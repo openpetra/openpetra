@@ -190,7 +190,7 @@ namespace Ict.Tools.DevelopersAssistant
          * ************************************************************************************************************/
 
         /// <summary>
-        /// The test that is displayed on the splash screen while a task runs
+        /// The test that is displayed in the list of tasks
         /// </summary>
         public string Description
         {
@@ -248,6 +248,69 @@ namespace Ict.Tools.DevelopersAssistant
 
                     default:
                         return "Unknown task";
+                }
+            }
+        }
+
+        /// <summary>
+        /// The text that is displayed in the status bar if the task runs asynchronously
+        /// </summary>
+        public string StatusText
+        {
+            get
+            {
+                switch (_taskItem)
+                {
+                    case TaskItem.qlog:
+                        return "Showing the history log";
+
+                    case TaskItem.qlogFile:
+                        return "Showing the history log for a specific file";
+
+                    case TaskItem.qdiff:
+                        return "Showing all the current differences for the current branch";
+
+                    case TaskItem.qdiffFile:
+                        return "Showing all the current differences for a specific file";
+
+                    case TaskItem.qcommit:
+                        return "Showing the 'Commit Changes' window for the current branch";
+
+                    case TaskItem.qadd:
+                        return "Showing the 'Add Unversioned Files' window for the current branch";
+
+                    case TaskItem.qbrowse:
+                        return "Showing the 'Source Code Browse' window for this branch";
+
+                    case TaskItem.qshelve:
+                        return "Showing the 'Shelve' window for selected changes";
+
+                    case TaskItem.qunshelve:
+                        return "Showing the 'Unshelve' window so that saved changes can be restored";
+
+                    case TaskItem.qmerge:
+                        return "Showing the 'Merge' window to merge revisions from trunk";
+
+                    case TaskItem.qconflicts:
+                        return "Showing the window where you can check and resolve conflicts";
+
+                    case TaskItem.qpull:
+                        return "Showing the 'Pull' window so that trunk changes can be mirrored into a local copy of trunk";
+
+                    case TaskItem.qupdate:
+                        return "Showing the 'Update' window to update a local copy of trunk from trunk";
+
+                    case TaskItem.qbranch:
+                        return "Showing the window for 'Creating a New Branch'";
+
+                    case TaskItem.bugUrl:
+                        return "Showing the window to review a specific Bug ID";
+
+                    case TaskItem.winexplore:
+                        return "Showing a Windows Explorer window ( for Tortoise Bazaar )";
+
+                    default:
+                        return "Showing unknown window";
                 }
             }
         }

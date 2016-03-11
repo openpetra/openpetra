@@ -98,9 +98,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             if (FMainDS != null)
             {
-                FMainDS.SUser.DefaultView.AllowNew = false;
-                FMainDS.SUser.DefaultView.Sort = "s_user_id_c ASC";
-                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.SUser.DefaultView);
+                DataView myDataView = FMainDS.SUser.DefaultView;
+                myDataView.AllowNew = false;
+                myDataView.Sort = "s_user_id_c ASC";
+                grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             }
         }
 
@@ -117,6 +118,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 // Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
                 LoadUsers();
+
+                ASubmitDS = FMainDS;
 
                 btnChangePassword.Enabled = true;
                 txtDetailPasswordHash.Enabled = false;
@@ -239,6 +242,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             string username = GetSelectedDetailRow().UserId;
 
+            string MessageTitle = Catalog.GetString("Set Password");
+            string ErrorMessage = String.Format(Catalog.GetString("There was a problem setting the password for user {0}."), username);
+
             // only request the password once, since this is the sysadmin changing it.
             // see http://bazaar.launchpad.net/~openpetracore/openpetraorg/trunkhosted/view/head:/csharp/ICT/Petra/Client/MSysMan/Gui/SysManMain.cs
             // for the change password dialog for the normal user
@@ -256,21 +262,21 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 {
                     if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true, true))
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), username));
+                        MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}."), username),
+                            MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                         // this has already been saved on during the server call to change the password
                         GetSelectedDetailRow().Retired = false;
                     }
                     else
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString("There was a problem setting the password for user {0}"), username));
+                        MessageBox.Show(ErrorMessage, MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show(String.Format(Catalog.GetString(
-                                "There was a problem setting the password for user {0}."), username) +
-                        Environment.NewLine + VerificationResult.ResultText);
+                    MessageBox.Show(ErrorMessage + Environment.NewLine + Environment.NewLine + VerificationResult.ResultText,
+                        MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

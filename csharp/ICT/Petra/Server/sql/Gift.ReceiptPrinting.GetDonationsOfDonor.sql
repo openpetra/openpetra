@@ -28,6 +28,7 @@ WHERE a_gift_batch.a_ledger_number_i = ?
    AND a_gift_detail.a_gift_transaction_number_i = a_gift.a_gift_transaction_number_i
    AND a_gift_batch.a_gl_effective_date_d BETWEEN ? AND ?
    AND a_gift.p_donor_key_n = ?
+   AND a_gift.a_print_receipt_l = 1
    AND a_motivation_detail.a_ledger_number_i = a_gift_batch.a_ledger_number_i
    AND a_motivation_detail.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c
    AND a_motivation_detail.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c

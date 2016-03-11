@@ -8,8 +8,8 @@ RootNode:
     Template: windowEditUIConnector
     MasterTable: AApSupplier
     UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
-    WindowWidth: 760
-    WindowHeight: 500
+    WindowWidth: 670
+    WindowHeight: 360
     Actions:
 #        cndDiscountEnabled: {InitialValue=false}
     Controls:
@@ -36,22 +36,31 @@ RootNode:
         grpAccountInformation:
             Label: Account Information
             Controls: [cmbAPAccount, cmbDefaultBankAccount, cmbCostCentre, cmbExpenseAccount]
-        txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey, Width=450}
+            Width: 655
+        txtPartnerKey: {Label=Partner Key, ReadOnly=true, DataField=AApSupplier.PartnerKey, Type=PartnerKey, Width=370}
         cmbCurrency: {Label=&Currency, DataField=AApSupplier.CurrencyCode, List=CurrencyCodeList, Width=200}
         cmbSupplierType: 
             Label:Supplier &Type
             DataField: AApSupplier.SupplierType
             OptionalValues: [NORMAL, CREDIT CARD]
         cmbAPAccount: {Label=&AP Account, DataField=AApSupplier.DefaultApAccount, List=UserDefinedList}
+            Width: 400
+            ComboBoxWidth:100
         cmbDefaultBankAccount: {Label=Default &Bank Account, DataField=AApSupplier.DefaultBankAccount, List=UserDefinedList}
+            Width: 400
+            ComboBoxWidth:100
         cmbCostCentre: {Label=Default C&ost Centre, DataField=AApSupplier.DefaultCostCentre, List=UserDefinedList}
+            Width: 400
+            ComboBoxWidth:100
         cmbExpenseAccount: {Label=Default &Expense Account, DataField=AApSupplier.DefaultExpAccount, List=UserDefinedList}
+            Width: 400
+            ComboBoxWidth:100
         nudInvoiceAging: {Label=Invoice A&ging, LabelUnit=months, DataField=AApSupplier.PreferredScreenDisplay, Width=90}
         nudCreditTerms: {Label=C&redit Terms, LabelUnit=days, DataField=AApSupplier.DefaultCreditTerms, Width=90}
         cmbDefaultPaymentType:
             Label: Default &Payment Type
             DataField: AApSupplier.PaymentType
             OptionalValues: [Cash, Cheque, Debit Card, Credit Card, Transfer]
-            Width: 90
+            Width: 100
 #        nudDiscountDays: {Label=Number of Days for &Discount (0 for none), DataField=AApSupplier.DefaultDiscountDays, PositiveValueActivates=cndDiscountEnabled, Width=90}
 #        txtDiscountValue: {Label=Discount &Value (%), DataField=AApSupplier.DefaultDiscountPercentage, Enabled=cndDiscountEnabled, Format=PercentDecimal(2), Width=90}

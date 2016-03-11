@@ -63,8 +63,7 @@ RootNode:
         txtDetailDescription: {Label=Help description, Multiline=true, Height=60, Width=400}
         chkDetailDisplayed: {Label=Display}
         cmbDetailDataType: {Label=Data type, OnChange=OnDataTypeChange}
-            OptionalValues: [=Text, Number, Currency, Yes/No, Date, Option List, Partner Key]
-#            OptionalValues: [=Text, Number, Currency, Yes/No, Date, Time, Option List, Partner Key] leave out Time field for now
+            OptionalValues: [=Text, Number, Currency, Yes/No, Date, Time, Option List, Partner Key]
         pnlDataSubType:
             Controls: [pnlCharLength, pnlNumDecimalPlaces, pnlCurrencyCode, pnlLookupCategoryCode]
             Height: 25

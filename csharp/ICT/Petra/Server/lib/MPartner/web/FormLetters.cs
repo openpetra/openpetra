@@ -285,6 +285,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                     formData.LastName = FamilyRow.FamilyName;
                                 }
                             }
+
+                            if (formData.FirstName.Length > 0)
+                            {
+                                formData.FirstInitial = ConvertIfUpperCase(formData.FirstName.Substring(0, 1), true);
+                            }
                         }
 
                         // retrieve Person information
@@ -304,6 +309,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PersonFormData.Decorations = PersonRow.Decorations;
                                 PersonFormData.MiddleName = PersonRow.MiddleName1;
                                 PersonFormData.PreferedName = PersonRow.PreferedName;
+                                PersonFormData.AcademicTitle = PersonRow.AcademicTitle;
                                 PersonFormData.DateOfBirth = PersonRow.DateOfBirth;
                                 PersonFormData.Gender = PersonRow.Gender;
                                 PersonFormData.MaritalStatus = PersonRow.MaritalStatus;
@@ -626,225 +632,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                         formData.BankBranchCode = BankRow.BranchCode;
                                         formData.BICSwiftCode = BankRow.Bic;
                                     }
-                                }
-                            }
-                        }
-
-                        if ((PartnerClass == TPartnerClass.PERSON)
-                            && (formData.GetType() == typeof(TFormDataPerson)))
-                        {
-                            // retrieve Passport information
-                            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.ePassport))
-                            {
-                                PmPassportDetailsTable PassportTable;
-                                TFormDataPassport PassportRecord;
-                                PassportTable = PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
-
-                                foreach (PmPassportDetailsRow PassportRow in PassportTable.Rows)
-                                {
-                                    PassportRecord = new TFormDataPassport();
-
-                                    PassportRecord.PassportName = PassportRow.FullPassportName;
-                                    PassportRecord.NationalityCode = PassportRow.PassportNationalityCode;
-
-                                    // retrieve country name from country table
-                                    TCacheable CachePopulator = new TCacheable();
-                                    PCountryTable CountryTable =
-                                        (PCountryTable)CachePopulator.GetCacheableTable(TCacheableCommonTablesEnum.CountryList);
-                                    PCountryRow CountryRow = (PCountryRow)CountryTable.Rows.Find(new object[] { PassportRow.PassportNationalityCode });
-
-                                    if (CountryRow != null)
-                                    {
-                                        PassportRecord.NationalityName = CountryRow.CountryName;
-                                    }
-
-                                    PassportRecord.TypeCode = PassportRow.PassportDetailsType;
-                                    // retrieve passport type name from type table
-                                    TPersonnelCacheable PersonnelCachePopulator = new TPersonnelCacheable();
-                                    PtPassportTypeTable TypeTable =
-                                        (PtPassportTypeTable)PersonnelCachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.PassportTypeList);
-                                    PtPassportTypeRow TypeRow = (PtPassportTypeRow)TypeTable.Rows.Find(new object[] { PassportRow.PassportDetailsType });
-
-                                    if (TypeRow != null)
-                                    {
-                                        PassportRecord.TypeDescription = TypeRow.Description;
-                                    }
-
-                                    // set number and nationality in main record (only for main passport or if there is just one)
-                                    if (PassportRow.MainPassport || (PassportTable.Count == 1))
-                                    {
-                                        ((TFormDataPerson)formData).PassportNumber = PassportRow.PassportNumber;
-                                        ((TFormDataPerson)formData).PassportNationality = PassportRow.PassportNationalityCode;
-                                        ((TFormDataPerson)formData).PassportName = PassportRow.FullPassportName;
-                                    }
-
-                                    PassportRecord.DateOfIssue = PassportRow.DateOfIssue;
-                                    PassportRecord.PlaceOfIssue = PassportRow.PlaceOfIssue;
-                                    PassportRecord.DateOfExpiry = PassportRow.DateOfExpiration;
-                                    PassportRecord.PlaceOfBirth = PassportRow.PlaceOfBirth;
-
-                                    ((TFormDataPerson)formData).AddPassport(PassportRecord);
-                                }
-                            }
-
-                            // retrieve Language information
-                            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLanguage))
-                            {
-                                PmPersonLanguageTable PersonLanguageTable;
-                                TFormDataLanguage PersonLanguageRecord;
-                                PersonLanguageTable = PmPersonLanguageAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
-
-                                foreach (PmPersonLanguageRow PersonLanguageRow in PersonLanguageTable.Rows)
-                                {
-                                    PersonLanguageRecord = new TFormDataLanguage();
-
-                                    PersonLanguageRecord.Code = PersonLanguageRow.LanguageCode;
-
-                                    // retrieve language name from language table
-                                    TCacheable CachePopulator = new TCacheable();
-                                    PLanguageTable LanguageTable =
-                                        (PLanguageTable)CachePopulator.GetCacheableTable(TCacheableCommonTablesEnum.LanguageCodeList);
-                                    PLanguageRow LanguageRow = (PLanguageRow)LanguageTable.Rows.Find(new object[] { PersonLanguageRow.LanguageCode });
-
-                                    if (LanguageRow != null)
-                                    {
-                                        PersonLanguageRecord.Name = LanguageRow.LanguageDescription;
-                                    }
-
-                                    PersonLanguageRecord.Level = PersonLanguageRow.LanguageLevel.ToString();
-
-                                    // retrieve language level name from language level table
-                                    TPersonnelCacheable CachePopulatorPersonnel = new TPersonnelCacheable();
-                                    PtLanguageLevelTable LanguageLevelTable =
-                                        (PtLanguageLevelTable)CachePopulatorPersonnel.GetCacheableTable(TCacheablePersonTablesEnum.LanguageLevelList);
-                                    PtLanguageLevelRow LanguageLevelRow =
-                                        (PtLanguageLevelRow)LanguageLevelTable.Rows.Find(new object[] { PersonLanguageRow.LanguageLevel });
-
-                                    if (LanguageLevelRow != null)
-                                    {
-                                        PersonLanguageRecord.LevelDesc = LanguageLevelRow.LanguageLevelDescr;
-                                    }
-
-                                    PersonLanguageRecord.Comment = PersonLanguageRow.Comment;
-
-                                    ((TFormDataPerson)formData).AddLanguage(PersonLanguageRecord);
-                                }
-                            }
-
-                            // retrieve Skill information
-                            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSkill))
-                            {
-                                PmPersonSkillTable PersonSkillTable;
-                                TFormDataSkill PersonSkillRecord;
-                                PersonSkillTable = PmPersonSkillAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
-
-                                foreach (PmPersonSkillRow PersonSkillRow in PersonSkillTable.Rows)
-                                {
-                                    PersonSkillRecord = new TFormDataSkill();
-
-                                    PersonSkillRecord.Category = PersonSkillRow.SkillCategoryCode;
-                                    PersonSkillRecord.Description = PersonSkillRow.DescriptionEnglish;
-
-                                    // if no description in local language then use english
-                                    PersonSkillRecord.DescriptionLocalOrDefault = PersonSkillRow.DescriptionLocal;
-
-                                    if (PersonSkillRow.DescriptionLocal != "")
-                                    {
-                                        PersonSkillRecord.DescriptionLocalOrDefault = PersonSkillRow.DescriptionEnglish;
-                                    }
-
-                                    PersonSkillRecord.Level = PersonSkillRow.SkillLevel;
-
-                                    // retrieve skill level name from skill level table
-                                    TPersonnelCacheable CachePopulatorPersonnel = new TPersonnelCacheable();
-                                    PtSkillLevelTable SkillLevelTable =
-                                        (PtSkillLevelTable)CachePopulatorPersonnel.GetCacheableTable(TCacheablePersonTablesEnum.SkillLevelList);
-                                    PtSkillLevelRow SkillLevelRow =
-                                        (PtSkillLevelRow)SkillLevelTable.Rows.Find(new object[] { PersonSkillRow.SkillLevel });
-
-                                    if (SkillLevelRow != null)
-                                    {
-                                        PersonSkillRecord.LevelDesc = SkillLevelRow.Description;
-                                    }
-
-                                    PersonSkillRecord.YearsExp = PersonSkillRow.YearsOfExperience;
-                                    PersonSkillRecord.Professional = PersonSkillRow.ProfessionalSkill;
-                                    PersonSkillRecord.Degree = PersonSkillRow.Degree;
-                                    PersonSkillRecord.Comment = PersonSkillRow.Comment;
-
-                                    ((TFormDataPerson)formData).AddSkill(PersonSkillRecord);
-                                }
-                            }
-
-                            // retrieve past work experience information
-                            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eWorkExperience))
-                            {
-                                TFormDataWorkExperience PersonExpRecord;
-                                String UnitShortName;
-                                TPartnerClass UnitClass;
-
-                                // retrieve applications for short term events
-                                String SqlStmt = TDataBase.ReadSqlFile("Personnel.FormLetters.GetAppTravelDates.sql");
-
-                                OdbcParameter[] parameters = new OdbcParameter[1];
-                                parameters[0] = new OdbcParameter("PartnerKey", OdbcType.BigInt);
-                                parameters[0].Value = APartnerKey;
-
-                                DataTable travelData = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "TravelDates", ReadTransaction, parameters);
-
-                                for (int i = 0; i < travelData.Rows.Count; i++)
-                                {
-                                    PersonExpRecord = new TFormDataWorkExperience();
-
-                                    if ((travelData.Rows[i][0]).GetType() == typeof(DateTime))
-                                    {
-                                        PersonExpRecord.StartDate = (DateTime?)travelData.Rows[i][0];
-                                    }
-
-                                    if ((travelData.Rows[i][1]).GetType() == typeof(DateTime))
-                                    {
-                                        PersonExpRecord.EndDate = (DateTime?)travelData.Rows[i][1];
-                                    }
-
-                                    PersonExpRecord.Organisation = "";
-                                    PersonExpRecord.Role = "";
-                                    PersonExpRecord.Category = "";
-                                    PersonExpRecord.SameOrg = true;
-                                    PersonExpRecord.SimilarOrg = true;
-                                    PersonExpRecord.Comment = "";
-
-                                    // check if unit exists and use unit name as location
-                                    if (TPartnerServerLookups.GetPartnerShortName((Int64)travelData.Rows[i][2], out UnitShortName, out UnitClass))
-                                    {
-                                        PersonExpRecord.Location = UnitShortName;
-                                    }
-                                    else
-                                    {
-                                        PersonExpRecord.Location = travelData.Rows[i][3].ToString();
-                                    }
-
-                                    ((TFormDataPerson)formData).AddWorkExperience(PersonExpRecord);
-                                }
-
-                                // retrieve actual past experience records
-                                PmPastExperienceTable PersonExpTable;
-                                PersonExpTable = PmPastExperienceAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
-
-                                foreach (PmPastExperienceRow PersonExpRow in PersonExpTable.Rows)
-                                {
-                                    PersonExpRecord = new TFormDataWorkExperience();
-
-                                    PersonExpRecord.StartDate = PersonExpRow.StartDate;
-                                    PersonExpRecord.EndDate = PersonExpRow.EndDate;
-                                    PersonExpRecord.Location = PersonExpRow.PrevLocation;
-                                    PersonExpRecord.Organisation = PersonExpRow.OtherOrganisation;
-                                    PersonExpRecord.Role = PersonExpRow.PrevRole;
-                                    PersonExpRecord.Category = PersonExpRow.Category;
-                                    PersonExpRecord.SameOrg = PersonExpRow.PrevWorkHere;
-                                    PersonExpRecord.SimilarOrg = PersonExpRow.PrevWork;
-                                    PersonExpRecord.Comment = PersonExpRow.PastExpComments;
-
-                                    ((TFormDataPerson)formData).AddWorkExperience(PersonExpRecord);
                                 }
                             }
                         }

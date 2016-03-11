@@ -596,19 +596,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 "------------------------------------------------ " + "\r\n" +
                 " This number is used to identify the family members within a Family. " +
                 "\r\n" + " * Family ID's 0 and 1 are used for parents; " + "\r\n" +
-                "    FamilyID's 2, 3, 4 ... 9 are used for children. " + "\r\n" +
-                " * All gifts to this Family will be assigned to the Field in the Gift" +
-                "\r\n" +
-                "    Destination of the family member with the the lowest Family ID" +
-                "\r\n" +
-                "    of those who have a current Gift Destination." +
+                "    FamilyID's 2, 3, 4 ... 9 are used for children. " +
                 "\r\n" +
                 "\r\n" +
-                " This system needs to be consistently applied to all Families, to ensure that" +
+                " This system needs to be consistently applied to all Families to ensure that" +
                 "\r\n" +
-                " gifts go to the correct Field, and that family members are" +
-                "\r\n" +
-                " always listed in the same order on screen and on reports.");
+                " family members are always listed in the same order on screen and on reports.");
 
             MessageBox.Show(StrFamilyIDExplained, Catalog.GetString("Family ID Explained"));
         }

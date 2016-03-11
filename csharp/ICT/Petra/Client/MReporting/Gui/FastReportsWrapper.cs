@@ -22,25 +22,30 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
-using Ict.Petra.Client.MReporting.Gui;
+
+//using FastReport;
+
+using Ict.Common;
+using Ict.Common.Data;
+using Ict.Common.IO;
+
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.MSysMan.Gui;
-using System.Collections;
-using Ict.Common;
-using System.Reflection;
-using Ict.Petra.Shared.MSysMan.Data;
+
 using Ict.Petra.Shared;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Common.Data;
-using Ict.Petra.Client.App.Core;
-using System.IO;
-using Ict.Common.IO;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using System.Collections.Generic;
-using System.Threading;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -838,7 +843,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             // I'm not in the User Interface thread, so I can use an invoke here:
 
-            Application.OpenForms[0].Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
+            TFormsList.GFormsList.MainMenuForm.Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
+            //Application.OpenForms[0].Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
         } // PrintReportNoUi
     }
 }

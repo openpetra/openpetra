@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.CommonForms
         public static TFormsList GFormsList = new TFormsList();
 
         /// <summary>
-        /// List of all Forms that are treated as being singletons, i.e. of which only on instance should be
+        /// List of all Forms that are treated as being singletons, i.e. of which only one instance should be
         /// open at a given time (except for Forms that are shown Modal, for which one Modal instance can be opened
         /// in addition to a single non-Modal instance of the same Form).
         /// </summary>
@@ -101,6 +101,31 @@ namespace Ict.Petra.Client.CommonForms
                         return;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns the main menu form
+        /// </summary>
+        public System.Windows.Forms.Form MainMenuForm
+        {
+            get
+            {
+                System.Windows.Forms.Form ReturnValue;
+                IDictionaryEnumerator DictEnum;
+                ReturnValue = null;
+                DictEnum = GetEnumerator();
+
+                while (DictEnum.MoveNext())
+                {
+                    if (DictEnum.Key.ToString().Contains("TFrmMainWindowNew"))
+                    {
+                        ReturnValue = (System.Windows.Forms.Form)DictEnum.Value;
+                        return ReturnValue;
+                    }
+                }
+
+                return ReturnValue;
             }
         }
 
@@ -348,7 +373,7 @@ namespace Ict.Petra.Client.CommonForms
             while (DictEnum.MoveNext())
             {
                 FormInstance = (System.Windows.Forms.Form)DictEnum.Value;
-                ReturnValue = ReturnValue + String.Format(StrPrintFormat, new Object[] { FormInstance.Name, FormInstance.Text }) + "\r\n";
+                ReturnValue += String.Format(StrPrintFormat, new Object[] { FormInstance.Name, FormInstance.Text }) + "\r\n";
             }
 
             return ReturnValue;

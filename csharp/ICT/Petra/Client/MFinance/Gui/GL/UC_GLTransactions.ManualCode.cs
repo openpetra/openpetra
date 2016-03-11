@@ -397,7 +397,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         //Remove trailing comma
                         updatedTransactions = updatedTransactions.Remove(updatedTransactions.Length - 2);
                         MessageBox.Show(String.Format(Catalog.GetString(
-                                    "Analysis Attributes have been updated in transaction(s): {0}.{1}{1}Remeber to set their values before posting!"),
+                                    "Analysis Attributes have been updated in transaction(s): {0}.{1}{1}Remember to set their values before posting!"),
                                 updatedTransactions,
                                 Environment.NewLine),
                             "Analysis Attributes",

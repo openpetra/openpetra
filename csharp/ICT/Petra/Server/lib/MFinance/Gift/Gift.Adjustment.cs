@@ -209,7 +209,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gifts:")) + "\n" + Message +
                               "\n\n" + Catalog.GetString("They have already been adjusted or reversed.");
                 }
-                else if (GiftCount > 0)
+                else if (GiftCount == 1)
                 {
                     Message = String.Format(Catalog.GetString("Cannot reverse or adjust the following gift:")) + "\n" + Message +
                               "\n\n" + Catalog.GetString("It has already been adjusted or reversed.");
@@ -227,81 +227,84 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Identify the gift detail that needs to be reset as not reversed
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="AReversalIdentification"></param>
-        /// <returns></returns>
+        /// <param name="AModifiedDetailKeys"></param>
         [RequireModulePermission("FINANCE-1")]
-        public static bool ReversedGiftReset(int ALedgerNumber, string AReversalIdentification)
+        public static void ReversedGiftReset(Int32 ALedgerNumber, List <string>AModifiedDetailKeys)
         {
-            int BatchNo;
-            int GiftTransNo;
-            int DetailNo;
+            #region Validate Arguments
 
-            TVerificationResultCollection Messages = new TVerificationResultCollection();
-
-            int positionFirstNumber = 1;
-            int positionSecondBar = AReversalIdentification.IndexOf('|', positionFirstNumber);
-            int positionThirdBar = AReversalIdentification.LastIndexOf('|');
-            int lenReversalDetails = AReversalIdentification.Length;
-
-            if (!Int32.TryParse(AReversalIdentification.Substring(positionFirstNumber, positionSecondBar - positionFirstNumber), out BatchNo)
-                || !Int32.TryParse(AReversalIdentification.Substring(positionSecondBar + 1,
-                        positionThirdBar - positionSecondBar - 1), out GiftTransNo)
-                || !Int32.TryParse(AReversalIdentification.Substring(positionThirdBar + 1, lenReversalDetails - positionThirdBar - 1), out DetailNo))
+            if (ALedgerNumber <= 0)
             {
-                Messages.Add(new TVerificationResult(
-                        String.Format(Catalog.GetString("Cannot parse the Modified Detail Key: '{0}'"),
-                            AReversalIdentification),
-                        String.Format(Catalog.GetString("Unexpected error.")),
-                        TResultSeverity.Resv_Critical));
-
-                return false;
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (AModifiedDetailKeys.Count == 0)
+            {
+                //Not an error condition, just return.
+                return;
             }
 
-            GiftBatchTDS MainDS = new GiftBatchTDS();
+            #endregion Validate Arguments
 
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                ref Transaction,
-                ref SubmissionOK,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
                     {
-                        TLogging.Log(BatchNo.ToString());
-                        TLogging.Log(GiftTransNo.ToString());
-                        TLogging.Log(DetailNo.ToString());
+                        foreach (string ModifiedDetailKey in AModifiedDetailKeys)
+                        {
+                            //Sometimes the underlying ModifiedDetailKeys field is set to empty string
+                            if (ModifiedDetailKey.Length == 0)
+                            {
+                                continue;
+                            }
 
-                        AGiftDetailAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, BatchNo, GiftTransNo, DetailNo, Transaction);
+                            string[] GiftDetailFields = ModifiedDetailKey.Split('|');
 
-                        TLogging.Log("Count: " + MainDS.AGiftDetail.Count.ToString());
+                            int giftBatchNumber = Convert.ToInt32(GiftDetailFields[1]);
+                            int giftNumber = Convert.ToInt32(GiftDetailFields[2]);
+                            int giftDetailNumber = Convert.ToInt32(GiftDetailFields[3]);
 
-                        AGiftDetailRow giftDetailRow = (AGiftDetailRow)MainDS.AGiftDetail.Rows[0];
-                        //Reset gift to not reversed
-                        giftDetailRow.ModifiedDetail = false;
+                            AGiftDetailTable GiftDetailTable =
+                                AGiftDetailAccess.LoadByPrimaryKey(ALedgerNumber, giftBatchNumber, giftNumber, giftDetailNumber, Transaction);
 
-                        AGiftDetailAccess.SubmitChanges(MainDS.AGiftDetail, Transaction);
+                            #region Validate Data
 
-                        MainDS.AGiftBatch.AcceptChanges();
+                            if ((GiftDetailTable == null) || (GiftDetailTable.Count == 0))
+                            {
+                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                            "Function:{0} - Data for Gift Detail {1}, from Gift {2} in Batch {3} and Ledger {4}, does not exist or could not be accessed!"),
+                                        Utilities.GetMethodName(true),
+                                        giftDetailNumber,
+                                        giftNumber,
+                                        giftBatchNumber,
+                                        ALedgerNumber));
+                            }
+
+                            #endregion Validate Data
+
+                            GiftDetailTable[0].ModifiedDetail = false;
+
+                            AGiftDetailAccess.SubmitChanges(GiftDetailTable, Transaction);
+                        }
 
                         SubmissionOK = true;
-                    }
-                    catch (Exception ex)
-                    {
-                        TLogging.Log("An Exception occured in ReversedGiftReset:" + Environment.NewLine + ex.ToString());
-
-                        Messages.Add(new TVerificationResult(
-                                String.Format(Catalog.GetString("Cannot reset ModifiedDetail for Gift {0} Detail {1} in Batch {2}"),
-                                    GiftTransNo, DetailNo, BatchNo),
-                                String.Format(Catalog.GetString("Unexpected error.")),
-                                TResultSeverity.Resv_Critical));
-
-                        throw ex;
-                    }
-                });
-
-            return true;
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
         }
 
         /// <summary>

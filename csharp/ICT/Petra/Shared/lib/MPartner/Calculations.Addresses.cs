@@ -581,12 +581,11 @@ namespace Ict.Petra.Shared.MPartner
         /// <returns>data view containing the current address</returns>
         public static DataView DetermineCurrentAddresses(PPartnerLocationTable ATable)
         {
-            // dd/MM/yyyy did not work on Mono on Mac
-            // see also http://www.csharp-examples.net/dataview-rowfilter/
-            return new DataView(ATable, "((" + PPartnerLocationTable.GetDateEffectiveDBName() + " <= #" + DateTime.Now.Date.ToString(
-                    "yyyy-MM-dd") + "# OR " + PPartnerLocationTable.GetDateEffectiveDBName() + " IS NULL) AND (" +
-                PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Now.Date.ToString(
-                    "yyyy-MM-dd") + "# OR " + PPartnerLocationTable.GetDateGoodUntilDBName() + " IS NULL))", "", DataViewRowState.CurrentRows);
+            return new DataView(ATable, "((" + PPartnerLocationTable.GetDateEffectiveDBName() + " <= #" +
+                DateTime.Now.Date.ToString("yyyy-MM-dd") + "# OR " +
+                PPartnerLocationTable.GetDateEffectiveDBName() + " IS NULL) AND (" +
+                PPartnerLocationTable.GetDateGoodUntilDBName() + " >= #" + DateTime.Now.Date.ToString("yyyy-MM-dd") +
+                "# OR " + PPartnerLocationTable.GetDateGoodUntilDBName() + " IS NULL))", "", DataViewRowState.CurrentRows);
         }
     }
 }

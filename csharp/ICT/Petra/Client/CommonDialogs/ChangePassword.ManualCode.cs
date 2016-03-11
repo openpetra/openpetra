@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, peters
 //
 // Copyright 2004-2015 by OM International
 //
@@ -78,16 +78,27 @@ namespace Ict.Petra.Client.CommonDialogs
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+            string MessageTitle = Catalog.GetString("Set Password");
+            string ErrorMessage = String.Format(Catalog.GetString("There was a problem setting the password for user {0}."), UserName);
+
+            if (txtOldPassword.Visible && !TRemote.MSysMan.Maintenance.WebConnectors.PasswordAuthentication(UserName, this.txtOldPassword.Text))
+            {
+                MessageBox.Show(Catalog.GetString("Incorrect password entered."),
+                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             if (txtNewPassword.Text != txtNewPassword2.Text)
             {
-                MessageBox.Show(Catalog.GetString("Passwords do not match! Please try again..."));
+                MessageBox.Show(Catalog.GetString("Passwords do not match! Please try again..."),
+                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (txtNewPassword.Text == this.txtOldPassword.Text && this.PasswordNeedsChanged)
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                    "Password not changed as the old password was reused. Please use a new password."), Catalog.GetString("Error")));
+                        "This password is the same as your old password! Please enter a new password."), UserName),
+                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -96,9 +107,9 @@ namespace Ict.Petra.Client.CommonDialogs
 
             if (!TSharedSysManValidation.CheckPasswordQuality(txtNewPassword.Text, out VerificationResult))
             {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "There was a problem setting the password for user {0}."), UserName) +
-                    Environment.NewLine + VerificationResult.ResultText);
+                MessageBox.Show(ErrorMessage + Environment.NewLine + Environment.NewLine +
+                    VerificationResult.ResultText,
+                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -107,14 +118,14 @@ namespace Ict.Petra.Client.CommonDialogs
                     PasswordNeedsChanged,
                     out VerificationResultCollection))
             {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "There was a problem setting the password for user {0}."), UserName) +
-                    Environment.NewLine + VerificationResultCollection.BuildVerificationResultString());
+                MessageBox.Show(ErrorMessage + Environment.NewLine + Environment.NewLine +
+                    VerificationResultCollection.BuildVerificationResultString(),
+                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}"), UserName),
-                            Catalog.GetString("Success"));
+            MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}."), UserName),
+                            MessageTitle);
             this.DialogResult = DialogResult.OK;
         }
     }

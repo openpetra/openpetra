@@ -476,13 +476,37 @@ namespace Ict.Common.IO.Testing
                 pck.SaveAs(new FileInfo(filename));
             }
 
-            new ExcelPackage(new FileInfo(filename));
-            PackTools.Unzip(PathToTestData + "testUnzip", filename);
+            // Set up an empty folder to unzip to
+            string unzipRoot = PathToTestData + "testUnzip";
 
-            FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
+            if (Directory.Exists(unzipRoot))
+            {
+                // Something left over from last time??
+                Directory.Delete(unzipRoot, true);
+                Thread.Sleep(1000);
+            }
+
+            Directory.CreateDirectory(unzipRoot);
+
+            // Unzip the Excel file
+            new ExcelPackage(new FileInfo(filename));
+            PackTools.Unzip(unzipRoot, filename);
+
+            FileInfo f = new FileInfo(unzipRoot + "/xl/sharedStrings.xml");
             Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
 
             Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
+
+            // Try to remove the folder that we unzipped to as part of clean-up
+            Thread.Sleep(1000);
+            try
+            {
+                Directory.Delete(unzipRoot, true);
+            }
+            catch (Exception)
+            {
+            }
+            Thread.Sleep(500);
         }
 
         /// <summary>
@@ -526,15 +550,39 @@ namespace Ict.Common.IO.Testing
                 }
             }
 
-            PackTools.Unzip(PathToTestData + "testUnzip", filename);
+            // Set up an empty folder to unzip to
+            string unzipRoot = PathToTestData + "testUnzip";
 
-            FileInfo f = new FileInfo(PathToTestData + "testUnzip/xl/sharedStrings.xml");
+            if (Directory.Exists(unzipRoot))
+            {
+                // Something left over from last time??
+                Directory.Delete(unzipRoot, true);
+                Thread.Sleep(1000);
+            }
+
+            Directory.CreateDirectory(unzipRoot);
+
+            // Unzip the Excel file
+            PackTools.Unzip(unzipRoot, filename);
+
+            FileInfo f = new FileInfo(unzipRoot + "/xl/sharedStrings.xml");
             Assert.AreNotEqual(0, f.Length, "file sharedStrings.xml should not be empty");
 
             // System.MethodAccessException : Attempt by security transparent method 'OfficeOpenXml.Utils.EncryptedPackageHandler.IsStorageFile(System.String)' to call native code
             // through method 'OfficeOpenXml.Utils.EncryptedPackageHandler.StgIsStorageFile(System.String)' failed.
             // Methods must be security critical or security safe-critical to call native code.
             //Assert.IsInstanceOf(typeof(ExcelPackage), new ExcelPackage(new FileInfo(filename)), "cannot open excel file");
+
+            // Try to remove the folder that we unzipped to as part of clean-up
+            Thread.Sleep(1000);
+            try
+            {
+                Directory.Delete(unzipRoot, true);
+            }
+            catch (Exception)
+            {
+            }
+            Thread.Sleep(500);
         }
 
         /// <summary>

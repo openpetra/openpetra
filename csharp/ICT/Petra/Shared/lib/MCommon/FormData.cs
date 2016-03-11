@@ -1024,6 +1024,10 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String FirstInitial {
+            get; set;
+        }
+        ///
         public String LastName {
             get; set;
         }
@@ -1284,10 +1288,6 @@ namespace Ict.Petra.Shared.MCommon
 
         ///
         public String Decorations {
-            get; set;
-        }
-        ///
-        public String FirstInitial {
             get; set;
         }
         ///

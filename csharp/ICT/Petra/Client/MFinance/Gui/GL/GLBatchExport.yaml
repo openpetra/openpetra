@@ -90,9 +90,9 @@ RootNode:
             ActionClick: BtnBrowseClick
         cmbDateFormat:
             OptionalValues: [MM/dd/yyyy,dd/MM/yyyy,yyyy-MM-dd]
-            Width: 160
+            Width: 120
         cmbNumberFormat:
-            Width: 160
+            Width: 190
             OptionalValues: ["Decimal Point (12.34)", "Decimal Comma (12,34)"]
         cmbDelimiter:
             OptionalValues: [";", ",", ":", "[SPACE]"]

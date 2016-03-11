@@ -916,29 +916,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             FCurrentCostCentre.GetAttrributes();
 
-            if (FCurrentCostCentre.CanDelete.Value)
-            {
-                ACostCentreRow SelectedRow = FCurrentCostCentre.CostCentreRow;
-                TreeNode DeletedNode = FCurrentCostCentre.linkedTreeNode;
-                TreeNode ParentNode = DeletedNode.Parent;
-                SelectedRow.Delete();
-                ucoCostCentreTree.DeleteSelectedCostCentre();
-
-                // FCurrentCostCentre is now the parent of the CostCentre that was just deleted.
-                // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
-                if (FCurrentCostCentre != null)
-                {
-                    FCurrentCostCentre.GetAttrributes();
-                }
-
-                FPetraUtilsObject.SetChangedFlag();
-            }
-            else
+            if (!FCurrentCostCentre.CanDelete.Value)
             {
                 MessageBox.Show(
                     Catalog.GetString("This Cost Centre Code is in use and cannot be deleted.") + "\n" + FCurrentCostCentre.Msg,
                     Catalog.GetString("Delete Cost Centre"));
+                return;
             }
+
+            if (!FCurrentCostCentre.IsNew)
+            {
+                if (MessageBox.Show(
+                        String.Format(
+                            Catalog.GetString("Please confirm that you want to delete Cost Centre {0}?"),
+                            FCurrentCostCentre.CostCentreRow.CostCentreCode),
+                        Catalog.GetString("Delete Cost Centre"), MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Question)
+                    != System.Windows.Forms.DialogResult.OK
+                    )
+                {
+                    return;
+                }
+            }
+
+            ACostCentreRow SelectedRow = FCurrentCostCentre.CostCentreRow;
+            TreeNode DeletedNode = FCurrentCostCentre.linkedTreeNode;
+            TreeNode ParentNode = DeletedNode.Parent;
+            SelectedRow.Delete();
+            ucoCostCentreTree.DeleteSelectedCostCentre();
+
+            // FCurrentCostCentre is now the parent of the CostCentre that was just deleted.
+            // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
+            if (FCurrentCostCentre != null)
+            {
+                FCurrentCostCentre.GetAttrributes();
+            }
+
+            FPetraUtilsObject.SetChangedFlag();
         }
 
         /// <summary>

@@ -75,8 +75,11 @@ RootNode:
                 Row0: [btnCancel, btnApply]
         cmbCalculation: {OnChange=CmbContentChanged}
             Label: Content of Column
+            Width: 250
+            ColSpan: 2
         txtColumnWidth:
             Label: Width of Column
+            Width: 50
         lblCm:
             Label: cm
         btnCancel:

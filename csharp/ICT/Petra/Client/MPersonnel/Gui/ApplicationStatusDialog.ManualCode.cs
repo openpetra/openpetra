@@ -204,7 +204,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui
             AApplicationStatusList = "";
 
             ApplicationStatusDialog = new TFrmApplicationStatusDialog(AOwner);
-            ApplicationStatusDialog.SetCurrentlySelectedStatuses(ACurrentApplicationStatusList);
+
+            if (!string.IsNullOrEmpty(ACurrentApplicationStatusList))
+            {
+                ApplicationStatusDialog.SetCurrentlySelectedStatuses(ACurrentApplicationStatusList);
+            }
+
             DlgResult = ApplicationStatusDialog.ShowDialog(AOwner);
 
             if (DlgResult == DialogResult.OK)

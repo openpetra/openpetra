@@ -167,7 +167,6 @@ OpenPetra:
                     General:
                         LedgerInfo: {Description: View general information about this ledger, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmGLInfo}
                         ForeignCurrencyAccountBalances: {Description:Display Foreign Currency Account Balances, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TFrmForeignCurrencyAccountBalance}
-                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                         #EnterTransactions:
                         #ImportTransactions:
                         #EditExistingTransactions:
@@ -180,6 +179,7 @@ OpenPetra:
                     PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                         MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
                         YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
+                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TGLRevaluation}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         AccountDetailReport: {ActionOpenScreen=TFrmAccountDetail}
 #                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -267,20 +267,6 @@ OpenPetra:
                       # CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
                         AnalysisTypesAndValues: {Description=Maintain Analysis Types and Values, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
                         DeleteLedger: {Description="Careful: Delete the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger}
-                        #Accounts:
-                        #AddPostingAccount:
-                        #AddForeignCurrencyAccount:
-                        #AddSummarisationAccount:
-                        #EditAccount:
-                        #DeleteAccount:
-                        #RenameAccount:
-                        #ImportChartOfAccounts:
-                    #CostCentres:
-                        #AddCostCentre:
-                        #EditCostCentre:
-                        #DeleteCostCentre:
-                        #RenameCostCentre:
-                        #LinkCostCentreToPartner:
                     Other:
                         Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
                         FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
@@ -290,6 +276,7 @@ OpenPetra:
                         MotivationDetails: {Description: "Maintain Motivation Details to which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}                        
                         AdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         AdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
+                        EsrDefaults: {Label=ESR Defaults, Description=Maintain Motivation Types for ESR Partner Keys, ActionOpenScreen=Gift.TFrmEsrDefaultsSetup}
                     AccountsPayable:
                         APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
@@ -298,15 +285,15 @@ OpenPetra:
                     ExchangeRates:
                         CorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
                         DailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
-                    Currencies:                   
+                    Currencies:
                         Currencies: {Description=Maintain Currencies, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
                         CurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
-                    FormLetters:                   
+                    FormLetters:
                         FormDesign: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Description=Maintain Printable Form Designs, ActionOpenScreen=TFrmFormDesignSetup, Context=Finance}
                         AddressLayoutCodes: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
                         AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
                         LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
-                    Other:                                       
+                    Other:
                         MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                         MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
                         EmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
@@ -320,7 +307,7 @@ OpenPetra:
                 # Sub Module
                 Partners: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPartner.Gui}
                     SearchBoxes: [Partner]
-                    MaintainPartners:                
+                    MaintainPartners:
                         FindPERSONPartners: {Label=Find a Person, ActionClick=TPartnerMain.FindPartnerOfClassPERSON, Description=Search for and work with a Person}
                         WorkWithLastPERSON: {Label=Work with Last Person, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreenPersonnelModule, Description=Open last Person worked with}
                     CreatePartner:
@@ -442,21 +429,21 @@ OpenPetra:
                     General:
                         ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
-            Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev}  # Icon=Print.ico
-                GeneralReports: {DontShowNestedTasksAsLinks=true}
-                    IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
-                    LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
-                    DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
-                    TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
-                    MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
-                OldStyleReports: {DontShowNestedTasksAsLinks=true}
-                    ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
-                    DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
-                    GiftsOverMinimumAmount: {ActionOpenScreen=TFrmGiftsOverMinimumAmount}
-                    LapsedDonorReport: {ActionOpenScreen=TFrmLapsedDonorReport}
-                    SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
-                    NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
-                    TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
+            Main: {SkipThisLevel=true}
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
+                    Reports:
+                        IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+                        LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
+                        DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
+                        TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
+                        MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
+                        ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
+                        DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
+                        GiftsOverMinimumAmount: {ActionOpenScreen=TFrmGiftsOverMinimumAmount}
+                        LapsedDonorReport: {ActionOpenScreen=TFrmLapsedDonorReport}
+                        SYBUNTReport: {ActionOpenScreen=TFrmSYBUNTReport}
+                        NewDonorReport: {ActionOpenScreen=TFrmNewDonorReport}
+                        TopDonorReport: {ActionOpenScreen=TFrmTopDonorReport}
         Settings: {Icon=settings.ico, Namespace=Ict.Petra.Client.MSysMan.Gui}
             Main: {SkipThisLevel=true}
                 Preferences: {DontShowNestedTasksAsLinks=true}

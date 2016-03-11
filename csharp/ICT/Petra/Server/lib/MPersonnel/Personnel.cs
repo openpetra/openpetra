@@ -351,9 +351,9 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 delegate
                 {
                     Query =
-                        "SELECT DISTINCT PUB_pm_short_term_application.*, p_partner_location.p_date_effective_d, p_partner_location.p_date_good_until_d, PUB_pm_general_application.*, PUB_p_partner.p_partner_short_name_c "
+                        "SELECT DISTINCT PUB_pm_short_term_application.*, PUB_pm_general_application.*, PUB_p_partner.p_partner_short_name_c "
                         +
-                        "FROM PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_partner, p_partner_location, p_unit " +
+                        "FROM PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_partner, p_unit " +
                         "WHERE ";
 
                     // if we are looking for a specific event
@@ -407,7 +407,6 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                              "AND PUB_pm_general_application.pm_gen_application_status_c = 'A' " +
                              "AND PUB_p_partner.p_partner_key_n = PUB_pm_short_term_application.p_partner_key_n " +
                              "AND p_unit.p_outreach_code_c = PUB_pm_short_term_application.pm_confirmed_option_code_c " +
-                             "AND p_partner_location.p_partner_key_n = p_unit.p_partner_key_n " +
                              "AND ";
 
                     if (AConvertTo)
@@ -418,9 +417,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
                     Query += "EXISTS (SELECT * FROM pm_past_experience " +
                              "WHERE pm_past_experience.p_partner_key_n = pm_short_term_application.p_partner_key_n " +
-                             "AND pm_past_experience.pm_prev_location_c = PUB_pm_short_term_application.pm_confirmed_option_code_c " +
-                             "AND pm_past_experience.pm_start_date_d = p_partner_location.p_date_effective_d " +
-                             "AND pm_past_experience.pm_end_date_d = p_partner_location.p_date_good_until_d)";
+                             "AND pm_past_experience.pm_prev_location_c = PUB_pm_short_term_application.pm_confirmed_option_code_c)";
 
                     DBAccess.GDBAccessObj.Select(MainDS, Query, ShortTermAppTableName, Transaction, Parameters.ToArray());
                 });
@@ -446,15 +443,15 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                 {
                     PmPastExperienceTable PastExperienceTable = new PmPastExperienceTable();
 
-                    foreach (ApplicationTDSPmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
+                    foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
                     {
                         // create the new past experience record
                         PmPastExperienceRow PastExperienceRow = PastExperienceTable.NewRowTyped(true);
                         PastExperienceRow.Key = Convert.ToInt64(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_past_experience));
                         PastExperienceRow.PartnerKey = Row.PartnerKey;
                         PastExperienceRow.PrevLocation = Row.ConfirmedOptionCode;
-                        PastExperienceRow.StartDate = Row.EventStartDate;
-                        PastExperienceRow.EndDate = Row.EventEndDate;
+                        PastExperienceRow.StartDate = Row.Arrival;
+                        PastExperienceRow.EndDate = Row.Departure;
                         PastExperienceRow.PrevWorkHere = true;
                         PastExperienceRow.PrevWork = true;
                         PastExperienceRow.PastExpComments = "Created from Event Application";
@@ -485,10 +482,13 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    foreach (ApplicationTDSPmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
+                    foreach (PmShortTermApplicationRow Row in AMainDS.PmShortTermApplication.Rows)
                     {
-                        PmPastExperienceTable PastExperienceTable = PmPastExperienceAccess.LoadByUniqueKey(
-                            Row.PartnerKey, Row.EventEndDate, Row.EventStartDate, Row.ConfirmedOptionCode, Transaction);
+                        PmPastExperienceTable PastExperienceTable = new PmPastExperienceTable();
+                        PmPastExperienceRow TempRow = PastExperienceTable.NewRowTyped(false);
+                        TempRow.PartnerKey = Row.PartnerKey;
+                        TempRow.PrevLocation = Row.ConfirmedOptionCode;
+                        PastExperienceTable = PmPastExperienceAccess.LoadUsingTemplate(TempRow, Transaction);
 
                         if ((PastExperienceTable != null) && (PastExperienceTable.Rows.Count > 0))
                         {

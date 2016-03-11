@@ -637,25 +637,37 @@ namespace Tests.MFinance.Client.ExchangeRates
             txtExchangeRate.NumberValueDecimal = 1.944m;
 
             // Finally check what happens when editing the date
+            DateTime dtToday = DateTime.Today;
             SelectRowInGrid(5);
             txtExchangeRate.NumberValueDecimal = 1.95m;             // 02:00 today
             FixUnvalidatedChanges();
             SelectRowInGrid(4);
             txtExchangeRate.NumberValueDecimal = 1.96m;
-            dtpEffectiveDate.Date = DateTime.Today.AddDays(1);      // 02.00 tomorrow
+            dtpEffectiveDate.Date = dtToday.AddDays(1);      // 02.00 tomorrow
             FixUnvalidatedChanges();
             SelectRowInGrid(3);
             txtExchangeRate.NumberValueDecimal = 1.97m;
-            dtpEffectiveDate.Date = DateTime.Today.AddDays(2);     // 02:00 next day
+            dtpEffectiveDate.Date = dtToday.AddDays(2);     // 02:00 next day
             FixUnvalidatedChanges();
 
             SelectRowInGrid(5);
             Assert.AreEqual(1.95m, txtExchangeRate.NumberValueDecimal);
             dtpEffectiveDate.Focus();
-            dtpEffectiveDate.Date = DateTime.Today.AddDays(10);
+            dtpEffectiveDate.Date = dtToday.AddDays(10);
             grdDetails.Focus();
             Assert.AreEqual(1.97m, txtExchangeRate.NumberValueDecimal);
             Assert.AreEqual("02:00", txtTimeEffective.Text);
+
+            // If the date today is later than 20-SEP we will get a warning dialog when we save because we will have run out of forwarding periods
+            //  - because we have just set a date to today+10
+            if (dtToday > new DateTime(dtToday.Year, 9, 20))
+            {
+                ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
+                {
+                    MessageBoxTester tester = new MessageBoxTester(hWnd);
+                    tester.SendCommand(MessageBoxTester.Command.Yes);           // Save anyway
+                };
+            }
 
             mainScreen.SaveChanges();
             mainScreen.Close();

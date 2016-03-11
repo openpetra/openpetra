@@ -824,6 +824,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // this is used to stop an 'Enter' key press triggering a search while a combo boxes list is dropped down
                 MotivationDetailDroppedDown = true;
             }
+
+            if ((Ict.Petra.Client.CommonControls.TCmbAutoPopulated)sender == cmbMotivationGroup)
+            {
+                if (cmbMotivationGroup.Text == string.Empty)
+                {
+                    cmbMotivationDetail.Filter = string.Empty;
+                }
+                else
+                {
+                    TFinanceControls.ChangeFilterMotivationDetailList(ref cmbMotivationDetail, cmbMotivationGroup.Text, false);
+                    cmbMotivationDetail.Filter += " OR " + AMotivationDetailTable.GetMotivationDetailCodeDBName() + " = ''";
+                    cmbMotivationDetail.SelectedIndex = -1;
+                }
+            }
         }
 
         #endregion

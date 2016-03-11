@@ -4,7 +4,10 @@ http://epplus.codeplex.com/
 
 licensed under LGPL
 
-current version:
+current version: 
+4.0.4 (latest stable version on 4 September 2015)
+
+previous version:
 modified version based on Mercurial from 11 April 2013 (version 3.1.3)
 
 my own branch:

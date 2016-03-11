@@ -183,6 +183,43 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         }
 
         /// <summary>
+        /// Authenticates a users password
+        /// </summary>
+        /// <param name="AUserID"></param>
+        /// <param name="APassword"></param>
+        /// <returns></returns>
+        [RequireModulePermission("NONE")]
+        public static bool PasswordAuthentication(String AUserID, String APassword)
+        {
+            TPetraPrincipal PetraPrincipal = null;
+
+            SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUserID, out PetraPrincipal);
+            string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
+
+            if (UserAuthenticationMethod == "OpenPetraDBSUser")
+            {
+                if (TUserManagerWebConnector.CreateHashOfPassword(String.Concat(APassword,
+                            UserDR.PasswordSalt)) != UserDR.PasswordHash)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                IUserAuthentication auth = TUserManagerWebConnector.LoadAuthAssembly(UserAuthenticationMethod);
+
+                string ErrorMessage;
+
+                if (!auth.AuthenticateUser(AUserID, APassword, out ErrorMessage))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// creates a user, either using the default authentication with the database or with the optional authentication plugin dll
         /// </summary>
         [RequireModulePermission("SYSMAN")]
@@ -304,10 +341,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         SUserModuleAccessPermissionAccess.SubmitChanges(moduleAccessPermissionTable, SubmitChangesTransaction);
 
                         // TODO: table permissions should be set by the module list
+                        // TODO: add p_data_label... tables here so user can generally have access
                         string[] tables = new string[] {
                             "p_bank", "p_church", "p_family", "p_location",
                             "p_organisation", "p_partner", "p_partner_location",
-                            "p_partner_type", "p_person", "p_unit", "p_venue"
+                            "p_partner_type", "p_person", "p_unit", "p_venue",
+                            "p_data_label", "p_data_label_lookup", "p_data_label_lookup_category", "p_data_label_use", "p_data_label_value_partner",
                         };
 
                         SUserTableAccessPermissionTable tableAccessPermissionTable = new SUserTableAccessPermissionTable();

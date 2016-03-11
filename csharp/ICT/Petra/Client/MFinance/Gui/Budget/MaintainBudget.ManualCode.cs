@@ -470,6 +470,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(ABudgetRow ARowToDelete, ref string ADeletionQuestion)
         {
+            if (FSelectedBudgetYear < FCurrentFinancialYear)
+            {
+                MessageBox.Show("You cannot delete a budget from a previous year!",
+                    "Delete Budget",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return false;
+            }
+
             ADeletionQuestion = String.Format(Catalog.GetString(
                     "You have chosen to delete the current budget for:{0}{0}" +
                     "    Year Ending: {1}, Cost Centre: {2}, Account: {3}, Type: {4}.{0}{0}" +

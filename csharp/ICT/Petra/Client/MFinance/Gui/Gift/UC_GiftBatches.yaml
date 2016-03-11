@@ -65,6 +65,9 @@ RootNode:
             Dock: Fill
             TableName: AGiftBatch
             Columns: [BatchNumber, GlEffectiveDate, BatchStatus, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
+            CustomColumns:
+                HashTotal: {Type=Currency}
+                BatchTotal: {Type=Currency}
             ActionFocusRow: FocusedRowChanged
             #ActionDoubleClickCell: ShowTransactionTab  # the generator does not support this event
             ActionEnterKeyPressed: ShowTransactionTab

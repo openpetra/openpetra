@@ -69,7 +69,7 @@
                 9800:{validcc=Local}
         RET EARN:{type=Equity, debitcredit=credit, shortdesc=Equity}
             9700S:{shortdesc=Brought Forward 1st January, longdesc=Balance Brought Forward 1st January}
-                9700:{validcc=Local}
+                9700:{validcc=All}
             PL:{type=Income, shortdesc=Surplus or Deficit}
                 INC:{shortdesc=Total Income}
                     GIFT:{shortdesc=Gift Income}

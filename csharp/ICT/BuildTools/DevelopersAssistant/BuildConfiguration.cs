@@ -158,8 +158,25 @@ namespace Ict.Tools.DevelopersAssistant
         /// Method to populate a list box with favourite configurations.  The first item is selected, if it exists
         /// </summary>
         /// <param name="listBox">The ListBox control to populate</param>
-        public void ListAllConfigs(System.Windows.Forms.ListBox listBox)
+        /// <param name="IndexToSelect">The index to select once the list is populated.  Use -1 to select the active current configuraion.</param>
+        public void ListAllConfigs(System.Windows.Forms.ListBox listBox, int IndexToSelect)
         {
+            string current = string.Empty;
+            int selectedIndex = 0;
+
+            if (IndexToSelect == -1)
+            {
+                if (_branchLocation != string.Empty)
+                {
+                    GetCurrentConfigAsSettingsString(out current);
+                }
+            }
+            else
+            {
+                selectedIndex = IndexToSelect;
+            }
+
+            listBox.SuspendLayout();
             listBox.Items.Clear();
 
             for (int i = 0; i < _storedDbBuildConfig.Count; i++)
@@ -169,37 +186,37 @@ namespace Ict.Tools.DevelopersAssistant
                     "++"
                 };
                 string[] items = _storedDbBuildConfig[i].Split(sep, StringSplitOptions.None);
-                string s = String.Empty;
+                string s = string.Empty;
 
-                if (items[0] != String.Empty)
+                if (items[0] != string.Empty)
                 {
-                    s += String.Format(";  DBMS: {0}{1}", Systems[GetDBMSIndex(
+                    s += string.Format(";  DBMS: {0}{1}", Systems[GetDBMSIndex(
                                                                       items[0])],
-                        (items.Length > 6 && items[6] != String.Empty) ? " version " + items[6] : String.Empty);
+                        (items.Length > 6 && items[6] != string.Empty) ? " version " + items[6] : string.Empty);
                 }
 
-                if (items[1] != String.Empty)
+                if (items[1] != string.Empty)
                 {
-                    s += String.Format(";  Name: {0}", items[1]);
+                    s += string.Format(";  Name: {0}", items[1]);
                 }
 
-                if (items[2] != String.Empty)
+                if (items[2] != string.Empty)
                 {
-                    s += String.Format(";  Port: {0}", items[2]);
+                    s += string.Format(";  Port: {0}", items[2]);
                 }
 
-                if (items[3] != String.Empty)
+                if (items[3] != string.Empty)
                 {
-                    s += String.Format(";  Password: {0}", items[3]);
+                    s += string.Format(";  Password: {0}", items[3]);
                 }
                 else if (items[4] != "0")
                 {
                     s += ";  Password: <blank>";
                 }
 
-                if (items[5] != String.Empty)
+                if (items[5] != string.Empty)
                 {
-                    s += String.Format(";  Location: {0}", items[5]);
+                    s += string.Format(";  Location: {0}", items[5]);
                 }
 
                 if (s.Length > 3)
@@ -207,12 +224,19 @@ namespace Ict.Tools.DevelopersAssistant
                     s = s.Substring(3);
                 }
 
-                listBox.Items.Add(s);
+                int newIndex = listBox.Items.Add(s);
+
+                if ((IndexToSelect == -1) && (string.Compare(current, _storedDbBuildConfig[i], true) == 0))
+                {
+                    selectedIndex = newIndex;
+                }
             }
 
-            if (listBox.Items.Count > 0)
+            listBox.ResumeLayout();
+
+            if ((selectedIndex >= 0) && (selectedIndex < listBox.Items.Count))
             {
-                listBox.SelectedIndex = 0;
+                listBox.SelectedIndex = selectedIndex;
             }
         }
 
@@ -228,9 +252,9 @@ namespace Ict.Tools.DevelopersAssistant
         /// Add a new favourite configuration to the stored list
         /// </summary>
         /// <param name="NewConfig">The new configuration.  Use MakeConfigString to format it correctly</param>
-        public void AddConfig(string NewConfig)
+        public void InsertConfig(string NewConfig)
         {
-            _storedDbBuildConfig.Add(NewConfig);
+            _storedDbBuildConfig.Insert(0, NewConfig);
             _localSettings.DbBuildConfigurations = MakeConfigStringArray();
         }
 
@@ -366,8 +390,10 @@ namespace Ict.Tools.DevelopersAssistant
             return bRet;
         }
 
-        private void SaveCurrentConfig()
+        private bool GetCurrentConfigAsSettingsString(out string SettingsString)
         {
+            SettingsString = string.Empty;
+
             string dbms = (IsDefined(_DBMSType)) ? _DBMSType : String.Empty;
             string version = (IsDefined(_version)) ? _version : String.Empty;
             string dbName = (IsDefined(_DBName)) ? _DBName : String.Empty;
@@ -382,8 +408,18 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (hasContent)
             {
-                string s = MakeConfigString(dbms, dbName, port, password, isBlank, location, version);
+                SettingsString = MakeConfigString(dbms, dbName, port, password, isBlank, location, version);
+            }
 
+            return hasContent;
+        }
+
+        private void SaveCurrentConfig()
+        {
+            string s;
+
+            if (GetCurrentConfigAsSettingsString(out s))
+            {
                 // Have we got it already?
                 for (int i = 0; i < _storedDbBuildConfig.Count; i++)
                 {
@@ -393,7 +429,7 @@ namespace Ict.Tools.DevelopersAssistant
                     }
                 }
 
-                AddConfig(s);
+                InsertConfig(s);
             }
         }
 
@@ -450,7 +486,8 @@ namespace Ict.Tools.DevelopersAssistant
         /// <param name="IsBlank">Returns if the password is explicitly blank</param>
         /// <param name="Location">Returns the location parameter (the host or file path)</param>
         /// <param name="Version">Returns the DBMS version</param>
-        public void GetStoredConfiguration(int Index,
+        /// <returns>True if there is a configuration at the specified index, false otherwise</returns>
+        public bool GetStoredConfiguration(int Index,
             out string DBMS,
             out string DBName,
             out string Port,
@@ -485,7 +522,45 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     Version = items[6];
                 }
+
+                return true;
             }
+
+            return false;
+        }
+
+        public void Promote(System.Windows.Forms.ListBox DisplayList)
+        {
+            int index = DisplayList.SelectedIndex;
+
+            if ((index <= 0) || (index >= _storedDbBuildConfig.Count))
+            {
+                return;
+            }
+
+            string item = _storedDbBuildConfig[index];
+            _storedDbBuildConfig.RemoveAt(index);
+            _storedDbBuildConfig.Insert(index - 1, item);
+            _localSettings.DbBuildConfigurations = MakeConfigStringArray();
+
+            ListAllConfigs(DisplayList, index - 1);
+        }
+
+        public void Demote(System.Windows.Forms.ListBox DisplayList)
+        {
+            int index = DisplayList.SelectedIndex;
+
+            if (index >= _storedDbBuildConfig.Count - 1)
+            {
+                return;
+            }
+
+            string item = _storedDbBuildConfig[index];
+            _storedDbBuildConfig.RemoveAt(index);
+            _storedDbBuildConfig.Insert(index + 1, item);
+            _localSettings.DbBuildConfigurations = MakeConfigStringArray();
+
+            ListAllConfigs(DisplayList, index + 1);
         }
 
         private string MakeConfigStringArray()

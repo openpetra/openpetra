@@ -77,6 +77,13 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
+        /// The window position
+        /// </summary>
+        public string WindowPosition {
+            get; set;
+        }
+
+        /// <summary>
         /// The path to the current working YAML file
         /// </summary>
         public string YAMLLocation {
@@ -198,6 +205,118 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
+        /// Gets/sets the generate solution option (for New Branch Actions) (0=none, 1=full, 2=minimal)
+        /// </summary>
+        public int NBA_GenerateSolutionOption
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to create config files (for New Branch Actions)
+        /// </summary>
+        public bool NBA_CreateMyConfigurations
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to initialise the database (for New Branch Actions)
+        /// </summary>
+        public bool NBA_InitialiseDatabase
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets the db configuration to use (for New Branch Actions)
+        /// </summary>
+        public int NBA_DatabaseConfiguration
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to launch the IDE (for New Branch Actions)
+        /// </summary>
+        public bool NBA_LaunchIDE
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets the solution to launch in the IDE (for New Branch Actions)
+        /// </summary>
+        public int NBA_IDESolution
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to launch the client (for New Branch Actions)
+        /// </summary>
+        public bool NBA_StartClient
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets the generate solution option (for Existing Branch Actions) (0=none, 1=full, 2=minimal)
+        /// </summary>
+        public int EBA_GenerateSolutionOption
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to create config files (for Existing Branch Actions)
+        /// </summary>
+        public bool EBA_CreateMyConfigurations
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to initialise the database (Existing New Branch Actions)
+        /// </summary>
+        public bool EBA_InitialiseDatabase
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets the db configuration to use (for Existing Branch Actions)
+        /// </summary>
+        public int EBA_DatabaseConfiguration
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to launch the IDE (for Existing Branch Actions)
+        /// </summary>
+        public bool EBA_LaunchIDE
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets the solution to launch in the IDE (for Existing Branch Actions)
+        /// </summary>
+        public int EBA_IDESolution
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Gets/sets whether to launch the client (for Existing Branch Actions)
+        /// </summary>
+        public bool EBA_StartClient
+        {
+            get; set;
+        }
+
+        /// <summary>
         /// Gets the branch history item at the specified index
         /// </summary>
         /// <param name="Index">A number between 1 and BRANCH_HISTORY_SIZE indicating the history item to fetch</param>
@@ -259,14 +378,31 @@ namespace Ict.Tools.DevelopersAssistant
             DbBuildConfigurations = String.Empty;
             LaunchpadUserName = String.Empty;
             Sequence = String.Empty;
+            WindowPosition = String.Empty;
             YAMLLocation = String.Empty;
 
             CodeGenerationComboID = 2;
             CompilationComboID = 2;
             MiscellaneousComboID = 0;
-            SourceCodeComboID = 0;
+            SourceCodeComboID = 13;
             DatabaseComboID = 1;
             FlashAfterSeconds = 15;
+
+            NBA_GenerateSolutionOption = 1;
+            NBA_CreateMyConfigurations = true;
+            NBA_InitialiseDatabase = true;
+            NBA_DatabaseConfiguration = 0;
+            NBA_LaunchIDE = true;
+            NBA_IDESolution = 0;
+            NBA_StartClient = true;
+
+            EBA_GenerateSolutionOption = 0;
+            EBA_CreateMyConfigurations = false;
+            EBA_InitialiseDatabase = true;
+            EBA_DatabaseConfiguration = 0;
+            EBA_LaunchIDE = true;
+            EBA_IDESolution = 0;
+            EBA_StartClient = true;
 
             AutoStartServer = true;
             AutoStopServer = true;
@@ -285,6 +421,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("DbBuildConfigurations", DbBuildConfigurations);
             this.Add("LaunchpadUserName", LaunchpadUserName);
             this.Add("Sequence", Sequence);
+            this.Add("WindowPosition", WindowPosition);
             this.Add("YAMLLocation", YAMLLocation);
 
             this.Add("CodeGenerationComboID", CodeGenerationComboID.ToString());
@@ -293,6 +430,22 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("SourceCodeComboID", SourceCodeComboID.ToString());
             this.Add("DatabaseComboID", DatabaseComboID.ToString());
             this.Add("FlashAfterSeconds", FlashAfterSeconds.ToString());
+
+            this.Add("NBA_GenerateSolutionOption", NBA_GenerateSolutionOption.ToString());
+            this.Add("NBA_CreateMyConfigurations", NBA_CreateMyConfigurations ? "1" : "0");
+            this.Add("NBA_InitialiseDatabase", NBA_InitialiseDatabase ? "1" : "0");
+            this.Add("NBA_DatabaseConfiguration", NBA_DatabaseConfiguration.ToString());
+            this.Add("NBA_LaunchIDE", NBA_LaunchIDE ? "1" : "0");
+            this.Add("NBA_IDESolution", NBA_IDESolution.ToString());
+            this.Add("NBA_StartClient", NBA_StartClient ? "1" : "0");
+
+            this.Add("EBA_GenerateSolutionOption", EBA_GenerateSolutionOption.ToString());
+            this.Add("EBA_CreateMyConfigurations", EBA_CreateMyConfigurations ? "1" : "0");
+            this.Add("EBA_InitialiseDatabase", EBA_InitialiseDatabase ? "1" : "0");
+            this.Add("EBA_DatabaseConfiguration", EBA_DatabaseConfiguration.ToString());
+            this.Add("EBA_LaunchIDE", EBA_LaunchIDE ? "1" : "0");
+            this.Add("EBA_IDESolution", EBA_IDESolution.ToString());
+            this.Add("EBA_StartClient", EBA_StartClient ? "1" : "0");
 
             this.Add("AutoStartServer", AutoStartServer ? "1" : "0");
             this.Add("AutoStopServer", AutoStopServer ? "1" : "0");
@@ -325,6 +478,7 @@ namespace Ict.Tools.DevelopersAssistant
             DbBuildConfigurations = this["DbBuildConfigurations"];
             LaunchpadUserName = this["LaunchpadUserName"];
             Sequence = this["Sequence"];
+            WindowPosition = this["WindowPosition"];
             YAMLLocation = this["YAMLLocation"];
 
             CodeGenerationComboID = Convert.ToInt32(this["CodeGenerationComboID"]);
@@ -333,6 +487,22 @@ namespace Ict.Tools.DevelopersAssistant
             SourceCodeComboID = Convert.ToInt32(this["SourceCodeComboID"]);
             DatabaseComboID = Convert.ToInt32(this["DatabaseComboID"]);
             FlashAfterSeconds = Convert.ToUInt32(this["FlashAfterSeconds"]);
+
+            NBA_GenerateSolutionOption = Convert.ToInt32(this["NBA_GenerateSolutionOption"]);
+            NBA_CreateMyConfigurations = (this["NBA_CreateMyConfigurations"] != "0");
+            NBA_InitialiseDatabase = (this["NBA_InitialiseDatabase"] != "0");
+            NBA_DatabaseConfiguration = Convert.ToInt32(this["NBA_DatabaseConfiguration"]);
+            NBA_LaunchIDE = (this["NBA_LaunchIDE"] != "0");
+            NBA_IDESolution = Convert.ToInt32(this["NBA_IDESolution"]);
+            NBA_StartClient = (this["NBA_StartClient"] != "0");
+
+            EBA_GenerateSolutionOption = Convert.ToInt32(this["EBA_GenerateSolutionOption"]);
+            EBA_CreateMyConfigurations = (this["EBA_CreateMyConfigurations"] != "0");
+            EBA_InitialiseDatabase = (this["EBA_InitialiseDatabase"] != "0");
+            EBA_DatabaseConfiguration = Convert.ToInt32(this["EBA_DatabaseConfiguration"]);
+            EBA_LaunchIDE = (this["EBA_LaunchIDE"] != "0");
+            EBA_IDESolution = Convert.ToInt32(this["EBA_IDESolution"]);
+            EBA_StartClient = (this["EBA_StartClient"] != "0");
 
             AutoStartServer = (this["AutoStartServer"] != "0");
             AutoStopServer = (this["AutoStopServer"] != "0");
@@ -409,6 +579,7 @@ namespace Ict.Tools.DevelopersAssistant
             this["DbBuildConfigurations"] = DbBuildConfigurations;
             this["LaunchpadUserName"] = LaunchpadUserName;
             this["Sequence"] = Sequence;
+            this["WindowPosition"] = WindowPosition;
             this["YAMLLocation"] = YAMLLocation;
 
             this["CodeGenerationComboID"] = CodeGenerationComboID.ToString();
@@ -417,6 +588,22 @@ namespace Ict.Tools.DevelopersAssistant
             this["SourceCodeComboID"] = SourceCodeComboID.ToString();
             this["DatabaseComboID"] = DatabaseComboID.ToString();
             this["FlashAfterSeconds"] = FlashAfterSeconds.ToString();
+
+            this["NBA_GenerateSolutionOption"] = NBA_GenerateSolutionOption.ToString();
+            this["NBA_CreateMyConfigurations"] = NBA_CreateMyConfigurations ? "1" : "0";
+            this["NBA_InitialiseDatabase"] = NBA_InitialiseDatabase ? "1" : "0";
+            this["NBA_DatabaseConfiguration"] = NBA_DatabaseConfiguration.ToString();
+            this["NBA_LaunchIDE"] = NBA_LaunchIDE ? "1" : "0";
+            this["NBA_IDESolution"] = NBA_IDESolution.ToString();
+            this["NBA_StartClient"] = NBA_StartClient ? "1" : "0";
+
+            this["EBA_GenerateSolutionOption"] = EBA_GenerateSolutionOption.ToString();
+            this["EBA_CreateMyConfigurations"] = EBA_CreateMyConfigurations ? "1" : "0";
+            this["EBA_InitialiseDatabase"] = EBA_InitialiseDatabase ? "1" : "0";
+            this["EBA_DatabaseConfiguration"] = EBA_DatabaseConfiguration.ToString();
+            this["EBA_LaunchIDE"] = EBA_LaunchIDE ? "1" : "0";
+            this["EBA_IDESolution"] = EBA_IDESolution.ToString();
+            this["EBA_StartClient"] = EBA_StartClient ? "1" : "0";
 
             this["AutoStartServer"] = AutoStartServer ? "1" : "0";
             this["AutoStopServer"] = AutoStopServer ? "1" : "0";
@@ -452,6 +639,8 @@ namespace Ict.Tools.DevelopersAssistant
         private string _path;               // path to external link settings file
         private string _contentHeader;      // static content header in file
 
+        private Dictionary <string, string>_defaultLinks = new Dictionary <string, string>();
+
         /// <summary>
         /// Standard constructor
         /// </summary>
@@ -471,6 +660,32 @@ namespace Ict.Tools.DevelopersAssistant
         /// </summary>
         public void Load()
         {
+            _defaultLinks = new Dictionary <string, string>();
+            _defaultLinks.Add("Database Schema",
+                "https://ci.openpetra.org/job/OpenPetraDBDoc/doclinks/1/index.html" + " ++ The complete architecture of the Open Petra database");
+            _defaultLinks.Add(
+                "Developer's Forum",
+                "http://forum.openpetra.org/" +
+                " ++ This links to the main developer forum where you can join in discussion of developer topics or ask a question.");
+            _defaultLinks.Add("Documentation for Developers",
+                "http://www.openpetra.org/en/developers-documentation" + " ++ Useful links from the main public site for Open Petra");
+            _defaultLinks.Add("Jenkins Build Server",
+                "https://ci.openpetra.org/" + " ++ A link to the main Continuous Integration server that runs on Linux.");
+            _defaultLinks.Add("Jenkins Server on Windows",
+                "https://ci-win.openpetra.org/" + " ++ A link to the dashboard of the Continuous Integration server that runs on Windows.");
+            _defaultLinks.Add("Launchpad",
+                "https://code.launchpad.net/openpetraorg/" + " ++ A web interface to the code on the main Launchpad repository");
+            _defaultLinks.Add("Doxygen", "http://codedoc.openpetra.org/" + " ++ A javadoc like documentation of the OpenPetra source code");
+            _defaultLinks.Add("Mantis Bug Tracker",
+                "https://tracker.openpetra.org/main_page.php" + " ++ This links to the main project work item database known as 'Mantis'");
+            _defaultLinks.Add(
+                "Mantis Bug Tracker (My View)",
+                "https://tracker.openpetra.org/my_view_page.php" +
+                " ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
+            _defaultLinks.Add("OpenPetra Wiki", "https://wiki.openpetra.org/" + " ++ This links to the main project wiki");
+            _defaultLinks.Add("Useful shortcuts",
+                "http://www.openpetra.org/en/shortcuts/" + " ++ Many useful shortcuts in one place, including many listed here");
+
             if (!File.Exists(_path))
             {
                 if (!Directory.Exists(Path.GetDirectoryName(_path)))
@@ -483,27 +698,11 @@ namespace Ict.Tools.DevelopersAssistant
                 {
                     sw.WriteLine(_contentHeader);
                     sw.WriteLine();
-                    sw.WriteLine(
-                        "Database Schema = http://dbdoc.openpetra.org/ ++ The complete architecture of the Open Petra database");
-                    sw.WriteLine(
-                        "Developer's Forum = http://forum.openpetra.org/ ++ This links to the main developer forum where you can join in discussion of developer topics or ask a question.");
-                    sw.WriteLine(
-                        "Documentation for Developers = http://www.openpetra.org/en/developers-documentation ++ Useful links from the main public site for Open Petra");
-                    sw.WriteLine(
-                        "Jenkins Build Server = https://ci.openpetra.org/ ++ A link to the main Continuous Integration server that runs on Linux.");
-                    sw.WriteLine(
-                        "Jenkins Server on Windows = http://ci-win.openpetra.org:8080/ ++ A link to the dashboard of the Continuous Integration server that runs on Windows.");
-                    sw.WriteLine(
-                        "Launchpad = http://code.openpetra.org/ ++ A web interface to the code on the main Launchpad repository");
-                    sw.WriteLine(
-                        "Doxygen = http://codedoc.openpetra.org/ ++ A javadoc like documentation of the OpenPetra source code");
-                    sw.WriteLine(
-                        "Mantis Bug Tracker = https://tracker.openpetra.org/main_page.php ++ This links to the main project work item database known as 'Mantis'");
-                    sw.WriteLine(
-                        "Mantis Bug Tracker (My View) = https://tracker.openpetra.org/my_view_page.php ++ This links to the 'My View' page in the main project work item database known as 'Mantis'");
-                    sw.WriteLine("OpenPetra Wiki = https://wiki.openpetra.org/ ++ This links to the main project wiki");
-                    sw.WriteLine(
-                        "Useful shortcuts = http://www.openpetra.org/en/shortcuts/ ++ Many useful shortcuts in one place, including many listed here");
+
+                    foreach (KeyValuePair <string, string>kvp in _defaultLinks)
+                    {
+                        sw.WriteLine(String.Format("{0} = {1}"), kvp.Key, kvp.Value);
+                    }
 
                     sw.Close();
                 }
@@ -514,11 +713,21 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
+        /// Save the changes
+        /// </summary>
+        public void Save()
+        {
+            base.Save(_path, _contentHeader);
+        }
+
+        /// <summary>
         /// Populate a list box using the keys in this dictionary
         /// </summary>
-        /// <param name="listBox">The lsit box to be populated</param>
+        /// <param name="listBox">The list box to be populated</param>
         public void PopulateListBox(System.Windows.Forms.ListBox listBox)
         {
+            object o = listBox.SelectedItem;
+
             listBox.Items.Clear();
 
             foreach (KeyValuePair <string, string>kvp in this)
@@ -528,7 +737,18 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (listBox.Items.Count > 0)
             {
-                listBox.SelectedIndex = 0;
+                if (o == null)
+                {
+                    listBox.SelectedIndex = 0;
+                }
+                else if (listBox.Items.Contains(o))
+                {
+                    listBox.SelectedItem = o;
+                }
+                else
+                {
+                    listBox.SelectedIndex = 0;
+                }
             }
         }
 
@@ -561,6 +781,83 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 url = String.Empty;
                 info = String.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Gets the suggested update at the requested index
+        /// </summary>
+        /// <param name="RequestedIndex">The update index to search for.  This method should be called with an initial value of 0,
+        /// then call again with 1, then 2 and so on until the method returns false.</param>
+        /// <param name="ForKey">The key name of the update</param>
+        /// <param name="ThisValue">The current value for the key</param>
+        /// <param name="SuggestedValue">The suggested value for the key</param>
+        /// <returns>Returns true if there is an update at the requested index</returns>
+        public bool GetSuggestedUpdate(int RequestedIndex, out string ForKey, out string ThisValue, out string SuggestedValue)
+        {
+            int foundIndex = -1;
+
+            ForKey = string.Empty;
+            ThisValue = string.Empty;
+            SuggestedValue = string.Empty;
+
+            foreach (KeyValuePair <string, string>kvp in _defaultLinks)
+            {
+                // Do we even have this key?
+                if (this.ContainsKey(kvp.Key))
+                {
+                    // We have the key, so how does the value compare?
+                    string[] thisValue = this[kvp.Key].Split(new string[] { "++" }, StringSplitOptions.None);
+                    string[] suggestedValue = kvp.Value.Split(new string[] { "++" }, StringSplitOptions.None);
+                    string thisUrl = thisValue[0].Trim();
+                    string suggestedUrl = suggestedValue[0].Trim();
+
+                    if (string.Compare(thisUrl, suggestedUrl, true) != 0)
+                    {
+                        foundIndex++;
+
+                        if (foundIndex == RequestedIndex)
+                        {
+                            ForKey = kvp.Key;
+                            SuggestedValue = suggestedUrl;
+                            ThisValue = thisUrl;
+                            return true;
+                        }
+                    }
+                }
+                else
+                {
+                    // We do not have the key
+                    foundIndex++;
+
+                    if (foundIndex == RequestedIndex)
+                    {
+                        ForKey = kvp.Key;
+                        string[] suggestedValue = kvp.Value.Split(new string[] { "++" }, StringSplitOptions.None);
+                        string suggestedUrl = suggestedValue[0].Trim();
+                        SuggestedValue = suggestedUrl;
+                        ThisValue = string.Empty;
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Sets the specified key to the program application default value.  Call this to update an existing 'out-of-date' Url
+        /// </summary>
+        /// <param name="KeyName">The key name</param>
+        public void SetToDefault(string KeyName)
+        {
+            if (this.ContainsKey(KeyName))
+            {
+                this[KeyName] = _defaultLinks[KeyName];
+            }
+            else
+            {
+                this.Add(KeyName, _defaultLinks[KeyName]);
             }
         }
     }

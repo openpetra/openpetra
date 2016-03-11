@@ -884,6 +884,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
+            if (!FCurrentAccount.IsNew)
+            {
+                if (MessageBox.Show(
+                        String.Format(
+                            Catalog.GetString("Please confirm that you want to delete Account {0}?"),
+                            AccountCode),
+                        Catalog.GetString("Delete Account"), MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Question)
+                    != System.Windows.Forms.DialogResult.OK
+                    )
+                {
+                    return;
+                }
+            }
+
             ucoAccountsTree.DeleteSelectedAccount(); // Calling this changes the current FCurrentAccount to the parent of the deleted account!
 
             //

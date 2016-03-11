@@ -721,13 +721,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             foreach (PPartnerGiftDestinationRow Row in AToPartnersGiftDestinations.Rows)
             {
-                if ((Row.DateEffective != Row.DateExpires)
+                if ((Row.IsDateExpiresNull() || (Row.DateEffective != Row.DateExpires))
                     && (Row.DateEffective >= AFromActiveRow.DateEffective) && (Row.DateEffective > DateTime.Today)
                     && (AFromActiveRow.IsDateExpiresNull() || (Row.DateEffective <= AFromActiveRow.DateExpires)))
                 {
                     AFromGiftDestinationNeedsEnded = Row;
                 }
-                else if ((Row.DateEffective != Row.DateExpires)
+                else if ((Row.IsDateExpiresNull() || (Row.DateEffective != Row.DateExpires))
                          && (Row.DateEffective < AFromActiveRow.DateEffective)
                          && (Row.IsDateExpiresNull() || (Row.DateExpires >= AFromActiveRow.DateEffective)))
                 {

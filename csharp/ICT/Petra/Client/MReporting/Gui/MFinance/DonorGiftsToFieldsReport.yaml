@@ -7,8 +7,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\donorgiftstofieldsreport.xml,Finance\\\\finance.xml,common.xml]
-        REPORTNAME: DonorGiftToFields
-        CURRENTREPORT: DonorGiftToFields
+        REPORTNAME: DonorGiftsToFields
+        CURRENTREPORT: DonorGiftsToFields
         SETAVAILABLEFUNCTIONS:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
@@ -24,12 +24,13 @@ RootNode:
             Label: General Settings
             Controls: [grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
 
-        tpgColumnSettings:
-            Label: Column Settings
-            Controls: [uco_Columns]
-        uco_Columns:
-            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-            Dock: Fill
+#        tpgColumnSettings:
+#            Label: Column Settings
+#            Controls: [uco_Columns]
+#        uco_Columns:
+#            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
+#            Dock: Fill
+
         grpReportType:
             Label: Report Type
             Dock: Top
@@ -87,22 +88,22 @@ RootNode:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
 
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
+#        tpgAdditionalSettings:
+#            Label: Additional Settings
+#            Controls: [rgrFormatCurrency]
+#        rgrFormatCurrency:
+#            ParameterName: param_currency_format
+#            Label: Format currency numbers:
+#            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
+#        rbtCurrencyComplete:
+#            Label: Complete
+#            ParameterValue: CurrencyComplete
+#        rbtCurrencyWithoutDecimals:
+#            Label: Without decimals
+#            ParameterValue: CurrencyWithoutDecimals
+#        rbtCurrencyThousands:
+#            Label: Only Thousands
+#            ParameterValue: CurrencyThousands
 
         tpgFields:
             Label: Fields

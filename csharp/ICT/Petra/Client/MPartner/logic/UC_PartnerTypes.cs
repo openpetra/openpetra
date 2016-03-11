@@ -223,7 +223,7 @@ namespace Ict.Petra.Client.MPartner
                 // Uncheck row in the Grid
                 TmpDataRowView = DetermineRowToSelect(TmpTypeCode);
                 TmpRowIndex = FDataGrid.DataSourceRowToIndex2(TmpDataRowView);
-                FPartnerTypesGridTableDV[TmpRowIndex]["Checked"] = false;
+                FPartnerTypesGridTableDV[TmpRowIndex]["Checked"] = (System.Object)((!(Boolean)(FPartnerTypesGridTableDV[TmpRowIndex]["Checked"])));
             }
 
             // Give Focus back to the Grid and the Cells again so that the Selection can be moved with the Cursor keys
@@ -285,7 +285,6 @@ namespace Ict.Petra.Client.MPartner
                         TMessages.MsgSecurityException(new ESecurityDBTableAccessDeniedException("", "create",
                                 PPartnerTypeTable.GetTableDBName()), this.GetType());
 
-                        AChangingPartnerTypeRow.CancelEdit();   // reset to unchecked
                         return false;
                     }
 
@@ -313,8 +312,6 @@ namespace Ict.Petra.Client.MPartner
 
                             if (CheckTypeRowsAnswer == DialogResult.No)
                             {
-                                // reset to unchecked
-                                AChangingPartnerTypeRow.CancelEdit();
                                 return false;
                             }
                         }
@@ -349,8 +346,6 @@ namespace Ict.Petra.Client.MPartner
                         TMessages.MsgSecurityException(new ESecurityDBTableAccessDeniedException("", "delete",
                                 PPartnerTypeTable.GetTableDBName()), this.GetType());
 
-                        // reset to checked
-                        AChangingPartnerTypeRow.CancelEdit();
                         return false;
                     }
 
@@ -364,8 +359,6 @@ namespace Ict.Petra.Client.MPartner
                                 MessageBox.Show(String.Format(StrPartnerHasCostCentreLink, CostCentreLink,
                                         StrPartnerHasCostCentreLinkTitle));
 
-                                // reset to checked
-                                AChangingPartnerTypeRow.CancelEdit();
                                 return false;
                             }
                         }
@@ -374,8 +367,6 @@ namespace Ict.Petra.Client.MPartner
                             TMessages.MsgSecurityException(Exp, this.GetType());
                             MessageBox.Show(StrSecurityPreventsRemoval, StrSecurityPreventsRemovalTitle, MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                            // reset to checked
-                            AChangingPartnerTypeRow.CancelEdit();
                             return false;
                         }
                         catch (Exception)
@@ -591,7 +582,7 @@ namespace Ict.Petra.Client.MPartner
 
 
         /// <summary>
-        /// todoComment
+        /// This is called when the user presses the spacebar or the enter key on a row
         /// </summary>
         /// <param name="ARow"></param>
         public void ChangeCheckedStateForRow(Int32 ARow)
@@ -645,13 +636,11 @@ namespace Ict.Petra.Client.MPartner
         // this is only called when the user clicks on the 'CheckBox' column and the grid automatically checks or unchecks a CheckBox
         private void ChangedRowEventHandler(int ChangedRow)
         {
-//          MessageBox.Show("ChangedRowEventHandler: " + FPartnerTypesGridTableDV[ChangedRow].Row[0].ToString() + " / " + FPartnerTypesGridTableDV[ChangedRow].Row[1].ToString());
-
-            // Our code also checks/uncheck a CheckBox when the user clicks in the 'CheckBox' column so we have a double check.
-            // I.e. the checkbox is returned to the original value. We need to check/uncheck again to redo this.
-            DataRow TmpDR = FPartnerTypesGridTableDV[ChangedRow].Row;
-
-            FPartnerTypesGridTableDV[ChangedRow]["Checked"] = (System.Object)((!(Boolean)(FPartnerTypesGridTableDV[ChangedRow]["Checked"])));
+            if (ChangedRow >= 0)
+            {
+                DataRow TmpDR = FPartnerTypesGridTableDV[ChangedRow].Row;
+                PartnerTypesGridTableColumnChanged(ref TmpDR);
+            }
         }
 
         private class CustomValueChangedEvent : SourceGrid.Cells.Controllers.ControllerBase

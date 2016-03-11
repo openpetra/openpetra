@@ -233,7 +233,7 @@
 43,9400S,Liability,Long Term Loans Payable to other Funds,Long Term Loans Payable Funds,Long Term Loans Payable Funds,Long Term Loans Payable to other Funds,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,9500,Liability,Provisions,Provisions,Provisions,Provisions,false,true,false,true,true,false,?,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9500S,Liability,Provisions,Provisions,Provisions,Provisions,false,true,false,true,true,false,?,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
-43,9700,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
+43,9700,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,ADHOC,true,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,9700S,Equity,Balance Brought Forward 1st January,Brought Forward 1st January,Brought Forward 1st January,Balance Brought Forward 1st January,false,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?
 43,9800,Liability,Internal Transfer,Internal Transfer,Internal Transfer,Internal Transfer,false,true,false,true,true,false,ADHOC,true,true,false,Local,false,?,?,2009-6-15,?,?,?,?
 43,9800S,Liability,Internal Transfer,Internal Transfer,Internal Transfer,Internal Transfer,false,true,false,true,true,false,ADHOC,false,true,false,All,false,?,?,2009-6-15,?,?,?,?

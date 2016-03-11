@@ -4,5 +4,6 @@
   <Parameter id="xmlfiles" value="eString:Finance\\totalgiftsthroughfield.xml,Finance\\finance.xml,common.xml" />
   <Parameter id="currentReport" value="eString:Total Gifts Through Field" />
   <Parameter id="param_currency" value="eString:Base" />
-  <Parameter id="param_txtYears" value="eInteger:2" />
+  <Parameter id="param_txtYearsDetail" value="eInteger:4" />
+  <Parameter id="param_txtYearsSummary" value="eInteger:8" />
 </Parameters>

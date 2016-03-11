@@ -82,14 +82,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            int Years = Convert.ToInt16(txtYears.Text);
+            int detailYears = Convert.ToInt16(txtYearsDetail.Text);
+            int summaryYears = Convert.ToInt16(txtYearsSummary.Text);
 
             if ((AReportAction == TReportActionEnum.raGenerate)
-                && ((Years > 8) || (Years < 1)))
+                && ((detailYears > 99) || (detailYears < 0) || (summaryYears > 99) || (summaryYears < 0)))
             {
                 TVerificationResult VerificationMessage = new TVerificationResult(
                     Catalog.GetString("Report Years"),
-                    Catalog.GetString("Set the year range between 1 and 8"), TResultSeverity.Resv_Critical);
+                    Catalog.GetString("Set the year range between 1 and 99"), TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationMessage);
             }
 
@@ -125,6 +126,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             Int32 PeriodThisYear = PeriodEndDate.Month;
 
+            Int32 Years = Math.Max(detailYears, summaryYears);
             DateTime StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
                 FLedgerNumber,
                 LedgerYear - Years + 1,
@@ -140,6 +142,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_PeriodThisYear", PeriodThisYear);
             ACalc.AddParameter("param_StartDate", StartDate);
             ACalc.AddParameter("param_EndDate", EndDate);
+            ACalc.AddParameter("param_DetailYears", detailYears);
+            ACalc.AddParameter("param_SummaryYears", summaryYears);
             ACalc.AddParameter("param_TD", FTaxDeductiblePercentageEnabled);
         }
     }

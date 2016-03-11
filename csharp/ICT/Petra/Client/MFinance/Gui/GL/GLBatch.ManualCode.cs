@@ -872,6 +872,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ReportGui.Show();
         }
 
+        /// <summary>
+        /// show the actual data of the database after server has changed data
+        /// </summary>
+        public void RefreshAll()
+        {
+            ucoBatches.ReloadBatches();
+        }
+
         #region Menu and command key handlers for our user controls
 
         ///////////////////////////////////////////////////////////////////////////////
@@ -922,6 +930,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        #endregion
+
+        #region Forms Messaging Interface Implementation
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>The Partner Edit 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>Returns True if the Form reacted on the specific Forms Message,
+        /// otherwise false.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            bool MessageProcessed = false;
+
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcRefreshGLBatches)
+            {
+                this.RefreshAll();
+
+                MessageProcessed = true;
+            }
+
+            return MessageProcessed;
         }
 
         #endregion

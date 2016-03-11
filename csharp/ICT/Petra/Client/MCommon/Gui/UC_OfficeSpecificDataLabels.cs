@@ -38,6 +38,7 @@ using DevAge.ComponentModel.Validator;
 using DevAge.Drawing;
 using Ict.Common;
 using Ict.Common.Controls;
+using Ict.Common.Verification;
 using Ict.Common.Data; // Implicit reference
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
@@ -476,10 +477,40 @@ namespace Ict.Petra.Client.MCommon.Gui
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxEditor, new Position(ARowIndex, 1)));
                 FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxEditor;
             }
+            // Create time field
+            else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_TIME)
+            {
+                TextBoxEditor = new System.Windows.Forms.TextBox();
+                cellControl = TextBoxEditor;
+
+                if (DataLabelValuePartnerRow != null)
+                {
+                    TextBoxEditor.Text =
+                        new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(DataLabelValuePartnerRow.ValueTime, typeof(string)).ToString();
+                }
+                else if (DataLabelValueApplicationRow != null)
+                {
+                    TextBoxEditor.Text =
+                        new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(DataLabelValueApplicationRow.ValueTime, typeof(string)).ToString();
+                }
+                else
+                {
+                    // Default value if no Label data exists for the Partner
+                    TextBoxEditor.Text = "";
+                }
+
+                // enable save button in editor when cell contents have changed
+                TextBoxEditor.TextChanged += new EventHandler(this.ControlValueHasChanged);
+
+                FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
+                FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)TextBoxEditor, new Position(ARowIndex, 1)));
+                FLocalDataLabelValuesGrid[ARowIndex, 1].Tag = TextBoxEditor;
+            }
             // Create float field
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_FLOAT)
             {
                 TextBoxNumericEditor = new TTxtNumericTextBox();
+                TextBoxNumericEditor.Context = this;
 
                 if (ADataLabelRow.NumDecimalPlaces == 0)
                 {
@@ -571,6 +602,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_INTEGER)
             {
                 TextBoxNumericEditor = new TTxtNumericTextBox();
+                TextBoxNumericEditor.Context = this;
                 TextBoxNumericEditor.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Integer;
                 TextBoxNumericEditor.NullValueAllowed = true;
                 cellControl = TextBoxNumericEditor;
@@ -630,6 +662,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN)
             {
                 CheckBoxEditor = new System.Windows.Forms.CheckBox();
+                CheckBoxEditor.ThreeState = true;
                 cellControl = CheckBoxEditor;
 
                 if (DataLabelValuePartnerRow != null)
@@ -643,11 +676,11 @@ namespace Ict.Petra.Client.MCommon.Gui
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    CheckBoxEditor.Checked = false;
+                    CheckBoxEditor.CheckState = CheckState.Indeterminate;
                 }
 
                 // enable save button in editor when cell contents have changed
-                CheckBoxEditor.CheckedChanged += new EventHandler(this.ControlValueHasChanged);
+                CheckBoxEditor.CheckStateChanged += new EventHandler(this.ControlValueHasChanged);
 
                 FLocalDataLabelValuesGrid[ARowIndex, 1] = new SourceGrid.Cells.Cell();
                 FLocalDataLabelValuesGrid.LinkedControls.Add(new LinkedControlValue((Control)CheckBoxEditor, new Position(ARowIndex, 1)));
@@ -1174,14 +1207,26 @@ namespace Ict.Petra.Client.MCommon.Gui
                 if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_DATE)
                 {
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+                    DateTime? dt = ((TtxtPetraDate)CurrentControl).Date;
 
-                    if (DataLabelValuePartnerRow != null)
+                    if (dt == null)
                     {
-                        DataLabelValuePartnerRow.ValueDate = ((TtxtPetraDate)CurrentControl).Date;
+                        string msg = String.Format(Catalog.GetString(
+                                "Local Data: '{0}': Cannot convert '{1}' to a date.  "),
+                            FLocalDataLabelValuesGrid[ARow, 0].DisplayText, ((TtxtPetraDate)CurrentControl).Text);
+                        msg += Catalog.GetString("The value that you entered will be ignored.  Please correct your entry and save again.");
+                        MessageBox.Show(msg, CommonResourcestrings.StrInvalidDataTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
-                    else if (DataLabelValueApplicationRow != null)
+                    else
                     {
-                        DataLabelValueApplicationRow.ValueDate = ((TtxtPetraDate)CurrentControl).Date;
+                        if (DataLabelValuePartnerRow != null)
+                        {
+                            DataLabelValuePartnerRow.ValueDate = dt;
+                        }
+                        else if (DataLabelValueApplicationRow != null)
+                        {
+                            DataLabelValueApplicationRow.ValueDate = dt;
+                        }
                     }
                 }
 
@@ -1259,6 +1304,38 @@ namespace Ict.Petra.Client.MCommon.Gui
                         DataLabelValueApplicationRow.ValueLookup = ((TCmbAutoPopulated)CurrentControl).GetSelectedString();
                     }
                 }
+
+                // apply time value
+                if (DataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_TIME)
+                {
+                    CurrentControl = (System.Windows.Forms.TextBox)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+
+                    string contentText = CurrentControl.Text;
+                    int intTime = (int)new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(contentText, typeof(int));
+
+                    if (intTime < 0)
+                    {
+                        // an invalid time will be -1.  The type converter will display this as ??:??
+                        string msg = String.Format(Catalog.GetString(
+                                "Local Data: '{0}': Cannot convert '{1}' to a time.  Time should be in your local time format using hours and minutes.  "),
+                            FLocalDataLabelValuesGrid[ARow, 0].DisplayText, contentText);
+                        msg += Catalog.GetString("The value that you entered will be ignored.");
+                        MessageBox.Show(msg, CommonResourcestrings.StrInvalidDataTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        // Replace the faulty display text with our standard ??:??
+                        CurrentControl.Text =
+                            new Ict.Common.TypeConverter.TShortTimeConverter().ConvertTo(intTime, typeof(string)).ToString();
+                    }
+
+                    if (DataLabelValuePartnerRow != null)
+                    {
+                        DataLabelValuePartnerRow.ValueTime = intTime;
+                    }
+                    else if (DataLabelValueApplicationRow != null)
+                    {
+                        DataLabelValueApplicationRow.ValueTime = intTime;
+                    }
+                }
             }
 
             return ReturnValue;
@@ -1280,6 +1357,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             switch (ADataLabelRow.DataType)
             {
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_CHAR:
+                case MCommonConstants.OFFICESPECIFIC_DATATYPE_TIME:
 
                     CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
 
@@ -1322,7 +1400,8 @@ namespace Ict.Petra.Client.MCommon.Gui
 
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN:
                     // can't determine at the moment if "unchecked" is set on purpose
-                    ReturnValue = false;
+                    CurrentControl = (System.Windows.Forms.Control)((SourceGrid.Cells.Cell)FLocalDataLabelValuesGrid.GetCell(ARow, AColumn)).Tag;
+                    ReturnValue = ((System.Windows.Forms.CheckBox)CurrentControl).CheckState == CheckState.Indeterminate;
                     break;
 
                 case MCommonConstants.OFFICESPECIFIC_DATATYPE_PARTNERKEY:

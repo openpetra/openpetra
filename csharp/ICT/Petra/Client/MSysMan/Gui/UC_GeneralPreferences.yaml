@@ -41,10 +41,10 @@ RootNode:
             Height: 45
 
         cmbLanguage: 
-            Width: 204
+            Width: 100
             ActionClick: Language_Click
         cmbCulture:
-            Width: 204
+            Width: 325
             ActionClick: Language_Click
         lblLanguageNotFound: {Text="Language not found?"}
         lblLanguageNotFound2: 

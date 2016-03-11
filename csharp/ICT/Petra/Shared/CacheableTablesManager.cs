@@ -269,15 +269,9 @@ namespace Ict.Petra.Shared
         /// </exception>
         public DataTable GetCachedDataTable(String ACacheableTableName, out System.Type AType)
         {
-            CacheableTablesTDSContentsRow ContentsEntryDR;
-            DataTable TmpTable;
+            DataTable TmpTable = null;
 
-            System.Type CachedDataTableType;
-            LockCookie UpgradeLockCookie = new LockCookie();
-
-            // Variable initialisation (just to prevent compiler warnings)
-            TmpTable = new DataTable();
-            CachedDataTableType = new System.Data.DataTable().GetType();
+            System.Type CachedDataTableType = typeof(DataTable);
             try
             {
                 TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable waiting for a ReaderLock...");
@@ -292,12 +286,13 @@ namespace Ict.Petra.Shared
                         "TCacheableTablesManager.GetCachedDataTable: Cacheable DataTable '" + ACacheableTableName + "' does not exist in Cache");
                 }
 
-                ContentsEntryDR = GetContentsEntry(ACacheableTableName); // GetContentsEntry reuses the ReaderLock
+                CacheableTablesTDSContentsRow ContentsEntryDR = GetContentsEntry(ACacheableTableName); // GetContentsEntry reuses the ReaderLock
 
                 if (ContentsEntryDR != null)
                 {
                     if (ContentsEntryDR.DataUpToDate)
                     {
+                        LockCookie UpgradeLockCookie = new LockCookie();
                         try
                         {
                             TLogging.LogAtLevel(10, "TCacheableTablesManager.GetCachedDataTable waiting for upgrading to a WriterLock...");

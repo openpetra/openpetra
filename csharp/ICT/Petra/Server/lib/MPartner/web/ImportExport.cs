@@ -1865,6 +1865,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                         if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
                                         {
                                             // export the person member with the person partner's best address
+                                            LocationKey = LocationTable[0].LocationKey;
                                             ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
                                         }
                                     }
@@ -1896,6 +1897,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                         if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
                                         {
                                             // export the family with the family partner's best address
+                                            LocationKey = LocationTable[0].LocationKey;
                                             ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
                                         }
                                     }

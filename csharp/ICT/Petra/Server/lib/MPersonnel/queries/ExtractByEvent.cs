@@ -66,12 +66,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
         protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
             // prepare list of selected events
-            List <String>param_events = new List <String>();
-
-            foreach (TVariant choice in AParameters.Get("param_events").ToComposite())
-            {
-                param_events.Add(choice.ToString());
-            }
+            List <String>param_events = new List <String>(AParameters.Get("param_events").ToString().Split(','));
 
             if (param_events.Count == 0)
             {

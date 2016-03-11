@@ -74,10 +74,12 @@ RootNode:
         chkExtraCosts:
             Label: List Extra Costs
         cmbSignOffLines:
+            Width: 230
             Label: Sign Off Lines
             #~ If the OptionalValues are changed, they need to be changed as well in chargedfieldreports.xml, receivingfieldreport.xml, registeringfieldreport.xml, sendingfieldreport.xml and campaignreport.xml
             OptionalValues: [no Sign Off Lines, print Financial Sign Off Lines, print Attendance Sign Off Lines]
         cmbChargedFields:
+            Width: 200
             Label: If charged field is not set
             #~ If the OptionalValues are changed, they need to be changed as well in chargedfieldreports.xml, receivingfieldreport.xml, registeringfieldreport.xml, sendingfieldreport.xml and campaignreport.xml
             OptionalValues: [leave data as it is, charge Sending Field, charge Receiving Field, charge Registering Field]

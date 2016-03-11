@@ -50,6 +50,8 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -3083,6 +3085,162 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             return resultTable;
         } // Total Gifts Through Field
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable DonorGiftsToField(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
+            DateTime startDate = AParameters["param_StartDate"].ToDate();
+            string strStartDate = startDate.ToString("#yyyy-MM-dd#");
+            DateTime endDate = AParameters["param_EndDate"].ToDate();
+            string strEndDate = endDate.ToString("#yyyy-MM-dd#");
+
+            String AmountField = "detail.a_gift_amount_n";
+            String CurrencyOption = AParameters["param_currency"].ToString().ToLower();
+
+            if (CurrencyOption.StartsWith("int"))
+            {
+                AmountField = "detail.a_gift_amount_intl_n";
+            }
+
+            Decimal MinAmount = AParameters["param_min_amount"].ToDecimal();
+            Decimal MaxAmount = AParameters["param_max_amount"].ToDecimal();
+
+            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+
+            DataTable resultTable = new DataTable();
+            String ExtractTables = " ";
+            String donorOption = AParameters["param_donor"].ToString();
+            String AmountFilter = " AND " + AmountField + " >= " + MinAmount + " AND " + AmountField + " <= " + MaxAmount;
+            String FieldFilter = "";
+
+            if (AParameters["param_field_selection"].ToString() == "selected_fields")
+            {
+                String FieldList = AParameters["param_clbFields"].ToString();
+                FieldFilter = " AND detail.a_recipient_ledger_number_n in (" + FieldList + ")";
+            }
+
+            if (donorOption == "Extract")
+            {
+                ExtractTables = ", PUB_m_extract, PUB_m_extract_master";
+            }
+
+            String Query =
+                "SELECT DISTINCT " +
+                " gift.p_donor_key_n AS DonorKey, " +
+                " donor.p_partner_short_name_c AS DonorName, " +
+                " donor.p_partner_class_c AS DonorClass, " +
+                " gift.a_date_entered_d AS GiftDate, " +
+                " recipient.p_partner_key_n AS RecipientKey, " +
+                " recipient.p_partner_short_name_c AS RecipientName, " +
+                " recipient.p_partner_class_c AS RecipientClass, " +
+                " detail.a_confidential_gift_flag_l AS Confidential, " +
+                " gift.a_receipt_number_i AS Receipt, " +
+                " gift.a_method_of_giving_code_c AS Method, " +
+                " detail.a_recipient_ledger_number_n AS FieldKey, " +
+                " detail.a_motivation_group_code_c AS MotivationGroup, " +
+                " detail.a_motivation_detail_code_c AS MotivationDetail, " +
+                " PUB_a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetailDescr, " +
+                " PUB_a_motivation_group.a_motivation_group_description_c AS MotivationGroupDescr, " +
+
+                AmountField + " AS GiftAmount " +
+                " FROM " +
+                " PUB_a_gift as gift, " +
+                " PUB_a_gift_detail as detail, " +
+                " PUB_a_gift_batch, " +
+                " PUB_p_partner as donor, " +
+                " PUB_p_partner as recipient, " +
+                " PUB_a_motivation_group, " +
+                " PUB_a_motivation_detail " +
+                ExtractTables;
+
+            switch (donorOption)
+            {
+                case "Extract":
+                    Query +=
+                        " WHERE" +
+                        " gift.p_donor_key_n =  PUB_m_extract.p_partner_key_n" +
+                        " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
+                        " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                        " AND";
+                    break;
+
+                case "All Donors":
+                    Query +=
+                        " WHERE";
+                    break;
+
+                case "One Donor":
+                    Query +=
+                        " WHERE" +
+                        " gift.p_donor_key_n = " + AParameters["param_donorkey"].ToInt32() +
+                        " AND";
+                    break;
+            }
+
+            Query +=
+                " detail.a_ledger_number_i = " + LedgerNum +
+                " AND detail.a_batch_number_i = gift.a_batch_number_i" +
+                " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                " AND gift.a_date_entered_d BETWEEN " + strStartDate + " AND " + strEndDate +
+                " AND gift.a_ledger_number_i = " + LedgerNum +
+                " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
+                " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
+                " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNum +
+                " AND donor.p_partner_key_n = gift.p_donor_key_n" +
+                " AND recipient.p_partner_key_n = detail.p_recipient_key_n" +
+
+                " AND a_motivation_group.a_ledger_number_i = " + LedgerNum +
+                " AND a_motivation_detail.a_ledger_number_i = " + LedgerNum +
+                " AND detail.a_motivation_group_code_c = a_motivation_group.a_motivation_group_code_c" +
+                " AND a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
+                " AND detail.a_motivation_detail_code_c = a_motivation_detail.a_motivation_detail_code_c" +
+
+                AmountFilter +
+                FieldFilter +
+                " ORDER BY donor.p_partner_short_name_c, GiftDate";
+
+            TDBTransaction Transaction = null;
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    resultTable = DbAdapter.RunQuery(Query, "DonorGiftsToField", Transaction);
+                    resultTable.Columns.Add("DonorAddress", typeof(String));
+
+                    // I need to add the donor address to each row:
+                    Int64 existingDonorKey = -1;
+                    String existingDonorAddress = ""; // For givers of multiple gifts, this caching makes the loop slightly faster.
+
+                    foreach (DataRow resultRow in resultTable.Rows)
+                    {
+                        Int64 DonorKey = Convert.ToInt64(resultRow["DonorKey"]);
+
+                        if (DonorKey != existingDonorKey)
+                        {
+                            existingDonorKey = DonorKey;
+                            PLocationTable LocationTable;
+                            String CountryName;
+                            TAddressTools.GetBestAddress(DonorKey, out LocationTable, out CountryName, Transaction);
+
+                            if (LocationTable.Rows.Count > 0)
+                            {
+                                existingDonorAddress = Calculations.DetermineLocationString(
+                                    LocationTable[0],
+                                    Calculations.TPartnerLocationFormatEnum.plfCommaSeparated
+                                    );
+                            }
+                        }
+
+                        resultRow["DonorAddress"] = existingDonorAddress;
+                    }
+                });
+            return resultTable;
+        }
 
         // get Actuals for this month, YTD and Prior YTD and Budget YTD
         private static Decimal[] GetActualsAndBudget(TReportingDbAdapter DbAdapter,

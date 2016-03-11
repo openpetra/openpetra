@@ -1356,84 +1356,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// When a reversed gift detail is cancelled this method will remove the Modified Detail flag on the original gift detail
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AModifiedDetailKeys"></param>
-        [RequireModulePermission("FINANCE-1")]
-        public static void RemoveModifiedDetailOnCancel(Int32 ALedgerNumber, List <string>AModifiedDetailKeys)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-            else if (AModifiedDetailKeys.Count == 0)
-            {
-                //Not an error condition, just return.
-                return;
-            }
-
-            #endregion Validate Arguments
-
-            TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
-
-            try
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    ref Transaction,
-                    ref SubmissionOK,
-                    delegate
-                    {
-                        foreach (string ModifiedDetailKey in AModifiedDetailKeys)
-                        {
-                            string[] GiftDetailFields = ModifiedDetailKey.Split('|');
-
-                            int giftBatchNumber = Convert.ToInt32(GiftDetailFields[1]);
-                            int giftNumber = Convert.ToInt32(GiftDetailFields[2]);
-                            int giftDetailNumber = Convert.ToInt32(GiftDetailFields[3]);
-
-                            AGiftDetailTable GiftDetailTable =
-                                AGiftDetailAccess.LoadByPrimaryKey(ALedgerNumber, giftBatchNumber, giftNumber, giftDetailNumber, Transaction);
-
-                            #region Validate Data
-
-                            if ((GiftDetailTable == null) || (GiftDetailTable.Count == 0))
-                            {
-                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                            "Function:{0} - Data for Gift Detail {1}, from Gift {2} in Batch {3} and Ledger {4}, does not exist or could not be accessed!"),
-                                        Utilities.GetMethodName(true),
-                                        giftDetailNumber,
-                                        giftNumber,
-                                        giftBatchNumber,
-                                        ALedgerNumber));
-                            }
-
-                            #endregion Validate Data
-
-                            GiftDetailTable[0].ModifiedDetail = false;
-
-                            AGiftDetailAccess.SubmitChanges(GiftDetailTable, Transaction);
-                        }
-
-                        SubmissionOK = true;
-                    });
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
-            }
-        }
-
-        /// <summary>
         /// Retrieve the cost centre code for the recipient
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -3367,10 +3289,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (RecipientRow != null)
                     {
                         giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                        giftDetail.RecipientClass = RecipientRow.PartnerClass;
                     }
                     else
                     {
                         giftDetail.RecipientDescription = "INVALID";
+                        giftDetail.RecipientClass = string.Empty;
                     }
 
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
@@ -3638,10 +3562,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     if (RecipientRow != null)
                     {
                         giftDetail.RecipientDescription = RecipientRow.PartnerShortName;
+                        giftDetail.RecipientClass = RecipientRow.PartnerClass;
                     }
                     else
                     {
                         giftDetail.RecipientDescription = "INVALID";
+                        giftDetail.RecipientClass = string.Empty;
                     }
 
                     PUnitRow RecipientUnitRow = (PUnitRow)MainDS.RecipientUnit.Rows.Find(giftDetail.RecipientKey);
@@ -4094,7 +4020,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (giftDetail.GiftTransactionAmount >= 0)
                 {
                     // The recipient ledger number must not be 0 if the motivation group is 'GIFT'
-                    if ((giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
+                    if ((giftDetail.RecipientClass == TPartnerClass.FAMILY.ToString())
+                        && (giftDetail.IsRecipientLedgerNumberNull() || (giftDetail.RecipientLedgerNumber == 0))
                         && (giftDetail.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
                     {
                         AVerifications.Add(
@@ -4621,6 +4548,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TGiftImporting Importing = new TGiftImporting();
 
             return Importing.ImportGiftTransactions(requestParams, importString, AGiftBatchNumber, out ANeedRecipientLedgerNumber, out AMessages);
+        }
+
+        /// <summary>
+        /// Return the ESR defaults table (creating if necessary) for use in importing, or for client side editing.
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-2")]
+        public static DataTable GetEsrDefaults()
+        {
+            return TGiftImporting.GetEsrDefaults();
+        }
+
+        /// <summary>
+        /// Commit the ESR defaults table after client side editing.
+        /// </summary>
+        /// <param name="AEsrDefaults"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-2")]
+        public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
+        {
+            return TGiftImporting.CommitEsrDefaults(AEsrDefaults);
         }
 
         /// <summary>

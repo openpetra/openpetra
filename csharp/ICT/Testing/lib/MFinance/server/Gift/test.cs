@@ -94,7 +94,7 @@ namespace Tests.MFinance.Server.Gift
             // TReceiptingWebConnector is from Ict.Petra.Server.MFinance.Gift.WebConnectors
             // for the moment, we expect that there are no gifts in the database in the year 1978
             // the template would need to be loaded from an HTML file
-            string result = TReceiptingWebConnector.CreateAnnualGiftReceipts(43, new DateTime(1978, 1, 1), new DateTime(1978, 1, 31),
+            string result = TReceiptingWebConnector.CreateAnnualGiftReceipts(43, "ANNUAL", new DateTime(1978, 1, 1), new DateTime(1978, 1, 31),
                 "invalid HTML template");
 
             Assert.AreEqual("", result, "Testing if using a web connector works");

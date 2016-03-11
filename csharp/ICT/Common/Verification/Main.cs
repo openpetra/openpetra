@@ -757,6 +757,27 @@ namespace Ict.Common.Verification
         }
 
         /// <summary>
+        /// Use this instead of Count if you don't want non-critical errors to be counted.
+        /// </summary>
+        public Int32 CountCriticalErrors
+        {
+            get
+            {
+                Int32 count = 0;
+
+                foreach (TVerificationResult v in FList)
+                {
+                    if (v.ResultSeverity == TResultSeverity.Resv_Critical)
+                    {
+                        count++;
+                    }
+                }
+
+                return count;
+            }
+        }
+
+        /// <summary>
         /// Checks whether there are any <see cref="TVerificationResult" />s  in the collection that denote a
         /// critical error.
         /// </summary>

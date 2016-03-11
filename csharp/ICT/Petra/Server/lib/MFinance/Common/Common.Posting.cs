@@ -1305,9 +1305,9 @@ namespace Ict.Petra.Server.MFinance.Common
                         if (aTransAttribRow == null)
                         {
                             AVerifications.Add(new TVerificationResult(
-                                    String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                    String.Format(Catalog.GetString("Cannot post GL Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
                                     String.Format(Catalog.GetString(
-                                            "Analysis Type {0} is missing values in journal {1}, transaction {2}"),
+                                            "Analysis Type {0} is missing values in Journal {1}, Transaction {2}"),
                                         attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                     TResultSeverity.Resv_Critical));
 
@@ -1321,8 +1321,8 @@ namespace Ict.Petra.Server.MFinance.Common
                             if ((analAttrValue == null) || (analAttrValue.Length == 0))
                             {
                                 AVerifications.Add(new TVerificationResult(
-                                        String.Format(Catalog.GetString("Cannot post Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
-                                        String.Format(Catalog.GetString("Analysis Type {0} is missing values in journal {1}, transaction {2}"),
+                                        String.Format(Catalog.GetString("Cannot post GL Batch {0} in Ledger {1}"), ABatchNumber, ALedgerNumber),
+                                        String.Format(Catalog.GetString("Analysis Type {0} is missing values in Journal {1}, Transaction {2}"),
                                             attributeRow.AnalysisTypeCode, transRow.JournalNumber, transRow.TransactionNumber),
                                         TResultSeverity.Resv_Critical));
 
@@ -1425,7 +1425,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             foreach (AJournalRow journal in AMainDS.AJournal.Rows)
             {
-                if (journal.BatchNumber != ABatchToPost.BatchNumber)
+                if ((journal.BatchNumber != ABatchToPost.BatchNumber) || (journal.JournalStatus == MFinanceConstants.BATCH_CANCELLED))
                 {
                     continue;
                 }

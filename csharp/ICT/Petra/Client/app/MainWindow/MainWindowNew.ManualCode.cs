@@ -69,6 +69,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private static bool FMultiLedgerSite = false;
         private static int FCurrentLedger = -1;
+        private static int FInitiallySelectedLedger = -1;
         private static List <string>FLedgersAvailableToUser = null;
         TBreadcrumbTrail FBreadcrumbTrail;
 
@@ -93,6 +94,17 @@ namespace Ict.Petra.Client.App.PetraClient
             set
             {
                 FCurrentLedger = value;
+            }
+        }
+
+        /// <summary>
+        /// The initially selected ledger (either a user default or the first ledger in the list)
+        /// </summary>
+        public static int InitiallySelectedLedger
+        {
+            get
+            {
+                return FInitiallySelectedLedger;
             }
         }
 
@@ -563,6 +575,8 @@ namespace Ict.Petra.Client.App.PetraClient
                     }
 
                     childNode = childNode.NextSibling;
+
+                    FInitiallySelectedLedger = FCurrentLedger;
                 }
                 else
                 {
@@ -647,6 +661,7 @@ namespace Ict.Petra.Client.App.PetraClient
 
             lstFolders.MultiLedgerSite = FMultiLedgerSite;
             lstFolders.CurrentLedger = FCurrentLedger;
+            lstFolders.InitiallySelectedLedger = FInitiallySelectedLedger;
             lstFolders.ConferenceSelected = FConferenceSelected;
 
             lstFolders.ClearFolders();

@@ -172,7 +172,10 @@ namespace Ict.Petra.Client.CommonForms
         mcGLOrGiftBatchSaved,
 
         /// <summary>A change has been made which requires the Gift Batches screen to be refreshed.</summary>
-        mcRefreshGiftBatches
+        mcRefreshGiftBatches,
+
+        /// <summary>A change has been made which requires the GL Batches screen to be refreshed.</summary>
+        mcRefreshGLBatches
     }
 
     /// <summary>

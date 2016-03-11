@@ -200,6 +200,15 @@ namespace Ict.Tools.DevelopersAssistant
 
         // Public properties
 
+        /// <summary> The number of failures in the current task </summary>
+        public int NumFailures = 0;
+
+        /// <summary> The number of warnings in the current task </summary>
+        public int NumWarnings = 0;
+
+        /// <summary> The number of successes in the current task </summary>
+        public int NumSucceeded = 0;
+
         /// <summary>
         /// Gets the TaskItem for this class instance
         /// </summary>

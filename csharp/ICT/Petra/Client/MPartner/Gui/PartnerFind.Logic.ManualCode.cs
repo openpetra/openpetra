@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public void SendEmailToPartner()
+        public void SendEmailToPartner(TFrmPetraUtils APetraUtilsObject)
         {
             if (FPartnerInfoCollPanel.UserControlInstance == null)
             {
@@ -316,6 +316,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             var PartnerInfoUC = ((TUC_PartnerInfo)(FPartnerInfoCollPanel.UserControlInstance));
+            PartnerInfoUC.PetraUtilsObject = APetraUtilsObject;
             PartnerInfoUC.InitUserControl();
 
             PartnerInfoUC.DataLoaded += PartnerInfoUC_DataLoaded;
@@ -628,9 +629,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void SendEmailToPartner()
+        public void SendEmailToPartner(TFrmPetraUtils APetraUtilsObject)
         {
-            FLogic.SendEmailToPartner();
+            FLogic.SendEmailToPartner(APetraUtilsObject);
         }
     }
 

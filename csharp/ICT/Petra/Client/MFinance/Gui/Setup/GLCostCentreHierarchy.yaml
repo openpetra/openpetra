@@ -7,8 +7,8 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
     FormType: edit
     Template: windowTDS
-    WindowWidth: 700
-    WindowHeight: 500
+    WindowWidth: 860
+    WindowHeight: 700
     Actions:
         actAddNewCostCentre: {Label=&Add Cost Centre, ActionClick=AddNewCostCentre}
         actDeleteCostCentre: {Label=&Delete Cost Centre, ActionClick=DeleteCostCentre}
@@ -22,7 +22,7 @@ RootNode:
         sptSplitter:
             Panel1: tabCostCentres
             Panel2: pnlDetails
-            SplitterDistance: 60
+            SplitterDistance: 83
             SplitterOrientation: vertical
             Dock: Fill
 
@@ -66,22 +66,22 @@ RootNode:
         chkDetailSummaryFlag: {Label=Summary}
         grpClearing:
             Height: 170
-            Width: 350
+            Width: 370
             Controls: [cmbDetailClearingAccount]
         grpEquitySettings:
             Height: 170
-            Width: 350
+            Width: 370
             Label: Equity / Roll-up Settings
             Controls: [cmbDetailRetEarningsAccountCode, cmbRollupStyleManual, chkChildrenLocked,lblLockedMessage]
         grpProjectStatusBox:
             Height: 95
-            Width: 350
+            Width: 370
             Label: Project Status
             Controls: [chkDetailProjectStatus, dtpDetailProjectConstraintDate,txtDetailProjectConstraintAmount]
         pnlStatus:
             Controls: [txtStatus]
             Height: 130
-            Width: 350
+            Width: 370
         txtStatus:
             Dock: Fill
             Multiline:true
@@ -90,11 +90,11 @@ RootNode:
         cmbDetailRetEarningsAccountCode:
             List: UserDefinedList
             Label: Ret Earn Account
-            Width:200
-            ComboBoxWidth:70
+            Width:235
+            ComboBoxWidth:65
         cmbRollupStyleManual:
             Label: Rollup Style
-            Width:70
+            Width:80
         chkChildrenLocked:
             Label: All children have these settings
             LabelWidth:120

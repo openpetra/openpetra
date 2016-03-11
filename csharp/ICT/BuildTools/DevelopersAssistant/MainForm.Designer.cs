@@ -101,6 +101,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.lblBranchLocation = new System.Windows.Forms.Label();
             this.label16 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.btnDemoteFavouriteBuild = new System.Windows.Forms.Button();
+            this.btnPromoteFavouriteBuild = new System.Windows.Forms.Button();
             this.btnEditDbBuildConfig = new System.Windows.Forms.Button();
             this.label12 = new System.Windows.Forms.Label();
             this.btnRemoveDbBuildConfig = new System.Windows.Forms.Button();
@@ -120,6 +122,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.txtOutput = new System.Windows.Forms.TextBox();
             this.ExternalPage = new System.Windows.Forms.TabPage();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.linkSuggestedLinksUpdates = new System.Windows.Forms.LinkLabel();
             this.linkRefreshLinks = new System.Windows.Forms.LinkLabel();
             this.linkEditLinks = new System.Windows.Forms.LinkLabel();
             this.lblExternalWebLink = new System.Windows.Forms.Label();
@@ -159,6 +163,9 @@ namespace Ict.Tools.DevelopersAssistant
             this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.ShutdownTimer = new System.Windows.Forms.Timer(this.components);
             this.TickTimer = new System.Windows.Forms.Timer(this.components);
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
@@ -172,6 +179,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             //
             // tabControl
@@ -186,6 +194,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(741, 482);
             this.tabControl.TabIndex = 0;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             //
             // TaskPage
             //
@@ -437,6 +446,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.cboSourceCode.Name = "cboSourceCode";
             this.cboSourceCode.Size = new System.Drawing.Size(249, 21);
             this.cboSourceCode.TabIndex = 22;
+            this.cboSourceCode.SelectedIndexChanged += new System.EventHandler(this.cboSourceCode_SelectedIndexChanged);
             //
             // label18
             //
@@ -732,6 +742,8 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // groupBox2
             //
+            this.groupBox2.Controls.Add(this.btnDemoteFavouriteBuild);
+            this.groupBox2.Controls.Add(this.btnPromoteFavouriteBuild);
             this.groupBox2.Controls.Add(this.btnEditDbBuildConfig);
             this.groupBox2.Controls.Add(this.label12);
             this.groupBox2.Controls.Add(this.btnRemoveDbBuildConfig);
@@ -742,14 +754,36 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox2.Controls.Add(this.btnSaveDbBuildConfig);
             this.groupBox2.Location = new System.Drawing.Point(3, 49);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(727, 240);
+            this.groupBox2.Size = new System.Drawing.Size(727, 288);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Build Configuration";
             //
+            // btnDemoteFavouriteBuild
+            //
+            this.btnDemoteFavouriteBuild.Location = new System.Drawing.Point(345, 249);
+            this.btnDemoteFavouriteBuild.Name = "btnDemoteFavouriteBuild";
+            this.btnDemoteFavouriteBuild.Size = new System.Drawing.Size(59, 23);
+            this.btnDemoteFavouriteBuild.TabIndex = 8;
+            this.btnDemoteFavouriteBuild.Text = "Demote";
+            this.toolTip.SetToolTip(this.btnDemoteFavouriteBuild, "Move the highlighted row down the list");
+            this.btnDemoteFavouriteBuild.UseVisualStyleBackColor = true;
+            this.btnDemoteFavouriteBuild.Click += new System.EventHandler(this.btnDemoteFavouriteBuild_Click);
+            //
+            // btnPromoteFavouriteBuild
+            //
+            this.btnPromoteFavouriteBuild.Location = new System.Drawing.Point(279, 249);
+            this.btnPromoteFavouriteBuild.Name = "btnPromoteFavouriteBuild";
+            this.btnPromoteFavouriteBuild.Size = new System.Drawing.Size(59, 23);
+            this.btnPromoteFavouriteBuild.TabIndex = 7;
+            this.btnPromoteFavouriteBuild.Text = "Promote";
+            this.toolTip.SetToolTip(this.btnPromoteFavouriteBuild, "Move the highlighted row up the list");
+            this.btnPromoteFavouriteBuild.UseVisualStyleBackColor = true;
+            this.btnPromoteFavouriteBuild.Click += new System.EventHandler(this.btnPromoteFavouriteBuild_Click);
+            //
             // btnEditDbBuildConfig
             //
-            this.btnEditDbBuildConfig.Location = new System.Drawing.Point(87, 200);
+            this.btnEditDbBuildConfig.Location = new System.Drawing.Point(87, 249);
             this.btnEditDbBuildConfig.Name = "btnEditDbBuildConfig";
             this.btnEditDbBuildConfig.Size = new System.Drawing.Size(75, 23);
             this.btnEditDbBuildConfig.TabIndex = 5;
@@ -769,7 +803,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // btnRemoveDbBuildConfig
             //
-            this.btnRemoveDbBuildConfig.Location = new System.Drawing.Point(168, 200);
+            this.btnRemoveDbBuildConfig.Location = new System.Drawing.Point(168, 249);
             this.btnRemoveDbBuildConfig.Name = "btnRemoveDbBuildConfig";
             this.btnRemoveDbBuildConfig.Size = new System.Drawing.Size(75, 23);
             this.btnRemoveDbBuildConfig.TabIndex = 6;
@@ -780,7 +814,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // btnAddDbBuildConfig
             //
-            this.btnAddDbBuildConfig.Location = new System.Drawing.Point(6, 200);
+            this.btnAddDbBuildConfig.Location = new System.Drawing.Point(6, 249);
             this.btnAddDbBuildConfig.Name = "btnAddDbBuildConfig";
             this.btnAddDbBuildConfig.Size = new System.Drawing.Size(75, 23);
             this.btnAddDbBuildConfig.TabIndex = 4;
@@ -811,16 +845,17 @@ namespace Ict.Tools.DevelopersAssistant
             this.listDbBuildConfig.FormattingEnabled = true;
             this.listDbBuildConfig.Location = new System.Drawing.Point(6, 99);
             this.listDbBuildConfig.Name = "listDbBuildConfig";
-            this.listDbBuildConfig.Size = new System.Drawing.Size(715, 95);
+            this.listDbBuildConfig.Size = new System.Drawing.Size(715, 147);
             this.listDbBuildConfig.TabIndex = 3;
+            this.listDbBuildConfig.SelectedIndexChanged += new System.EventHandler(this.listDbBuildConfig_SelectedIndexChanged);
             this.listDbBuildConfig.DoubleClick += new System.EventHandler(this.listDbBuildConfig_DoubleClick);
             //
             // btnSaveDbBuildConfig
             //
-            this.btnSaveDbBuildConfig.Location = new System.Drawing.Point(506, 200);
+            this.btnSaveDbBuildConfig.Location = new System.Drawing.Point(506, 249);
             this.btnSaveDbBuildConfig.Name = "btnSaveDbBuildConfig";
             this.btnSaveDbBuildConfig.Size = new System.Drawing.Size(215, 23);
-            this.btnSaveDbBuildConfig.TabIndex = 7;
+            this.btnSaveDbBuildConfig.TabIndex = 9;
             this.btnSaveDbBuildConfig.Text = "Save As Current Build Configuration";
             this.toolTip.SetToolTip(this.btnSaveDbBuildConfig, "Save the highlighted database build configuration as the default for this compute" +
                 "r.");
@@ -831,7 +866,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.btnDatabase.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDatabase.Location = new System.Drawing.Point(523, 311);
+            this.btnDatabase.Location = new System.Drawing.Point(523, 363);
             this.btnDatabase.Name = "btnDatabase";
             this.btnDatabase.Size = new System.Drawing.Size(32, 23);
             this.btnDatabase.TabIndex = 5;
@@ -844,7 +879,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.cboDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDatabase.FormattingEnabled = true;
-            this.cboDatabase.Location = new System.Drawing.Point(268, 313);
+            this.cboDatabase.Location = new System.Drawing.Point(268, 365);
             this.cboDatabase.Name = "cboDatabase";
             this.cboDatabase.Size = new System.Drawing.Size(249, 21);
             this.cboDatabase.TabIndex = 4;
@@ -852,7 +887,7 @@ namespace Ict.Tools.DevelopersAssistant
             // label7
             //
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(168, 316);
+            this.label7.Location = new System.Drawing.Point(168, 368);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(85, 13);
             this.label7.TabIndex = 3;
@@ -941,6 +976,8 @@ namespace Ict.Tools.DevelopersAssistant
             //
             // groupBox5
             //
+            this.groupBox5.Controls.Add(this.label21);
+            this.groupBox5.Controls.Add(this.linkSuggestedLinksUpdates);
             this.groupBox5.Controls.Add(this.linkRefreshLinks);
             this.groupBox5.Controls.Add(this.linkEditLinks);
             this.groupBox5.Controls.Add(this.lblExternalWebLink);
@@ -954,13 +991,34 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Useful Web Links";
             //
+            // label21
+            //
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(251, 209);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(253, 13);
+            this.label21.TabIndex = 4;
+            this.label21.Text = "Click this link to check that your links are up to date.";
+            //
+            // linkSuggestedLinksUpdates
+            //
+            this.linkSuggestedLinksUpdates.AutoSize = true;
+            this.linkSuggestedLinksUpdates.Location = new System.Drawing.Point(254, 225);
+            this.linkSuggestedLinksUpdates.Name = "linkSuggestedLinksUpdates";
+            this.linkSuggestedLinksUpdates.Size = new System.Drawing.Size(127, 13);
+            this.linkSuggestedLinksUpdates.TabIndex = 5;
+            this.linkSuggestedLinksUpdates.TabStop = true;
+            this.linkSuggestedLinksUpdates.Text = "View Suggested Updates";
+            this.linkSuggestedLinksUpdates.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(
+                this.linkSuggestedLinksUpdates_LinkClicked);
+            //
             // linkRefreshLinks
             //
             this.linkRefreshLinks.AutoSize = true;
             this.linkRefreshLinks.Location = new System.Drawing.Point(140, 286);
             this.linkRefreshLinks.Name = "linkRefreshLinks";
             this.linkRefreshLinks.Size = new System.Drawing.Size(63, 13);
-            this.linkRefreshLinks.TabIndex = 5;
+            this.linkRefreshLinks.TabIndex = 7;
             this.linkRefreshLinks.TabStop = true;
             this.linkRefreshLinks.Text = "Refresh List";
             this.linkRefreshLinks.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkRefreshLinks_LinkClicked);
@@ -971,7 +1029,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.linkEditLinks.Location = new System.Drawing.Point(7, 286);
             this.linkEditLinks.Name = "linkEditLinks";
             this.linkEditLinks.Size = new System.Drawing.Size(44, 13);
-            this.linkEditLinks.TabIndex = 4;
+            this.linkEditLinks.TabIndex = 6;
             this.linkEditLinks.TabStop = true;
             this.linkEditLinks.Text = "Edit List";
             this.linkEditLinks.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkEditLinks_LinkClicked);
@@ -982,7 +1040,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.lblExternalWebLink.Location = new System.Drawing.Point(251, 138);
             this.lblExternalWebLink.Name = "lblExternalWebLink";
             this.lblExternalWebLink.Size = new System.Drawing.Size(38, 13);
-            this.lblExternalWebLink.TabIndex = 3;
+            this.lblExternalWebLink.TabIndex = 2;
             this.lblExternalWebLink.Text = "http://";
             //
             // btnBrowseWeb
@@ -990,7 +1048,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnBrowseWeb.Location = new System.Drawing.Point(589, 165);
             this.btnBrowseWeb.Name = "btnBrowseWeb";
             this.btnBrowseWeb.Size = new System.Drawing.Size(75, 23);
-            this.btnBrowseWeb.TabIndex = 2;
+            this.btnBrowseWeb.TabIndex = 3;
             this.btnBrowseWeb.Text = "Browse";
             this.btnBrowseWeb.UseVisualStyleBackColor = true;
             this.btnBrowseWeb.Click += new System.EventHandler(this.btnBrowseWeb_Click);
@@ -1347,11 +1405,38 @@ namespace Ict.Tools.DevelopersAssistant
             this.TickTimer.Interval = 10000;
             this.TickTimer.Tick += new System.EventHandler(this.TickTimer_Tick);
             //
+            // statusStrip
+            //
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                    this.toolStripProgressBar,
+                    this.toolStripStatusLabel
+                });
+            this.statusStrip.Location = new System.Drawing.Point(0, 500);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Size = new System.Drawing.Size(765, 22);
+            this.statusStrip.TabIndex = 1;
+            this.statusStrip.Text = "statusStrip1";
+            //
+            // toolStripProgressBar
+            //
+            this.toolStripProgressBar.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.toolStripProgressBar.Name = "toolStripProgressBar";
+            this.toolStripProgressBar.Size = new System.Drawing.Size(100, 16);
+            this.toolStripProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
+            this.toolStripProgressBar.Visible = false;
+            //
+            // toolStripStatusLabel
+            //
+            this.toolStripStatusLabel.Name = "toolStripStatusLabel";
+            this.toolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
+            this.toolStripStatusLabel.Text = "Ready";
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(765, 506);
+            this.ClientSize = new System.Drawing.Size(765, 522);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1384,7 +1469,10 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox3.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
         }
 
         #endregion
@@ -1494,5 +1582,12 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.Label lblDatabaseName;
         private System.Windows.Forms.LinkLabel linkLabel_LaunchpadUrl;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+        private System.Windows.Forms.Button btnDemoteFavouriteBuild;
+        private System.Windows.Forms.Button btnPromoteFavouriteBuild;
+        private System.Windows.Forms.LinkLabel linkSuggestedLinksUpdates;
+        private System.Windows.Forms.Label label21;
     }
 }

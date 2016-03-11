@@ -370,6 +370,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             String ColumnName = SelectColumnNameForExract(FirstRow);
             this.UseWaitCursor = true;
 
+            Int64 repeatedPartnerKey = 0;
+
             foreach (XmlNode node in Rows)
             {
                 XmlAttribute Attr = node.Attributes[ColumnName];
@@ -378,11 +380,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                 {
                     Int64 intPartnerKey;
 
-                    if (Int64.TryParse(Attr.Value, out intPartnerKey))
+                    if (Int64.TryParse(Attr.Value, out intPartnerKey)
+                        && (intPartnerKey != repeatedPartnerKey))
                     {
                         DataRow Row = Tbl.NewRow();
                         Row["PartnerKey"] = intPartnerKey;
                         Tbl.Rows.Add(Row);
+                        repeatedPartnerKey = intPartnerKey;
                     }
                 }
             }

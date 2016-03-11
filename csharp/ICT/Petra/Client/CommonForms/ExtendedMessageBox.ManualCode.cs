@@ -55,6 +55,28 @@ namespace Ict.Petra.Client.CommonForms
         private Bitmap FBitmap;
         private TDefaultButton FDefaultButton = TDefaultButton.embdDefButton1;
 
+        /// <summary>
+        /// Customise text for the Yes button.
+        /// </summary>
+        public string YesButtonText
+        {
+            set
+            {
+                btnYes.Text = value;
+            }
+        }
+
+        /// <summary>
+        /// Customise text for the No button.
+        /// </summary>
+        public string NoButtonText
+        {
+            set
+            {
+                btnNo.Text = value;
+            }
+        }
+
         /// <summary>Scope of data that is already available client-side.</summary>
         public enum TButtons
         {
@@ -249,6 +271,9 @@ namespace Ict.Petra.Client.CommonForms
             btnNoToAll.Visible = false;
             btnOK.Visible = false;
             btnCancel.Visible = false;
+
+            this.btnCancel.Click -= new System.EventHandler(this.actClose);
+            this.btnCancel.Click += new System.EventHandler(this.BtnCancel_Click);
 
             FDefaultButton = ADefaultButton;
 

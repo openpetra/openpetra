@@ -90,7 +90,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                 SourceGrid.GridSpecialKeys.Control) | SourceGrid.GridSpecialKeys.Shift)));
             this.grdPartnerTypes.TabIndex = 0;
             this.grdPartnerTypes.TabStop = true;
-            this.grdPartnerTypes.MouseClick += new MouseEventHandler(this.GrdPartnerTypes_Click);
             this.grdPartnerTypes.SpaceKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_SpaceKeyPressed);
             this.grdPartnerTypes.EnterKeyPressed += new TKeyPressedEventHandler(this.GrdPartnerTypes_EnterKeyPressed);
 

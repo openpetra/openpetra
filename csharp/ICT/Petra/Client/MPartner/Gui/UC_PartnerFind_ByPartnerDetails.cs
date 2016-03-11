@@ -648,19 +648,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 using (var MergePartnersDialog = new Ict.Petra.Client.MPartner.Gui.TFrmMergePartnersDialog(FPetraUtilsObject.GetForm()))
                 {
+                    MergePartnersDialog.FromPartnerKey = PartnerKey;
                     DialogResult MergeDialRes = MergePartnersDialog.ShowDialog();
-                    bool RunSearchAgain = false;
 
                     if ((MergeDialRes == DialogResult.OK)
                         && (FPagedDataTable != null)
                         && (FPagedDataTable.Rows.Count > 0))
                     {
-                        RunSearchAgain = FPartnerFindObject.CheckIfResultsContainPartnerKey(MergePartnersDialog.FromPartnerKey);
-
-                        if (!RunSearchAgain)
-                        {
-                            RunSearchAgain = FPartnerFindObject.CheckIfResultsContainPartnerKey(MergePartnersDialog.ToPartnerKey);
-                        }
+                        bool RunSearchAgain = FPartnerFindObject.CheckIfResultsContainPartnerKey(MergePartnersDialog.FromPartnerKey)
+                                              || FPartnerFindObject.CheckIfResultsContainPartnerKey(MergePartnersDialog.ToPartnerKey);
 
                         if (RunSearchAgain)
                         {
@@ -684,7 +680,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileSendEmail")
             {
-                FMenuFunctions.SendEmailToPartner();
+                FMenuFunctions.SendEmailToPartner(FPetraUtilsObject);
             }
             else
             {
@@ -753,7 +749,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (ClickedMenuItemName == "mniMaintainContacts")
             {
-                throw new NotImplementedException();
+                OpenPartnerEditScreen(TPartnerEditTabPageEnum.petpContacts);
             }
             else if (ClickedMenuItemName == "mniMaintainFamilyMembers")
             {
@@ -789,6 +785,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (FLogic.DetermineCurrentPartnerClass() == TPartnerClass.PERSON.ToString())
                 {
+                    DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
+                    string PartnerShortName = Convert.ToString(SelectedGridRow[0][PPartnerTable.GetPartnerShortNameDBName()]);
+
+                    // inform user that this is the gift destination for the partner's family
+                    MessageBox.Show(string.Format(TFrmPartnerEdit.StrGiftDestinationForPerson, "\n\n", PartnerShortName),
+                        Catalog.GetString("Gift Destination"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                     // open the Gift Destination screen for the person's family
                     TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
                         FPetraUtilsObject.GetForm(), Convert.ToInt64(FLogic.CurrentDataRow[PPersonTable.GetFamilyKeyDBName()]));

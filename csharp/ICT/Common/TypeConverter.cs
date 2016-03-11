@@ -519,7 +519,7 @@ namespace Ict.Common
         {
             private NumberFormatInfo FNumberFormatInfo = null;
             private int FDecimalDigits = 2;
-            private bool FShowThousands = true;
+            private bool FShowThousandsInCurrency = true;
             private bool FUseCurrencyFormatForCurrency = true;
             private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
 
@@ -576,17 +576,17 @@ namespace Ict.Common
                 {
                     string workText = ((decimal)value).ToString("N" + FDecimalDigits);
 
-                    if (FShowThousands)
-                    {
-                        workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, FNumberFormatInfo.CurrencyGroupSeparator);
-                    }
-                    else
-                    {
-                        workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, String.Empty);
-                    }
-
                     if (FUseCurrencyFormatForCurrency)
                     {
+                        if (FShowThousandsInCurrency)
+                        {
+                            workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, FNumberFormatInfo.CurrencyGroupSeparator);
+                        }
+                        else
+                        {
+                            workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, String.Empty);
+                        }
+
                         workText = workText.Replace(FNumberFormatInfo.NumberDecimalSeparator, FNumberFormatInfo.CurrencyDecimalSeparator);
                     }
 
@@ -620,20 +620,20 @@ namespace Ict.Common
                     if (AContext.ToString().StartsWith("a_"))
                     {
                         // It is a Finance screen
-                        FShowThousands = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, true);
+                        FShowThousandsInCurrency = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, true);
                         FUseCurrencyFormatForCurrency = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, true);
                     }
                     else
                     {
                         // Partner/personnel/conference
-                        FShowThousands = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_SHOW_THOUSANDS, true);
+                        FShowThousandsInCurrency = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_SHOW_THOUSANDS, true);
                         FUseCurrencyFormatForCurrency = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_FORMAT_AS_CURRENCY, false);
                     }
                 }
                 else
                 {
                     // Must be testing?
-                    FShowThousands = true;
+                    FShowThousandsInCurrency = true;
                     FUseCurrencyFormatForCurrency = true;
                 }
             }
@@ -675,6 +675,7 @@ namespace Ict.Common
             private NumberFormatInfo FNumberFormatInfo = null;
             private int FDecimalDigits = 2;
             private bool FUseCurrencyFormatForDecimal = false;
+            private bool FShowThousandsInCurrency = true;
             private static TRetrieveUserDefaultBoolean FRetrieveUserDefaultBoolean;
 
             /// <summary>
@@ -732,6 +733,15 @@ namespace Ict.Common
 
                     if (FUseCurrencyFormatForDecimal)
                     {
+                        if (FShowThousandsInCurrency)
+                        {
+                            workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, FNumberFormatInfo.CurrencyGroupSeparator);
+                        }
+                        else
+                        {
+                            workText = workText.Replace(FNumberFormatInfo.NumberGroupSeparator, string.Empty);
+                        }
+
                         workText = workText.Replace(FNumberFormatInfo.NumberDecimalSeparator, FNumberFormatInfo.CurrencyDecimalSeparator);
                     }
 
@@ -755,11 +765,13 @@ namespace Ict.Common
                     if (AContext.ToString().StartsWith("a_"))
                     {
                         // It is a Finance screen
+                        FShowThousandsInCurrency = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, true);
                         FUseCurrencyFormatForDecimal = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
                     }
                     else
                     {
                         // Partner/personnel/conference
+                        FShowThousandsInCurrency = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_CURRENCY_SHOW_THOUSANDS, true);
                         FUseCurrencyFormatForDecimal = FRetrieveUserDefaultBoolean(StringHelper.PARTNER_DECIMAL_FORMAT_AS_CURRENCY, false);
                     }
                 }
@@ -767,6 +779,7 @@ namespace Ict.Common
                 {
                     // Must be testing?
                     FUseCurrencyFormatForDecimal = true;
+                    FShowThousandsInCurrency = true;
                 }
             }
 

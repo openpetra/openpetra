@@ -116,6 +116,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             CreateContacts(ANode, PersonKey, ref ResultDS, "_1");
                             CreateContacts(ANode, PersonKey, ref ResultDS, "_2");
                             CreatePassport(ANode, PersonKey, ref ResultDS);
+                            CreateSpecialNeeds(ANode, PersonKey, ref ResultDS);
                         }
 
                         ANode = ANode.NextSibling;
@@ -185,9 +186,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newFamily.PartnerKey = newPartner.PartnerKey;
             newFamily.FirstName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
             newFamily.FamilyName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
-            newFamily.MaritalStatus = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
+            newFamily.MaritalStatus = GetMaritalStatusCode(ANode, ATransaction);
             newFamily.Title = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_TITLE);
-            newFamily.MaritalStatus = GetMaritalStatusCode(ANode);
+
+            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE))
+            {
+                newPartner.LanguageCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+            }
 
             newPartner.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName, newFamily.Title, newFamily.FirstName);
             PLocationRow newLocation = AMainDS.PLocation.NewRowTyped(true);
@@ -266,6 +271,22 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPerson.Title = FamilyRow.Title;
             newPerson.Gender = GetGenderCode(ANode);
             newPerson.MaritalStatus = FamilyRow.MaritalStatus;
+
+            String TimeString = "";
+            try
+            {
+                TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH);
+
+                if (TimeString.Length > 0)
+                {
+                    newPerson.DateOfBirth = DateTime.Parse(TimeString);
+                }
+            }
+            catch (System.FormatException)
+            {
+                AddVerificationResult("Bad date of birth: " + TimeString);
+            }
+
 
             PPartnerLocationRow newPartnerLocation = AMainDS.PPartnerLocation.NewRowTyped();
             AMainDS.PPartnerLocation.Rows.Add(newPartnerLocation);
@@ -482,6 +503,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
+        private static void CreateSpecialNeeds(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
+        {
+            // only create special need record if data exists in import file
+            if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
+                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS))
+            {
+                PmSpecialNeedRow NewRow = AMainDS.PmSpecialNeed.NewRowTyped();
+                NewRow.PartnerKey = APartnerKey;
+                NewRow.MedicalComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
+
+                if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN).ToLower() == "yes")
+                {
+                    NewRow.VegetarianFlag = true;
+                }
+                else
+                {
+                    NewRow.VegetarianFlag = false;
+                }
+
+                AMainDS.PmSpecialNeed.Rows.Add(NewRow);
+                AddVerificationResult("Special Need Record Created.", TResultSeverity.Resv_Status);
+            }
+        }
+
         private static void CreateSubscriptions(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS)
         {
             int SubsCount = 0;
@@ -571,12 +616,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             return "";
         }
 
-        private static string GetMaritalStatusCode(XmlNode ACurrentPartnerNode)
+        private static string GetMaritalStatusCode(XmlNode ACurrentPartnerNode, TDBTransaction ATransaction)
         {
             if (TXMLParser.HasAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
             {
                 string maritalStatus = TXMLParser.GetAttribute(ACurrentPartnerNode, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
 
+                // first look for special cases
                 if (maritalStatus.ToLower() == Catalog.GetString("married").ToLower())
                 {
                     return MPartnerConstants.MARITALSTATUS_MARRIED;
@@ -593,9 +639,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     return MPartnerConstants.MARITALSTATUS_DIVORCED;
                 }
+
+                // now check for value of marital status in setup table
+                if (PtMaritalStatusAccess.Exists(maritalStatus, ATransaction))
+                {
+                    return maritalStatus;
+                }
             }
 
-            return MPartnerConstants.MARITALSTATUS_UNDEFINED;
+            return "";
         }
     }
 }

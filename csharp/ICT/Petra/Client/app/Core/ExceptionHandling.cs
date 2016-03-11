@@ -22,12 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Threading;
 using System.IO;
+using System.Threading;
+using System.Windows.Forms;
+
+//using GNU.Gettext;
 
 using Ict.Common;
-using GNU.Gettext;
-using System.Windows.Forms;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 
@@ -105,7 +106,9 @@ namespace Ict.Petra.Client.App.Core
             }
             else if (((Exception)AEventArgs.ExceptionObject is EDBAccessLackingCoordinationException))
             {
-                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+                //Would normally use the code below but cannot due to circular referencing.
+                //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
+                Form MainMenuForm = Application.OpenForms[0];
 
                 // Ensure MessageBox is shown on the UI Thread!
                 if (MainMenuForm.InvokeRequired)
@@ -170,6 +173,8 @@ namespace Ict.Petra.Client.App.Core
                 UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
                 UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
 
+                //Would normally use the code below but cannot due to circular referencing.
+                //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
                 Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
 
                 // Ensure UEDialogue is shown on the UI Thread!
@@ -223,6 +228,8 @@ namespace Ict.Petra.Client.App.Core
             }
             else if ((AEventArgs.Exception is EDBAccessLackingCoordinationException))
             {
+                //Would normally use the code below but cannot due to circular referencing.
+                //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
                 Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
 
                 // Ensure MessageBox is shown on the UI Thread!
@@ -286,6 +293,8 @@ namespace Ict.Petra.Client.App.Core
                 UEDialogue.NonRecoverable = false;
                 UEDialogue.TheException = AEventArgs.Exception;
 
+                //Would normally use the code below but cannot due to circular referencing.
+                //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
                 Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
 
                 // Ensure UEDialogue is shown on the UI Thread!

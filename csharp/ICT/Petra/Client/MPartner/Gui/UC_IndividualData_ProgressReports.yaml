@@ -59,7 +59,7 @@ RootNode:
         cmbEvaluationType: 
             Label: Report Type 
             DataField: PmPersonEvaluation.EvaluationType
-            Width: 100
+            Width: 120
             OptionalValues: [=Semi-Annual, Annual, Leaving]
             Validation: true
         txtEvaluationComments:

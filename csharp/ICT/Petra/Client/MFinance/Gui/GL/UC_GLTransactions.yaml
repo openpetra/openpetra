@@ -77,6 +77,8 @@ RootNode:
                 CostCentreCode: {Label=Cost Centre}
                 AccountCode: {Label=Account}
                 TransactionAmount: {Label=Amount, Type=Currency}
+                AmountInBaseCurrency: {Label=Base Currency Amount, Type=Currency}
+                AmountInIntlCurrency: {Label=Intl Currency Amount, Type=Currency}
                 DebitCreditIndicator: {Label=Credit/Debit, Type="Boolean(Debit,Credit)"}
                 DateEntered: {Label=Date Entered, Type=DateTime}
                 AnalysisAttributes: {Label=Analysis Attributes, Type=String}

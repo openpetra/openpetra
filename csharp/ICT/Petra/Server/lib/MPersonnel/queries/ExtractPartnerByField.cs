@@ -186,12 +186,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             }
 
             // prepare list of selected fields
-            List <String>param_fields = new List <String>();
+            ICollection <String>param_fields;
 
-            foreach (TVariant choice in AParameters.Get("param_fields").ToComposite())
-            {
-                param_fields.Add(choice.ToString());
-            }
+            param_fields = AParameters.Get("param_fields").ToString().Split(new Char[] { ',', });
 
             if (param_fields.Count == 0)
             {
@@ -350,12 +347,9 @@ namespace Ict.Petra.Server.MPersonnel.queries
             AExtractId = -1;
 
             // prepare list of selected fields
-            List <String>param_fields = new List <String>();
+            ICollection <String>param_fields;
 
-            foreach (TVariant choice in AParameters.Get("param_fields").ToComposite())
-            {
-                param_fields.Add(choice.ToString());
-            }
+            param_fields = AParameters.Get("param_fields").ToString().Split(new Char[] { ',', });
 
             if (param_fields.Count == 0)
             {

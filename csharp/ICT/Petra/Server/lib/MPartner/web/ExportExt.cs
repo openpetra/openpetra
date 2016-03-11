@@ -441,7 +441,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             foreach (PmPassportDetailsRow PassportDetailsRow in AMainDS.PmPassportDetails.Rows)
             {
-                if (PassportDetailsRow.IsDateOfExpirationNull() || (PassportDetailsRow.DateOfExpiration < DateTime.Today))
+                if (PassportDetailsRow.IsDateOfExpirationNull() || (PassportDetailsRow.DateOfExpiration >= DateTime.Today))
                 {
                     Write("PASSPORT");
                     WriteLine();
