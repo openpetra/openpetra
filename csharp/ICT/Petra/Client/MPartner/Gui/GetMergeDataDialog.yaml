@@ -19,6 +19,7 @@ RootNode:
         clbRecords:
             Dock: Fill
             Stretch: horizontally
+            AutoFindMode: NoAutoFind
             NoLabel: true 
                         
         btnOK: {Label=&OK (0)}            

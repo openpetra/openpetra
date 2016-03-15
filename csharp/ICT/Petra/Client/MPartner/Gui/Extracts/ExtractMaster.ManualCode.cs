@@ -419,6 +419,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ucoExtractMasterList.DelegateRefreshExtractList = @RefreshExtractList;
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            ucoExtractMasterList.RunOnceOnParentActivation();
+        }
+
         /// <summary>
         /// Open a new screen to show details and maintain the currently selected extract
         /// </summary>

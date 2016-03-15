@@ -48,7 +48,7 @@ RootNode:
 
         pnlTransAnalysisAttributes:
             Dock: Right
-            Controls: [lblAnalAttributes, grdAnalAttributes]
+            Controls: [lblAnalAttributes, grdAnalAttributes, lblAnalAttributesHelp]
             Width: 240
 
         grdAnalAttributes:
@@ -59,9 +59,15 @@ RootNode:
             CustomColumns:
                 AnalysisTypeCode: {Label=Type, Type=String}
             Tooltip: Use cursor keys to select and edit an Analysis Attribute
+            Validation: true
 
         lblAnalAttributes:
             Label: Analysis Attributes
+        lblAnalAttributesHelp:
+            Text: To change a value click the cell with the mouse or tab to the grid and press ENTER
+            AutoSize: false
+            Width: 220
+            Height: 110
 
         grdDetails:
             Dock: Fill

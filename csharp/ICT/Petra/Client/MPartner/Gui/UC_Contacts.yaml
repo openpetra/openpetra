@@ -38,7 +38,8 @@ RootNode:
             Dock: Fill
             TableName: PContactLog
             Columns: [ContactDate, ContactCode, Contactor, MailingCode, ContactComment]
-            ActionFocusRow: FocusedRowChanged
+            AutoFindMode: FirstCharacter
+            AutoFindColumn: 2
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control

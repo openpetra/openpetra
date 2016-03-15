@@ -184,7 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void SetupAnalysisAttributeGrid(TSgrdDataGridPaged AGrid, ref SourceGrid.Cells.Editors.ComboBox AGridCombo)
+        private void SetupAnalysisAttributeGrid(TSgrdDataGrid AGrid, ref SourceGrid.Cells.Editors.ComboBox AGridCombo)
         {
             AGrid.DataSource = null;
             GLBatchTDS DS = null;
@@ -893,7 +893,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshAnalysisAttributesGrid(object sender, GLBatchTDS ADS)
         {
-            TSgrdDataGridPaged Grid = null;
+            TSgrdDataGrid Grid = null;
             int TransactionNumber = 0;
             string AccountCode = "";
 

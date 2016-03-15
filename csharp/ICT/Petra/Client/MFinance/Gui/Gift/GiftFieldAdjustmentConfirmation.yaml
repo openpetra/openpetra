@@ -32,6 +32,7 @@
         lblHeader2: {Text=Please select OK if this is what you want to do.}
         grdDetails:
             Dock: Fill
+            AutoFindMode: NoAutoFind
             Columns: [DateEntered, DonorKey, DonorName, DetailGiftAmount]
             CustomColumns:
                 DateEntered: {Label=Date Entered, Type=DateTime}

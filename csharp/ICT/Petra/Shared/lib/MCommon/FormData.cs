@@ -1827,6 +1827,29 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Subtitle for list
+        public String SubTitle {
+            get; set;
+        }
+
+        /// Name of person printing
+        public String PrintedBy
+        {
+            get; set;
+        }
+
+        /// Date and time of printing
+        public String Date
+        {
+            get; set;
+        }
+
+        /// Full path to the file that is being printed
+        public String Filename
+        {
+            get; set;
+        }
+
         /// Title for Key column
         public String KeyTitle {
             get; set;

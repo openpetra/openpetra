@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                         && (ucoConferenceSelection.AllConferenceSelected
                             || (!ucoConferenceSelection.AllConferenceSelected && (bool)Row["Used_in_Conference"])))
                     {
-                        SelectedFieldKeys = SelectedFieldKeys + Row["Unit Key"].ToString() + ',';
+                        SelectedFieldKeys = SelectedFieldKeys + Row["Unit_Key"].ToString() + ',';
                     }
                 }
             }
@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
             foreach (DataRow Row in FFieldTable.Rows)
             {
-                String CurrentKey = Row["Unit Key"].ToString();
+                String CurrentKey = Row["Unit_Key"].ToString();
 
                 if (SelectedFieldKeys.Contains(CurrentKey))
                 {
@@ -176,8 +176,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 if (grdChargedFields.Columns.Count == 0)
                 {
                     grdChargedFields.AddCheckBoxColumn("", FFieldTable.Columns["Selection"]);
-                    grdChargedFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns["Unit Key"]);
-                    grdChargedFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns["Unit Name"]);
+                    grdChargedFields.AddTextColumn(Catalog.GetString("Field Key"), FFieldTable.Columns["Unit_Key"]);
+                    grdChargedFields.AddTextColumn(Catalog.GetString("Field Name"), FFieldTable.Columns["Unit_Name"]);
                 }
 
                 FFieldTable.DefaultView.AllowNew = false;

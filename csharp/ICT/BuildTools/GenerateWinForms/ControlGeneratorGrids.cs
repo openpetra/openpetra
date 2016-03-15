@@ -41,10 +41,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         private Int16 FColumnIndex = -1;
         private string FPrevControlName = String.Empty;
+        private const string TYPE_DATA_GRID_PAGED = "Ict.Common.Controls.TSgrdDataGridPaged";
+        private const string TYPE_DATA_GRID_NON_PAGED = "Ict.Common.Controls.TSgrdDataGrid";
 
         /// <summary>constructor</summary>
         public SourceGridGenerator()
-            : base("grd", "Ict.Common.Controls.TSgrdDataGridPaged")
+            : base("grd", TYPE_DATA_GRID_PAGED)
         {
             FGenerateLabel = false;
             FDefaultHeight = 100;
@@ -56,10 +58,23 @@ namespace Ict.Tools.CodeGeneration.Winforms
         {
             if (base.ControlFitsNode(curNode))
             {
-                if (TYml2Xml.GetAttribute(curNode, "Type").ToLower() != "winforms")
+                string typeAttribute = TYml2Xml.GetAttribute(curNode, "Type");
+
+                if (typeAttribute.ToLower() == "winforms")
                 {
-                    return true;
+                    return false;
                 }
+
+                if (typeAttribute.Length == 0)
+                {
+                    this.FControlType = TYPE_DATA_GRID_NON_PAGED;
+                }
+                else
+                {
+                    this.FControlType = typeAttribute;
+                }
+
+                return true;
             }
 
             return false;
@@ -253,6 +268,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
                 }
 
+                bool isFirstColumnVarchar = false;
+                bool doneFirstColumn = false;
+
                 foreach (string ColumnFieldName in Columns)
                 {
                     bool IsDetailNotMaster;
@@ -291,6 +309,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (CustomColumnNode != null)
                     {
+                        TTableField tf = null;
+
                         // if grd has no TableName property
                         if ((TableFieldTable == "") && ColumnFieldNameResolved.Contains("."))
                         {
@@ -304,6 +324,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
                                 TableName,
                                 ColumnName);
+                            tf = TDataBinding.GetTableField(null, TableName + "." + ColumnName, out IsDetailNotMaster, true);
                         }
                         else
                         {
@@ -313,13 +334,19 @@ namespace Ict.Tools.CodeGeneration.Winforms
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
                                 TableFieldTable,
                                 ColumnFieldNameResolved);
+                            tf = TDataBinding.GetTableField(null, TableFieldTable + "." + ColumnFieldNameResolved, out IsDetailNotMaster, true);
+                        }
+
+                        if (!doneFirstColumn)
+                        {
+                            isFirstColumnVarchar = tf.strName.EndsWith("_c");
+                            doneFirstColumn = true;
                         }
                     }
                     else if (ctrl.HasAttribute("TableName"))
                     {
-                        field =
-                            TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName, out IsDetailNotMaster,
-                                true);
+                        field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + ColumnFieldName,
+                            out IsDetailNotMaster, true);
                     }
                     else
                     {
@@ -334,6 +361,52 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             String.Empty,
                             TTable.NiceTableName(field.strTableName),
                             TTable.NiceFieldName(field.strName));
+
+                        if (!doneFirstColumn)
+                        {
+                            isFirstColumnVarchar = field.strName.EndsWith("_c");
+                            doneFirstColumn = true;
+                        }
+                    }
+                }
+
+                if (FControlType == TYPE_DATA_GRID_NON_PAGED)
+                {
+                    // Grid AutoFind definition (not allowed in paged grids)
+                    string autoFindStr = ctrl.controlName + ".AutoFindMode = TAutoFindModeEnum.";
+                    string mode = "NoAutoFind";
+
+                    if (ctrl.HasAttribute("AutoFindMode"))
+                    {
+                        // Use the specified value in YAML
+                        mode = ctrl.GetAttribute("AutoFindMode");
+                        TLogging.Log("Info: AutoFindMode (with columns) was set to " + mode + " from explicit YAML attribute: " + ctrl.controlName);
+                    }
+                    else if (isFirstColumnVarchar)
+                    {
+                        // We can use auto-find because we have a first column based on a varchar
+                        mode = "FirstCharacter";
+                        TLogging.Log("Info: AutoFindMode (with columns) was set implicitly for: " + ctrl.controlName);
+                    }
+                    else
+                    {
+                        TLogging.Log("Info: AutoFindMode (with columns) was set to NoAutoFind for: " + ctrl.controlName);
+                    }
+
+                    writer.Template.AddToCodelet("INITMANUALCODE", autoFindStr + mode + ";" + Environment.NewLine);
+
+                    if (ctrl.HasAttribute("AutoFindColumn"))
+                    {
+                        string colNum = ctrl.GetAttribute("AutoFindColumn");
+                        writer.Template.AddToCodelet("INITMANUALCODE",
+                            ctrl.controlName + ".AutoFindColumn = " + colNum + ";" + Environment.NewLine);
+                        TLogging.Log("Info: AutoFindColumn was set to " + colNum + " for: " + ctrl.controlName);
+                    }
+
+                    if ((mode == "FirstCharacter") && !ctrl.HasAttribute("SortOrder"))
+                    {
+                        TLogging.Log("Info: AutoFind has been turned on for a grid with no YAML-defined sort order: (" + ctrl.controlName +
+                            "). You can remove this message by explicitly setting a SortOrder in the YAML file.");
                     }
                 }
             }
@@ -344,6 +417,40 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 {
                     string trueOrFalse = ctrl.GetAttribute("SortableHeaders");
                     writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".SortableHeaders = " + trueOrFalse + ";" + Environment.NewLine);
+                }
+
+                if (FControlType == TYPE_DATA_GRID_NON_PAGED)
+                {
+                    // Grid AutoFind definition (not allowed in paged grids)
+                    string autoFindStr = ctrl.controlName + ".AutoFindMode = TAutoFindModeEnum.";
+                    string mode = "FirstCharacter";
+
+                    if (ctrl.HasAttribute("AutoFindMode"))
+                    {
+                        // Use the specified value in YAML
+                        mode = ctrl.GetAttribute("AutoFindMode");
+                        TLogging.Log("Info: AutoFindMode (without columns) was set to " + mode + " from explicit YAML attribute: " + ctrl.controlName);
+                    }
+                    else if (writer.FCodeStorage.ManualFileExistsAndContains(ctrl.controlName + ".AddTextColumn("))
+                    {
+                        // We presume can use auto-find because we have a column (maybe the first) based on a varchar
+                        TLogging.Log("Info: AutoFindMode (without columns) was set implicitly for: " + ctrl.controlName);
+                    }
+                    else
+                    {
+                        mode = "NoAutoFind";
+                        TLogging.Log("Info: AutoFindMode (without columns) was set to NoAutoFind for: " + ctrl.controlName);
+                    }
+
+                    writer.Template.AddToCodelet("INITMANUALCODE", autoFindStr + mode + ";" + Environment.NewLine);
+
+                    if (ctrl.HasAttribute("AutoFindColumn"))
+                    {
+                        string colNum = ctrl.GetAttribute("AutoFindColumn");
+                        writer.Template.AddToCodelet("INITMANUALCODE",
+                            ctrl.controlName + ".AutoFindColumn = " + colNum + ";" + Environment.NewLine);
+                        TLogging.Log("Info: AutoFindColumn was set to " + colNum + " for: " + ctrl.controlName);
+                    }
                 }
             }
 
@@ -381,24 +488,20 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     {
                         bool temp;
                         TTableField field = null;
+                        string columnNamePart = SortOrderPart.Split(' ')[0];
 
-                        if ((SortOrderPart.Split(' ')[0].IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
+                        if ((columnNamePart.IndexOf(".") == -1) && ctrl.HasAttribute("TableName"))
                         {
-                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + SortOrderPart.Split(
-                                    ' ')[0], out temp, true);
+                            field = TDataBinding.GetTableField(null, ctrl.GetAttribute("TableName") + "." + columnNamePart, out temp, true);
                         }
                         else
                         {
-                            field =
-                                TDataBinding.GetTableField(
-                                    null,
-                                    SortOrderPart.Split(' ')[0],
-                                    out temp, true);
+                            field = TDataBinding.GetTableField(null, columnNamePart, out temp, true);
                         }
 
                         if (field != null)
                         {
-                            SortOrder = SortOrder.Replace(SortOrderPart.Split(' ')[0], field.strName);
+                            SortOrder = SortOrder.Replace(columnNamePart, field.strName);
                         }
                     }
 

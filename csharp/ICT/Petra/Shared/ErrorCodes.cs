@@ -246,6 +246,22 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_RECIPIENTFIELD_NOT_ILT = "FIN.000013V";
 
+        /// <summary>Invalid Analysis Attribute value.</summary>
+        [ErrCodeAttribute("Invalid Analysis Attribute Value.",
+             ErrorMessageText = "The Analysis Attribute value that you are editing is not valid.")]
+        public const String ERR_INVALID_ANALYSIS_ATTRIBUTE_VALUE = "FIN.00014V";
+
+        /// <summary>Incorrect Analysis Attribute count.</summary>
+        [ErrCodeAttribute("Incorrect Analysis Attribute Count.",
+             ErrorMessageText = "Wrong number of 'Analysis Attributes' for Account Code {0} in Transaction {1}.")]
+        public const String ERR_INCORRECT_ANALYSIS_ATTRIBUTE_COUNT = "FIN.00015V";
+
+        /// <summary>Incorrect Analysis Attribute count.</summary>
+        [ErrCodeAttribute("Missing Analysis Attribute Value.",
+             ErrorMessageText =
+                 "An Analysis Attribute value is required for Attribute '{0}' with Account Code {1} in Transaction {2}.")]
+        public const String ERR_MISSING_ANALYSIS_ATTRIBUTE_VALUE = "FIN.00016V";
+
         #endregion
 
         #region Partner Module-specific error codes

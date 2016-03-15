@@ -14,3 +14,4 @@ RootNode:
 
         grdContactAttributes:
             Dock: Fill
+            AutoFindColumn: 1

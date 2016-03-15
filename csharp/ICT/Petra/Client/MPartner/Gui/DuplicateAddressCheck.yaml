@@ -25,6 +25,7 @@ RootNode:
 			
         grdResults:
             Dock: Fill
+            AutoFindMode: NoAutoFind
 
         btnMergeAddresses:
             Action: actMergeAddresses

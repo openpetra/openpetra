@@ -78,6 +78,8 @@ RootNode:
             Dock: Fill
             TableName:AApDocumentDetail
             Columns: [Amount, Narrative, ItemRef, AccountCode, AnalAttr]
+            AutoFindMode: FirstCharacter
+            AutoFindColumn: 1
             ActionFocusRow: FocusedRowChanged
 
         pnlTransAnalysisAttributes:

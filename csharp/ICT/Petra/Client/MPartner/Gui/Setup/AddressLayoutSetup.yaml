@@ -46,6 +46,7 @@ RootNode:
             Columns: [DetailCountryCode, DetailAddressLayoutCode]
             CustomColumns: 
                DetailAddressLayoutCode: {Label=Layout}
+            SortOrder: DetailCountryCode ASC
         pnlDetails:
             Dock: Bottom
             Controls:

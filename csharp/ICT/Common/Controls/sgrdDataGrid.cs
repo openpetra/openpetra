@@ -257,13 +257,13 @@ namespace Ict.Common.Controls
         /// Used by the PerformAutoFindFirstCharacter procedure.
         ///
         /// </summary>
-        private TAutoFindModeEnum FAutoFindMode;
+        protected TAutoFindModeEnum FAutoFindMode;
 
         /// <summary>
         /// Used by the PerformAutoFindFirstCharacter procedure.
         ///
         /// </summary>
-        private Int16 FAutoFindColumn;
+        protected Int16 FAutoFindColumn = -1;
 
         /// <summary>
         /// Used by the PerformAutoFindFirstCharacter procedure.
@@ -670,7 +670,7 @@ namespace Ict.Common.Controls
 
         /**
          * This property determines which AutoFindMode should be used.
-         *
+         * If the auto-find column has not already been set, it is set to the first column.
          */
         [Category("AutoFind"),
          RefreshPropertiesAttribute(System.ComponentModel.RefreshProperties.All),
@@ -696,6 +696,12 @@ namespace Ict.Common.Controls
                 }
 
                 FAutoFindMode = value;
+
+                // If the auto-find column has not been set then we set that as well
+                if (FAutoFindColumn == -1)
+                {
+                    FAutoFindColumn = 0;
+                }
             }
         }
 
@@ -1338,7 +1344,10 @@ namespace Ict.Common.Controls
             AddTextColumn(AColumnTitle, ADataColumn, -1, null, BooleanEditor, null, null, null);
         }
 
-        class PartnerKeyConverter : System.ComponentModel.TypeConverter
+        /// <summary>
+        /// A converter for displaying partner keys in 10 digit format
+        /// </summary>
+        public class PartnerKeyConverter : System.ComponentModel.TypeConverter
         {
             /// <summary>
             /// constructor
@@ -2056,12 +2065,19 @@ namespace Ict.Common.Controls
                     }
                 }
 
+                int colToFocus = 0;
+
+                while ((this.Columns[colToFocus].Visible == false) && (colToFocus < this.Columns.Count - 1))
+                {
+                    colToFocus++;
+                }
+
                 if (NewSelectedItemRow != -1)
                 {
                     // A matching Row was found after the currently selected row, so select it
                     // Scroll grid to line where the new record is now displayed and keep the focus on the grid
                     this.ShowCell(NewSelectedItemRow + 1);
-                    this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
+                    this.Selection.Focus(new Position(NewSelectedItemRow + 1, colToFocus), true);
                 }
                 else
                 {
@@ -2082,7 +2098,7 @@ namespace Ict.Common.Controls
 
                     // Scroll grid to line where the new record is now displayed and keep the focus on the grid
                     this.ShowCell(NewSelectedItemRow + 1);
-                    this.Selection.Focus(new Position(NewSelectedItemRow + 1, 0), true);
+                    this.Selection.Focus(new Position(NewSelectedItemRow + 1, colToFocus), true);
                 }
             }
         }
@@ -2204,6 +2220,28 @@ namespace Ict.Common.Controls
         {
             this.Columns.AutoSize(false, IncludeFixedRowsInAutoSizeColumns ? 0 : FixedRows, Math.Min(MaxAutoSizeRows, this.Rows.Count - 1));
             base.OnResize(new EventArgs());
+        }
+
+        /// <summary>
+        /// Gets a value of true if the current cell is being edited
+        /// </summary>
+        public bool IsEditorEditing
+        {
+            get
+            {
+                return (new CellContext(this, Selection.ActivePosition)).IsEditing();
+            }
+        }
+
+        /// <summary>
+        /// Ends an outstanding edit on a grid
+        /// </summary>
+        /// <param name="ACancel">Set to true if the value is to be restored to its start value and the current value discarded.</param>
+        /// <returns>True if the edit was ended successfully, false otherwise (indicating a value that cannot be stored according to the validation rule)</returns>
+        public bool EndEdit(bool ACancel)
+        {
+            // Can we successfully end it?
+            return (new CellContext(this, Selection.ActivePosition)).EndEdit(ACancel);
         }
 
         #region IndexedGridRowsHelper

@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MPartner
         /// <param name="AAttributes">Attributes to be included in the grid</param>
         /// <param name="AIncludeDescription">Include columns that display the attribute descriptions</param>
         /// <param name="AContactLogIDFilter">Filter grid to only show rows for given contact log if</param>
-        public static DataView SetupContactAttributesGrid(ref TSgrdDataGridPaged AGrid,
+        public static DataView SetupContactAttributesGrid(ref TSgrdDataGrid AGrid,
             DataTable AAttributes,
             bool AIncludeDescription,
             Int64 AContactLogIDFilter = -1)

@@ -1,0 +1,90 @@
+RootNode:
+    BaseYaml: PetraForm.yaml
+    UtilObjectClass: TFrmPetraEditUtils
+    InterfaceName: IFrmPetraEdit
+    #don't generate this file with designer code, because it should not have the menuitems and toolbar
+    FormType: abstract
+    Actions:
+        cndFindFilterAvailable:  {InitialValue=true}
+        actSave: 
+            Label:&Save
+            ActionClick:FileSave
+            #ShortcutKeys: [System.Windows.Forms.Keys.Control, System.Windows.Forms.Keys.S]
+            Tooltip: Save changed data
+            Image: Save.ico
+        actEditFindNext:
+            Label:Find Ne&xt
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the next record that matches the current 'Find' criteria
+            Enabled: cndFindFilterAvailable
+        actEditFindPrevious:
+            Label:Find Pre&vious
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find the previous record that matches the current 'Find' criteria
+            Enabled: cndFindFilterAvailable
+        actEditFilter: 
+            Label:Filte&r...
+            ActionClick:MniFilterFind_Click
+            Tooltip: Filter the displayed records by one or more criteria
+            Image: FilterActive.ico
+            Enabled: cndFindFilterAvailable
+        actEditFind: 
+            Label:&Find...
+            ActionClick:MniFilterFind_Click
+            Tooltip: Find a record that matches one or more criteria
+            Image: Find.ico
+            Enabled: cndFindFilterAvailable
+        actPrintUsingWord: 
+            Label: Using &Word
+            ActionClick: PrintUsingWord
+            Tooltip: Print the rows displayed in the grid using MS Word
+            Image: word.ico
+            Enabled: cndPrintAvailable
+        actPrintUsingExcel: 
+            Label: Using E&xcel
+            ActionClick: PrintUsingExcel
+            Tooltip: Print the rows displayed in the grid using MS Excel
+            Image: excel.ico
+            Enabled: cndPrintAvailable
+        actPrintPreviewInWord: 
+            Label: Pre&view In Word
+            ActionClick: PrintPreviewInWord
+            Tooltip: Preview the rows displayed in the grid as an editable MS Word document
+            Image: page_word.ico
+            Enabled: cndPrintAvailable
+        actPrintPreviewInExcel: 
+            Label: Pr&eview In Excel
+            ActionClick: PrintPreviewInExcel
+            Tooltip: Preview the rows displayed in the grid as an editable MS Excel document
+            Image: page_excel.ico
+            Enabled: cndPrintAvailable
+
+    Menu:
+        mniFile:
+            mniFileSave: {Action=actSave}
+            mniSeparator: {Label=-}
+            mniFilePrint:
+              Label:&Print
+              mniPrintUsingWord: {Action=actPrintUsingWord}
+              mniPrintUsingExcel: {Action=actPrintUsingExcel}
+              mniPrintSeparator: {Label=-}
+              mniPrintPreviewInWord: {Action=actPrintPreviewInWord}
+              mniPrintPreviewInExcel: {Action=actPrintPreviewInExcel}
+            mniFileSeparator: {Label=-}
+        mniEdit: 
+            Label:&Edit
+            mniEditFilter: {Action=actEditFilter}
+            mniEditFind: {Action=actEditFind}
+            mniEditFindNext: {Action=actEditFindNext}
+            mniEditFindPrevious: {Action=actEditFindPrevious}
+            mniSeparator: {Label=-}
+            mniEditUndoCurrentField: 
+              Label:Undo &Current Field
+#             ActionClick:MniEdit_Click
+            mniEditUndoScreen: 
+              Label:&Undo Screen
+#              ActionClick:MniEdit_Click
+    Toolbar:
+        tbbSave: {Action=actSave, Order=AlwaysFirst}
+        tbbPrintUsingWord: {Action=actPrintUsingWord, Label=Print Using Word}
+        tbbPrintUsingExcel: {Action=actPrintUsingExcel, Label=Print Using Excel}

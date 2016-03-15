@@ -522,6 +522,31 @@ namespace Ict.Tools.CodeGeneration.Winforms
             base.SetControlProperties(writer, ctrl);
             writer.SetControlProperty(ctrl, "FixedRows", "1");
             writer.Template.AddToCodelet("INITMANUALCODE", ctrl.controlName + ".CancelEditingWithEscapeKey = false;" + Environment.NewLine);
+
+            // Grid AutoFind definition.  Unlike normal grids this applies whether columns and sorting are defined or not.
+            // Checked list boxes enable first character auto find by default using column 1/
+            // If you want something different it must be specified in YAML
+            string autoFindStr = ctrl.controlName + ".AutoFindMode = TAutoFindModeEnum.";
+
+            if (ctrl.HasAttribute("AutoFindMode"))
+            {
+                autoFindStr += ctrl.GetAttribute("AutoFindMode");
+                TLogging.Log("Info: AutoFindMode for checked list box was set from explicit YAML attribute: " + ctrl.controlName);
+            }
+            else
+            {
+                autoFindStr += "FirstCharacter";
+                TLogging.Log("Info: AutoFindMode for checked list box was set implicitly for: " + ctrl.controlName);
+            }
+
+            writer.Template.AddToCodelet("INITMANUALCODE", autoFindStr + ";" + Environment.NewLine);
+
+            if (ctrl.HasAttribute("AutoFindColumn"))
+            {
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    ctrl.controlName + ".AutoFindColumn = " + ctrl.GetAttribute("AutoFindColumn") + ";" + Environment.NewLine);
+            }
+
             return writer.FTemplate;
         }
     }

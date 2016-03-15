@@ -331,7 +331,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         /// <param name="AGrid">Grid to show the values</param>
         /// <param name="AColumnTable">Table that holds the column parameter data</param>
-        public static void LoadDataToGrid(ref TSgrdDataGridPaged AGrid,
+        public static void LoadDataToGrid(ref TSgrdDataGrid AGrid,
             ref DataTable AColumnTable)
         {
             AGrid.Columns.Clear();

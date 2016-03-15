@@ -48,8 +48,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void InitializeManualCode()
         {
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbLedger.AutoFindColumn = ((Int16)(1));
-            this.clbLedger.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
 
             clbLedger.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |

@@ -1143,6 +1143,37 @@ namespace Ict.Petra.Client.CommonForms
             return ReturnValue;
         }
 
+        /// <summary>
+        /// Checks to see if data has changed.  If it has the user is offered the chance to save it now.
+        /// </summary>
+        /// <returns></returns>
+        public Boolean IsDataSaved()
+        {
+            if (!FHasChanges)
+            {
+                return true;
+            }
+
+            string SaveQuestion = MCommonResourcestrings.StrFormHasUnsavedChanges + Environment.NewLine + Environment.NewLine;
+            SaveQuestion += MCommonResourcestrings.StrSaveChangesBeforeContinuing;
+
+            if (MessageBox.Show(SaveQuestion,
+                    MCommonResourcestrings.StrGenericWarning,
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button1) == DialogResult.No)
+            {
+                return false;
+            }
+
+            if (((IFrmPetraEdit)FTheForm).SaveChanges() == false)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         /**
          * Event Handler that is invoked when the Form is about to close - no matter
          * how the closing was invoked (by calling Form.Close, a Close button, the

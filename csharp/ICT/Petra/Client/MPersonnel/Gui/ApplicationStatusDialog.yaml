@@ -34,6 +34,7 @@ RootNode:
 
         grdApplicationStatuses:
             Dock: Fill
+            AutoFindColumn: 1
 
         btnDeselectAll:
             Label: Deselect All

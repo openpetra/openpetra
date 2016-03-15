@@ -46,6 +46,7 @@ RootNode:
             CheckBoxAttachedLabel: right
             OnChange: chkSelectedStatusChanged
         grdStatuses:
+            AutoFindColumn: 1
             Height: 200
             Width: 320
             #Margin: 24,5,0,0

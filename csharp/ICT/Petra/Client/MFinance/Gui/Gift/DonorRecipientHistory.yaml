@@ -42,6 +42,7 @@ RootNode:
             ControlsOrientation: horizontal
         grdDetails:
             Dock: Fill
+            AutoFindMode: NoAutoFind
             ActionDoubleClick: ViewTransaction
         pnlDetails:
             Dock: Bottom

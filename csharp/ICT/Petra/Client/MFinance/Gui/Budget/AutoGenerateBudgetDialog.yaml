@@ -33,6 +33,7 @@ RootNode:
                 Row1: [btnUnselectAllBudgets]
         clbCostCentreAccountCodes: 
             List: UserDefinedList
+            AutoFindMode: NoAutoFind
             NoLabel:true
             Dock: Fill
             Width: 284

@@ -43,6 +43,7 @@ RootNode:
             Dock: Bottom
         grdColumns:
             Dock: Fill
+            AutoFindMode: NoAutoFind
         btnMoveColumn2Right:
             Label: Right
             Action: actMoveColumn2Right
@@ -89,6 +90,7 @@ RootNode:
             CheckBoxAttachedLabel: right
         clbLedger:
             NoLabel: true
+            AutoFindColumn: 2
             MultiColumn: true
             Width: 200
         cmbColumnRelation:

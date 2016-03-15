@@ -540,6 +540,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RefreshAnalysisAttributesGrid()
         {
+            // We can be called when the user has clicked on the current transaction during an attribute value edit.
+            // If the attributes are stuck in an edit we must not fiddle with the grid but wait until the edit is complete.
+            if (grdAnalAttributes.IsEditorEditing)
+            {
+                return;
+            }
+
             //Empty the grid
             FMainDS.ARecurringTransAnalAttrib.DefaultView.RowFilter = "1=2";
             FPSAttributesRow = null;
@@ -552,6 +559,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (grdAnalAttributes.Enabled)
                 {
                     grdAnalAttributes.Enabled = false;
+                    lblAnalAttributesHelp.Enabled = false;
                 }
 
                 return;
@@ -568,7 +576,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             grdAnalAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransAnalAttrib.DefaultView);
 
-            if (grdAnalAttributes.Rows.Count > 1)
+            bool gotRows = (grdAnalAttributes.Rows.Count > 1);
+            lblAnalAttributesHelp.Enabled = gotRows;
+
+            if (gotRows)
             {
                 grdAnalAttributes.SelectRowWithoutFocus(1);
                 AnalysisAttributesGrid_RowSelected(null, null);
@@ -633,7 +644,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return;
             }
-            else if (valueType.Items[selectedValueIndex].ToString() != FPSAttributesRow.AnalysisAttributeValue.ToString())
+            else if ((FPSAttributesRow != null)
+                     && (valueType.Items[selectedValueIndex].ToString() != FPSAttributesRow.AnalysisAttributeValue.ToString()))
             {
                 FPetraUtilsObject.SetChangedFlag();
             }
@@ -655,14 +667,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 || (OldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
                 UpdateTransactionTotals();
-            }
-
-            // If combobox to set analysis attribute value has focus when save button is pressed then currently
-            // displayed value is not stored in database.
-            // --> move focus to different field so that grid accepts value for storing in database
-            if (FcmbAnalAttribValues.Control.Focused)
-            {
-                cmbDetailCostCentreCode.Focus();
             }
         }
 
@@ -1062,17 +1066,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
             conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
             {
-                DataRowView row = (DataRowView)itemRow;
-                string accountCode = row[ARecurringTransactionTable.ColumnAccountCodeId].ToString();
-                return !AccountIsActive(accountCode);
+                if (itemRow != null)
+                {
+                    DataRowView row = (DataRowView)itemRow;
+                    string accountCode = row[ARecurringTransactionTable.ColumnAccountCodeId].ToString();
+                    return !AccountIsActive(accountCode);
+                }
+                else
+                {
+                    return false;
+                }
             };
 
             SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
             conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
             {
-                DataRowView row = (DataRowView)itemRow;
-                string costCentreCode = row[ARecurringTransactionTable.ColumnCostCentreCodeId].ToString();
-                return !CostCentreIsActive(costCentreCode);
+                if (itemRow != null)
+                {
+                    DataRowView row = (DataRowView)itemRow;
+                    string costCentreCode = row[ARecurringTransactionTable.ColumnCostCentreCodeId].ToString();
+                    return !CostCentreIsActive(costCentreCode);
+                }
+                else
+                {
+                    return false;
+                }
             };
 
             //Add conditions to columns
@@ -1786,27 +1804,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TSharedFinanceValidation_GL.ValidateRecurringGLDetailManual(this, FBatchRow, ARow, controlToPass, ref VerificationResultCollection,
                 FValidationControlsDict);
 
+            DataColumn ValidationColumn = ARow.Table.Columns[ATransactionTable.ColumnAccountCodeId];
+            TScreenVerificationResult VerificationResult = null;
+
+            if (!grdAnalAttributes.EndEdit(false))
+            {
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_ANALYSIS_ATTRIBUTE_VALUE)),
+                    ValidationColumn, grdAnalAttributes);
+            }
+
+            // Handle addition/removal to/from TVerificationResultCollection
+            VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
+
             if ((FPreviouslySelectedDetailRow != null)
                 && !FAnalysisAttributesLogic.AccountRecurringAnalysisAttributeCountIsCorrect(
                     FPreviouslySelectedDetailRow.TransactionNumber,
                     FPreviouslySelectedDetailRow.AccountCode,
                     FMainDS))
             {
-                DataColumn ValidationColumn;
-                TVerificationResult VerificationResult = null;
-                object ValidationContext;
-
-                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnAccountCodeId];
-                ValidationContext = "unused because of OverrideResultText";
-
                 // This code is only running because of failure, so cause an error to occur.
-                VerificationResult = TStringChecks.StringMustNotBeEmpty("",
-                    ValidationContext.ToString(),
-                    this, ValidationColumn, null);
-                VerificationResult.OverrideResultText(String.Format(
-                        "A value must be entered for 'Analysis Attributes' for Account Code {0} in Transaction {1}.",
-                        ARow.AccountCode,
-                        ARow.TransactionNumber));
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INCORRECT_ANALYSIS_ATTRIBUTE_COUNT,
+                            new string[] { ARow.AccountCode, ARow.TransactionNumber.ToString() })),
+                    ValidationColumn, grdAnalAttributes);
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);
             }
@@ -1820,20 +1842,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FMainDS,
                     out ValueRequiredForType))
             {
-                DataColumn ValidationColumn;
-                TVerificationResult VerificationResult = null;
-                object ValidationContext;
-
-                ValidationColumn = ARow.Table.Columns[ARecurringTransactionTable.ColumnAccountCodeId];
-                ValidationContext = String.Format("Analysis code {0} for Account Code {1} in Transaction {2}",
-                    ValueRequiredForType,
-                    ARow.AccountCode,
-                    ARow.TransactionNumber);
-
                 // This code is only running because of failure, so cause an error to occur.
-                VerificationResult = TStringChecks.StringMustNotBeEmpty("",
-                    ValidationContext.ToString(),
-                    this, ValidationColumn, null);
+                VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                        ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_MISSING_ANALYSIS_ATTRIBUTE_VALUE,
+                            new string[] { ValueRequiredForType, ARow.AccountCode, ARow.TransactionNumber.ToString() })),
+                    ValidationColumn, grdAnalAttributes);
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, ValidationColumn, true);

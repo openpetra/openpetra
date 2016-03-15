@@ -37,6 +37,7 @@ RootNode:
             CustomColumns: 
                DetailCode: {Label=Layout Code}
                DetailDeletable: {Type=Boolean, Label=Deletable}
+            SortOrder: DetailCode ASC
         pnlUpDown:
             Dock: Right
             Controls: [btnUp, btnDown]

@@ -73,8 +73,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             ucoChkFilter.ShowFamiliesOnly(false);
 
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbEvent.AutoFindColumn = ((Int16)(1));
-            this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
 
             clbEvent.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |

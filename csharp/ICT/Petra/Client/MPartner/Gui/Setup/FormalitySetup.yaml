@@ -35,6 +35,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: [DetailLanguageCode, DetailCountryCode, DetailAddresseeTypeCode, DetailFormalityLevel, DetailSalutationText, DetailComplimentaryClosingText]
+            SortOrder: DetailLanguageCode ASC
         pnlDetails:
             Dock: Bottom
             Controls:

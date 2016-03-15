@@ -39,6 +39,7 @@
             OnChange: chkExcludeCostCentresChanged
         clbCostCentres: 
             List: UserDefinedList
+            AutoFindColumn: 2
             NoLabel:true
             ParameterName: param_cost_centre_codes
             Width: 365

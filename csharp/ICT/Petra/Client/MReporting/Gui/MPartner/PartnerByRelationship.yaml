@@ -60,9 +60,11 @@
         lblSelectReciprocalRelationship:
             Label: (Select from list below)
         grdDirectRelationship:
+            AutoFindColumn: 1
             Width: 350
             Height: 200
         grdReciprocalRelationship:
+            AutoFindColumn: 1
             Width: 350
             Height: 200
 			

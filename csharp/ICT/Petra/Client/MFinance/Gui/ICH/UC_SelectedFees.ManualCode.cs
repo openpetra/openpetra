@@ -169,7 +169,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             AFeesReceivableTable FeesReceivable = new AFeesReceivableTable();
             Type DataTableType;
-            DataTable CacheDT = TDataCache.GetCacheableDataTableFromPetraServer("FeesReceivableList", String.Empty, FLedgerNumber, out DataTableType);
+            DataTable CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("FeesReceivableList",
+                "Ledger",
+                FLedgerNumber,
+                out DataTableType);
             FeesReceivable.Merge(CacheDT);
 
             foreach (AFeesReceivableRow Row in FeesReceivable.Rows)
@@ -178,7 +181,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
 
             AFeesPayableTable FeesPayable = new AFeesPayableTable();
-            CacheDT = TDataCache.GetCacheableDataTableFromPetraServer("FeesPayableList", String.Empty, FLedgerNumber, out DataTableType);
+            CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("FeesPayableList", "Ledger", FLedgerNumber, out DataTableType);
             FeesPayable.Merge(CacheDT);
 
             foreach (AFeesPayableRow Row in FeesPayable.Rows)

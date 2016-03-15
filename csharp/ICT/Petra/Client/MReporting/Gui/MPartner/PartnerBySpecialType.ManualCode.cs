@@ -86,8 +86,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
 
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbIncludeSpecialTypes.AutoFindColumn = ((Int16)(1));
-            this.clbIncludeSpecialTypes.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

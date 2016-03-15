@@ -106,6 +106,7 @@ RootNode:
             ControlsOrientation: horizontal
         clbFields:
             List: UserDefinedList
+            AutoFindColumn: 2
             NoLabel:true
             Width: 365
             Height: 300

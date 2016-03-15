@@ -73,12 +73,53 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             CreateNewPLanguage();
         }
 
+        private void PrintUsingWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, false);
+        }
+
+        private void PrintUsingExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, false);
+        }
+
+        private void PrintPreviewInWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, true);
+        }
+
+        private void PrintPreviewInExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, true);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3 },
+                new int[]
+                {
+                    PLanguageTable.ColumnLanguageCodeId,
+                    PLanguageTable.ColumnLanguageDescriptionId,
+                    PLanguageTable.ColumnCongressLanguageId,
+                    PLanguageTable.ColumnDeletableId
+                });
+        }
+
         void HandleDataSaved(object Sender, TDataSavedEventArgs e)
         {
             if (e.Success)
             {
                 TDataCache.TMCommon.RefreshCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
             }
+        }
+
+        private void ShowDetailsManual(PLanguageRow ARow)
+        {
+            bool gotRows = grdDetails.Rows.Count > 1;
+
+            ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingWord", gotRows));
+            ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingExcel", gotRows));
         }
     }
 }

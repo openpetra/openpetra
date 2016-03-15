@@ -124,6 +124,7 @@ RootNode:
                     dtpDate-2:
         grdResult: 
             Dock: Fill
+            Type: Ict.Common.Controls.TSgrdDataGridPaged
             ActionDoubleClick: actOpenSelected
             ActionEnterKeyPressed: actOpenSelected
     Menu:

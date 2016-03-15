@@ -35,6 +35,7 @@ RootNode:
 
         clbSites:
             Dock: Fill
+            AutoFindColumn: 2
             NoLabel: true
             OnChange: ClbSites_ValueChanged 
 

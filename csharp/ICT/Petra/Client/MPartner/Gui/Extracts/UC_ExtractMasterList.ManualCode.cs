@@ -36,6 +36,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
@@ -882,6 +883,23 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             grdDetails.EnterKeyPressed += new TKeyPressedEventHandler(this.MaintainExtract);
 
             //FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Extract List"));
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            TCmbAutoComplete cmbCreatedByUser = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByClonedFrom(cmbCreatedBy);
+
+            cmbCreatedByUser.SetSelectedString(UserInfo.GUserInfo.UserID, -1);
+
+            // Set the focus either to the grid or to the filter control
+            if (grdDetails.Rows.Count > 1)
+            {
+                grdDetails.Focus();
+            }
+            else
+            {
+                cmbCreatedByUser.Focus();
+            }
         }
 
         /// <summary>

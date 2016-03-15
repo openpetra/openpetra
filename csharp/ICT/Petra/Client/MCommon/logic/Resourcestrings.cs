@@ -103,6 +103,9 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>todoComment</summary>
         public static readonly string StrFormSaveDataAnywayQuestion = Catalog.GetString("Save changes before closing?");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrSaveChangesBeforeContinuing = Catalog.GetString("Save changes before continuing?");
+
         /// <summary>Shown while data is being saved.</summary>
         public static readonly string StrSavingDataInProgress = Catalog.GetString("Saving data...");
 

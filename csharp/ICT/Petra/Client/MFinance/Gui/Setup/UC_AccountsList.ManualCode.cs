@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private TFrmGLAccountHierarchy FParentForm = null;
         private TUC_AccountsListFilterFind FFilterFindLogicObject = null;
 
-        private TSgrdDataGridPaged grdDetails = null;
+        private TSgrdDataGrid grdDetails = null;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
         private bool FSelectionMadeInList = false;
