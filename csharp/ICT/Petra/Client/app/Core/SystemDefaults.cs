@@ -45,9 +45,13 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="ASystemDefaultName">System Default Key.</param>
         /// <param name="ADefault">The value returned if System Default not found.</param>
         /// <returns>The value of the System Default, or ADefault.</returns>
-        public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for getting the System Defaults through this.
+        /// If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used instead
+        /// (with the 'globally available' open DB Connection that exists for the users' AppDomain).</param>
+        public static String GetSystemDefault(String ASystemDefaultName, String ADefault, bool ASeparateDBConnection = false)
         {
-            String Tmp = GetSystemDefault(ASystemDefaultName);
+            String Tmp = GetSystemDefault(ASystemDefaultName, ASeparateDBConnection);
 
             return Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND ? Tmp : ADefault;
         }
@@ -58,9 +62,13 @@ namespace Ict.Petra.Client.App.Core
         /// thousands of system defaults, and this method isn't called too often!
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for getting the System Defaults through this.
+        /// If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used instead
+        /// (with the 'globally available' open DB Connection that exists for the users' AppDomain).</param>
         /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
         /// specified System Default was not found.</returns>
-        public static String GetSystemDefault(String ASystemDefaultName)
+        public static String GetSystemDefault(String ASystemDefaultName, bool ASeparateDBConnection = false)
         {
             SSystemDefaultsTable SystemDefaultsDT = null;
             SSystemDefaultsRow FoundSystemDefaultsRow;
@@ -69,7 +77,8 @@ namespace Ict.Petra.Client.App.Core
             TServerBusyHelper.CoordinatedAutoRetryCall("System Defaults", ref ServerCallSuccessful,
                 delegate
                 {
-                    SystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefaults();
+                    SystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefaults(
+                        ASeparateDBConnection);
 
                     ServerCallSuccessful = true;
                 });

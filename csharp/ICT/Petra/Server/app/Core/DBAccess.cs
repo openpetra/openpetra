@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="APassword"></param>
         /// <param name="AConnectionString"></param>
         /// <param name="APetraUserName"></param>
-        public void EstablishDBConnection(TDBType ADataBaseType,
+        public new void EstablishDBConnection(TDBType ADataBaseType,
             String ADsn,
             String ADBPort,
             String ADatabaseName,
@@ -88,11 +88,22 @@ namespace Ict.Petra.Server.App.Core.Security
             String AConnectionString,
             String APetraUserName)
         {
+            // A Method of the same name and Method signature in the Base Class has got an optional string Argument
+            // 'AConnectionName' in exactly the same Argument position than APetraUserName has got here. The Base Class
+            // supplies 'null' as a Default for this Argument. For these reasons the Method *here* *could* get legally called
+            // with 'APetraUserName' *omitted* and 'null' would be supplied in lieu in that case. As this would not make
+            // sense here we throw an ArgumentNullException in that case.
+            if (APetraUserName == null)
+            {
+                throw new ArgumentNullException("APetraUserName");
+            }
+
             UserID = APetraUserName;
             FCache.Invalidate();
 
-            // inherited
-            EstablishDBConnection(ADataBaseType, ADsn, ADBPort, ADatabaseName, AUsername, APassword, AConnectionString);
+            // Call base Method with same name and same Method signature but different functionality!
+            base.EstablishDBConnection(ADataBaseType, ADsn, ADBPort, ADatabaseName, AUsername, APassword, AConnectionString,
+                "Client's Default DB Connection");
         }
 
         /// <summary>
@@ -133,12 +144,9 @@ namespace Ict.Petra.Server.App.Core.Security
                     // TODO 2 oChristianK cThread safety : This is currently not threadsave and probably not the most efficient way to use cached data. Change this.
                     FRetrievingTablePermissions = true;
 
-
                     tab = FCache.GetDataTable(
-                        this,
-                        "SELECT s_can_create_l, s_can_modify_l, s_can_delete_l, s_can_inquire_l, s_table_name_c FROM PUB_s_user_table_access_permission WHERE s_user_id_c = '"
-                        +
-                        UserID + "'");
+                        "SELECT s_can_create_l, s_can_modify_l, s_can_delete_l, s_can_inquire_l, s_table_name_c FROM " +
+                        "PUB_s_user_table_access_permission WHERE s_user_id_c = '" + UserID + "'", this);
 
                     FRetrievingTablePermissions = false;
                     RequiredAccessPermission = "";

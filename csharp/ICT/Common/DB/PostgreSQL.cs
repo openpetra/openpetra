@@ -619,5 +619,33 @@ namespace Ict.Common.DB
             throw new EDBUnsupportedDBUpgradeException(
                 "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
         }
+
+        /// <summary>
+        /// Clears (empties) *all* the Connection Pools that the Npgsql driver for PostgreSQL provides (irrespecive of the
+        /// Connection String that is associated with any connection).
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        public static void ClearAllConnectionPools()
+        {
+            NpgsqlConnection.ClearAllPools();
+        }
+
+        /// <summary>
+        /// Clears (empties) the Connection Pool that the Npgsql driver for PostgreSQL provides for all connections *that
+        /// were created using the Connection String that is associated with <paramref name="ADBConnection"/>*.
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        public void ClearConnectionPool(DbConnection ADBConnection)
+        {
+            ((NpgsqlConnection)ADBConnection).ClearPool();
+        }
     }
 }

@@ -87,7 +87,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static DataTable GetReportDataTable(String AReportType, Dictionary <String, TVariant>AParameters)
         {
-            FDbAdapter = new TReportingDbAdapter();
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataTable ResultTbl = null;
 
@@ -96,60 +95,89 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 /* GL Reports */
 
                 case "BalanceSheet":
+
+                    FDbAdapter = new TReportingDbAdapter(true);     // Balance Sheet uses a separate DB Connection!
+
                     ResultTbl = TFinanceReportingWebConnector.BalanceSheetTable(AParameters, FDbAdapter);
                     break;
 
                 case "FieldGifts":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.KeyMinGiftsTable(AParameters, FDbAdapter);
                     break;
 
                 case "HOSA":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.HosaGiftsTable(AParameters, FDbAdapter);
                     break;
 
                 case "Stewardship":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.StewardshipTable(AParameters, FDbAdapter);
                     break;
 
                 case "Fees":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.FeesTable(AParameters, FDbAdapter);
                     break;
 
                 case "IncomeExpense":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
                     break;
 
                 case "AFO":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.AFOTable(AParameters, FDbAdapter);
                     break;
 
                 case "Executive Summary":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.ExecutiveSummaryTable(AParameters, FDbAdapter);
                     break;
 
                 case "TrialBalance":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
                     break;
 
                 case "SurplusDeficit":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.SurplusDeficitTable(AParameters, FDbAdapter);
                     break;
 
                 /* Gift Reports */
 
                 case "GiftBatchDetail":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.GiftBatchDetailTable(AParameters, FDbAdapter);
                     break;
 
                 case "RecipientTaxDeductPct":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.RecipientTaxDeductPctTable(AParameters, FDbAdapter);
                     break;
 
                 case "FieldLeaderGiftSummary":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.FieldLeaderGiftSummary(AParameters, FDbAdapter);
                     break;
 
                 case "TotalGiftsThroughField":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.TotalGiftsThroughField(AParameters, FDbAdapter);
                     break;
 
@@ -181,9 +209,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             try
             {
-                Transaction = DBAccess.GDBAccessObj.BeginTransaction();
-
-                FDbAdapter = new TReportingDbAdapter();
+                FDbAdapter = new TReportingDbAdapter(false);
+                Transaction = FDbAdapter.FPrivateDatabaseObj.BeginTransaction(
+ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
                 while (!FDbAdapter.IsCancelled && ADataSetFilterCsv != "")
                 {
@@ -198,14 +226,18 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     return null;
                 }
             }
-            catch (Exception)
+            catch (Exception Exc)
             {
                 MainDs = null;
+
+                TLogging.Log("TReportingWebConnector.GetReportingDataSet encountered an Exception: " + Exc.ToString());
+
                 throw;
             }
             finally
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
+                FDbAdapter.FPrivateDatabaseObj.RollbackTransaction();
+                FDbAdapter.CloseConnection();
             }
 
             return MainDs;
@@ -219,7 +251,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         {
             string ReportType = AParameters["param_report_type"].ToString();
 
-            FDbAdapter = new TReportingDbAdapter();
+            FDbAdapter = new TReportingDbAdapter(false);
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataSet ReturnDataSet = new DataSet();
 
@@ -315,7 +347,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static DataSet GetOneYearMonthGivingDataSet(Dictionary <String, TVariant>AParameters)
         {
-            FDbAdapter = new TReportingDbAdapter();
+            FDbAdapter = new TReportingDbAdapter(false);
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataSet ReturnDataSet = new DataSet();
 

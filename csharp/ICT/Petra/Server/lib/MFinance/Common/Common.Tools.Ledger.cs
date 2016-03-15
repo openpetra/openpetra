@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,26 +24,18 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Odbc;
-using System.Text.RegularExpressions;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
-using Ict.Common.Verification;
-
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.Gift.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
@@ -70,19 +62,28 @@ namespace Ict.Petra.Server.MFinance.Common
         /// for something else.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public TLedgerInfo(int ALedgerNumber)
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
+        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
+        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        public TLedgerInfo(int ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
-            GetDataRow();
+            GetDataRow(ADataBase);
         }
 
-        private void GetDataRow()
+        /// <summary>
+        /// TODO
+        /// </summary>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
+        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
+        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        private void GetDataRow(TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = null;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -124,7 +125,8 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
         }
 
@@ -151,7 +153,8 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             GetDataRow();
@@ -160,7 +163,12 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Get the name for this Ledger
         /// </summary>
-        public static string GetLedgerName(int ALedgerNumber)
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        public static string GetLedgerName(int ALedgerNumber, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -176,14 +184,14 @@ namespace Ict.Petra.Server.MFinance.Common
             String ReturnValue = string.Empty;
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 delegate
                 {
                     String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
                                     ALedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-                    DataTable tab = DBAccess.GDBAccessObj.SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+                    DataTable tab = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
 
                     if (tab.Rows.Count > 0)
                     {
@@ -508,7 +516,7 @@ namespace Ict.Petra.Server.MFinance.Common
                             Utilities.GetMethodSignature(),
                             Environment.NewLine,
                             ex.Message));
-                    throw ex;
+                    throw;
                 }
             }
 
@@ -625,7 +633,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+                throw;
             }
 
             return RecordFound;
@@ -661,7 +669,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+                throw;
             }
         }
 

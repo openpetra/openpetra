@@ -220,7 +220,8 @@ namespace Ict.Petra.Server.App.Core
                 TSrvSetting.PostgreSQLDatabaseName,
                 TSrvSetting.DBUsername,
                 TSrvSetting.DBPassword,
-                "");
+                "",
+                "Server's DB Connection");
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
         }

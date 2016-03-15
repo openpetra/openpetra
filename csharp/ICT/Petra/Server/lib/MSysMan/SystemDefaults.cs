@@ -25,15 +25,15 @@
 //
 using System;
 using System.Data;
+
 using Ict.Common;
 using Ict.Common.DB.Exceptions;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Common.DB;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Common.Verification;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 {
@@ -48,14 +48,17 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// </summary>
         /// <param name="ASystemDefaultName">System Default Key</param>
         /// <param name="ADefault">Default to use if not found</param>
-        /// <returns>Value of System Default, or ADefault
-        /// </returns>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns>Value of System Default, or ADefault.</returns>
         [NoRemoting]
-        public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
+        public static String GetSystemDefault(String ASystemDefaultName, String ADefault, TDataBase ADataBase = null)
         {
             String ReturnValue = ADefault;
 
-            String Tmp = GetSystemDefault(ASystemDefaultName);
+            String Tmp = GetSystemDefault(ASystemDefaultName, ADataBase);
 
             if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
             {
@@ -69,13 +72,16 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// Returns the value of the specified System Default.
         /// </summary>
         /// <param name="ASystemDefaultName">System Default Key</param>
-        /// <returns>Value of System Default, or SYSDEFAULT_NOT_FOUND
-        /// </returns>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns>Value of System Default, or SYSDEFAULT_NOT_FOUND.</returns>
         [NoRemoting]
-        public static String GetSystemDefault(String ASystemDefaultName)
+        public static String GetSystemDefault(String ASystemDefaultName, TDataBase ADataBase = null)
         {
             String ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
-            SSystemDefaultsTable SystemDefaultsTable = GetSystemDefaults();
+            SSystemDefaultsTable SystemDefaultsTable = GetSystemDefaults(ADataBase);
 
             if (SystemDefaultsTable != null)
             {
@@ -94,16 +100,62 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// <summary>
         /// Returns the System Defaults as a DataTable.
         /// </summary>
-        /// <returns>System Defaults Typed DataTable.
-        /// </returns>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for getting the System Defaults through this.
+        /// If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used instead
+        /// (with the 'globally available' open DB Connection that exists for the users' AppDomain).</param>
+        /// <returns>System Defaults Typed DataTable.</returns>
         [RequireModulePermission("NONE")]
-        public static SSystemDefaultsTable GetSystemDefaults()
+        public static SSystemDefaultsTable GetSystemDefaults(bool ASeparateDBConnection)
+        {
+            TDataBase PrivateDataBaseObj = null;
+
+            if (ASeparateDBConnection)
+            {
+                try
+                {
+                    PrivateDataBaseObj = new Ict.Common.DB.TDataBase();
+
+                    PrivateDataBaseObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                        TSrvSetting.PostgreSQLServer,
+                        TSrvSetting.PostgreSQLServerPort,
+                        TSrvSetting.PostgreSQLDatabaseName,
+                        TSrvSetting.DBUsername,
+                        TSrvSetting.DBPassword,
+                        "",
+                        "System Defaults DB Connection");
+
+                    return GetSystemDefaults(PrivateDataBaseObj);
+                }
+                finally
+                {
+                    if (PrivateDataBaseObj != null)
+                    {
+                        PrivateDataBaseObj.CloseDBConnection();
+                    }
+                }
+            }
+            else
+            {
+                return GetSystemDefaults(null);
+            }
+        }
+
+        /// <summary>
+        /// Returns the System Defaults as a DataTable.
+        /// </summary>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns>System Defaults Typed DataTable.</returns>
+        private static SSystemDefaultsTable GetSystemDefaults(TDataBase ADataBase = null)
         {
             SSystemDefaultsTable ReturnValue = null;
             TDBTransaction ReadTransaction = null;
             bool DBAccessCallSuccessful = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                 delegate
                 {
@@ -129,16 +181,32 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="AValue"></param>
-        /// <returns>true if I believe the System Default was saved successfully</returns>
+        /// <returns>true if I believe the System Default was saved successfully.</returns>
         [RequireModulePermission("NONE")]
         public static void SetSystemDefault(String AKey, String AValue)
+        {
+            SetSystemDefault(AKey, AValue, null);
+        }
+
+        /// <summary>
+        /// Add or modify a System Default
+        /// </summary>
+        /// <param name="AKey"></param>
+        /// <param name="AValue"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns>true if I believe the System Default was saved successfully.</returns>
+        [NoRemoting]
+        public static void SetSystemDefault(String AKey, String AValue, TDataBase ADataBase)
         {
             Boolean NewTransaction = false;
             Boolean ShouldCommit = false;
 
             try
             {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                TDBTransaction Transaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
                 SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
@@ -172,11 +240,11 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
                 {
                     if (ShouldCommit)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
                     }
                     else
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
                     }
                 }
             }

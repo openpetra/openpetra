@@ -68,15 +68,20 @@ namespace Ict.Petra.Server.MPartner
         /// can be used client-side as well!</remarks>
         /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>
         /// <param name="APartnerLocationDR">PPartnerLocation Record that is the record that is the Location of the 'Best Address'.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
-        public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PPartnerLocationRow APartnerLocationDR)
+        public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PPartnerLocationRow APartnerLocationDR,
+            TDataBase ADataBase = null)
         {
             TLocationPK ReturnValue = new TLocationPK();
             PPartnerLocationTable PartnerLocationDT;
             Boolean NewTransaction;
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+            TDBTransaction ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
                 Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -93,7 +98,7 @@ namespace Ict.Petra.Server.MPartner
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
                     TLogging.LogAtLevel(7, "ServerCalculations.DetermineBestAddress: commited own transaction.");
                 }
             }
@@ -136,9 +141,14 @@ namespace Ict.Petra.Server.MPartner
         /// <param name="APartnerKey">PartnerKey of the Partner whose addresses should be checked.</param>
         /// <param name="APartnerLocationDR">PPartnerLocation Record that is the record that is the Location of the 'Best Address'.</param>
         /// <param name="ALocationDR">PLocation Record that the 'Best Address' is pointing to.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>A <see cref="TLocationPK" /> which points to the 'Best Address'. If no 'Best Address' was found,
         /// SiteKey and LocationKey of this instance will be both -1.</returns>
-        public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PPartnerLocationRow APartnerLocationDR, out PLocationRow ALocationDR)
+        public static TLocationPK DetermineBestAddress(Int64 APartnerKey, out PPartnerLocationRow APartnerLocationDR,
+            out PLocationRow ALocationDR, TDataBase ADataBase = null)
         {
             PLocationTable LocationDT;
             TLocationPK BestLocation = new TLocationPK();
@@ -149,7 +159,7 @@ namespace Ict.Petra.Server.MPartner
 
             BestLocation = DetermineBestAddress(APartnerKey, out APartnerLocationDR);
 
-            TDBTransaction ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+            TDBTransaction ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
                 Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
@@ -167,7 +177,7 @@ namespace Ict.Petra.Server.MPartner
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
                     TLogging.LogAtLevel(7, "ServerCalculations.DetermineBestAddress: commited own transaction.");
                 }
             }

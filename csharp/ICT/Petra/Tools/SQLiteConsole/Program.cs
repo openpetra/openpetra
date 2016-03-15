@@ -52,7 +52,8 @@ namespace Ict.Tools.SQLiteConsole
                 "",
                 "",
                 ADBPassword,
-                "");
+                "",
+                "TSQLiteConsole.InitDBConnection DB Connection");
             DBAccess.GDBAccessObj = db;
 
             return true;

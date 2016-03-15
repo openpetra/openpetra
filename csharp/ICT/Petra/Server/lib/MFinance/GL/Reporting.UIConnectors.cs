@@ -413,7 +413,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("Currency", typeof(string)));
 
             Boolean FromStartOfYear = (AStartPeriod == 1);
-            TReportingDbAdapter DbAdapter = new TReportingDbAdapter();
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(false);
 
             if (!FromStartOfYear)
             {
@@ -869,7 +869,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
              */
 
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-            Int32 NumberOfAccountingPeriods = new TLedgerInfo(LedgerNumber).NumberOfAccountingPeriods;
+            Int32 NumberOfAccountingPeriods;
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
@@ -904,6 +904,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref ReadTrans,
                 delegate
                 {
+                    NumberOfAccountingPeriods = new TLedgerInfo(LedgerNumber, DbAdapter.FPrivateDatabaseObj).NumberOfAccountingPeriods;
                     ACostCentreTable AllCostCentres = ACostCentreAccess.LoadViaALedger(LedgerNumber, ReadTrans);
                     AllCostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
                     List <string>ReportingCostCentres = new List <string>();

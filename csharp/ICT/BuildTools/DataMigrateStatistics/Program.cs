@@ -36,7 +36,7 @@ namespace ICT.Tools.DataMigrateStatistics
 
                 DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(cmdLine.GetOptValue("type")), cmdLine.GetOptValue("host"),
                     cmdLine.GetOptValue("port"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"), cmdLine.GetOptValue(
-                        "password"), "");
+                        "password"), "", "ICT.Tools.DataMigrateStatistics.Program.Main DB Connection");
 
                 TDataDefinitionParser parserNew = new TDataDefinitionParser(xmlfile, false);
                 TDataDefinitionStore storeNew = new TDataDefinitionStore();

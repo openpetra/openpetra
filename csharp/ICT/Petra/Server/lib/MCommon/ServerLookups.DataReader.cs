@@ -71,13 +71,32 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         [RequireModulePermission("NONE")]
         public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable)
         {
+            return GetData(ATablename, ASearchCriteria, out AResultTable, null);
+        }
+
+        /// <summary>
+        /// simple data reader;
+        /// checks for permissions of the current user;
+        /// </summary>
+        /// <param name="ATablename"></param>
+        /// <param name="ASearchCriteria">a set of search criteria</param>
+        /// <param name="AResultTable">returns typed datatable</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static bool GetData(string ATablename, TSearchCriteria[] ASearchCriteria, out TTypedDataTable AResultTable,
+            TDataBase ADataBase)
+        {
             // TODO: check access permissions for the current user
 
             TDBTransaction ReadTransaction = null;
 
             TTypedDataTable tempTable = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 delegate
@@ -242,8 +261,26 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("NONE")]
         public static TSubmitChangesResult SaveData(string ATablename,
-            ref TTypedDataTable ASubmitTable,
-            out TVerificationResultCollection AVerificationResult)
+            ref TTypedDataTable ASubmitTable, out TVerificationResultCollection AVerificationResult)
+        {
+            return SaveData(ATablename, ref ASubmitTable, out AVerificationResult, null);
+        }
+
+        /// <summary>
+        /// generic function for saving some rows in a single table
+        /// </summary>
+        /// <param name="ATablename"></param>
+        /// <param name="ASubmitTable"></param>
+        /// <param name="AVerificationResult"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static TSubmitChangesResult SaveData(string ATablename,
+            ref TTypedDataTable ASubmitTable, out TVerificationResultCollection AVerificationResult,
+            TDataBase ADataBase)
         {
             TDBTransaction SubmitChangesTransaction = null;
             bool SubmissionOK = false;
@@ -257,7 +294,8 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             {
                 VerificationResult = new TVerificationResultCollection();
 
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, ref SubmissionOK,
+                DBAccess.GetDBAccessObj(ADataBase).BeginAutoTransaction(IsolationLevel.Serializable,
+                    ref SubmitChangesTransaction, ref SubmissionOK,
                     delegate
                     {
                         try

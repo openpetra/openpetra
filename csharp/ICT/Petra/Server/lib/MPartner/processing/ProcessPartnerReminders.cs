@@ -57,9 +57,9 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// <summary>
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
         /// </summary>
-        /// <param name="ADBAccessObj">Already instatiated DB Access object with opened DB connection.</param>
+        /// <param name="ADataBaseObj">Already instatiated DB Access object with opened DB connection.</param>
         /// <param name="ARunManually">this is true if the process was called manually from the server admin console</param>
-        public static void Process(TDataBase ADBAccessObj, bool ARunManually)
+        public static void Process(TDataBase ADataBaseObj, bool ARunManually)
         {
             TDBTransaction ReadWriteTransaction;
             bool NewTransaction;
@@ -69,16 +69,11 @@ namespace Ict.Petra.Server.MPartner.Processing
             SSystemDefaultsRow SystemDefaultsDR;
             PPartnerReminderTable PartnerReminderDT;
             int ReminderFreqency;
-            TDataBase DBAccessObj;
 
             if (TLogging.DebugLevel >= 6)
             {
                 TLogging.Log("Entering TProcessPartnerReminders.Process...");
             }
-
-            // TODO: it is quite ipossible at the moment to use ADBAccessObj instead of DBAccess.GDBAccessObj due to SubmitChanges etc
-            //DBAccessObj = ADBAccessObj;
-            DBAccessObj = DBAccess.GDBAccessObj;
 
             // SubmitChanges references a user
             TPetraIdentity PetraIdentity = new TPetraIdentity(
@@ -88,7 +83,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
-            ReadWriteTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+            ReadWriteTransaction = ADataBaseObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 out NewTransaction);
 
             /*
@@ -108,7 +103,7 @@ namespace Ict.Petra.Server.MPartner.Processing
                         TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
                         ": Could not send Partner Reminders because Petra couldn't create the required SystemDefault setting for the Last Reminder Date!");
 
-                    DBAccessObj.RollbackTransaction();
+                    ADataBaseObj.RollbackTransaction();
 
                     return;
                 }
@@ -121,13 +116,13 @@ namespace Ict.Petra.Server.MPartner.Processing
                         TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
                         ": Could not send Partner Reminders because SMTP server didn't initialise.");
 
-                    DBAccessObj.RollbackTransaction();
+                    ADataBaseObj.RollbackTransaction();
                     return;
                 }
 
                 // Retrieve all PartnerReminders we need to process.
                 ReminderResultsDS = GetRemindersToProcess(LastReminderDate, out PartnerReminderDT,
-                    DBAccessObj, ReadWriteTransaction);
+                    ADataBaseObj, ReadWriteTransaction);
 
                 /*
                  * We now have a Typed DataTable with the PartnerReminders that we need to process.
@@ -222,7 +217,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    ADataBaseObj.CommitTransaction();
                 }
 
                 TLogging.LogAtLevel(1, TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing + " ran succesfully.");
@@ -235,7 +230,7 @@ namespace Ict.Petra.Server.MPartner.Processing
 
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    ADataBaseObj.RollbackTransaction();
                 }
 
                 throw;
@@ -359,11 +354,11 @@ namespace Ict.Petra.Server.MPartner.Processing
         /// </summary>
         /// <param name="ALastReminderDate">Date when PartnerReminders processing last ran.</param>
         /// <param name="APartnerReminderDT">PartnerReminders DataRows that need to be processed.</param>
-        /// <param name="ADBAccessObj">Already instatiated DB Access object with opened DB connection.</param>
+        /// <param name="ADataBaseObj">Already instatiated DB Access object with opened DB connection.</param>
         /// <param name="AReadTransaction">Already instantiated DB Transaction.</param>
         /// <returns>DataSet containing the <paramref name="APartnerReminderDT" /> DataTable.</returns>
         private static DataSet GetRemindersToProcess(DateTime ALastReminderDate, out PPartnerReminderTable APartnerReminderDT,
-            TDataBase ADBAccessObj, TDBTransaction AReadTransaction)
+            TDataBase ADataBaseObj, TDBTransaction AReadTransaction)
         {
             List <OdbcParameter>OdbcParams;
             string SQLCommand;
@@ -389,7 +384,11 @@ namespace Ict.Petra.Server.MPartner.Processing
             OdbcParams.Add(new OdbcParameter("Now", OdbcType.Date));
             OdbcParams[1].Value = DateTime.Now.Date;
 
-            DBAccess.GDBAccessObj.Select(ReminderResultsDS, SQLCommand, APartnerReminderDT.TableName, AReadTransaction, OdbcParams.ToArray());
+            DBAccess.GetDBAccessObj(AReadTransaction).Select(ReminderResultsDS,
+                SQLCommand,
+                APartnerReminderDT.TableName,
+                AReadTransaction,
+                OdbcParams.ToArray());
 
             // Mark the data as being 'unchanged' (rather than 'new', which it is by default)
             ReminderResultsDS.AcceptChanges();

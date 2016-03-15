@@ -87,7 +87,7 @@ namespace Ict.Testing.NUnitPetraServer
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                 TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
                 TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
+                TSrvSetting.DBUsername, TSrvSetting.DBPassword, "", "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 
             bool SystemEnabled;
             string WelcomeMessage;

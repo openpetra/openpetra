@@ -571,5 +571,21 @@ namespace Ict.Common.DB
             throw new EDBUnsupportedDBUpgradeException(
                 "Cannot connect to old database, please restore the latest clean demo database or run nant patchDatabase");
         }
+
+        /// <summary>
+        /// Clearing of all Connection Pools is not yet implemented for MySQL...!
+        /// </summary>
+        public void ClearAllConnectionPools()
+        {
+            // We don't do anything here: Clearing of all Connection Pools is not yet implemented for MySQL...!
+        }
+
+        /// <summary>
+        /// Clearing of a Connection Pool is not yet implemented for MySQL...!
+        /// </summary>
+        public void ClearConnectionPool(DbConnection ADBConnection)
+        {
+            // We don't do anything here: Clearing of a Connection Pool is not yet implemented for MySQL...!
+        }
     }
 }

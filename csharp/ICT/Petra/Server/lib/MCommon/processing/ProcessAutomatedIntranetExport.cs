@@ -39,9 +39,9 @@ namespace Ict.Petra.Server.MCommon.Processing
         /// <summary>
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
         /// </summary>
-        /// <param name="ADBAccessObj">Instantiated DB Access object with opened DB connection.</param>
+        /// <param name="ADataBaseObj">Instantiated DB Access object with opened DB connection.</param>
         /// <param name="ARunManually">this is true if the process was called manually from the server admin console</param>
-        public static void Process(TDataBase ADBAccessObj, bool ARunManually)
+        public static void Process(TDataBase ADataBaseObj, bool ARunManually)
         {
             //At the moment this isn't ready for production use
             return;

@@ -426,7 +426,8 @@ namespace Tests.MFinance.Client.ExchangeRates
                         TAppSettingsManager.GetValue("Server.DBName"),
                         TAppSettingsManager.GetValue("Server.DBUserName"),
                         TAppSettingsManager.GetValue("Server.DBPassword"),
-                        "");
+                        "",
+                        "TDailyExchangeRateTest.FGiftAndJournal.ConnectToDatabase DB Connection");
                 }
                 catch (Exception ex)
                 {

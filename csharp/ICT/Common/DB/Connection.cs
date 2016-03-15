@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,10 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
 using System.Data;
 using System.Data.Common;
-using System.Data.Odbc;
 using System.Runtime.Serialization;
 using Ict.Common.Exceptions;
 
@@ -34,55 +32,16 @@ namespace Ict.Common.DB
     #region TDBConnection
 
     /// <summary>
-    /// Contains functions that handle the creation of a DB connection.
+    /// Contains functions that handle the creation and closing of a DB connection.
     /// </summary>
     /// <remarks>
-    /// This is a sealed class so that inheritance of the TDBConnection class
-    /// can be prevented (to avoid Class inheritance). Call <see cref="GetInstance" />
-    /// to get an Instance of this Class!
     /// This class is kind of 'low-level' - it is not intended to be
     /// instantiated except through the TDataBase.EstablishDBConnection procedures!!!
     /// The TDataBase class is the only class that a developer needs to deal with
     /// when accessing DB's!
     /// </remarks>
-    internal sealed class TDBConnection : object
+    internal static class TDBConnection
     {
-        /// <summary>Used internally to make sure that only one instance of
-        /// <see cref="TDBConnection" /> is created.</summary>
-        /// <seealso cref="GetInstance" />
-        private static TDBConnection FSingletonConnector;
-
-        /// <summary>Used internally to build the Connection String.</summary>
-        private static string FConnectionString;
-
-        /// <summary>
-        /// Returns an instance of <see cref="TDBConnection" />.
-        /// <para>
-        /// <em>This method is the only way to get an Instance of
-        /// <see cref="TDBConnection" /> because the Class is <b>sealed</b>
-        /// (therefore not allowing the creation of an Instance of it using a Constructor!)</em>
-        /// </para>
-        /// </summary>
-        /// <remarks>
-        /// Before an Instance of <see cref="TDBConnection" /> is created,
-        /// a check is performed whether an instance has already been created by
-        /// the calling class. If this is the case, then the the same instance is returned,
-        /// otherwise a new instance of <see cref="TDBConnection" /> is created and returned.
-        /// </remarks>
-        /// <returns>An instance of the <see cref="TDBConnection" /> Class.
-        /// </returns>
-        public static TDBConnection GetInstance()
-        {
-            // Support multithreaded applications through "Double checked locking"
-            // pattern which avoids locking every time the method is invoked.
-            if (FSingletonConnector == null)
-            {
-                FSingletonConnector = new TDBConnection();
-            }
-
-            return FSingletonConnector;
-        }
-
         /// <summary>
         /// Opens a connection to the specified database
         /// </summary>
@@ -96,21 +55,19 @@ namespace Ict.Common.DB
         /// <param name="AStateChangeEventHandler">for connection state changes</param>
         /// <returns>Opened Connection (null if connection could not be established).
         /// </returns>
-        public DbConnection GetConnection(IDataBaseRDBMS ADataBaseRDBMS,
+        public static DbConnection GetConnection(IDataBaseRDBMS ADataBaseRDBMS,
             String AServer,
             String APort,
             String ADatabaseName,
             String AUsername,
             ref String APassword,
-            String AConnectionString,
+            ref String AConnectionString,
             StateChangeEventHandler AStateChangeEventHandler)
         {
-            FConnectionString = AConnectionString;
-
             return ADataBaseRDBMS.GetConnection(AServer, APort,
                 ADatabaseName,
                 AUsername, ref APassword,
-                ref FConnectionString,
+                ref AConnectionString,
                 AStateChangeEventHandler);
         }
 
@@ -125,10 +82,10 @@ namespace Ict.Common.DB
         /// connection.
         /// </remarks>
         /// <param name="AConnection">Open Database connection</param>
-        /// <returns>void</returns>
+        /// <param name="AConnectionName">Name of the DB Connection (can be an empty string).</param>
         /// <exception cref="EDBConnectionAlreadyClosedException">When trying to close an
         /// already/still closed DB connection.</exception>
-        public void CloseDBConnection(IDbConnection AConnection)
+        public static void CloseDBConnection(IDbConnection AConnection, string AConnectionName)
         {
             if (AConnection == null)
             {
@@ -142,11 +99,16 @@ namespace Ict.Common.DB
                     AConnection.Close();
                     AConnection.Dispose();
 
-                    // TLogging.Log("Database connection closed.");
+                    TLogging.Log(
+                        "    " +
+                        (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") + "Database connection closed." + AConnectionName);
                 }
                 catch (Exception exp)
                 {
-                    TLogging.Log("Error closing Database connection!" + "Exception: " + exp.ToString());
+                    TLogging.Log(
+                        (TLogging.DL >=
+                         DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") + "Error closing Database connection!" + AConnectionName +
+                        " Exception: " + exp.ToString());
                     throw;
                 }
             }
@@ -157,16 +119,47 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// Clears (empties) *all* the Connection Pools that a RDBMS driver provides (irrespecive of the Connection String
+        /// that is associated with any connection). In case an RDBMS type doesn't provide a Connection Pool nothing is done
+        /// and the Method returns no error.
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        public static void ClearAllConnectionPools()
+        {
+            TPostgreSQL.ClearAllConnectionPools();
+        }
+
+        /// <summary>
+        /// Clears (empties) the Connection Pool that a RDBMS driver provides for all connections *that were created using
+        /// the Connection String that is associated with <paramref name="ADBConnection"/>*. In case an RDBMS type doesn't
+        /// provide a Connection Pool nothing is done and the Method returns no error.
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        public static void ClearConnectionPool(IDataBaseRDBMS ADataBaseRDBMS, DbConnection ADBConnection)
+        {
+            ADataBaseRDBMS.ClearConnectionPool(ADBConnection);
+        }
+
+        /// <summary>
         /// Returns the Connection String that is used to connect to the DataBase that
         /// TDBConnection is pointing to.
         /// </summary>
-        /// <returns>Connection string - including Password marked as hidden
-        /// </returns>
-        public String GetConnectionString()
+        /// <param name="AConnectionString">Connection String that the connection got opened with.</param>
+        /// <returns>Connection string - including Password marked as hidden.</returns>
+        public static String GetConnectionStringWithHiddenPwd(string AConnectionString)
         {
-            return FConnectionString + "*hidden*";
+            return AConnectionString + "*hidden*";
         }
     }
+
     #endregion
 
     #region EDBConnectionAlreadyClosedException

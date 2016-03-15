@@ -78,7 +78,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
 
         private DataTable GetCountyListTable(TDBTransaction AReadTransaction, string ATableName)
         {
-            return DBAccess.GDBAccessObj.SelectDT("SELECT DISTINCT " + PLocationTable.GetCountryCodeDBName() + ", " +
+            return DBAccess.GetDBAccessObj(AReadTransaction).SelectDT("SELECT DISTINCT " +
+                PLocationTable.GetCountryCodeDBName() + ", " +
                 PLocationTable.GetCountyDBName() + " FROM PUB." +
                 PLocationTable.GetTableDBName(), ATableName, AReadTransaction);
         }
@@ -88,7 +89,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
             // Used in Foundation Details screen.
             SUserTable TmpUserTable = new SUserTable();
 
-            TmpUserTable = (SUserTable)DBAccess.GDBAccessObj.SelectDT(TmpUserTable, "SELECT " + SUserTable.GetPartnerKeyDBName() + ',' +
+            TmpUserTable = (SUserTable)DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(TmpUserTable, "SELECT " +
+                SUserTable.GetPartnerKeyDBName() + ',' +
                 SUserTable.GetUserIdDBName() + ',' +
                 SUserTable.GetFirstNameDBName() + ',' +
                 SUserTable.GetLastNameDBName() + ' ' +
@@ -141,7 +143,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         private DataTable GetCountryListFromExistingLocationsTable(TDBTransaction AReadTransaction, string ATableName)
         {
             // Used eg. in Report Gift Data Export for finding donors.
-            return DBAccess.GDBAccessObj.SelectDT("SELECT DISTINCT c." +
+            return DBAccess.GetDBAccessObj(AReadTransaction).SelectDT("SELECT DISTINCT " +
+                "PUB." + PCountryTable.GetTableDBName() + '.' +
                 PCountryTable.GetCountryCodeDBName() + ", " +
                 PCountryTable.GetCountryNameDBName() + " FROM PUB." +
                 PCountryTable.GetTableDBName() + " c, PUB." +

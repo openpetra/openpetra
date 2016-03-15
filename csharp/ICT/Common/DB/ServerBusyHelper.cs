@@ -93,6 +93,18 @@ namespace Ict.Common.DB
                                 ServerCallRetries, MaxRetries));
                     }
                 }
+                catch (EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException)
+                {
+                    ServerCallRetries++;
+
+                    if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
+                    {
+                        TLogging.Log(TLogging.LOG_PREFIX_INFO + AContext +
+                            String.Format(
+                                ": Server is busy (DB Transaction in use by another Thread), retrying acquisition of DB Transaction... (Retry #{0} of {1})",
+                                ServerCallRetries, MaxRetries));
+                    }
+                }
                 catch (EDBCoordinatedDBAccessWaitingTimeExceededException)
                 {
                     ServerCallRetries++;
