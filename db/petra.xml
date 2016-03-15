@@ -10020,6 +10020,13 @@
                 label="Print Receipt"
                 help="Do you want receipts for gifts with this motivation code?"
                 initial="Yes"/>
+    <tablefield name="a_dont_report_l"
+                type="bit"
+                descr="Don't include these gifts in reporting"
+                format="Yes/No"
+                label="Exclude from gift reports"
+                help="Select this for retail sale items."
+                initial="No"/>
     <tablefield name="a_tax_deductible_l"
                 type="bit"
                 descr="Whether this gift is tax deductible"

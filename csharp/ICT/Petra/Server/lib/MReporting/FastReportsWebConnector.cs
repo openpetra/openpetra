@@ -158,7 +158,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 /* Gift Reports */
 
                 case "GiftBatchDetail":
-                    FDbAdapter = new TReportingDbAdapter(false);
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.GiftBatchDetailTable(AParameters, FDbAdapter);
                     break;

@@ -56,7 +56,7 @@ RootNode:
 
         sptDetails:
             SplitterOrientation: Horizontal
-            SplitterDistance: 220
+            SplitterDistance: 250
             Height: 400
             Dock: Fill
             BackColor: System.Drawing.SystemColors.ControlDark
@@ -72,12 +72,17 @@ RootNode:
                 Row2: [txtDetailMotivationDetailDesc, txtDetailMotivationDetailDescLocal]
                 Row3: [cmbDetailCostCentreCode]
                 Row4: [cmbDetailAccountCode]
-                Row6: [txtDetailRecipientKey]
-                Row5: [pnlMoreChecks]
-        pnlMoreChecks:
+                Row5: [txtDetailRecipientKey]
+                Row6: [pnlChecks1]
+                Row7: [pnlChecks2]
+        pnlChecks1:
             ControlsOrientation: horizontal
             ColSpan: 2
-            Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailReceipt, chkDetailTaxDeductible, chkDetailExportToIntranet]
+            Controls: [chkDetailAutopopdesc, chkDetailMotivationStatus, chkDetailTaxDeductible]
+        pnlChecks2:
+            ControlsOrientation: horizontal
+            ColSpan: 2
+            Controls: [chkDetailReceipt, chkDetailDontReport, chkDetailExportToIntranet]
         cmbDetailMotivationGroupCode: {Label=Group, List=UserDefinedList}
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=210, OnChange=DescriptionTyped}
@@ -88,6 +93,7 @@ RootNode:
         chkDetailAutopopdesc: {Label=Populate Gift Description}
         chkDetailMotivationStatus: {Label=Active}
         chkDetailReceipt: {Label=Print Receipt}
+        chkDetailDontReport: {Label=Exclude from Gift Reports}
         chkDetailTaxDeductible: {Label=Tax Deductible}
         chkDetailExportToIntranet: {Label=Export to Intranet}
         cmbReportColumn:

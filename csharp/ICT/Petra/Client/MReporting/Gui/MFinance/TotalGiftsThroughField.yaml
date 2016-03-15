@@ -34,5 +34,5 @@ RootNode:
             Label: Details for years (0-99)
             Format: Integer
         txtYearsSummary:
-            Label: Summay for years (0-99)
+            Label: Summary for years (0-99)
             Format: Integer

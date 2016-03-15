@@ -527,7 +527,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, System.EventArgs e)
         {
-            FImportLogicObject.ImportBudget(FSelectedBudgetYear, ref FMainDS);
+            FImportLogicObject.ImportBudget(FSelectedBudgetYear, FMainDS);
         }
 
         // This is not used (and imcomplete...)

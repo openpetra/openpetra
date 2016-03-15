@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 ACalc.RemoveParameter("param_currency_name");
                 ACalc.AddParameter("param_currency_name",
-                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber));
+                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber, true));
             }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);

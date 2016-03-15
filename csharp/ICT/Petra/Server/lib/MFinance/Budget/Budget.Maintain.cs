@@ -188,7 +188,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         int numPeriods = MainDS.ALedger[0].NumberOfAccountingPeriods;
 
                         //Load all by Year
-                        LoadABudgetByYearWithCustomColumns(ref MainDS, ALedgerNumber, ABudgetYear, numPeriods, Transaction);
+                        LoadABudgetByYearWithCustomColumns(MainDS, ALedgerNumber, ABudgetYear, numPeriods, Transaction);
 
                         //Load budget period data
                         ABudgetTable BudgetTable = new ABudgetTable();
@@ -219,7 +219,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             return MainDS;
         }
 
-        private static void LoadABudgetByYearWithCustomColumns(ref BudgetTDS AMainDS,
+        private static void LoadABudgetByYearWithCustomColumns(BudgetTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 AYear,
             Int32 ANumberOfPeriods,
@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string AImportString,
             string ACSVFileName,
             string[] AFdlgSeparator,
-            ref BudgetTDS AImportDS,
+            BudgetTDS AImportDS,
             out Int32 ARecordsUpdated,
             out Int32 AFailedRows,
             out TVerificationResultCollection AVerificationResult)
@@ -386,10 +386,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     AImportString,
                     ACSVFileName,
                     AFdlgSeparator,
-                    ref AImportDS,
+                    AImportDS,
                     ref ARecordsUpdated,
                     ref AFailedRows,
-                    ref AVerificationResult);
+                    AVerificationResult);
 
                 return retVal;
             }
@@ -415,10 +415,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string AImportString,
             string ACSVFileName,
             string[] AFdlgSeparator,
-            ref BudgetTDS AImportDS,
+            BudgetTDS AImportDS,
             ref Int32 ARecordsUpdated,
             ref Int32 AFailedRows,
-            ref TVerificationResultCollection AVerificationResult)
+            TVerificationResultCollection AVerificationResult)
         {
             StringReader sr = new StringReader(AImportString);
 
@@ -437,127 +437,127 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             //string currentBudgetVal = string.Empty;
             //string mess = string.Empty;
-            ACostCentreTable CostCentreTable = null;
-            AAccountTable AccountTable = null;
+            ACostCentreTable CostCentreTable = new ACostCentreTable();
+            AAccountTable AccountTable = new AAccountTable();
 
-            string CostCentre = string.Empty;
-            string Account = string.Empty;
-            string BudgetTypeUpper = string.Empty;
-            string BudgetYearStringUpper = string.Empty;
             int BudgetYearNumber = 0;
             int BdgRevision = 0;  //not currently implementing versioning so always zero
+            TDBTransaction transaction = null;
+            Int32 recordsUpdated = 0;
+            Int32 failedRows = 0;
 
             int NumPeriods = TAccountingPeriodsWebConnector.GetNumberOfPeriods(ALedgerNumber);
             decimal[] BudgetPeriods = new decimal[NumPeriods];
 
             int RowNumber = 0;
+            Boolean hasAccountCodeProblem = false;
 
             ABudgetTable BudgetTableExistingAndImported = new ABudgetTable();
 
             // Go round a loop reading the file line by line
             string ImportLine = sr.ReadLine();
-
-            while (ImportLine != null)
-            {
-                decimal totalBudgetRowAmount = 0;
-
-                try
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref transaction,
+                delegate
                 {
-                    CostCentre = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString();
-
-                    //Check if header row exists
-                    if ((CostCentre == "Cost Centre") || string.IsNullOrEmpty(ImportLine))
+                    while (ImportLine != null)
                     {
-                        continue;
-                    }
+                        decimal totalBudgetRowAmount = 0;
 
-                    //Increment row number
-                    RowNumber++;
-
-                    //Read the values for the current line
-                    //Account
-                    Account = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString();
-                    //BudgetType
-                    BudgetTypeUpper = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString().ToUpper();
-                    BudgetTypeUpper = BudgetTypeUpper.Replace(" ", ""); //Ad hoc will become ADHOC
-
-                    //Allow for variations on Inf.Base and Inf.N
-                    if (BudgetTypeUpper.Contains("INF"))
-                    {
-                        if (BudgetTypeUpper.Contains("BASE"))
+                        try
                         {
-                            if (BudgetTypeUpper != MFinanceConstants.BUDGET_INFLATE_BASE)
+                            String CostCentre = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString();
+
+                            //Check if header row exists
+                            if ((CostCentre == "Cost Centre") || string.IsNullOrEmpty(ImportLine))
                             {
-                                BudgetTypeUpper = MFinanceConstants.BUDGET_INFLATE_BASE;
+                                continue;
                             }
-                        }
-                        else if (BudgetTypeUpper != MFinanceConstants.BUDGET_INFLATE_N)
-                        {
-                            BudgetTypeUpper = MFinanceConstants.BUDGET_INFLATE_N;
-                        }
-                    }
 
-                    //BudgetYear
-                    BudgetYearStringUpper = (StringHelper.GetNextCSV(ref ImportLine, Separator, false)).ToUpper();
+                            //Increment row number
+                            RowNumber++;
 
-                    //Check validity of CSV file line values
-                    if (!ValidateKeyBudgetFields(ALedgerNumber,
-                            RowNumber,
-                            ref CostCentreTable,
-                            ref AccountTable,
-                            CostCentre,
-                            Account,
-                            BudgetTypeUpper,
-                            BudgetYearStringUpper,
-                            ref AVerificationResult))
-                    {
-                        AFailedRows++;
-                        continue;
-                    }
+                            //Read the values for the current line
+                            //Account
+                            String Account = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString();
+                            //BudgetType
+                            String BudgetTypeUpper = StringHelper.GetNextCSV(ref ImportLine, Separator, false).ToString().ToUpper();
+                            BudgetTypeUpper = BudgetTypeUpper.Replace(" ", ""); //Ad hoc will become ADHOC
 
-                    //Read the budgetperiod values to check if valid according to type
-                    Array.Clear(BudgetPeriods, 0, NumPeriods);
+                            //Allow for variations on Inf.Base and Inf.N
+                            if (BudgetTypeUpper.Contains("INF"))
+                            {
+                                if (BudgetTypeUpper.Contains("BASE"))
+                                {
+                                    if (BudgetTypeUpper != MFinanceConstants.BUDGET_INFLATE_BASE)
+                                    {
+                                        BudgetTypeUpper = MFinanceConstants.BUDGET_INFLATE_BASE;
+                                    }
+                                }
+                                else if (BudgetTypeUpper != MFinanceConstants.BUDGET_INFLATE_N)
+                                {
+                                    BudgetTypeUpper = MFinanceConstants.BUDGET_INFLATE_N;
+                                }
+                            }
 
-                    if (!ProcessBudgetTypeImportDetails(RowNumber,
-                            ref ImportLine,
-                            Separator,
-                            BudgetTypeUpper,
-                            ref BudgetPeriods,
-                            BudgetYearStringUpper,
-                            CostCentre,
-                            Account,
-                            ref AVerificationResult))
-                    {
-                        continue;
-                    }
+                            //BudgetYear
+                            String BudgetYearStringUpper = (StringHelper.GetNextCSV(ref ImportLine, Separator, false)).ToUpper();
 
-                    //Calculate the budget Year
-                    BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearStringUpper);
+                            //Check validity of CSV file line values
+                            if (!ValidateKeyBudgetFields(transaction,
+                                    ALedgerNumber,
+                                    RowNumber,
+                                    CostCentreTable,
+                                    AccountTable,
+                                    CostCentre,
+                                    Account,
+                                    BudgetTypeUpper,
+                                    BudgetYearStringUpper,
+                                    ref hasAccountCodeProblem,
+                                    AVerificationResult))
+                            {
+                                failedRows++;
+                                continue;
+                            }
 
-                    //Add budget revision record if there's not one already.
-                    if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, BudgetYearNumber, BdgRevision }) == null)
-                    {
-                        ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)AImportDS.ABudgetRevision.NewRowTyped();
-                        BudgetRevisionRow.LedgerNumber = ALedgerNumber;
-                        BudgetRevisionRow.Year = BudgetYearNumber;
-                        BudgetRevisionRow.Revision = BdgRevision;
-                        BudgetRevisionRow.Description = "Budget Import from: " + ACSVFileName;
-                        AImportDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
-                    }
+                            //Read the budgetperiod values to check if valid according to type
+                            Array.Clear(BudgetPeriods, 0, NumPeriods);
 
-                    for (int i = 0; i < NumPeriods; i++)
-                    {
-                        totalBudgetRowAmount += BudgetPeriods[i];
-                    }
+                            if (!ProcessBudgetTypeImportDetails(RowNumber,
+                                    ref ImportLine,
+                                    Separator,
+                                    BudgetTypeUpper,
+                                    BudgetPeriods,
+                                    BudgetYearStringUpper,
+                                    CostCentre,
+                                    Account,
+                                    AVerificationResult))
+                            {
+                                continue;
+                            }
 
-                    BudgetTDS mainDS = new BudgetTDS();
-                    TDBTransaction transaction = null;
+                            //Calculate the budget Year
+                            BudgetYearNumber = GetBudgetYearNumber(ALedgerNumber, BudgetYearStringUpper);
 
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        ref transaction,
-                        delegate
-                        {
+                            //Add budget revision record if there's not one already.
+                            if (AImportDS.ABudgetRevision.Rows.Find(new object[] { ALedgerNumber, BudgetYearNumber, BdgRevision }) == null)
+                            {
+                                ABudgetRevisionRow BudgetRevisionRow = (ABudgetRevisionRow)AImportDS.ABudgetRevision.NewRowTyped();
+                                BudgetRevisionRow.LedgerNumber = ALedgerNumber;
+                                BudgetRevisionRow.Year = BudgetYearNumber;
+                                BudgetRevisionRow.Revision = BdgRevision;
+                                BudgetRevisionRow.Description = "Budget Import from: " + ACSVFileName;
+                                AImportDS.ABudgetRevision.Rows.Add(BudgetRevisionRow);
+                            }
+
+                            for (int i = 0; i < NumPeriods; i++)
+                            {
+                                totalBudgetRowAmount += BudgetPeriods[i];
+                            }
+
+                            BudgetTDS mainDS = new BudgetTDS();
+
                             //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
                             ABudgetAccess.LoadByUniqueKey(mainDS, ALedgerNumber, BudgetYearNumber, BdgRevision, CostCentre, Account, transaction);
 
@@ -577,203 +577,198 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             }
 
                             #endregion Validate Data
-                        });
 
-                    //Check to see if the budget combination already exists:
-                    if (mainDS.ABudget.Count > 0)
-                    {
-                        //Will only be one row
-                        ABudgetRow br2 = (ABudgetRow)mainDS.ABudget.Rows[0];
-
-                        //Check if exists in AImportDS
-                        int bdgSeq = br2.BudgetSequence;
-
-                        //Add to duplicates-checking table
-                        //If not in saved budget table, check if already been imported earlier in the file
-                        DataRow duplicateBudgetRow = BudgetTableExistingAndImported.Rows.Find(new object[] { bdgSeq });
-
-                        if (duplicateBudgetRow != null)
-                        {
-                            //TODO: update when budget revisioning is added
-                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
-                                    String.Format(Catalog.GetString(
-                                            " This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
-                                        BudgetYearStringUpper,
-                                        CostCentre,
-                                        Account),
-                                    TResultSeverity.Resv_Noncritical));
-
-                            AFailedRows++;
-                            continue;
-                        }
-
-                        BudgetTableExistingAndImported.ImportRow(br2);
-
-                        ABudgetRow bdgRow = (ABudgetRow)AImportDS.ABudget.Rows.Find(new object[] { bdgSeq });
-
-                        if (bdgRow != null)
-                        {
-                            bool rowUpdated = false;
-
-                            if (bdgRow.BudgetTypeCode != BudgetTypeUpper)
+                            //Check to see if the budget combination already exists:
+                            if (mainDS.ABudget.Count > 0)
                             {
-                                rowUpdated = true;
-                                bdgRow.BudgetTypeCode = BudgetTypeUpper;
-                            }
+                                //Will only be one row
+                                ABudgetRow br2 = (ABudgetRow)mainDS.ABudget.Rows[0];
 
-                            ABudgetPeriodRow BPRow = null;
+                                //Check if exists in AImportDS
+                                int bdgSeq = br2.BudgetSequence;
 
-                            for (int i = 0; i < NumPeriods; i++)
-                            {
-                                BPRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.Rows.Find(new object[] { bdgSeq, i + 1 });
+                                //Add to duplicates-checking table
+                                //If not in saved budget table, check if already been imported earlier in the file
+                                DataRow duplicateBudgetRow = BudgetTableExistingAndImported.Rows.Find(new object[] { bdgSeq });
 
-                                if ((BPRow != null) && (BPRow.BudgetBase != BudgetPeriods[i]))
+                                if (duplicateBudgetRow != null)
                                 {
-                                    rowUpdated = true;
-                                    BPRow.BudgetBase = BudgetPeriods[i];
+                                    //TODO: update when budget revisioning is added
+                                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
+                                            String.Format(Catalog.GetString(
+                                                    " This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
+                                                BudgetYearStringUpper,
+                                                CostCentre,
+                                                Account),
+                                            TResultSeverity.Resv_Noncritical));
+
+                                    failedRows++;
+                                    continue;
                                 }
 
-                                BPRow = null;
-                            }
+                                BudgetTableExistingAndImported.ImportRow(br2);
 
-                            if (rowUpdated)
+                                ABudgetRow bdgRow = (ABudgetRow)AImportDS.ABudget.Rows.Find(new object[] { bdgSeq });
+
+                                if (bdgRow != null)
+                                {
+                                    bool rowUpdated = false;
+
+                                    if (bdgRow.BudgetTypeCode != BudgetTypeUpper)
+                                    {
+                                        rowUpdated = true;
+                                        bdgRow.BudgetTypeCode = BudgetTypeUpper;
+                                    }
+
+                                    ABudgetPeriodRow BPRow = null;
+
+                                    for (int i = 0; i < NumPeriods; i++)
+                                    {
+                                        BPRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.Rows.Find(new object[] { bdgSeq, i + 1 });
+
+                                        if ((BPRow != null) && (BPRow.BudgetBase != BudgetPeriods[i]))
+                                        {
+                                            rowUpdated = true;
+                                            BPRow.BudgetBase = BudgetPeriods[i];
+                                        }
+
+                                        BPRow = null;
+                                    }
+
+                                    if (rowUpdated)
+                                    {
+                                        recordsUpdated++;
+                                    }
+                                }
+                            }
+                            else
                             {
-                                ARecordsUpdated++;
+                                //If not in saved budget table, check if already been imported earlier in the file
+                                DataRow[] duplicateBudgetRows =
+                                    BudgetTableExistingAndImported.Select(String.Format("{0}={1} And {2}={3} And {4}={5} And {6}='{7}' And {8}='{9}'",
+                                            ABudgetTable.GetLedgerNumberDBName(),
+                                            ALedgerNumber,
+                                            ABudgetTable.GetYearDBName(),
+                                            BudgetYearNumber,
+                                            ABudgetTable.GetRevisionDBName(),
+                                            BdgRevision,
+                                            ABudgetTable.GetCostCentreCodeDBName(),
+                                            CostCentre,
+                                            ABudgetTable.GetAccountCodeDBName(),
+                                            Account));
+
+                                if ((duplicateBudgetRows != null) && (duplicateBudgetRows.Length > 0))
+                                {
+                                    //TODO: update when budget revisioning is added
+                                    AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
+                                            String.Format(Catalog.GetString(
+                                                    "This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
+                                                BudgetYearStringUpper,
+                                                CostCentre,
+                                                Account),
+                                            TResultSeverity.Resv_Noncritical));
+
+                                    failedRows++;
+                                    continue;
+                                }
+
+                                //Add the new budget row
+                                ABudgetRow BudgetRow = (ABudgetRow)AImportDS.ABudget.NewRowTyped();
+                                int newSequence = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_budget)); // -1 * (AImportDS.ABudget.Rows.Count + 1);
+
+                                BudgetRow.BudgetSequence = newSequence;
+                                BudgetRow.LedgerNumber = ALedgerNumber;
+                                BudgetRow.Year = BudgetYearNumber;
+                                BudgetRow.Revision = BdgRevision;
+                                BudgetRow.CostCentreCode = CostCentre;
+                                BudgetRow.AccountCode = Account;
+                                BudgetRow.BudgetTypeCode = BudgetTypeUpper;
+                                AImportDS.ABudget.Rows.Add(BudgetRow);
+
+                                //Add to import table to check for later duplicates
+                                BudgetTableExistingAndImported.ImportRow(BudgetRow);
+
+                                //Add the budget periods
+                                for (int i = 0; i < NumPeriods; i++)
+                                {
+                                    ABudgetPeriodRow BudgetPeriodRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.NewRowTyped();
+                                    BudgetPeriodRow.BudgetSequence = newSequence;
+                                    BudgetPeriodRow.PeriodNumber = i + 1;
+                                    BudgetPeriodRow.BudgetBase = BudgetPeriods[i];
+                                    AImportDS.ABudgetPeriod.Rows.Add(BudgetPeriodRow);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        //If not in saved budget table, check if already been imported earlier in the file
-                        DataRow[] duplicateBudgetRows =
-                            BudgetTableExistingAndImported.Select(String.Format("{0}={1} And {2}={3} And {4}={5} And {6}='{7}' And {8}='{9}'",
-                                    ABudgetTable.GetLedgerNumberDBName(),
-                                    ALedgerNumber,
-                                    ABudgetTable.GetYearDBName(),
-                                    BudgetYearNumber,
-                                    ABudgetTable.GetRevisionDBName(),
-                                    BdgRevision,
-                                    ABudgetTable.GetCostCentreCodeDBName(),
-                                    CostCentre,
-                                    ABudgetTable.GetAccountCodeDBName(),
-                                    Account));
-
-                        if ((duplicateBudgetRows != null) && (duplicateBudgetRows.Length > 0))
+                        catch (Exception ex)
                         {
-                            //TODO: update when budget revisioning is added
-                            AVerificationResult.Add(new TVerificationResult(Catalog.GetString("Row: " + RowNumber.ToString("0000")),
-                                    String.Format(Catalog.GetString(
-                                            "This budget import row (Year: '{0}', Cost Centre: '{1}', Account: '{2}') is repeated in the import file!"),
-                                        BudgetYearStringUpper,
-                                        CostCentre,
-                                        Account),
-                                    TResultSeverity.Resv_Noncritical));
-
-                            AFailedRows++;
-                            continue;
+                            TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                                    Utilities.GetMethodSignature(),
+                                    Environment.NewLine,
+                                    ex.Message));
+                            throw ex;
                         }
-
-                        //Add the new budget row
-                        ABudgetRow BudgetRow = (ABudgetRow)AImportDS.ABudget.NewRowTyped();
-                        int newSequence = Convert.ToInt32(TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_budget)); // -1 * (AImportDS.ABudget.Rows.Count + 1);
-
-                        BudgetRow.BudgetSequence = newSequence;
-                        BudgetRow.LedgerNumber = ALedgerNumber;
-                        BudgetRow.Year = BudgetYearNumber;
-                        BudgetRow.Revision = BdgRevision;
-                        BudgetRow.CostCentreCode = CostCentre;
-                        BudgetRow.AccountCode = Account;
-                        BudgetRow.BudgetTypeCode = BudgetTypeUpper;
-                        AImportDS.ABudget.Rows.Add(BudgetRow);
-
-                        //Add to import table to check for later duplicates
-                        BudgetTableExistingAndImported.ImportRow(BudgetRow);
-
-                        //Add the budget periods
-                        for (int i = 0; i < NumPeriods; i++)
+                        finally
                         {
-                            ABudgetPeriodRow BudgetPeriodRow = (ABudgetPeriodRow)AImportDS.ABudgetPeriod.NewRowTyped();
-                            BudgetPeriodRow.BudgetSequence = newSequence;
-                            BudgetPeriodRow.PeriodNumber = i + 1;
-                            BudgetPeriodRow.BudgetBase = BudgetPeriods[i];
-                            AImportDS.ABudgetPeriod.Rows.Add(BudgetPeriodRow);
+                            // Read the next line
+                            ImportLine = sr.ReadLine();
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                            Utilities.GetMethodSignature(),
-                            Environment.NewLine,
-                            ex.Message));
-                    throw ex;
-                }
-                finally
-                {
-                    // Read the next line
-                    ImportLine = sr.ReadLine();
-                }
+                }); // NewOrExisting AutoReadTransaction
+
+            ARecordsUpdated = recordsUpdated;
+            AFailedRows = failedRows;
+
+            if (hasAccountCodeProblem)
+            {
+                AVerificationResult.Add(new TVerificationResult(
+                        Catalog.GetString("Account Code / Code Centre problem"),
+                        Catalog.GetString(
+                            "(To prevent the Excel program removing leading zeros, you can set the account column in the Excel spreadsheet to type 'Text')"),
+                        TResultSeverity.Resv_Info));
             }
-
-            //DataFile.Close();
 
             return RowNumber;
         }
 
-        private static bool ValidateKeyBudgetFields(int ALedgerNumber,
+        private static bool ValidateKeyBudgetFields(TDBTransaction Atransaction,
+            int ALedgerNumber,
             int ARowNumber,
-            ref ACostCentreTable ACostCentreTbl,
-            ref AAccountTable AAccountTbl,
+            ACostCentreTable ACostCentreTbl,
+            AAccountTable AAccountTbl,
             string ACostCentre,
             string AAccount,
             string ABudgetType,
             string ABudgetYearStringUpper,
-            ref TVerificationResultCollection AVerificationResult)
+            ref Boolean AHasAccountCodeProblem,
+            TVerificationResultCollection AVerificationResult)
         {
             string VerificationMessage = string.Empty;
 
-            ACostCentreTable CCTable = ACostCentreTbl;
-            AAccountTable AccTable = AAccountTbl;
-
-            ACostCentreRow CostCentreRow = null;
-            AAccountRow AccountRow = null;
-
-            if (CCTable == null)
+            if (ACostCentreTbl.Rows.Count == 0)
             {
                 try
                 {
-                    TDBTransaction transaction = null;
+                    ACostCentreTbl = ACostCentreAccess.LoadViaALedger(ALedgerNumber, Atransaction);
+                    AAccountTbl = AAccountAccess.LoadViaALedger(ALedgerNumber, Atransaction);
 
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                        TEnforceIsolationLevel.eilMinimum,
-                        ref transaction,
-                        delegate
-                        {
-                            CCTable = ACostCentreAccess.LoadViaALedger(ALedgerNumber, transaction);
-                            AccTable = AAccountAccess.LoadViaALedger(ALedgerNumber, transaction);
+                    #region Validate Data
 
-                            #region Validate Data
+                    if ((ACostCentreTbl == null) || (ACostCentreTbl.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Cost Centre data for Ledger number {1} does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true),
+                                ALedgerNumber));
+                    }
+                    else if ((AAccountTbl == null) || (AAccountTbl.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true),
+                                ALedgerNumber));
+                    }
 
-                            if ((CCTable == null) || (CCTable.Count == 0))
-                            {
-                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                            "Function:{0} - Cost Centre data for Ledger number {1} does not exist or could not be accessed!"),
-                                        Utilities.GetMethodName(true),
-                                        ALedgerNumber));
-                            }
-                            else if ((AccTable == null) || (AccTable.Count == 0))
-                            {
-                                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                            "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
-                                        Utilities.GetMethodName(true),
-                                        ALedgerNumber));
-                            }
-
-                            #endregion Validate Data
-                        });
-
-                    ACostCentreTbl = CCTable;
-                    AAccountTbl = AccTable;
+                    #endregion Validate Data
                 }
                 catch (Exception ex)
                 {
@@ -786,11 +781,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             //Check for missing or inactive cost centre
-            CostCentreRow = (ACostCentreRow)ACostCentreTbl.Rows.Find(new object[] { ALedgerNumber, ACostCentre });
+            ACostCentreRow CostCentreRow = (ACostCentreRow)ACostCentreTbl.Rows.Find(new object[] { ALedgerNumber, ACostCentre });
 
             if (CostCentreRow == null)
             {
                 VerificationMessage += String.Format(Catalog.GetString(" Cost Centre: '{0}' does not exist."), ACostCentre);
+                AHasAccountCodeProblem = true;
             }
             else if (!CostCentreRow.CostCentreActiveFlag)
             {
@@ -798,11 +794,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             //Check for missing or inactive account code
-            AccountRow = (AAccountRow)AAccountTbl.Rows.Find(new object[] { ALedgerNumber, AAccount });
+            AAccountRow AccountRow = (AAccountRow)AAccountTbl.Rows.Find(new object[] { ALedgerNumber, AAccount });
 
             if (AccountRow == null)
             {
                 VerificationMessage += String.Format(Catalog.GetString(" Account: '{0}' does not exist."), AAccount);
+                AHasAccountCodeProblem = true;
             }
             else if (!AccountRow.AccountActiveFlag)
             {
@@ -988,11 +985,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             ref string Line,
             string Separator,
             string ABudgetType,
-            ref decimal[] ABudgetPeriods,
+            decimal[] ABudgetPeriods,
             string ABudgetYearString,
             string ACostCentre,
             string AAccount,
-            ref TVerificationResultCollection AVerificationResult)
+            TVerificationResultCollection AVerificationResult)
         {
             //Assume return true
             bool RetVal = true;
@@ -1118,7 +1115,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             return RetVal;
-        }
+        } // Process BudgetType Import Details
 
         /// <summary>
         /// Exports budgets

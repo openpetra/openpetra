@@ -62,7 +62,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 string DisplayMember = "Field Name";
                 string ValueMember = "Field Key";
 
-                DataTable Table = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember);
+                DataTable Table = TRemote.MFinance.Reporting.WebConnectors.GetReceivingFields(FLedgerNumber, out DisplayMember, out ValueMember, true);
 
                 DataColumn FirstColumn = new DataColumn(CheckedMember, typeof(bool));
 

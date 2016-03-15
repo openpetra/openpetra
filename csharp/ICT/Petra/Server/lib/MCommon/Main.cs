@@ -1072,7 +1072,9 @@ namespace Ict.Petra.Server.MCommon
         /// users' AppDomain).</param>
         public TReportingDbAdapter(bool ASeparateDBConnection)
         {
-            FPrivateDatabaseObj = EstablishDBConnection(ASeparateDBConnection);
+            FPrivateDBConnection = ASeparateDBConnection;
+
+            FPrivateDatabaseObj = EstablishDBConnection(ASeparateDBConnection, "FastReports Report DB Connection");
         }
 
         /// <summary>
@@ -1113,13 +1115,12 @@ namespace Ict.Petra.Server.MCommon
         /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
         /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets returned by this Method (with the
         /// 'globally available' open DB Connection that exists for the users' AppDomain).</param>
+        /// <param name="AConnectionName"></param>
         /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
-        private TDataBase EstablishDBConnection(bool ASeparateDBConnection)
+        public static TDataBase EstablishDBConnection(bool ASeparateDBConnection, String AConnectionName)
         {
             if (ASeparateDBConnection)
             {
-                FPrivateDBConnection = true;
-
                 TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
 
                 FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
@@ -1129,8 +1130,7 @@ namespace Ict.Petra.Server.MCommon
                     TSrvSetting.DBUsername,
                     TSrvSetting.DBPassword,
                     "",
-                    "FastReports Report DB Connection");
-
+                    AConnectionName);
                 return FDBAccessObj;
             }
             else
