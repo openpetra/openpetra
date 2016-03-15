@@ -261,6 +261,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     FEarliestAccountingPeriodStartDate = ledgerRow.CurrentPeriodStartDate;
                 }
             }
+
+            if ((FPetraUtilsObject == null) || (FPetraUtilsObject.GetCallerForm() == null))
+            {
+                // This code runs only during testing
+                FEarliestAccountingPeriodStartDate = DateTime.Now.AddMonths(-1);
+                FLatestAccountingPeriodEndDate = DateTime.Now.AddMonths(1);
+
+                Console.WriteLine("Latest forwarding period is: {0}", FLatestAccountingPeriodEndDate.ToLongDateString());
+            }
         }
 
         /// <summary>
