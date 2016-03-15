@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.App.Gui
                 MessageBox.Show(Catalog.GetString("Could not find the template to use for printing."), msgTitle);
                 return;
             }
-#ifdef USING_TEMPLATER
+#if USING_TEMPLATER
             string targetDir = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mPartner);
             TTemplaterAccess.AppendUserAndDateInfo(ref targetDir, Path.GetFileNameWithoutExtension(templatePath));
 
