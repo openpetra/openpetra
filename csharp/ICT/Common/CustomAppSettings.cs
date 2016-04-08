@@ -256,11 +256,14 @@ namespace Ict.Common
 
             if (FAppSettingsElement != null)
             {
-                XmlNodeList list = FAppSettingsElement.SelectNodes("add[@key='" + AStartingWith + ".*']");
+                XmlNodeList list = FAppSettingsElement.SelectNodes("add");
 
                 foreach (XmlElement appsetting in list)
                 {
-                    Result.Add(appsetting.GetAttribute("key"));
+                    if ((AStartingWith == String.Empty) || appsetting.GetAttribute("key").StartsWith(AStartingWith))
+                    {
+                        Result.Add(appsetting.GetAttribute("key"));
+                    }
                 }
             }
 
