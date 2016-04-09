@@ -4,7 +4,7 @@
 // @Authors:
 //       charlvj, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,6 +101,25 @@ namespace Ict.Common
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// return all keys of available options
+        /// </summary>
+        /// <param name="AStartingWith">only keys that start with this string</param>
+        public StringCollection GetOptKeys(string AStartingWith = "")
+        {
+            StringCollection Result = new StringCollection();
+
+            foreach (string opt in FList)
+            {
+                if ((AStartingWith == String.Empty) || (opt.StartsWith(AStartingWith)))
+                {
+                    Result.Add(opt);
+                }
+            }
+
+            return Result;
         }
 
         /// <summary>

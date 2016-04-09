@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Specialized;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
@@ -237,6 +238,36 @@ namespace Ict.Common
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// return all keys of available options and configuration parameters
+        /// </summary>
+        /// <param name="AStartingWith">only keys starting with this string</param>
+        /// <returns></returns>
+        public static StringCollection GetKeys(String AStartingWith = "")
+        {
+            StringCollection Result = new StringCollection();
+
+            if (FCmdOpts != null)
+            {
+                Result = FCmdOpts.GetOptKeys(AStartingWith);
+            }
+
+            if (FAppSettingsElement != null)
+            {
+                XmlNodeList list = FAppSettingsElement.SelectNodes("add");
+
+                foreach (XmlElement appsetting in list)
+                {
+                    if ((AStartingWith == String.Empty) || appsetting.GetAttribute("key").StartsWith(AStartingWith))
+                    {
+                        Result.Add(appsetting.GetAttribute("key"));
+                    }
+                }
+            }
+
+            return Result;
         }
 
         /// <summary>
