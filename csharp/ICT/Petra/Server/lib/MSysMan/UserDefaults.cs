@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +29,7 @@ using Ict.Common;
 using Ict.Common.Data.Exceptions;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
+using Ict.Common.Session;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
@@ -56,19 +57,69 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         private const String USERDEFAULTSDT_NAME = "UserDefaultsCacheDT";
 
         /// <summary>internal cache DataSet of the UserDefaults  for current user only</summary>
-        private static DataSet UUserDefaultsDS;
+        private static DataSet UUserDefaultsDS
+        {
+            set
+            {
+                TSession.SetVariable("UUserDefaultsDS", value);
+            }
+            get
+            {
+                return (DataSet)TSession.GetVariable("UUserDefaultsDS");
+            }
+        }
 
         /// <summary>internal cache DataTable of the UserDefaults  for current user only</summary>
-        private static SUserDefaultsTable UUserDefaultsDT;
+        private static SUserDefaultsTable UUserDefaultsDT
+        {
+            set
+            {
+                TSession.SetVariable("UUserDefaultsDT", value);
+            }
+            get
+            {
+                return (SUserDefaultsTable)TSession.GetVariable("UUserDefaultsDT");
+            }
+        }
 
         /// <summary>DataView on the internal cache DataTable</summary>
-        private static DataView UUserDefaultsDV;
+        private static DataView UUserDefaultsDV
+        {
+            set
+            {
+                TSession.SetVariable("UUserDefaultsDV", value);
+            }
+            get
+            {
+                return (DataView)TSession.GetVariable("UUserDefaultsDV");
+            }
+        }
 
         /// <summary>used to control read and write access to the cache</summary>
-        private static System.Threading.ReaderWriterLock UReadWriteLock;
+        private static System.Threading.ReaderWriterLock UReadWriteLock
+        {
+            set
+            {
+                TSession.SetVariable("UReadWriteLock", value);
+            }
+            get
+            {
+                return (System.Threading.ReaderWriterLock)TSession.GetVariable("UReadWriteLock");
+            }
+        }
 
         /// <summary>tells whether the cache is containing data, or not</summary>
-        private static Boolean UTableCached;
+        private static Boolean UTableCached
+        {
+            set
+            {
+                TSession.SetVariable("UTableCached", value);
+            }
+            get
+            {
+                return (Boolean)TSession.GetVariable("UTableCached");
+            }
+        }
 
         /// <summary>
         /// initialize some static variables
@@ -802,15 +853,18 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 
             try
             {
-                if (UUserDefaultsDT.Rows.Count > 0)
+                SUserDefaultsTable DefaultsDT = UUserDefaultsDT;
+
+                if (DefaultsDT.Rows.Count > 0)
                 {
                     TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
-                        ref UUserDefaultsDT,
+                        ref DefaultsDT,
                         null,
                         ASendUpdateInfoToClient);
 
                     // we don't have any unsaved changes anymore in the cache table.
-                    UUserDefaultsDT.AcceptChanges();
+                    DefaultsDT.AcceptChanges();
+                    UUserDefaultsDT = DefaultsDT;
                 }
                 else
                 {
