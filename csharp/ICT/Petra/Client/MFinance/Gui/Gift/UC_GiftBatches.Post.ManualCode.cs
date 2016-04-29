@@ -242,16 +242,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
-                    string ErrorMessages = String.Empty;
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+                    StringBuilder errorMessages = new StringBuilder();
+                    int counter = 0;
+
+                    errorMessages.AppendLine(Catalog.GetString("________________________Gift Posting Errors________________________"));
+                    errorMessages.AppendLine();
 
                     foreach (TVerificationResult verif in Verifications)
                     {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
+                        counter++;
+                        errorMessages.AppendLine(counter.ToString("000") + " - " + verif.ResultText);
+                        errorMessages.AppendLine();
                     }
 
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+                    extendedMessageBox.ShowDialog(errorMessages.ToString(),
+                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
                 }
                 else
                 {

@@ -3953,10 +3953,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             GiftBatchRow.BatchPeriod,
                             GLEffectiveDate),
                         TResultSeverity.Resv_Critical));
-                return null;
             }
+
             //Check international exchange rate
-            else if (IntlToBaseExchRate == 0)
+            if (IntlToBaseExchRate == 0)
             {
                 AVerifications.Add(
                     new TVerificationResult(
@@ -3964,10 +3964,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         String.Format(Catalog.GetString("No Corporate Exchange rate exists for the month: {0:MMMM yyyy}!"),
                             GLEffectiveDate),
                         TResultSeverity.Resv_Critical));
-                return null;
             }
+
             //Check Hash total
-            else if ((GiftBatchRow.HashTotal != 0) && (GiftBatchRow.BatchTotal != GiftBatchRow.HashTotal))
+            if ((GiftBatchRow.HashTotal != 0) && (GiftBatchRow.BatchTotal != GiftBatchRow.HashTotal))
             {
                 AVerifications.Add(
                     new TVerificationResult(
@@ -3976,12 +3976,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             StringHelper.FormatUsingCurrencyCode(GiftBatchRow.BatchTotal, GiftBatchRow.CurrencyCode),
                             StringHelper.FormatUsingCurrencyCode(GiftBatchRow.HashTotal, GiftBatchRow.CurrencyCode)),
                         TResultSeverity.Resv_Critical));
-                return null;
             }
 
+            DataView GiftDetailsDV = new DataView(MainDS.AGiftDetail);
+            GiftDetailsDV.Sort = string.Format("{0} ASC, {1} ASC",
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
+
             //Check validity at the gift detail level
-            foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+            //foreach (GiftBatchTDSAGiftDetailRow giftDetail in MainDS.AGiftDetail.Rows)
+            foreach (DataRowView dRV in GiftDetailsDV)
             {
+                GiftBatchTDSAGiftDetailRow giftDetail = (GiftBatchTDSAGiftDetailRow)dRV.Row;
+
                 // find motivation detail row
                 AMotivationDetailRow motivationRow =
                     (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(new object[] { ALedgerNumber,
@@ -3997,10 +4004,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             String.Format(Catalog.GetString("Donor Key needed in gift {0}"),
                                 giftDetail.GiftTransactionNumber),
                             TResultSeverity.Resv_Critical));
-                    return null;
                 }
+
                 //check for valid motivation detail code
-                else if (motivationRow == null)
+                if (motivationRow == null)
                 {
                     AVerifications.Add(
                         new TVerificationResult(
@@ -4010,7 +4017,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 giftDetail.MotivationDetailCode,
                                 giftDetail.GiftTransactionNumber),
                             TResultSeverity.Resv_Critical));
-                    return null;
                 }
 
                 // data is only updated if the gift amount is positive
@@ -4030,9 +4036,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     giftDetail.GiftTransactionNumber) +
                                 "\n\n" +
                                 Catalog.GetString(
-                                    "A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
+                                    " A Gift Destination will need to be assigned to this Partner before this gift can be posted with the Motivation Group 'GIFT'."),
                                 TResultSeverity.Resv_Critical));
-                        return null;
                     }
                     //Check for missing cost centre code
                     else if (giftDetail.IsCostCentreCodeNull() || (giftDetail.CostCentreCode == string.Empty))
@@ -4048,7 +4053,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 Catalog.GetString(
                                     "A Gift Destination will need to be assigned to this Partner."),
                                 TResultSeverity.Resv_Critical));
-                        return null;
                     }
                 }
 
@@ -4064,11 +4068,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             String.Format(Catalog.GetString("Exchange rate to base currency is 0 in Batch {0}!"),
                                 ABatchNumber),
                             TResultSeverity.Resv_Critical));
-                    return null;
                 }
-                else if ((GiftBatchRow.CurrencyCode != LedgerBaseCurrency)
-                         && !IsDailyExchangeRateIsStillValid(GiftBatchRow.CurrencyCode, LedgerBaseCurrency, GiftBatchRow.GlEffectiveDate,
-                             GiftBatchRow.ExchangeRateToBase, ATransaction))
+
+                if ((GiftBatchRow.CurrencyCode != LedgerBaseCurrency)
+                    && !IsDailyExchangeRateIsStillValid(GiftBatchRow.CurrencyCode, LedgerBaseCurrency, GiftBatchRow.GlEffectiveDate,
+                        GiftBatchRow.ExchangeRateToBase, ATransaction))
                 {
                     AVerifications.Add(
                         new TVerificationResult(
@@ -4076,7 +4080,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             String.Format(Catalog.GetString("Exchange rate to base currency is invalid in Batch {0}!"),
                                 ABatchNumber),
                             TResultSeverity.Resv_Critical));
-                    return null;
+                }
+
+                if (AVerifications.Count > 0)
+                {
+                    continue;
                 }
 
                 //Calculate GiftAmount
@@ -4113,7 +4121,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications2))
                         {
                             AVerifications.AddCollection(Verifications2);
-                            return null;
+                            continue;
                         }
 
                         if (FeeAmount != 0)
@@ -4122,6 +4130,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     }
                 }
+            }
+
+            if (AVerifications.Count > 0)
+            {
+                return null;
             }
 
             return MainDS;

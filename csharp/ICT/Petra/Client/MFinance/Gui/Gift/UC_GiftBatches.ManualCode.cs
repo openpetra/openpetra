@@ -27,15 +27,16 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -989,6 +990,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool Success = false;
 
+            bool LoadDialogVisible = false;
+            TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
+
             if (GetSelectedRowIndex() < 0)
             {
                 return; // Oops - there's no selected row.
@@ -1000,6 +1004,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 Cursor = Cursors.WaitCursor;
 
+                dlgStatus.Show();
+                LoadDialogVisible = true;
+                dlgStatus.Heading = String.Format(Catalog.GetString("Batch {0}"), FSelectedBatchNumber);
+                dlgStatus.CurrentStatus = Catalog.GetString("Loading gifts ready for posting...");
+
                 if (!LoadAllBatchData(FSelectedBatchNumber))
                 {
                     Cursor = Cursors.Default;
@@ -1008,10 +1017,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
+                dlgStatus.CurrentStatus = Catalog.GetString("Checking for inactive values...");
+
                 if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed))
                 {
                     return;
                 }
+
+                dlgStatus.Close();
+                LoadDialogVisible = false;
 
                 Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, postingAlreadyConfirmed);
 
@@ -1055,6 +1069,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             finally
             {
+                if (LoadDialogVisible)
+                {
+                    dlgStatus.Close();
+                }
+
                 Cursor = Cursors.Default;
             }
         }
