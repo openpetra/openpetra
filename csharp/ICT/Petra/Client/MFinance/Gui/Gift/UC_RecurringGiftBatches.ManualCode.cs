@@ -35,6 +35,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
@@ -113,7 +114,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             RefreshBankAccountAndCostCentreData();
 
             // if this form is readonly, then we need all codes, because old codes might have been used
-            bool ActiveOnly = this.Enabled;
+            bool ActiveOnly = false; // this.Enabled;
             SetupAccountAndCostCentreCombos(ActiveOnly);
 
             cmbDetailMethodOfPaymentCode.AddNotSetRow("", "");
@@ -920,6 +921,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailHashTotal.Focus();
                 txtDetailHashTotal.SelectAll();
                 return;
+            }
+
+            //Check for inactive KeyMinistries
+            DataTable GiftsWithInactiveKeyMinistries;
+
+            if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, FSelectedBatchNumber,
+                    out GiftsWithInactiveKeyMinistries, true))
+            {
+                int numInactiveValues = GiftsWithInactiveKeyMinistries.Rows.Count;
+
+                string listOfOffendingRows =
+                    String.Format(Catalog.GetString(
+                            "{0} inactive key ministries found in Recurring Gift Batch {1}. Do you still want to submit?{2}{2}"),
+                        numInactiveValues,
+                        FSelectedBatchNumber,
+                        Environment.NewLine);
+
+                listOfOffendingRows += "Gift      Detail   Recipient          KeyMinistry" + Environment.NewLine;
+                listOfOffendingRows += "-------------------------------------------------------------------------------";
+
+                foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
+                {
+                    listOfOffendingRows += String.Format("{0}{1:0000}    {2:00}        {3:00000000000}    {4}",
+                        Environment.NewLine,
+                        dr[0],
+                        dr[1],
+                        dr[2],
+                        dr[3]);
+                }
+
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                if (extendedMessageBox.ShowDialog(listOfOffendingRows.ToString(),
+                        Catalog.GetString("Submit Batch"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbYesNo,
+                        TFrmExtendedMessageBox.TIcon.embiWarning) != TFrmExtendedMessageBox.TResult.embrYes)
+                {
+                    return;
+                }
             }
 
             TFrmRecurringGiftBatchSubmit submitForm = new TFrmRecurringGiftBatchSubmit(FPetraUtilsObject.GetForm());

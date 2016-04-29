@@ -4433,6 +4433,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             string ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
 
+                            ////TODO: remove
+                            ////Test purposes
+                            //TLogging.Log("Post-Ledger Name = " + ledgerName);
+
                             //
                             // Print Gift Batch Detail report (on the client!)
                             foreach (Int32 BatchNumber in ABatchNumbers)
@@ -5106,9 +5110,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="APartnerKey">Partner Key </param>
         /// <param name="AFieldNumber">Field Number </param>
+        /// <param name="AActiveOnly">Field Number </param>
         /// <returns>ArrayList for loading the key ministry combobox</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static PUnitTable LoadKeyMinistry(Int64 APartnerKey, out Int64 AFieldNumber)
+        public static PUnitTable LoadKeyMinistry(Int64 APartnerKey, out Int64 AFieldNumber, bool AActiveOnly = true)
         {
             #region Validate Arguments
 
@@ -5132,7 +5137,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref Transaction,
                     delegate
                     {
-                        UnitTable = LoadKeyMinistries(APartnerKey, Transaction);
+                        UnitTable = LoadKeyMinistries(APartnerKey, Transaction, AActiveOnly);
                         FieldNumber = GetRecipientFundNumber(APartnerKey);
                     });
 
@@ -5156,7 +5161,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// get the key ministries. If Recipient is a field, get the key ministries of that field.
         /// If Recipient is a key ministry itself, get all key ministries of the same field
         /// </summary>
-        private static PUnitTable LoadKeyMinistries(Int64 ARecipientPartnerKey, TDBTransaction ATransaction)
+        private static PUnitTable LoadKeyMinistries(Int64 ARecipientPartnerKey, TDBTransaction ATransaction, bool AActiveOnly)
         {
             #region Validate Arguments
 
@@ -5185,11 +5190,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     case MPartnerConstants.UNIT_TYPE_KEYMIN:
                         Int64 fieldNumber = GetRecipientFundNumber(ARecipientPartnerKey);
-                        UnitTable = LoadKeyMinistriesOfField(fieldNumber, ATransaction);
+                        UnitTable = LoadKeyMinistriesOfField(fieldNumber, ATransaction, AActiveOnly);
                         break;
 
                     case MPartnerConstants.UNIT_TYPE_FIELD:
-                        UnitTable = LoadKeyMinistriesOfField(ARecipientPartnerKey, ATransaction);
+                        UnitTable = LoadKeyMinistriesOfField(ARecipientPartnerKey, ATransaction, AActiveOnly);
                         break;
                 }
             }
@@ -5197,7 +5202,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             return UnitTable;
         }
 
-        private static PUnitTable LoadKeyMinistriesOfField(Int64 APartnerKey, TDBTransaction ATransaction)
+        private static PUnitTable LoadKeyMinistriesOfField(Int64 APartnerKey, TDBTransaction ATransaction, bool AActiveOnly)
         {
             #region Validate Arguments
 
@@ -5220,8 +5225,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 "WHERE us.um_parent_unit_key_n = " + APartnerKey.ToString() + " " +
                 "AND unit.p_partner_key_n = us.um_child_unit_key_n " +
                 "AND unit.u_unit_type_code_c = '" + MPartnerConstants.UNIT_TYPE_KEYMIN + "' " +
-                "AND partner.p_partner_key_n = unit.p_partner_key_n " +
-                "AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_ACTIVE + "'";
+                "AND partner.p_partner_key_n = unit.p_partner_key_n ";
+
+            if (AActiveOnly)
+            {
+                sqlLoadKeyMinistriesOfField += " AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_ACTIVE + "'";
+            }
 
             PUnitTable UnitTable = new PUnitTable();
 
@@ -5236,9 +5245,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AInactiveKMsTable"></param>
+        /// <param name="ARecurringGift"></param>
         /// <returns>Return true if inactive ones found</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static bool InactiveKeyMinistriesFoundInBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out DataTable AInactiveKMsTable)
+        public static bool InactiveKeyMinistriesFoundInBatch(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            out DataTable AInactiveKMsTable,
+            bool ARecurringGift = false)
         {
             #region Validate Arguments
 
@@ -5264,6 +5277,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetDetailNumberDBName(), typeof(Int32)));
             AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetRecipientKeyDBName(), typeof(Int64)));
             AInactiveKMsTable.Columns.Add(new DataColumn(PUnitTable.GetUnitNameDBName(), typeof(String)));
+
+            if (!ARecurringGift)
+            {
+                AInactiveKMsTable.Columns.Add(new DataColumn(AGiftDetailTable.GetModifiedDetailDBName(), typeof(Boolean)));
+            }
+
             DataTable InactiveKMsTable = AInactiveKMsTable;
 
             TDBTransaction Transaction = null;
@@ -5277,11 +5296,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         SQLLoadInactiveKeyMinistriesInBatch =
                             "SELECT gd.a_gift_transaction_number_i, a_detail_number_i, p_recipient_key_n, unit.p_unit_name_c" +
-                            " FROM a_gift_detail gd, um_unit_structure us, p_unit unit, p_partner partner" +
+                            (ARecurringGift ? " FROM a_recurring_gift_detail gd," : ", gd.a_modified_detail_l FROM a_gift_detail gd,") +
+                            "   um_unit_structure us, p_unit unit, p_partner partner" +
                             " WHERE gd.p_recipient_key_n = partner.p_partner_key_n" +
                             "   AND gd.a_ledger_number_i = " + ALedgerNumber.ToString() +
                             "   AND gd.a_batch_number_i = " + ABatchNumber.ToString() +
-                            "   AND gd.a_gift_transaction_amount_n > 0" +
+                            (ARecurringGift ? " AND gd.a_gift_amount_n > 0" : "") +
                             "   AND partner.p_partner_key_n = unit.p_partner_key_n" +
                             "   AND partner.p_status_code_c = '" + MPartnerConstants.PARTNERSTATUS_INACTIVE + "'" +
                             "   AND unit.p_partner_key_n = us.um_child_unit_key_n" +

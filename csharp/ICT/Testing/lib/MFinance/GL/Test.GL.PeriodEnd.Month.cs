@@ -327,14 +327,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         public void Test_SwitchToNextMonth()
         {
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
-            TLedgerInfo ledgerInfo = new TLedgerInfo(FLedgerNumber);
-            int counter = 0;
+            TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
+            int Counter = 0;
 
             do
             {
-                Int32 CurrentPeriod = ledgerInfo.CurrentPeriod;
-                ++counter;
-                Assert.Greater(20, counter, "Too many loops");
+                Int32 CurrentPeriod = LedgerInfo.CurrentPeriod;
+                ++Counter;
+                Assert.Greater(20, Counter, "Too many loops");
 
                 // Set revaluation flag ...
                 new TLedgerInitFlagHandler(FLedgerNumber,
@@ -345,15 +345,15 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false, out verificationResult);
 
-                if (!ledgerInfo.ProvisionalYearEndFlag)
+                if (!LedgerInfo.ProvisionalYearEndFlag)
                 {
                     Assert.AreEqual(CurrentPeriod + 1,
-                        ledgerInfo.CurrentPeriod, "Period increment");
+                        LedgerInfo.CurrentPeriod, "Period increment");
                 }
 
                 Assert.IsFalse(blnHasErrors, "Month end without any error");
-                System.Diagnostics.Debug.WriteLine("Counter: " + counter.ToString());
-            } while (!ledgerInfo.ProvisionalYearEndFlag);
+                System.Diagnostics.Debug.WriteLine("Counter: " + Counter.ToString());
+            } while (!LedgerInfo.ProvisionalYearEndFlag);
         }
 
         /// <summary>

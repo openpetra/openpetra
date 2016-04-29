@@ -335,7 +335,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 if (ATransActionIsInForeign)
                 {
                     TAccountInfo accountCheck =
-                        new TAccountInfo(FLedgerInfo, AAccount);
+                        new TAccountInfo(FLedgerInfo.LedgerNumber, AAccount);
 
                     if (accountCheck.IsValid)
                     {

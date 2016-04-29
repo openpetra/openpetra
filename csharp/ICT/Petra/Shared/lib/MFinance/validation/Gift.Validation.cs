@@ -165,20 +165,20 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
                 }
 
-                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
-                    AAccountTableRef,
-                    ValidationContext.ToString(),
-                    AAccountTable.GetAccountActiveFlagDBName(),
-                    AContext,
-                    ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                //VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                //    AAccountTableRef,
+                //    ValidationContext.ToString(),
+                //    AAccountTable.GetAccountActiveFlagDBName(),
+                //    AContext,
+                //    ValidationColumn,
+                //    ValidationControlsData.ValidationControl);
 
-                // Handle addition/removal to/from TVerificationResultCollection
-                if ((VerificationResult != null)
-                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }
+                //// Handle addition/removal to/from TVerificationResultCollection
+                //if ((VerificationResult != null)
+                //    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                //{
+                //    VerifResultCollAddedCount++;
+                //}
             }
 
             // Bank Cost Centre Code validation
@@ -222,21 +222,21 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     }
                 }
 
-                // Bank Cost Centre Code must be active
-                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
-                    ACostCentreTableRef,
-                    ValidationContext.ToString(),
-                    ACostCentreTable.GetCostCentreActiveFlagDBName(),
-                    AContext,
-                    ValidationColumn,
-                    ValidationControlsData.ValidationControl);
+                //// Bank Cost Centre Code must be active
+                //VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                //    ACostCentreTableRef,
+                //    ValidationContext.ToString(),
+                //    ACostCentreTable.GetCostCentreActiveFlagDBName(),
+                //    AContext,
+                //    ValidationColumn,
+                //    ValidationControlsData.ValidationControl);
 
-                // Handle addition/removal to/from TVerificationResultCollection
-                if ((VerificationResult != null)
-                    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
-                {
-                    VerifResultCollAddedCount++;
-                }
+                //// Handle addition/removal to/from TVerificationResultCollection
+                //if ((VerificationResult != null)
+                //    && AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn, true))
+                //{
+                //    VerifResultCollAddedCount++;
+                //}
             }
 
             // Currency Code validation

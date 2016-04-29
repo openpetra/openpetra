@@ -81,8 +81,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         {
             try
             {
-                TLedgerInfo LedgerInfo = new TLedgerInfo(ALedgerNum);
-                bool res = new TYearEnd(LedgerInfo).RunYearEnd(AIsInInfoMode, out AVerificationResult);
+                TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum);
+                bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode, out AVerificationResult);
 
                 if (!res)
                 {
@@ -381,7 +381,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private List <String>LoadAccountList()
         {
             List <String>accountList = null;
-            FaccountInfo = new TAccountInfo(FledgerInfo);
+            FaccountInfo = new TAccountInfo(FledgerInfo.LedgerNumber);
             bool blnIncomeFound = false;
             bool blnExpenseFound = false;
             String strIncomeAccount = TAccountTypeEnum.Income.ToString();

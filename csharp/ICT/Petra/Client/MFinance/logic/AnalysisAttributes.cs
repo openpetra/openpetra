@@ -987,6 +987,11 @@ namespace Ict.Petra.Client.MFinance.Logic
             StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 AAccountCode, true);
 
+            if (RequiredAnalAttrCodes.Count == 0)
+            {
+                return true;
+            }
+
             string AnalysisCodeFilterValues = TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
 
             DataView analAttrib = new DataView(AGLBatchDS.ATransAnalAttrib);

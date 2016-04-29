@@ -543,8 +543,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!FPostingLogicObject.PostingInProgress)
             {
-                bool ActiveOnly = Unposted;
-                RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
+                bool activeOnly = false; //unposted
+                RefreshBankAccountAndCostCentreFilters(activeOnly, ARow);
             }
 
             FLedgerNumber = ARow.LedgerNumber;
@@ -996,9 +996,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                bool postingAlreadyConfirmed = false;
+
                 Cursor = Cursors.WaitCursor;
 
-                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow);
+                if (!LoadAllBatchData(FSelectedBatchNumber))
+                {
+                    Cursor = Cursors.Default;
+                    MessageBox.Show(Catalog.GetString("The Gift Batch is empty!"), Catalog.GetString("Posting failed"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+
+                if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed))
+                {
+                    return;
+                }
+
+                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, postingAlreadyConfirmed);
 
                 if (Success)
                 {
@@ -1042,6 +1057,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 Cursor = Cursors.Default;
             }
+        }
+
+        private bool AllowInactiveFieldValues(ref bool APostingConfirmed)
+        {
+            //Check for inactive Bank Cost Centre & Account
+            string bankCostCentre = FPreviouslySelectedDetailRow.BankCostCentre;
+            string bankAccount = FPreviouslySelectedDetailRow.BankAccountCode;
+
+            if (!FAccountAndCostCentreLogicObject.AccountIsActive(bankAccount)
+                || !FAccountAndCostCentreLogicObject.CostCentreIsActive(bankCostCentre))
+            {
+                string msg =
+                    string.Format(Catalog.GetString(
+                            "Gift batch {0} has an inactive bank cost centre and/or account!{1}{1}Do you want to continue posting batch {0} ?"),
+                        FPreviouslySelectedDetailRow.BatchNumber,
+                        Environment.NewLine);
+
+                if (MessageBox.Show(msg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) != DialogResult.Yes)
+                {
+                    return false;
+                }
+
+                APostingConfirmed = true;
+            }
+
+            return true;
+        }
+
+        private Boolean LoadAllBatchData(int ABatchNumber)
+        {
+            return ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(FLedgerNumber, ABatchNumber);
         }
 
         private void ExportBatches(System.Object sender, System.EventArgs e)

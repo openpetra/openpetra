@@ -1144,7 +1144,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if Unit Recipient
             else
             {
-                TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, true);
+                //At this point, only active KeyMinistries are allowed in a live gift
+                bool activeOnly = true;
+                TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, activeOnly);
 
                 // enable / disable combo box depending on whether it contains any key ministries
                 if ((cmbKeyMinistries.Table == null) || (cmbKeyMinistries.Table.Rows.Count == 0))

@@ -24,16 +24,21 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Odbc;
+using System.Text.RegularExpressions;
+using System.Threading;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 
@@ -45,6 +50,11 @@ namespace Ict.Petra.Server.MFinance.Common
     public class TLedgerInfo
     {
         int FLedgerNumber;
+
+        //Used for extracting ledger name irrespective of current active Ledger
+        static ReaderWriterLockSlim FReadWriteLock = new ReaderWriterLockSlim();
+        static Dictionary <int, string>FLedgerNamesDict = new Dictionary <int, string>();
+        static Dictionary <int, string>FLedgerCountryCodeDict = new Dictionary <int, string>();
 
         //
         // Several utilities may each have their own TLedgerInfo object, so several objects can be created for the same ledger.
@@ -68,7 +78,149 @@ namespace Ict.Petra.Server.MFinance.Common
         public TLedgerInfo(int ALedgerNumber, TDataBase ADataBase = null)
         {
             FLedgerNumber = ALedgerNumber;
+
+            PopulateLedgerDictionaries(ALedgerNumber);
+
+            //GetDataRow();
             GetDataRow(ADataBase);
+        }
+
+        private static void PopulateLedgerDictionaries(int ALedgerNumber, TDataBase ADataBase = null)
+        {
+            bool LedgerDictPrePopulated = (FLedgerNamesDict.Count > 0);
+
+            if (LedgerDictPrePopulated && FLedgerNamesDict.ContainsKey(ALedgerNumber))
+            {
+                return;
+            }
+
+            //Prepare a temp dictionaries for minimum time in lock
+            Dictionary <int, string>LedgerNamesDictTemp = new Dictionary <int, string>();
+            Dictionary <int, string>LedgerCountryCodesDictTemp = new Dictionary <int, string>();
+
+            //Take a backup for reversion purposes if error occurs
+            Dictionary <int, string>LedgerNamesDictBackup = null;
+            Dictionary <int, string>LedgerCountryCodesDictBackup = null;
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        String strSql = "SELECT a_ledger_number_i, p_partner_short_name_c, a_country_code_c" +
+                                        " FROM PUB_a_ledger, PUB_p_partner" +
+                                        " WHERE PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n;";
+
+                        DataTable ledgerData = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", Transaction);
+
+                        #region Validate Data
+
+                        if ((ledgerData == null) || (ledgerData.Rows.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Ledger and Partner data does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true)));
+                        }
+
+                        #endregion Validate Data
+
+                        int currentLedger = 0;
+                        string currentLedgerName = string.Empty;
+                        string currentLedgerCountryCode = string.Empty;
+
+                        for (int i = 0; i < ledgerData.Rows.Count; i++)
+                        {
+                            currentLedger = (int)ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()];
+                            currentLedgerName = Convert.ToString(ledgerData.Rows[i][PPartnerTable.GetPartnerShortNameDBName()]);
+                            currentLedgerCountryCode = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetCountryCodeDBName()]);
+
+                            LedgerNamesDictTemp.Add(currentLedger, currentLedgerName);
+                            LedgerCountryCodesDictTemp.Add(currentLedger, currentLedgerCountryCode);
+                        }
+
+                        bool lockEntered = false;
+
+                        try
+                        {
+                            if (FReadWriteLock.TryEnterWriteLock(10))
+                            {
+                                lockEntered = true;
+
+                                if (LedgerDictPrePopulated)
+                                {
+                                    //Backup dictionaries
+                                    LedgerNamesDictBackup = new Dictionary <int, string>(FLedgerNamesDict);
+                                    LedgerCountryCodesDictBackup = new Dictionary <int, string>(FLedgerCountryCodeDict);
+
+                                    FLedgerNamesDict.Clear();
+                                    FLedgerCountryCodeDict.Clear();
+                                }
+
+                                FLedgerNamesDict = new Dictionary <int, string>(LedgerNamesDictTemp);
+                                FLedgerCountryCodeDict = new Dictionary <int, string>(LedgerCountryCodesDictTemp);
+                            }
+                        }
+                        finally
+                        {
+                            if (lockEntered)
+                            {
+                                FReadWriteLock.ExitWriteLock();
+                            }
+                        }
+                    });
+            }
+            catch (Exception ex)
+            {
+                if (LedgerNamesDictBackup != null)
+                {
+                    FLedgerNamesDict = new Dictionary <int, string>(LedgerNamesDictBackup);
+                    FLedgerCountryCodeDict = new Dictionary <int, string>(LedgerCountryCodesDictBackup);
+                }
+
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
+        }
+
+        /// <summary>
+        /// Get the name for this Ledger
+        /// </summary>
+        public static string GetLedgerCountryCode(int ALedgerNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            string LedgerCountryCode = string.Empty;
+
+            PopulateLedgerDictionaries(ALedgerNumber);
+
+            try
+            {
+                FReadWriteLock.EnterReadLock();
+
+                LedgerCountryCode = FLedgerCountryCodeDict[ALedgerNumber];
+            }
+            finally
+            {
+                FReadWriteLock.ExitReadLock();
+            }
+
+            return LedgerCountryCode;
         }
 
         /// <summary>
@@ -88,6 +240,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     ref Transaction,
                     delegate
                     {
+                        //Reload all ledgers each time
                         FLedgerTbl = ALedgerAccess.LoadAll(Transaction); // FLedgerTbl is static - this refreshes *any and all* TLedgerInfo objects.
 
                         #region Validate Data 1
@@ -130,14 +283,16 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        private void CommitLedgerChange()
+        private void CommitLedgerChange(TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = null;
             Boolean SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
                     delegate
                     {
                         ALedgerAccess.SubmitChanges(FLedgerTbl, Transaction);
@@ -200,6 +355,47 @@ namespace Ict.Petra.Server.MFinance.Common
                 });
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get the name for this Ledger
+        /// </summary>
+        public static string GetLedgerName(int ALedgerNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            PopulateLedgerDictionaries(ALedgerNumber);
+
+            string LedgerName = string.Empty;
+
+            try
+            {
+                FReadWriteLock.EnterReadLock();
+
+                LedgerName = FLedgerNamesDict[ALedgerNumber];
+
+                FReadWriteLock.ExitReadLock();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+
+                throw;
+            }
+
+            return LedgerName;
         }
 
         /// <summary>
@@ -272,7 +468,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        ///
+        /// Read or write the CurrentPeriod
         /// </summary>
         public int CurrentPeriod
         {
@@ -296,7 +492,6 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                GetDataRow();
                 return FLedgerRow.NumberOfAccountingPeriods;
             }
         }
@@ -308,7 +503,6 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                GetDataRow();
                 return FLedgerRow.NumberFwdPostingPeriods;
             }
         }
@@ -350,6 +544,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
+                GetDataRow();
                 return FLedgerRow.YearEndProcessStatus;
             }
             set
@@ -414,7 +609,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// get the default bank account for this ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        public static string GetDefaultBankAccount(int ALedgerNumber)
+        /// <param name="ADataBase"></param>
+        public static string GetDefaultBankAccount(int ALedgerNumber, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -436,7 +632,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 try
                 {
-                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum, ref readTransaction,
                         delegate
                         {
@@ -453,30 +649,31 @@ namespace Ict.Petra.Server.MFinance.Common
                             }
                             else
                             {
-                                string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c " +
-                                                  "FROM a_gift_batch " +
-                                                  "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
-                                                  " AND a_gift_batch.a_batch_number_i = (" +
-                                                  "SELECT max(a_gift_batch.a_batch_number_i) " +
-                                                  "FROM a_gift_batch " +
-                                                  "WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
-                                                  " AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "')";
+                                string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c" +
+                                                  " FROM a_gift_batch " +
+                                                  " WHERE a_gift_batch.a_ledger_number_i =" + ALedgerNumber +
+                                                  "  AND a_gift_batch.a_batch_number_i =" +
+                                                  "   (SELECT max(a_gift_batch.a_batch_number_i)" +
+                                                  "     FROM a_gift_batch " +
+                                                  "     WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
+                                                  "      AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "');";
 
-                                DataTable LatestAccountCode = DBAccess.GDBAccessObj.SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
+                                DataTable latestAccountCode =
+                                    DBAccess.GetDBAccessObj(ADataBase).SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
 
                                 // use the Bank Account of the previous Gift Batch
-                                if ((LatestAccountCode != null) && (LatestAccountCode.Rows.Count > 0))
+                                if ((latestAccountCode != null) && (latestAccountCode.Rows.Count > 0))
                                 {
-                                    BankAccountCode = LatestAccountCode.Rows[0][AGiftBatchTable.GetBankAccountCodeDBName()].ToString(); //"a_bank_account_code_c"
+                                    BankAccountCode = latestAccountCode.Rows[0][AGiftBatchTable.GetBankAccountCodeDBName()].ToString(); //"a_bank_account_code_c"
                                 }
                                 // if this is the first ever gift batch (this should happen only once!) then use the first appropriate Account Code in the database
                                 else
                                 {
-                                    AAccountTable AccountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, readTransaction);
+                                    AAccountTable accountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, readTransaction);
 
                                     #region Validate Data
 
-                                    if ((AccountTable == null) || (AccountTable.Count == 0))
+                                    if ((accountTable == null) || (accountTable.Count == 0))
                                     {
                                         throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
                                                     "Function:{0} - Account data for Ledger number {1} does not exist or could not be accessed!"),
@@ -486,15 +683,14 @@ namespace Ict.Petra.Server.MFinance.Common
 
                                     #endregion Validate Data
 
-                                    DataView dv = AccountTable.DefaultView;
+                                    DataView dv = accountTable.DefaultView;
                                     dv.Sort = AAccountTable.GetAccountCodeDBName() + " ASC"; //a_account_code_c
                                     dv.RowFilter = String.Format("{0} = true AND {1} = true",
                                         AAccountTable.GetAccountActiveFlagDBName(),
                                         AAccountTable.GetPostingStatusDBName()); // "a_account_active_flag_l = true AND a_posting_status_l = true";
                                     DataTable sortedDT = dv.ToTable();
 
-                                    TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
-                                    TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ledgerInfo);
+                                    TGetAccountHierarchyDetailInfo accountHierarchyTools = new TGetAccountHierarchyDetailInfo(ALedgerNumber);
                                     List <string>children = accountHierarchyTools.GetChildren(MFinanceConstants.CASH_ACCT);
 
                                     foreach (DataRow account in sortedDT.Rows)
@@ -523,6 +719,7 @@ namespace Ict.Petra.Server.MFinance.Common
             return BankAccountCode;
         }
     }
+
 
     /// <summary>
     /// This is the list of valid Ledger-Init-Flags
@@ -609,7 +806,7 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
 
-        private bool FindRecord()
+        private bool FindRecord(TDataBase ADataBase = null)
         {
             bool RecordFound = false;
 
@@ -618,7 +815,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
                     delegate
                     {
@@ -639,14 +836,14 @@ namespace Ict.Petra.Server.MFinance.Common
             return RecordFound;
         }
 
-        private void CreateRecord()
+        private void CreateRecord(TDataBase ADataBase = null)
         {
             TDBTransaction ReadWriteTransaction = null;
             Boolean SubmissionOK = false;
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                     ref ReadWriteTransaction, ref SubmissionOK,
                     delegate
                     {
@@ -673,12 +870,12 @@ namespace Ict.Petra.Server.MFinance.Common
             }
         }
 
-        private void DeleteRecord()
+        private void DeleteRecord(TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = null;
             Boolean SubmissionOK = true;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
