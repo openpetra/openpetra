@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -112,8 +112,8 @@ namespace Ict.Testing.NUnitPetraServer
 
             TSetupDelegates.Init();
             TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
-            DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
-                Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+            DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = 
+                @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
             StringHelper.CurrencyFormatTable = DBAccess.GDBAccessObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
 

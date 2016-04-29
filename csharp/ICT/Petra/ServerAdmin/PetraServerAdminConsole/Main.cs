@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -658,6 +658,7 @@ namespace PetraServerAdminConsole
         /// have been connected while the PetraServer has been running.</param>
         /// <param name="ACurrentlyConnectedClients">Number of currently
         /// connected Clients.</param>
+        /// <param name="ASiteKey">The SiteKey</param>
         static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey)
         {
             ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
