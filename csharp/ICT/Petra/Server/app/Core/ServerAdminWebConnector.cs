@@ -103,6 +103,15 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         }
 
         /// <summary>
+        /// get the site key
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static Int64 GetSiteKey()
+        {
+            return TServerManagerBase.TheServerManager.SiteKey;
+        }
+
+        /// <summary>
         /// get list of clients
         /// </summary>
         [RequireModulePermission("SYSMAN")]

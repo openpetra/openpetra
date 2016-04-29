@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,10 +45,9 @@ namespace Ict.Petra.Server.App.Core
     /// transparent to the caller. A reload of the cached System Defaults table can
     /// be requested. Read access to the cache table is denied while the cache table
     /// is (re)loaded to allow safe multi-threading operation.
-    ///
-    /// @Comment The System Defaults are retrieved from the s_system_defaults table
-    ///   and are put into a Typed DataTable that has the structure of this table.
     /// </summary>
+    /// <remarks>The System Defaults are retrieved from the s_system_defaults table
+    /// and are put into a Typed DataTable that has the structure of this table.</remarks>
     public class TSystemDefaultsCache : ISystemDefaultsCache
     {
         /// a static variable for global access to the system defaults
@@ -68,13 +67,14 @@ namespace Ict.Petra.Server.App.Core
         /// <summary>holds a state that tells whether the Typed DataTable is cached or not</summary>
         private Boolean FTableCached;
 
+        private readonly object FTableCachedLockCookie = new object();
+
         /// <summary>this Typed DataTable holds the cached System Defaults</summary>
         private SSystemDefaultsTable FSystemDefaultsDT;
 
         /// <summary>used to control read and write access to the cache</summary>
         private System.Threading.ReaderWriterLock FReadWriteLock;
 
-        #region TSystemDefaultsCache
 
         /// <summary>
         /// constructor
@@ -98,13 +98,16 @@ namespace Ict.Petra.Server.App.Core
         {
             SSystemDefaultsTable ReturnValue;
 
-            // FIXME Inquiring FTableCached (and potentially updating) isn't done in a thread-safe manner - it needs to be
-            // made thread-safe by using a lock!
-            if (!FTableCached)
+            // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
+            // FTableCached value!
+            lock (FTableCachedLockCookie)
             {
-                LoadSystemDefaultsTable();
+                if (!FTableCached)
+                {
+                    LoadSystemDefaultsTable();
 
-                FTableCached = true;
+                    FTableCached = true;
+                }
             }
 
             try
@@ -122,6 +125,7 @@ namespace Ict.Petra.Server.App.Core
                 // Release read lock on the cache table
                 FReadWriteLock.ReleaseReaderLock();
             }
+
             return ReturnValue;
         }
 
@@ -143,13 +147,16 @@ namespace Ict.Petra.Server.App.Core
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
 
-            // FIXME Inquiring FTableCached (and potentially updating) isn't done in a thread-safe manner - it needs to be
-            // made thread-safe by using a lock!
-            if (!FTableCached)
+            // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
+            // FTableCached value!
+            lock (FTableCachedLockCookie)
             {
-                LoadSystemDefaultsTable();
+                if (!FTableCached)
+                {
+                    LoadSystemDefaultsTable();
 
-                FTableCached = true;
+                    FTableCached = true;
+                }
             }
 
             try
@@ -177,6 +184,7 @@ namespace Ict.Petra.Server.App.Core
                 // Release read lock on the cache table
                 FReadWriteLock.ReleaseReaderLock();
             }
+
             return ReturnValue;
         }
 
@@ -330,6 +338,8 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         /// <param name="AKey"></param>
         /// <param name="ADefault"></param>
+        /// <remarks><em>Do not inquire the 'SiteKey' System Default with this Method!</em> Rather, always use the
+        /// <see cref="GetSiteKeyDefault"/> Method!</remarks>
         /// <returns></returns>
         public System.Int64 GetInt64Default(String AKey, System.Int64 ADefault)
         {
@@ -340,6 +350,8 @@ namespace Ict.Petra.Server.App.Core
         /// get int default
         /// </summary>
         /// <param name="AKey"></param>
+        /// <remarks><em>Do not inquire the 'SiteKey' System Default with this Method!</em> Rather, always use the
+        /// <see cref="GetSiteKeyDefault"/> Method!</remarks>
         /// <returns>0 if key does not exist</returns>
         public System.Int64 GetInt64Default(String AKey)
         {
@@ -368,6 +380,49 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
+        /// Gets the SiteKey Sytem Default.
+        /// </summary>
+        /// <remarks>
+        /// Note: The SiteKey can get changed by a user with the necessary priviledges while being logged
+        /// in to OpenPetra and this gets reflected when this Method gets called.</remarks>
+        /// <returns>The SiteKey of the Site.</returns>
+        public System.Int64 GetSiteKeyDefault()
+        {
+            const string AlternativeSiteKeyDefaultKey = "SiteKeyPetra2";
+            Int64 ReturnValue;
+
+            ReturnValue = GetInt64Default(SharedConstants.SYSDEFAULT_SITEKEY, 99000000);
+
+            if (ReturnValue != 99000000)
+            {
+                return ReturnValue;
+            }
+            else
+            {
+                // This is for the case that OpenPetra connects to a legacy (Petra 2.3) database.
+                // In this case we cannot add the SiteKey to the SystemDefaults, because Petra 2.3 would have a conflict
+                // since it adds it on startup already to the in-memory defaults, but not to the database.
+                // (See also resolved Bug #114 (https://tracker.openpetra.org/view.php?id=114)
+                ReturnValue = GetInt64Default(AlternativeSiteKeyDefaultKey, 99000000);
+            }
+
+            if (ReturnValue != 99000000)
+            {
+                return ReturnValue;
+            }
+            else
+            {
+                // This can happen either with a legacy Petra 2.x database or with a fresh OpenPetra database without
+                // any Ledger yet,
+                TLogging.LogAtLevel(1, TLogging.LOG_PREFIX_INFO +
+                    String.Format("There is no '{0}' or '{1}' record in the s_system_defaults DB Table. This is only OK if " +
+                        "this is a new OpenPetra Site!", SharedConstants.SYSDEFAULT_SITEKEY, AlternativeSiteKeyDefaultKey));
+
+                return ReturnValue;
+            }
+        }
+
+        /// <summary>
         /// Loads the System Defaults into the cached Typed DataTable.
         ///
         /// The System Defaults are retrieved from the s_system_defaults table and are
@@ -377,8 +432,8 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>void</returns>
         private void LoadSystemDefaultsTable()
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
+            TDataBase DBAccessObj = new Ict.Common.DB.TDataBase();
+            TDBTransaction ReadTransaction = null;
 
             // Prevent other threads from obtaining a read lock on the cache table while we are (re)loading the cache table!
             FReadWriteLock.AcquireWriterLock(SharedConstants.THREADING_WAIT_INFINITE);
@@ -392,18 +447,24 @@ namespace Ict.Petra.Server.App.Core
 
                 try
                 {
-                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.RepeatableRead,
-                        TEnforceIsolationLevel.eilMinimum,
-                        out NewTransaction);
-                    FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+                    DBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                        TSrvSetting.PostgreSQLServer,
+                        TSrvSetting.PostgreSQLServerPort,
+                        TSrvSetting.PostgreSQLDatabaseName,
+                        TSrvSetting.DBUsername,
+                        TSrvSetting.DBPassword,
+                        "",
+                        "SystemDefaultsCache DB Connection");
+
+                    DBAccessObj.BeginAutoReadTransaction(IsolationLevel.RepeatableRead, ref ReadTransaction,
+                        delegate
+                        {
+                            FSystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadTransaction);
+                        });
                 }
                 finally
                 {
-                    if (NewTransaction)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                        TLogging.LogAtLevel(7, "TSystemDefaultsCache.LoadSystemDefaultsTable: commited own transaction.");
-                    }
+                    DBAccessObj.CloseDBConnection();
                 }
 
                 // Thread.Sleep(5000);     uncomment this for debugging. This allows checking whether read access to FSystemDefaultsDT actually waits until we release the WriterLock in the finally block.
@@ -426,141 +487,98 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// Saves changes to the submitted Typed SystemDefaults DataTable to the DB.
-        ///
-        /// @comment Currently always returns false because the function needs to be
-        /// rewritten!
-        ///
-        /// @todo Rewrite this function so that it saves entries that originally came
-        /// from the s_system_parameter table in the DB to this table instead of
-        /// writing them to the s_system_defaults table! Also use the DataStore to
-        /// save the data instead of using SQL queries!!!
-        ///
+        /// Sets the value of a System Default. If the System Default doesn't exist yet it will be created by that call.
         /// </summary>
-        /// <param name="ASystemDefaultsDataTable">Typed SystemDefaults DataTable</param>
-        /// <returns>true if the System Defaults could be saved successfully
-        /// </returns>
-        public Boolean SaveSystemDefaults(SSystemDefaultsTable ASystemDefaultsDataTable)
+        /// <param name="AKey">Name of new or existing System Default.</param>
+        /// <param name="AValue">String Value.</param>
+        public void SetSystemDefault(String AKey, String AValue)
         {
-            // var
-            // Transaction: OdbcTransaction;
-            // ParametersArray: array of OdbcParameter;
-            // Counter,
-            // DefaultInDataBaseCount: Int16;
-            // AllSubmissionsOK: Boolean;
+            bool SystemDefaultAdded;
 
-            /* TODO 2 oChristanK cDB : Rewrite this function so that it saves entries that originally came from the s_system_parameter table
-             * in the DB to this table instead of writing them to the s_system_defaults table! Also use the DataStore to
-             * save the data instead of using SQL queries!!!
-             */
-
-            // Currently always returns false because the function needs to be rewritten!
-            return false;
-
-            // AllSubmissionsOK := false;
-            // DefaultInDataBaseCount := 0;
-            //
-            // if (ASystemDefaultsDataTable <> nil) and (ASystemDefaultsDataTable.Rows.Count > 0) then
-            // begin
-            // $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Saving ' + (ASystemDefaultsDataTable.Rows.Count).ToString + ' System Defaults...'); $ENDIF
-            //
-            // Transaction := DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-            //
-            // Loop over all changed/added System Defaults
-            // for Counter := 0 to ASystemDefaultsDataTable.Rows.Count  1 do
-            // begin
-            // Look whether the System Default already exists in the DB
-            // SetLength(ParametersArray, 1);
-            // ParametersArray[0] := new OdbcParameter('', OdbcType.VarChar, 32);
-            // ParametersArray[0].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString;
-            //
-            // try
-            // DefaultInDataBaseCount := Convert.ToInt16( DBAccess.GDBAccessObj.ExecuteScalar(
-            // 'SELECT COUNT) ' +
-            // 'FROM PUB_s_system_defaults ' +
-            // 'WHERE s_default_code_c = ?', Transaction, false, ParametersArray) );
-            // except
-            // on exp: Exception do
-            // begin
-            // Result := false;
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running count query!!! ' +
-            // 'Possible cause: ' + exp.ToString); $ENDIF
-            // Exit;
-            // end;
-            // end;
-            //
-            // if DefaultInDataBaseCount = 0 then
-            // begin
-            // System Default doesn't exist yet > create it
-
-            /* $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Inserting SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
-             *ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString);$ENDIF */
-
-            // SetLength(ParametersArray, 3);
-            // ParametersArray[0] := new OdbcParameter('', OdbcType.VarChar, 32);
-            // ParametersArray[0].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString;
-            // ParametersArray[0] := new OdbcParameter('', OdbcType.VarChar, 48);
-            // ParametersArray[0].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_description_c'].ToString;
-            // ParametersArray[2] := new OdbcParameter('', OdbcType.VarChar, 96);
-            // ParametersArray[2].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString;
-            //
-            // try
-            // DBAccess.GDBAccessObj.ExecuteNonQuery(
-            // 'INSERT INTO PUB_s_system_defaults ' +
-            // '(s_default_code_c, s_default_description_c, s_default_value_c) ' +
-            // 'VALUES (?, ?, ?)', Transaction, false, ParametersArray);
-            // except
-            // on exp: Exception do
-            // begin
-            // Result := false;
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error running insert query!!! ' +
-            // 'Possible cause: ' + exp.ToString); $ENDIF
-            // Exit;
-            // end;
-            // end;
-            // end
-            // else
-            // begin
-            // System Default exists > update it
-
-            /* $IFDEF DEBUGMODE if TLogging.DL >= 8 then Console.WriteLine('Updating SystemDefault ' + ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'].ToString + '; Value: ' +
-             *ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'].ToString);$ENDIF */
-
-            // SetLength(ParametersArray, 3);
-            // ParametersArray[0] := new OdbcParameter('', OdbcType.VarChar, 48);
-            // ParametersArray[0].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_description_c'];
-            // ParametersArray[1] := new OdbcParameter('', OdbcType.VarChar, 96);
-            // ParametersArray[1].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_value_c'];
-            // ParametersArray[2] := new OdbcParameter('', OdbcType.VarChar, 32);
-            // ParametersArray[2].Value := ASystemDefaultsDataTable.Rows[Counter].Item['s_default_code_c'];
-            //
-            // try
-            // DBAccess.GDBAccessObj.ExecuteNonQuery(
-            // 'UPDATE PUB_s_system_defaults ' +
-            // 'SET s_default_description_c = ?, s_default_value_c = ? ' +
-            // 'WHERE s_default_code_c = ?', Transaction, false, ParametersArray);
-            // except
-            // on exp: Exception do
-            // begin
-            // Result := false;
-            // $IFDEF DEBUGMODE if TLogging.DL >= 9 then Console.WriteLine(this.GetType.FullName + '.SaveSystemDefaults: Error runing insert query!!! ' +
-            // 'Possible cause: ' + exp.ToString); $ENDIF
-            // Exit;
-            // end;
-            // end;
-            // end;
-            // end;
-            //
-            // DBAccess.GDBAccessObj.CommitTransaction;
-            // Result := AllSubmissionsOK;
-            // end
-            // else
-            // begin
-            // nothing to save!
-            // Result := false;
-            // end;
+            SetSystemDefault(AKey, AValue, out SystemDefaultAdded);
         }
 
-        #endregion
+        /// <summary>
+        /// Stores a System Default in the DB. If it was already there it gets updated, if it wasn't there it gets added.
+        /// </summary>
+        /// <remarks>The change gets reflected in the System Defaults Cache the next time the System Defaults Cache
+        /// gets accessed.</remarks>
+        /// <param name="AKey">Name of the System Default.</param>
+        /// <param name="AValue">Value of the System Default.</param>
+        /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
+        public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
+        {
+            Boolean NewTransaction = false;
+            Boolean ShouldCommit = false;
+            SSystemDefaultsTable SystemDefaultsDT;
+
+            try
+            {
+                TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+
+                SystemDefaultsDT = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, ReadWriteTransaction);
+
+                if (SystemDefaultsDT.Rows.Count > 0)
+                {
+                    // I already have this System Default in the DB --> simply update the Value in the DB.
+                    // (This will often be the case!)
+                    DataRow SystemDefaultsDR = SystemDefaultsDT[0];
+                    ((SSystemDefaultsRow)SystemDefaultsDR).DefaultValue = AValue;
+
+                    AAdded = false;
+                }
+                else
+                {
+                    // The System Default isn't in the DB yet --> store it in the DB.
+                    var SystemDefaultsDR = SystemDefaultsDT.NewRowTyped(true);
+                    SystemDefaultsDR.DefaultCode = AKey;
+                    SystemDefaultsDR.DefaultDescription = "Created in OpenPetra";
+                    SystemDefaultsDR.DefaultValue = AValue;
+
+                    SystemDefaultsDT.Rows.Add(SystemDefaultsDR);
+
+                    AAdded = true;
+                }
+
+                SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, ReadWriteTransaction);
+
+                ShouldCommit = true;
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log(
+                    "TSystemDefaultCache.SetSystemDefault: An Exception occured during the saving of the System Default '" + AKey +
+                    "'. Value to be saved: + '" + AValue + "'" +
+                    Environment.NewLine + Exc.ToString());
+
+                ShouldCommit = false;
+
+                throw;
+            }
+            finally
+            {
+                if (NewTransaction)
+                {
+                    if (ShouldCommit)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+
+                        // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
+
+                        // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
+                        // FTableCached value!
+                        lock (FTableCachedLockCookie)
+                        {
+                            FTableCached = false;
+                        }
+                    }
+                    else
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+                }
+            }
+        }
     }
 }

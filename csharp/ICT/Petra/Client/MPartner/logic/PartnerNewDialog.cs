@@ -104,7 +104,7 @@ namespace Ict.Petra.Client.MPartner
 
             if ((APreselectedSiteKey == 0) || (APreselectedSiteKey == -1))
             {
-                ASiteKey = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY));
+                ASiteKey = TSystemDefaults.GetSiteKeyDefault();
             }
             else
             {

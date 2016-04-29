@@ -389,7 +389,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 GenAppRow.ApplicationKey = (int)DBAccess.GDBAccessObj.GetNextSequenceValue("seq_application", ATransaction);
 
                 GenAppRow.OldLink =
-                    TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "") + ";" + GenAppRow.ApplicationKey.ToString();
+                    TSystemDefaults.GetSiteKeyDefault() + ";" + GenAppRow.ApplicationKey.ToString();
                 GenAppRow.RegistrationOffice = DomainManager.GSiteKey; // When this is imported, RegistrationOffice can't be null.
 
                 GenAppRow.GenAppDate = DateTime.Now;

@@ -61,7 +61,7 @@ namespace Ict.Petra.Server.MCommon.Processing
 
                         TSystemDefaults.GetSystemDefault(
                             PROCESSDATACHECK_LAST_RUN,
-                            new TVariant(DateTime.MinValue).EncodeToString(), ADataBaseObj)).ToDate();
+                            new TVariant(DateTime.MinValue).EncodeToString())).ToDate();
 
                 if (LastRun.AddDays(TAppSettingsManager.GetInt16("DataChecks.RunEveryXDays", 1)) > DateTime.Now)
                 {
@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
             CheckModule(ADataBaseObj, "DataCheck.MPartner.");
 
-            TSystemDefaults.SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString(), ADataBaseObj);
+            TSystemDefaults.SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString());
         }
 
         private static void CheckModule(TDataBase ADataBaseObj, string AModule)

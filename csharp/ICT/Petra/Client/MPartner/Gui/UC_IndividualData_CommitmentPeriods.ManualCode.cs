@@ -103,8 +103,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             ARow.ReceivingField = 0;
             ARow.SetReceivingFieldOfficeNull();
-            ARow.OfficeRecruitedBy = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
-            ARow.HomeOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+            ARow.OfficeRecruitedBy = TSystemDefaults.GetSiteKeyDefault();
+            ARow.HomeOffice = TSystemDefaults.GetSiteKeyDefault();
             ARow.StartOfCommitment = DateTime.Now.Date;
         }
 

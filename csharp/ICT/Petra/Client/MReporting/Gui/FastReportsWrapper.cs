@@ -289,7 +289,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             //
             // Some params are always provided for reports:
             bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE", true));
+                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
 
             ACalc.AddParameter("param_tax_deductible_pct", TaxDeductiblePercentageEnabled);
 
