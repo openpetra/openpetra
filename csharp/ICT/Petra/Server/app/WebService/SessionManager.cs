@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -47,6 +47,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Delegates;
 using Ict.Petra.Shared.Interfaces.MCommon;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.App.WebService
 {
@@ -134,6 +135,8 @@ namespace Ict.Petra.Server.App.WebService
 
                     // initialise the cached tables
                     TSetupDelegates.Init();
+
+                    TUserDefaults.InitializeUnit();
                 }
                 catch (Exception e)
                 {
