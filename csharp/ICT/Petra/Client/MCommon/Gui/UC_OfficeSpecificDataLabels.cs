@@ -1021,7 +1021,10 @@ namespace Ict.Petra.Client.MCommon.Gui
             // FLocalDataLabelValuesGrid.AutoSize;
             FLocalDataLabelValuesGrid.AutoStretchColumnsToFitWidth = true;
             FLocalDataLabelValuesGrid.Columns.StretchToFit();
-            ApplySecurity();
+
+            // TODO: Disable security check for now until new security model is in place
+            //ApplySecurity();
+
             FGridIsSetUp = true;
 
             // set width for controls (comboboxes and buttons)
