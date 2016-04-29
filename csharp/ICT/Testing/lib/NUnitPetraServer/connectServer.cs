@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,6 +36,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Delegates;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 
 namespace Ict.Testing.NUnitPetraServer
 {
@@ -46,7 +47,7 @@ namespace Ict.Testing.NUnitPetraServer
     /// required parameters (in the config file or on the command line):
     /// AutoLogin
     /// AutoLoginPasswd
-    public class TPetraServerConnector
+    public static class TPetraServerConnector
     {
         /// <summary>
         /// Initialize the Petra server and connect to the database.
@@ -114,6 +115,8 @@ namespace Ict.Testing.NUnitPetraServer
             TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
             DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
                 Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+
+            TUserDefaults.InitializeUnit();
 
             StringHelper.CurrencyFormatTable = DBAccess.GDBAccessObj.SelectDT("SELECT * FROM PUB_a_currency", "a_currency", null);
 
