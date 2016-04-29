@@ -1035,12 +1035,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     string Query = "SELECT Gift.*" +
                                    " FROM a_gift AS Gift" +
                                    " WHERE Gift.a_ledger_number_i = " + ALedgerNumber +
-                                   " AND Gift.p_donor_key_n = " + ADonorPartnerKey +
-                                   " AND Gift.a_date_entered_d =" +
-                                   "(SELECT MAX(a_gift.a_date_entered_d)" +
-                                   " FROM a_gift" +
-                                   " WHERE a_gift.a_ledger_number_i = " + ALedgerNumber +
-                                   " AND a_gift.p_donor_key_n = " + ADonorPartnerKey + ")";
+                                   "  AND Gift.p_donor_key_n = " + ADonorPartnerKey +
+                                   " ORDER BY Gift.a_date_entered_d DESC" +
+                                   " LIMIT 1;";
 
                     DataTable GiftTable = DBAccess.GDBAccessObj.SelectDT(Query, AGiftTable.GetTableDBName(), Transaction);
 

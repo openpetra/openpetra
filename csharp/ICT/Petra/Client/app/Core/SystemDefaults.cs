@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.App.Core
         {
             return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSiteKeyDefault();
         }
-        
+
         /// <summary>
         /// Sets the value of a System Default. If the System Default doesn't exist yet it will be created by that call.
         /// </summary>

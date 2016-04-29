@@ -81,7 +81,6 @@ namespace Ict.Petra.Server.MFinance.Common
 
             PopulateLedgerDictionaries(ALedgerNumber);
 
-            //GetDataRow();
             GetDataRow(ADataBase);
         }
 
@@ -192,6 +191,89 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         /// Get the name for this Ledger
         /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        public static string GetLedgerName(int ALedgerNumber, TDataBase ADataBase = null)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            String ReturnValue = string.Empty;
+            TDBTransaction ReadTransaction = null;
+
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
+                                    ALedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
+                    DataTable tab = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
+
+                    if (tab.Rows.Count > 0)
+                    {
+                        ReturnValue = Convert.ToString(tab.Rows[0][PPartnerTable.GetPartnerShortNameDBName()]); //"p_partner_short_name_c"
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get the name for this Ledger
+        /// </summary>
+        public static string GetLedgerName(int ALedgerNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            string LedgerName = string.Empty;
+
+            try
+            {
+                PopulateLedgerDictionaries(ALedgerNumber);
+
+                FReadWriteLock.EnterReadLock();
+
+                LedgerName = FLedgerNamesDict[ALedgerNumber];
+
+                FReadWriteLock.ExitReadLock();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+
+                throw;
+            }
+
+            return LedgerName;
+        }
+
+        /// <summary>
+        /// Get the name for this Ledger
+        /// </summary>
         public static string GetLedgerCountryCode(int ALedgerNumber)
         {
             #region Validate Arguments
@@ -207,17 +289,24 @@ namespace Ict.Petra.Server.MFinance.Common
 
             string LedgerCountryCode = string.Empty;
 
-            PopulateLedgerDictionaries(ALedgerNumber);
-
             try
             {
+                PopulateLedgerDictionaries(ALedgerNumber);
+
                 FReadWriteLock.EnterReadLock();
 
                 LedgerCountryCode = FLedgerCountryCodeDict[ALedgerNumber];
-            }
-            finally
-            {
+
                 FReadWriteLock.ExitReadLock();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+
+                throw ex;
             }
 
             return LedgerCountryCode;
@@ -313,89 +402,6 @@ namespace Ict.Petra.Server.MFinance.Common
             }
 
             GetDataRow();
-        }
-
-        /// <summary>
-        /// Get the name for this Ledger
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
-        /// gets passed then the Method executes DB commands with the 'globally available'
-        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
-        /// Argument!</param>
-        public static string GetLedgerName(int ALedgerNumber, TDataBase ADataBase = null)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-
-            #endregion Validate Arguments
-
-            String ReturnValue = string.Empty;
-            TDBTransaction ReadTransaction = null;
-
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
-                delegate
-                {
-                    String strSql = "SELECT p_partner_short_name_c FROM PUB_a_ledger, PUB_p_partner WHERE a_ledger_number_i=" +
-                                    ALedgerNumber + " AND PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n";
-                    DataTable tab = DBAccess.GetDBAccessObj(ADataBase).SelectDT(strSql, "GetLedgerName_TempTable", ReadTransaction);
-
-                    if (tab.Rows.Count > 0)
-                    {
-                        ReturnValue = Convert.ToString(tab.Rows[0][PPartnerTable.GetPartnerShortNameDBName()]); //"p_partner_short_name_c"
-                    }
-                });
-
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// Get the name for this Ledger
-        /// </summary>
-        public static string GetLedgerName(int ALedgerNumber)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-
-            #endregion Validate Arguments
-
-            PopulateLedgerDictionaries(ALedgerNumber);
-
-            string LedgerName = string.Empty;
-
-            try
-            {
-                FReadWriteLock.EnterReadLock();
-
-                LedgerName = FLedgerNamesDict[ALedgerNumber];
-
-                FReadWriteLock.ExitReadLock();
-            }
-            catch (Exception ex)
-            {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
-                throw;
-            }
-
-            return LedgerName;
         }
 
         /// <summary>
@@ -652,11 +658,9 @@ namespace Ict.Petra.Server.MFinance.Common
                                 string SQLQuery = "SELECT a_gift_batch.a_bank_account_code_c" +
                                                   " FROM a_gift_batch " +
                                                   " WHERE a_gift_batch.a_ledger_number_i =" + ALedgerNumber +
-                                                  "  AND a_gift_batch.a_batch_number_i =" +
-                                                  "   (SELECT max(a_gift_batch.a_batch_number_i)" +
-                                                  "     FROM a_gift_batch " +
-                                                  "     WHERE a_gift_batch.a_ledger_number_i = " + ALedgerNumber +
-                                                  "      AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "');";
+                                                  "  AND a_gift_batch.a_gift_type_c = '" + MFinanceConstants.GIFT_TYPE_GIFT + "'" +
+                                                  " ORDER BY a_gift_batch.a_batch_number_i DESC" +
+                                                  " LIMIT 1;";
 
                                 DataTable latestAccountCode =
                                     DBAccess.GetDBAccessObj(ADataBase).SelectDT(SQLQuery, "LatestAccountCode", readTransaction);
@@ -843,8 +847,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
-                    ref ReadWriteTransaction, ref SubmissionOK,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref ReadWriteTransaction,
+                    ref SubmissionOK,
                     delegate
                     {
                         ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
@@ -866,7 +872,7 @@ namespace Ict.Petra.Server.MFinance.Common
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw;
+                throw ex;
             }
         }
 
@@ -875,20 +881,33 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction Transaction = null;
             Boolean SubmissionOK = true;
 
-            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
-                ref Transaction, ref SubmissionOK,
-                delegate
-                {
-                    ALedgerInitFlagTable LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                        FLedgerNumber, FFlagName, Transaction);
-
-                    if (LedgerInitFlagTable.Rows.Count == 1)
+            try
+            {
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
                     {
-                        ((ALedgerInitFlagRow)LedgerInitFlagTable.Rows[0]).Delete();
+                        ALedgerInitFlagTable LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                            FLedgerNumber, FFlagName, Transaction);
 
-                        ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
-                    }
-                });
+                        if (LedgerInitFlagTable.Rows.Count == 1)
+                        {
+                            ((ALedgerInitFlagRow)LedgerInitFlagTable.Rows[0]).Delete();
+
+                            ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
+                        }
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
         }
     }
 }

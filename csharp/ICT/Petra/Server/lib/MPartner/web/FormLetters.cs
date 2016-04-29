@@ -286,8 +286,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 }
                             }
 
-                            if (formData.FirstName != null
-                                && formData.FirstName.Length > 0)
+                            if ((formData.FirstName != null)
+                                && (formData.FirstName.Length > 0))
                             {
                                 formData.FirstInitial = ConvertIfUpperCase(formData.FirstName.Substring(0, 1), true);
                             }

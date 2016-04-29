@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         {
             return TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault();
         }
-        
+
         /// <summary>
         /// Returns the System Defaults as a DataTable.
         /// </summary>
