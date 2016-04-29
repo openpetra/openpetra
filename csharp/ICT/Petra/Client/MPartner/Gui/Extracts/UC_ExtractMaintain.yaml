@@ -41,6 +41,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             Columns: []
+            AutoFindColumn: 2
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom

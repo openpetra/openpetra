@@ -259,10 +259,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         private void ShowEquityOrClearingControls(CostCentreNodeDetails AnewSelection)
         {
             FPetraUtilsObject.SuppressChangeDetection = true;
-            grpClearing.Visible = (AnewSelection.CostCentreRow.CostCentreType == "Foreign");
+            bool isGoodSelection = AnewSelection != null;
+            grpClearing.Visible = (isGoodSelection && (AnewSelection.CostCentreRow.CostCentreType == "Foreign"));
             grpEquitySettings.Visible =
-                ((!grpClearing.Visible) && (AnewSelection.CostCentreRow.CostCentreCode != MFinanceConstants.INTER_LEDGER_HEADING));
-            grpProjectStatusBox.Visible = grpEquitySettings.Visible && AnewSelection.CostCentreRow.PostingCostCentreFlag;
+                ((!grpClearing.Visible) && isGoodSelection && (AnewSelection.CostCentreRow.CostCentreCode != MFinanceConstants.INTER_LEDGER_HEADING));
+            grpProjectStatusBox.Visible = grpEquitySettings.Visible && isGoodSelection && AnewSelection.CostCentreRow.PostingCostCentreFlag;
             grpEquitySettings.Height = grpProjectStatusBox.Visible ? 70 : 170;
             FPetraUtilsObject.SuppressChangeDetection = false;
         }

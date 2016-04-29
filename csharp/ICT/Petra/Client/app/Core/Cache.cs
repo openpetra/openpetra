@@ -1008,7 +1008,7 @@ namespace Ict.Petra.Client.App.Core
         /// '' if it isn't in the client-side cache yet (in this case the cacheable</param>
         /// <param name="ACacheableTableSystemType"></param>
         /// <returns>)</returns>
-        public static DataTable GetCacheableDataTableFromPetraServer(String ACacheableTableName,
+        private static DataTable GetCacheableDataTableFromPetraServer(String ACacheableTableName,
             String AHashCode,
             out System.Type ACacheableTableSystemType)
         {
@@ -1183,7 +1183,7 @@ namespace Ict.Petra.Client.App.Core
         /// Hash that the server-side CacheableTablesManager has for this cacheable
         /// DataTable, the specified DataTable is returned, otherwise nil.
         /// </returns>
-        public static DataTable GetCacheableDataTableFromPetraServer(String ACacheableTableName,
+        private static DataTable GetCacheableDataTableFromPetraServer(String ACacheableTableName,
             String AHashCode,
             object AFilterCriteria,
             out System.Type ACacheableTableSystemType)
@@ -1511,6 +1511,10 @@ namespace Ict.Petra.Client.App.Core
 
                     // Calculate HashCode for the DataTable (used to compare the DataTable
                     // with the DataTable in the Serverside Cache)
+                    DateTime dtHashStart = DateTime.UtcNow;
+
+                    // Calculate HashCode for the DataTable (used to compare the DataTable
+                    // with the DataTable in the Serverside Cache)
                     if (AFilterCriteriaString != "")
                     {
                         CacheableDataTableFilteredDV = new DataView(CacheableDataTableFromFile,
@@ -1522,6 +1526,18 @@ namespace Ict.Petra.Client.App.Core
                     else
                     {
                         DataUtilities.CalculateHashAndSize(CacheableDataTableFromFile, out HashCode, out TmpSize);
+                    }
+
+                    if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
+                    {
+                        TLogging.Log(String.Format(" -- Hashing from file: {0} ms", (DateTime.UtcNow - dtHashStart).TotalMilliseconds));
+                        TLogging.Log(String.Format(" --   Hash: {0}", HashCode));
+
+                        if (AFilterCriteriaString != "")
+                        {
+                            TLogging.Log(String.Format(" -- FilterCriteria for hash: {0}", AFilterCriteriaString));
+                            TLogging.Log(String.Format(" -- DataView row count for hash: {0}", CacheableDataTableFilteredDV.Count));
+                        }
                     }
                 }
             }
@@ -1552,7 +1568,14 @@ namespace Ict.Petra.Client.App.Core
 
                 if (TLogging.DebugLevel >= DEBUGLEVEL_CACHEMESSAGES - 1)
                 {
-                    TLogging.Log(String.Format(" -- Hashing: {0} ms", (DateTime.UtcNow - dtHashStart).TotalMilliseconds));
+                    TLogging.Log(String.Format(" -- Hashing from cache: {0} ms", (DateTime.UtcNow - dtHashStart).TotalMilliseconds));
+                    TLogging.Log(String.Format(" --   Hash: {0}", HashCode));
+
+                    if (AFilterCriteriaString != "")
+                    {
+                        TLogging.Log(String.Format(" -- FilterCriteria for hash: {0}", AFilterCriteriaString));
+                        TLogging.Log(String.Format(" -- DataView row count for hash: {0}", CacheableDataTableFilteredDV.Count));
+                    }
                 }
             }
 
@@ -1697,17 +1720,11 @@ namespace Ict.Petra.Client.App.Core
                         break;
                 }
 
-                if (ADataTableType == typeof(System.Data.DataTable))
+                // Just turn the view into a standard data table and, if appropriate, get it back to a typed table of the correct type
+                ReturnValue = CacheableDataTableFilteredDV.ToTable();
+
+                if (ADataTableType.IsSubclassOf(typeof(TTypedDataTable)))
                 {
-                    // Just turn the view into a standard data table
-                    ReturnValue = CacheableDataTableFilteredDV.ToTable();
-                }
-                else
-                {
-                    // This construct looks a little odd.  There is no need to convert the view to a new table instance
-                    //  because the conversion to a typed table will create a new instance - so we only need to pass the data
-                    //  as a reference param and can therefore use .Table rather than .ToTable()
-                    ReturnValue = CacheableDataTableFilteredDV.Table;
                     DataUtilities.ChangeDataTableToTypedDataTable(ref ReturnValue, ADataTableType, "");
                 }
             }

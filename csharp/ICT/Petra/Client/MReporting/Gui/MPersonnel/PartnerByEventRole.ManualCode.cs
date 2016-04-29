@@ -96,8 +96,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
 
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbEvent.AutoFindColumn = ((Int16)(1));
-            this.clbEvent.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
 
             clbEvent.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |
@@ -116,8 +115,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             this.LoadEventListData();
 
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbEventRole.AutoFindColumn = ((Int16)(1));
-            this.clbEventRole.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
 
             clbEventRole.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |

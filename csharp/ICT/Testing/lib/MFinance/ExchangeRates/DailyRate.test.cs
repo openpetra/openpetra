@@ -658,17 +658,6 @@ namespace Tests.MFinance.Client.ExchangeRates
             Assert.AreEqual(1.97m, txtExchangeRate.NumberValueDecimal);
             Assert.AreEqual("02:00", txtTimeEffective.Text);
 
-            // If the date today is later than 20-SEP we will get a warning dialog when we save because we will have run out of forwarding periods
-            //  - because we have just set a date to today+10
-            if (dtToday > new DateTime(dtToday.Year, 9, 20))
-            {
-                ModalFormHandler = delegate(string name, IntPtr hWnd, Form form)
-                {
-                    MessageBoxTester tester = new MessageBoxTester(hWnd);
-                    tester.SendCommand(MessageBoxTester.Command.Yes);           // Save anyway
-                };
-            }
-
             mainScreen.SaveChanges();
             mainScreen.Close();
         }

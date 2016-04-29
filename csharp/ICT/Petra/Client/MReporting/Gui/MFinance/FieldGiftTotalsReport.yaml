@@ -66,6 +66,7 @@ RootNode:
             Controls: [clbFields, pnlButtons]
         clbFields:
             List: UserDefinedList
+            AutoFindColumn: 2
             NoLabel:true
             Dock: Fill
             Width: 365

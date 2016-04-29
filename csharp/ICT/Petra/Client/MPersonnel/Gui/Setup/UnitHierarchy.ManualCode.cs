@@ -406,7 +406,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             UnitNodes.RemoveAt(0);
             trvUnits.Nodes.Add(RootNode);
             AddChildren(RootNode, UnitNodes);
-            Int64 MySiteKey = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+            Int64 MySiteKey = TSystemDefaults.GetSiteKeyDefault();
             ShowThisUnit(MySiteKey);
         }
 

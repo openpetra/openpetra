@@ -48,9 +48,9 @@ namespace Ict.Petra.Server.MCommon.Processing
         /// <summary>
         /// Gets called in regular intervals from a Timer in Class TTimedProcessing.
         /// </summary>
-        /// <param name="ADBAccessObj">Instantiated DB Access object with opened DB connection.</param>
+        /// <param name="ADataBaseObj">Instantiated DB Access object with opened DB connection.</param>
         /// <param name="ARunManually">this is true if the process was called manually from the server admin console</param>
-        public static void Process(TDataBase ADBAccessObj, bool ARunManually)
+        public static void Process(TDataBase ADataBaseObj, bool ARunManually)
         {
             // only check once a day (or as specified in config file), if not manually called
             if (!ARunManually)
@@ -74,12 +74,12 @@ namespace Ict.Petra.Server.MCommon.Processing
             Errors_SinceDate = DateTime.Today.AddDays(-1 * SENDREPORTFORDAYS_TOUSERS);
 
             TLogging.LogAtLevel(1, "TProcessDataChecks.Process: Checking Modules");
-            CheckModule(ADBAccessObj, "DataCheck.MPartner.");
+            CheckModule(ADataBaseObj, "DataCheck.MPartner.");
 
             TSystemDefaults.SetSystemDefault(PROCESSDATACHECK_LAST_RUN, new TVariant(DateTime.Now).EncodeToString());
         }
 
-        private static void CheckModule(TDataBase ADBAccessObj, string AModule)
+        private static void CheckModule(TDataBase ADataBaseObj, string AModule)
         {
             // get all sql files starting with module
             string[] sqlfiles = Directory.GetFiles(Path.GetFullPath(TAppSettingsManager.GetValue("SqlFiles.Path", ".")),
@@ -112,13 +112,13 @@ namespace Ict.Petra.Server.MCommon.Processing
                     firstTableAlias + ".s_date_modified_d AS DateModified, " +
                     firstTableAlias + ".s_modified_by_c AS ModifiedBy FROM ");
 
-                errors.Merge(ADBAccessObj.SelectDT(sql, "temp", null));
+                errors.Merge(ADataBaseObj.SelectDT(sql, "temp", null));
             }
 
             if (errors.Rows.Count > 0)
             {
                 SendEmailToAdmin(errors);
-                SendEmailsPerUser(errors);
+                SendEmailsPerUser(ADataBaseObj, errors);
             }
         }
 
@@ -166,13 +166,13 @@ namespace Ict.Petra.Server.MCommon.Processing
             }
         }
 
-        private static void SendEmailForUser(string AUserId, DataTable AErrors)
+        private static void SendEmailForUser(TDataBase ADataBaseObj, string AUserId, DataTable AErrors)
         {
             TDBTransaction ReadTransaction = null;
             SUserRow userrow = null;
 
             // get the email address of the user
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+            ADataBaseObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
                 delegate
                 {
                     userrow = SUserAccess.LoadByPrimaryKey(AUserId, ReadTransaction)[0];
@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MCommon.Processing
             }
         }
 
-        private static void SendEmailsPerUser(DataTable AErrors)
+        private static void SendEmailsPerUser(TDataBase ADataBaseObj, DataTable AErrors)
         {
             // get all users that have created or modified the records in the past week(s)
             List <String>Users = new List <string>();
@@ -262,7 +262,7 @@ namespace Ict.Petra.Server.MCommon.Processing
                 {
                     Users.Add(lastUser);
 
-                    SendEmailForUser(lastUser, AErrors);
+                    SendEmailForUser(ADataBaseObj, lastUser, AErrors);
                 }
             }
         }

@@ -139,6 +139,8 @@ RootNode:
             ActionFocusRow: FocusedRowChanged
             ActionDoubleClick: actSetMainAccount
             EnableMultiSelection: false
+            AutoFindMode: FirstCharacter
+            AutoFindColumn: 1
             
         txtBankKey:
             NoLabel: true

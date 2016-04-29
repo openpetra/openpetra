@@ -64,14 +64,18 @@ namespace Ict.Common.DB.DBCaching
         /// The result is added to the cache, and the result is returned
         /// as a DataSet from the cache.
         /// </summary>
-        /// <param name="db"></param>
         /// <param name="sql"></param>
         /// <param name="ATable">can already have some prepared columns; optional parameter, can be null
         /// </param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>void</returns>
-        public DataSet GetDataSet(DB.TDataBase db, String sql, DataTable ATable)
+        public DataSet GetDataSet(String sql, DataTable ATable, TDataBase ADataBase = null)
         {
-            DB.TDBTransaction ReadTransaction;
+            TDataBase DBAccessObj = DBAccess.GetDBAccessObj(ADataBase);
+            TDBTransaction ReadTransaction;
             Boolean NewTransaction = false;
             DataSet newDataSet;
 
@@ -91,27 +95,27 @@ namespace Ict.Common.DB.DBCaching
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                ReadTransaction = DBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 if (ATable == null)
                 {
-                    newDataSet = db.Select(sql, "Cache", ReadTransaction);
+                    newDataSet = DBAccessObj.Select(sql, "Cache", ReadTransaction);
                 }
                 else
                 {
                     newDataSet = new DataSet();
                     newDataSet.Tables.Add(ATable);
                     ATable.TableName = "Cache";
-                    db.Select(newDataSet, sql, "Cache", ReadTransaction);
+                    DBAccessObj.Select(newDataSet, sql, "Cache", ReadTransaction);
                 }
             }
             finally
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
+                    DBAccessObj.CommitTransaction();
                 }
             }
             storedDataSet.Add(newDataSet);
@@ -127,12 +131,15 @@ namespace Ict.Common.DB.DBCaching
         /// The result is added to the cache, and the result is returned
         /// as a DataSet from the cache.
         /// </summary>
-        /// <param name="db"></param>
         /// <param name="sql"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns></returns>
-        public DataSet GetDataSet(DB.TDataBase db, String sql)
+        public DataSet GetDataSet(String sql, TDataBase ADataBase = null)
         {
-            return GetDataSet(db, sql, null);
+            return GetDataSet(sql, null, ADataBase);
         }
 
         /// <summary>
@@ -141,14 +148,17 @@ namespace Ict.Common.DB.DBCaching
         /// The result is added to the cache, and the result is returned
         /// as a DataTable from the cache.
         /// </summary>
-        /// <param name="db"></param>
         /// <param name="sql"></param>
         /// <param name="ATable">can already have some prepared columns; optional parameter, can be nil
         /// </param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>void</returns>
-        public DataTable GetDataTable(DB.TDataBase db, String sql, DataTable ATable)
+        public DataTable GetDataTable(string sql, DataTable ATable, TDataBase ADataBase = null)
         {
-            return GetDataSet(db, sql, ATable).Tables["Cache"];
+            return GetDataSet(sql, ATable, ADataBase).Tables["Cache"];
         }
 
         /// <summary>
@@ -157,12 +167,15 @@ namespace Ict.Common.DB.DBCaching
         /// The result is added to the cache, and the result is returned
         /// as a DataTable from the cache.
         /// </summary>
-        /// <param name="db"></param>
         /// <param name="sql"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns></returns>
-        public DataTable GetDataTable(DB.TDataBase db, String sql)
+        public DataTable GetDataTable(String sql, TDataBase ADataBase = null)
         {
-            return GetDataTable(db, sql, null);
+            return GetDataTable(sql, null, ADataBase);
         }
 
         /// <summary>
@@ -172,13 +185,17 @@ namespace Ict.Common.DB.DBCaching
         /// as a ArrayList from the cache.
         /// The ArrayList consists of the strings
         /// of the first column of the first table in the dataset.
-        ///
         /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>void</returns>
-        public ArrayList GetStringList(DB.TDataBase db, String sql)
+        public ArrayList GetStringList(String sql, TDataBase ADataBase = null)
         {
             ArrayList ReturnValue = new ArrayList();
-            DataSet ds = GetDataSet(db, sql);
+            DataSet ds = GetDataSet(sql, ADataBase);
 
             foreach (DataRow row in ds.Tables[0].Rows)
             {

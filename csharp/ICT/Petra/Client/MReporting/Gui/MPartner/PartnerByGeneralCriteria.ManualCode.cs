@@ -50,8 +50,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             ucoAddress.ShowAddressDateFields(true);
 
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbLocationType.AutoFindColumn = ((Int16)(1));
-            this.clbLocationType.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
 
             clbLocationType.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |

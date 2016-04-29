@@ -43,56 +43,34 @@ namespace Ict.Petra.Client.App.Core
         /// Returns the value of the specified System Default.
         /// </summary>
         /// <param name="ASystemDefaultName">System Default Key.</param>
-        /// <param name="ADefault">The value returned if System Default not found.</param>
+        /// <param name="ADefault">The value returned if System Default is not found.</param>
         /// <returns>The value of the System Default, or ADefault.</returns>
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
-            String Tmp = GetSystemDefault(ASystemDefaultName);
-
-            return Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND ? Tmp : ADefault;
+            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
         /// Returns the value of the specified System Default.
-        /// For that, the whole System Defaults DB table is read from the server - that's not a problem so long as there's not
-        /// thousands of system defaults, and this method isn't called too often!
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
         /// specified System Default was not found.</returns>
         public static String GetSystemDefault(String ASystemDefaultName)
         {
-            SSystemDefaultsTable SystemDefaultsDT = null;
-            SSystemDefaultsRow FoundSystemDefaultsRow;
-            bool ServerCallSuccessful = false;
+            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefault(ASystemDefaultName);
+        }
 
-            TServerBusyHelper.CoordinatedAutoRetryCall("System Defaults", ref ServerCallSuccessful,
-                delegate
-                {
-                    SystemDefaultsDT = TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefaults();
-
-                    ServerCallSuccessful = true;
-                });
-
-            if (!ServerCallSuccessful)
-            {
-                TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
-
-                return SharedConstants.SYSDEFAULT_NOT_FOUND;
-            }
-
-            if (SystemDefaultsDT != null)
-            {
-                // Look up the System Default
-                FoundSystemDefaultsRow = (SSystemDefaultsRow)SystemDefaultsDT.Rows.Find(ASystemDefaultName);
-
-                return FoundSystemDefaultsRow != null ? FoundSystemDefaultsRow.DefaultValue : SharedConstants.SYSDEFAULT_NOT_FOUND;
-            }
-            else
-            {
-                // 'Back-stop' - should never get here
-                return SharedConstants.SYSDEFAULT_NOT_FOUND;
-            }
+        /// <summary>
+        /// Gets the SiteKey Sytem Default.
+        /// </summary>
+        /// <remarks>
+        /// Note: The SiteKey can get changed by a user with the necessary priviledges while being logged
+        /// in to OpenPetra and this gets reflected when this Method gets called.</remarks>
+        /// <returns>The SiteKey of the Site.</returns>
+        public static Int64 GetSiteKeyDefault()
+        {
+            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSiteKeyDefault();
         }
 
         /// <summary>
@@ -102,7 +80,20 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="AValue">String Value.</param>
         public static void SetSystemDefault(String AKey, String AValue)
         {
-            TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.SetSystemDefault(AKey, AValue);
+            bool SystemDefaultAdded;
+
+            SetSystemDefault(AKey, AValue, out SystemDefaultAdded);
+        }
+
+        /// <summary>
+        /// Sets the value of a System Default. If the System Default doesn't exist yet it will be created by that call.
+        /// </summary>
+        /// <param name="AKey">Name of new or existing System Default.</param>
+        /// <param name="AValue">String Value.</param>
+        /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
+        public static void SetSystemDefault(String AKey, String AValue, out bool AAdded)
+        {
+            TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.SetSystemDefault(AKey, AValue, out AAdded);
         }
     }
 }

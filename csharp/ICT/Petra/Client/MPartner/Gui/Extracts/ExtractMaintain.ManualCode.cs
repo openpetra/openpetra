@@ -168,6 +168,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ucoExtractMaintain.VerifyAndUpdateExtract(sender, e);
         }
 
+        private void PrintUsingWord(System.Object sender, EventArgs e)
+        {
+            ucoExtractMaintain.PrintFormData(TStandardFormPrint.TPrintUsing.Word, false);
+        }
+
+        private void PrintUsingExcel(System.Object sender, EventArgs e)
+        {
+            ucoExtractMaintain.PrintFormData(TStandardFormPrint.TPrintUsing.Excel, false);
+        }
+
+        private void PrintPreviewInWord(System.Object sender, EventArgs e)
+        {
+            ucoExtractMaintain.PrintFormData(TStandardFormPrint.TPrintUsing.Word, true);
+        }
+
+        private void PrintPreviewInExcel(System.Object sender, EventArgs e)
+        {
+            ucoExtractMaintain.PrintFormData(TStandardFormPrint.TPrintUsing.Excel, true);
+        }
+
         #endregion
 
         #region Keyboard and Filter/Find Menu

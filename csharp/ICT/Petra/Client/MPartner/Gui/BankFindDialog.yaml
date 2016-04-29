@@ -51,6 +51,7 @@ RootNode:
         grdDetails:
             Dock: Fill
             EnableMultiSelection: false
+            AutoFindColumn: 1
 
         btnClear:
             Action: actClear

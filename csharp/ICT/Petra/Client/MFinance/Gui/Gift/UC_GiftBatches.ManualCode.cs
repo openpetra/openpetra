@@ -27,15 +27,16 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Controls;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -543,8 +544,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (!FPostingLogicObject.PostingInProgress)
             {
-                bool ActiveOnly = Unposted;
-                RefreshBankAccountAndCostCentreFilters(ActiveOnly, ARow);
+                bool activeOnly = false; //unposted
+                RefreshBankAccountAndCostCentreFilters(activeOnly, ARow);
             }
 
             FLedgerNumber = ARow.LedgerNumber;
@@ -989,6 +990,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool Success = false;
 
+            bool LoadDialogVisible = false;
+            TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
+
             if (GetSelectedRowIndex() < 0)
             {
                 return; // Oops - there's no selected row.
@@ -996,9 +1000,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                bool postingAlreadyConfirmed = false;
+
                 Cursor = Cursors.WaitCursor;
 
-                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow);
+                dlgStatus.Show();
+                LoadDialogVisible = true;
+                dlgStatus.Heading = String.Format(Catalog.GetString("Batch {0}"), FSelectedBatchNumber);
+                dlgStatus.CurrentStatus = Catalog.GetString("Loading gifts ready for posting...");
+
+                if (!LoadAllBatchData(FSelectedBatchNumber))
+                {
+                    Cursor = Cursors.Default;
+                    MessageBox.Show(Catalog.GetString("The Gift Batch is empty!"), Catalog.GetString("Posting failed"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+
+                dlgStatus.CurrentStatus = Catalog.GetString("Checking for inactive values...");
+
+                if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed))
+                {
+                    return;
+                }
+
+                dlgStatus.Close();
+                LoadDialogVisible = false;
+
+                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, postingAlreadyConfirmed);
 
                 if (Success)
                 {
@@ -1040,8 +1069,45 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             finally
             {
+                if (LoadDialogVisible)
+                {
+                    dlgStatus.Close();
+                }
+
                 Cursor = Cursors.Default;
             }
+        }
+
+        private bool AllowInactiveFieldValues(ref bool APostingConfirmed)
+        {
+            //Check for inactive Bank Cost Centre & Account
+            string bankCostCentre = FPreviouslySelectedDetailRow.BankCostCentre;
+            string bankAccount = FPreviouslySelectedDetailRow.BankAccountCode;
+
+            if (!FAccountAndCostCentreLogicObject.AccountIsActive(bankAccount)
+                || !FAccountAndCostCentreLogicObject.CostCentreIsActive(bankCostCentre))
+            {
+                string msg =
+                    string.Format(Catalog.GetString(
+                            "Gift batch {0} has an inactive bank cost centre and/or account!{1}{1}Do you want to continue posting batch {0} ?"),
+                        FPreviouslySelectedDetailRow.BatchNumber,
+                        Environment.NewLine);
+
+                if (MessageBox.Show(msg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning) != DialogResult.Yes)
+                {
+                    return false;
+                }
+
+                APostingConfirmed = true;
+            }
+
+            return true;
+        }
+
+        private Boolean LoadAllBatchData(int ABatchNumber)
+        {
+            return ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(FLedgerNumber, ABatchNumber);
         }
 
         private void ExportBatches(System.Object sender, System.EventArgs e)

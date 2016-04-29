@@ -86,8 +86,20 @@ namespace Ict.Common.DB
         /// <summary>DebugLevel for dumping stacktraces when Thread-safe access to the TDataBase Class is requested/released (extremely verbose log output): is 11</summary>
         public const Int32 DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES = 11;
 
-        /// <summary>Global Object in which the Application can store a reference to an Instance of
-        /// <see cref="TDataBase" /></summary>
+        /// <summary>
+        /// <em>Global Object</em> in which the Application can store a reference to a single instance of
+        /// <see cref="TDataBase" />.
+        /// <para>
+        /// In every Clients AppDomain this holds the one instance that is responsible for the 'always-open' DB Connection for the
+        /// Client that gets established automatically on Client connection and which gets closed automatically on Client
+        /// disconnection/crash.
+        /// </para>
+        /// <para>
+        /// <em>IMPORTANT: Do not close and re-open the DB Connection that <em>this</em> instance of
+        /// <see cref="TDataBase" /> provides in a Client AppDomain as the majority of program code that access the DB
+        /// relies on it being <em>open all the time!!!</em></em>
+        /// </para>
+        /// </summary>
         public static TDataBase GDBAccessObj
         {
             set
@@ -98,6 +110,46 @@ namespace Ict.Common.DB
             {
                 return (TDataBase)TSession.GetVariable("DBAccessObj");
             }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="TDataBase"/> instance that <paramref name="ATransaction"/> got started with, or
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance in case <paramref name="ATransaction"/>
+        /// is null.
+        /// <para>
+        /// This is needed for some generated code to be able to work with a (custom) reference to a TDataBase instance, is
+        /// helpful for static Methods (which might not have a means to get a reference to a custom <see cref="TDataBase" />
+        /// instance easily), and can be neat for other scenarios, too.
+        /// </para>
+        /// </summary>
+        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" />, or null.</param>
+        /// <returns><see cref="TDataBase"/> instance that <paramref name="ATransaction"/> got started with, or
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance in case <paramref name="ATransaction"/>
+        /// is null.
+        /// </returns>
+        public static TDataBase GetDBAccessObj(TDBTransaction ATransaction)
+        {
+            return ATransaction != null ? ATransaction.DataBaseObj : GDBAccessObj;
+        }
+
+        /// <summary>
+        /// Gets the <see cref="TDataBase"/> instance that gets passed in with Argument <paramref name="ADataBase"/>, or
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj"/> instance in case <paramref name="ADataBase"/>
+        /// is null.
+        /// <para>
+        /// This is needed for some generated code to be able to work with a (custom) reference to a TDataBase instance, is
+        /// helpful for static Methods (which might not have a means to get a reference to a custom <see cref="TDataBase" />
+        /// instance easily), and can be neat for other scenarios, too.
+        /// </para>
+        /// </summary>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null.</param>
+        /// <returns><see cref="TDataBase"/> instance that got passed in with Argument <paramref name="ADataBase"/>, or
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj"/> instance in case <paramref name="ADataBase"/>
+        /// is null.
+        /// </returns>
+        public static TDataBase GetDBAccessObj(TDataBase ADataBase)
+        {
+            return ADataBase ?? GDBAccessObj;
         }
     }
 
@@ -236,6 +288,18 @@ namespace Ict.Common.DB
         /// restart a sequence with the given value
         /// </summary>
         void RestartSequence(String ASequenceName, TDBTransaction ATransaction, TDataBase ADatabase, Int64 ARestartValue);
+
+        /// <summary>
+        /// Clears (empties) the Connection Pool that a RDBMS driver provides for all connections *that were created using
+        /// the Connection String that is associated with <paramref name="ADBConnection"/>*. In case an RDBMS type doesn't
+        /// provide a Connection Pool nothing is done and the Method returns no error.
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        void ClearConnectionPool(DbConnection ADBConnection);
     }
 
     /// <summary>
@@ -263,8 +327,12 @@ namespace Ict.Common.DB
                                                            "The attempt to begin a DB Transaction NOW occured on Thread {5} in AppDomain '{6}.'   " +
                                                            "The StackTrace of the *previously* started DB Transaction is as follows:\r\n  PREVIOUS Stracktrace: {7}\r\n  CURRENT Stracktrace: {8}";
 
-        /// <summary>References the DBConnection instance.</summary>
-        private TDBConnection FDBConnectionInstance;
+        private const string StrThreadAndAppDomainCallInfo = "(Call performed in Thread {0} in AppDomain '{1}')";
+
+        /// <summary>An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies a DB Connection once it
+        /// gets created. It is used for internal 'sanity checks'. It also gets logged and hence can aid debugging (also useful for
+        /// Unit Testing).</summary>
+        private System.Guid FConnectionIdentifier;
 
         /// <summary>References an (open) DB connection.</summary>
         private DbConnection FSqlConnection;
@@ -289,6 +357,9 @@ namespace Ict.Common.DB
         /// <summary>References the type of RDBMS that we are currently connected to.</summary>
         private TDBType FDbType;
 
+        /// <summary>Used for guaranteeing Thread Safety when acquiring a DB Connection.</summary>
+        private readonly object FSqlConnectionAcquirationLock = new object();
+
         /// store credentials to be able to login again after closed db connection
         private string FDsnOrServer;
         /// store credentials to be able to login again after closed db connection
@@ -301,6 +372,10 @@ namespace Ict.Common.DB
         private string FPassword;
         /// store credentials to be able to login again after closed db connection
         private string FConnectionString;
+        /// Name of the DB connection (optional). It gets logged and hence can aid debugging (also useful for Unit Testing).
+        private string FConnectionName;
+        /// <summary>Thread that the (most recent) DB Connection was established on.</summary>
+        private Thread FThreadThatConnectionWasEstablishedOn;
 
         /// <summary>Reference to the specific database functions which can be different for each RDBMS.</summary>
         private IDataBaseRDBMS FDataBaseRDBMS;
@@ -310,11 +385,7 @@ namespace Ict.Common.DB
         private DateTime FLastDBAction;
 
         /// <summary>References the current Transaction, if there is any.</summary>
-        private DbTransaction FTransaction;
-        private StackTrace FTransactionStackTrace;
-        private string FTransactionAppDomain;
-        private Thread FTransactionThread;
-        private bool FTransactionReused;
+        private TDBTransaction FTransaction;
 
         /// <summary>Tells whether the next Command that is sent to the DB should be a 'prepared' Command.</summary>
         /// <remarks>Automatically reset to false once the Command has been executed against the DB!</remarks>
@@ -387,6 +458,41 @@ namespace Ict.Common.DB
             }
         }
 
+        /// <summary>
+        /// An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies a DB Connection once it got created.
+        /// It is used for internal 'sanity checks'. It also gets logged and hence can aid debugging (also useful for
+        /// Unit Testing).
+        /// </summary>
+        public System.Guid ConnectionIdentifier
+        {
+            get
+            {
+                return FConnectionIdentifier;
+            }
+        }
+
+        /// <summary>
+        /// Thread that the (most recent) DB Connection was established on.
+        /// </summary>
+        internal Thread ThreadThatConnectionWasEstablishedOn
+        {
+            get
+            {
+                return FThreadThatConnectionWasEstablishedOn;
+            }
+        }
+
+        /// <summary>
+        /// Name of the DB connection (optional). It gets logged and hence can aid debugging (also useful for Unit Testing).
+        /// </summary>
+        public string ConnectionName
+        {
+            get
+            {
+                return FConnectionName;
+            }
+        }
+
         /// <summary>Tells when the last Database action was carried out by the caller.</summary>
         public DateTime LastDBAction
         {
@@ -427,7 +533,7 @@ namespace Ict.Common.DB
 
                 try
                 {
-                    return FTransaction == null ? null : new TDBTransaction(FTransaction, FTransactionReused);
+                    return FTransaction;
                 }
                 finally
                 {
@@ -483,7 +589,8 @@ namespace Ict.Common.DB
         /// <param name="AUsername">User which should be used for connecting to the DB server</param>
         /// <param name="APassword">Password of the User which should be used for connecting to the DB server</param>
         /// <param name="AConnectionString">If this is not empty, it is prefered over the Dsn and Username and Password</param>
-        /// <returns>void</returns>
+        /// <param name="AConnectionName">Name of the DB Connection (optional). It gets logged and hence can aid debugging
+        /// (also useful for Unit Testing).</param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown when a connection cannot be established</exception>
         public void EstablishDBConnection(TDBType ADataBaseType,
             String ADsnOrServer,
@@ -491,10 +598,11 @@ namespace Ict.Common.DB
             String ADatabaseName,
             String AUsername,
             String APassword,
-            String AConnectionString)
+            String AConnectionString,
+            String AConnectionName = "")
         {
             EstablishDBConnection(ADataBaseType, ADsnOrServer, ADBPort, ADatabaseName, AUsername, APassword,
-                AConnectionString, true);
+                AConnectionString, true, AConnectionName);
         }
 
         /// <summary>
@@ -509,7 +617,8 @@ namespace Ict.Common.DB
         /// <param name="AConnectionString">If this is not empty, it is prefered over the Dsn and Username and Password</param>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
-        /// <returns>void</returns>
+        /// <param name="AConnectionName">Name of the DB Connection (optional). It gets logged and hence can aid debugging
+        /// (also useful for Unit Testing).</param>
         /// <exception cref="EDBConnectionNotEstablishedException">Thrown when a connection cannot be established</exception>
         private void EstablishDBConnection(TDBType ADataBaseType,
             String ADsnOrServer,
@@ -518,7 +627,8 @@ namespace Ict.Common.DB
             String AUsername,
             String APassword,
             String AConnectionString,
-            bool AMustCoordinateDBAccess)
+            bool AMustCoordinateDBAccess,
+            String AConnectionName = "")
         {
             if (AMustCoordinateDBAccess)
             {
@@ -534,67 +644,83 @@ namespace Ict.Common.DB
                 FUsername = AUsername;
                 FPassword = APassword;
                 FConnectionString = AConnectionString;
+                FConnectionName = AConnectionName;
 
-                if (FDbType == TDBType.PostgreSQL)
+                switch (FDbType)
                 {
-                    FDataBaseRDBMS = (IDataBaseRDBMS) new TPostgreSQL();
-                }
-                else if (FDbType == TDBType.MySQL)
-                {
-                    FDataBaseRDBMS = (IDataBaseRDBMS) new TMySQL();
-                }
-                else if (FDbType == TDBType.SQLite)
-                {
-                    FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
-                }
-                else if (FDbType == TDBType.ProgressODBC)
-                {
-                    FDataBaseRDBMS = (IDataBaseRDBMS) new TProgressODBC();
+                    case TDBType.PostgreSQL:
+                        FDataBaseRDBMS = (IDataBaseRDBMS) new TPostgreSQL();
+                        break;
+
+                    case TDBType.MySQL:
+                        FDataBaseRDBMS = (IDataBaseRDBMS) new TMySQL();
+                        break;
+
+                    case TDBType.SQLite:
+                        FDataBaseRDBMS = (IDataBaseRDBMS) new TSQLite();
+                        break;
+
+                    case TDBType.ProgressODBC:
+                        FDataBaseRDBMS = (IDataBaseRDBMS) new TProgressODBC();
+                        break;
+
+                    default:
+                        throw new ArgumentException(String.Format("EstablishDBConnection cannot deal with ADataBaseType " + "" +
+                            "'{0}' that got passed in", ADataBaseType));
                 }
 
                 if (ConnectionReady(false))
                 {
-                    TLogging.Log("Error establishing connection to Database Server: connection is already open!");
-                    throw new EDBConnectionNotAvailableException(
-                        FSqlConnection != null ? FSqlConnection.State.ToString("G") : "FSqlConnection is null");
+                    TLogging.Log("Error establishing connection to Database Server" +
+                        GetDBConnectionIdentifierInternal() + ": connection is already open!");
+                    throw new EDBConnectionIsAlreadyOpenException(
+                        FSqlConnection != null ? "Connection State: " + FSqlConnection.State.ToString("G") : "FSqlConnection is null");
                 }
 
-                TDBConnection CurrentConnectionInstance;
-
-                if (FSqlConnection == null)
+                // We take out a 'lock' on the following code sequence because only *this* guarantees complete thread safety -
+                // though we have a call to 'WaitForCoordinatedDBAccess' above this could be either not working for some
+                // reason - and also this check can get by-passed by passing in 'false' for the 'AMustCoordinateDBAccess'
+                // Argument.
+                lock (FSqlConnectionAcquirationLock)
                 {
-                    FDBConnectionInstance = TDBConnection.GetInstance();
-                    CurrentConnectionInstance = FDBConnectionInstance;
-
-                    FSqlConnection = CurrentConnectionInstance.GetConnection(
-                        FDataBaseRDBMS,
-                        FDsnOrServer,
-                        FDBPort,
-                        FDatabaseName,
-                        FUsername,
-                        ref FPassword,
-                        FConnectionString,
-                        new StateChangeEventHandler(this.OnStateChangedHandler));
-
                     if (FSqlConnection == null)
                     {
-                        throw new EDBConnectionNotAvailableException();
+                        FConnectionIdentifier = System.Guid.NewGuid();
+
+                        FSqlConnection = TDBConnection.GetConnection(
+                            FDataBaseRDBMS,
+                            ADsnOrServer,
+                            ADBPort,
+                            ADatabaseName,
+                            AUsername,
+                            ref APassword,
+                            ref FConnectionString,
+                            new StateChangeEventHandler(this.OnStateChangedHandler));
+
+                        if (FSqlConnection == null)
+                        {
+                            throw new EDBConnectionNotEstablishedException();
+                        }
                     }
-                }
-                else
-                {
-                    CurrentConnectionInstance = FDBConnectionInstance;
+                    else
+                    {
+                        throw new EDBConnectionWasAlreadyEstablishedException();
+                    }
                 }
 
                 try
                 {
                     // always log to console and log file, which database we are connecting to.
                     // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=156
-                    TLogging.Log("    Connecting to database " + FDbType + ": " + CurrentConnectionInstance.GetConnectionString());
+                    TLogging.Log("    Connecting to database " + ADataBaseType +
+                        GetDBConnectionIdentifierInternal() + ": " +
+                        TDBConnection.GetConnectionStringWithHiddenPwd(FConnectionString) + " " +
+                        GetThreadAndAppDomainCallInfo());
 
                     FSqlConnection.Open();
                     FDataBaseRDBMS.InitConnection(FSqlConnection);
 
+                    FThreadThatConnectionWasEstablishedOn = Thread.CurrentThread;
                     FLastDBAction = DateTime.Now;
                 }
                 catch (Exception exp)
@@ -609,7 +735,8 @@ namespace Ict.Common.DB
                     LogException(exp,
                         String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
 
-                    throw new EDBConnectionNotAvailableException(CurrentConnectionInstance.GetConnectionString() + ' ' + exp.ToString());
+                    throw new EDBConnectionNotEstablishedException(TDBConnection.GetConnectionStringWithHiddenPwd(
+                            FConnectionString) + ' ' + exp.ToString());
                 }
 
                 // only check database version once when working with multiple connections
@@ -647,7 +774,7 @@ namespace Ict.Common.DB
                 delegate
                 {
                     // now check if the database is 'up to date'; otherwise run db patch against it
-                    Tbl = DBAccess.GDBAccessObj.SelectDTInternal(
+                    Tbl = SelectDTInternal(
                         "SELECT s_default_value_c FROM PUB_s_system_defaults WHERE s_default_code_c = 'CurrentDatabaseVersion'",
                         "Temp", ReadTransaction, new OdbcParameter[0], false);
                 });
@@ -693,42 +820,81 @@ namespace Ict.Common.DB
             {
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
-                    TLogging.Log("  Closing Database connection...");
+                    TLogging.Log("    Closing Database connection..." + GetDBConnectionIdentifier());
                 }
 
-                if (FTransaction != null)
+                if (!CheckEstablishedDBConnectionThreadIsCompatible(false))
                 {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    var Exc1 =
+                        new EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(
+                            "TDataBase.CloseDBConnectionInternal would close established DB Connection that got " +
+                            "established on a different Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                            ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                            ThreadingHelper.GetCurrentThreadIdentifier());
+
+                    TLogging.Log(Exc1.ToString());
+
+                    throw Exc1;
+                }
+
+                // If a DB Transaction is still open and it hasn't been committed or rolled back yet
+                // then issue a Rollback (this is cleaner than just closing the DB Transaction).
+                // Note: DB Transactions must be rolled back (and get committed) *only* in the Thread in which they were
+                // created (the RollbackTransaction Method enforces this)!
+                if ((FTransaction != null)
+                    && (FTransaction.Valid))
+                {
+                    // Multi-threading 'Sanity Check':
+                    // Check if the current Thread is the same Thread that the current Transaction was started on:
+                    // if not, throw Exception!
+                    if (!CheckRunningDBTransactionThreadIsCompatible(false))
                     {
-                        TLogging.Log("TDataBase.CloseDBConnectionInternal: before calling this.RollbackTransaction",
-                            TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                        var Exc2 =
+                            new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
+                                "TDataBase.CloseDBConnectionInternal would roll back still running DB Transaction that got " +
+                                "started on a different Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
+
+                        TLogging.Log(Exc2.ToString());
+
+                        throw Exc2;
                     }
 
-                    this.RollbackTransaction();
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log("TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
+                            " before calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                    }
+
+                    this.RollbackTransaction(false);
 
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
-                        TLogging.Log("TDataBase.CloseDBConnectionInternal: after calling this.RollbackTransaction",
-                            TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                        TLogging.Log("TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
+                            " after calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
                     }
                 }
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
-                        "TDataBase.CloseDBConnectionInternal: before calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain '"
-                        +
+                        "TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
+                        " before calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain '" +
                         AppDomain.CurrentDomain.FriendlyName + "'",
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
                 }
 
-                FDBConnectionInstance.CloseDBConnection(FSqlConnection);
+                TDBConnection.CloseDBConnection(FSqlConnection, GetDBConnectionIdentifierInternal());
+
+                // Remark: TDBConnection.CloseDBConnection already calls Dispose() on FSqlConnection so we don't need to do it here
+                // and we can simply set it to null.
                 FSqlConnection = null;
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                 {
                     TLogging.Log(
-                        "TDataBase.CloseDBConnectionInternal: closed DB Connection.");
+                        "TDataBase.CloseDBConnectionInternal: closed DB Connection." + GetDBConnectionIdentifier());
                 }
 
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
@@ -736,16 +902,194 @@ namespace Ict.Common.DB
                     TLogging.Log(
                         "TDataBase.CloseDBConnectionInternal: after calling FDBConnectionInstance.CloseODBCConnection(FConnection) in AppDomain '"
                         +
-                        AppDomain.CurrentDomain.FriendlyName + "'",
+                        AppDomain.CurrentDomain.FriendlyName + "'" + GetDBConnectionIdentifier(),
                         TLoggingType.ToConsole | TLoggingType.ToLogfile);
                 }
 
                 FLastDBAction = DateTime.Now;
+                FDatabaseName = null;
             }
             else
             {
                 throw new EDBConnectionNotAvailableException();
             }
+        }
+
+        /// <summary>
+        /// Returns the number of open DB Connections that the RDBMS reports.
+        /// </summary>
+        /// <param name="ADBType">The RDBMS which should return the number of open DB Connections.</param>
+        /// <param name="ATransaction">An instantiated <see cref="TDBTransaction" /> object, or null (default = null).
+        /// If an instance gets passed in then the Method executes DB commands with the <see cref="TDataBase"/> instance
+        /// that <paramref name="ATransaction"/> got started with.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null).
+        /// If <paramref name="ATransaction"/> is null and null gets passed for <paramref name="ADataBase" />, too,
+        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
+        /// instance, otherwise with the instance that gets passed in with  <paramref name="ADataBase" /> if
+        /// <paramref name="ATransaction"/> is null. (The DB Connection instance of <paramref name="ATransaction" />
+        /// takes precedece over any DB Connection instance that might get passed with <paramref name="ADataBase" />.)</param>
+        /// <remarks>At present the implementation only works for the PostgreSQL RDBMS!!!</remarks>
+        /// <returns>Number of open DB Connections that the PostgreSQL RDBMS reports, or -1 for any other RDBMS.</returns>
+        public static int GetNumberOfDBConnections(TDBType ADBType, TDBTransaction ATransaction = null,
+            TDataBase ADataBase = null)
+        {
+            int ReturnValue = -1;
+
+            string SqlQueryStr;
+
+            if (ADBType == TDBType.PostgreSQL)
+            {
+                SqlQueryStr = String.Format("SELECT SUM(numbackends) FROM pg_stat_database where datname = '{0}'",
+                    TAppSettingsManager.GetValue("Server.DBName"));
+
+                if (ATransaction == null)
+                {
+                    ReturnValue = Convert.ToInt32(DBAccess.GetDBAccessObj(ADataBase).ExecuteScalar(
+                            SqlQueryStr, IsolationLevel.Serializable));
+                }
+                else
+                {
+                    ReturnValue = Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar(
+                            SqlQueryStr, ATransaction));
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Returns a string containing the ConnectionIdentifier. If a ConnectionName was assigned when the DB connection
+        /// was opened it is included, too.
+        /// </summary>
+        /// <returns>String containing the ConnectionIdentifier. If a ConnectionName was assigned when the DB connection
+        /// was opened it is included, too.
+        /// </returns>
+        public string GetDBConnectionIdentifier()
+        {
+            return " (Conn.Identifier: " + ConnectionIdentifier + ")" +
+                   (FConnectionName != String.Empty ? String.Format(" (Connection Name: {0})", FConnectionName) : "");
+        }
+
+        /// <summary>
+        /// Same as <see cref="GetDBConnectionIdentifier"/> but only returns a string in case a certain DebugLevel is set.
+        /// </summary>
+        /// <returns>Same as <see cref="GetDBConnectionIdentifier"/> but only returns a string in case a certain
+        /// DebugLevel is set.</returns>
+        private string GetDBConnectionIdentifierInternal()
+        {
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                return " (Conn.Identifier: " + ConnectionIdentifier + ")" +
+                       (FConnectionName != String.Empty ? String.Format(" (Connection Name: {0})", FConnectionName) : "");
+            }
+
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Returns a standardised string containing the name of <paramref name="AConnectionName"/>.
+        /// </summary>
+        /// <returns>String containing the name of <paramref name="AConnectionName"/>, or <see cref="String.Empty"/>
+        /// if no name was assigned.
+        /// </returns>
+        public static string GetDBConnectionName(string AConnectionName)
+        {
+            return AConnectionName == null ? "" : String.Format("  (Connection Name: {0})", AConnectionName);
+        }
+
+        private void ExtendedLoggingInfoOnHigherDebugLevels(string ALogMessage,
+            int AMinimumDebugLevel = DBAccess.DB_DEBUGLEVEL_TRACE, bool AIncludeStackTrace = false)
+        {
+            if (TLogging.DL < AMinimumDebugLevel)
+            {
+                return;
+            }
+
+            TLogging.Log(ALogMessage + String.Format(" (Logged on Thread {0} in AppDomain '{1}')",
+                    ThreadingHelper.GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName) +
+                (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES ?
+                 GetDBConnectionIdentifier() : "."));
+
+            if (AIncludeStackTrace)
+            {
+                TLogging.Log("Start of stack trace ->");
+                TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                TLogging.Log("<- End of stack trace");
+            }
+        }
+
+        private string GetThreadAndAppDomainCallInfo()
+        {
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                return String.Format(StrThreadAndAppDomainCallInfo, ThreadingHelper.GetCurrentThreadIdentifier(),
+                    AppDomain.CurrentDomain.FriendlyName);
+            }
+
+            return String.Empty;
+        }
+
+        /// <summary>
+        /// Clears (empties) *all* the Connection Pools a RDBMS driver provides (irrespecive of the Connection String that is
+        /// associated with any connection).  In case an RDBMS type doesn't provide a Connection Pool nothing is done and the
+        /// Method returns no error.
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        public static void ClearAllConnectionPools()
+        {
+            TDBConnection.ClearAllConnectionPools();
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("    TDataBase.ClearAllConnectionPools got called.");
+            }
+        }
+
+        /// <summary>
+        /// Clears (empties) the Connection Pool that a RDBMS driver provides. In case an RDBMS type doesn't provide a
+        /// Connection Pool nothing is done and the Method returns no error.
+        /// </summary>
+        /// <remarks>
+        /// THERE IS NORMALLY NO NEED TO EXECUTE THIS METHOD - IN FACT THIS METHOD SHOULD NOT GET CALLED as it will have a
+        /// negative performance impact when subsequent DB Connections are opened! Use this Method only for 'unit-testing'
+        /// DB Connection-related issues (such as that DB Connections are really closed when they ought to be).
+        /// </remarks>
+        public void ClearConnectionPool()
+        {
+            TDBConnection.ClearConnectionPool(FDataBaseRDBMS, FSqlConnection);
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            {
+                TLogging.Log("    TDataBase.ClearConnectionPool got called.");
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of open DB connections. This Method is a convenient combination of the
+        /// <see cref="ClearAllConnectionPools()" /> and <see cref="GetNumberOfDBConnections" /> Methods to get the
+        /// number of currently open DB connections on a RDBMS (using just the latter Method on its own is not reliable
+        /// because of connection pooling).
+        /// </summary>
+        /// <param name="ADBType">Type of RDBMS (Relational Database Management System)</param>
+        /// <returns>Number of open DB Connections that the PostgreSQL RDBMS reports, or -1 for any other RDBMS.</returns>
+        public static int ClearConnectionPoolAndGetNumberOfDBConnections(TDBType ADBType)
+        {
+            int ReturnValue = -1;
+
+            // Very important: Ensure that all the ConnectionPools are cleared so we can correctly determine the number of
+            // open DB Connections!
+            TDataBase.ClearAllConnectionPools();
+
+            // Find out how many DB Connections are open.
+            // Note: ReturnValue will be -1 for any RDBMS other than PostgreSQL as getting the number of open DB Connections
+            // is currently only implemented for PostgreSQL!
+            ReturnValue = TDataBase.GetNumberOfDBConnections(ADBType);
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -862,7 +1206,11 @@ namespace Ict.Common.DB
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
-                TLogging.Log("Entering " + this.GetType().FullName + ".Command()...");
+                TLogging.Log("Entering " + this.GetType().FullName + ".Command()..." +
+                    (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES ?
+                     " on Thread " + ThreadingHelper.GetCurrentThreadIdentifier() + " in AppDomain '" +
+                     AppDomain.CurrentDomain.FriendlyName + "' " +
+                     (ATransaction != null ? ATransaction.GetDBTransactionIdentifier() : "") + GetDBConnectionIdentifier() : ""));
             }
 
             try
@@ -884,9 +1232,79 @@ namespace Ict.Common.DB
 
                     ObjReturn = FDataBaseRDBMS.NewCommand(ref ACommandText, FSqlConnection, AParametersArray, ATransaction);
 
-                    // enlist this command in a DB transaction (does not happen if ATransaction is null)
+                    // Enlist this command in a DB transaction (does not happen if ATransaction is null)
                     if (ATransaction != null)
                     {
+                        // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet:
+                        // if not, throw Exception!
+                        if (!ATransaction.Valid)
+                        {
+                            var Exc1 = new EDBAttemptingToUseTransactionThatIsInvalidException(
+                                "TDataBase.Command called with a DB Transaction that isn't valid",
+                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
+
+                            TLogging.Log(Exc1.ToString());
+
+                            throw Exc1;
+                        }
+
+                        //
+                        // Multi-threading and multi-connection 'Sanity Checks'
+                        //
+
+                        // Check if the current Thread is the same Thread that ATransaction was started on:
+                        // if not, throw Exception!
+                        if (!CheckDBTransactionThreadIsCompatible(ATransaction))
+                        {
+                            var Exc2 = new
+                                       EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException(
+                                "TDataBase.Command would yield Command on a Thread that is different from the Thread that " +
+                                "started the Transaction that got passed in",
+                                ThreadingHelper.GetThreadIdentifier(ATransaction.ThreadThatTransactionWasStartedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
+
+                            TLogging.Log(Exc2.ToString());
+
+                            throw Exc2;
+                        }
+
+                        // Check whether the current DB Connection is different from the DB Connection that the Transaction
+                        // that got passed in with ATransaction got started against: if this is so, throw Exception!
+                        // Reason for that: Running DB Commands on one DB Connection with a DB Transaction that was started
+                        // against another DB Connection isn't supported (because each DB Command is always bound to the
+                        // DB Connection that creates it)!
+                        if (ConnectionIdentifier != ATransaction.ConnectionIdentifier)
+                        {
+                            var Exc3 = new
+                                       EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException(
+                                "TDataBase.Command would yield Command on a Connection that is different from the Connection " +
+                                "that the Transaction that got passed in was started against",
+                                ATransaction.ConnectionIdentifier.ToString(), ConnectionIdentifier.ToString());
+
+                            TLogging.Log(Exc3.ToString());
+
+                            throw Exc3;
+                        }
+
+                        // Check whether the TransactionIdentifier of the current Transaction of TDataBase is different from
+                        // the TransactionIdentifier of the Transaction that got passed in with ATransaction: if this is so,
+                        // throw Exception!
+                        // Reason for that: Running DB Commands on a DB Transaction other than the currently running DB
+                        // Transaction is not supported (because parallel DB Transactions are not supported)!
+                        if (FTransaction.TransactionIdentifier != ATransaction.TransactionIdentifier)
+                        {
+                            var Exc4 = new
+                                       EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException(
+                                "TDataBase.Command would yield Command that would be enlisted in a different DB Transaction " +
+                                "(the one that got passed in) than the current DB Transaction",
+                                ATransaction.TransactionIdentifier.ToString(), FTransaction.TransactionIdentifier.ToString());
+
+                            TLogging.Log(Exc4.ToString());
+
+                            throw Exc4;
+                        }
+
                         ObjReturn.Transaction = ATransaction.WrappedTransaction;
                     }
 
@@ -1030,7 +1448,7 @@ namespace Ict.Common.DB
 
             if (ADataTableName == String.Empty)
             {
-                throw new ArgumentException("ADataTableName", "A name for the DataTable must be submitted!");
+                throw new ArgumentException("A name for the DataTable must be submitted!", "ADataTableName");
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
@@ -1241,6 +1659,7 @@ namespace Ict.Common.DB
             TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
             bool APrepareSelectCommand = false, int ASelectCommandTimeout = -1, DbParameter[] AParametersArray = null)
         {
+            int ReturnValue;
             DbDataAdapter SelectDataAdapter;
             IDictionaryEnumerator ColumNameMappingEnumerator = null;
             string MappingsString;
@@ -1267,7 +1686,7 @@ namespace Ict.Common.DB
                     LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", ASqlStatement, AParametersArray);
                 }
 
-                SelectDataAdapter = (DbDataAdapter)DBAccess.GDBAccessObj.SelectDA(ASqlStatement, AReadTransaction,
+                SelectDataAdapter = (DbDataAdapter)SelectDA(ASqlStatement, AReadTransaction,
                     false, AParametersArray);
 
                 if (SelectDataAdapter != null)
@@ -1291,18 +1710,31 @@ namespace Ict.Common.DB
 
                     ADataAdapterCanceller = new TDataAdapterCanceller(SelectDataAdapter);
 
-                    return SelectDataAdapter.Fill(AFillDataTable);
+                    ReturnValue = SelectDataAdapter.Fill(AFillDataTable);
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    {
+                        TLogging.Log(((this.GetType().FullName + ".SelectUsingDataAdapter: finished filling DbDataAdapter(DataTable " +
+                                       AFillDataTable.TableName) + "). DT Row Count: " + AFillDataTable.Rows.Count.ToString()));
+                    }
                 }
                 else
                 {
                     // Should not happen, but if it does then let the caller know that!
-                    return -1;
+                    ReturnValue = -1;
                 }
             }
             finally
             {
                 ReleaseCoordinatedDBAccess();
             }
+
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
+            {
+                LogTable(AFillDataTable);
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -1437,7 +1869,7 @@ namespace Ict.Common.DB
 
             if (ADataTableName == String.Empty)
             {
-                throw new ArgumentException("ADataTableName", "A name for the DataTable must be submitted!");
+                throw new ArgumentException("A name for the DataTable must be submitted!", "ADataTableName");
             }
 
             if (AMustCoordinateDBAccess)
@@ -1506,7 +1938,7 @@ namespace Ict.Common.DB
         {
             if (ATypedDataTable == null)
             {
-                throw new ArgumentException("ATypedDataTable", "ATypedDataTable must not be null");
+                throw new ArgumentException("ATypedDataTable must not be null", "ATypedDataTable");
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
@@ -1557,7 +1989,254 @@ namespace Ict.Common.DB
 
         #endregion
 
+        #region DB Connection check Methods
+
+        /// <summary>
+        /// Checks if the current Thread is the same Thread that the currently established DB Connection was established on.
+        /// </summary>
+        /// <returns>True if there isn't a currently established DB Connection or if the current Thread is the same Thread
+        /// that the currently running established DB Connection was established on; if this isn't the case false is
+        /// returned.</returns>
+        public bool CheckEstablishedDBConnectionThreadIsCompatible()
+        {
+            return CheckEstablishedDBConnectionThreadIsCompatible(true);
+        }
+
+        /// <summary>
+        /// Checks if the current Thread is the same Thread that the currently established DB Connection was established on.
+        /// </summary>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>True if there isn't a currently established DB Connection or if the current Thread is the same Thread
+        /// that the currently running established DB Connection was established on; if this isn't the case false is
+        /// returned.</returns>
+        private bool CheckEstablishedDBConnectionThreadIsCompatible(bool AMustCoordinateDBAccess)
+        {
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                if (FSqlConnection == null)
+                {
+                    return true;
+                }
+
+                // Multi-threading 'Sanity Check':
+                // Check if the current Thread is the same Thread that the currently established DB Connection was established on:
+                // if not, this Method returns false!
+                // Reason for that: Running DB Commands on a different Thread than the one that the DB Connection was started
+                // on isn't supported as the ADO.NET providers (specifically: the PostgreSQL provider, Npgsql) aren't thread-safe!
+                if (ThreadingHelper.GetCurrentThreadIdentifier() != ThreadingHelper.GetThreadIdentifier(
+                        ThreadThatConnectionWasEstablishedOn))
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
+
+            return true;
+        }
+
+        #endregion
+
         #region Transactions
+
+        #region Transaction check Methods
+
+        /// <summary>
+        /// Checks if the current Thread is the same Thread that <paramref name="ATransaction"/> was started on.
+        /// </summary>
+        /// <param name="ATransaction">An instantiated Transaction.</param>
+        /// <returns>True if the current Thread is the same Thread that <paramref name="ATransaction"/> was started on;
+        /// if this isn't the case false is returned.</returns>
+        public static bool CheckDBTransactionThreadIsCompatible(TDBTransaction ATransaction)
+        {
+            if (ATransaction == null)
+            {
+                throw new ArgumentNullException("ATransaction", "ATransaction Argument must not be null");
+            }
+
+            // Multi-threading 'Sanity Check':
+            // Check if the current Thread is the same Thread that ATransaction was started on: if not, this Method returns false!
+            // Reason for that: Running DB Commands on a different Thread than the one that the DB Transaction was started
+            // on isn't supported as the ADO.NET providers (specifically: the PostgreSQL provider, Npgsql) aren't thread-safe!
+            if (ThreadingHelper.GetCurrentThreadIdentifier() != ThreadingHelper.GetThreadIdentifier(
+                    ATransaction.ThreadThatTransactionWasStartedOn))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the current Thread is the same Thread that the currently running DB Transaction was started on.
+        /// </summary>
+        /// <returns>True if there isn't a currently running DB Transaction or if the current Thread is the same Thread
+        /// that the currently running DB Transaction was started on; if this isn't the case false is returned.</returns>
+        public bool CheckRunningDBTransactionThreadIsCompatible()
+        {
+            return CheckRunningDBTransactionThreadIsCompatible(true);
+        }
+
+        /// <summary>
+        /// Checks if the current Thread is the same Thread that the currently running DB Transaction was started on.
+        /// </summary>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>True if there isn't a currently running DB Transaction or if the current Thread is the same Thread
+        /// that the currently running DB Transaction was started on; if this isn't the case false is returned.</returns>
+        private bool CheckRunningDBTransactionThreadIsCompatible(bool AMustCoordinateDBAccess)
+        {
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                if (FTransaction == null)
+                {
+                    return true;
+                }
+
+                // Multi-threading 'Sanity Check':
+                // Check if the current Thread is the same Thread that the currently running DB Transaction was started on:
+                // if not, this Method returns false!
+                // Reason for that: Running DB Commands on a different Thread than the one that the DB Transaction was started
+                // on isn't supported as the ADO.NET providers (specifically: the PostgreSQL provider, Npgsql) aren't thread-safe!
+                if (ThreadingHelper.GetCurrentThreadIdentifier() != ThreadingHelper.GetThreadIdentifier(
+                        FTransaction.ThreadThatTransactionWasStartedOn))
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for what is
+        /// asked for with the two Arguments.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel"/> that is desired.</param>
+        /// <param name="AEnforceIsolationLevel">Pass <see cref="TEnforceIsolationLevel.eilExact"/> if an
+        /// exact match of the <see cref="IsolationLevel"/> of the currently running DB Transaction with
+        /// <paramref name="ADesiredIsolationLevel"/> is required. Pass <see cref="TEnforceIsolationLevel.eilMinimum"/>
+        /// if the minimum <see cref="IsolationLevel"/> specified with <paramref name="ADesiredIsolationLevel"/> is
+        /// acceptable.
+        /// </param>
+        /// <returns>True if there isn't a currently running DB Transaction or if the <see cref="IsolationLevel"/> of the
+        /// currently running DB Transaction is acceptable for what is asked for with the two Arguments; if this isn't the case
+        /// false is returned.</returns>
+        public bool CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel AEnforceIsolationLevel)
+        {
+            return CheckRunningDBTransactionIsolationLevelIsCompatible(ADesiredIsolationLevel, AEnforceIsolationLevel,
+                true);
+        }
+
+        /// <summary>
+        /// Checks if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for what is
+        /// asked for with the two Arguments.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel"/> that is desired.</param>
+        /// <param name="AEnforceIsolationLevel">Pass <see cref="TEnforceIsolationLevel.eilExact"/> if an
+        /// exact match of the <see cref="IsolationLevel"/> of the currently running DB Transaction with
+        /// <paramref name="ADesiredIsolationLevel"/> is required. Pass <see cref="TEnforceIsolationLevel.eilMinimum"/>
+        /// if the minimum <see cref="IsolationLevel"/> specified with <paramref name="ADesiredIsolationLevel"/> is
+        /// acceptable.
+        /// </param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <returns>True if there isn't a currently running DB Transaction or if the <see cref="IsolationLevel"/> of the
+        /// currently running DB Transaction is acceptable for what is asked for with the two Arguments; if this isn't the case
+        /// false is returned.</returns>
+        private bool CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel AEnforceIsolationLevel, bool AMustCoordinateDBAccess)
+        {
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                if (FTransaction == null)
+                {
+                    return true;
+                }
+
+                // Check if the IsolationLevel of the currently running Transaction is acceptable for what is requested with
+                // the ADesiredIsolationLevel and AEnforceIsolationLevel Arguments: if not, this Method returns false!
+                if ((AEnforceIsolationLevel == TEnforceIsolationLevel.eilExact)
+                    && (FTransaction.IsolationLevel != ADesiredIsolationLevel)
+                    || ((AEnforceIsolationLevel == TEnforceIsolationLevel.eilMinimum)
+                        && (FTransaction.IsolationLevel < ADesiredIsolationLevel)))
+                {
+                    return false;
+                }
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the current Thread is the same Thread that the currently running DB Transaction was started on AND
+        /// if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for what is
+        /// asked for with the two Arguments.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel"/> that is desired.</param>
+        /// <param name="AEnforceIsolationLevel">Pass <see cref="TEnforceIsolationLevel.eilExact"/> if an
+        /// exact match of the <see cref="IsolationLevel"/> of the currently running DB Transaction with
+        /// <paramref name="ADesiredIsolationLevel"/> is required. Pass <see cref="TEnforceIsolationLevel.eilMinimum"/>
+        /// if the minimum <see cref="IsolationLevel"/> specified with <paramref name="ADesiredIsolationLevel"/> is
+        /// acceptable.
+        /// </param>
+        /// <remarks>Combines calls to the Methods <see cref="CheckRunningDBTransactionThreadIsCompatible()"/> and
+        /// <see cref="CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel, TEnforceIsolationLevel)"/>
+        /// for convenience!</remarks>
+        /// <returns>True if there isn't a currently running DB Transaction. Also returns true if the current Thread is the
+        /// same Thread that the currently running DB Transaction was started on AND if the <see cref="IsolationLevel"/>
+        /// of the currently running DB Transaction is acceptable for what is asked for with the two Arguments; if this isn't the
+        /// case false is returned.</returns>
+        public bool CheckRunningDBTransactionIsCompatible(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel AEnforceIsolationLevel)
+        {
+            if (!(CheckRunningDBTransactionThreadIsCompatible())
+                || (!CheckRunningDBTransactionIsolationLevelIsCompatible(ADesiredIsolationLevel,
+                        AEnforceIsolationLevel)))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        #endregion
 
         /// <summary>
         /// Starts a Transaction on the current DB connection.
@@ -1567,10 +2246,12 @@ namespace Ict.Common.DB
         /// This is to be able to mitigate the problem of wanting to start a DB
         /// Transaction while another one is still running (gives time for the
         /// currently running DB Transaction to be finished).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction  (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <returns>Started Transaction (null if an error occured).</returns>
-        public TDBTransaction BeginTransaction(Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+        public TDBTransaction BeginTransaction(Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "")
         {
-            return BeginTransaction(true, ARetryAfterXSecWhenUnsuccessful);
+            return BeginTransaction(true, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
         }
 
         /// <summary>
@@ -1583,9 +2264,11 @@ namespace Ict.Common.DB
         /// This is to be able to mitigate the problem of wanting to start a DB
         /// Transaction while another one is still running (gives time for the
         /// currently running DB Transaction to be finished).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <returns>Started Transaction (null if an error occured).</returns>
         private TDBTransaction BeginTransaction(bool AMustCoordinateDBAccess,
-            Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "")
         {
             string NestedTransactionProblemError;
 
@@ -1604,17 +2287,20 @@ namespace Ict.Common.DB
                     {
                         Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
 
-                        // Retry again to begin a transaction.
+                        // Retry again to begin a transaction (=RECURSIVE call!).
                         // Note: If this fails again, an Exception is thrown as if there was
                         // no ARetryAfterXSecWhenUnsuccessful specfied!
-                        return BeginTransaction(false, -1);
+                        return BeginTransaction(false, -1, ATransactionName);
                     }
                     else
                     {
                         NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, FTransaction.Connection != null,
-                            FTransaction.IsolationLevel, FTransactionReused, GetThreadIdentifier(FTransactionThread),
-                            FTransactionAppDomain, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
-                            TLogging.StackTraceToText(FTransactionStackTrace), TLogging.StackTraceToText(new StackTrace(true)));
+                            FTransaction.IsolationLevel, FTransaction.Reused, ThreadingHelper.GetThreadIdentifier(
+                                FTransaction.ThreadThatTransactionWasStartedOn),
+                            FTransaction.AppDomainNameThatTransactionWasStartedIn, ThreadingHelper.GetCurrentThreadIdentifier(),
+                            AppDomain.CurrentDomain.FriendlyName,
+                            TLogging.StackTraceToText(FTransaction.StackTraceAtPointOfTransactionStart),
+                            TLogging.StackTraceToText(new StackTrace(true)));
                         TLogging.Log(NestedTransactionProblemError);
 
                         throw new EDBTransactionBusyException(
@@ -1626,28 +2312,14 @@ namespace Ict.Common.DB
 
                 try
                 {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                    {
-                        TLogging.Log(String.Format(
-                                "Trying to start a DB Transaction... (on Thread {0} in AppDomain '{1}').",
-                                GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName));
-                    }
+                    ExtendedLoggingInfoOnHigherDebugLevels("Trying to start a DB Transaction... ");
 
-                    FTransactionStackTrace = new StackTrace(true);
-                    FTransactionAppDomain = AppDomain.CurrentDomain.FriendlyName;
-                    FTransactionThread = Thread.CurrentThread;
-                    FTransactionReused = false;
+                    FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(), ConnectionIdentifier, this,
+                        false, ATransactionName);
 
-                    FTransaction = FSqlConnection.BeginTransaction();
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        TLogging.Log(String.Format("DB Transaction started (on Thread {0} in AppDomain '{1}').", GetCurrentThreadIdentifier(),
-                                AppDomain.CurrentDomain.FriendlyName));
-                        TLogging.Log("Start of stack trace ->");
-                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                        TLogging.Log("<- End of stack trace");
-                    }
+                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                            "DB Transaction started{0})", FTransaction.GetDBTransactionIdentifier()),
+                        DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
                 }
                 catch (Exception exp)
                 {
@@ -1691,7 +2363,8 @@ namespace Ict.Common.DB
                                 "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                         }
 
-                        return BeginTransaction(false, ARetryAfterXSecWhenUnsuccessful);
+                        // Retry again to begin a transaction (=RECURSIVE call!).
+                        return BeginTransaction(false, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
                     }
 
                     LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
@@ -1700,7 +2373,7 @@ namespace Ict.Common.DB
                 FLastDBAction = DateTime.Now;
 
 
-                return new TDBTransaction(FTransaction);
+                return FTransaction;
             }
             finally
             {
@@ -1720,10 +2393,13 @@ namespace Ict.Common.DB
         /// This is to be able to mitigate the problem of wanting to start a DB
         /// Transaction while another one is still running (gives time for the
         /// currently running DB Transaction to be finished).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <returns>Started Transaction (null if an error occured).</returns>
-        public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+        public TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful = -1,
+            string ATransactionName = "")
         {
-            return BeginTransaction(AIsolationLevel, true, ARetryAfterXSecWhenUnsuccessful);
+            return BeginTransaction(AIsolationLevel, true, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
         }
 
         /// <summary>
@@ -1737,9 +2413,11 @@ namespace Ict.Common.DB
         /// currently running DB Transaction to be finished).</param>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <returns>Started Transaction (null if an error occured).</returns>
         private TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, bool AMustCoordinateDBAccess,
-            Int16 ARetryAfterXSecWhenUnsuccessful = -1)
+            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "")
         {
             string NestedTransactionProblemError;
 
@@ -1763,7 +2441,7 @@ namespace Ict.Common.DB
                     {
                         Thread.Sleep(ARetryAfterXSecWhenUnsuccessful * 1000);
 
-                        // Retry again to begin a transaction.
+                        // Retry again to begin a transaction (=RECURSIVE call!).
                         // Note: If this fails again, an Exception is thrown as if there was
                         // no ARetryAfterXSecWhenUnsuccessful specfied!
                         return BeginTransaction(AIsolationLevel, false, -1);
@@ -1771,9 +2449,12 @@ namespace Ict.Common.DB
                     else
                     {
                         NestedTransactionProblemError = String.Format(StrNestedTransactionProblem, FTransaction.Connection != null,
-                            FTransaction.IsolationLevel, FTransactionReused, GetThreadIdentifier(FTransactionThread),
-                            FTransactionAppDomain, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
-                            TLogging.StackTraceToText(FTransactionStackTrace), TLogging.StackTraceToText(new StackTrace(true)));
+                            FTransaction.IsolationLevel, FTransaction.Reused, ThreadingHelper.GetThreadIdentifier(
+                                FTransaction.ThreadThatTransactionWasStartedOn),
+                            FTransaction.AppDomainNameThatTransactionWasStartedIn, ThreadingHelper.GetCurrentThreadIdentifier(),
+                            AppDomain.CurrentDomain.FriendlyName,
+                            TLogging.StackTraceToText(FTransaction.StackTraceAtPointOfTransactionStart),
+                            TLogging.StackTraceToText(new StackTrace(true)));
                         TLogging.Log(NestedTransactionProblemError);
 
                         throw new EDBTransactionBusyException(
@@ -1788,28 +2469,15 @@ namespace Ict.Common.DB
 
                 try
                 {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                    {
-                        TLogging.Log(String.Format(
-                                "Trying to start a DB Transaction with IsolationLevel '{0}'... (on Thread {1} in AppDomain '{2}').",
-                                AIsolationLevel, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName));
-                    }
+                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                            "Trying to start a DB Transaction with IsolationLevel '{0}'...", AIsolationLevel));
 
-                    FTransactionStackTrace = new StackTrace(true);
-                    FTransactionAppDomain = AppDomain.CurrentDomain.FriendlyName;
-                    FTransactionThread = Thread.CurrentThread;
-                    FTransactionReused = false;
+                    FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(AIsolationLevel),
+                        ConnectionIdentifier, this, false, ATransactionName);
 
-                    FTransaction = FSqlConnection.BeginTransaction(AIsolationLevel);
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        TLogging.Log(String.Format("DB Transaction with IsolationLevel '{0}' started (on Thread {1} in AppDomain '{2}').",
-                                AIsolationLevel, GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName));
-                        TLogging.Log("Start of stack trace ->");
-                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
-                        TLogging.Log("<- End of stack trace");
-                    }
+                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                            "DB Transaction{0} with IsolationLevel '{1}' got started", FTransaction.GetDBTransactionIdentifier(),
+                            AIsolationLevel), DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
                 }
                 catch (Exception exp)
                 {
@@ -1853,6 +2521,7 @@ namespace Ict.Common.DB
                                 "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
                         }
 
+                        // Retry again to begin a transaction (=RECURSIVE call!).
                         return BeginTransaction(AIsolationLevel, false, ARetryAfterXSecWhenUnsuccessful);
                     }
 
@@ -1861,7 +2530,7 @@ namespace Ict.Common.DB
 
                 FLastDBAction = DateTime.Now;
 
-                return new TDBTransaction(FTransaction);
+                return FTransaction;
             }
             finally
             {
@@ -1889,7 +2558,12 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         private void CommitTransaction(bool AMustCoordinateDBAccess)
         {
-            String msg = "";
+            string TransactionIdentifier = null;
+            bool TransactionValid = false;
+            bool TransactionReused = false;
+            IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
+            string ThreadThatTransactionWasStartedOn = null;
+            string AppDomainNameThatTransactionWasStartedIn = null;
 
             if (AMustCoordinateDBAccess)
             {
@@ -1900,32 +2574,70 @@ namespace Ict.Common.DB
             {
                 if (FTransaction != null)
                 {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    // Attempt to commit the DB Transaction
+
+                    // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet.
+                    if (!FTransaction.Valid)
                     {
-                        msg = String.Format("DB Transaction gets committed (on Thread {0} in AppDomain '{1}').   " +
-                            "DB Transaction Properties: Valid: {2}, IsolationLevel: {3}, Reused: {4}; it got started on " +
-                            "Thread {5} in AppDomain '{6}').", GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
-                            FTransaction.Connection != null, FTransaction.IsolationLevel,
-                            FTransactionReused, GetThreadIdentifier(FTransactionThread), FTransactionAppDomain);
+                        var Exc1 =
+                            new EDBAttemptingToUseTransactionThatIsInvalidException(
+                                "TDataBase.CommitTransaction called on DB Transaction that isn't valid",
+                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
+
+                        TLogging.Log(Exc1.ToString());
+
+                        throw Exc1;
                     }
 
-                    FTransaction.Commit();
+                    // Multi-threading 'Sanity Check':
+                    // Check if the current Thread is the same Thread that the current Transaction was started on:
+                    // if not, throw Exception!
+                    if (!CheckRunningDBTransactionThreadIsCompatible(false))
+                    {
+                        var Exc2 =
+                            new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
+                                "TDataBase.CommitTransaction would commit DB Transaction that got started on a different Thread " +
+                                "and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
 
+                        TLogging.Log(Exc2.ToString());
+
+                        throw Exc2;
+                    }
+
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
+                    {
+                        // Gather information for logging
+                        TransactionIdentifier = FTransaction.GetDBTransactionIdentifier();
+                        TransactionValid = FTransaction.Valid;
+                        TransactionReused = FTransaction.Reused;
+                        TransactionIsolationLevel = FTransaction.IsolationLevel;
+                        ThreadThatTransactionWasStartedOn = ThreadingHelper.GetThreadIdentifier(
+                            FTransaction.ThreadThatTransactionWasStartedOn);
+                        AppDomainNameThatTransactionWasStartedIn = FTransaction.AppDomainNameThatTransactionWasStartedIn;
+                    }
+
+                    FTransaction.WrappedTransaction.Commit();
+
+                    // Commit was OK, now clean up.
                     FTransaction.Dispose();
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        TLogging.Log(msg);
-                    }
+                    FTransaction = null;
 
                     FLastDBAction = DateTime.Now;
 
-                    FTransaction = null;
+                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                            "DB Transaction{0} got committed.  Before that, its DB Transaction Properties were: Valid: {1}, " +
+                            "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').",
+                            TransactionIdentifier, TransactionValid, TransactionIsolationLevel, TransactionReused,
+                            ThreadThatTransactionWasStartedOn, AppDomainNameThatTransactionWasStartedIn),
+                        DBAccess.DB_DEBUGLEVEL_TRANSACTION);
                 }
             }
             catch (Exception Exc)
             {
-                LogExceptionAndThrow(Exc, "While Committing Transaction");
+                LogExceptionAndThrow(Exc, "Exception while attempting Transaction commit");
             }
             finally
             {
@@ -1953,7 +2665,12 @@ namespace Ict.Common.DB
         /// <returns>void</returns>
         private void RollbackTransaction(bool AMustCoordinateDBAccess)
         {
-            String msg = "";
+            string TransactionIdentifier = null;
+            bool TransactionValid = false;
+            bool TransactionReused = false;
+            IsolationLevel TransactionIsolationLevel = IsolationLevel.Unspecified;
+            string ThreadThatTransactionWasStartedOn = null;
+            string AppDomainNameThatTransactionWasStartedIn = null;
 
             if (AMustCoordinateDBAccess)
             {
@@ -1964,29 +2681,66 @@ namespace Ict.Common.DB
             {
                 if (FTransaction != null)
                 {
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
-                    {
-                        msg = String.Format("DB Transaction rolled back (on Thread {0} in AppDomain '{1}').   " +
-                            "DB Transaction Properties: Valid: {2}, IsolationLevel: {3}, Reused: {4}; it got started on " +
-                            "Thread {5} in AppDomain '{6}').", GetCurrentThreadIdentifier(), AppDomain.CurrentDomain.FriendlyName,
-                            FTransaction.Connection != null, FTransaction.IsolationLevel,
-                            FTransactionReused, GetThreadIdentifier(FTransactionThread), FTransactionAppDomain);
-                    }
-
                     // Attempt to roll back the DB Transaction.
                     try
                     {
-                        FTransaction.Rollback();
-                        FTransaction.Dispose();
+                        // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet.
+                        if (!FTransaction.Valid)
+                        {
+                            var Exc1 =
+                                new EDBAttemptingToUseTransactionThatIsInvalidException(
+                                    "TDataBase.RollbackTransaction called on DB Transaction that isn't valid",
+                                    ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                    ThreadingHelper.GetCurrentThreadIdentifier());
+
+                            TLogging.Log(Exc1.ToString());
+
+                            throw Exc1;
+                        }
+
+                        // Multi-threading 'Sanity Check':
+                        // Check if the current Thread is the same Thread that the current Transaction was started on:
+                        // if not, throw Exception!
+                        if (!CheckRunningDBTransactionThreadIsCompatible(false))
+                        {
+                            var Exc2 =
+                                new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
+                                    "TDataBase.RollbackTransaction would roll back DB Transaction that got started on a different Thread " +
+                                    "and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                                    ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                    ThreadingHelper.GetCurrentThreadIdentifier());
+
+                            TLogging.Log(Exc2.ToString());
+
+                            throw Exc2;
+                        }
 
                         if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                         {
-                            TLogging.Log(msg);
+                            // Gather information for logging
+                            TransactionIdentifier = FTransaction.GetDBTransactionIdentifier();
+                            TransactionValid = FTransaction.Valid;
+                            TransactionReused = FTransaction.Reused;
+                            TransactionIsolationLevel = FTransaction.IsolationLevel;
+                            ThreadThatTransactionWasStartedOn = ThreadingHelper.GetThreadIdentifier(
+                                FTransaction.ThreadThatTransactionWasStartedOn);
+                            AppDomainNameThatTransactionWasStartedIn = FTransaction.AppDomainNameThatTransactionWasStartedIn;
                         }
+
+                        FTransaction.WrappedTransaction.Rollback();
+
+                        // Rollback was OK, now clean up.
+                        FTransaction.Dispose();
+                        FTransaction = null;
 
                         FLastDBAction = DateTime.Now;
 
-                        FTransaction = null;
+                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                                "DB Transaction{0} got rolled back.  Before that, its DB Transaction Properties were: Valid: {1}, " +
+                                "IsolationLevel: {2}, Reused: {3} (it got started on Thread {4} in AppDomain '{5}').", TransactionIdentifier,
+                                TransactionValid, TransactionIsolationLevel, TransactionReused, ThreadThatTransactionWasStartedOn,
+                                AppDomainNameThatTransactionWasStartedIn),
+                            DBAccess.DB_DEBUGLEVEL_TRANSACTION);
                     }
                     catch (Exception Exc)
                     {
@@ -2011,9 +2765,9 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// for debugging purposes, get the isolation level of the current transaction
+        /// Gets the <see cref="IsolationLevel"/> of the current DB Transaction (or debugging purposes).
         /// </summary>
-        /// <returns>Isolation.Undefined if no transaction is open</returns>
+        /// <returns><see cref="IsolationLevel.Unspecified"/> if no DB Transaction is open.</returns>
         public IsolationLevel GetIsolationLevel()
         {
             WaitForCoordinatedDBAccess();
@@ -2047,10 +2801,14 @@ namespace Ict.Common.DB
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired</param>
         /// <param name="ANewTransaction">True if a new Transaction was started and is returned,
         /// false if an already existing Transaction is returned</param>
+        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <returns>Either an existing or a new Transaction that exactly meets the specified <see cref="IsolationLevel" /></returns>
-        public TDBTransaction GetNewOrExistingTransaction(IsolationLevel ADesiredIsolationLevel, out Boolean ANewTransaction)
+        public TDBTransaction GetNewOrExistingTransaction(IsolationLevel ADesiredIsolationLevel, out Boolean ANewTransaction,
+            string ATransactionName = "")
         {
-            return GetNewOrExistingTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact, out ANewTransaction);
+            return GetNewOrExistingTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
+                out ANewTransaction, ATransactionName);
         }
 
         /// <summary>
@@ -2070,6 +2828,8 @@ namespace Ict.Common.DB
         /// </param>
         /// <param name="ANewTransaction">True if a new Transaction was started and is returned,
         /// false if an already existing Transaction is returned</param>
+        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <returns>Either an existing or a new Transaction that exactly meets the specified IsolationLevel</returns>
         /// <exception cref="EDBTransactionIsolationLevelWrongException">Thrown if the ATryToEnforceIsolationLevel Argument is set to
         /// TEnforceIsolationLevel.eilExact and the existing Transactions' IsolationLevel does not
@@ -2080,7 +2840,7 @@ namespace Ict.Common.DB
         /// eilMinimum and the existing Transaction's Isolation Level hasn't got at least the Isolation Level specified.</exception>
         public TDBTransaction GetNewOrExistingTransaction(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel ATryToEnforceIsolationLevel,
-            out Boolean ANewTransaction)
+            out Boolean ANewTransaction, string ATransactionName = "")
         {
             TDBTransaction TheTransaction;
 
@@ -2090,29 +2850,55 @@ namespace Ict.Common.DB
 
             try
             {
-                TheTransaction = FTransaction == null ? null : new TDBTransaction(FTransaction);
+                TheTransaction = FTransaction;
 
                 FDataBaseRDBMS.AdjustIsolationLevel(ref ADesiredIsolationLevel);
 
                 if (TheTransaction != null)
                 {
-                    // Check if the IsolationLevel of the existing Transaction is acceptable
-                    if ((ATryToEnforceIsolationLevel == TEnforceIsolationLevel.eilExact)
-                        && (TheTransaction.IsolationLevel != ADesiredIsolationLevel)
-                        || ((ATryToEnforceIsolationLevel == TEnforceIsolationLevel.eilMinimum)
-                            && (TheTransaction.IsolationLevel < ADesiredIsolationLevel)))
+                    // Multi-threading and multi-connection 'Sanity Check':
+                    // Check if the current Thread is the same Thread that the currently running DB Transaction was started on:
+                    // if not, throw Exception!
+                    if (!CheckRunningDBTransactionThreadIsCompatible(false))
+                    {
+                        var Exc1 = new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
+                            "TDataBase.GetNewOrExistingTransaction would yield DB Transaction that got started on a different " +
+                            "Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                            ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                            ThreadingHelper.GetCurrentThreadIdentifier());
+
+                        TLogging.Log(Exc1.ToString());
+
+                        throw Exc1;
+                    }
+
+                    // Check if the IsolationLevel of the currently running DB Transaction is acceptable for what is
+                    // asked for with the ADesiredIsolationLevel and ATryToEnforceIsolationLevel Arguments:
+                    // if not, throw Exception!
+                    if (!CheckRunningDBTransactionIsolationLevelIsCompatible(ADesiredIsolationLevel,
+                            ATryToEnforceIsolationLevel, false))
                     {
                         switch (ATryToEnforceIsolationLevel)
                         {
                             case TEnforceIsolationLevel.eilExact:
-                                throw new EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
+                                var Exc2 = new
+                                           EDBTransactionIsolationLevelWrongException("Expected IsolationLevel: " +
                                 ADesiredIsolationLevel.ToString("G") + " but is: " +
                                 TheTransaction.IsolationLevel.ToString("G"));
 
+                                TLogging.Log(Exc2.ToString());
+
+                                throw Exc2;
+
                             case TEnforceIsolationLevel.eilMinimum:
-                                throw new EDBTransactionIsolationLevelTooLowException(
+                                var Exc3 = new
+                                           EDBTransactionIsolationLevelTooLowException(
                                 "Expected IsolationLevel: at least " + ADesiredIsolationLevel.ToString("G") +
                                 " but is: " + TheTransaction.IsolationLevel.ToString("G"));
+
+                                TLogging.Log(Exc3.ToString());
+
+                                throw Exc3;
                         }
                     }
                 }
@@ -2121,24 +2907,44 @@ namespace Ict.Common.DB
                 {
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
                     {
-                        TLogging.Log("GetNewOrExistingTransaction: creating new transaction. IsolationLevel: " + ADesiredIsolationLevel.ToString());
+                        TLogging.Log(String.Format("GetNewOrExistingTransaction: Creating new DB Transaction with IsolationLevel '{0}'{1}.",
+                                ADesiredIsolationLevel, GetDBConnectionIdentifier()));
                     }
 
-                    TheTransaction = BeginTransaction(ADesiredIsolationLevel, false);
+                    TheTransaction = BeginTransaction(ADesiredIsolationLevel, false, -1, ATransactionName);
 
                     ANewTransaction = true;
                 }
                 else
                 {
+                    // 'Sanity Check': Check that TheTransaction hasn't been committed or rolled back yet.
+                    if (!TheTransaction.Valid)
+                    {
+                        var Exc4 =
+                            new EDBAttemptingToUseTransactionThatIsInvalidException(
+                                "TDataBase.GetNewOrExistingTransaction would yield DB Transaction that isn't valid",
+                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
+
+                        TLogging.Log(Exc4.ToString());
+
+                        throw Exc4;
+                    }
+
                     // Set Flag that indicates that the Transaction has been re-used instead of freshly created! This Flag can be
                     // inquired using the readonly TDBTransaction.Reused Property!
                     TheTransaction.SetTransactionToReused();
-                    FTransactionReused = true;
 
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRANSACTION)
                     {
-                        TLogging.Log(
-                            "GetNewOrExistingTransaction: using existing transaction. IsolationLevel: " + TheTransaction.IsolationLevel.ToString());
+                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                                "GetNewOrExistingTransaction: Re-using (='piggy-backing on') existing DB Transaction{0} with IsolationLevel '{1}'{2} "
+                                +
+                                "(it got started on Thread {3} in AppDomain '{4}').", TheTransaction.GetDBTransactionIdentifier(),
+                                TheTransaction.IsolationLevel,
+                                GetDBConnectionIdentifier(),
+                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                TheTransaction.AppDomainNameThatTransactionWasStartedIn));
                     }
                 }
             }
@@ -2879,13 +3685,20 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Tells whether the DB connection is ready to accept commands
-        /// or whether it is busy.
+        /// Tells whether the DB connection is ready to accept commands or whether it is busy.
+        /// </summary>
+        /// <returns>True if DB connection can accept commands, false if it is busy.</returns>
+        public bool ConnectionReady()
+        {
+            return ConnectionReady(true);
+        }
+
+        /// <summary>
+        /// Tells whether the DB connection is ready to accept commands or whether it is busy.
         /// </summary>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
-        /// <returns>True if DB connection can accept commands, false if
-        /// it is busy</returns>
+        /// <returns>True if DB connection can accept commands, false if it is busy.</returns>
         private bool ConnectionReady(bool AMustCoordinateDBAccess)
         {
             if (AMustCoordinateDBAccess)
@@ -3245,8 +4058,10 @@ namespace Ict.Common.DB
             FDataBaseRDBMS.LogException(AException, ref ErrorMessage);
 
             TLogging.Log(AContext + Environment.NewLine +
-                String.Format("on Thread {0} in AppDomain '{1}'", GetCurrentThreadIdentifier(),
-                    AppDomain.CurrentDomain.FriendlyName) + Environment.NewLine + FormattedSqlStatement +
+                String.Format("on Thread {0} in AppDomain '{1}'", ThreadingHelper.GetCurrentThreadIdentifier(),
+                    AppDomain.CurrentDomain.FriendlyName) +
+                (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES ?
+                 GetDBConnectionIdentifier() : "") + Environment.NewLine + FormattedSqlStatement +
                 "Possible cause: " + AException.ToString() + Environment.NewLine + ErrorMessage);
 
             TLogging.LogStackTrace(TLoggingType.ToLogfile);
@@ -3269,17 +4084,19 @@ namespace Ict.Common.DB
         private void WaitForCoordinatedDBAccess()
         {
             const string StrWaitingMessage =
-                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... (Call performed in Thread {0})";
-            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... (Call performed in Thread {0})";
+                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... " + StrThreadAndAppDomainCallInfo;
+            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " + StrThreadAndAppDomainCallInfo;
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
             {
-                TLogging.Log(String.Format(StrWaitingMessage, GetCurrentThreadIdentifier()) + Environment.NewLine +
+                TLogging.Log(String.Format(StrWaitingMessage, ThreadingHelper.GetCurrentThreadIdentifier(),
+                        AppDomain.CurrentDomain.FriendlyName) + Environment.NewLine +
                     "  StackTrace: " + new StackTrace(true).ToString());
             }
             else if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
-                TLogging.Log(String.Format(StrWaitingMessage, GetCurrentThreadIdentifier()));
+                TLogging.Log(String.Format(StrWaitingMessage, ThreadingHelper.GetCurrentThreadIdentifier(),
+                        AppDomain.CurrentDomain.FriendlyName));
             }
 
             if (!FCoordinatedDBAccess.Wait(FWaitingTimeForCoordinatedDBAccess))
@@ -3288,77 +4105,41 @@ namespace Ict.Common.DB
                     String.Format("Failed to obtain co-ordinated " +
                         "(=Thread-safe) access to the Database Abstraction Layer (waiting time [{0} ms] exceeded). " +
                         "(Call performed in Thread {1})!", FWaitingTimeForCoordinatedDBAccess,
-                        GetCurrentThreadIdentifier()));
+                        ThreadingHelper.GetCurrentThreadIdentifier()));
             }
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
             {
-                TLogging.Log(String.Format(StrWaitingSuccessful, GetCurrentThreadIdentifier()) + Environment.NewLine +
+                TLogging.Log(String.Format(StrWaitingSuccessful, ThreadingHelper.GetCurrentThreadIdentifier(),
+                        AppDomain.CurrentDomain.FriendlyName) + Environment.NewLine +
                     "  StackTrace: " + new StackTrace(true).ToString());
             }
             else if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
-                TLogging.Log(String.Format(StrWaitingSuccessful, GetCurrentThreadIdentifier()));
+                TLogging.Log(String.Format(StrWaitingSuccessful, ThreadingHelper.GetCurrentThreadIdentifier(),
+                        AppDomain.CurrentDomain.FriendlyName));
             }
         }
 
         private void ReleaseCoordinatedDBAccess()
         {
             const string StrReleasedCoordinatedDBAccess =
-                "Released Thread-safe access to the Database Abstraction Layer. (Call performed in Thread {0})...";
+                "Released Thread-safe access to the Database Abstraction Layer. " + StrThreadAndAppDomainCallInfo + "...";
 
             FCoordinatedDBAccess.Release();
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
             {
                 TLogging.Log(String.Format(
-                        StrReleasedCoordinatedDBAccess, GetCurrentThreadIdentifier()) + Environment.NewLine +
+                        StrReleasedCoordinatedDBAccess, ThreadingHelper.GetCurrentThreadIdentifier(),
+                        AppDomain.CurrentDomain.FriendlyName) + Environment.NewLine +
                     "  StackTrace: " + new StackTrace(true).ToString());
             }
             else if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
             {
-                TLogging.Log(String.Format(StrReleasedCoordinatedDBAccess, GetCurrentThreadIdentifier()));
+                TLogging.Log(String.Format(StrReleasedCoordinatedDBAccess, ThreadingHelper.GetCurrentThreadIdentifier(),
+                        AppDomain.CurrentDomain.FriendlyName));
             }
-        }
-
-        #endregion
-
-        #region Thread Helper
-
-        private string GetCurrentThreadIdentifier()
-        {
-            return GetThreadIdentifier(Thread.CurrentThread);
-        }
-
-        private string GetThreadIdentifier(Thread ATheThread)
-        {
-            string ReturnValue = ATheThread.Name ?? String.Empty;
-
-            if (ReturnValue.Length > 0)
-            {
-                // Ensure Thread Name starts with apostrophy ( ' ).
-                if (!ReturnValue.StartsWith("'", StringComparison.InvariantCulture))
-                {
-                    ReturnValue = "'" + ReturnValue;
-                }
-
-                if (!ReturnValue.EndsWith("]", StringComparison.InvariantCulture))
-                {
-                    // Ensure Thread Name ends with apostrophy ( ' ).
-                    if (!ReturnValue.EndsWith("'", StringComparison.InvariantCulture))
-                    {
-                        ReturnValue += "'";
-                    }
-
-                    ReturnValue += " [ThreadID: " + ATheThread.ManagedThreadId.ToString() + "]";
-                }
-            }
-            else
-            {
-                ReturnValue += ATheThread.ManagedThreadId.ToString();
-            }
-
-            return ReturnValue;
         }
 
         #endregion
@@ -3367,16 +4148,16 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -3385,16 +4166,42 @@ namespace Ict.Common.DB
             ref TDBTransaction ATransaction, ref bool ASubmissionOK,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
-                ref ATransaction, ref ASubmissionOK, AEncapsulatedDBAccessCode);
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ref ATransaction, ref ASubmissionOK, String.Empty,
+                AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, ref bool ASubmissionOK, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
+                ref ATransaction, ref ASubmissionOK, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
         /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
@@ -3404,7 +4211,7 @@ namespace Ict.Common.DB
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
         /// </param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -3414,15 +4221,46 @@ namespace Ict.Common.DB
             ref bool ASubmissionOK,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel,
-                ref ATransaction, ref ASubmissionOK, true, AEncapsulatedDBAccessCode);
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel, ref ATransaction,
+                ref ASubmissionOK, true, String.Empty, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
+        /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel,
+                ref ATransaction, ref ASubmissionOK, true, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
@@ -3430,7 +4268,7 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when
         /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
@@ -3442,16 +4280,46 @@ namespace Ict.Common.DB
             ref TDBTransaction ATransaction, ref bool ASubmissionOK, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
-                ref ATransaction, ref ASubmissionOK, ACommitTransaction, AEncapsulatedDBAccessCode);
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ref ATransaction, ref ASubmissionOK,
+                ACommitTransaction, String.Empty, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
+        /// and <paramref name="ACommitTransaction"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when
+        /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
+        /// <paramref name="ASubmissionOK"/> is true, or whether nothing should happen in that case (also no Rollback!).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, ref bool ASubmissionOK, bool ACommitTransaction, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
+                ref ATransaction, ref ASubmissionOK, ACommitTransaction, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
         /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
@@ -3462,7 +4330,7 @@ namespace Ict.Common.DB
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
         /// </param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when
         /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
@@ -3475,13 +4343,48 @@ namespace Ict.Common.DB
             ref bool ASubmissionOK, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel, ref ATransaction,
+                ref ASubmissionOK, ACommitTransaction, String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
+        /// and <paramref name="ACommitTransaction"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
+        /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true <em>and</em> when
+        /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
+        /// <paramref name="ASubmissionOK"/> is true, or whether nothing should happen in that case (also no Rollback!).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK, bool ACommitTransaction, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
             bool NewTransaction;
             bool ExceptionThrown = true;
 
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
             ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel,
-                ATryToEnforceIsolationLevel, out NewTransaction);
+                ATryToEnforceIsolationLevel, out NewTransaction, ATransactionName);
 
             try
             {
@@ -3505,16 +4408,16 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
@@ -3524,16 +4427,43 @@ namespace Ict.Common.DB
             ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult,
             Action AEncapsulatedDBAccessCode)
         {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ref ATransaction, ref ASubmitChangesResult,
+                String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
             GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
-                ref ATransaction, ref ASubmitChangesResult, AEncapsulatedDBAccessCode);
+                ref ATransaction, ref ASubmitChangesResult, ATransactionName, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em> : Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
         /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
@@ -3543,7 +4473,7 @@ namespace Ict.Common.DB
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
         /// </param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
@@ -3554,22 +4484,54 @@ namespace Ict.Common.DB
             ref TSubmitChangesResult ASubmitChangesResult,
             Action AEncapsulatedDBAccessCode)
         {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel, ref ATransaction,
+                ref ASubmitChangesResult, String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em> : Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
+        /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
             GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel,
-                ref ATransaction, ref ASubmitChangesResult, true, AEncapsulatedDBAccessCode);
+                ref ATransaction, ref ASubmitChangesResult, true, ATransactionName, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when
@@ -3583,16 +4545,47 @@ namespace Ict.Common.DB
             ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction,
             Action AEncapsulatedDBAccessCode)
         {
+            GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, ref ATransaction, ref ASubmitChangesResult,
+                ACommitTransaction, String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when
+        /// <paramref name="ACommitTransaction"/> is true) or Rollback (when false) is issued.</param>
+        /// <param name="ACommitTransaction">Controls whether a Commit is issued when
+        /// <paramref name="ASubmitChangesResult"/> is <see cref="TSubmitChangesResult.scrOK"/>,
+        /// or whether nothing should happen in that case (also no Rollback!).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction,
+            string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
             GetNewOrExistingAutoTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
-                ref ATransaction, ref ASubmitChangesResult, ACommitTransaction, AEncapsulatedDBAccessCode);
+                ref ATransaction, ref ASubmitChangesResult, ACommitTransaction, ATransactionName, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em> : Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
         /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmitChangesResult"/>
@@ -3603,7 +4596,7 @@ namespace Ict.Common.DB
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
         /// </param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/> <em>and</em> when
@@ -3611,11 +4604,13 @@ namespace Ict.Common.DB
         /// <param name="ACommitTransaction">Controls whether a Commit is issued when
         /// <paramref name="ASubmitChangesResult"/> is <see cref="TSubmitChangesResult.scrOK"/>,
         /// or whether nothing should happen in that case (also no Rollback!).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void GetNewOrExistingAutoTransaction(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
-            ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, bool ACommitTransaction, string ATransactionName,
             Action AEncapsulatedDBAccessCode)
         {
             bool NewTransaction;
@@ -3624,7 +4619,7 @@ namespace Ict.Common.DB
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
             ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel,
-                ATryToEnforceIsolationLevel, out NewTransaction);
+                ATryToEnforceIsolationLevel, out NewTransaction, ATransactionName);
 
             try
             {
@@ -3648,16 +4643,16 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
@@ -3665,16 +4660,41 @@ namespace Ict.Common.DB
             ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
-            GetNewOrExistingAutoReadTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
-                ref ATransaction, AEncapsulatedDBAccessCode);
+            GetNewOrExistingAutoReadTransaction(ADesiredIsolationLevel, ref ATransaction, String.Empty,
+                AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// Method with the Argument <paramref name="ADesiredIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoReadTransaction(IsolationLevel ADesiredIsolationLevel,
+            ref TDBTransaction ATransaction, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
+            GetNewOrExistingAutoReadTransaction(ADesiredIsolationLevel, TEnforceIsolationLevel.eilExact,
+                ref ATransaction, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
         /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/>
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
         /// either started or simply returned in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
@@ -3684,7 +4704,7 @@ namespace Ict.Common.DB
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
         /// </param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool)"/> either
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
         /// started or simply returned.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
@@ -3692,12 +4712,41 @@ namespace Ict.Common.DB
             TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
+            GetNewOrExistingAutoReadTransaction(ADesiredIsolationLevel, ATryToEnforceIsolationLevel, ref ATransaction,
+                String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// Method with the Arguments <paramref name="ADesiredIsolationLevel"/> and
+        /// <paramref name="ATryToEnforceIsolationLevel"/> and returns the DB Transaction that
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/>
+        /// either started or simply returned in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
+        /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
+        /// </param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="GetNewOrExistingTransaction(IsolationLevel, TEnforceIsolationLevel, out bool, string)"/> either
+        /// started or simply returned.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void GetNewOrExistingAutoReadTransaction(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel ATryToEnforceIsolationLevel, ref TDBTransaction ATransaction, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
             bool NewTransaction;
 
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
             ATransaction = GetNewOrExistingTransaction(ADesiredIsolationLevel,
-                ATryToEnforceIsolationLevel, out NewTransaction);
+                ATryToEnforceIsolationLevel, out NewTransaction, ATransactionName);
 
             try
             {
@@ -3725,47 +4774,93 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short)"/>
+        /// <see cref="BeginTransaction(short, string)"/>
         /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short)"/>
+        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short)"/> started.</param>
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoTransaction(ref TDBTransaction ATransaction,
             ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoTransaction(-1, ref ATransaction, ref ASubmissionOK, AEncapsulatedDBAccessCode);
+            BeginAutoTransaction(ref ATransaction, ref ASubmissionOK, String.Empty, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short)"/>
+        /// <see cref="BeginTransaction(short, string)"/>
+        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
+        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
+        /// </summary>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoTransaction(-1, ref ATransaction, ref ASubmissionOK, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(short, string)"/>
         /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short)"/>
+        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short)"/> started.</param>
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
             ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
+            BeginAutoTransaction(ARetryAfterXSecWhenUnsuccessful, ref ATransaction, ref ASubmissionOK, String.Empty,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(short, string)"/>
+        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
+        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
+        /// </summary>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
             bool ExceptionThrown = true;
 
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful, ATransactionName);
 
             try
             {
@@ -3789,15 +4884,15 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short)"/>
+        /// <see cref="BeginTransaction(short, string)"/>
         /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short)"/>
+        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short)"/> started.</param>
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -3805,21 +4900,45 @@ namespace Ict.Common.DB
         public void BeginAutoTransaction(ref TDBTransaction ATransaction,
             ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoTransaction(-1, ref ATransaction, ref ASubmitChangesResult, AEncapsulatedDBAccessCode);
+            BeginAutoTransaction(ref ATransaction, ref ASubmitChangesResult, String.Empty, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short)"/>
+        /// <see cref="BeginTransaction(short, string)"/>
+        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
+        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoTransaction(-1, ref ATransaction, ref ASubmitChangesResult, ATransactionName,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(short, string)"/>
         /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short)"/>
+        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(short)"/> started.</param>
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -3827,11 +4946,36 @@ namespace Ict.Common.DB
         public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
             ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
+            BeginAutoTransaction(ARetryAfterXSecWhenUnsuccessful, ref ATransaction, ref ASubmitChangesResult, String.Empty,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(short, string)"/>
+        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
+        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(short, string)"/> started.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(Int16 ARetryAfterXSecWhenUnsuccessful, ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
             bool ExceptionThrown = true;
 
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful, ATransactionName);
 
             try
             {
@@ -3855,34 +4999,61 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
         /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
         /// the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
             ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ref ASubmissionOK, AEncapsulatedDBAccessCode);
+            BeginAutoTransaction(AIsolationLevel, ref ATransaction, ref ASubmissionOK, String.Empty,
+                AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
+        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
+        /// the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
+            ref bool ASubmissionOK, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ref ASubmissionOK, ATransactionName,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
         /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
@@ -3890,18 +5061,47 @@ namespace Ict.Common.DB
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
-            ref TDBTransaction ATransaction, ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+            ref TDBTransaction ATransaction, ref bool ASubmissionOK,
+            Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, ref ASubmissionOK,
+                String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
+        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
+        /// and returns the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, ref bool ASubmissionOK, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
 
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
 
             try
             {
@@ -3925,18 +5125,18 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
         /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
         /// the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -3944,16 +5144,44 @@ namespace Ict.Common.DB
         public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
             ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ref ASubmitChangesResult, AEncapsulatedDBAccessCode);
+            BeginAutoTransaction(AIsolationLevel, ref ATransaction, ref ASubmitChangesResult, String.Empty,
+                AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
+        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful) and returns
+        /// the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoTransaction(AIsolationLevel, -1, ref ATransaction, ref ASubmitChangesResult, ATransactionName,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
         /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
@@ -3961,7 +5189,7 @@ namespace Ict.Common.DB
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
         /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -3969,11 +5197,40 @@ namespace Ict.Common.DB
         public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
             ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, Action AEncapsulatedDBAccessCode)
         {
+            BeginAutoTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction,
+                ref ASubmitChangesResult, String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
+        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
+        /// and returns the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
+        /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmitChangesResult"/>.
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when it is
+        /// <see cref="TSubmitChangesResult.scrOK"/>) or Rollback (when it has a different value) is issued.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, ref TSubmitChangesResult ASubmitChangesResult, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
             bool ExceptionThrown = true;
 
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
 
             try
             {
@@ -3997,43 +5254,87 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short)"/>
+        /// <see cref="BeginTransaction(short, string)"/>
         /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
-        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short)"/>
+        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoReadTransaction(ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoReadTransaction(-1, ref ATransaction, AEncapsulatedDBAccessCode);
+            BeginAutoReadTransaction(ref ATransaction, String.Empty, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(short)"/>
+        /// <see cref="BeginTransaction(short, string)"/>
+        /// Method, supplying -1 for that Methods' 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry
+        /// when unsuccessful) and returns the DB Transaction that <see cref="BeginTransaction(short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(ref TDBTransaction ATransaction, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoReadTransaction(-1, ref ATransaction, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(short, string)"/>
         /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
-        /// the DB Transaction that <see cref="BeginTransaction(short)"/>
+        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoReadTransaction(Int16 ARetryAfterXSecWhenUnsuccessful,
             ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
+            BeginAutoReadTransaction(ARetryAfterXSecWhenUnsuccessful, ref ATransaction, String.Empty,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(short, string)"/>
+        /// Method with the Argument <paramref name="ARetryAfterXSecWhenUnsuccessful"/> and returns
+        /// the DB Transaction that <see cref="BeginTransaction(short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(ARetryAfterXSecWhenUnsuccessful, ATransactionName);
 
             try
             {
@@ -4058,33 +5359,57 @@ namespace Ict.Common.DB
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
         /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful)
         /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
         /// </summary>
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
             Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoReadTransaction(AIsolationLevel, -1, ref ATransaction, AEncapsulatedDBAccessCode);
+            BeginAutoReadTransaction(AIsolationLevel, ref ATransaction, String.Empty, AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Argument <paramref name="AIsolationLevel"/> and -1 for that Methods'
+        /// 'ARetryAfterXSecWhenUnsuccessful' Argument (meaning: no retry when unsuccessful)
+        /// and returns the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, ref TDBTransaction ATransaction,
+            string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoReadTransaction(AIsolationLevel, -1, ref ATransaction, ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
         /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
@@ -4092,23 +5417,23 @@ namespace Ict.Common.DB
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
             ref TDBTransaction ATransaction, Action AEncapsulatedDBAccessCode)
         {
-            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, true,
+            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, String.Empty,
                 AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// <em>Automatic Transaction Handling</em>: Calls the
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// Method with the Arguments <paramref name="AIsolationLevel"/> and
         /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
         /// and returns the DB Transaction that
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
         /// started in <paramref name="ATransaction"/>.
         /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
         /// whether an Exception occured, or not!
@@ -4116,7 +5441,33 @@ namespace Ict.Common.DB
         /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
         /// <param name="ATransaction">The DB Transaction that the Method
-        /// <see cref="BeginTransaction(IsolationLevel, short)"/> started.</param>
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, string ATransactionName, Action AEncapsulatedDBAccessCode)
+        {
+            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction, true,
+                ATransactionName, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
+        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
+        /// and returns the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
@@ -4124,9 +5475,39 @@ namespace Ict.Common.DB
         private void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
             ref TDBTransaction ATransaction, bool AMustCoordinateDBAccess, Action AEncapsulatedDBAccessCode)
         {
+            BeginAutoReadTransaction(AIsolationLevel, ARetryAfterXSecWhenUnsuccessful, ref ATransaction,
+                AMustCoordinateDBAccess, String.Empty, AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// <em>Automatic Transaction Handling</em>: Calls the
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// Method with the Arguments <paramref name="AIsolationLevel"/> and
+        /// <paramref name="ARetryAfterXSecWhenUnsuccessful"/>
+        /// and returns the DB Transaction that
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/>
+        /// started in <paramref name="ATransaction"/>.
+        /// Handles the Rolling Back of the DB Transaction automatically - a <em>Rollback is always issued</em>,
+        /// whether an Exception occured, or not!
+        /// </summary>
+        /// <param name="AIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
+        /// <param name="ARetryAfterXSecWhenUnsuccessful">Allows a retry timeout to be specified (in seconds).</param>
+        /// <param name="ATransaction">The DB Transaction that the Method
+        /// <see cref="BeginTransaction(IsolationLevel, short, string)"/> started.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this.</param>
+        /// <param name="ATransactionName">Name of the DB Transaction. It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        private void BeginAutoReadTransaction(IsolationLevel AIsolationLevel, Int16 ARetryAfterXSecWhenUnsuccessful,
+            ref TDBTransaction ATransaction, bool AMustCoordinateDBAccess, string ATransactionName,
+            Action AEncapsulatedDBAccessCode)
+        {
             // Execute the Method that we are 'encapsulating' inside the present Method. (The called Method has no 'automaticness'
             // regarding Exception Handling.)
-            ATransaction = BeginTransaction(AIsolationLevel, AMustCoordinateDBAccess, ARetryAfterXSecWhenUnsuccessful);
+            ATransaction = BeginTransaction(AIsolationLevel, AMustCoordinateDBAccess, ARetryAfterXSecWhenUnsuccessful,
+                ATransactionName);
 
             try
             {
@@ -4265,12 +5646,14 @@ namespace Ict.Common.DB
                 if (ACommitTransaction)
                 {
                     TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Commit");
+
                     CommitTransaction();
                 }
             }
             else
             {
                 TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback: Rollback");
+
                 RollbackTransaction();
             }
         }
@@ -4413,7 +5796,67 @@ namespace Ict.Common.DB
     {
         /// <summary>Holds the DbTransaction that we are wrapping inside this class.</summary>
         private DbTransaction FWrappedTransaction;
+        private TDataBase FTDataBaseInstanceThatTransactionBelongsTo;
         private bool FReused = false;
+        private Thread FThreadThatTransactionWasStartedOn;
+        private AppDomain FAppDomainThatTransactionWasStartedIn;
+        private StackTrace FStackTraceAtPointOfTransactionStart;
+        private System.Guid FTransactionIdentifier;
+        private System.Guid FConnectionIdentifier;
+        private string FTransactionName;
+
+        /// <summary>
+        /// An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies a DB Transaction once it got created.
+        /// It is used for internal 'sanity checks'. It also gets logged and hence can aid debugging (also useful for
+        /// Unit Testing).</summary>
+        public System.Guid TransactionIdentifier
+        {
+            get
+            {
+                return FTransactionIdentifier;
+            }
+        }
+
+        /// <summary>
+        /// An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies the DB Connection that this
+        /// DB Transaction is running against. It is used for internal 'sanity checks'. It also gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</summary>
+        public System.Guid ConnectionIdentifier
+        {
+            get
+            {
+                return FConnectionIdentifier;
+            }
+        }
+
+        /// <summary>
+        /// Instance of <see cref="TDataBase"/> that this Transaction belongs to.
+        /// <para>
+        /// Can be used e.g. in Static Methods to get the <see cref="TDataBase"/> instance that a <see cref="TDBTransaction"/>
+        /// object was instantiated on. This <see cref="TDataBase"/> instance can then be used to execute calls on the proper
+        /// <see cref="TDataBase"/> instance without needing to have this instance readily in a given context
+        /// (thinking of static Methods in the 'Typed DataStore' here)!
+        /// </para>
+        /// </summary>
+        public TDataBase DataBaseObj
+        {
+            get
+            {
+                return FTDataBaseInstanceThatTransactionBelongsTo;
+            }
+        }
+
+        /// <summary>
+        /// Name of the DB Transaction (optional). It gets logged and hence can aid debugging (also useful for Unit Testing).
+        /// </summary>
+        public string TransactionName
+        {
+            get
+            {
+                return FTransactionName;
+            }
+        }
+
 
         /// <summary>
         /// Database connection to which the Transaction belongs.
@@ -4478,16 +5921,82 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// Name of the AppDomain that the DB Transaction was started in. It gets logged and hence can aid debugging
+        /// (also useful for Unit Testing).
+        /// </summary>
+        public string AppDomainNameThatTransactionWasStartedIn
+        {
+            get
+            {
+                return FAppDomainThatTransactionWasStartedIn.FriendlyName;
+            }
+        }
+
+        /// <summary>
+        /// AppDomain that the DB Transaction was started in.
+        /// </summary>
+        internal AppDomain AppDomainThatTransactionWasStartedIn
+        {
+            get
+            {
+                return FAppDomainThatTransactionWasStartedIn;
+            }
+        }
+
+        /// <summary>
+        /// Thread that the DB Transaction was started on. It is used for internal 'sanity checks'. It also gets logged and
+        /// hence can aid debugging (also useful for Unit Testing).
+        /// </summary>
+        internal Thread ThreadThatTransactionWasStartedOn
+        {
+            get
+            {
+                return FThreadThatTransactionWasStartedOn;
+            }
+        }
+
+        /// <summary>
+        /// StackTrace at the point of the starting of the DB Transaction. This is kept so it can get logged and hence it
+        /// can aid debugging.
+        /// </summary>
+        internal StackTrace StackTraceAtPointOfTransactionStart
+        {
+            get
+            {
+                return FStackTraceAtPointOfTransactionStart;
+            }
+        }
+
+        /// <summary>
         /// Constructor for a <see cref="TDBTransaction" /> Object.
         /// </summary>
-        /// <param name="ATransaction">The concrete DbTransaction Object that <see cref="TDBTransaction" />
+        /// <param name="ATransaction">The concrete <see cref="DbTransaction"/> object that <see cref="TDBTransaction" />
         /// should represent.</param>
+        /// <param name="AConnectionIdentifier">ConnectionIdentifier of the DB Connection that this DB Transaction
+        /// is running against.</param>
+        /// <param name="ATDataBaseInstanceThatTransactionBelongsTo">Instance of <see cref="TDataBase"/> that
+        /// owns this <see cref="TDBTransaction"/> instance.</param>
         /// <param name="AReused">Set to true to make the new instance return 'true' right away when its
-        /// <see cref="Reused"/> Property gets inquired. (Default=false).</param>
-        public TDBTransaction(DbTransaction ATransaction, bool AReused = false)
+        /// <see cref="Reused"/> Property gets inquired (default=false).</param>
+        /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
+        /// debugging (also useful for Unit Testing).</param>
+        public TDBTransaction(DbTransaction ATransaction,
+            System.Guid AConnectionIdentifier,
+            TDataBase ATDataBaseInstanceThatTransactionBelongsTo,
+            bool AReused = false,
+            string ATransactionName = "")
         {
+            FTransactionIdentifier = System.Guid.NewGuid();
+            FTransactionName = ATransactionName;
+
             FWrappedTransaction = ATransaction;
             FReused = AReused;
+
+            FTDataBaseInstanceThatTransactionBelongsTo = ATDataBaseInstanceThatTransactionBelongsTo;
+            FAppDomainThatTransactionWasStartedIn = AppDomain.CurrentDomain;
+            FThreadThatTransactionWasStartedOn = Thread.CurrentThread;
+            FStackTraceAtPointOfTransactionStart = new StackTrace(true);
+            FConnectionIdentifier = AConnectionIdentifier;
         }
 
         /// <summary>
@@ -4496,6 +6005,19 @@ namespace Ict.Common.DB
         internal void SetTransactionToReused()
         {
             FReused = true;
+        }
+
+        /// <summary>
+        /// Returns a string containing the TransactionIdentifier. If a TransactionName was assigned when the DB Transaction
+        /// was created it is included, too. Gets logged and hence can aid debugging (also useful for Unit Testing).
+        /// </summary>
+        /// <returns>String containing the TransactionIdentifier. If a TransactionName was assigned when the DB Transaction
+        /// was created it is included, too.
+        /// </returns>
+        public string GetDBTransactionIdentifier()
+        {
+            return " (Trans.Identifier: " + FTransactionIdentifier + ")" +
+                   (FTransactionName != String.Empty ? String.Format(" (Transaction Name: {0})", FTransactionName) : "");
         }
 
         #region Dispose pattern
@@ -4508,6 +6030,7 @@ namespace Ict.Common.DB
         public void Dispose()
         {
             Dispose(true);
+
             GC.SuppressFinalize(this);
         }
 
@@ -4525,6 +6048,7 @@ namespace Ict.Common.DB
                 if (FWrappedTransaction != null)
                 {
                     FWrappedTransaction.Dispose();
+                    FWrappedTransaction = null;
                 }
             }
         }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,9 +62,6 @@ namespace Ict.Petra.Server.App.Core
     /// </summary>
     public class TServerManager : TServerManagerBase
     {
-        /// <summary>System wide defaults</summary>
-        private TSystemDefaultsCache FSystemDefaultsCache;
-
         private IUserManager FUserManager;
 
         /// <summary>
@@ -85,7 +82,8 @@ namespace Ict.Petra.Server.App.Core
         public TServerManager() : base()
         {
             // Create SystemDefaults Cache
-            FSystemDefaultsCache = new TSystemDefaultsCache();
+            TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
+            DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
             TCacheableTablesManager.InitializeUnit();
             TCacheableTablesManager.GCacheableTablesManager = new TCacheableTablesManager(new TDelegateSendClientTask(TClientManager.QueueClientTask));
@@ -113,7 +111,7 @@ namespace Ict.Petra.Server.App.Core
                 null,
                 null);
 
-            TClientManager.InitializeStaticVariables(FSystemDefaultsCache,
+            TClientManager.InitializeStaticVariables(TSystemDefaultsCache.GSystemDefaultsCache,
                 FUserManager,
                 new TErrorLog(),
                 new TMaintenanceLogonMessage());
@@ -220,7 +218,8 @@ namespace Ict.Petra.Server.App.Core
                 TSrvSetting.PostgreSQLDatabaseName,
                 TSrvSetting.DBUsername,
                 TSrvSetting.DBPassword,
-                "");
+                "",
+                "Server's DB Connection");
 
             TLogging.Log("  " + Catalog.GetString("Connected to Database."));
         }

@@ -73,6 +73,7 @@ RootNode:
                     txtSupplierName:
         grdSuppliers: {ActionDoubleClick=actSupplierTransactions, ActionEnterKeyPressed=actSupplierTransactions}
             Dock: Fill
+            Type: Ict.Common.Controls.TSgrdDataGridPaged
         btnNewSupplier: {Label=New, Width=70}
         btnEditDetails:
         btnCreateInvoice: {Width=120}

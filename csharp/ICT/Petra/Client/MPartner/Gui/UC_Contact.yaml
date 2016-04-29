@@ -44,3 +44,4 @@ RootNode:
             Action: actSelectAttributes
         grdSelectedAttributes:
             Stretch: fully
+            AutoFindMode: FirstCharacter

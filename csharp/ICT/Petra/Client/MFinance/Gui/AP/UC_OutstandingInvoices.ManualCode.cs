@@ -50,7 +50,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FInvoiceTable;
-        private TSgrdDataGridPaged grdDetails;
+        private TSgrdDataGrid grdDetails;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
 

@@ -130,5 +130,6 @@ RootNode:
             Padding: 0,33,0,0
   
         grdExample:
+            AutoFindMode: NoAutoFind
             Width: 190
             Height: 160

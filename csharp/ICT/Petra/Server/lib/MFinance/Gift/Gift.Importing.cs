@@ -828,11 +828,13 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 break;
 
                             case DataRowState.Modified:
+
                                 DBAccess.GDBAccessObj.ExecuteNonQuery("UPDATE a_esr_default SET " +
-                                "a_new_partner_key_n = " + Convert.ToInt64(Row["a_new_partner_key_n"]) +
+                                "a_partner_key_n=" + Convert.ToInt64(Row["a_partner_key_n"]) +
+                                ", a_new_partner_key_n = " + Convert.ToInt64(Row["a_new_partner_key_n"]) +
                                 ", a_motiv_group_s='" + Row["a_motiv_group_s"].ToString() +
                                 "', a_motiv_detail_s='" + Row["a_motiv_detail_s"].ToString() +
-                                "' WHERE a_partner_key_n=" + Convert.ToInt64(Row["a_partner_key_n"]),
+                                "' WHERE a_partner_key_n=" + Convert.ToInt64(Row["a_partner_key_n", DataRowVersion.Original]),
                                 Transaction);
                                 break;
                         }

@@ -538,6 +538,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         {
             String OldLoggingText;
             DateTime startTime;
+            String ErrorMessage = null;
 
             OldLoggingText = "";
             startTime = DateTime.Now;
@@ -558,7 +559,12 @@ namespace Ict.Petra.Client.MReporting.Logic
                     }
                     else
                     {
-                        TLogging.Log(FReportingGenerator.GetErrorMessage());
+                        ErrorMessage = FReportingGenerator.GetErrorMessage();
+
+                        if (ErrorMessage != null)
+                        {
+                            TLogging.Log(FReportingGenerator.GetErrorMessage());
+                        }
                     }
 
                     FKeepUpProgressCheck = false;

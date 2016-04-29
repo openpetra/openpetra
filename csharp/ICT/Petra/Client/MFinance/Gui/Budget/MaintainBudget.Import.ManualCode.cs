@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// </summary>
         /// <param name="ASelectedBudgetYear"></param>
         /// <param name="AMainDS"></param>
-        public void ImportBudget(int ASelectedBudgetYear, ref BudgetTDS AMainDS)
+        public void ImportBudget(int ASelectedBudgetYear, BudgetTDS AMainDS)
         {
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
@@ -144,7 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             ImportString,
                             OFDialog.FileName,
                             FdlgSeparatorVal,
-                            ref AMainDS,
+                            AMainDS,
                             out NumRecsUpdated,
                             out NumRowsFailed,
                             out Messages);

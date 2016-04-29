@@ -83,7 +83,6 @@ RootNode:
                 Row4: [cmbDetailCurrencyCode, btnGetSetExchangeRate]
                 Row5: [txtDetailExchangeRateToBase, txtDetailHashTotal]
                 Row6: [cmbDetailMethodOfPaymentCode, rgrDetailGiftType]
-                #Row6: []
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
         cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, Validation=true}
         cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, Validation=true}

@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Language Codes
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PLanguage
@@ -12,6 +12,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        #actPrint: {ActionClick=PrintList}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -48,3 +49,8 @@ RootNode:
         txtDetailLanguageDescription: {Width=245}
         chkDetailCongressLanguage: 
         chkDetailDeletable:
+
+#    Menu:
+#        mniFile:
+#            mniFilePrint:
+#                Action: actPrint

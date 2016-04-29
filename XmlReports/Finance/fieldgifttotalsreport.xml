@@ -179,7 +179,7 @@
 							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
 							AND motivation.a_motivation_group_code_c = 'GIFT'
                             AND motivation.a_report_column_c = 'Field'
-                            AND motivation.a_receipt_l=true
+                            AND motivation.a_dont_report_l=false
 							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
 						</value>
 					</queryDetail>

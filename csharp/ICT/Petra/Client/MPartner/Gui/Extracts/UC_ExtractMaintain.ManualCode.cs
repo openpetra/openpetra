@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -39,6 +40,7 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -356,6 +358,32 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        /// <summary>
+        /// Print the screen data using Word or Excel
+        /// </summary>
+        /// <param name="APrintUsing">The print application</param>
+        /// <param name="APreviewOnly"></param>
+        public void PrintFormData(TStandardFormPrint.TPrintUsing APrintUsing, bool APreviewOnly)
+        {
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All) && FPetraUtilsObject.IsDataSaved())
+            {
+                TStandardFormPrint.PrintGrid(APrintUsing, APreviewOnly, TModule.mPartner,
+                    FPetraUtilsObject.GetForm().Text,
+                    grdDetails,
+                    new int[]
+                    {
+                        0, 2, 1, 3
+                    },
+                    new int[]
+                    {
+                        ExtractTDSMExtractTable.ColumnPartnerKeyId,
+                        ExtractTDSMExtractTable.ColumnPartnerShortNameId,
+                        ExtractTDSMExtractTable.ColumnPartnerClassId,
+                        ExtractTDSMExtractTable.ColumnLocationKeyId
+                    });
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -438,6 +466,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             btnDeleteRow.Enabled = pnlDetails.Enabled && !FFrozen;
+
+            bool gotRows = grdDetails.Rows.Count > 1;
+            ((TFrmExtractMaintain)FPetraUtilsObject.GetForm()).ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingWord", gotRows));
+            ((TFrmExtractMaintain)FPetraUtilsObject.GetForm()).ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingExcel", gotRows));
         }
 
         private void EditPartner(System.Object sender, EventArgs e)

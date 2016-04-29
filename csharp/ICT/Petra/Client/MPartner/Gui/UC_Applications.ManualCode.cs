@@ -153,14 +153,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 NewRowGeneralApp.PartnerKey = FMainDS.PPerson[0].PartnerKey;
                 NewRowGeneralApp.ApplicationKey = GetNextApplicationKey();
-                NewRowGeneralApp.RegistrationOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+                NewRowGeneralApp.RegistrationOffice = TSystemDefaults.GetSiteKeyDefault();
                 NewRowGeneralApp.GenAppDate = DateTime.Today;
                 NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Event");
 
                 //TODO temp, needs to be changed
                 NewRowGeneralApp.AppTypeName = "CONFERENCE";
                 NewRowGeneralApp.OldLink =
-                    TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "") + ";" + NewRowGeneralApp.ApplicationKey.ToString();
+                    TSystemDefaults.GetSiteKeyDefault().ToString() + ";" + NewRowGeneralApp.ApplicationKey.ToString();
                 NewRowGeneralApp.GenApplicantType = "Participant";
 
                 NewRowShortTermApp.PartnerKey = NewRowGeneralApp.PartnerKey;
@@ -202,14 +202,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 NewRowGeneralApp.PartnerKey = FMainDS.PPerson[0].PartnerKey;
                 NewRowGeneralApp.ApplicationKey = GetNextApplicationKey();
-                NewRowGeneralApp.RegistrationOffice = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, ""));
+                NewRowGeneralApp.RegistrationOffice = TSystemDefaults.GetSiteKeyDefault();
                 NewRowGeneralApp.GenAppDate = DateTime.Today;
                 NewRowGeneralApp.ApplicationForEventOrField = Catalog.GetString("Field");
 
                 //TODO temp, needs to be changed
                 NewRowGeneralApp.AppTypeName = "FIELD";
                 NewRowGeneralApp.OldLink =
-                    TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, "") + ";" + NewRowGeneralApp.ApplicationKey.ToString();;
+                    TSystemDefaults.GetSiteKeyDefault().ToString() + ";" + NewRowGeneralApp.ApplicationKey.ToString();;
                 NewRowGeneralApp.GenApplicantType = "Participant";
 
                 NewRowLongTermApp.PartnerKey = NewRowGeneralApp.PartnerKey;

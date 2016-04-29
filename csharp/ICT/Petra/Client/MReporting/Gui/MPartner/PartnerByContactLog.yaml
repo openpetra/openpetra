@@ -46,6 +46,7 @@ RootNode:
         dtpDateTo: {Label=To, ClearIfSettingEmpty=true}
 
         grdSelectedAttributes:
+            AutoFindMode: FirstCharacter
             Stretch: Fully
 
         btnSelectAttributes:

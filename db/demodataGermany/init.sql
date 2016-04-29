@@ -91,7 +91,13 @@ COPY a_system_interface FROM '{#ABSOLUTEBASEDATAPATH}/a_system_interface.csv' WI
 COPY a_transaction_type FROM '{#ABSOLUTEBASEDATAPATH}/a_transaction_type.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_valid_ledger_number FROM '{#ABSOLUTEBASEDATAPATH}/a_valid_ledger_number.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_motivation_group FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_group.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
-COPY a_motivation_detail FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
+
+INSERT INTO a_motivation_detail(a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_motivation_detail_desc_c,a_account_code_c,a_cost_centre_code_c,a_motivation_status_l,a_motivation_detail_desc_local_c,a_report_column_c) VALUES(43,'GIFT','FIELD','Field Gift','0200','4300',true,'Field Gift','Field');
+INSERT INTO a_motivation_detail(a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_motivation_detail_desc_c,a_account_code_c,a_cost_centre_code_c,a_motivation_status_l,a_motivation_detail_desc_local_c,a_report_column_c) VALUES(43,'GIFT','KEYMIN','Key Ministry Gift','0400','4300',true,'Key Ministry Gift','Field');
+INSERT INTO a_motivation_detail(a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_motivation_detail_desc_c,a_account_code_c,a_cost_centre_code_c,a_motivation_status_l,a_motivation_detail_desc_local_c,a_report_column_c) VALUES(43,'GIFT','PERSONAL','Gift for personal use','0100','4300',true,'Gift for personal use','Worker');
+INSERT INTO a_motivation_detail(a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_motivation_detail_desc_c,a_account_code_c,a_cost_centre_code_c,a_motivation_status_l,a_motivation_detail_desc_local_c,a_report_column_c) VALUES(43,'GIFT','SUPPORT','Support Gift','0100','4300',true,'Support Gift','Worker');
+INSERT INTO a_motivation_detail(a_ledger_number_i,a_motivation_group_code_c,a_motivation_detail_code_c,a_motivation_detail_desc_c,a_account_code_c,a_cost_centre_code_c,a_motivation_status_l,a_motivation_detail_desc_local_c,a_report_column_c) VALUES(43,'GIFT','UNDESIG','Undesignated Gift','0300','4300',true,'Undesignated Gift','Field');
+
 COPY a_fees_payable FROM '{#ABSOLUTEBASEDATAPATH}/a_fees_payable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_fees_receivable FROM '{#ABSOLUTEBASEDATAPATH}/a_fees_receivable.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';
 COPY a_motivation_detail_fee FROM '{#ABSOLUTEBASEDATAPATH}/a_motivation_detail_fee.csv' WITH DELIMITER AS ',' NULL AS '?' CSV QUOTE AS '"' ESCAPE AS '"';

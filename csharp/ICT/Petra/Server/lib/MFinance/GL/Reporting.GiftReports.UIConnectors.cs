@@ -55,7 +55,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -146,7 +146,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -265,7 +265,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -345,7 +345,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
@@ -434,7 +434,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Results.Columns.Add("DonorKey", typeof(Int64));
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
@@ -488,7 +488,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+            DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
                     DateTime CurrentDate = DateTime.Today;
@@ -552,7 +552,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Query += ")";
                     }
 
-                    Results = DBAccess.GDBAccessObj.SelectDT(Query, "Results", Transaction);
+                    Results = DbAdapter.RunQuery(Query, "Results", Transaction);
                 });
 
             return Results;
@@ -574,7 +574,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             // create new datatable
             DataTable Results = new DataTable();
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,

@@ -94,6 +94,37 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Gets/Sets the auto find mode.  This method hides the base version because it defaults to setting the column to 1 instead of 0
+        /// </summary>
+        public new TAutoFindModeEnum AutoFindMode
+        {
+            get
+            {
+                return FAutoFindMode;
+            }
+
+            set
+            {
+                if (value == TAutoFindModeEnum.FullString)
+                {
+                    if (DesignMode)
+                    {
+                        throw new EDataGridAutoFindModeNotImplementedYetException(
+                            "Sorry, AutoFindMode 'FullString' is not implemented yet! You could implement it, though, if you really need it!");
+                    }
+                }
+
+                FAutoFindMode = value;
+
+                // If the auto-find column has not been set then we set that as well
+                if (FAutoFindColumn == -1)
+                {
+                    FAutoFindColumn = 1;
+                }
+            }
+        }
+
+        /// <summary>
         /// allows popping up a question whether to check the CheckBox
         ///
         /// </summary>

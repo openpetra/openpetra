@@ -24,29 +24,30 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+//using System.Collections.Specialized;
 using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Text;
+//using System.Diagnostics;
+//using System.Globalization;
+//using System.IO;
+//using System.Text;
 
 using Ict.Common;
-using Ict.Common.Data;
+//using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 
-using Ict.Petra.Shared;
+//using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.Data.Cascading;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MFinance.GL.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -263,15 +264,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return MainDS;
         }
 
-        /// <summary>
-        /// load the specified batch and its journals and transactions and attributes.
-        /// this method is called after a batch has been posted.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        private static GLBatchTDS LoadABatchAndContent(TDataBase ADbConnection, Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -296,7 +289,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ADbConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -356,6 +349,37 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return MainDS;
+        }
+
+        /// <summary>
+        /// load the specified batch and its journals and transactions and attributes.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            return LoadABatchAndContent(DBAccess.GDBAccessObj, ALedgerNumber, ABatchNumber);
+        }
+
+        /// <summary>
+        /// load the specified batch and its journals and transactions and attributes.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAndContentUsingPrivateDb(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            TDataBase dbConnection = TReportingDbAdapter.EstablishDBConnection(true, "LoadABatchAndContent");
+
+            GLBatchTDS tempTDS = LoadABatchAndContent(dbConnection, ALedgerNumber, ABatchNumber);
+
+            dbConnection.CloseDBConnection();
+            return tempTDS;
         }
 
         /// <summary>

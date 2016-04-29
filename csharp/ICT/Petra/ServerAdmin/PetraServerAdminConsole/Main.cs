@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -658,10 +658,12 @@ namespace PetraServerAdminConsole
         /// have been connected while the PetraServer has been running.</param>
         /// <param name="ACurrentlyConnectedClients">Number of currently
         /// connected Clients.</param>
-        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients)
+        /// <param name="ASiteKey">The SiteKey</param>
+        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey)
         {
             ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
             ACurrentlyConnectedClients = TRemote.GetClientsConnected();
+            ASiteKey = TRemote.GetSiteKey();
         }
 
         private static string SecurityToken = string.Empty;
@@ -694,13 +696,16 @@ namespace PetraServerAdminConsole
         {
             int TotalConnectedClients;
             int CurrentlyConnectedClients;
+            Int64 SiteKey;
 
-            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients);
+            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients, out SiteKey);
 
             TLogging.Log(TRemote.GetServerInfoVersion());
             TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
-            TLogging.Log("  Clients connections since Server start: " + TotalConnectedClients.ToString());
-            TLogging.Log("  Clients currently connected: " + CurrentlyConnectedClients.ToString());
+            TLogging.Log("  * Clients connections since Server start: " + TotalConnectedClients.ToString());
+            TLogging.Log("  * Clients currently connected: " + CurrentlyConnectedClients.ToString());
+            TLogging.Log("  * " + String.Format(Catalog.GetString("SiteKey of OpenPetra Installation: {0}{1}"),
+                     SiteKey, (SiteKey == 99000000) ? Catalog.GetString("  (SiteKey not yet set up)") : String.Empty));
 
             TLogging.Log(TRemote.GetServerInfoState());
         }

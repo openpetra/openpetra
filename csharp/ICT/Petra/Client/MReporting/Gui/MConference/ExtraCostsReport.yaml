@@ -43,6 +43,7 @@ RootNode:
             Label: Select Fields
             Controls: [rbtAllFields, rbtSelectedFields, grdChargedFields]
         grdChargedFields:
+            AutoFindColumn: 2
             Height: 250
             Width: 450
         rbtAllFields:

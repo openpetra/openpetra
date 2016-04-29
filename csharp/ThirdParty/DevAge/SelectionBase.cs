@@ -126,8 +126,16 @@ namespace SourceGrid.Selection
                         // AlanP: Oct 2013
                         // The grid cannot be focused, which happens when we call SelectRowInGrid before the screen has been 'activated'.
                         // We still want to fire our SelectionChanged event
-                        ResetSelection(false, true);
-                        SelectCell(pCellToActivate, true);
+                        // AlanP: sep 2015
+                        // Added the test for Visible, because we want to fire the SelectionChanged event when the grid is not yet shown
+                        // but we don't want to do so if we can't focus when the screen is visible...
+                        //  this happens on GL transactions where there are two grids - one of them with an editable comboBox.  In that case
+                        //  the second grid may have the focus captured until a good edit has been completed.  So we must not appear to accept focus here.
+                        if (Grid.Visible == false)
+                        {
+                            ResetSelection(false, true);
+                            SelectCell(pCellToActivate, true);
+                        }
                         return false;
                     }
 				}

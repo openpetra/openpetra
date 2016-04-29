@@ -139,11 +139,13 @@ namespace Ict.Petra.Server.App.Core
                     TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername,
                     TSrvSetting.DBPassword,
-                    "");
+                    "",
+                    "Servers's DB Connection for TimedProcessing");
             }
-            catch (Exception)
+            catch (Exception Exc)
             {
-                /* TLogging.Log('Exception occured while establishing connection to Database Server: ' + exp.ToString); */
+                TLogging.Log("Timed Processing: Exception occured while establishing connection to Database Server: " + Exc.ToString());
+
                 throw;
             }
 

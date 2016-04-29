@@ -38,7 +38,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     [TestFixture]
     public class TestGLCommonTools
     {
-        int LedgerNumber = 43;
+        int FLedgerNumber = 43;
         /// <summary>
         /// This routine tests the TLedgerInitFlagHandler completely. It's the routine
         /// which writes "boolean" values to a data base table.
@@ -48,19 +48,19 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             bool blnOld = new TLedgerInitFlagHandler(43, TLedgerInitFlagEnum.Revaluation).Flag;
 
-            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
+            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
             Assert.IsTrue(new TLedgerInitFlagHandler(
-                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
+                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
             Assert.IsTrue(new TLedgerInitFlagHandler(
-                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
+                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
+            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
             Assert.IsFalse(new TLedgerInitFlagHandler(
-                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
+                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
             Assert.IsFalse(new TLedgerInitFlagHandler(
-                    LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(LedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = blnOld;
+                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
+            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = blnOld;
         }
 
         /// <summary>
@@ -69,10 +69,10 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_02_TLedgerInfo()
         {
-            Assert.AreEqual("EUR", new TLedgerInfo(LedgerNumber).BaseCurrency,
-                String.Format("Base Currency of {0} shall be EUR", LedgerNumber));
-            Assert.AreEqual("5003", new TLedgerInfo(LedgerNumber).RevaluationAccount,
-                String.Format("Revaluation Account of {0} shall be 5003", LedgerNumber));
+            Assert.AreEqual("EUR", new TLedgerInfo(FLedgerNumber).BaseCurrency,
+                String.Format("Base Currency of {0} shall be EUR", FLedgerNumber));
+            Assert.AreEqual("5003", new TLedgerInfo(FLedgerNumber).RevaluationAccount,
+                String.Format("Revaluation Account of {0} shall be 5003", FLedgerNumber));
         }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_03_TAccountPeriodInfo()
         {
-            TAccountPeriodInfo getAPI = new TAccountPeriodInfo(LedgerNumber);
+            TAccountPeriodInfo getAPI = new TAccountPeriodInfo(FLedgerNumber);
 
             getAPI.AccountingPeriodNumber = 2;
 
@@ -179,13 +179,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_07_ProcessStatus()
         {
-            TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
+            TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
 
-            ledgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT;
-            Assert.AreEqual((int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT, ledgerInfo.YearEndProcessStatus,
+            LedgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT;
+            Assert.AreEqual((int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT, LedgerInfo.YearEndProcessStatus,
                 "OK");
-            ledgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.GIFT_CLOSED_OUT;
-            Assert.AreEqual((int)TYearEndProcessStatus.GIFT_CLOSED_OUT, ledgerInfo.YearEndProcessStatus,
+            LedgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.GIFT_CLOSED_OUT;
+            Assert.AreEqual((int)TYearEndProcessStatus.GIFT_CLOSED_OUT, LedgerInfo.YearEndProcessStatus,
                 "OK");
         }
 
@@ -196,8 +196,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_08_TGetAccountHierarchyDetailInfo()
         {
-            TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(
-                new TLedgerInfo(LedgerNumber));
+            TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(FLedgerNumber);
 
             Assert.IsTrue(gahdi.HasNoChildren("6800"), "Base Account without childs");
             Assert.IsFalse(gahdi.HasNoChildren("6800S"), "Root Account");
@@ -217,8 +216,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_09_TAccountPropertyHandler()
         {
-            TLedgerInfo tHandleLedgerInfo = new TLedgerInfo(LedgerNumber);
-            TAccountInfo tHandleAccountInfo = new TAccountInfo(tHandleLedgerInfo);
+            TLedgerInfo tHandleLedgerInfo = new TLedgerInfo(FLedgerNumber);
+            TAccountInfo tHandleAccountInfo = new TAccountInfo(tHandleLedgerInfo.LedgerNumber);
 
             tHandleAccountInfo.SetSpecialAccountCode(TAccountPropertyEnum.ICH_ACCT);
             Assert.IsTrue(tHandleAccountInfo.IsValid, "ICH_ACCT shall exist");

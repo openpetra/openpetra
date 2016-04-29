@@ -40,9 +40,11 @@ RootNode:
 
         grdSelectedAttributes:
             Stretch: Fully
+            AutoFindMode: FirstCharacter
             RowSpan: 4
         grdDetails:
             Dock: Fill
+            AutoFindColumn: 2
 
         dtpContactDate:
         txtContactor:

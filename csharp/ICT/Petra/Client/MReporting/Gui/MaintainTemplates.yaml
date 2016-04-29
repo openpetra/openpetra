@@ -5,7 +5,7 @@ RootNode:
         INITMANUALCODE: InitManualCode();
     FormTitle: Reporting Templates
     Namespace: Ict.Petra.Client.MReporting.Gui
-    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data]
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Common.Controls]
     FormType: edit
 
     WindowWidth: 363

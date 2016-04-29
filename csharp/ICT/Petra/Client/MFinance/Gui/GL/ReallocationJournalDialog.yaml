@@ -89,9 +89,11 @@ RootNode:
 
         grdAccounts:
             Dock: Fill
+            AutoFindMode: NoAutoFind
             ActionFocusRow: AccountCodeDetailChanged
         grdDetails:
             Dock: Fill
+            AutoFindMode: NoAutoFind
             Columns: [DetailPercentage, DetailTransactionAmount, DetailCostCentreCode, DetailAccountCode]
             CustomColumns:
                 DetailPercentage: {Label=%, Type=Decimal(2)}

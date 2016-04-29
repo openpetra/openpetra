@@ -51,6 +51,7 @@ RootNode:
             Label: Charged Fields
             Controls: [cmbChargedFields]
         grdFields:
+            AutoFindColumn: 2
             Height: 120
             Width: 500
         pnlButtons:

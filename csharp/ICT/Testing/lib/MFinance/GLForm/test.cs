@@ -213,8 +213,8 @@ namespace Tests.MFinance.GLBatches
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
                 Assert.IsTrue(tester.Text.StartsWith(
-                        "Are you sure you want to post batch"),
-                    "Should start with 'are you sure you want to post batch', but is '" +
+                        "Are you sure you want to post GL batch"),
+                    "Should start with 'are you sure you want to post GL batch', but is '" +
                     tester.Text + "'");
 
                 // there is a second message box after posting, telling the user about success.
@@ -548,8 +548,8 @@ namespace Tests.MFinance.GLBatches
             {
                 MessageBoxTester tester = new MessageBoxTester(hWnd);
                 Assert.IsTrue(tester.Text.StartsWith(
-                        "Are you sure you want to post batch"),
-                    "Should start with 'are you sure you want to post batch', but is '" +
+                        "Are you sure you want to post GL batch"),
+                    "Should start with 'are you sure you want to post GL batch', but is '" +
                     tester.Text + "'");
 
                 // there is a second message box after posting, telling the user about success.

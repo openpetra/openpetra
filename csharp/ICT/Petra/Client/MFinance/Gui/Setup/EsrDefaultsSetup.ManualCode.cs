@@ -53,10 +53,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             cmbMotivGroup.SelectedValueChanged += UpdateMotivationDetail;
             cmbMotivDetail.SelectedValueChanged += UpdateGrid;
 
-            DataView myDataView = FesrDefaults.DefaultView;
-            myDataView.Sort = "a_partner_key_n";
-            myDataView.AllowNew = false;
-            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            FesrDefaults.DefaultView.Sort = "a_partner_key_n";
+            FesrDefaults.DefaultView.AllowNew = false;
+            grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FesrDefaults.DefaultView);
         }
 
         void UpdateGrid(object sender, EventArgs e)
@@ -94,6 +93,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 return;
             }
 
+            FesrDefaults.DefaultView.Sort = "a_partner_key_n";  // I don't know why I need to do this, since it was done previously in
+
+            // InitializeManualCode. But without it, I'm seeing exceptions here.
             if (FesrDefaults.DefaultView.Find(PartnerKeySt) > 0)
             {
                 MessageBox.Show(String.Format("Error: An entry already exists for partner key {0}.", PartnerKeySt),
@@ -232,6 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         /// <returns></returns>
         public bool SaveChanges()
         {
+            GetDataFromControlsManual();
             Boolean Res = TRemote.MFinance.Gift.WebConnectors.CommitEsrDefaults(FesrDefaults);
 
             if (Res)

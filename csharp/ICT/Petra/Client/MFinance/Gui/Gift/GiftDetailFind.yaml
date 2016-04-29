@@ -45,6 +45,7 @@ RootNode:
  
         grdResult:
             Dock: Fill
+            Type: Ict.Common.Controls.TSgrdDataGridPaged
 
         cmbLedger: {ReadOnly=true, List=LedgerNameList, ColSpan=2}
         txtGiftBatchNumber: {Width=100, Format=Integer}

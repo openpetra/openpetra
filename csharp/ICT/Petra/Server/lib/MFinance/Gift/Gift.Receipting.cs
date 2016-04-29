@@ -24,28 +24,24 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using System.Collections.Specialized;
+using System.IO;
+
 using GNU.Gettext;
-using Ict.Petra.Server.MFinance.Cacheable;
-using Ict.Petra.Shared;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Printing;
-using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MCommon.Data;
+
+using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
-using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
@@ -53,8 +49,16 @@ using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
-using System.IO;
-using System.Collections.Generic;
+
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 {

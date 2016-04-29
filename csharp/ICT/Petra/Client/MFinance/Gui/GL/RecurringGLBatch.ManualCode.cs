@@ -103,6 +103,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ucoRecurringJournals.WorkAroundInitialization();
                 ucoRecurringTransactions.WorkAroundInitialization();
             }
+
+            get
+            {
+                return FLedgerNumber;
+            }
         }
 
         private void TFrmRecurringGLBatch_Load(object sender, EventArgs e)

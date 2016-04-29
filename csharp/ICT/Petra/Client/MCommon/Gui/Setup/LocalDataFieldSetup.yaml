@@ -44,7 +44,7 @@ RootNode:
                 DetailGroup: {Label=Group Heading}            
                 DetailText: {Label=Label}            
             SortOrder: DetailGroup ASC
-            ActionFocusRow: FocusedRowChanged
+            AutoFindColumn: 1
         pnlDetails:
             Dock: Bottom
             Controls:

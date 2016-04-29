@@ -22,13 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Windows.Forms;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Data;
 using System.Diagnostics;
-using System.Collections.Generic;
-using System.Collections;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml;
 
 using GNU.Gettext;
 
@@ -41,8 +42,9 @@ using Ict.Common.Remoting.Client;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -466,7 +468,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            if (!LoadAllBatchData() || !AllowInactiveFieldValues())
+            if (!LoadAllBatchData() || !AllowInactiveFieldValues(FPreviouslySelectedDetailRow.BatchNumber))
             {
                 return;
             }
@@ -573,77 +575,132 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return RetVal;
         }
 
-        private bool AllowInactiveFieldValues()
+        private bool AllowInactiveFieldValues(int ABatchNumber)
         {
             bool RetVal = false;
+
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            string VerificationMessage = string.Empty;
 
             DataView TransDV = new DataView(FMainDS.ARecurringTransaction);
             DataView AttribDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
 
+            int TotalNumInactiveValues = 0;
+            int NumInactiveAccounts = 0;
+            int NumInactiveCostCentres = 0;
+            int NumInactiveAccountTypes = 0;
+            int NumInactiveAccountValues = 0;
+
             try
             {
+                //Check for inactive account or cost centre codes
                 TransDV.RowFilter = String.Format("{0}={1}",
                     ARecurringTransactionTable.GetBatchNumberDBName(),
-                    FSelectedBatchNumber);
-                AttribDV.RowFilter = String.Format("{0}={1}",
-                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
-                    FSelectedBatchNumber);
+                    ABatchNumber);
+                TransDV.Sort = String.Format("{0} ASC, {1} ASC",
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    ARecurringTransactionTable.GetTransactionNumberDBName());
 
-                //Check for inactive data field values
                 foreach (DataRowView drv in TransDV)
                 {
                     ARecurringTransactionRow transRow = (ARecurringTransactionRow)drv.Row;
 
-                    if (!AccountIsActive(transRow.AccountCode) || !CostCentreIsActive(transRow.CostCentreCode))
+                    if (!AccountIsActive(transRow.AccountCode))
                     {
-                        if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "Recurring batch no. {0} contains an inactive account or cost centre code in journal {1}, transaction {2}. Do you still want to submit the batch?"),
-                                    FSelectedBatchNumber,
-                                    transRow.JournalNumber,
-                                    transRow.TransactionNumber),
-                                Catalog.GetString("Inactive Account/Cost Centre Code"), MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Warning,
-                                MessageBoxDefaultButton.Button2) == DialogResult.No)
-                        {
-                            return RetVal;
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        VerificationMessage += String.Format(" Account '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            transRow.AccountCode,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccounts++;
+                    }
+
+                    if (!CostCentreIsActive(transRow.CostCentreCode))
+                    {
+                        VerificationMessage += String.Format(" Cost Centre '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            transRow.CostCentreCode,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveCostCentres++;
                     }
                 }
+
+                //Check anlysis attributes
+                AttribDV.RowFilter = String.Format("{0}={1}",
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    ABatchNumber);
+                AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                    ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
 
                 foreach (DataRowView drv2 in AttribDV)
                 {
                     ARecurringTransAnalAttribRow analAttribRow = (ARecurringTransAnalAttribRow)drv2.Row;
 
-                    if (!AnalysisCodeIsActive(analAttribRow.AccountCode,
-                            analAttribRow.AnalysisTypeCode)
-                        || !AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                    if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
                     {
-                        if (MessageBox.Show(String.Format(Catalog.GetString(
-                                        "Recurring batch no. {0} contains an inactive analysis attribute code/value in journal {1}, transaction {2}. Do you still want to submit the batch?"),
-                                    FSelectedBatchNumber,
-                                    analAttribRow.JournalNumber,
-                                    analAttribRow.TransactionNumber),
-                                Catalog.GetString("Inactive Analysis Attribute Code/Value"), MessageBoxButtons.YesNo,
-                                MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.No)
-                        {
-                            return RetVal;
-                        }
-                        else
-                        {
-                            break;
-                        }
+                        VerificationMessage += String.Format(" Analysis Code '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            analAttribRow.AnalysisTypeCode,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccountTypes++;
+                    }
+
+                    if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                    {
+                        VerificationMessage += String.Format(" Analysis Value '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            analAttribRow.AnalysisAttributeValue,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccountValues++;
                     }
                 }
-
-                RetVal = true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                throw ex;
+            }
+
+            TotalNumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
+
+            if (TotalNumInactiveValues > 0)
+            {
+                VerificationResult.Add(new TVerificationResult(string.Format(Catalog.GetString("Inactive Values:{0}"), Environment.NewLine),
+                        VerificationMessage,
+                        TResultSeverity.Resv_Noncritical));
+
+                StringBuilder errorMessages = new StringBuilder();
+
+                errorMessages.AppendFormat(Catalog.GetString("{0} inactive value(s) found in Recurring GL Batch {1}. Do you still want to submit?{2}"),
+                    TotalNumInactiveValues,
+                    ABatchNumber,
+                    Environment.NewLine);
+
+                foreach (TVerificationResult message in VerificationResult)
+                {
+                    errorMessages.AppendFormat("{0}{1}",
+                        Environment.NewLine,
+                        message.ResultText);
+                }
+
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                RetVal = (extendedMessageBox.ShowDialog(errorMessages.ToString(),
+                              Catalog.GetString("Submit Batch"), string.Empty,
+                              TFrmExtendedMessageBox.TButtons.embbYesNo,
+                              TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes);
+            }
+            else
+            {
+                RetVal = true;
             }
 
             return RetVal;

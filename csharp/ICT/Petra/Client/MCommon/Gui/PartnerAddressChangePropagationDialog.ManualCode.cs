@@ -58,8 +58,7 @@ namespace Ict.Petra.Client.MCommon.Gui
         private void RunOnceOnActivationManual()
         {
             // enable autofind in list for first character (so the user can press character to find list entry)
-            this.clbAddress.AutoFindColumn = ((Int16)(1));
-            this.clbAddress.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
 
             clbAddress.SpecialKeys =
                 ((SourceGrid.GridSpecialKeys)((((((SourceGrid.GridSpecialKeys.Arrows |

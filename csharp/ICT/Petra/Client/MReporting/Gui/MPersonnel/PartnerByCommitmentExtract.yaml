@@ -71,6 +71,7 @@ RootNode:
                 Row3: [pnlBottomCommitmentStatuses]
         grdCommitmentStatusChoices:
             Dock: Fill
+            AutoFindColumn: 1
             ParameterName: param_commitment_status_choices
             Enabled: false
         pnlBottomCommitmentStatuses:

@@ -181,9 +181,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             bool AActiveOnly, bool ABankAccountOnly,
             string AForeignCurrencyName)
         {
-            string Filter = AAccountTable.GetAccountCodeDBName() + " = '' OR (";
-
-            Filter += "1=1";
+            string Filter = AAccountTable.GetAccountCodeDBName() + " = '' OR (1=1";
 
             if (APostingOnly)
             {
@@ -973,12 +971,14 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ATxtField"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ARefreshData"></param>
+        /// <param name="AActiveOnly"></param>
         public static void GetRecipientData(ref TCmbAutoPopulated ACmbMinistry,
             ref TtxtAutoPopulatedButtonLabel ATxtField,
             System.Int64 APartnerKey,
-            Boolean ARefreshData = false)
+            Boolean ARefreshData = false,
+            Boolean AActiveOnly = true)
         {
-            GetRecipientData(ref ACmbMinistry, APartnerKey, out FFieldNumber, ARefreshData);
+            GetRecipientData(ref ACmbMinistry, APartnerKey, out FFieldNumber, ARefreshData, AActiveOnly);
 
             if (Convert.ToInt64(ATxtField.Text) != FFieldNumber)
             {
@@ -991,9 +991,10 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="cmbMinistry"></param>
         /// <param name="APartnerKey"></param>
-        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey)
+        /// <param name="AActiveOnly"></param>
+        public static void GetRecipientData(ref TCmbAutoPopulated cmbMinistry, System.Int64 APartnerKey, Boolean AActiveOnly = true)
         {
-            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber);
+            GetRecipientData(ref cmbMinistry, APartnerKey, out FFieldNumber, false, AActiveOnly);
         }
 
         /// <summary>
@@ -1003,10 +1004,12 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="APartnerKey"></param>
         /// <param name="AFieldNumber"></param>
         /// <param name="ARefreshData"></param>
+        /// <param name="AActiveOnly"></param>
         private static void GetRecipientData(ref TCmbAutoPopulated ACmbKeyMinistry,
             Int64 APartnerKey,
             out Int64 AFieldNumber,
-            Boolean ARefreshData = false)
+            Boolean ARefreshData = false,
+            Boolean AActiveOnly = true)
         {
             string CurrentRowFilter = string.Empty;
 
@@ -1030,7 +1033,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             try
             {
-                FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber);
+                FKeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out FFieldNumber, AActiveOnly);
 
                 AFieldNumber = FFieldNumber;
 

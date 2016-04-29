@@ -44,7 +44,7 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         public EDBConnectionNotEstablishedException() : base()
         {
-            TLogging.Log("Error establishing ODBC Database connection. Please check the connection parameters.");
+            TLogging.Log("Error establishing Database connection. Please check the connection parameters.");
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Ict.Common.DB.Exceptions
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
         public EDBConnectionNotEstablishedException(string AConnectionString, Exception AInnerException) : base(AConnectionString, AInnerException)
         {
-            string ErrorString = (("Error opening Database connection. The connection string is [ " + AConnectionString) + " ].");
+            string ErrorString = (("Error opening Database Connection. The connection string is [ " + AConnectionString) + " ].");
 
             Console.WriteLine();
             TLogging.Log(ErrorString);
@@ -79,6 +79,161 @@ namespace Ict.Common.DB.Exceptions
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBConnectionNotEstablishedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EDBConnectionIsAlreadyOpenException
+
+    /// <summary>
+    /// Thrown if an attempt to create a DB connection failed because the DB connection was already established earlier.
+    /// </summary>
+    [Serializable()]
+    public class EDBConnectionIsAlreadyOpenException : EDBConnectionNotEstablishedException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBConnectionIsAlreadyOpenException() : base()
+        {
+            TLogging.Log("Error establishing Database connection. Please check the connection parameters.");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBConnectionIsAlreadyOpenException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Use this to pass on the ConnectionString with the Exception and to log the Exception to the log file.
+        /// </summary>
+        /// <param name="AConnectionString">Database connection string.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBConnectionIsAlreadyOpenException(string AConnectionString, Exception AInnerException) : base(AConnectionString, AInnerException)
+        {
+            string ErrorString =
+                (("Error opening Database Connection as the Database Connection was already opened earlier. The connection string is [ " +
+                  AConnectionString) + " ].");
+
+            Console.WriteLine();
+            TLogging.Log(ErrorString);
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBConnectionIsAlreadyOpenException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EDBConnectionWasAlreadyEstablishedException
+
+    /// <summary>
+    /// Thrown if an attempt to create a DB connection failed because the DB connection was already established earlier.
+    /// </summary>
+    [Serializable()]
+    public class EDBConnectionWasAlreadyEstablishedException : EDBConnectionNotEstablishedException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBConnectionWasAlreadyEstablishedException() : base()
+        {
+            TLogging.Log("Error establishing Database connection. Please check the connection parameters.");
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBConnectionWasAlreadyEstablishedException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Use this to pass on the ConnectionString with the Exception and to log the Exception to the log file.
+        /// </summary>
+        /// <param name="AConnectionString">Database connection string.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBConnectionWasAlreadyEstablishedException(string AConnectionString, Exception AInnerException) : base(AConnectionString,
+                                                                                                                      AInnerException)
+        {
+            string ErrorString =
+                (("Error opening Database Connection as the Database Connection was already established earlier. The connection string is [ " +
+                  AConnectionString) + " ].");
+
+            Console.WriteLine();
+            TLogging.Log(ErrorString);
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBConnectionWasAlreadyEstablishedException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 
@@ -393,6 +548,1078 @@ namespace Ict.Common.DB.Exceptions
     }
 
     #endregion
+
+
+    #region EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException
+
+    /// <summary>
+    /// Thrown in case a caller wants to close a DB Connection when there is still a Transaction running - which the act of
+    /// closing of the DB Connection would roll back - and that DB Transaction was started on another Thread (running DB
+    /// commands on different Threads on the same DB Connection isn't supported as the ADO.NET providers (specifically: the
+    /// PostgreSQL provider, Npgsql) aren't thread-safe!).
+    /// </summary>
+    [Serializable()]
+    public class EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException : EDBAccessLackingCoordinationException
+    {
+        private String FThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection;
+        private String FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection;
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which established the current DB Connection.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection = value;
+            }
+        }
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which attempted to close the current DB Connection.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and <see cref="ThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection" /> and
+        /// <see cref="ThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection">ThreadIdentifier of the Thread which
+        /// established the current DB Connection.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection">ThreadIdentifier of the Thread which
+        /// attempted to close the current DB Connection.</param>
+        public EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(String AMessage,
+            String AThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection,
+            string AThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection) : base(AMessage)
+        {
+            FThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection = AThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection;
+            FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection = AThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(string AMessage,
+            Exception AInnerException) : base(AMessage,
+                                             AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(SerializationInfo AInfo,
+            StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection = AInfo.GetString(
+                "ThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection");
+            FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection = AInfo.GetString(
+                "ThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection",
+                FThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection);
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection",
+                FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates and returns a string representation of the current
+        /// <see cref="EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current
+        /// <see cref="EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
+            // ...then add our "special information"...
+            if ((ThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection != null)
+                && (ThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection != null))
+            {
+                ReturnValue += "  (ThreadIdentifier of the Thread which established the current DB Connection: " +
+                               ThreadIdentifierOfThreadWhichEstablishedCurrentDBConnection + "; " +
+                               "ThreadIdentifier of the Thread which attempted to close the current DB Connection.: " +
+                               FThreadIdentifierOfThreadWhichAttemptedToCloseCurrentDBConnection + ")" + Environment.NewLine;
+            }
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
+            StackTraceStr = Environment.StackTrace;
+
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
+            return ReturnValue;
+        }
+    }
+
+    #endregion
+
+
+    #region EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException
+
+    /// <summary>
+    /// Thrown in case a caller wants to work with a Transaction and that DB Transaction was started on another Thread
+    /// (running DB commands on different Threads in the same DB Transaction [and hence on the same DB Connection] isn't supported!).
+    /// </summary>
+    [Serializable()]
+    public class EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException : EDBAccessLackingCoordinationException
+    {
+        private String FThreadIdentifierOfThreadWhichStartedExistingTransaction;
+        private String FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction;
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which started the existing Transaction.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichStartedExistingTransaction
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichStartedExistingTransaction;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichStartedExistingTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which wants to reuse an existing Transaction.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and <see cref="ThreadIdentifierOfThreadWhichStartedExistingTransaction" /> and
+        /// <see cref="ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichStartedExistingTransaction">ThreadIdentifier of the Thread which
+        /// started the existing Transaction.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction">ThreadIdentifier of the Thread which
+        /// wants to reuse an existing Transaction.</param>
+        public EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(String AMessage,
+            String AThreadIdentifierOfThreadWhichStartedExistingTransaction,
+            string AThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction) : base(AMessage)
+        {
+            FThreadIdentifierOfThreadWhichStartedExistingTransaction = AThreadIdentifierOfThreadWhichStartedExistingTransaction;
+            FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction = AThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(string AMessage, Exception AInnerException) : base(AMessage,
+                                                                                                                                            AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(SerializationInfo AInfo,
+            StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FThreadIdentifierOfThreadWhichStartedExistingTransaction = AInfo.GetString("ThreadIdentifierOfThreadWhichStartedExistingTransaction");
+            FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction = AInfo.GetString(
+                "ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichStartedExistingTransaction",
+                FThreadIdentifierOfThreadWhichStartedExistingTransaction);
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction",
+                FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates and returns a string representation of the current
+        /// <see cref="EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current
+        /// <see cref="EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
+            // ...then add our "special information"...
+            if ((ThreadIdentifierOfThreadWhichStartedExistingTransaction != null)
+                && (ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction != null))
+            {
+                ReturnValue += "  (ThreadIdentifier of the Thread that started the existing Transaction: " +
+                               ThreadIdentifierOfThreadWhichStartedExistingTransaction + "; " +
+                               "ThreadIdentifier of the Thread that wants to use the existing Transaction: " +
+                               FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction + ")" + Environment.NewLine;
+            }
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
+            StackTraceStr = Environment.StackTrace;
+
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
+            return ReturnValue;
+        }
+    }
+
+    #endregion
+
+
+    #region EDBAttemptingToUseTransactionThatIsInvalidException
+
+    /// <summary>
+    /// Thrown in case a caller wants to use a DB Transaction and that DB Transaction is no longer Valid (i.e. that
+    /// DB Transaction has already been Committed or Rolled Back).
+    /// </summary>
+    [Serializable()]
+    public class EDBAttemptingToUseTransactionThatIsInvalidException : EDBAccessLackingCoordinationException
+    {
+        private String FThreadIdentifierOfThreadWhichStartedExistingTransaction;
+        private String FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction;
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which started the existing Transaction.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichStartedExistingTransaction
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichStartedExistingTransaction;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichStartedExistingTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which wants to reuse an existing Transaction.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAttemptingToUseTransactionThatIsInvalidException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAttemptingToUseTransactionThatIsInvalidException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and <see cref="ThreadIdentifierOfThreadWhichStartedExistingTransaction" /> and
+        /// <see cref="ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichStartedExistingTransaction">ThreadIdentifier of the Thread which
+        /// started the existing Transaction.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction">ThreadIdentifier of the Thread which
+        /// wants to reuse an existing Transaction.</param>
+        public EDBAttemptingToUseTransactionThatIsInvalidException(String AMessage,
+            String AThreadIdentifierOfThreadWhichStartedExistingTransaction,
+            string AThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction) : base(AMessage)
+        {
+            FThreadIdentifierOfThreadWhichStartedExistingTransaction = AThreadIdentifierOfThreadWhichStartedExistingTransaction;
+            FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction = AThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAttemptingToUseTransactionThatIsInvalidException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAttemptingToUseTransactionThatIsInvalidException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FThreadIdentifierOfThreadWhichStartedExistingTransaction = AInfo.GetString("ThreadIdentifierOfThreadWhichStartedExistingTransaction");
+            FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction = AInfo.GetString(
+                "ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichStartedExistingTransaction",
+                FThreadIdentifierOfThreadWhichStartedExistingTransaction);
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction",
+                FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates and returns a string representation of the current
+        /// <see cref="EDBAttemptingToUseTransactionThatIsInvalidException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current
+        /// <see cref="EDBAttemptingToUseTransactionThatIsInvalidException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
+            // ...then add our "special information"...
+            if ((ThreadIdentifierOfThreadWhichStartedExistingTransaction != null)
+                && (ThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction != null))
+            {
+                ReturnValue += "  (ThreadIdentifier of the Thread that started the existing Transaction: " +
+                               ThreadIdentifierOfThreadWhichStartedExistingTransaction + "; " +
+                               "ThreadIdentifier of the Thread that wants to reuse an existing Transaction: " +
+                               FThreadIdentifierOfThreadWhichWantsToReuseExistingTransaction + ")" + Environment.NewLine;
+            }
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
+            StackTraceStr = Environment.StackTrace;
+
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
+            return ReturnValue;
+        }
+    }
+
+    #endregion
+
+    #region EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException
+
+    /// <summary>
+    /// Thrown in case a caller wants to create a Command that would be executed on a Thread that is different from the Thread
+    /// that started the DB Transaction that got passed in as an Argument (running DB commands on different
+    /// Threads in the same DB Transaction [and hence on the same DB Connection] isn't supported as the ADO.NET providers
+    /// [specifically: the PostgreSQL provider, Npgsql] aren't thread-safe!)
+    /// </summary>
+    [Serializable()]
+    public class EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException :
+        EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException
+    {
+        private String FThreadIdentifierOfThreadWhichStartedTransaction;
+        private String FThreadIdentifierOfThreadWhichWantsToCreateCommand;
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which started the existing Transaction.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichStartedTransaction
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichStartedTransaction;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichStartedTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// ThreadIdentifier of the Thread which wants to create a Command using the Transaction that was started on another
+        /// Thread.
+        /// </summary>
+        public String ThreadIdentifierOfThreadWhichWantsToCreateCommand
+        {
+            get
+            {
+                return FThreadIdentifierOfThreadWhichWantsToCreateCommand;
+            }
+
+            set
+            {
+                FThreadIdentifierOfThreadWhichWantsToCreateCommand = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException(String AMessage) :
+            base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and <see cref="ThreadIdentifierOfThreadWhichStartedTransaction" /> and
+        /// <see cref="ThreadIdentifierOfThreadWhichWantsToCreateCommand" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichStartedTransaction">ThreadIdentifier of the Thread which
+        /// started the existing Transaction.</param>
+        /// <param name="AThreadIdentifierOfThreadWhichWantsToCreateCommand">ThreadIdentifier of the Thread which wants
+        /// to create a Command using the Transaction that was started on another Thread.</param>
+        public EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException(String AMessage,
+            String AThreadIdentifierOfThreadWhichStartedTransaction,
+            string AThreadIdentifierOfThreadWhichWantsToCreateCommand) : base(AMessage)
+        {
+            FThreadIdentifierOfThreadWhichStartedTransaction = AThreadIdentifierOfThreadWhichStartedTransaction;
+            FThreadIdentifierOfThreadWhichWantsToCreateCommand = AThreadIdentifierOfThreadWhichWantsToCreateCommand;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException(string AMessage,
+            Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException(
+            SerializationInfo AInfo,
+            StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FThreadIdentifierOfThreadWhichStartedTransaction = AInfo.GetString("ThreadIdentifierOfThreadWhichStartedTransaction");
+            FThreadIdentifierOfThreadWhichWantsToCreateCommand = AInfo.GetString("ThreadIdentifierOfThreadWhichWantsToCreateCommand");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichStartedTransaction",
+                FThreadIdentifierOfThreadWhichStartedTransaction);
+            AInfo.AddValue("ThreadIdentifierOfThreadWhichWantsToCreateCommand",
+                FThreadIdentifierOfThreadWhichWantsToCreateCommand);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates and returns a string representation of the current
+        /// <see cref="EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current
+        /// <see cref="EDBAttemptingToCreateCommandThatWouldRunCommandOnDifferentThreadThanThreadOfTheTransactionThatGotPassedException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
+            // ...then add our "special information"...
+            if ((ThreadIdentifierOfThreadWhichStartedTransaction != null)
+                && (ThreadIdentifierOfThreadWhichWantsToCreateCommand != null))
+            {
+                ReturnValue += "  (ThreadIdentifier of the Thread that started the Transaction: " +
+                               ThreadIdentifierOfThreadWhichStartedTransaction + "; " +
+                               "ThreadIdentifier of the Thread that wants to create a Command using the Transaction that was started on " +
+                               "another Thread: " + FThreadIdentifierOfThreadWhichWantsToCreateCommand + ")" + Environment.NewLine;
+            }
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
+            StackTraceStr = Environment.StackTrace;
+
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
+            return ReturnValue;
+        }
+    }
+
+    #endregion
+
+    #region EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException
+
+    /// <summary>
+    /// Thrown in case a caller wants to create a Command that would be enlisted in a DB Transaction that was started against
+    /// a DB Connection that is different from the DB Connection of current DB Connection (running DB Commands on one
+    /// DB Connection with a DB Transaction that was started against another DB Connection isn't supported [because each
+    /// DB Command is bound to a certain DB Connection as the ADO.NET providers {specifically: the PostgreSQL provider,
+    /// Npgsql} aren't thread-safe!}]).
+    /// </summary>
+    [Serializable()]
+    public class EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException :
+        EDBAccessLackingCoordinationException
+    {
+        private String FConnectionIdentifierOfConnectionOfPassedInTransaction;
+        private String FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance;
+
+        /// <summary>
+        /// ConnectionIdentifier of the Connection of the Transaction that got passed in as an Argument.
+        /// </summary>
+        public String ConnectionIdentifierOfConnectionOfPassedInTransaction
+        {
+            get
+            {
+                return FConnectionIdentifierOfConnectionOfPassedInTransaction;
+            }
+
+            set
+            {
+                FConnectionIdentifierOfConnectionOfPassedInTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// ConnectionIdentifier of the current TDataBase instance.
+        /// </summary>
+        public String ConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance
+        {
+            get
+            {
+                return FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance;
+            }
+
+            set
+            {
+                FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException(String AMessage) :
+            base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and <see cref="ConnectionIdentifierOfConnectionOfPassedInTransaction" /> and
+        /// <see cref="ConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AConnectionIdentifierOfConnectionOfPassedInTransaction">ConnectionIdentifier of the Connection of the
+        /// Transaction that got passed in as an Argument.</param>
+        /// <param name="AConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance">ConnectionIdentifier of the
+        /// current TDataBase instance.</param>
+        public EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException(String AMessage,
+            String AConnectionIdentifierOfConnectionOfPassedInTransaction,
+            string AConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance) : base(AMessage)
+        {
+            FConnectionIdentifierOfConnectionOfPassedInTransaction = AConnectionIdentifierOfConnectionOfPassedInTransaction;
+            FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance = AConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException(string AMessage,
+            Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException(
+            SerializationInfo AInfo,
+            StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FConnectionIdentifierOfConnectionOfPassedInTransaction = AInfo.GetString("ConnectionIdentifierOfConnectionOfPassedInTransaction");
+            FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance = AInfo.GetString(
+                "ConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("ConnectionIdentifierOfConnectionOfPassedInTransaction",
+                FConnectionIdentifierOfConnectionOfPassedInTransaction);
+            AInfo.AddValue("ConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance",
+                FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates and returns a string representation of the current
+        /// <see cref="EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current
+        /// <see cref="EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
+            // ...then add our "special information"...
+            if ((ConnectionIdentifierOfConnectionOfPassedInTransaction != null)
+                && (ConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance != null))
+            {
+                ReturnValue += "  (ConnectionIdentifier of the Connection of the Transaction that got passed in as an " +
+                               "Argument: " + FConnectionIdentifierOfConnectionOfPassedInTransaction + "; " +
+                               "ConnectionIdentifier of the current TDataBase instance: " +
+                               FConnectionIdentifierOfConnectionOfCurrentTDataBaseInstance + ")" + Environment.NewLine;
+            }
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
+            StackTraceStr = Environment.StackTrace;
+
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
+            return ReturnValue;
+        }
+    }
+
+    #endregion
+
+    #region EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException
+
+    /// <summary>
+    /// Thrown in case a caller wants to create a Command that would be enlisted in a DB Transaction that is different from
+    /// the current DB Transaction (running DB Commands on a DB Transaction other than the currently running DB Transaction
+    /// is not supported [because parallel DB Transactions are not supported]).
+    /// </summary>
+    [Serializable()]
+    public class EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException :
+        EDBAccessLackingCoordinationException
+    {
+        private String FTransactionIdentifierOfPassedInTransaction;
+        private String FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance;
+
+        /// <summary>
+        /// TransactionIdentifier of the Transaction that got passed in as an Argument.
+        /// </summary>
+        public String TransactionIdentifierOfPassedInTransaction
+        {
+            get
+            {
+                return FTransactionIdentifierOfPassedInTransaction;
+            }
+
+            set
+            {
+                FTransactionIdentifierOfPassedInTransaction = value;
+            }
+        }
+
+        /// <summary>
+        /// TransactionIdentifier of the current Transaction of the current TDataBase instance (which should create the Command).
+        /// </summary>
+        public String TransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance
+        {
+            get
+            {
+                return FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance;
+            }
+
+            set
+            {
+                FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance = value;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and
+        /// <see cref="TransactionIdentifierOfPassedInTransaction" /> and
+        /// <see cref="TransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="ATransactionIdentifierOfPassedInTransaction">TransactionIdentifier of the Transaction that
+        /// got passed in as an Argument.</param>
+        /// <param name="ATransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance">TransactionIdentifier
+        /// of the current Transaction of the current TDataBase instance (which should create the Command).</param>
+        public EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException(String AMessage,
+            String ATransactionIdentifierOfPassedInTransaction,
+            string ATransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance) : base(AMessage)
+        {
+            FTransactionIdentifierOfPassedInTransaction = ATransactionIdentifierOfPassedInTransaction;
+            FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance =
+                ATransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException(string AMessage,
+            Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException(SerializationInfo AInfo,
+            StreamingContext AContext) : base(AInfo, AContext)
+        {
+            FTransactionIdentifierOfPassedInTransaction = AInfo.GetString("TransactionIdentifierOfPassedInTransaction");
+            FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance = AInfo.GetString(
+                "TransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            AInfo.AddValue("TransactionIdentifierOfPassedInTransaction",
+                FTransactionIdentifierOfPassedInTransaction);
+            AInfo.AddValue("TransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance",
+                FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Creates and returns a string representation of the current
+        /// <see cref="EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException"/>.
+        /// </summary>
+        /// <returns>A string representation of the current
+        /// <see cref="EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException"/>.</returns>
+        /// <remarks>See https://msdn.microsoft.com/en-us/library/system.exception.tostring(v=vs.100).aspx for the standard
+        /// .NET implementation of the System.Exception.ToString() Method.</remarks>
+        public override string ToString()
+        {
+            string ReturnValue;
+            string StackTraceStr;
+
+            // Start the ToString() return value as .NET does for the System.Exception.ToString() Method...
+            ReturnValue = GetType().FullName + ": " + Message + Environment.NewLine;
+
+            // ...then add our "special information"...
+            if ((TransactionIdentifierOfPassedInTransaction != null)
+                && (TransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance != null))
+            {
+                ReturnValue += "  (TransactionIdentifier of the Transaction that got passed in as an Argument: " +
+                               FTransactionIdentifierOfPassedInTransaction + "; " +
+                               "TransactionIdentifier of the current Transaction of the current TDataBase instance (which should create " +
+                               "the Command): " + FTransactionIdentifierOfCurrentTransactionOfCurrentTDataBaseInstance + ")" +
+                               Environment.NewLine;
+            }
+
+            // ...and end the ToString() return value as .NET does for the System.Exception.ToString() Method.
+            if (InnerException != null)
+            {
+                ReturnValue += InnerException.ToString() + Environment.NewLine;
+            }
+
+            StackTraceStr = Environment.StackTrace;
+
+            if (!String.IsNullOrEmpty(StackTraceStr))
+            {
+                ReturnValue += "Server stack trace:" + Environment.StackTrace + Environment.NewLine;
+            }
+
+            return ReturnValue;
+        }
+    }
+
+    #endregion
+
 
     #region EDBTransactionIsolationLevelWrongException
 

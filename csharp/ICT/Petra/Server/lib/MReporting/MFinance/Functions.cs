@@ -645,7 +645,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             string strSql = "SELECT a_actual_base_n, a_actual_intl_n, a_actual_foreign_n FROM PUB_a_general_ledger_master_period" +
                             " WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence +
                             " AND a_period_number_i = " + period.realPeriod;
-            DataTable tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
+            DataTable tab = ActualsCache.GetDataTable(strSql, situation.GetDatabaseConnection());
 
             if (tab.Rows.Count > 0)
             {
@@ -797,7 +797,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
                 string strSql =
                     "SELECT a_start_balance_base_n, a_start_balance_intl_n, a_start_balance_foreign_n FROM PUB_a_general_ledger_master " +
                     "WHERE a_glm_sequence_i = " + period.realGlmSequence.glmSequence;
-                DataTable tab = ActualsCache.GetDataTable(situation.GetDatabaseConnection(), strSql);
+                DataTable tab = ActualsCache.GetDataTable(strSql, situation.GetDatabaseConnection());
 
                 if (tab.Rows.Count > 0)
                 {
@@ -1158,7 +1158,7 @@ namespace Ict.Petra.Server.MReporting.MFinance
             if ((calculationResult.ToString().ToUpper().IndexOf("SELECT") >= 0) && (calculationResult.ToString().ToUpper().IndexOf("SELECT") <= 3))
             {
                 // this is an sql statement and not a function result
-                DataTable tab = AccountDescendantsCache.GetDataTable(situation.GetDatabaseConnection(), calculationResult.ToString());
+                DataTable tab = AccountDescendantsCache.GetDataTable(calculationResult.ToString(), situation.GetDatabaseConnection());
 
                 foreach (DataRow row in tab.Rows)
                 {

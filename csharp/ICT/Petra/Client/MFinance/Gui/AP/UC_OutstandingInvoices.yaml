@@ -96,6 +96,7 @@ RootNode:
                     dtpIssueDate-2: {Label=To Issue Date, Comparison=lt}
         grdInvoices: {ActionDoubleClick=actOpenSelectedInvoice, ActionEnterKeyPressed=actOpenSelectedInvoice}
             Dock: Fill
+            Type: Ict.Common.Controls.TSgrdDataGridPaged
         pnlOutstandingTotals:
             Controls: [grpOutstandingTotals]
             Padding: 5,10,5,5

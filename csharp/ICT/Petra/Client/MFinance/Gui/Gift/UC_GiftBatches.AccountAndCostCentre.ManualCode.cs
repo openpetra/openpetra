@@ -226,11 +226,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="AActiveOnly"></param>
         /// <param name="ABankAccountOnly"></param>
-        /// <param name="ALblBankAccoountCode"></param>
+        /// <param name="ALblBankAccountCode"></param>
         /// <param name="ARow"></param>
         public void SetupAccountCombo(bool AActiveOnly,
             bool ABankAccountOnly,
-            ref System.Windows.Forms.Label ALblBankAccoountCode,
+            ref System.Windows.Forms.Label ALblBankAccountCode,
             AGiftBatchRow ARow)
         {
             FCmbBankAccountCode.Clear();
@@ -245,11 +245,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ABankAccountOnly)
             {
-                ALblBankAccoountCode.Text = Catalog.GetString("Bank Account:");
+                ALblBankAccountCode.Text = Catalog.GetString("Bank Account:");
             }
             else
             {
-                ALblBankAccoountCode.Text = Catalog.GetString("Account Code:");
+                ALblBankAccountCode.Text = Catalog.GetString("Account Code:");
             }
 
             if (ARow != null)

@@ -20,6 +20,7 @@ RootNode:
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
+            InitiallyExpanded: true     
             FilterControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc, Column:Frozen]
             FindControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc]
             ControlAttributes:

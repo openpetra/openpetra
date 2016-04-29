@@ -49,6 +49,8 @@ RootNode:
                 FromDate: {Label=Begin Date, Type=DateTime}
                 ToDate: {Label=End Date, Type=DateTime}
             SortOrder: FromDate DESC
+            AutoFindMode: FirstCharacter
+            AutoFindColumn: 1
             
         grpChurchInfo:
             Label: Overview / Church Info

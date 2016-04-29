@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintenance of Extract
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     DetailTable: MExtract

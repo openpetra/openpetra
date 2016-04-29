@@ -48,6 +48,7 @@ RootNode:
         btnImport: {Action=actImport, Width=80, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
+            AutoFindMode: NoAutoFind
             Columns: [DetailCostCentreCode, DetailAccountCode, DetailBudgetTypeCode, Period01Amount, Period02Amount, Period03Amount, Period04Amount, Period05Amount, Period06Amount, Period07Amount, Period08Amount, Period09Amount, Period10Amount, Period11Amount, Period12Amount, Period13Amount, Period14Amount]
             CustomColumns:
                 Period01Amount: {Label=Period 01, Type=Currency}

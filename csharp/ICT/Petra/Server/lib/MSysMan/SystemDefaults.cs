@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,71 +24,57 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
-using Ict.Common;
-using Ict.Common.DB.Exceptions;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Common.DB;
-using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Common.Verification;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
 {
     /// <summary>
-    /// Reads and saves a DataTable for the System Defaults.
-    ///
+    /// Reads and updates/adds System Defaults. This Class exists solely for Client calls; for any server-side calls
+    /// use the global (and always available!) <see cref="TSystemDefaultsCache.GSystemDefaultsCache" /> instance
+    /// of <see cref="TSystemDefaultsCache" /> directly!
     /// </summary>
-    public class TSystemDefaults
+    /// <remarks>Utilises a thread-safe cache (<see cref="TSystemDefaultsCache" />) for speed!</remarks>
+    public static class TSystemDefaults
     {
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>
         /// <param name="ASystemDefaultName">System Default Key</param>
-        /// <param name="ADefault">Default to use if not found</param>
-        /// <returns>Value of System Default, or ADefault
-        /// </returns>
-        [NoRemoting]
+        /// <param name="ADefault">The value returned if System Default is not found.</param>
+        /// <returns>The value of the System Default, or ADefault.</returns>
+        [RequireModulePermission("NONE")]
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
-            String ReturnValue = ADefault;
-
-            String Tmp = GetSystemDefault(ASystemDefaultName);
-
-            if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
-            {
-                ReturnValue = Tmp;
-            }
-
-            return ReturnValue;
+            return TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
         /// Returns the value of the specified System Default.
         /// </summary>
-        /// <param name="ASystemDefaultName">System Default Key</param>
-        /// <returns>Value of System Default, or SYSDEFAULT_NOT_FOUND
-        /// </returns>
-        [NoRemoting]
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
+        /// specified System Default was not found.</returns>
+        [RequireModulePermission("NONE")]
         public static String GetSystemDefault(String ASystemDefaultName)
         {
-            String ReturnValue = SharedConstants.SYSDEFAULT_NOT_FOUND;
-            SSystemDefaultsTable SystemDefaultsTable = GetSystemDefaults();
+            return TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(ASystemDefaultName);
+        }
 
-            if (SystemDefaultsTable != null)
-            {
-                // Look up the System Default
-                SSystemDefaultsRow FoundSystemDefaultsRow = (SSystemDefaultsRow)SystemDefaultsTable.Rows.Find(ASystemDefaultName);
-
-                if (FoundSystemDefaultsRow != null)
-                {
-                    ReturnValue = FoundSystemDefaultsRow.DefaultValue;
-                }
-            }
-
-            return ReturnValue;
+        /// <summary>
+        /// Gets the SiteKey Sytem Default.
+        /// </summary>
+        /// <remarks>
+        /// Note: The SiteKey can get changed by a user with the necessary priviledges while being logged
+        /// in to OpenPetra and this gets reflected when this Method gets called.</remarks>
+        /// <returns>The SiteKey of the Site.</returns>
+        [RequireModulePermission("NONE")]
+        public static Int64 GetSiteKeyDefault()
+        {
+            return TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault();
         }
 
         /// <summary>
@@ -99,87 +85,30 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         [RequireModulePermission("NONE")]
         public static SSystemDefaultsTable GetSystemDefaults()
         {
-            SSystemDefaultsTable ReturnValue = null;
-            TDBTransaction ReadTransaction = null;
-            bool DBAccessCallSuccessful = false;
-
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
-                IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
-                delegate
-                {
-                    TServerBusyHelper.CoordinatedAutoRetryCall("Loading all SystemDefaults", ref DBAccessCallSuccessful,
-                        delegate
-                        {
-                            ReturnValue = SSystemDefaultsAccess.LoadAll(ReadTransaction);
-
-                            DBAccessCallSuccessful = true;
-                        });
-                });
-
-            if (!DBAccessCallSuccessful)
-            {
-                throw new EDBAccessLackingCoordinationException("Loading of System Default failed: server was too busy!");
-            }
-
-            return ReturnValue;
+            return TSystemDefaultsCache.GSystemDefaultsCache.GetSystemDefaultsTable();
         }
 
         /// <summary>
-        /// Add or modify a System Default
+        /// Sets the value of a System Default. If the System Default doesn't exist yet it will be created by that call.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="AValue"></param>
-        /// <returns>true if I believe the System Default was saved successfully</returns>
+        /// <param name="AKey">Name of new or existing System Default.</param>
+        /// <param name="AValue">String Value.</param>
         [RequireModulePermission("NONE")]
         public static void SetSystemDefault(String AKey, String AValue)
         {
-            Boolean NewTransaction = false;
-            Boolean ShouldCommit = false;
+            TSystemDefaultsCache.GSystemDefaultsCache.SetSystemDefault(AKey, AValue);
+        }
 
-            try
-            {
-                TDBTransaction Transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                SSystemDefaultsTable tbl = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, Transaction);
-
-                if (tbl.Rows.Count > 0) // I already have this. (I expect this is the case usually!)
-                {
-                    DataRow Row = tbl[0];
-                    ((SSystemDefaultsRow)Row).DefaultValue = AValue;
-                }
-                else
-                {
-                    DataRow Row = tbl.NewRowTyped(true);
-                    ((SSystemDefaultsRow)Row).DefaultCode = AKey;
-                    ((SSystemDefaultsRow)Row).DefaultDescription = "Created in OpenPetra";
-                    ((SSystemDefaultsRow)Row).DefaultValue = AValue;
-                    tbl.Rows.Add(Row);
-                }
-
-                SSystemDefaultsAccess.SubmitChanges(tbl, Transaction);
-                ShouldCommit = true;
-            }
-            catch (Exception Exc)
-            {
-                TLogging.Log("An Exception occured during the saving of a single System Default:" + Environment.NewLine + Exc.ToString());
-                ShouldCommit = false;
-                throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    if (ShouldCommit)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
-                    }
-                    else
-                    {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
-                    }
-                }
-            }
+        /// <summary>
+        /// Sets the value of a System Default. If the System Default doesn't exist yet it will be created by that call.
+        /// </summary>
+        /// <param name="AKey">Name of new or existing System Default.</param>
+        /// <param name="AValue">String Value.</param>
+        /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
+        [RequireModulePermission("NONE")]
+        public static void SetSystemDefault(String AKey, String AValue, out bool AAdded)
+        {
+            TSystemDefaultsCache.GSystemDefaultsCache.SetSystemDefault(AKey, AValue, out AAdded);
         }
     }
 }

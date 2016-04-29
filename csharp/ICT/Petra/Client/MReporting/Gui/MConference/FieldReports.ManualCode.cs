@@ -134,14 +134,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
 
                 if (FUnitType == TUnitTypeEnum.utOutreachOptions)
                 {
-                    grdFields.AddTextColumn(Catalog.GetString("Outreach Code"), FUnitTableList.Columns["Outreach Code"]);
+                    grdFields.AddTextColumn(Catalog.GetString("Outreach Code"), FUnitTableList.Columns["Outreach_Code"]);
                 }
                 else
                 {
-                    grdFields.AddTextColumn(Catalog.GetString("Unit Key"), FUnitTableList.Columns["Unit Key"]);
+                    grdFields.AddTextColumn(Catalog.GetString("Unit Key"), FUnitTableList.Columns["Unit_Key"]);
                 }
 
-                grdFields.AddTextColumn(Catalog.GetString("Unit Name"), FUnitTableList.Columns["Unit Name"]);
+                grdFields.AddTextColumn(Catalog.GetString("Unit Name"), FUnitTableList.Columns["Unit_Name"]);
             }
 
             UpdateUnitGrid("");
@@ -337,11 +337,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
                 {
                     if (FUnitType == TUnitTypeEnum.utOutreachOptions)
                     {
-                        ReturnValue = ReturnValue + Row["Outreach Code"].ToString() + ',';
+                        ReturnValue = ReturnValue + Row["Outreach_Code"].ToString() + ',';
                     }
                     else
                     {
-                        ReturnValue = ReturnValue + Row["Unit Key"].ToString() + ',';
+                        ReturnValue = ReturnValue + Row["Unit_Key"].ToString() + ',';
                     }
                 }
             }

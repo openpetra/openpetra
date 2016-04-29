@@ -1508,6 +1508,8 @@ namespace Ict.Petra.Shared
             String HashCodeInCacheableTablesManager = "";
             Int32 TmpSize = 0;
 
+            AType = FCacheableTablesManager.GetCachedDataTableType(ATableName);
+
             DataUtilities.CalculateHashAndSize(ACacheableTableDV, out HashCodeInCacheableTablesManager, out TmpSize);
 
             if (HashCodeInCacheableTablesManager != AHashCode)
@@ -1515,11 +1517,20 @@ namespace Ict.Petra.Shared
                 TLogging.LogAtLevel(7,
                     "TCacheableTablesManager.ResultingCachedDataTable: passed in HashCode: " + AHashCode +
                     "; HashCode in CacheableTableManager: " + HashCodeInCacheableTablesManager);
-                ReturnValue = FCacheableTablesManager.GetCachedDataTable(ATableName, out AType);
+
+                // The hash codes do not match...  The passed-in DataView contains the filtered results that we need to return to the client.
+                // So we convert it to a table and then usually change it to a typed table.
+                //   NOTE: Prior to Sep 2015 we returned the whole table (unfiltered) direct from FCacheableTablesManager!!
+                ReturnValue = ACacheableTableDV.ToTable();
+
+                if (AType.IsSubclassOf(typeof(TTypedDataTable)))
+                {
+                    DataUtilities.ChangeDataTableToTypedDataTable(ref ReturnValue, AType, "");
+                }
             }
             else
             {
-                AType = FCacheableTablesManager.GetCachedDataTableType(ATableName);
+                // The hash matches so we don't need to return anything
                 ReturnValue = null;
             }
 

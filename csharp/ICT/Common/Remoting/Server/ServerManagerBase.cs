@@ -83,6 +83,15 @@ namespace Ict.Common.Remoting.Server
             }
         }
 
+        /// <summary>The Site Key</summary>
+        public Int64 SiteKey
+        {
+            get
+            {
+                return DomainManager.GSiteKey;
+            }
+        }
+
         /// <summary>Array that contains information about the Clients that are currently connected to the Petra Server.</summary>
         public ArrayList ClientList
         {

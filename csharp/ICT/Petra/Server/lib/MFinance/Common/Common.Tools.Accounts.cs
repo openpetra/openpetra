@@ -23,16 +23,17 @@
 
 using System;
 using System.Data;
-using System.Data.Odbc;
-using System.Text.RegularExpressions;
+//using System.Data.Odbc;
+//using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.DB;
-using Ict.Common.Verification;
+using Ict.Common.Exceptions;
+//using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Server.MCommon.Data.Access;
+//using Ict.Petra.Shared.MCommon.Data;
+//using Ict.Petra.Server.MCommon.Data.Access;
 
 namespace Ict.Petra.Server.MFinance.Common
 {
@@ -50,28 +51,46 @@ namespace Ict.Petra.Server.MFinance.Common
 
         private const string STANDARD = "STANDARD";
         AAccountHierarchyDetailTable FAccountTable;
-        AAccountHierarchyDetailRow accountRow = null;
-        TLedgerInfo FledgerInfo;
+        AAccountHierarchyDetailRow FAccountRow = null;
 
 
         /// <summary>
         /// ...
         /// </summary>
-        /// <param name="ALedgerInfo"></param>
-        public TGetAccountHierarchyDetailInfo(TLedgerInfo ALedgerInfo)
+        /// <param name="ALedgerNumber"></param>
+        public TGetAccountHierarchyDetailInfo(Int32 ALedgerNumber)
         {
-            FledgerInfo = ALedgerInfo;
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(
-                        FledgerInfo.LedgerNumber, Transaction);
-                });
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
+            }
         }
 
         /// <summary>
@@ -113,17 +132,17 @@ namespace Ict.Petra.Server.MFinance.Common
 
                 foreach (DataRowView rv in FAccountTable.DefaultView)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)rv.Row;
+                    FAccountRow = (AAccountHierarchyDetailRow)rv.Row;
 
-                    if (accountRow.AccountCodeToReportTo.Equals(AAccountCode))
+                    if (FAccountRow.AccountCodeToReportTo.Equals(AAccountCode))
                     {
-                        if (accountRow.AccountHierarchyCode.Equals(STANDARD))
+                        if (FAccountRow.AccountHierarchyCode.Equals(STANDARD))
                         {
-                            help.Add(accountRow.ReportingAccountCode);
+                            help.Add(FAccountRow.ReportingAccountCode);
 
                             if (AChildLevel != 0)
                             {
-                                GetChildrenIntern(help, accountRow.ReportingAccountCode, --AChildLevel);
+                                GetChildrenIntern(help, FAccountRow.ReportingAccountCode, --AChildLevel);
                             }
                         }
                     }
@@ -143,11 +162,11 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 for (int i = 0; i < FAccountTable.Rows.Count; ++i)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
+                    FAccountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
 
-                    if (accountRow.AccountCodeToReportTo.Equals(AAccountCode))
+                    if (FAccountRow.AccountCodeToReportTo.Equals(AAccountCode))
                     {
-                        if (accountRow.AccountHierarchyCode.Equals(STANDARD))
+                        if (FAccountRow.AccountHierarchyCode.Equals(STANDARD))
                         {
                             return false;
                         }
@@ -169,13 +188,13 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 for (int i = 0; i < FAccountTable.Rows.Count; ++i)
                 {
-                    accountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
+                    FAccountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
 
-                    if (accountRow.ReportingAccountCode.Equals(AAccountCode))
+                    if (FAccountRow.ReportingAccountCode.Equals(AAccountCode))
                     {
-                        if (accountRow.AccountHierarchyCode.Equals(STANDARD))
+                        if (FAccountRow.AccountHierarchyCode.Equals(STANDARD))
                         {
-                            return accountRow.AccountCodeToReportTo;
+                            return FAccountRow.AccountCodeToReportTo;
                         }
                     }
                 }
@@ -293,28 +312,43 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class THandleAccountPropertyInfo
     {
-        AAccountPropertyTable propertyCodeTable;
+        AAccountPropertyTable FPropertyCodeTable;
         /// <summary>
         /// The constructor needs a ledgerinfo (for the ledger number)
         /// </summary>
-        /// <param name="ledgerInfo"></param>
-        public THandleAccountPropertyInfo(TLedgerInfo ledgerInfo)
+        /// <param name="ALedgerNumber"></param>
+        public THandleAccountPropertyInfo(Int32 ALedgerNumber)
         {
-            bool NewTransaction = false;
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            TDBTransaction Transaction = null;
 
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                propertyCodeTable = AAccountPropertyAccess.LoadViaALedger(ledgerInfo.LedgerNumber, transaction);
+                    ref Transaction,
+                    delegate
+                    {
+                        FPropertyCodeTable = AAccountPropertyAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    });
             }
-            finally
+            catch (Exception ex)
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
@@ -325,7 +359,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public string GetAccountCode(TAccountPropertyEnum AEnum)
         {
-            foreach (AAccountPropertyRow row in propertyCodeTable.Rows)
+            foreach (AAccountPropertyRow row in FPropertyCodeTable.Rows)
             {
                 if (row.PropertyCode.Equals("Is_Special_Account"))
                 {
@@ -404,7 +438,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public string GetAccountCode(string APropertyCode)
         {
-            foreach (AAccountPropertyRow row in propertyCodeTable.Rows)
+            foreach (AAccountPropertyRow row in FPropertyCodeTable.Rows)
             {
                 if (row.PropertyCode == APropertyCode)
                 {
@@ -418,7 +452,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
     /// <summary>
-    /// TAccountInfo uses a TLedgerInfo and primarily references the LedgerNumber.
+    /// TAccountInfo uses the LedgerNumber.
     /// All Accounts are load in both contructors. You can define an initial account code in the
     /// second constructor or you can set the value later (or change) by using SetAccountRowTo.
     /// Then you can read the values for the selected Account.
@@ -427,7 +461,7 @@ namespace Ict.Petra.Server.MFinance.Common
     {
         AAccountTable FAccountTable;
         AAccountRow FAccountRow = null;
-        TLedgerInfo FLedgerInfo;
+        Int32 FLedgerNumber;
         THandleAccountPropertyInfo FAccountPropertyHandler = null;
 
         int FRowIdx;
@@ -436,45 +470,63 @@ namespace Ict.Petra.Server.MFinance.Common
         /// This mininmal constructor defines the result collection for the error messages and
         /// Ledger Info to select the ledger ...
         /// </summary>
-        /// <param name="ALedgerInfo"></param>
-        public TAccountInfo(TLedgerInfo ALedgerInfo)
+        /// <param name="ALedgerNumber"></param>
+        public TAccountInfo(Int32 ALedgerNumber)
         {
-            FLedgerInfo = ALedgerInfo;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
         /// <summary>
         /// The Constructor defines a first value of a specific accounting code too.
         /// </summary>
-        /// <param name="ALedgerInfo"></param>
+        /// <param name="ALedgerNumber"></param>
         /// <param name="AAccountCode"></param>
-        public TAccountInfo(TLedgerInfo ALedgerInfo, string AAccountCode)
+        public TAccountInfo(Int32 ALedgerNumber, String AAccountCode)
         {
-            FLedgerInfo = ALedgerInfo;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
             AccountCode = AAccountCode;
         }
 
         private void LoadData()
         {
-            bool NewTransaction = false;
+            TDBTransaction Transaction = null;
 
             try
             {
-                TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                FAccountTable = AAccountAccess.LoadViaALedger(
-                    FLedgerInfo.LedgerNumber, transaction);
+                    ref Transaction,
+                    delegate
+                    {
+                        FAccountTable = AAccountAccess.LoadViaALedger(FLedgerNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((FAccountTable == null) || (FAccountTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Account data for Ledger {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    FLedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
             finally
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
-                }
+                FAccountRow = null;
             }
-            FAccountRow = null;
         }
 
         /// <summary>
@@ -488,7 +540,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (FAccountPropertyHandler == null)
             {
-                FAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerInfo);
+                FAccountPropertyHandler = new THandleAccountPropertyInfo(FLedgerNumber);
             }
 
             string account = FAccountPropertyHandler.GetAccountCode(AENum);
@@ -528,7 +580,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     if (value != "")
                     {
-                        FAccountRow = (AAccountRow)FAccountTable.Rows.Find(new Object[] { FLedgerInfo.LedgerNumber, value });
+                        FAccountRow = (AAccountRow)FAccountTable.Rows.Find(new Object[] { FLedgerNumber, value });
                     }
                 }
             }
@@ -639,9 +691,9 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TAccountPeriodInfo
     {
-        private int intLedgerNumber = 0;
-        private AAccountingPeriodTable periodTable = null;
-        private AAccountingPeriodRow periodRow = null;
+        private int FLedgerNumber;
+        private AAccountingPeriodTable FPeriodTable = null;
+        private AAccountingPeriodRow FPeriodRow = null;
 
 
         /// <summary>
@@ -649,7 +701,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// </summary>
         protected void LoadTableData(int ALedgerNumber)
         {
-            intLedgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
@@ -659,7 +711,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="ALedgerNumber">Ledger number</param>
         public TAccountPeriodInfo(int ALedgerNumber)
         {
-            intLedgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
         }
 
@@ -671,31 +723,44 @@ namespace Ict.Petra.Server.MFinance.Common
 
         public TAccountPeriodInfo(int ALedgerNumber, int ACurrentPeriod)
         {
-            intLedgerNumber = ALedgerNumber;
+            FLedgerNumber = ALedgerNumber;
             LoadData();
             AccountingPeriodNumber = ACurrentPeriod;
         }
 
         private void LoadData()
         {
-            bool NewTransaction;
-            TDBTransaction transaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
+            TDBTransaction Transaction = null;
 
             try
             {
-                periodTable = AAccountingPeriodAccess.LoadViaALedger(intLedgerNumber, transaction);
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        FPeriodTable = AAccountingPeriodAccess.LoadViaALedger(FLedgerNumber, Transaction);
 
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                }
+                        #region Validate Data
+
+                        if ((FPeriodTable == null) || (FPeriodTable.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Accounting Period data for Ledger {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    FLedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-                throw;
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+                throw ex;
             }
         }
 
@@ -706,16 +771,16 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             set
             {
-                periodRow = null;
+                FPeriodRow = null;
                 AAccountingPeriodRow periodRowH;
 
-                for (int i = 0; i < periodTable.Rows.Count; ++i)
+                for (int i = 0; i < FPeriodTable.Rows.Count; ++i)
                 {
-                    periodRowH = periodTable[i];
+                    periodRowH = FPeriodTable[i];
 
                     if (periodRowH.AccountingPeriodNumber == value)
                     {
-                        periodRow = periodRowH;
+                        FPeriodRow = periodRowH;
                     }
                 }
             }
@@ -729,7 +794,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return periodRow.PeriodEndDate;
+                return FPeriodRow.PeriodEndDate;
             }
         }
 
@@ -741,7 +806,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return periodRow.PeriodStartDate;
+                return FPeriodRow.PeriodStartDate;
             }
         }
 
@@ -753,7 +818,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return periodRow.EffectiveDate;
+                return FPeriodRow.EffectiveDate;
             }
         }
 
@@ -765,7 +830,7 @@ namespace Ict.Petra.Server.MFinance.Common
         {
             get
             {
-                return periodTable.Rows.Count;
+                return FPeriodTable.Rows.Count;
             }
         }
     }

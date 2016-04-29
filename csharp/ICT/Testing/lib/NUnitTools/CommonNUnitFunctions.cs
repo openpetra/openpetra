@@ -117,7 +117,7 @@ namespace Ict.Testing.NUnitTools
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                     TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
                     TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
+                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "", "ResetDatabase DB Connection");
             }
         }
 
@@ -164,7 +164,7 @@ namespace Ict.Testing.NUnitTools
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                     TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
                     TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "");
+                    TSrvSetting.DBUsername, TSrvSetting.DBPassword, "CommonNUnitFunctions.LoadTestDataBase DB Connection");
             }
 
             if (tempfile.Length > 0)

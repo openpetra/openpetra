@@ -45,6 +45,7 @@ RootNode:
  
         grdResult:
             Dock: Fill
+            Type: Ict.Common.Controls.TSgrdDataGridPaged
 
         cmbLedger: {ReadOnly=true, List=LedgerNameList, ColSpan=2, OnChange=OnComboChange, Tooltip: Select a ledger}
         txtBatchNumber: {Width=100, Format=Integer, Tooltip=Enter a GL Batch Number}

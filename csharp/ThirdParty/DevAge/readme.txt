@@ -6,8 +6,9 @@ based on the source code of SourceGrid as of July 16, 2012
 File SourceGrid.dll:
 --------------------
 Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
-The latest version is 4.40.5534.25678, dated 25 February 2015, size 536KB - this fixes all bugs and features below
+The latest version is 4.40.5736.31861, dated 15 September 2015, size 500KB - this fixes all bugs and features below
 
+(Version number 4.40.5534.25678, dated 25 February 2015, size 536KB - this fixes all bugs 1 to 12 below
 (Version number 4.40.5336.16408, dated 11 August 2014, size 536KB - this fixes all bugs 1 to 11 below)
 (Version number 4.40.5283.24660, dated 19 June 2014, size 536KB - this fixes all bugs 1 to 10 below)
 (Version number 4.40.5210.20614, dated 07 April 2014, size 536KB - this fixes all bugs 1 to 9 below)
@@ -62,6 +63,8 @@ Made a small change to the grid that fixed an issue when we use this event.  Add
 ==== 11.  (August 2014)  1: Improved the way in which Edit-in-place works when using the mouse to move away from a cell being edited.  In effect there was a line of code missing that called BeginEdit() when the mouse was used to re-enter an edit cell.  2: Also had to modify the edit-in-place code that I had used for TAB and ENTER so that it is ignored for a screen like LocalData in Partner/Edit.  This uses controllers rather than editors and was lifted from Petra 2.3.  I achieved what I wanted by adding a new special key enum which only gets set for that screen but then makes Tab and Enter work the way it always used to.
 
 ==== 12.  (February 2015)  Our GL Revaluation screen uses a simple grid with a Cell.View.Button in the right hand column.  This fix is another case (in GridVirtual.cs) where we do not make the active position go to the fist column.
+
+==== 13.  (September 2015)  An 'improvement' to the fix #5 above... where we need to ensure that the SelectionChanged event is fired even before the grid is visible.  This was achieved inside an 'if (canFocus)' clause, which is ok most of the time because it returns false before the screen is displayed.  However for screens like GL transactions that have a secondary editable grid we actually do NOT want to fire the SelectionChanged event when the main grid is visible but REALLY cannot be focused because that is what happens when there is an invalid edit in the attributes grid.  I fixed a bug in the IsEditing() method in CellContext (which I knew existed a long time ago).  By fixing it I can use it in the new grid wrapper method of the same name.
 
 
 All the changes made for this are commented with // AlanP:

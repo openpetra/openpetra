@@ -46,15 +46,33 @@ namespace Ict.Petra.Server.MCommon.WebConnectors
         [RequireModulePermission("NONE")]
         public static Int64 GetNextSequence(TSequenceNames ASequence)
         {
+            return GetNextSequence(ASequence, null);
+        }
+
+        /// <summary>
+        /// get the next sequence value
+        /// </summary>
+        /// <param name="ASequence"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static Int64 GetNextSequence(TSequenceNames ASequence, TDataBase ADataBase)
+        {
             Int64 NewSequenceValue = 0;
 
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    NewSequenceValue = DBAccess.GDBAccessObj.GetNextSequenceValue(ASequence.ToString(), Transaction);
+                    NewSequenceValue = DBAccess.GetDBAccessObj(ADataBase).GetNextSequenceValue(ASequence.ToString(),
+                        Transaction);
+
                     SubmissionOK = true;
                 });
 

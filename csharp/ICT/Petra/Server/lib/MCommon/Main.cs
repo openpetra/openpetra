@@ -59,11 +59,16 @@ namespace Ict.Petra.Server.MCommon
         /// <param name="APartnerShortName">Returns the ShortName.</param>
         /// <param name="APartnerClass">Returns the PartnerClass (FAMILY, ORGANISATION, etc).</param>
         /// <param name="APartnerStatus">Returns the PartnerStatus (eg. ACTIVE, DIED).</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>True if partner was found, otherwise false.</returns>
         public static Boolean RetrievePartnerShortName(Int64 APartnerKey,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
-            out TStdPartnerStatusCode APartnerStatus)
+            out TStdPartnerStatusCode APartnerStatus,
+            TDataBase ADataBase = null)
         {
             bool Result = false;
 
@@ -75,7 +80,7 @@ namespace Ict.Petra.Server.MCommon
             {
                 TDBTransaction ReadTransaction = null;
 
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref ReadTransaction,
                     delegate
@@ -183,7 +188,12 @@ namespace Ict.Petra.Server.MCommon
         /// must not be a Merged Partner.</param>
         /// <returns>An instance of PPartnerRow if the Partner exists (taking AMustNotBeMergedPartner into consideration),
         /// otherwise null.</returns>
-        public static PPartnerRow CheckPartnerExists2(Int64 APartnerKey, bool AMustNotBeMergedPartner)
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        public static PPartnerRow CheckPartnerExists2(Int64 APartnerKey, bool AMustNotBeMergedPartner,
+            TDataBase ADataBase = null)
         {
             PPartnerRow ReturnValue = null;
             TDBTransaction ReadTransaction;
@@ -192,7 +202,7 @@ namespace Ict.Petra.Server.MCommon
 
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
@@ -204,7 +214,7 @@ namespace Ict.Petra.Server.MCommon
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
                         TLogging.LogAtLevel(7, "CheckPartnerExists: committed own transaction.");
                     }
                 }
@@ -345,14 +355,17 @@ namespace Ict.Petra.Server.MCommon
         }
 
         /// <summary>
-        /// Executes the query. Call this method in a separate Thread to execute the
-        /// query asynchronously!
+        /// Executes the query. Always call this method in a separate Thread to execute the query asynchronously!
         /// </summary>
-        /// <remarks>An instance of TAsyncFindParameters with set up Properties must
-        /// exist before this procedure can get called!
+        /// <param name="ASessionID">the id of the current session</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
+        /// called!
         /// </remarks>
-        /// <returns>void</returns>
-        public void ExecuteQuery(string ASessionID)
+        public void ExecuteQuery(string ASessionID, TDataBase ADataBase = null)
         {
             bool ownDatabaseConnection = false;
 
@@ -378,7 +391,7 @@ namespace Ict.Petra.Server.MCommon
                 TProgressTracker.InitProgressTracker(FProgressID, "Executing Query...", 100.0m);
 
                 // Create SQL statement and execute it to return all records
-                ExecuteFullQuery();
+                ExecuteFullQuery(ADataBase);
             }
             catch (Exception exp)
             {
@@ -404,10 +417,8 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
-        private void ExecuteFullQuery()
+        private void ExecuteFullQuery(TDataBase ADataBase)
         {
-//            TDBTransaction ReadTransaction;
-//            Boolean NewTransaction = false;
             if (FFindParameters.FParametersGivenSeparately)
             {
                 string SQLOrderBy = "";
@@ -442,12 +453,12 @@ namespace Ict.Petra.Server.MCommon
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
 
                 // Fill temporary table with query results (all records)
-                FTotalRecords = DBAccess.GDBAccessObj.SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
+                FTotalRecords = DBAccess.GetDBAccessObj(ADataBase).SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
                     ref FTmpDataTable, out FDataAdapterCanceller,
                     delegate(ref IDictionaryEnumerator AEnumerator)
                     {
@@ -491,7 +502,7 @@ namespace Ict.Petra.Server.MCommon
             {
                 if (NewTransaction)
                 {
-                    DBAccess.GDBAccessObj.RollbackTransaction();
+                    DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
                 }
             }
 
@@ -1026,9 +1037,10 @@ namespace Ict.Petra.Server.MCommon
         private TDataAdapterCanceller FDataAdapterCanceller;
         private Boolean FRunningQuery = false;
         private Exception FRunQueryException = null;
+        private Boolean FPrivateDBConnection = false;
 
         /// <summary>Use this object for creating DB Transactions, etc</summary>
-        public TDataBase FPrivateDatabaseObj = EstablishDBConnection();
+        public TDataBase FPrivateDatabaseObj;
 
         /// <summary>Check this before assuming that the query returned a good result!</summary>
         public Boolean IsCancelled
@@ -1048,6 +1060,21 @@ namespace Ict.Petra.Server.MCommon
             {
                 return FRunQueryException;
             }
+        }
+
+        /// <summary>
+        /// Constructor. It establishes a DB Connection for a FastReports Report.
+        /// </summary>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used by this instance of
+        /// <see cref="TReportingDbAdapter" /> (with the 'globally available' open DB Connection that exists for the
+        /// users' AppDomain).</param>
+        public TReportingDbAdapter(bool ASeparateDBConnection)
+        {
+            FPrivateDBConnection = ASeparateDBConnection;
+
+            FPrivateDatabaseObj = EstablishDBConnection(ASeparateDBConnection, "FastReports Report DB Connection");
         }
 
         /// <summary>
@@ -1081,38 +1108,48 @@ namespace Ict.Petra.Server.MCommon
             FRunningQuery = false;
         }
 
-        private static TDataBase EstablishDBConnection()
+        /// <summary>
+        /// Establishes a DB Connection for a FastReports Report.
+        /// </summary>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for the Report through this. If this is false,
+        /// the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets returned by this Method (with the
+        /// 'globally available' open DB Connection that exists for the users' AppDomain).</param>
+        /// <param name="AConnectionName"></param>
+        /// <returns>Instance of <see cref="TDataBase" /> that has an open DB Connection.</returns>
+        public static TDataBase EstablishDBConnection(bool ASeparateDBConnection, String AConnectionName)
         {
-/*
- * This scheme that uses a private database connection
- * is not currently approved for use.
- *
- *          TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
- *
- *          FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
- *                  TSrvSetting.PostgreSQLServer,
- *                  TSrvSetting.PostgreSQLServerPort,
- *                  TSrvSetting.PostgreSQLDatabaseName,
- *                  TSrvSetting.DBUsername,
- *                  TSrvSetting.DBPassword,
- *                  "");
- *
- *          return FDBAccessObj;
- */
-            return DBAccess.GDBAccessObj;
+            if (ASeparateDBConnection)
+            {
+                TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
+
+                FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                    TSrvSetting.PostgreSQLServer,
+                    TSrvSetting.PostgreSQLServerPort,
+                    TSrvSetting.PostgreSQLDatabaseName,
+                    TSrvSetting.DBUsername,
+                    TSrvSetting.DBPassword,
+                    "",
+                    AConnectionName);
+                return FDBAccessObj;
+            }
+            else
+            {
+                return DBAccess.GDBAccessObj;
+            }
         }
 
         /// <summary>
-        /// Call this to ensure that linked resources are disposed.
+        /// Call this to ensure that the DB Connection that got established for the Report gets closed. This only really
+        /// happens if <see cref="EstablishDBConnection" /> got called with Argument 'ASeparateDBConnection' set to
+        /// true, otherwise this Method does nothing.
         /// </summary>
         public void CloseConnection()
         {
-/*
- * Since in this version I am not using a private database connection
- * I'm also not going to close it when I've finished:
- *
- *          FPrivateDatabaseObj.CloseDBConnection();
- */
+            if (FPrivateDBConnection)
+            {
+                FPrivateDatabaseObj.CloseDBConnection();
+            }
         }
 
         /// <summary>

@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
@@ -29,12 +31,15 @@ using System.Collections;
 using System.Threading;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
@@ -48,6 +53,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private TFrmPetraEditUtils FPetraUtilsObject = null;
         private Int32 FLedgerNumber = 0;
         private GLBatchTDS FMainDS = null;
+        private GLSetupTDS FCacheDS = null;
+        private ACostCentreTable FCostCentreTable = null;
+        private AAccountTable FAccountTable = null;
         private IUC_GLBatches FMyUserControl = null;
         private TFrmGLBatch FMyForm = null;
 
@@ -92,6 +100,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return RetVal;
             }
 
+            //Load all Batch data
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ACurrentBatchRow.BatchNumber));
+
+            if (FCacheDS == null)
+            {
+                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
+            }
+
+            if (FAccountTable == null)
+            {
+                SetAccountCostCentreTableVariables();
+            }
+
+            //Check for inactive values
+            int NumInactiveValues = 0;
+
+            if (!AllowInactiveFieldValues(ACurrentBatchRow.BatchNumber, out NumInactiveValues))
+            {
+                return RetVal;
+            }
+
+            bool PostWithInactiveValues = (NumInactiveValues > 0);
+
+
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
 
@@ -115,10 +147,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return false;
             }
 
-            if (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post batch {0}?"),
-                        CurrentBatchNumber),
-                    Catalog.GetString("Question"),
-                    MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes)
+            if (PostWithInactiveValues
+                || (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post GL batch {0}?"),
+                            CurrentBatchNumber),
+                        Catalog.GetString("Question"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
             {
                 try
                 {
@@ -184,6 +217,255 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return RetVal;
+        }
+
+        private void SetAccountCostCentreTableVariables()
+        {
+            //Populate CostCentreList variable
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreListTable, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)CostCentreListTable;
+
+            //Populate AccountList variable
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountListTable, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)AccountListTable;
+        }
+
+        private bool AllowInactiveFieldValues(int ABatchNumber, out int ANumInactiveValues)
+        {
+            bool RetVal = false;
+
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            string VerificationMessage = string.Empty;
+
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+            DataView AttribDV = new DataView(FMainDS.ATransAnalAttrib);
+
+            int NumInactiveAccounts = 0;
+            int NumInactiveCostCentres = 0;
+            int NumInactiveAccountTypes = 0;
+            int NumInactiveAccountValues = 0;
+
+            try
+            {
+                //Check for inactive account or cost centre codes
+                TransDV.RowFilter = String.Format("{0}={1}",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    ABatchNumber);
+                TransDV.Sort = String.Format("{0} ASC, {1} ASC",
+                    ATransactionTable.GetJournalNumberDBName(),
+                    ATransactionTable.GetTransactionNumberDBName());
+
+                foreach (DataRowView drv in TransDV)
+                {
+                    ATransactionRow transRow = (ATransactionRow)drv.Row;
+
+                    if (!AccountIsActive(transRow.AccountCode))
+                    {
+                        VerificationMessage += String.Format(" Account '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            transRow.AccountCode,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccounts++;
+                    }
+
+                    if (!CostCentreIsActive(transRow.CostCentreCode))
+                    {
+                        VerificationMessage += String.Format(" Cost Centre '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            transRow.CostCentreCode,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveCostCentres++;
+                    }
+                }
+
+                //Check anlysis attributes
+                AttribDV.RowFilter = String.Format("{0}={1}",
+                    ATransAnalAttribTable.GetBatchNumberDBName(),
+                    ABatchNumber);
+                AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                foreach (DataRowView drv2 in AttribDV)
+                {
+                    ATransAnalAttribRow analAttribRow = (ATransAnalAttribRow)drv2.Row;
+
+                    if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
+                    {
+                        VerificationMessage += String.Format(" Analysis Code '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            analAttribRow.AnalysisTypeCode,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccountTypes++;
+                    }
+
+                    if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                    {
+                        VerificationMessage += String.Format(" Analysis Value '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            analAttribRow.AnalysisAttributeValue,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccountValues++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            ANumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
+
+            if (ANumInactiveValues > 0)
+            {
+                VerificationResult.Add(new TVerificationResult(string.Format(Catalog.GetString("Inactive Values:{0}"), Environment.NewLine),
+                        VerificationMessage,
+                        TResultSeverity.Resv_Noncritical));
+
+                StringBuilder errorMessages = new StringBuilder();
+
+                errorMessages.AppendFormat(Catalog.GetString("{0} inactive value(s) found in GL Batch {1}. Do you still want to post?{2}"),
+                    ANumInactiveValues,
+                    ABatchNumber,
+                    Environment.NewLine);
+
+                foreach (TVerificationResult message in VerificationResult)
+                {
+                    errorMessages.AppendFormat("{0}{1}",
+                        Environment.NewLine,
+                        message.ResultText);
+                }
+
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
+                RetVal = (extendedMessageBox.ShowDialog(errorMessages.ToString(),
+                              Catalog.GetString("Post Batch"), string.Empty,
+                              TFrmExtendedMessageBox.TButtons.embbYesNo,
+                              TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes);
+            }
+            else
+            {
+                RetVal = true;
+            }
+
+            return RetVal;
+        }
+
+        private void ShowMessages(TVerificationResultCollection AMessages)
+        {
+            if (AMessages.Count == 0)
+            {
+                return;
+            }
+        }
+
+        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
+
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                AAccountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
+
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        private bool AccountIsActive(string AAccountCode)
+        {
+            bool retVal = true;
+
+            AAccountRow currentAccountRow = null;
+
+            if (FAccountTable != null)
+            {
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+            }
+
+            if (currentAccountRow != null)
+            {
+                retVal = currentAccountRow.AccountActiveFlag;
+            }
+
+            return retVal;
+        }
+
+        private bool CostCentreIsActive(string ACostCentreCode)
+        {
+            bool retVal = true;
+
+            ACostCentreRow currentCostCentreRow = null;
+
+            if (FCostCentreTable != null)
+            {
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+            }
+
+            if (currentCostCentreRow != null)
+            {
+                retVal = currentCostCentreRow.CostCentreActiveFlag;
+            }
+
+            return retVal;
         }
 
         /// <summary>

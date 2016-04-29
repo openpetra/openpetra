@@ -214,11 +214,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             this.cmbLedgerNumber.TextChanged += new System.EventHandler(this.CmbLedgerChanged);
 
             // enable autofind in lists for first character (so the user can press character to find list entry)
-            this.clbMotivationGroup.AutoFindColumn = ((Int16)(1));
-            this.clbMotivationGroup.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
-
-            this.clbMotivationDetail.AutoFindColumn = ((Int16)(1));
-            this.clbMotivationDetail.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
+            // from Sep 2015 this is handled automatically by the code generator
         }
 
         private void SelectAllMotivationDetail(System.Object sender, EventArgs e)

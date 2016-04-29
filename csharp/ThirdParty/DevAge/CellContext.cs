@@ -142,7 +142,10 @@ namespace SourceGrid
 				return false;
 
 			if (Cell.Editor != null)
-				return (Cell.Editor.IsEditing && Cell.Editor.EditCellContext == this);
+                // AlanP: Sep 2015.  Fixed this code that always returned false when it should have been true
+                //  by adding .Position to both sides of the equality test (see GridVirtual.cs at about line 1295)
+                //  I needed this fix for the IsEditing() call from our grid wrapper to work
+				return (Cell.Editor.IsEditing && Cell.Editor.EditCellContext.Position == this.Position);
 			else
 				return false;
 		}

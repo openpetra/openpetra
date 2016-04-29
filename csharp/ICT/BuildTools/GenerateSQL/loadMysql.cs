@@ -44,7 +44,8 @@ namespace GenerateSQL
             DBAccess.GDBAccessObj = new TDataBase(TDBType.MySQL);
             try
             {
-                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.MySQL, "localhost", "", ADatabaseName, AUsername, APassword, "");
+                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.MySQL, "localhost", "", ADatabaseName, AUsername, APassword, "",
+                    "GenerateSQL.TLoadMysql.LoadData DB Connection");
                 sr = new StreamReader(ALoadSQLFileName);
             }
             catch (Exception e)

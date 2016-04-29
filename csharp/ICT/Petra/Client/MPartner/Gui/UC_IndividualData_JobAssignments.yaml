@@ -47,6 +47,8 @@ RootNode:
                 AssignmentTypeCode: {Label=Assignment Type}
             ActionFocusRow: FocusedRowChanged
             SortOrder: UnitKey ASC
+            AutoFindMode: FirstCharacter
+            AutoFindColumn: 1
             
         pnlDetails:
             Dock: Fill

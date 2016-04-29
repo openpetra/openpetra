@@ -22,27 +22,32 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
-using System.Collections.Specialized;
+
 using GNU.Gettext;
-using Ict.Petra.Shared;
+
 using Ict.Common;
-using Ict.Common.DB;
 using Ict.Common.Data;
-using Ict.Common.Verification;
+using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Common.Verification;
+
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Data;
+
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
+using Ict.Petra.Server.MFinance.Common;
+using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -105,34 +110,26 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// Return the country code for the ledger with this key
-        /// </summary>
-        public static string GetCountryCodeFromLedger(TDBTransaction ATransaction, Int32 LedgerNumber)
-        {
-            ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey((int)(DomainManager.GSiteKey / 1000000), ATransaction);
-
-            if (ledgerTable.Rows.Count == 1)
-            {
-                return ledgerTable[0].CountryCode;
-            }
-
-            // no Ledger row for this key, so return invalid country code
-            return "99";
-        }
-
-        /// <summary>
         /// Return the country code for this installation of OpenPetra.
         /// using the SiteKey to determine the country
         /// </summary>
         public static string GetCountryCodeFromSiteLedger(TDBTransaction ATransaction)
         {
+            string CountryCode = string.Empty;
+
             if (DomainManager.GSiteKey > 0)
             {
-                Int32 LedgerNumber = (Int32)(DomainManager.GSiteKey / 1000000);
-                return GetCountryCodeFromLedger(ATransaction, LedgerNumber);
+                Int32 ledgerNumber = (Int32)(DomainManager.GSiteKey / 1000000);
+                CountryCode = TLedgerInfo.GetLedgerCountryCode(ledgerNumber);
             }
 
-            return "99"; // Domain Manager doesn't know my site key?
+            if (CountryCode.Length == 0)
+            {
+                // Domain Manager doesn't know my site key?
+                CountryCode = "99";
+            }
+
+            return CountryCode;
         }
 
         /// <summary>

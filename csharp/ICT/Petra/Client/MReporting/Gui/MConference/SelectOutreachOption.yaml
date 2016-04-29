@@ -49,6 +49,7 @@ RootNode:
             Action: actDeselectAll
         grdOutreachOption:
             Dock: Fill
+            AutoFindColumn: 2
             Height: 300
             Width: 500
         pnlBottom:

@@ -38,6 +38,7 @@ RootNode:
             Dock: Fill
             Columns: []
             ActionFocusRow: FocusedRowChanged
+            AutoFindMode: NoAutoFind
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control

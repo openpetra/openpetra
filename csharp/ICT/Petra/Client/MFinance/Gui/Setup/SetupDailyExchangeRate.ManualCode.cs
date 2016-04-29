@@ -22,25 +22,28 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Xml;
-using System.Windows.Forms;
-using System.Globalization;
+using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
+using System.Windows.Forms;
+using System.Xml;
+
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MCommon;
+using Ict.Petra.Client.MFinance.Logic;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.CrossLedger.Data;
-using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Client.MCommon;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared.MFinance.Validation;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using System.Collections.Generic;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -260,6 +263,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     FEarliestAccountingPeriodStartDate = ledgerRow.CurrentPeriodStartDate;
                 }
+            }
+
+            if ((FPetraUtilsObject == null) || (FPetraUtilsObject.GetCallerForm() == null))
+            {
+                // This code runs only during testing
+                FEarliestAccountingPeriodStartDate = DateTime.Now.AddMonths(-1);
+                FLatestAccountingPeriodEndDate = DateTime.Now.AddMonths(1);
+
+                Console.WriteLine("Latest forwarding period is: {0}", FLatestAccountingPeriodEndDate.ToLongDateString());
             }
         }
 

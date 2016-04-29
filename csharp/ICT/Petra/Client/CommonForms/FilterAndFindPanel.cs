@@ -119,7 +119,7 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ALblRecordCounter">The Label control displaying the record count associated with the caller form or control.</param>
         public TFilterAndFindPanel(IFilterAndFind ACallerFormOrControl,
             TFrmPetraUtils APetraUtilsObject,
-            TSgrdDataGridPaged AGrid,
+            TSgrdDataGrid AGrid,
             IButtonPanel AButtonPanel,
             Panel APanelFilterFind,
             CheckBox AChkToggleFilter,

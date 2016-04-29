@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private String FHistoryFilter = "";  // filter the status of history
         private string FAgedOlderThan;
 
-        private TSgrdDataGridPaged grdDetails;
+        private TSgrdDataGrid grdDetails;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
 

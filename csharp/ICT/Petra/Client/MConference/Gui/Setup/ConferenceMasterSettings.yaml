@@ -72,6 +72,7 @@ RootNode:
             OnChange: AttendanceChargeChanged
             ParameterValue: Campaign
         grdVenues:
+            AutoFindColumn: 1
             Dock: Fill
             Stretch: fully
         btnAdd:

@@ -115,11 +115,22 @@ namespace Ict.Petra.Client.App.Core
             }
             else if (ADerivedException as EDBTransactionIsolationLevelWrongException != null)
             {
-                AReason = Catalog.GetString("Failed to initiate shared data access.");
+                AReason = Catalog.GetString("Shared data access could not be initiated.");
             }
             else if (ADerivedException as EDBCoordinatedDBAccessWaitingTimeExceededException != null)
             {
                 AReason = Catalog.GetString("Waiting time for data access exceeded.");
+            }
+            else if
+            (
+                (ADerivedException as EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException != null)
+                || (ADerivedException as
+                    EDBAttemptingToCreateCommandOnDifferentDBConnectionThanTheDBConnectionOfOfTheDBTransactionThatGotPassedException != null)
+                || (ADerivedException as EDBAttemptingToCreateCommandEnlistedInDifferentDBTransactionThanTheCurrentDBTransactionException != null)
+                || (ADerivedException as EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException != null)
+            )
+            {
+                AReason = Catalog.GetString("Parallel data access could not be performed.");
             }
 
             MessageBox.Show(String.Format(AppCoreResourcestrings.StrPetraServerTooBusyWaitAFewSecondsNoAutomaticRetryCancel,

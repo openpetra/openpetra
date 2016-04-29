@@ -706,7 +706,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns></returns>
         public Boolean RegisterBatchPostingData(TRptCalculator ACalc, Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(ALedgerNumber, ABatchNumber);
+            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContentUsingPrivateDb(ALedgerNumber, ABatchNumber);
 
             if (BatchTDS.ABatch.Rows.Count < 1)
             {
@@ -731,7 +731,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
             ACalc.AddParameter("param_currency_name",
-                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(ALedgerNumber, ABatchNumber));
+                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(ALedgerNumber, ABatchNumber, true));
             return true;
         }
 

@@ -111,7 +111,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AGrid"></param>
         /// <returns></returns>
-        public static ATransAnalAttribRow GetSelectedAttributeRow(TSgrdDataGridPaged AGrid)
+        public static ATransAnalAttribRow GetSelectedAttributeRow(TSgrdDataGrid AGrid)
         {
             #region Validate Arguments
 
@@ -139,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AGrid"></param>
         /// <returns></returns>
-        public static ARecurringTransAnalAttribRow GetSelectedRecurringAttributeRow(TSgrdDataGridPaged AGrid)
+        public static ARecurringTransAnalAttribRow GetSelectedRecurringAttributeRow(TSgrdDataGrid AGrid)
         {
             #region Validate Arguments
 
@@ -986,6 +986,11 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                 AAccountCode, true);
+
+            if (RequiredAnalAttrCodes.Count == 0)
+            {
+                return true;
+            }
 
             string AnalysisCodeFilterValues = TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
 

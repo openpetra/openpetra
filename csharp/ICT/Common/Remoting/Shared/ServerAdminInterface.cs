@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,6 +45,14 @@ namespace Ict.Common.Remoting.Shared
         /// get number of currently connected clients
         /// </summary>
         int ClientsConnected
+        {
+            get;
+        }
+
+        /// <summary>
+        /// get the site key
+        /// </summary>
+        Int64 SiteKey
         {
             get;
         }

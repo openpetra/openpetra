@@ -389,9 +389,9 @@ namespace Ict.Petra.Server.MConference.WebConnectors
             PmShortTermApplicationTable ShortTermerTable = new PmShortTermApplicationTable();
 
             AFieldsTable.Columns.Add("Selection", System.Type.GetType("System.Boolean"));
-            AFieldsTable.Columns.Add("Unit Key", System.Type.GetType("System.Int64"));
-            AFieldsTable.Columns.Add("Unit Name", System.Type.GetType("System.String"));
-            AFieldsTable.Columns.Add("Outreach Code", System.Type.GetType("System.String"));
+            AFieldsTable.Columns.Add("Unit_Key", System.Type.GetType("System.Int64"));
+            AFieldsTable.Columns.Add("Unit_Name", System.Type.GetType("System.String"));
+            AFieldsTable.Columns.Add("Outreach_Code", System.Type.GetType("System.String"));
             AFieldsTable.Columns.Add("Used_in_Conference", System.Type.GetType("System.Boolean"));
 
             AConferencePrefix = TConferenceOptions.GetConferencePrefix(AConferenceKey);

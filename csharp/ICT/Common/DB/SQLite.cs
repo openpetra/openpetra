@@ -437,5 +437,21 @@ namespace Ict.Common.DB
             return ASqlCommand.Substring(0, StartIndex) + "strftime('%j', " +
                    ASqlCommand.Substring(StartIndex + 10);
         }
+
+        /// <summary>
+        /// Clearing of all Connection Pools is not yet implemented for SQLite...!
+        /// </summary>
+        public void ClearAllConnectionPools()
+        {
+            // We don't do anything here: Clearing of all Connection Pools is not yet implemented for SQLite...!
+        }
+
+        /// <summary>
+        /// Clearing of a Connection Pool is not yet implemented for SQLite...!
+        /// </summary>
+        public void ClearConnectionPool(DbConnection ADBConnection)
+        {
+            // We don't do anything here: Clearing of a Connection Pool is not yet implemented for SQLite...!
+        }
     }
 }

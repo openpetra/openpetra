@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common.DB.Exceptions;
 using NUnit.Framework;
 using System.Threading;
 using System.Collections;
@@ -41,35 +42,99 @@ using MySql.Data.MySqlClient;
 
 namespace Ict.Common.DB.Testing
 {
-    ///  This is a testing program for Ict.Common.DB.dll
+    /// This is a testing program for Ict.Common.DB.dll
+    /// Please note that this is a Partial Class which continues with Tests in the file test.Multithreading.cs!
     [TestFixture]
-    public class TTestCommonDB
+    public partial class TTestCommonDB
     {
+        private const string DefaultDBConnName = "Default NUnit TTestCommonDB DB Connection";
+        private TDBType FDBType;
+
+        private void EstablishDBConnection(string AConnectionName = null)
+        {
+            DBAccess.GDBAccessObj = EstablishDBConnectionAndReturnIt(AConnectionName);
+        }
+
         /// <summary>
         /// modified version taken from Ict.Petra.Server.App.Main::TServerManager
         /// </summary>
-        private void EstablishDBConnection()
+        private TDataBase EstablishDBConnectionAndReturnIt(string AConnectionName = null, bool ALogNumberOfConnections = false)
         {
-            TLogging.Log("  Connecting to Database...");
+            TDataBase ReturnValue;
 
-            DBAccess.GDBAccessObj = new TDataBase();
+            if (ALogNumberOfConnections)
+            {
+                if (FDBType == TDBType.PostgreSQL)
+                {
+                    TLogging.Log("  EstablishDBConnectionAndReturnIt: Number of open DB Connections on PostgreSQL BEFORE Connecting to Database: " +
+                        TDataBase.GetNumberOfDBConnections(FDBType) + TDataBase.GetDBConnectionName(AConnectionName));
+                }
+            }
+
+            TLogging.Log("  EstablishDBConnectionAndReturnIt: Establishing connection to Database..." + TDataBase.GetDBConnectionName(AConnectionName));
+
+            ReturnValue = new TDataBase();
+
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 10);
+
             try
             {
-                DBAccess.GDBAccessObj.EstablishDBConnection(CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType")),
+                ReturnValue.EstablishDBConnection(FDBType,
                     TAppSettingsManager.GetValue("Server.DBHostOrFile"),
                     TAppSettingsManager.GetValue("Server.DBPort"),
                     TAppSettingsManager.GetValue("Server.DBName"),
                     TAppSettingsManager.GetValue("Server.DBUserName"),
                     TAppSettingsManager.GetValue("Server.DBPassword"),
-                    "");
+                    "", AConnectionName);
             }
-            catch (Exception)
+            catch (Exception Exc)
             {
+                TLogging.Log("  EstablishDBConnectionAndReturnIt: Encountered Exception while trying to establish connection to Database " +
+                    TDataBase.GetDBConnectionName(AConnectionName) + Environment.NewLine +
+                    Exc.ToString());
+
                 throw;
             }
 
-            TLogging.Log("  Connected to Database.");
+            TLogging.Log("  EstablishDBConnectionAndReturnIt: Connected to Database." + ReturnValue.GetDBConnectionIdentifier());
+
+            if (ALogNumberOfConnections)
+            {
+                if (FDBType == TDBType.PostgreSQL)
+                {
+                    TLogging.Log("  EstablishDBConnectionAndReturnIt: Number of open DB Connections on PostgreSQL AFTER  Connecting to Database: " +
+                        TDataBase.GetNumberOfDBConnections(FDBType) + ReturnValue.GetDBConnectionIdentifier());
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        private void CloseTestDBConnection(TDataBase ADBAccessObject, string AConnectionName = null, bool ALogNumberOfConnections = false)
+        {
+            if (ALogNumberOfConnections)
+            {
+                if (FDBType == TDBType.PostgreSQL)
+                {
+                    TLogging.Log("  CloseTestDBConnection: Number of open DB Connections on PostgreSQL BEFORE closing Database connection: " +
+                        TDataBase.GetNumberOfDBConnections(FDBType) + ADBAccessObject.GetDBConnectionIdentifier());
+                }
+            }
+
+            TLogging.Log("  CloseTestDBConnection: Closing connection to Database..." + ADBAccessObject.GetDBConnectionIdentifier());
+
+            ADBAccessObject.CloseDBConnection();
+
+            TLogging.Log("  CloseTestDBConnection: Database connection closed." + TDataBase.GetDBConnectionName(AConnectionName));
+
+            if (ALogNumberOfConnections)
+            {
+                if (FDBType == TDBType.PostgreSQL)
+                {
+                    TLogging.Log("  CloseTestDBConnection: Number of open DB Connections on PostgreSQL AFTER closing Database connection: " +
+                        TDataBase.GetNumberOfDBConnections(FDBType) + TDataBase.GetDBConnectionName(AConnectionName));
+                }
+            }
         }
 
         /// init
@@ -78,16 +143,40 @@ namespace Ict.Common.DB.Testing
         {
             new TLogging("../../log/test.log");
             new TAppSettingsManager("../../etc/TestServer.config");
+            FDBType = CommonTypes.ParseDBType(TAppSettingsManager.GetValue("Server.RDBMSType"));
 
-            EstablishDBConnection();
+            EstablishDBConnection(DefaultDBConnName);
+
+            // Reset some Fields for every Test
+            FTestDBInstance1 = null;
+            FTestDBInstance2 = null;
+            FTestCallDBCommand1 = null;
+            FTestCallDBCommand2 = null;
+            FTestingThread1 = null;
+            FTestingThread2 = null;
+            FTestingThread1NewTransaction = false;
+            FTestingThread2NewTransaction = false;
+            FTestingThread1Exception = null;
+            FTestingThread2Exception = null;
+            FEstablishedDBConnectionSignalDBConn1 = null;
+            FEstablishedDBConnectionSignalDBConn2 = null;
+            FCloseDBConnectionSignalDBConn1 = null;
+            FCloseDBConnectionSignalDBConn2 = null;
+            FDBConnectionClosedSignalDBConn1 = null;
+            FDBConnectionClosedSignalDBConn2 = null;
+            FGotNewOrExistingDBTransactionSignal1 = null;
+            FGotNewOrExistingDBTransactionSignal2 = null;
+            FRollbackDBTransactionSignal1 = null;
+            FRollbackDBTransactionSignal2 = null;
+            FDBTransactionRolledbackSignal1 = null;
+            FDBTransactionRolledbackSignal2 = null;
         }
 
         /// tear down
         [TearDown]
         public void TearDown()
         {
-            DBAccess.GDBAccessObj.CloseDBConnection();
-            TLogging.Log("  Database disconnected.");
+            CloseTestDBConnection(DBAccess.GDBAccessObj, DefaultDBConnName);
         }
 
         /// <summary>
@@ -275,6 +364,236 @@ namespace Ict.Common.DB.Testing
                     Assert.AreEqual(1, DBAccess.GDBAccessObj.ExecuteNonQuery(updateSql, t, new OdbcParameter[] { param }), "update by timestamp");
                 });
         }
+
+        #region GNoETransaction_throws_proper_Exception
+
+        /// <summary>
+        /// This Test asserts that GetNewOrExistingTransaction will throw the proper Exceptions once it gets called and
+        /// a DB Transaction is running and the exact <see cref="IsolationLevel"/> that is asked for by the caller cannot
+        /// be met.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongExactIsolationLevel()
+        {
+            bool NewTrans;
+
+            //
+            // Arrange
+            //
+
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+
+            // Guard Assert: Check that the new DB Transaction has been taken out
+            Assert.That(NewTrans, Is.True);
+
+            //
+            // Act and Assert
+            //
+            Assert.Throws <EDBTransactionIsolationLevelWrongException>(() =>
+                                                                       DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                                                                           IsolationLevel.Serializable,
+                                                                           TEnforceIsolationLevel.eilExact,
+                                                                           out NewTrans), "GetNewOrExistingTransaction didn't throw expected " +
+                                                                       "Exception (EDBTransactionIsolationLevelWrongException) on asking for an exact IsolationLevel which "
+                                                                       +
+                                                                       "cannot be met");
+
+            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
+            // it's better to do this explicitly here so it is clear it isn't forgotten about.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
+        /// This Test asserts that GetNewOrExistingTransaction will throw the proper Exceptions once it gets called and
+        /// a DB Transaction is running and the minimum <see cref="IsolationLevel"/> that is asked for by the caller
+        /// cannot be met.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_GNoETransaction_throws_proper_ExceptionOnWrongMinimumIsolationLevel()
+        {
+            bool NewTrans;
+
+            //
+            // Arrange
+            //
+
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+
+            // Guard Assert: Check that the new DB Transaction has been taken out
+            Assert.That(NewTrans, Is.True);
+
+            //
+            // Act and Assert
+            //
+            Assert.Throws <EDBTransactionIsolationLevelTooLowException>(() =>
+                                                                        DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                                                                            IsolationLevel.Serializable,
+                                                                            TEnforceIsolationLevel.eilMinimum,
+                                                                            out NewTrans), "GetNewOrExistingTransaction didn't throw expected " +
+                                                                        "Exception (EDBTransactionIsolationLevelTooLowException) on asking for a minimum IsolationLevel which "
+                                                                        +
+                                                                        "cannot be met");
+
+            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
+            // it's better to do this explicitly here so it is clear it isn't forgotten about.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        #endregion
+
+        #region CheckRunningDBTransactionIsolationLevelIsCompatible
+
+        /// <summary>
+        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact
+        /// IsolationLevel that isn't what the running DB Transaction has got returns false.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectFalse()
+        {
+            bool NewTrans;
+            bool Result;
+
+            //
+            // Arrange
+            //
+
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+
+            // Guard Assert: Check that the new DB Transaction has been taken out
+            Assert.That(NewTrans, Is.True);
+
+            // Act
+            Result = DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadUncommitted,
+                TEnforceIsolationLevel.eilExact);
+
+            // Primary Assert
+            Assert.IsFalse(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
+                "IsolationLevel that isn't exactly what the running DB Transaction has got did not return false");
+
+            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
+            // it's better to do this explicitly here so it is clear it isn't forgotten about.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
+        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible when there is no current DB
+        /// Transaction returns true.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectTrue1()
+        {
+            bool Result;
+
+            // Guard Assert
+            Assert.IsNull(DBAccess.GDBAccessObj.Transaction);
+
+
+            // Act
+            Result = DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilExact);
+
+            // Primary Assert
+            Assert.IsTrue(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
+                "IsolationLevel that is exactly what the running DB Transaction has got did not return true");
+        }
+
+        /// <summary>
+        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact
+        /// IsolationLevel that is exactly what the running DB Transaction has got returns true.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithExactIsolationLevel_ExpectTrue2()
+        {
+            bool NewTrans;
+            bool Result;
+
+            //
+            // Arrange
+            //
+
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+
+            // Guard Assert: Check that the new DB Transaction has been taken out
+            Assert.That(NewTrans, Is.True);
+
+            // Act
+            Result = DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilExact);
+
+            // Primary Assert
+            Assert.IsTrue(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for an exact " +
+                "IsolationLevel that is exactly what the running DB Transaction has got did not return true");
+
+            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
+            // it's better to do this explicitly here so it is clear it isn't forgotten about.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
+        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for a minimum
+        /// IsolationLevel that isn't met by the running DB Transactions' IsolationLevel returns false.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithMinimumIsolationLevel_ExpectFalse()
+        {
+            bool NewTrans;
+            bool Result;
+
+            //
+            // Arrange
+            //
+
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+
+            // Guard Assert: Check that the new DB Transaction has been taken out
+            Assert.That(NewTrans, Is.True);
+
+            // Act
+            Result = DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum);
+
+            // Primary Assert
+            Assert.IsFalse(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for a minimum " +
+                "IsolationLevel that isn't met by the running DB Transactions' IsolationLevel did not return false");
+
+            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
+            // it's better to do this explicitly here so it is clear it isn't forgotten about.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        /// <summary>
+        /// This Test asserts that calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for a minimum
+        /// IsolationLevel that is met by the running DB Transactions' IsolationLevel returns true.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_CheckRunningDBTransactionIsolationLevelIsCompatible_WithMinimumIsolationLevel_ExpectTrue()
+        {
+            bool NewTrans;
+            bool Result;
+
+            //
+            // Arrange
+            //
+
+            DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out NewTrans);
+
+            // Guard Assert: Check that the new DB Transaction has been taken out
+            Assert.That(NewTrans, Is.True);
+
+            // Act
+            Result = DBAccess.GDBAccessObj.CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum);
+
+            // Primary Assert
+            Assert.IsTrue(Result, "Calling CheckRunningDBTransactionIsolationLevelIsCompatible and asking for a minimum " +
+                "IsolationLevel that is met by the running DB Transactions' IsolationLevel did not return true");
+
+            // Roll back the one DB Transaction that has been requested (this would happen automatically on DB closing, but
+            // it's better to do this explicitly here so it is clear it isn't forgotten about.
+            DBAccess.GDBAccessObj.RollbackTransaction();
+        }
+
+        #endregion
 
         /// <summary>
         /// Tests that TDataBase.ExecuteNonQuery is working fine when a previous call to TDataBase.ExecuteNonQuery

@@ -199,6 +199,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // DataBind the DataGrid
             grdContactAttributes.DataSource = new DevAge.ComponentModel.BoundDataView(FGridTableDV);
+            grdContactAttributes.SelectRowInGrid(1);
 
             // Hook Grid event that allows popping up a question whether to check the CheckBox
             FGridValueChangedEvent = new CustomValueChangedEvent(this);

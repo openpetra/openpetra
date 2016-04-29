@@ -460,8 +460,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnParentActivationManual()
         {
+            // On a screen with no batches we cannot use FLedgerNumber because that is set by LoadJournals
+            int batchFormLedger = ((TFrmRecurringGLBatch)ParentForm).LedgerNumber;
+
             ALedgerRow LedgerRow =
-                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, batchFormLedger))[0];
 
             FLedgerBaseCurrency = LedgerRow.BaseCurrency;
 

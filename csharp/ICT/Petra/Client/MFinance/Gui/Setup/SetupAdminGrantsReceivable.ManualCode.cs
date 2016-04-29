@@ -123,7 +123,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             // Load the data from the Fees Payable cached table
             Type DataTableType;
-            DataTable CacheDT = TDataCache.GetCacheableDataTableFromPetraServer("FeesPayableList", String.Empty, FFilter, out DataTableType);
+            DataTable CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("FeesPayableList", "Ledger", FFilter, out DataTableType);
             FExtraDS.AFeesPayable.Merge(CacheDT);
             FExtraDS.AFeesPayable.DefaultView.Sort = String.Format("{0}, {1} ASC",
                 AFeesPayableTable.GetLedgerNumberDBName(), AFeesPayableTable.GetFeeCodeDBName());

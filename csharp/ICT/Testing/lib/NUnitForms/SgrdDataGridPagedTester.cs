@@ -35,33 +35,33 @@ namespace Ict.Testing.NUnitForms
     /// </summary>
     public class TSgrdDataGridPagedTester : ControlTester
     {
-        private TSgrdDataGridPaged _TheObject;
+        private TSgrdDataGrid _TheObject;
 
         /// constructor
         public TSgrdDataGridPagedTester(string name, Form form)
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, form);
+            Finder <TSgrdDataGrid>finder = new Finder <TSgrdDataGrid>(name, form);
             _TheObject = finder.Find();
         }
 
         /// constructor
         public TSgrdDataGridPagedTester(string name, string formName)
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name, new FormFinder().Find(formName));
+            Finder <TSgrdDataGrid>finder = new Finder <TSgrdDataGrid>(name, new FormFinder().Find(formName));
             _TheObject = finder.Find();
         }
 
         /// constructor
         public TSgrdDataGridPagedTester(string name)
         {
-            Finder <TSgrdDataGridPaged>finder = new Finder <TSgrdDataGridPaged>(name);
+            Finder <TSgrdDataGrid>finder = new Finder <TSgrdDataGrid>(name);
             _TheObject = finder.Find();
         }
 
         /// <summary>
         /// access the properties of the source grid
         /// </summary>
-        public new TSgrdDataGridPaged Properties
+        public new TSgrdDataGrid Properties
         {
             get
             {

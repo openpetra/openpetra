@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -35,6 +36,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MFinance.Validation;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -88,12 +90,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Main method to post a specified batch
         /// </summary>
         /// <param name="ACurrentBatchRow">The batch row to post</param>
+        /// <param name="APostingAlreadyConfirmed">True means ask user if they want to post</param>
         /// <returns>True if the batch was successfully posted</returns>
-        public bool PostBatch(AGiftBatchRow ACurrentBatchRow)
+        public bool PostBatch(AGiftBatchRow ACurrentBatchRow, bool APostingAlreadyConfirmed = false)
         {
+            //This assumes that all gift data etc is loaded into the batch before arriving here
+
+            bool RetVal = false;
+
             if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                return false;
+                return RetVal;
             }
 
             FSelectedBatchNumber = ACurrentBatchRow.BatchNumber;
@@ -101,8 +108,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                FMyForm.EnsureGiftDataPresent(FLedgerNumber, FSelectedBatchNumber);
-
                 GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
 
                 foreach (GiftBatchTDSAGiftDetailRow Row in FMainDS.AGiftDetail.Rows)
@@ -111,15 +116,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         BatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
                     }
-                }
-
-                // there are no gifts in this batch!
-                if (BatchGiftDetails.Rows.Count == 0)
-                {
-                    FMyForm.Cursor = Cursors.Default;
-                    MessageBox.Show(Catalog.GetString("Batch is empty!"), Catalog.GetString("Posting failed"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    return false;
                 }
 
                 bool CancelledDueToExWorkerOrAnonDonor;
@@ -136,7 +132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             Catalog.GetString("Please first correct and save the batch, and then post it!"));
                     }
 
-                    return false;
+                    return RetVal;
                 }
             }
             catch (Exception ex)
@@ -149,45 +145,86 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMyForm.InternationalCurrencyExchangeRate(ACurrentBatchRow, out IsTransactionInIntlCurrency, true) == 0)
             {
-                return false;
+                return RetVal;
             }
 
             //Check for inactive KeyMinistries
             DataTable GiftsWithInactiveKeyMinistries;
+            bool ModifiedDetails = false;
 
             if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, FSelectedBatchNumber,
-                    out GiftsWithInactiveKeyMinistries))
+                    out GiftsWithInactiveKeyMinistries, false))
             {
-                string listOfOffendingRows = "Gift   Detail   Recipient        KeyMinistry" + Environment.NewLine;
-                listOfOffendingRows += "------------------------------------------------";
+                int numInactiveValues = GiftsWithInactiveKeyMinistries.Rows.Count;
+
+                string messageNonModifiedBatch =
+                    String.Format(Catalog.GetString("{0} inactive key ministries found in Gift Batch {1}. Please fix before posting!{2}{2}"),
+                        numInactiveValues,
+                        FSelectedBatchNumber,
+                        Environment.NewLine);
+                string messageModifiedBatch =
+                    String.Format(Catalog.GetString(
+                            "{0} inactive key ministries found in Reversal/Adjustment Gift Batch {1}. Do you still want to post?{2}{2}"),
+                        numInactiveValues,
+                        FSelectedBatchNumber,
+                        Environment.NewLine);
+
+                string listOfOffendingRows = string.Empty;
+
+                listOfOffendingRows += "Gift      Detail   Recipient          KeyMinistry" + Environment.NewLine;
+                listOfOffendingRows += "-------------------------------------------------------------------------------";
 
                 foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
                 {
-                    listOfOffendingRows += String.Format("{0}{1:0000}    {2:00}    {3:00000000000}    {4}",
+                    listOfOffendingRows += String.Format("{0}{1:0000}    {2:00}        {3:00000000000}    {4}",
                         Environment.NewLine,
                         dr[0],
                         dr[1],
                         dr[2],
                         dr[3]);
+
+                    bool isModified = Convert.ToBoolean(dr[4]);
+
+                    if (isModified)
+                    {
+                        ModifiedDetails = true;
+                    }
                 }
 
-                string msg = String.Format(Catalog.GetString("Cannot post Batch {0} as inactive Key Ministries found in gifts:{1}{1}{2}"),
-                    FSelectedBatchNumber,
-                    Environment.NewLine,
-                    listOfOffendingRows);
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
 
-                MessageBox.Show(msg, Catalog.GetString("Inactive Key Ministries Found"));
+                if (ModifiedDetails)
+                {
+                    if (extendedMessageBox.ShowDialog((messageModifiedBatch + listOfOffendingRows),
+                            Catalog.GetString("Post Batch"), string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbYesNo,
+                            TFrmExtendedMessageBox.TIcon.embiWarning) == TFrmExtendedMessageBox.TResult.embrYes)
+                    {
+                        APostingAlreadyConfirmed = true;
+                    }
+                    else
+                    {
+                        return RetVal;
+                    }
+                }
+                else
+                {
+                    extendedMessageBox.ShowDialog((messageNonModifiedBatch + listOfOffendingRows),
+                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
 
-                return false;
+                    return RetVal;
+                }
             }
 
             // ask if the user really wants to post the batch
-            if (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"),
-                        FSelectedBatchNumber),
-                    Catalog.GetString("Confirm posting of Gift Batch"),
-                    MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            if (!APostingAlreadyConfirmed
+                && (MessageBox.Show(String.Format(Catalog.GetString("Do you really want to post gift batch {0}?"), FSelectedBatchNumber),
+                        Catalog.GetString("Confirm posting of Gift Batch"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes))
             {
-                return false;
+                return RetVal;
             }
 
             Verifications = new TVerificationResultCollection();
@@ -205,22 +242,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
-                    string ErrorMessages = String.Empty;
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+                    StringBuilder errorMessages = new StringBuilder();
+                    int counter = 0;
+
+                    errorMessages.AppendLine(Catalog.GetString("________________________Gift Posting Errors________________________"));
+                    errorMessages.AppendLine();
 
                     foreach (TVerificationResult verif in Verifications)
                     {
-                        ErrorMessages += "[" + verif.ResultContext + "] " +
-                                         verif.ResultTextCaption + ": " +
-                                         verif.ResultText + Environment.NewLine;
+                        counter++;
+                        errorMessages.AppendLine(counter.ToString("000") + " - " + verif.ResultText);
+                        errorMessages.AppendLine();
                     }
 
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"));
+                    extendedMessageBox.ShowDialog(errorMessages.ToString(),
+                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
                 }
                 else
                 {
                     MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
 
-                    return true;
+                    RetVal = true;
                 }
             }
             catch (Exception ex)
@@ -240,7 +285,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPostingInProgress = false;
             }
 
-            return false;
+            return RetVal;
         }
 
         #endregion
