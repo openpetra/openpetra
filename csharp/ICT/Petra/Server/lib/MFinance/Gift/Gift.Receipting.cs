@@ -209,10 +209,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         TFormLettersTools.CloseDocument(ref ResultDocument);
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in CreateAnnualGiftReceipts: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -572,10 +572,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in GetUnreceiptedGifts: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -822,11 +822,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return HtmlDoc;
@@ -928,10 +925,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         TFormLettersTools.CloseDocument(ref HtmlDoc);
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in LoadTransactions: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -968,10 +965,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         SubmissionOK = true;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in MarkReceiptsPrinted: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
         }
@@ -1014,10 +1011,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         SubmissionOK = true;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in MarkReceiptsPrinted: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
         }
@@ -1041,10 +1038,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     {
                         LedgerTbl = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in GetLastReceiptNumber: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -1088,10 +1085,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             SubmissionOK = true;
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in SetLastReceiptNumber: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
         }

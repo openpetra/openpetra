@@ -1423,8 +1423,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                     }
                                     else
                                     {
-                                        throw new System.Exception(
-                                            "GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
+                                        throw new EOPException("GetReturnedParameters called, but Form '" + AddressChangedDialog.Name +
                                             "' is not finished yet with initialisation");
                                     }
 

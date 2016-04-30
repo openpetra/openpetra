@@ -484,6 +484,23 @@ namespace Ict.Common
         /// <summary>
         /// Logs a number of messages in one go. Output goes to both Screen and Logfile.
         /// </summary>
+        /// <param name="AEx">The exception to log</param>
+        /// <returns>void</returns>
+        public static void LogException(Exception AEx)
+        {
+            ArrayList AList = new ArrayList();
+
+            AList.Add(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                    Utilities.GetMethodSignature(),
+                    Environment.NewLine,
+                    AEx.ToString()));
+
+            Log(AList, true);
+        }
+
+        /// <summary>
+        /// Logs a number of messages in one go. Output goes to both Screen and Logfile.
+        /// </summary>
         /// <param name="aList">An ArrayList containing a number of Log messages</param>
         /// <param name="isException">If set to TRUE, an information which states that all
         /// following Log messages are Exceptions is written before

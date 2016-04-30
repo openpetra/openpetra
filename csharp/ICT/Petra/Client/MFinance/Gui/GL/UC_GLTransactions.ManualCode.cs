@@ -412,11 +412,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
             finally
             {
@@ -1914,11 +1911,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 

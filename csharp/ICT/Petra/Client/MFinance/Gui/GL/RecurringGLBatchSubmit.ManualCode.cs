@@ -378,6 +378,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // refresh gl batch screen
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcRefreshGLBatches, this.ToString());
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+
+                SaveChanges();
+                Close();
             }
             else
             {
@@ -393,9 +396,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 MessageBox.Show(errorMessages, Catalog.GetString("Recurring GL Batch Submit failed"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
-            }
 
-            Close();
+                SaveChanges();
+            }
         }
 
         private void BtnCloseClick(object sender, EventArgs e)

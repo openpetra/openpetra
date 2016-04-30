@@ -33,6 +33,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
@@ -443,7 +444,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                         if (ExchangeRate == 0)
                         {
-                            throw new Exception();
+                            throw new EOPException(Catalog.GetString("Exchange Rate is 0!"));
                         }
                     }
                     catch (Exception)

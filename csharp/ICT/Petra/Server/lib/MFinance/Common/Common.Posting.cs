@@ -152,11 +152,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return RetVal;
@@ -252,11 +249,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return RetVal;
@@ -311,11 +305,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return GLBatchDS;
@@ -394,11 +385,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return GLBatchDS;
@@ -488,11 +476,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return PostingDS;
@@ -571,11 +556,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 
@@ -1002,11 +984,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
             finally
             {
@@ -1210,11 +1189,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
             finally
             {
@@ -2194,11 +2170,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             AVerifications = Verifications;
@@ -2312,11 +2285,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             AVerifications = VerificationResult;
@@ -2407,11 +2377,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return RetVal;
@@ -2714,11 +2681,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             if (AVerifications.HasCriticalErrors)
@@ -2794,11 +2758,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -2888,11 +2849,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -2978,11 +2936,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -3078,11 +3033,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return CreationSuccessful;
@@ -3192,11 +3144,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return CreationSuccessful;

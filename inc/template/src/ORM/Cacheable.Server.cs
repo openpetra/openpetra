@@ -478,7 +478,7 @@ namespace {#NAMESPACE}
 
                                     default:
 
-                                        throw new Exception(
+                                        throw new EOPException(
                                         "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
                                 }
                             });
@@ -807,7 +807,7 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 
                             default:
 
-                                throw new Exception(
+                                throw new EOPException(
                                 "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
                         }
                     });

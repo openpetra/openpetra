@@ -190,11 +190,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     FLedgerBaseCurrencyDict = new Dictionary <int, string>(LedgerBaseCurrencyDictBackup);
                 }
 
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 
@@ -352,12 +349,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return LedgerCountryCode;
@@ -919,11 +912,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 
@@ -953,11 +943,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
     }

@@ -143,11 +143,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -210,11 +207,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -246,11 +240,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             if (ALedgerNumber <= 0)
@@ -478,11 +469,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 
@@ -594,11 +582,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return ReturnTable;
@@ -655,11 +640,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -758,11 +740,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -825,11 +804,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -894,11 +870,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -995,11 +968,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -1176,11 +1146,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -1237,11 +1204,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -1313,11 +1277,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -1428,11 +1389,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return CostCentreCode;
@@ -1609,11 +1567,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return true;
@@ -1676,11 +1631,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -1743,11 +1695,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -1878,10 +1827,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                TLogging.Log("Error in LoadDonorRecipientHistory: " + e.Message);
-                throw e;
+                TLogging.LogException(ex);
+                throw;
             }
 
             MainDS.AcceptChanges();
@@ -2160,11 +2109,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.Log(String.Format("Method:{0} - Unexpected error trying to save gift batch!{1}{1}{2}",
-                                    Utilities.GetMethodSignature(),
-                                    Environment.NewLine,
-                                    ex.Message));
-                            throw ex;
+                            TLogging.LogException(ex);
+                            throw;
                         }
                     }
                 }
@@ -2416,11 +2362,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.Log(String.Format("Method:{0} - Unexpected error trying to save recurring gift batch!{1}{1}{2}",
-                                    Utilities.GetMethodSignature(),
-                                    Environment.NewLine,
-                                    ex.Message));
-                            throw ex;
+                            TLogging.LogException(ex);
+                            throw;
                         }
                     }
                 }
@@ -2840,11 +2783,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 
@@ -2896,10 +2836,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             tempDataSet.Clear();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in CheckCostCentreLinkForRecipient: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -2950,10 +2890,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -3021,11 +2961,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             ACostCentreCode = CostCentreCode;
@@ -3085,11 +3022,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
             finally
             {
@@ -3412,11 +3346,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
             finally
             {
@@ -3786,11 +3717,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
@@ -3904,11 +3832,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
         }
 
@@ -4502,13 +4427,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                // show the full stacktrace of the caught exception
-                TLogging.Log(ex.ToString());
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
@@ -4875,11 +4795,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             if (DataLoaded)
@@ -5065,11 +4982,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             AIsActive = IsActive;
@@ -5127,11 +5041,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return KeyMinistryIsActive;
@@ -5177,11 +5088,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             AFieldNumber = FieldNumber;
@@ -5344,11 +5252,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return AInactiveKMsTable.Rows.Count > 0;

@@ -738,10 +738,11 @@ namespace Ict.Petra.Server.MFinance.GL
                             SubmissionOK = true;
                         }
                     }
-                    catch (Exception Exc)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Exception during running the AccountPeriod To New Year operation:" + Environment.NewLine + Exc.ToString());
-                        throw Exc;
+                        TLogging.Log("Exception during running the AccountPeriod To New Year operation:");
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -1219,10 +1220,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in RunOperation: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 
@@ -1317,10 +1318,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             }
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in RunOperation: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex);
+                        throw;
                     }
                 });
 

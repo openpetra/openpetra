@@ -229,7 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int nCurrentRowIndex = GetSelectedRowIndex();
             int nCurrentBatchNumber = -1;
 
-            if (myParentForm.InitialBatchNumber > 0)
+            if ((myParentForm != null) && (myParentForm.InitialBatchNumber > 0))
             {
                 nCurrentBatchNumber = myParentForm.InitialBatchNumber;
                 myParentForm.InitialBatchNumber = -1;

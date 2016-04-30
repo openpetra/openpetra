@@ -126,11 +126,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -209,11 +206,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return MainDS;
@@ -701,11 +695,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                                    Utilities.GetMethodSignature(),
-                                    Environment.NewLine,
-                                    ex.Message));
-                            throw ex;
+                            TLogging.LogException(ex);
+                            throw;
                         }
                         finally
                         {
@@ -772,11 +763,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 }
                 catch (Exception ex)
                 {
-                    TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                            Utilities.GetMethodSignature(),
-                            Environment.NewLine,
-                            ex.Message));
-                    throw ex;
+                    TLogging.LogException(ex);
+                    throw;
                 }
             }
 
@@ -900,11 +888,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return RetVal;
@@ -971,11 +956,8 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex);
+                throw;
             }
 
             return RetVal;
