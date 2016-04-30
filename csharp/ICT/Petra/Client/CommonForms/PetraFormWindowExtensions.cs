@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.CommonForms
                     }
                 }
                 else if ((FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch") || (FWinForm.Name == "TFrmGLBatch")
-                    || (FWinForm.Name == "TPartnerFindScreen"))
+                         || (FWinForm.Name == "TPartnerFindScreen"))
                 {
                     // We always save the settings for these forms - they can be launched from the main window or from Partner/Find or several other ways
                     GetWindowPositionProperties();

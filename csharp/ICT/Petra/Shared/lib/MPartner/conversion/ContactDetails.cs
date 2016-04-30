@@ -587,7 +587,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             string UrlString = (string)APartnerLocationDR["p_url_c"];
             string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
             string CountryCode = (!APartnerLocationDR.IsNull("p_value_country_c")) ?
-                ((string)APartnerLocationDR["p_value_country_c"]) : String.Empty;
+                                 ((string)APartnerLocationDR["p_value_country_c"]) : String.Empty;
             string PartnerClass;
 
             FInsertionOrderPerPartner++;

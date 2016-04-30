@@ -1338,10 +1338,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ucoPartnerFindCriteria.CriteriaFieldsLeft =
                     new ArrayList("PartnerName;PersonalName;PreviousName;Address1;Address2;Address3;City;PostCode;Country".Split(
-                        new Char[] { (';') }));
+                            new Char[] { (';') }));
                 ucoPartnerFindCriteria.CriteriaFieldsRight =
                     new ArrayList("PartnerClass;PartnerKey;LocationKey;PartnerStatus;MailingAddressOnly;Email;PhoneNumber".Split(
-                        new Char[] { (';') }));
+                            new Char[] { (';') }));
 
                 // Note: In Petra 2.3 the Criteria Fields were not hard-coded but read from a UserDefault like this:
 //                ucoPartnerFindCriteria.CriteriaFieldsLeft =
@@ -1349,19 +1349,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 //                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
 //                ucoPartnerFindCriteria.CriteriaFieldsRight =
 //                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
-//                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));                
+//                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
             }
             else if (FBankDetailsTab)
-            {               
+            {
                 ucoPartnerFindCriteria.CriteriaFieldsLeft =
                     new ArrayList("PartnerName;AccountName;AccountNumber;Iban;BranchCode;Bic;BankKey;BankName;BankCode".Split(
-                        new Char[] { (';') }));
+                            new Char[] { (';') }));
                 ucoPartnerFindCriteria.CriteriaFieldsRight =
                     new ArrayList("PartnerClass;OMSSKey;PartnerStatus".Split(new Char[] { (';') }));
             }
 
             ucoPartnerFindCriteria.DisplayCriteriaFieldControls();
-            
+
             if (!FBankDetailsTab)
             {
                 ucoPartnerFindCriteria.InitialiseCriteriaFields();
