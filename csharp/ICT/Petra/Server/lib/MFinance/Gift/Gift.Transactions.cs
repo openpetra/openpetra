@@ -41,6 +41,7 @@ using Ict.Common.Remoting.Server;
 
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Common;
@@ -52,6 +53,7 @@ using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -3800,7 +3802,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Public for tests
         /// </summary>
         [NoRemoting]
-        public static void AddToFeeTotals(GiftBatchTDS AMainDS,
+        public static void AddToFeeTotals(Int32 ALedgerNumber,
+            GiftBatchTDS AMainDS,
             AGiftDetailRow AGiftDetailRow,
             string AFeeCode,
             decimal AFeeAmount,
@@ -3808,7 +3811,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             #region Validate Arguments
 
-            if (AMainDS == null)
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (AMainDS == null)
             {
                 throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
                             "Function:{0} - The Gift Batch dataset is null!"),
@@ -3828,8 +3837,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
+            string LedgerBaseCurrency = TLedgerInfo.GetLedgerBaseCurrency(ALedgerNumber);
+            int NumDecPlaces = 2;
+
             try
             {
+                TDBTransaction Transaction = null;
+                //Round AFeeAmount
+
+                /* 0003 Finds for ledger base currency format, for report currency format */
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ACurrencyTable currencyInfo = ACurrencyAccess.LoadByPrimaryKey(LedgerBaseCurrency, Transaction);
+
+                        #region Validate Data
+
+                        if ((currencyInfo == null) || (currencyInfo.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Currency data for Ledger base currency {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    LedgerBaseCurrency));
+                        }
+
+                        #endregion Validate Data
+
+                        ACurrencyRow currencyRow = (ACurrencyRow)currencyInfo.Rows[0];
+
+                        string numericFormat = currencyRow.DisplayFormat;
+                        NumDecPlaces = THelperNumeric.CalcNumericFormatDecimalPlaces(numericFormat);
+                    });
+
+                //Round the fee amount
+                AFeeAmount = Math.Round(AFeeAmount, NumDecPlaces);
+
+
                 /* Get the record for the totals of the processed fees. */
                 AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
                 AProcessedFeeRow ProcessedFeeRow =
@@ -4079,18 +4123,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             TResultSeverity.Resv_Critical));
                 }
 
-                if ((GiftBatchRow.CurrencyCode != LedgerBaseCurrency)
-                    && !IsDailyExchangeRateIsStillValid(GiftBatchRow.CurrencyCode, LedgerBaseCurrency, GiftBatchRow.GlEffectiveDate,
-                        GiftBatchRow.ExchangeRateToBase, ATransaction))
-                {
-                    AVerifications.Add(
-                        new TVerificationResult(
-                            "Posting Gift Batch",
-                            String.Format(Catalog.GetString("Exchange rate to base currency is invalid in Batch {0}!"),
-                                ABatchNumber),
-                            TResultSeverity.Resv_Critical));
-                }
-
                 if (AVerifications.Count > 0)
                 {
                     continue;
@@ -4135,7 +4167,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         if (FeeAmount != 0)
                         {
-                            AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
+                            AddToFeeTotals(ALedgerNumber, MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                         }
                     }
                 }
@@ -4147,32 +4179,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return MainDS;
-        }
-
-        private static bool IsDailyExchangeRateIsStillValid(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime ADateEffective,
-            decimal ARateOfExchange,
-            TDBTransaction ATransaction)
-        {
-            ADailyExchangeRateTable DailyExchangeRateTable = null;
-
-            ADailyExchangeRateTable TempTable = new ADailyExchangeRateTable();
-            ADailyExchangeRateRow TempRow = TempTable.NewRowTyped(false);
-
-            TempRow.FromCurrencyCode = ACurrencyFrom;
-            TempRow.ToCurrencyCode = ACurrencyTo;
-            TempRow.DateEffectiveFrom = ADateEffective;
-            TempRow.RateOfExchange = ARateOfExchange;
-
-            DailyExchangeRateTable = ADailyExchangeRateAccess.LoadUsingTemplate(TempRow, ATransaction);
-
-            if ((DailyExchangeRateTable != null) && (DailyExchangeRateTable.Rows.Count > 0))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -4485,7 +4491,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
 
-                throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                if (ex.InnerException != null)
+                {
+                    throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                }
+                else
+                {
+                    throw;
+                }
             }
             catch (Exception ex)
             {

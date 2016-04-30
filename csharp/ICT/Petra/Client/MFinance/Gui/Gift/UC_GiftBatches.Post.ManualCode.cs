@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                   Utilities.GetMethodSignature(),
                                   Environment.NewLine,
                                   ex.Message,
-                                  ex.InnerException.Message));
+                                  (ex.InnerException != null) ? ex.InnerException.Message : Catalog.GetString("[No additional error information]")));
 
                 TLogging.Log(msg);
                 throw ex;

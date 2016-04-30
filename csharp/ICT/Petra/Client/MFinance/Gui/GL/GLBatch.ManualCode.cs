@@ -497,7 +497,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message,
-                        ex.InnerException.Message));
+                        (ex.InnerException != null) ? ex.InnerException.Message : "[No inner exception]"));
 
                 MessageBox.Show(errorMsg, methodName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
