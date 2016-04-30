@@ -25,8 +25,8 @@ RootNode:
         pnlDetailGrid:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
-            Controls: [pnlButtons, grdDetails]
-        pnlButtons:
+            Controls: [pnlEditButtons, grdDetails]
+        pnlEditButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete]
             ControlsOrientation: horizontal
@@ -52,4 +52,4 @@ RootNode:
         cmbMotivDetail: {Label=Motiv. Detail, List=UserDefinedList}
 
         txtPartnerKey: {Label=ESR Key, Width=120}
-        txtNewPartnerKey: {Label=Substitute Key, Type=PartnerKey, Validation=true, Width=200}
+        txtNewPartnerKey: {Label=Substitute Key, Type=PartnerKey, Validation=true, Width=300}

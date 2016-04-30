@@ -24,39 +24,25 @@ RootNode:
             Label: General Settings
             Controls: [grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
 
-#        tpgColumnSettings:
-#            Label: Column Settings
-#            Controls: [uco_Columns]
-#        uco_Columns:
-#            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
-#            Dock: Fill
-
         grpReportType:
             Label: Report Type
-            Dock: Top
             Controls: [cmbReportType]
-        grpDateSelection:
-            Label: Select Date
-            Dock: Top
-            Controls: [dtpFromDate, dtpToDate]
-        rgrDonorSelection:
-            Label: Select Donors
-            Dock: Top
-            Controls: [rbtAllDonors, rbtExtract, rbtPartner]
-            ParameterName: param_donor
-        grpCurrencySelection:
-            Label: Gift Limit
-            Dock: Top
-            Controls: [txtMinAmount, txtMaxAmount, cmbCurrency]
         cmbReportType:
             ParameterName: param_report_type
             OptionalValues: [=Complete, Summary, Tax Claim]
+        grpDateSelection:
+            Label: Select Date
+            Controls: [dtpFromDate, dtpToDate]
         dtpFromDate:
             Label: From
             ParameterName: param_from_date
         dtpToDate:
             Label: To
             ParameterName: param_to_date
+        rgrDonorSelection:
+            Label: Select Donors
+            Controls: [rbtAllDonors, rbtExtract, rbtPartner]
+            ParameterName: param_donor
         rbtAllDonors:
             Label: All Donors
             ParameterValue: All Donors
@@ -68,14 +54,17 @@ RootNode:
             Label: One Donor
             ParameterValue: One Donor
             Controls: [txtDonor]
-        txtExtract:
-            NoLabel: true
-            Type: Extract
-            Width: 400
         txtDonor:
             NoLabel: true
             Type: PartnerKey
             Width: 400
+        txtExtract:
+            NoLabel: true
+            Type: Extract
+            Width: 400
+        grpCurrencySelection:
+            Label: Gift Limit
+            Controls: [txtMinAmount, txtMaxAmount, cmbCurrency]
         txtMinAmount:
             Label: Minimum Amount
             Format: Integer
@@ -87,23 +76,6 @@ RootNode:
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
-
-#        tpgAdditionalSettings:
-#            Label: Additional Settings
-#            Controls: [rgrFormatCurrency]
-#        rgrFormatCurrency:
-#            ParameterName: param_currency_format
-#            Label: Format currency numbers:
-#            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-#        rbtCurrencyComplete:
-#            Label: Complete
-#            ParameterValue: CurrencyComplete
-#        rbtCurrencyWithoutDecimals:
-#            Label: Without decimals
-#            ParameterValue: CurrencyWithoutDecimals
-#        rbtCurrencyThousands:
-#            Label: Only Thousands
-#            ParameterValue: CurrencyThousands
 
         tpgFields:
             Label: Fields
@@ -124,50 +96,3 @@ RootNode:
             NoLabel:true
             Width: 365
             Height: 300
-
-    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para0:
-            Name: Donor Name
-            Parameter: 3.5
-        Para1:
-            Name: Donor Key
-            Parameter: 2.0
-        Para2:
-            Name: Donor Class
-            Parameter: 2.0
-        Para3:
-            Name: Recipient Name
-            Parameter: 3.5
-        Para4:
-            Name: Recipient Key
-            Parameter: 2.0
-        Para5:
-            Name: Recipient Class
-            Parameter: 2.0
-        Para6:
-            Name: Gift Date
-            Parameter: 2.0
-        Para7:
-            Name: Gift Amount
-            Parameter: 2.0
-        Para8:
-            Name: Gift Type
-            Parameter: 2.0
-        Para9:
-            Name: Donor Address
-            Parameter: 8.0
-        Para23:
-            Name: Receipt
-            Parameter: 2.0
-        Para24:
-            Name: Field
-            Parameter: 2.5
-        Para25:
-            Name: Motivation Detail
-            Parameter: 3.5
-        Para26:
-            Name: Confidential
-            Parameter: 2.0
-        Para27:
-            Name: Method
-            Parameter: 2.0

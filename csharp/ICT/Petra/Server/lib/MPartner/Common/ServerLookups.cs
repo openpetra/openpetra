@@ -608,125 +608,56 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             const string DATASET_NAME = "PartnerInfo";
 
             Boolean ReturnValue = false;
-            TDataBase DBAccessObj = null;
             TDBTransaction ReadTransaction = null;
             PartnerInfoTDS PartnerInfoDS = new PartnerInfoTDS(DATASET_NAME);
 
-            try
-            {
-                try
+            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.PartnerInfo DB Connection",
+                out ReadTransaction,
+                delegate
                 {
-                    DBAccessObj = DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo DB Connection");
-                }
-                catch (Exception Exc)
-                {
-                    TLogging.Log("PartnerInfo: Exception occured while establishing connection to Database Server: " + Exc.ToString());
-
-                    throw;
-                }
-
-                DBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
-                    delegate
+                    switch (APartnerInfoScope)
                     {
-                        switch (APartnerInfoScope)
-                        {
-                            case TPartnerInfoScopeEnum.pisHeadOnly:
+                        case TPartnerInfoScopeEnum.pisHeadOnly:
 
-                                throw new NotImplementedException();
+                            throw new NotImplementedException();
 
-                            case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly:
+                        case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly:
 
-                                if (TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
-                                        ALocationKey, ref PartnerInfoDS, ReadTransaction))
-                                {
-                                    ReturnValue = true;
-                                }
-                                else
-                                {
-                                    ReturnValue = false;
-                                }
+                            ReturnValue = TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
+                            ALocationKey, ref PartnerInfoDS, ReadTransaction);
+                            break;
 
-                                break;
+                        case TPartnerInfoScopeEnum.pisPartnerLocationOnly:
 
-                            case TPartnerInfoScopeEnum.pisPartnerLocationOnly:
+                            ReturnValue = TServerLookups_PartnerInfo.PartnerLocationOnly(APartnerKey,
+                            ALocationKey, ref PartnerInfoDS, ReadTransaction);
+                            break;
 
-                                if (TServerLookups_PartnerInfo.PartnerLocationOnly(APartnerKey,
-                                        ALocationKey, ref PartnerInfoDS, ReadTransaction))
-                                {
-                                    ReturnValue = true;
-                                }
-                                else
-                                {
-                                    ReturnValue = false;
-                                }
+                        case TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly:
 
-                                break;
+                            ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly(APartnerKey,
+                            ALocationKey, ref PartnerInfoDS, ReadTransaction);
+                            break;
 
-                            case TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly:
+                        case TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly:
 
-                                if (TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly(APartnerKey,
-                                        ALocationKey, ref PartnerInfoDS, ReadTransaction))
-                                {
-                                    ReturnValue = true;
-                                }
-                                else
-                                {
-                                    ReturnValue = false;
-                                }
+                            ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationOnly(APartnerKey,
+                            ALocationKey, ref PartnerInfoDS, ReadTransaction);
+                            break;
 
-                                break;
+                        case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
 
-                            case TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly:
+                            ReturnValue = TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
+                            ref PartnerInfoDS, ReadTransaction);
+                            break;
 
-                                if (TServerLookups_PartnerInfo.LocationPartnerLocationOnly(APartnerKey,
-                                        ALocationKey, ref PartnerInfoDS, ReadTransaction))
-                                {
-                                    ReturnValue = true;
-                                }
-                                else
-                                {
-                                    ReturnValue = false;
-                                }
+                        case TPartnerInfoScopeEnum.pisFull:
 
-                                break;
-
-                            case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
-
-                                if (TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
-                                        ref PartnerInfoDS, ReadTransaction))
-                                {
-                                    ReturnValue = true;
-                                }
-                                else
-                                {
-                                    ReturnValue = false;
-                                }
-
-                                break;
-
-                            case TPartnerInfoScopeEnum.pisFull:
-
-                                if (TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,
-                                        ref PartnerInfoDS, ReadTransaction))
-                                {
-                                    ReturnValue = true;
-                                }
-                                else
-                                {
-                                    ReturnValue = false;
-                                }
-
-                                break;
-                        }
-                    });
-            }
-            finally
-            {
-                if (DBAccessObj != null)
-                {
-                    DBAccessObj.CloseDBConnection();
-                }
-            }
+                            ReturnValue = TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,
+                            ref PartnerInfoDS, ReadTransaction);
+                            break;
+                    }
+                });
 
             APartnerInfoDS = PartnerInfoDS;
 
@@ -750,8 +681,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction ReadTransaction = null;
             PPartnerTable PartnerTbl = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper(
+                "GetPartnerReceiptingInfo",
+                out ReadTransaction,
                 delegate
                 {
                     PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);

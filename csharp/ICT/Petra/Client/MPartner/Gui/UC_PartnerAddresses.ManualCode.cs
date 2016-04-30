@@ -833,14 +833,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
-                if (FMainDS.PPartnerLocation.Rows.Count != 0)
-                {
-                    ReturnValue = true;
-                }
-                else
-                {
-                    ReturnValue = false;
-                }
+                ReturnValue = (FMainDS.PPartnerLocation.Rows.Count != 0);
             }
             catch (System.NullReferenceException)
             {

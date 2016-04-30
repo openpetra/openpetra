@@ -74,11 +74,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 clbFields.AddTextColumn(Catalog.GetString("Field Key"), Table.Columns[ValueMember], 100);
                 clbFields.AddTextColumn(Catalog.GetString("Field Name"), Table.Columns[DisplayMember], 200);
                 clbFields.DataBindGrid(Table, ValueMember, CheckedMember, ValueMember, false, true, false);
+
+                rbtSelectedFields.CheckedChanged += rbtSelectedFields_CheckedChanged;
+
+                DateTime startDateCurrentPeriod;
+                DateTime endDateCurrentPeriod;
+
+                TRemote.MFinance.Common.ServerLookups.WebConnectors.GetCurrentPeriodDates(FLedgerNumber,
+                    out startDateCurrentPeriod,
+                    out endDateCurrentPeriod);
+                dtpFromDate.Date = startDateCurrentPeriod;
+                dtpToDate.Date = endDateCurrentPeriod;
             }
         }
 
         private void InitReceivingFieldList()
         {
+        }
+
+        void rbtSelectedFields_CheckedChanged(object sender, EventArgs e)
+        {
+            clbFields.Enabled = rbtSelectedFields.Checked;
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -100,14 +116,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             //
             // Verify date fields
-            if (dtpFromDate.ValidDate(true))
+            if (dtpFromDate.ValidDate(true) && dtpToDate.ValidDate(true))
             {
                 ACalc.AddParameter("param_StartDate", this.dtpFromDate.Date);
+                ACalc.AddParameter("param_EndDate", this.dtpToDate.Date);
+            }
+            else
+            {
+                FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                        Catalog.GetString("Donor Gifts To Field"),
+                        Catalog.GetString("Incorrect Date Format"),
+                        TResultSeverity.Resv_Critical));
             }
 
-            if (dtpToDate.ValidDate(true))
+            if (rbtSelectedFields.Checked)
             {
-                ACalc.AddParameter("param_EndDate", this.dtpToDate.Date);
+                if (clbFields.GetCheckedStringList() == "") // An empty selection would cause an SQL error.
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                            Catalog.GetString("Recipient Fields"),
+                            Catalog.GetString("Select at least one recipient field."),
+                            TResultSeverity.Resv_Critical));
+                }
             }
         }
 

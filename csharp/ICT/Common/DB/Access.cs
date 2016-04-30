@@ -1269,11 +1269,11 @@ namespace Ict.Common.DB
         /// <summary>
         /// Closes the DB connection.
         /// </summary>
-        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that 
-        /// calls this Method is the Thread that established the DB Connection. <em>WARNING: 
-        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will 
-        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and 
-        /// that Thread will be different from the Thread that established the 'globally available' DB Connection 
+        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that
+        /// calls this Method is the Thread that established the DB Connection. <em>WARNING:
+        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will
+        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
+        /// that Thread will be different from the Thread that established the 'globally available' DB Connection
         /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
@@ -1297,11 +1297,11 @@ namespace Ict.Common.DB
         /// <summary>
         /// Closes the DB connection.
         /// </summary>
-        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that 
-        /// calls this Method is the Thread that established the DB Connection. <em>WARNING: 
-        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will 
-        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and 
-        /// that Thread will be different from the Thread that established the 'globally available' DB Connection 
+        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that
+        /// calls this Method is the Thread that established the DB Connection. <em>WARNING:
+        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will
+        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
+        /// that Thread will be different from the Thread that established the 'globally available' DB Connection
         /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>

@@ -200,6 +200,7 @@ namespace Ict.Petra.Server.App.Core
         /// returned</param>
         /// <param name="ADefault">The value that should be returned if the System Default was
         /// not found</param>
+        /// <remarks>SystemDefault Names are not case sensitive.</remarks>
         /// <returns>The value of the System Default, or the value of the ADefault
         /// parameter if the specified System Default was not found
         /// </returns>
@@ -208,7 +209,7 @@ namespace Ict.Petra.Server.App.Core
             String ReturnValue;
             String Tmp;
 
-            Tmp = GetSystemDefault(ASystemDefaultName);
+            Tmp = GetSystemDefault(ASystemDefaultName.ToUpper());
 
             if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
             {
@@ -506,12 +507,15 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AKey">Name of the System Default.</param>
         /// <param name="AValue">Value of the System Default.</param>
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
+        /// <remarks>SystemDefault Names are not case sensitive.</remarks>
+
         public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
             Boolean NewTransaction = false;
             Boolean ShouldCommit = false;
             SSystemDefaultsTable SystemDefaultsDT;
 
+            AKey = AKey.ToUpper();
             try
             {
                 TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(

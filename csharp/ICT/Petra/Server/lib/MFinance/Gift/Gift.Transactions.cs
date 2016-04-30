@@ -2703,7 +2703,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool ARecurring,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            ref TDBTransaction ATransaction)
+            TDBTransaction ATransaction)
         {
             #region Validate Arguments
 
@@ -2765,7 +2765,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getDonorSQL = getDonorSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getDonorSQL, AGiftDS.DonorPartners.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getDonorSQL, AGiftDS.DonorPartners.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2793,7 +2793,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientSQL = getRecipientSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientSQL, AGiftDS.RecipientPartners.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientSQL, AGiftDS.RecipientPartners.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2806,7 +2806,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientFamilySQL = getRecipientFamilySQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientFamilySQL, AGiftDS.RecipientFamily.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientFamilySQL, AGiftDS.RecipientFamily.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2819,7 +2819,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientPersonSQL = getRecipientPersonSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientPersonSQL, AGiftDS.RecipientPerson.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientPersonSQL, AGiftDS.RecipientPerson.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2832,7 +2832,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientUnitSQL = getRecipientUnitSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientUnitSQL, AGiftDS.RecipientUnit.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientUnitSQL, AGiftDS.RecipientUnit.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
             }
@@ -3063,9 +3063,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
 
+            TDataBase DBConnection = DBAccess.SimpleEstablishDBConnection("ReadGiftTds");
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -3075,7 +3076,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (ChangesToCommit)
                 {
-                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                    GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
                 }
 
                 MainDS.AcceptChanges();
@@ -3087,6 +3088,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         Environment.NewLine,
                         ex.Message));
                 throw ex;
+            }
+            finally
+            {
+                DBConnection.CloseDBConnection();
             }
 
             return MainDS;
@@ -3176,7 +3181,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Data 1
 
             //Load related donor data
-            LoadGiftDonorRelatedData(MainDS, false, ALedgerNumber, ABatchNumber, ref ATransaction);
+            LoadGiftDonorRelatedData(MainDS, false, ALedgerNumber, ABatchNumber, ATransaction);
 
             DataView giftView = new DataView(MainDS.AGift);
             giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
@@ -3382,10 +3387,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+            TDataBase DBConnection = DBAccess.SimpleEstablishDBConnection("ReadRecurringGifts");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -3397,7 +3403,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (ChangesToCommit)
                 {
                     // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
-                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                    GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
                 }
 
                 MainDS.AcceptChanges();
@@ -3410,7 +3416,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         ex.Message));
                 throw ex;
             }
-
+            finally
+            {
+                DBConnection.CloseDBConnection();
+            }
             return MainDS;
         }
 
@@ -3487,7 +3496,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Data 1
 
-            LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ref ATransaction);
+            LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ATransaction);
 
             DataView giftView = new DataView(MainDS.ARecurringGift);
             giftView.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName();

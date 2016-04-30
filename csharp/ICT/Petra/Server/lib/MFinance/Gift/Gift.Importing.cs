@@ -781,7 +781,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             Boolean shouldCommit = true;
             DataTable Res = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref shouldCommit,
                 delegate

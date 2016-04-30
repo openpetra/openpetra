@@ -1065,10 +1065,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     errMsg = Catalog.GetString("Error trying to print gift receipts for batch");
                 }
 
-                errMsg += String.Format(" {0}:{1}{1}{2}",
+                errMsg += String.Format(" {0}:{1}{1}{2}{1}{1}{3}",
                     FPreviouslySelectedDetailRow.BatchNumber,
                     Environment.NewLine,
-                    ex.Message);
+                    ex.Message,
+                    Catalog.GetString("Refer to server log for more details."));
 
                 MessageBox.Show(errMsg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
