@@ -741,7 +741,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     catch (Exception ex)
                     {
                         TLogging.Log("Exception during running the AccountPeriod To New Year operation:");
-                        TLogging.LogException(ex);
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
                         throw;
                     }
                 });
@@ -1222,7 +1222,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                     catch (Exception ex)
                     {
-                        TLogging.LogException(ex);
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
                         throw;
                     }
                 });
@@ -1320,7 +1320,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     }
                     catch (Exception ex)
                     {
-                        TLogging.LogException(ex);
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
                         throw;
                     }
                 });

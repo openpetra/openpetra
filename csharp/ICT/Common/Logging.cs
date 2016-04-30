@@ -485,13 +485,14 @@ namespace Ict.Common
         /// Logs a number of messages in one go. Output goes to both Screen and Logfile.
         /// </summary>
         /// <param name="AEx">The exception to log</param>
+        /// <param name="AMethodSignature">The exception to log</param>
         /// <returns>void</returns>
-        public static void LogException(Exception AEx)
+        public static void LogException(Exception AEx, String AMethodSignature = "")
         {
             ArrayList AList = new ArrayList();
 
             AList.Add(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                    Utilities.GetMethodSignature(),
+                    AMethodSignature,
                     Environment.NewLine,
                     AEx.ToString()));
 

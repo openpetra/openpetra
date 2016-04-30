@@ -313,7 +313,7 @@ namespace Ict.Common.IO
                         }
                         else
                         {
-                            TLogging.LogException(ex);
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
                             throw;
                         }
                     }

@@ -299,7 +299,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }

@@ -646,7 +646,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -860,7 +860,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 

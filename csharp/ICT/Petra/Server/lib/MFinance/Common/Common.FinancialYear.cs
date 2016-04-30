@@ -169,7 +169,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 

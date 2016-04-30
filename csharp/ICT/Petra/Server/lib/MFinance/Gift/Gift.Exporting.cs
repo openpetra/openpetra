@@ -220,7 +220,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                         catch (Exception ex)
                         {
-                            TLogging.LogException(ex);
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
                             throw;
                         }
                     });

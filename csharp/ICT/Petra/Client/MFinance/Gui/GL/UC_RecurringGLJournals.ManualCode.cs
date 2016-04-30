@@ -754,7 +754,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.Merge(BackupDS);
 
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }

@@ -143,7 +143,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -207,7 +207,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -240,7 +240,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -469,7 +469,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -582,7 +582,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -640,7 +640,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -740,7 +740,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -804,7 +804,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -870,7 +870,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -968,7 +968,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1146,7 +1146,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1204,7 +1204,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1277,7 +1277,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1389,7 +1389,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1567,7 +1567,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1631,7 +1631,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1695,7 +1695,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1829,7 +1829,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -2109,7 +2109,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.LogException(ex);
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
                             throw;
                         }
                     }
@@ -2362,7 +2362,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.LogException(ex);
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
                             throw;
                         }
                     }
@@ -2783,7 +2783,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -2838,7 +2838,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                     catch (Exception ex)
                     {
-                        TLogging.LogException(ex);
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
                         throw;
                     }
                 });
@@ -2892,7 +2892,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     }
                     catch (Exception ex)
                     {
-                        TLogging.LogException(ex);
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
                         throw;
                     }
                 });
@@ -2961,7 +2961,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -3022,7 +3022,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
             finally
@@ -3346,7 +3346,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
             finally
@@ -3717,7 +3717,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -3832,7 +3832,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -4427,7 +4427,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -4795,7 +4795,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -4982,7 +4982,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5041,7 +5041,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5088,7 +5088,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5252,7 +5252,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
