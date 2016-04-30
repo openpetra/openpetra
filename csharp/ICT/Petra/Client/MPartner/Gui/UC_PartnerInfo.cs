@@ -640,7 +640,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
                             FCurrentServerCallParams.LocationKey,
                             FCurrentServerCallParams.PartnerInfoScope,
-                            out FPartnerInfoDS);
+                            out FPartnerInfoDS,
+                            true);
 
                         FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
                         FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
@@ -649,7 +650,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
                             FCurrentServerCallParams.PartnerInfoScope,
-                            out FPartnerInfoDS);
+                            out FPartnerInfoDS,
+                            true);
 
                         FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
                         FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
@@ -662,7 +664,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                         FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
                             FCurrentServerCallParams.LocationKey,
                             FCurrentServerCallParams.PartnerInfoScope,
-                            out PartlyPopulatedPartnerInfoDS);
+                            out PartlyPopulatedPartnerInfoDS,
+                            true);
                     }
                 }
                 catch (ESecurityPartnerAccessDeniedException Exp)

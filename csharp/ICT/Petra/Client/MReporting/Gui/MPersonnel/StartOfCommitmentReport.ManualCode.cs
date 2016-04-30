@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
             grdStatuses.Columns.Clear();
 
-            grdStatuses.AddCheckBoxColumn("", FCommitmentStatusTable.Columns["Selection"]);
+            grdStatuses.AddCheckBoxColumn("", FCommitmentStatusTable.Columns["Selection"], false);
             grdStatuses.AddTextColumn("Status", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetCodeDBName()]);
             grdStatuses.AddTextColumn("Description", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetDescDBName()]);
 
