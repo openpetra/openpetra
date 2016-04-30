@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -59,7 +59,7 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// <summary>
-        /// Delegate that allows <see cref="DomainManagerBase" /> to access the System Defaults Cache of OpenPetra.
+        /// Delegate that allows <see cref="DomainManager" /> to access the System Defaults Cache of OpenPetra.
         /// </summary>
         public static Func <Int64>GetSiteKeyFromSystemDefaultsCacheDelegate
         {

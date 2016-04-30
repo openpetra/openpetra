@@ -51,8 +51,8 @@ try
     TheServerManager.EstablishDBConnection();
 
     TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();
-    DomainManager.GSiteKey = TSystemDefaultsCache.GSystemDefaultsCache.GetInt64Default(
-	Ict.Petra.Shared.SharedConstants.SYSDEFAULT_SITEKEY);
+    DomainManager.GetSiteKeyFromSystemDefaultsCacheDelegate = 
+        @TSystemDefaultsCache.GSystemDefaultsCache.GetSiteKeyDefault;
 
     TLanguageCulture.Init();
 
