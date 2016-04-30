@@ -195,7 +195,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtDetailGiftCommentOne.Focus();
                     return true;
                 }
-
             }
 
             if (keyData == (Keys.V | Keys.Alt))
@@ -207,7 +206,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (keyData == (Keys.D | Keys.Alt))
             {
                 txtDetailDonorKey.SetTextboxFocus();
-                
+
                 return true;
             }
 
@@ -216,7 +215,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailRecipientKey.SetTextboxFocus();
                 return true;
             }
-
 
             return false;
         }
@@ -2203,7 +2201,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
+                MessageBox.Show(Catalog.GetString("Please select a Gift to Adjust/Reverse."));
                 ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }

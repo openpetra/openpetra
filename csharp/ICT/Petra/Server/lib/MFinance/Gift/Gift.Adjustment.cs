@@ -320,7 +320,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             if ((AGiftDS == null) || (AGiftDS.AGiftDetail == null) || (AGiftDS.AGiftDetail.Rows.Count == 0))
             {
                 TLogging.Log("Empty dataset sent to GiftRevertAdjust");
-
                 return false;
             }
 
@@ -332,33 +331,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             DateTime DateEffective;
             decimal batchGiftTotal = 0;
-            Int32 ANewBatchNumber = 0;
-
-            if (BatchSelected)
-            {
-                ANewBatchNumber = (Int32)requestParams["NewBatchNumber"];
-            }
+            Int32 ANewBatchNumber = (BatchSelected ? (Int32)requestParams["NewBatchNumber"] : 0);
 
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                ref Transaction,
-                ref SubmissionOK,
-                delegate
-                {
-                    try
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                    ref Transaction,
+                    ref SubmissionOK,
+                    delegate
                     {
-                        ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                        ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
                         AGiftBatchRow giftBatch;
 
                         // if we need to create a new gift batch
                         if (!BatchSelected)
                         {
-                            giftBatch = CreateNewGiftBatch(requestParams, ref AGiftDS, out DateEffective, ref LedgerTable, Transaction);
+                            giftBatch = CreateNewGiftBatch(requestParams, ref AGiftDS, out DateEffective, ref ledgerTable, Transaction);
                         }
-                        else  // using an existing gift batch
+                        else // using an existing gift batch
                         {
                             AGiftBatchAccess.LoadByPrimaryKey(AGiftDS, ALedgerNumber, ANewBatchNumber, Transaction);
 
@@ -452,24 +446,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         // save everything at the end
                         AGiftBatchAccess.SubmitChanges(AGiftDS.AGiftBatch, Transaction);
-
-                        ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
-
+                        ALedgerAccess.SubmitChanges(ledgerTable, Transaction);
                         AGiftAccess.SubmitChanges(AGiftDS.AGift, Transaction);
-
                         AGiftDetailAccess.SubmitChanges(AGiftDS.AGiftDetail, Transaction);
 
                         AGiftDS.AGiftBatch.AcceptChanges();
 
                         SubmissionOK = true;
-                    }
-                    catch (Exception Exc)
-                    {
-                        TLogging.Log("An Exception occured while performing Gift Reverse/Adjust:" + Environment.NewLine + Exc.ToString());
-
-                        throw new EOPAppException(Catalog.GetString("Gift Reverse/Adjust failed."), Exc);
-                    }
-                });
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw new EOPAppException(Catalog.GetString("Gift Reverse/Adjust failed."), ex);
+            }
 
             AAdjustmentBatchNumber = AdjustmentBatchNo;
 

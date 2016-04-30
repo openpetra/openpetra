@@ -2090,7 +2090,7 @@ namespace Ict.Petra.Client.CommonControls
         {
             this.txtAutoPopulated.txtTextBox.Focus();
         }
-        
+
         /// <summary>
         /// Updates the label for the text button
         /// </summary>

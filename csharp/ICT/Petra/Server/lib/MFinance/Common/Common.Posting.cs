@@ -2198,7 +2198,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// post several GL Batches at once
         /// Returns true if it seems to be OK.
         /// </summary>
-        public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        public static bool PostGLBatches(Int32 ALedgerNumber,
+            List <Int32>ABatchNumbers,
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             //Used in validation of arguments
             AVerifications = new TVerificationResultCollection();
@@ -2249,7 +2252,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate

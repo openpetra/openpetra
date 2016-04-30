@@ -4231,7 +4231,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         //[RequireModulePermission("FINANCE-2")]
         [NoRemoting]
-        public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        public static bool PostGiftBatches(Int32 ALedgerNumber,
+            List <Int32>ABatchNumbers,
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             //Used in validation of arguments
             AVerifications = new TVerificationResultCollection();
@@ -4286,7 +4289,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.GetDBAccessObj(ADataBase).BeginAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -4406,11 +4409,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             string ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
 
-                            ////TODO: remove
-                            ////Test purposes
-                            //TLogging.Log("Post-Ledger Name = " + ledgerName);
-
-                            //
                             // Print Gift Batch Detail report (on the client!)
                             foreach (Int32 BatchNumber in ABatchNumbers)
                             {

@@ -1911,11 +1911,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #region Event Handlers
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private  void FileSaveClose(object sender, EventArgs e)
+        private void FileSaveClose(object sender, EventArgs e)
         {
             if (SaveChanges())
             {
