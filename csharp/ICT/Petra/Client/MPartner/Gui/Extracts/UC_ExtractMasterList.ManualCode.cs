@@ -177,7 +177,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void ExportToFile(bool AExportFamiliesPersons, ref string ADoc, Boolean AOldPetraFormat)
         {
-            ADoc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, AExportFamiliesPersons, AOldPetraFormat);
+            ADoc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(
+                GetSelectedDetailRow().ExtractId, AExportFamiliesPersons, AOldPetraFormat);
         }
 
         /// <summary>

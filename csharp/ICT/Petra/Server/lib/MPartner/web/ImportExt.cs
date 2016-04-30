@@ -380,6 +380,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     return 1;
                 }
+
                 if (ALanguageLevel == 3)
                 {
                     return 2;
