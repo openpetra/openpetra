@@ -46,10 +46,12 @@ namespace Ict.Common
         public const String UNDEFINEDVALUE = "#UNDEFINED#";
 
         /// <summary>The path where the application is started from.</summary>
-        private static String FApplicationDirectory = System.IO.Path.GetDirectoryName(
-            System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+        private static String FApplicationDirectory = "";
 
-        /// <summary>The name of the Configuration File that should be read from; static so it can be manipulated manually once for all (remoting nunit etc.)</summary>
+        /// <summary>The name of the Configuration File that should be read from; it is static so it can be manipulated
+        /// manually once for all (remoting nunit etc.)</summary>
+        /// <remarks>As this Field is static, a once-set FConfigFileName will be available in any repeated reading of the
+        /// Field (in the same AppDomain)!</remarks>
         private static String FConfigFileName = "";
 
         /// <summary>XML Element under which the AppSettings are found</summary>
@@ -79,6 +81,16 @@ namespace Ict.Common
                 if (TAppSettingsManager.HasValue("ApplicationDirectory"))
                 {
                     return TAppSettingsManager.GetValue("ApplicationDirectory");
+                }
+
+                // If unit tests are running, then there is no Config File, and it is likely
+                // that FApplicationDirectory is not defined...
+                if (FApplicationDirectory == "")
+                {
+                    // Default to the current running assemblies location
+                    FApplicationDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
+
+                    // Now proceed to fix it....
                 }
 
                 if (FApplicationDirectory.StartsWith("file:\\"))
@@ -121,12 +133,11 @@ namespace Ict.Common
         #region TAppSettingsManager
 
         /// <summary>
-        /// this should be called by the constructors only;
+        /// This should be called by the constructors only;
         /// in C# one constructor cannot call another constructor, so we have moved the code to a different method
         /// </summary>
         /// <param name="CustomConfigFileName">Name of the .NET Configuration File to read from</param>
         /// <param name="AFailOnMissingConfigFile">if this is true and there is no config file, an exception is raised</param>
-        /// <returns>void</returns>
         private void Create(String CustomConfigFileName, bool AFailOnMissingConfigFile)
         {
             FCmdOpts = new TCmdOpts();
@@ -153,16 +164,16 @@ namespace Ict.Common
             }
 
             LoadCustomAppSettingFile(AFailOnMissingConfigFile);
+            FApplicationDirectory = GetValue("Server.ApplicationBinDirectory", System.IO.Path.GetDirectoryName(
+                    System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase));
         }
 
         /// <summary>
         /// Create a TAppSettingsManager that reads AppSettings values from the
         /// specified .NET Configuration File.
-        ///
         /// </summary>
         /// <param name="CustomConfigFileName">Name of the .NET Configuration File to read from
         /// </param>
-        /// <returns>void</returns>
         public TAppSettingsManager(String CustomConfigFileName)
         {
             Create(CustomConfigFileName, true);
@@ -171,24 +182,31 @@ namespace Ict.Common
         /// <summary>
         /// Create a TAppSettingsManager that reads AppSettings values from the
         /// Application's standard .NET Configuration File.
-        ///
         /// </summary>
-        /// <returns>void</returns>
         public TAppSettingsManager()
         {
-            Create("", true);
+            // Note: As FConfigFileName is static, a repeated call to this specific Constructor
+            // means that a once-set FConfigFileName will be taken into consideration in the called
+            // Create Method with any repeated Constructor call (in the same AppDomain)!
+            Create(FConfigFileName, true);
         }
 
         /// <summary>
         /// Create a TAppSettingsManager that reads AppSettings values from the
         /// Application's standard .NET Configuration File.
-        ///
         /// </summary>
         /// <param name="AFailOnMissingConfigFile">if this is true and there is no config file, an exception is raised</param>
-        /// <returns>void</returns>
         public TAppSettingsManager(bool AFailOnMissingConfigFile)
         {
-            Create("", AFailOnMissingConfigFile);
+            // Please refer to XML Comment on the FConfigFileName Field as to when the condition below will be true!
+            if (FConfigFileName != String.Empty)
+            {
+                Create(FConfigFileName, AFailOnMissingConfigFile);
+            }
+            else
+            {
+                Create("", AFailOnMissingConfigFile);
+            }
         }
 
         /// <summary>
@@ -327,7 +345,7 @@ namespace Ict.Common
                 if (appsetting != null)
                 {
                     ReturnValue = appsetting.GetAttribute("value");
-//                  TLogging.Log("CustomAppSettings: " + AKey + " = " + ReturnValue);
+                    //                  TLogging.Log("CustomAppSettings: " + AKey + " = " + ReturnValue);
                 }
                 else
                 {
@@ -351,7 +369,11 @@ namespace Ict.Common
             {
                 ReturnValue = ReturnValue.Replace("{userappdata}",
                     Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData));
-                ReturnValue = ReturnValue.Replace("{applicationbindir}", ApplicationDirectory);
+
+                if (FApplicationDirectory != null)
+                {
+                    ReturnValue = ReturnValue.Replace("{applicationbindir}", ApplicationDirectory);
+                }
             }
 
             return ReturnValue;
@@ -449,7 +471,7 @@ namespace Ict.Common
                 }
                 else
                 {
-//                  TLogging.Log("CustomAppSettings: Int32(" + AKey + ") not found - default: " + ReturnValue, TLoggingType.ToLogfile);
+                    //                  TLogging.Log("CustomAppSettings: Int32(" + AKey + ") not found - default: " + ReturnValue, TLoggingType.ToLogfile);
                 }
             }
 

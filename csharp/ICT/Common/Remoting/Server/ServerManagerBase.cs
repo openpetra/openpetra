@@ -190,12 +190,10 @@ namespace Ict.Common.Remoting.Server
         public TServerManagerBase() : base()
         {
             FNumberServerManagerInstances = 0;
-
             new TAppSettingsManager(false);
             new TSrvSetting();
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-
             FFirstInstance = (FNumberServerManagerInstances == 0);
             FNumberServerManagerInstances++;
         }
