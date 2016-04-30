@@ -62,8 +62,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             set
             {
                 FLedgerNumber = value;
-                FGiftProcessingActivated = TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(FLedgerNumber);
-                FAccountsPayableActivated = TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(FLedgerNumber);
+
+                TRemote.MFinance.Setup.WebConnectors.GetActivatedSubsystems(FLedgerNumber,
+                    out FAccountsPayableActivated, out FGiftProcessingActivated);
 
                 if (FGiftProcessingActivated)
                 {

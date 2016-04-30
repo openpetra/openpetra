@@ -308,6 +308,11 @@ namespace PetraServerAdminConsole
             TRemote.RefreshAllCachedTables();
         }
 
+        private static int ClearConnectionPoolAndGetNumberOfDBConnections()
+        {
+            return TRemote.ClearConnectionPoolAndGetNumberOfDBConnections();
+        }
+
         private static void AddUser(string AUserId)
         {
             TRemote.AddUser(AUserId);
@@ -380,7 +385,9 @@ namespace PetraServerAdminConsole
 
                             Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                             Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
-
+#if DEBUG
+                            Console.WriteLine("     v: Clear all RDBMS Connection Pools");
+#endif
                             Console.WriteLine("     x: exit PETRAServerADMIN");
                             Console.Write(ServerAdminPrompt);
                             break;
@@ -415,7 +422,6 @@ namespace PetraServerAdminConsole
 
                             Console.Write(ServerAdminPrompt);
 
-                            // queue a Client Task for a certain Client
                             break;
 
                         case 'e':
@@ -426,7 +432,6 @@ namespace PetraServerAdminConsole
 
                             Console.Write(ServerAdminPrompt);
 
-                            // queue a Client Task for a certain Client
                             break;
 
                         case 'i':
@@ -437,7 +442,6 @@ namespace PetraServerAdminConsole
 
                             Console.Write(ServerAdminPrompt);
 
-                            // queue a Client Task for a certain Client
                             break;
 
                         case 'j':
@@ -452,6 +456,19 @@ namespace PetraServerAdminConsole
                             Console.WriteLine(Environment.NewLine + "-> Marking all Cached Tables for Refreshing... <-");
 
                             RefreshAllCachedTables();
+
+                            Console.Write(ServerAdminPrompt);
+
+                            break;
+
+                        case 'v':
+                        case 'V':
+                            Console.WriteLine(Environment.NewLine + "-> Clearing all RDBMS Connection Pools... <-");
+
+                            int NumberOfDBConnectionsAfterClearing = ClearConnectionPoolAndGetNumberOfDBConnections(TRemote);
+
+                            Console.WriteLine(Environment.NewLine + "  Number of DB Connections after clearing all " +
+                            "RDBMS Connection Pools: " + NumberOfDBConnectionsAfterClearing.ToString());
 
                             Console.Write(ServerAdminPrompt);
 

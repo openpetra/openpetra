@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using Ict.Common;
 
-namespace Ict.Common.Remoting.Server
+namespace Ict.Common
 {
     /// <summary>
     /// Static class for storing Server settings. Once instantiated, Server settings

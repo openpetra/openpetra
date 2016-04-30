@@ -309,9 +309,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
-        /// Gets all Bank records
+        /// Gets all Bank records.
         /// </summary>
-        /// <returns>Dataset containing data for all Bank partners</returns>
+        /// <returns>Dataset containing data for all Bank Partners.</returns>
         [RequireModulePermission("PTNRUSER")]
         public static BankTDS GetPBankRecords()
         {
@@ -319,12 +319,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             TDBTransaction ReadTransaction = null;
 
-            // Need to use 'GetNewOrExistingAutoReadTransaction' rather than 'BeginAutoReadTransaction' to allow
-            // switching to the 'Find by Bank Details' on Partner Find while a Report is calculating (Bug #3877).
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper(
                 IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
+                "TPartnerDataReaderWebConnector.GetPBankRecords",
+                out ReadTransaction,
                 delegate
                 {
                     const string QUERY_BANKRECORDS = "SELECT PUB_p_bank.*, PUB_p_partner.p_status_code_c, PUB_p_location.* " +
@@ -337,7 +337,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                                      "JOIN PUB_p_location ON PUB_p_partner_location.p_site_key_n = PUB_p_location.p_site_key_n " +
                                                      "AND PUB_p_partner_location.p_location_key_i = PUB_p_location.p_location_key_i";
 
-                    DBAccess.GDBAccessObj.Select(ReturnValue, QUERY_BANKRECORDS, ReturnValue.PBank.TableName,
+                    DBAccess.GetDBAccessObj(ReadTransaction).Select(ReturnValue, QUERY_BANKRECORDS, ReturnValue.PBank.TableName,
                         ReadTransaction, null);
 
                     foreach (BankTDSPBankRow Row in ReturnValue.PBank.Rows)

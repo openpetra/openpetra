@@ -226,6 +226,11 @@ namespace Ict.Petra.Shared
         /// <summary>this message is returned by the server after successful login, if the user is required to change the password</summary>
         public const String LOGINMUSTCHANGEPASSWORD = "LOGINMUSTCHANGEPASSWORD";
 
+        /// <summary>
+        /// Used in XML Reports messaging between Server and Client.
+        /// </summary>
+        public const String NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX = "###NO_PARALLEL_XMLREPORTS###";
+
         #region readonly Fields   (Used for 'constants' whose value can be translated so that they are meaningful to the users in their language)
 
         /// <summary>

@@ -358,6 +358,9 @@ namespace Ict.Petra.Server.MCommon
         /// Executes the query. Always call this method in a separate Thread to execute the query asynchronously!
         /// </summary>
         /// <param name="ASessionID">the id of the current session</param>
+        /// <param name="AContext">Context in which this quite generic Method gets called (e.g. 'Partner Find'). This is
+        /// optional but should be specified to aid in debugging as it gets logged in case Exceptions happen when the
+        /// DB Transaction is taken out and the Query gets executed.</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
         /// gets passed then the Method executes DB commands with the 'globally available'
         /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
@@ -365,7 +368,7 @@ namespace Ict.Petra.Server.MCommon
         /// <remarks>An instance of TAsyncFindParameters with set up Properties must exist before this procedure can get
         /// called!
         /// </remarks>
-        public void ExecuteQuery(string ASessionID, TDataBase ADataBase = null)
+        public void ExecuteQuery(string ASessionID, string AContext = null, TDataBase ADataBase = null)
         {
             bool ownDatabaseConnection = false;
 
@@ -391,11 +394,12 @@ namespace Ict.Petra.Server.MCommon
                 TProgressTracker.InitProgressTracker(FProgressID, "Executing Query...", 100.0m);
 
                 // Create SQL statement and execute it to return all records
-                ExecuteFullQuery(ADataBase);
+                ExecuteFullQuery(AContext, ADataBase);
             }
             catch (Exception exp)
             {
-                TLogging.Log(this.GetType().FullName + ".ExecuteQuery:  Exception occured: " + exp.ToString());
+                TLogging.Log(this.GetType().FullName + ".ExecuteQuery" +
+                    (AContext == null ? "" : " (Context: " + AContext + ")") + ": Exception occured: " + exp.ToString());
 
                 // Inform the caller that something has gone wrong...
                 TProgressTracker.CancelJob(FProgressID);
@@ -417,8 +421,14 @@ namespace Ict.Petra.Server.MCommon
             }
         }
 
-        private void ExecuteFullQuery(TDataBase ADataBase)
+        private void ExecuteFullQuery(string AContext = null, TDataBase ADataBase = null)
         {
+            TDataBase DBConnectionObj = null;
+            TDBTransaction ReadTransaction = null;
+            bool ANewTransaction = false;
+            bool ASeparateDBConnectionEstablished = false;
+            string StrDBTransAndConnPartialName = AContext ?? "TPagedDataSet.ExecuteFullQuery DB";
+
             if (FFindParameters.FParametersGivenSeparately)
             {
                 string SQLOrderBy = "";
@@ -448,17 +458,27 @@ namespace Ict.Petra.Server.MCommon
             // clear temp table. do not recreate because it may be typed
             FTmpDataTable.Clear();
 
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
-
             try
             {
-                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
+                if (ADataBase == null)
+                {
+                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
+                    // hence can be used to start a DB Transaction.
+                    ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.ReadCommitted,
+                        out DBConnectionObj, out ASeparateDBConnectionEstablished,
+                        StrDBTransAndConnPartialName + " Connection",
+                        StrDBTransAndConnPartialName + " Transaction");
+
+                    ANewTransaction = true;
+                }
+                else
+                {
+                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum, out ANewTransaction, AContext + " Transaction");
+                }
 
                 // Fill temporary table with query results (all records)
-                FTotalRecords = DBAccess.GetDBAccessObj(ADataBase).SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
+                FTotalRecords = DBAccess.GetDBAccessObj(ReadTransaction).SelectUsingDataAdapter(FSelectSQL, ReadTransaction,
                     ref FTmpDataTable, out FDataAdapterCanceller,
                     delegate(ref IDictionaryEnumerator AEnumerator)
                     {
@@ -500,9 +520,15 @@ namespace Ict.Petra.Server.MCommon
             }
             finally
             {
-                if (NewTransaction)
+                if (ANewTransaction)
                 {
-                    DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
+                    DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
+                }
+
+                // Close separate DB Connection if we opened one earlier
+                if (ASeparateDBConnectionEstablished)
+                {
+                    DBConnectionObj.CloseDBConnection();
                 }
             }
 

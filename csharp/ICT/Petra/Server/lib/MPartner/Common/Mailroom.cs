@@ -53,7 +53,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="ALastContactDate"></param>
-        public static void GetLastContactDate(Int64 APartnerKey, out DateTime ALastContactDate)
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
+        public static void GetLastContactDate(Int64 APartnerKey, out DateTime ALastContactDate,
+            TDataBase ADataBase = null)
         {
             TDBTransaction ReadTransaction = null;
 
@@ -64,7 +69,7 @@ namespace Ict.Petra.Server.MPartner.Common
             LastContactDS = new DataSet("LastContactDate");
             LastContactDS.Tables.Add(new PContactLogTable());
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref ReadTransaction,
                 delegate

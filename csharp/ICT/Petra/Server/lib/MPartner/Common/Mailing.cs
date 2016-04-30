@@ -60,6 +60,10 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="AIncludeFutureAddresses">If true: include future addresses.</param>
         /// <param name="AIncludeExpiredAddresses">If true: include expired addresses.</param>
         /// <param name="APartnerLocations">The Locations of the Partner being processed.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner, otherwise true.</returns>
         public static bool GetPartnerLocations(Int64 APartnerKey,
@@ -67,7 +71,8 @@ namespace Ict.Petra.Server.MPartner.Common
             bool AIncludeCurrentAddresses,
             bool AIncludeFutureAddresses,
             bool AIncludeExpiredAddresses,
-            out PPartnerLocationTable APartnerLocations)
+            out PPartnerLocationTable APartnerLocations,
+            TDataBase ADataBase = null)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -84,10 +89,10 @@ namespace Ict.Petra.Server.MPartner.Common
             {
                 TLogging.LogAtLevel(8, "TMailing.GetPartnerLocations: Checking access to Partner.");
 
-                if (TSecurity.CanAccessPartnerByKey(APartnerKey, false) ==
+                if (TSecurity.CanAccessPartnerByKey(APartnerKey, false, ADataBase) ==
                     TPartnerAccessLevelEnum.palGranted)
                 {
-                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
@@ -148,7 +153,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         APartnerLocations = new PPartnerLocationTable(PPartnerLocationTable.GetTableDBName());
                         FillDataSet.Tables.Add(APartnerLocations);
 
-                        DBAccess.GDBAccessObj.Select(FillDataSet, SelectSQL,
+                        DBAccess.GetDBAccessObj(ADataBase).Select(FillDataSet, SelectSQL,
                             PPartnerLocationTable.GetTableDBName(),
                             ReadTransaction,
                             parameters.ToArray());
@@ -174,7 +179,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     {
                         if (NewTransaction)
                         {
-                            DBAccess.GDBAccessObj.CommitTransaction();
+                            DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
                             TLogging.LogAtLevel(7, "TMailing.GetPartnerLocations: committed own transaction.");
                         }
                     }
@@ -205,12 +210,16 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ABestAddressPK">Primary Key of the 'Best Address' Location</param>
         /// <param name="ALocationDR">DataRow containing the 'Best Address' Location</param>
         /// <param name="APartnerLocationDR">DataRow containing the 'Best Address' PartnerLocation</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>False if an invalid PartnerKey was passed in or if Petra Security
         /// denied access to the Partner or if Location/PartnerLocation Data could not be loaded for the
         /// Partner, otherwise true.</returns>
         public static bool GetPartnersBestLocationData(Int64 APartnerKey,
             out TLocationPK ABestAddressPK,
-            out PLocationRow ALocationDR, out PPartnerLocationRow APartnerLocationDR)
+            out PLocationRow ALocationDR, out PPartnerLocationRow APartnerLocationDR, TDataBase ADataBase = null)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -223,13 +232,13 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey > 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
                 try
                 {
                     if (TMailing.GetPartnerLocations(APartnerKey, false,
-                            true, true, true, out PartnerLocationDT))
+                            true, true, true, out PartnerLocationDT, ADataBase))
                     {
                         TLogging.LogAtLevel(8,
                             "TMailing.GetPartnersBestLocationData: processing " + PartnerLocationDT.Rows.Count.ToString() + " Locations...");

@@ -1030,8 +1030,9 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void UpdateSubsystemLinkStatus(int ALedgerNumber, TTaskList ATaskList, XmlNode ATaskListNode)
         {
-            bool ServerCallSuccessful;
             ALedgerRow LedgerDR = null;
+            bool AccountsPayableActivated = false;
+            bool GiftProcessingActivated = false;
 
             if ((ATaskListNode != null) && (ATaskListNode.ParentNode != null)
                 && (ATaskListNode.ParentNode.Name == "Finance"))
@@ -1051,40 +1052,22 @@ namespace Ict.Petra.Client.App.PetraClient
                     PetraClientShutdown.Shutdown.StopPetraClient(true, true, true, StrDataLoadingErrorMessage);
                 }
 
+                TRemote.MFinance.Setup.WebConnectors.GetActivatedSubsystems(ALedgerNumber,
+                    out AccountsPayableActivated, out GiftProcessingActivated);
+
                 XmlNode TempNode = ATaskListNode.ParentNode.FirstChild;
 
                 while (TempNode != null)
                 {
-                    ServerCallSuccessful = false;
-
-                    Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("Finance Sub-system Activated inquiry", ref ServerCallSuccessful,
-                        delegate
-                        {
-                            if (TempNode.Name == "GiftProcessing")
-                            {
-                                ATaskList.EnableDisableTaskItem(TempNode,
-                                    TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNumber));
-                            }
-                            else if (TempNode.Name == "AccountsPayable")
-                            {
-                                ATaskList.EnableDisableTaskItem(TempNode,
-                                    TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNumber));
-                            }
-
-                            ServerCallSuccessful = true;
-                        });
-
-                    if (!ServerCallSuccessful)
+                    if (TempNode.Name == "GiftProcessing")
                     {
-                        TLogging.Log("Inquiring of Finance Subsystems' Activated States failed; the CLIENT NEEDS TO BE RESTARTED!");
-                        TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
-
-                        // RESTART CLIENT!
-                        PetraClientShutdown.Shutdown.StopPetraClient(true, true, true, StrDataLoadingErrorMessage);
-
-                        // ALL-IMPORTANT EXIT statement: without this, a number of OpenPetra Clients might get
-                        // started from within this while loop!!!
-                        Environment.Exit(0);
+                        ATaskList.EnableDisableTaskItem(TempNode,
+                            GiftProcessingActivated);
+                    }
+                    else if (TempNode.Name == "AccountsPayable")
+                    {
+                        ATaskList.EnableDisableTaskItem(TempNode,
+                            AccountsPayableActivated);
                     }
 
                     TempNode = TempNode.NextSibling;

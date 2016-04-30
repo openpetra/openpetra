@@ -583,7 +583,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             TimeSpan Duration;
             PartnerInfoTDS PartlyPopulatedPartnerInfoDS = null;
-            bool ServerCallSuccessful = false;
 
             if (FTimer == null)  // prevent execution of this Method if Timer is already disposed!
             {
@@ -632,49 +631,39 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 try
                 {
-                    Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("Partner Info", ref ServerCallSuccessful,
-                        delegate
-                        {
-                            /*
-                             * Actual PetraServer calls!
-                             */
-                            if ((FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly)
-                                || (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly))
-                            {
-                                FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
-                                    FCurrentServerCallParams.LocationKey,
-                                    FCurrentServerCallParams.PartnerInfoScope,
-                                    out FPartnerInfoDS);
+                    /*
+                     * Actual PetraServer calls!
+                     */
+                    if ((FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly)
+                        || (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly))
+                    {
+                        FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
+                            FCurrentServerCallParams.LocationKey,
+                            FCurrentServerCallParams.PartnerInfoScope,
+                            out FPartnerInfoDS);
 
-                                ServerCallSuccessful = true;
+                        FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
+                        FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
+                    }
+                    else if (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisFull)
+                    {
+                        FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
+                            FCurrentServerCallParams.PartnerInfoScope,
+                            out FPartnerInfoDS);
 
-                                FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
-                                FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
-                            }
-                            else if (FCurrentServerCallParams.PartnerInfoScope == TPartnerInfoScopeEnum.pisFull)
-                            {
-                                FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
-                                    FCurrentServerCallParams.PartnerInfoScope,
-                                    out FPartnerInfoDS);
+                        FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
+                        FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
 
-                                ServerCallSuccessful = true;
-
-                                FPartnerInfoDS.Merge(FPartnerAttributeCategoryDT);
-                                FPartnerInfoDS.Merge(FPartnerAttributeTypeDT);
-
-                                FPartnerClass = SharedTypes.PartnerClassStringToEnum(FPartnerInfoDS.PartnerHeadInfo[0].PartnerClass);
-                                FPartnerShortName = FPartnerInfoDS.PartnerHeadInfo[0].PartnerShortName;
-                            }
-                            else
-                            {
-                                FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
-                                    FCurrentServerCallParams.LocationKey,
-                                    FCurrentServerCallParams.PartnerInfoScope,
-                                    out PartlyPopulatedPartnerInfoDS);
-
-                                ServerCallSuccessful = true;
-                            }
-                        });
+                        FPartnerClass = SharedTypes.PartnerClassStringToEnum(FPartnerInfoDS.PartnerHeadInfo[0].PartnerClass);
+                        FPartnerShortName = FPartnerInfoDS.PartnerHeadInfo[0].PartnerShortName;
+                    }
+                    else
+                    {
+                        FCurrentServerCallParams.ServerCallOK = TServerLookup.TMPartner.PartnerInfo(FCurrentServerCallParams.PartnerKey,
+                            FCurrentServerCallParams.LocationKey,
+                            FCurrentServerCallParams.PartnerInfoScope,
+                            out PartlyPopulatedPartnerInfoDS);
+                    }
                 }
                 catch (ESecurityPartnerAccessDeniedException Exp)
                 {
@@ -685,14 +674,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FServerCallError = "An error occured while trying to retrieve data for the Partner.";
                     TLogging.Log("Partner Info: An error occured while trying to retrieve data for the Partner!  Details:\r\n" +
                         Exc.ToString());
-                }
-
-                if (!ServerCallSuccessful)
-                {
-                    // ServerCallRetries must be equal to MAX_RETRIES when we get here!
-                    FServerCallError = String.Format(StrPartnerInfoCannotBeShownDueToTooBusyServerText,
-                        Catalog.GetString(" in the Find Result"), Catalog.GetString(" in the Find Result"),
-                        Catalog.GetString("re-run the search operation by pressing 'Search'"));
                 }
 
                 //MessageBox.Show("FCurrentServerCallParams.ServerCallOK: " + FCurrentServerCallParams.ServerCallOK.ToString());

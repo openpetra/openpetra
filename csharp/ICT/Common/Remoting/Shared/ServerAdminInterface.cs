@@ -160,13 +160,13 @@ namespace Ict.Common.Remoting.Shared
         bool UpgradeDatabase();
 
         /// <summary>
-        /// returns a string with yml.gz data
+        /// Returns a string with yml.gz data.
         /// </summary>
         /// <returns></returns>
         string BackupDatabaseToYmlGZ();
 
         /// <summary>
-        /// restore the database from a string with yml.gz data
+        /// Restore the database from a string with yml.gz data.
         /// </summary>
         /// <returns></returns>
         bool RestoreDatabaseFromYmlGZ(string AYmlGzData);
@@ -176,6 +176,12 @@ namespace Ict.Common.Remoting.Shared
         /// with the data that was originally placed in the DataTable).
         /// </summary>
         void RefreshAllCachedTables();
+
+        /// <summary>
+        /// Clears (flushes) all RDMBS Connection Pools and returns the new number of DB Connections after clearing all
+        /// RDMBS Connection Pools.
+        /// </summary>
+        int ClearConnectionPoolAndGetNumberOfDBConnections();
 
         /// <summary>
         /// add a new user

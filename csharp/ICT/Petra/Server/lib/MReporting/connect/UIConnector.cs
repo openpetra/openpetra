@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using System.IO;
 using System.Xml;
 using System.Drawing.Printing;
 using System.Collections.Generic;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared;
@@ -84,18 +85,39 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <returns>void</returns>
         public void Start(System.Data.DataTable AParameters)
         {
-            TRptUserFunctionsFinance.FlushSqlCache();
             FProgressID = "ReportCalculation" + Guid.NewGuid();
             TProgressTracker.InitProgressTracker(FProgressID, string.Empty, -1.0m);
+
+            // First check whether the 'globally available' DB Connection isn't busy - we must not allow the start of a
+            // Report Calculation when that is the case (as this would lead to a nested DB Transaction exception,
+            // EDBTransactionBusyException).
+            if (DBAccess.GDBAccessObj.Transaction != null)
+            {
+                FErrorMessage = Catalog.GetString(SharedConstants.NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX +
+                    "The OpenPetra Server is currently too busy to prepare this Report. " +
+                    "Please retry once other running tasks (eg. a Report) are finished!");
+                TProgressTracker.FinishJob(FProgressID);
+                FSuccess = false;
+
+                // Return to the Client immediately!
+                return;
+            }
+
+            TRptUserFunctionsFinance.FlushSqlCache();
+
             FParameterList = new TParameterList();
             FParameterList.LoadFromDataTable(AParameters);
+
             FSuccess = false;
+
             String PathStandardReports = TAppSettingsManager.GetValue("Reporting.PathStandardReports");
             String PathCustomReports = TAppSettingsManager.GetValue("Reporting.PathCustomReports");
+
             FDatacalculator = new TRptDataCalculator(DBAccess.GDBAccessObj, PathStandardReports, PathCustomReports);
 
             // setup the logging to go to the TProgressTracker
             TLogging.SetStatusBarProcedure(new TLogging.TStatusCallbackProcedure(WriteToStatusBar));
+
             string session = TSession.GetSessionID();
             ThreadStart myThreadStart = delegate {
                 Run(session);
@@ -107,12 +129,17 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         }
 
         /// <summary>
-        /// cancel the report calculation
+        /// Signal that the Report calculation should be cancelled.
         /// </summary>
         public void Cancel()
         {
-            // This variable will be picked up regularly during generation, in TRptDataCalcLevel.calculate in Ict.Petra.Server.MReporting.Calculation
-            FParameterList.Add("CancelReportCalculation", new TVariant(true));
+            if (FParameterList != null)
+            {
+                // This variable will be picked up regularly during generation, in TRptDataCalcLevel.calculate in
+                // Ict.Petra.Server.MReporting.Calculation. (It can be null if Cancel gets called before FParameterList is
+                // available.)
+                FParameterList.Add("CancelReportCalculation", new TVariant(true));
+            }
         }
 
         /// <summary>

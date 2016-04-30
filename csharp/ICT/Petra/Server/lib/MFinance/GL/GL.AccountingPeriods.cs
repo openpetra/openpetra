@@ -214,7 +214,18 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// get the end date of the given period
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
-        public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod, System.Int32 APeriod)
+        public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod,
+            System.Int32 APeriod)
+        {
+            return GetPeriodEndDate(ALedgerNumber, AYear, ADiffPeriod, APeriod, null);
+        }
+
+        /// <summary>
+        /// get the end date of the given period
+        /// </summary>
+        [NoRemoting]
+        public static System.DateTime GetPeriodEndDate(Int32 ALedgerNumber, System.Int32 AYear, System.Int32 ADiffPeriod,
+            System.Int32 APeriod, TDataBase ADataBase)
         {
             System.Int32 RealYear = 0;
             System.Int32 RealPeriod = 0;
@@ -226,7 +237,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 "",
                 false,
                 ALedgerNumber,
-                out typeofTable);
+                out typeofTable, ADataBase);
             AAccountingPeriodTable CachedDataTable = (AAccountingPeriodTable)UntypedTable;
             CachedDataTable.DefaultView.RowFilter = AAccountingPeriodTable.GetAccountingPeriodNumberDBName() + " = " + RealPeriod;
 
@@ -238,7 +249,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     "",
                     false,
                     ALedgerNumber,
-                    out typeofTable);
+                    out typeofTable, ADataBase);
 
                 ReturnValue = ReturnValue.AddYears(RealYear - Ledger[0].CurrentFinancialYear);
             }
@@ -464,6 +475,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             bool AIncludeNextYear,
             out String ADisplayMember, out String AValueMember)
         {
+            TDBTransaction ReadTransaction = null;
+            ALedgerTable LedgerTable = null;
+
+            DataTable BatchYearTable = null;
+            DateTime CurrentYearEnd = DateTime.MinValue;
+
             ADisplayMember = "YearDate";
             AValueMember = "YearNumber";
             String YearEnd = "YearEnd";
@@ -477,44 +494,45 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             System.Type TypeOfTable = null;
             TCacheable CachePopulator = new TCacheable();
-            ALedgerTable LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
-                "",
-                false,
-                ALedgerNumber,
-                out TypeOfTable);
 
-            DateTime CurrentYearEnd = GetPeriodEndDate(
-                ALedgerNumber,
-                LedgerTable[0].CurrentFinancialYear,
-                ADiffPeriod,
-                LedgerTable[0].NumberOfAccountingPeriods);
+            // add the years, which are retrieved by reading from the GL batch tables
+            string sql =
+                String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
+                    ALedgerNumber.ToString() + " ORDER BY 1 DESC",
+                    ABatchTable.GetBatchYearDBName(),
+                    ABatchTable.GetTableDBName(),
+                    ABatchTable.GetLedgerNumberDBName());
 
-            TDBTransaction ReadTransaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
+                "TAccountingPeriodsWebConnector.GetAvailableGLYears", out ReadTransaction,
                 delegate
                 {
-                    // add the years, which are retrieved by reading from the GL batch tables
-                    string sql =
-                        String.Format("SELECT DISTINCT {0} AS availYear " + " FROM PUB_{1} " + " WHERE {2} = " +
-                            ALedgerNumber.ToString() + " ORDER BY 1 DESC",
-                            ABatchTable.GetBatchYearDBName(),
-                            ABatchTable.GetTableDBName(),
-                            ABatchTable.GetLedgerNumberDBName());
+                    LedgerTable = (ALedgerTable)CachePopulator.GetCacheableTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                        "",
+                        false,
+                        ALedgerNumber,
+                        out TypeOfTable, ReadTransaction.DataBaseObj);
 
-                    DataTable BatchYearTable = DBAccess.GDBAccessObj.SelectDT(sql, "BatchYearTable", ReadTransaction);
+                    CurrentYearEnd = GetPeriodEndDate(
+                        ALedgerNumber,
+                        LedgerTable[0].CurrentFinancialYear,
+                        ADiffPeriod,
+                        LedgerTable[0].NumberOfAccountingPeriods, ReadTransaction.DataBaseObj);
 
-                    foreach (DataRow row in BatchYearTable.Rows)
-                    {
-                        DataRow resultRow = DatTable.NewRow();
-                        DateTime SelectableYear = CurrentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
-                        resultRow[0] = row[0];
-                        resultRow[1] = SelectableYear.ToString("yyyy");
-                        resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
-                        DatTable.Rows.Add(resultRow);
-                    }
+                    BatchYearTable = DBAccess.GetDBAccessObj(ReadTransaction).SelectDT(sql, "BatchYearTable", ReadTransaction);
                 });
+
+            foreach (DataRow row in BatchYearTable.Rows)
+            {
+                DataRow resultRow = DatTable.NewRow();
+                DateTime SelectableYear = CurrentYearEnd.AddYears(-1 * (LedgerTable[0].CurrentFinancialYear - Convert.ToInt32(row[0])));
+                resultRow[0] = row[0];
+                resultRow[1] = SelectableYear.ToString("yyyy");
+                resultRow[2] = SelectableYear.ToString("dd-MMM-yyyy");
+                DatTable.Rows.Add(resultRow);
+            }
 
             // we should also check if the current year has been added, in case there are no batches yet
             if (DatTable.Rows.Find(LedgerTable[0].CurrentFinancialYear) == null)

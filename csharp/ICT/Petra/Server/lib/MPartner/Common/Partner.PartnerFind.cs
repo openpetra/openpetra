@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session);
+                    FPagedDataSetObject.ExecuteQuery(session, "Partner Find (by Partner Details)");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "PartnerFindPerformSearch" + Guid.NewGuid().ToString();
@@ -353,7 +353,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session);
+                    FPagedDataSetObject.ExecuteQuery(session, "Partner Find (by Bank Details)");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Start();

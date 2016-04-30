@@ -53,13 +53,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             String BackupFilename = TemplateBackupFilename(AType, "*");
 
             String[] BackupFiles = Directory.GetFiles(Path.GetDirectoryName(BackupFilename), Path.GetFileName(BackupFilename));
-
             TDBTransaction Transaction = null;
-            Boolean submissionOk = true;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                ref submissionOk,
+
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
+                "TReportTemplateWebConnector.LoadTemplatesFromBackupFile", out Transaction,
                 delegate
                 {
                     foreach (String fname in BackupFiles)
@@ -70,7 +69,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                             DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
                         }
                     }
-                }); // Get NewOrExisting AutoReadTransaction
+                });
         }
 
         //

@@ -145,7 +145,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return MainDS;
@@ -163,6 +164,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         public static GLSetupTDS LoadLedgerSettings(Int32 ALedgerNumber, out DateTime ACalendarStartDate,
             out bool ACurrencyChangeAllowed, out bool ACalendarChangeAllowed)
         {
+            TDBTransaction Transaction = null;
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -179,16 +182,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             DateTime CalendarStartDate = ACalendarStartDate;
             bool CurrencyChangeAllowed = ACurrencyChangeAllowed;
+            bool CalendarChangeAllowed = ACalendarChangeAllowed;
 
             GLSetupTDS MainDS = new GLSetupTDS();
 
-            TDBTransaction Transaction = null;
-
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
+                // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+                // Connection where a DB Transaction can be exectued (only if that should be needed).
+                DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
+                    "TGLSetupWebConnector.LoadLedgerSettings", out Transaction,
                     delegate
                     {
                         ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, Transaction);
@@ -256,12 +259,14 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 CurrencyChangeAllowed = false;
                             }
                         }
+
+                        // now check if calendar change would be allowed
+                        CalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber, Transaction.DataBaseObj);
                     });
 
                 ACalendarStartDate = CalendarStartDate;
                 ACurrencyChangeAllowed = CurrencyChangeAllowed;
-                // now check if calendar change would be allowed
-                ACalendarChangeAllowed = IsCalendarChangeAllowed(ALedgerNumber);
+                ACalendarChangeAllowed = CalendarChangeAllowed;
 
                 // Accept row changes here so that the Client gets 'unmodified' rows
                 MainDS.AcceptChanges();
@@ -281,7 +286,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return MainDS;
@@ -294,6 +300,19 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool IsCalendarChangeAllowed(Int32 ALedgerNumber)
+        {
+            return IsCalendarChangeAllowed(ALedgerNumber, null);
+        }
+
+        /// <summary>
+        /// returns true if calendar change is allowed for given ledger
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null. If null gets passed
+        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" />
+        /// instance, otherwise with the instance that gets passed in with this Argument!</param>
+        /// <returns></returns>
+        private static bool IsCalendarChangeAllowed(Int32 ALedgerNumber, TDataBase ADataBase)
         {
             #region Validate Arguments
 
@@ -311,7 +330,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum, ref Transaction,
                     delegate
                     {
@@ -329,7 +348,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return CalendarChangeAllowed;
@@ -390,20 +410,23 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return NumberOfAccountingPeriods;
         }
 
         /// <summary>
-        /// returns true if subsystem is activated for given ledger
+        /// Returns true if specified subsystem is activated for a given Ledger.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ASubsystemCode"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode)
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
+        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance,
+        /// otherwise with the instance that gets passed in with this Argument!</param>
+        /// <returns>True if specified subsystem is activated for a given Ledger, otherwise false.</returns>
+        private static bool IsSubsystemActivated(Int32 ALedgerNumber, String ASubsystemCode, TDataBase ADataBase = null)
         {
             #region Validate Arguments
 
@@ -437,7 +460,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum, ref Transaction,
                 delegate
                 {
@@ -451,22 +474,55 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         }
 
         /// <summary>
-        /// returns true if gift processing subsystem is activated for given ledger
+        /// Gets the active/deactivated state of the Accounts Payable (AP) subsystem and of the Gift Processing subsystem for
+        /// a given Ledger.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
+        /// <param name="AAccountsPayableSubsystemActivated">True if the Accounts Payable (AP) subsystem is activated
+        /// for the Ledger specified with <paramref name="ALedgerNumber"/>, otherwise false.</param>
+        /// <param name="AGiftProcessingSubsystemActivated">True if the Gift Processing subsystem is activated
+        /// for the Ledger specified with <paramref name="ALedgerNumber"/>, otherwise false.</param>
         [RequireModulePermission("FINANCE-1")]
+        public static void GetActivatedSubsystems(Int32 ALedgerNumber,
+            out bool AAccountsPayableSubsystemActivated, out bool AGiftProcessingSubsystemActivated)
+        {
+            TDBTransaction DBTransaction = null;
+            bool AccountsPayableSubsystemActivated = false;
+            bool GiftProcessingSubsystemActivated = false;
+
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper("TGLSetupWebConnector.GetActivatedSubsystems", out DBTransaction,
+                delegate
+                {
+                    AccountsPayableSubsystemActivated = IsSubsystemActivated(ALedgerNumber,
+                        CommonAccountingSubSystemsEnum.AP.ToString(), DBTransaction.DataBaseObj);
+
+                    GiftProcessingSubsystemActivated = IsSubsystemActivated(ALedgerNumber,
+                        CommonAccountingSubSystemsEnum.GR.ToString(), DBTransaction.DataBaseObj);
+                });
+
+            AAccountsPayableSubsystemActivated = AccountsPayableSubsystemActivated;
+            AGiftProcessingSubsystemActivated = GiftProcessingSubsystemActivated;
+        }
+
+        /// <summary>
+        /// Returns true if the Gift Processing subsystem is activated for a given Ledger.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns>True if the Gift Processing subsystem is activated for a given Ledger, otherwise false.</returns>
+        [NoRemoting]
         public static bool IsGiftProcessingSubsystemActivated(Int32 ALedgerNumber)
         {
             return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
         }
 
         /// <summary>
-        /// returns true if accounts payable subsystem is activated for given ledger
+        /// Returns true if the Accounts Payable (AP) subsystem is activated for a given Ledger.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        /// <returns>True if the Accounts Payable (AP) subsystem is activated for a given Ledger, otherwise false.</returns>
+        [NoRemoting]
         public static bool IsAccountsPayableSubsystemActivated(Int32 ALedgerNumber)
         {
             return IsSubsystemActivated(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
@@ -605,7 +661,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
         }
 
@@ -706,7 +763,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
         }
 
@@ -814,7 +872,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return Result;
@@ -889,7 +948,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return SubmissionOK;
@@ -1053,7 +1113,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return MainDS;
@@ -1194,7 +1255,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return MainDS;
@@ -1259,7 +1321,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return ParentCostCentreTbl;
@@ -1378,7 +1441,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return PartnerCostCentreTbl;
@@ -1544,7 +1608,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
         }
 
@@ -1656,7 +1721,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
         }
 
@@ -2155,7 +2221,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return TSubmitChangesResult.scrOK;
@@ -2524,7 +2591,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return DbSuccess;
@@ -2682,7 +2750,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             // XmlDocument is not serializable, therefore print it to string and return the string
@@ -2805,7 +2874,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             // XmlDocument is not serializable, therefore print it to string and return the string
@@ -4541,7 +4611,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return AccountAnalysisAttributeExists;
@@ -4600,7 +4671,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return AccountAnalysisAttributeExists;
@@ -4660,7 +4732,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return AccountAnalysisAttributeValueRequired;
@@ -4952,7 +5025,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             AVerificationResults = VerificationResults;
@@ -5127,7 +5201,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             ACanBeParent = CanBeParent;
@@ -5275,7 +5350,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             AVerificationResults = VerificationResults;
@@ -5359,7 +5435,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return ReturnValue;
@@ -5422,7 +5499,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
                         ex.Message));
-                throw ex;
+
+                throw;
             }
 
             return ReturnValue;

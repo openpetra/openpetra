@@ -279,7 +279,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session);
+                    FPagedDataSetObject.ExecuteQuery(session, "AP TFindUIConnector");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "APFind" + Guid.NewGuid().ToString();

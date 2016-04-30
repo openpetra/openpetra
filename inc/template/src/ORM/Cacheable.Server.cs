@@ -56,18 +56,23 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
-        /// <returns>)
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for the loading of the Cacheable DataTable
+        /// through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used 
+        /// (with the 'globally available' open DB Connection that exists for the  users' AppDomain) (default = false).</param>
+        /// <returns>
         /// DataTable The desired DataTable
         /// </returns>
         private static DataTable GetCacheableTableInternal(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
             String AHashCode,
             Boolean ARefreshFromDB,
-            out System.Type AType)
+            out System.Type AType,
+            bool ASeparateDBConnection = false)
         {
             Init();
 
             DataTable ReturnValue = FCachePopulator.GetCacheableTable(
-                ACacheableTable, AHashCode, ARefreshFromDB, out AType);
+                ACacheableTable, AHashCode, ARefreshFromDB, out AType, null, ASeparateDBConnection);
 
             if (ReturnValue != null)
             {
@@ -99,6 +104,10 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should be
+        /// created and an equally separate DB Connection should be established for the loading of the Cacheable DataTable
+        /// through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance gets used 
+        /// (with the 'globally available' open DB Connection that exists for the  users' AppDomain) (default = false).</param>
         /// <returns>)
         /// DataTable The desired DataTable
         /// </returns>
@@ -106,12 +115,13 @@ namespace Ict.Petra.Server.{#SUBNAMESPACE}.Cacheable.WebConnectors
             String AHashCode,
             Boolean ARefreshFromDB,
             System.Int32 ALedgerNumber,
-            out System.Type AType)
+            out System.Type AType,
+            bool ASeparateDBConnection = false)
         {
             Init();
 
             DataTable ReturnValue = FCachePopulator.GetCacheableTable(
-                ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType);
+                ACacheableTable, AHashCode, ARefreshFromDB, ALedgerNumber, out AType, null, ASeparateDBConnection);
 
             if (ReturnValue != null)
             {
@@ -255,9 +265,22 @@ namespace {#NAMESPACE}
         /// the Client accesses the Cacheable DataTable. Otherwise set to false.</param>
         /// <param name="AType">The Type of the DataTable (useful in case it's a
         /// Typed DataTable)</param>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance, 
-        /// otherwise with the instance that gets passed in with this Argument!</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
+        /// gets passed then the Method executes DB commands with the 'globally available' 
+        /// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
+        /// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
+        /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
+        /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
+        /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
+        /// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
+        /// is set to true!</param>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
+        /// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
+        /// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
+        /// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
+        /// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
+        /// Any separate DB Connection will be closed automatically.
+        /// </param>
         /// <returns>
         /// DataTable If the Hash that got passed in AHashCode doesn't fit the
         /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
@@ -267,19 +290,58 @@ namespace {#NAMESPACE}
             String AHashCode,
             Boolean ARefreshFromDB,
             out System.Type AType, 
-            TDataBase ADataBase = null)
+            TDataBase ADataBase = null,
+            bool ASeparateDBConnection = false)
         {
+            const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
+            const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
+            TDataBase DBConnectionObj = null;
             TDBTransaction ReadTransaction = null;
+            bool ANewTransaction = false;
             String TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
+            bool ASeparateDBConnectionEstablished = false;
+
+            if ((ASeparateDBConnection) 
+                && (ADataBase != null))
+            {
+                throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
+            }
 
             TLogging.LogAtLevel (9, "{#CACHEABLECLASS}.GetCacheableTable '{#SUBMODULE}' called.");
 
             if ((ARefreshFromDB) || ((!FCacheableTablesManager.IsTableCached(TableName))))
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(
-                    MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction, 
-                delegate                    
+                try
                 {
+                    if (ASeparateDBConnection)
+                    {
+                        // Open a separate DB Connection
+                        DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+
+                        // ...and start a DB Transction on that separate DB Connection                                
+                        ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                            ATransactionName: StrDBTransName);
+                    }
+                    else
+                    {
+                        if (ADataBase == null)
+                        {
+                            // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
+                            // hence can be used to start a DB Transaction.
+                            ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                                out DBConnectionObj, out ASeparateDBConnectionEstablished,
+                                StrDBConnName,
+                                StrDBTransName);
+                                
+                            ANewTransaction = true;
+                        }
+                        else
+                        {
+                            ReadTransaction = ADataBase.GetNewOrExistingTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                                TEnforceIsolationLevel.eilMinimum, out ANewTransaction, StrDBTransName);
+                        }
+                    }
+
                     switch(ACacheableTable)
                     {
                         {#LOADTABLESANDLISTS}
@@ -289,7 +351,20 @@ namespace {#NAMESPACE}
                             throw new ECachedDataTableNotImplementedException("Requested Cacheable DataTable '" +
                                 TableName + "' is not available as a Standard Cacheable Table");
                     }
-                });
+                }
+                finally
+                {
+                    if (ANewTransaction)
+                    {
+                        DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
+                    }
+
+                    // Close separate DB Connection if we opened one earlier
+                    if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+                    {
+                        DBConnectionObj.CloseDBConnection();
+                    }
+                }
             }
 
             // Return the DataTable from the Cache only if the Hash is not the same
@@ -313,20 +388,44 @@ namespace {#NAMESPACE}
         /// to be submitted, not just changes to it!</param>
         /// <param name="AVerificationResult">Will be filled with any
         /// VerificationResults if errors occur.</param>
-        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-        /// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance, otherwise 
-        /// with the instance that gets passed in with this Argument!</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
+        /// gets passed then the Method executes DB commands with the 'globally available' 
+        /// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
+        /// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
+        /// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
+        /// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
+        /// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
+        /// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
+        /// is set to true!</param>
+        /// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
+        /// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
+        /// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
+        /// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
+        /// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
+        /// Any separate DB Connection will be closed automatically.
+        /// </param>
         /// <returns>Status of the operation.</returns>
         public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTable,
             ref TTypedDataTable ASubmitTable,
             out TVerificationResultCollection AVerificationResult, 
-            TDataBase ADataBase = null)
+            TDataBase ADataBase = null,
+            bool ASeparateDBConnection = false)
         {
+            const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
+            const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
+            TDataBase DBConnectionObj = null;
             TDBTransaction SubmitChangesTransaction = null;
             TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
             string CacheableDTName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
             TTypedDataTable SubmitTable = ASubmitTable;
             TVerificationResultCollection VerificationResult;
+            bool ASeparateDBConnectionEstablished = false;
+            
+            if ((ASeparateDBConnection) 
+                && (ADataBase != null))
+            {
+                throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
+            }
             
             // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
             AVerificationResult = null;
@@ -340,41 +439,79 @@ namespace {#NAMESPACE}
                 
                 try
                 {
-                    DBAccess.GetDBAccessObj(ADataBase).BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, 
-                        ref SubmissionResult, 
-                    delegate
-                    {                
-                        switch (ACacheableTable)
+                    try
+                    {
+                        if (ASeparateDBConnection)
                         {
-                            {#SAVETABLE}
+                            // Open a separate DB Connection
+                            DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
 
-                            default:
-
-                                throw new Exception(
-                                "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
+                            // ...and start a DB Transction on that separate DB Connection
+                            SubmitChangesTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable,
+                                ATransactionName: StrDBTransName);
                         }
-                    });
+                        else
+                        {
+                            if (ADataBase == null)
+                            {
+                                // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
+                                // hence can be used to start a DB Transaction.
+                                SubmitChangesTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.Serializable,
+                                    out DBConnectionObj, out ASeparateDBConnectionEstablished,
+                                    StrDBConnName,
+                                    StrDBTransName);
+                            }
+                            else
+                            {
+                                SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
+                                    ATransactionName: StrDBTransName);
+                            }
+                        }
+                        
+                        // Automatic handling of a (write) DB Transaction
+                        DBConnectionObj.AutoTransaction(ref SubmitChangesTransaction, ref SubmissionResult,
+                            delegate
+                            {
+                                switch (ACacheableTable)
+                                {
+                                    {#SAVETABLE}
+
+                                    default:
+
+                                        throw new Exception(
+                                        "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
+                                }
+                            });
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(
+                            "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
+                            CacheableDTName +
+                            "':  Exception " + e.ToString());
+
+                        throw;
+                    }
+                    
+                    // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+                    // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+                    // the next time something in the Client accesses it.
+                    if (SubmissionResult == TSubmitChangesResult.scrOK)
+                    {
+                        Type TmpType;
+                        GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType, DBConnectionObj);
+
+                        AfterSaving(ACacheableTable);
+                    }
                 }
-                catch (Exception e)
+                finally
                 {
-                    TLogging.Log(
-                        "{#CACHEABLECLASS}.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
-                        CacheableDTName +
-                        "':  Exception " + e.ToString());
-
-                    throw;
-                }
-            }
-
-
-            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
-            // the next time something in the Client accesses it.
-            if (SubmissionResult == TSubmitChangesResult.scrOK)
-            {
-                Type TmpType;
-                GetCacheableTable(ACacheableTable, String.Empty, true, out TmpType);
-                AfterSaving(ACacheableTable);
+                    // Close separate DB Connection if we opened one earlier
+                    if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+                    {
+                        DBConnectionObj.CloseDBConnection();
+                    }
+                }                
             }
 
             if (AVerificationResult.Count > 0)
@@ -430,9 +567,22 @@ namespace {#NAMESPACE}
 /// Typed DataTable)</param>
 /// <param name="ALedgerNumber">The LedgerNumber that the rows that should be stored in
 /// the Cache need to match.</param>
-/// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-/// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance, 
-/// otherwise with the instance that gets passed in with this Argument!</param>
+/// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
+/// gets passed then the Method executes DB commands with the 'globally available' 
+/// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
+/// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
+/// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
+/// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
+/// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
+/// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
+/// is set to true!</param>
+/// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
+/// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
+/// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
+/// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
+/// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
+/// Any separate DB Connection will be closed automatically.
+/// </param>
 /// <returns>
 /// DataTable If the Hash that got passed in AHashCode doesn't fit the
 /// Hash that the CacheableTablesManager has for this cacheable DataTable, the
@@ -443,10 +593,22 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
     Boolean ARefreshFromDB,
     System.Int32 ALedgerNumber,
     out System.Type AType, 
-    TDataBase ADataBase = null)
+    TDataBase ADataBase = null,
+    bool ASeparateDBConnection = false)
 {
+    const string StrDBTransName = "Cacheable DataTable (reading) DB Transaction";
+    const string StrDBConnName = "Cacheable DataTable (reading) DB Connection";
+    TDataBase DBConnectionObj = null;
     TDBTransaction ReadTransaction = null;
+    bool ANewTransaction = false;
     string TableName = Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum), ACacheableTable);
+    bool ASeparateDBConnectionEstablished = false;
+
+    if ((ASeparateDBConnection) 
+        && (ADataBase != null))
+    {
+        throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
+    }
 
     if (TLogging.DL >= 7)
     {
@@ -470,10 +632,36 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
                     out AType).Select(ALedgerTable.GetLedgerNumberDBName() + " = " +
                     ALedgerNumber.ToString()).Length == 0)))
     {
-        DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(
-            MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL, TEnforceIsolationLevel.eilMinimum, ref ReadTransaction, 
-        delegate                    
+        try
         {
+            if (ASeparateDBConnection)
+            {
+                // Open a separate DB Connection
+                DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
+
+                // ...and start a DB Transction on that separate DB Connection
+                ReadTransaction = DBConnectionObj.BeginTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                    ATransactionName: StrDBTransName);
+            }
+            else
+            {
+                if (ADataBase == null)
+                {
+                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
+                    // hence can be used to start a DB Transaction.
+                    ReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                        out DBConnectionObj, out ASeparateDBConnectionEstablished, StrDBConnName,
+                        StrDBTransName);
+                        
+                    ANewTransaction = true;
+                }
+                else
+                {
+                    ReadTransaction = ADataBase.GetNewOrExistingTransaction(MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                        TEnforceIsolationLevel.eilMinimum, out ANewTransaction, StrDBTransName);
+                }
+            }
+
             switch (ACacheableTable)
             {
                 {#LOADTABLESANDLISTS}
@@ -485,7 +673,20 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
                     Enum.GetName(typeof(TCacheable{#SUBMODULE}TablesEnum),
                         ACacheableTable) + "' is not available as a Standard Cacheable Table (with ALedgerNumber as an Argument)");
             }
-        });
+        }
+        finally
+        {
+            if (ANewTransaction)
+            {
+                DBAccess.GetDBAccessObj(ReadTransaction).RollbackTransaction();
+            }
+
+            // Close separate DB Connection if we opened one earlier
+            if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+            {
+                DBConnectionObj.CloseDBConnection();
+            }
+        }
     }
 
     DataView TmpView = new DataView(FCacheableTablesManager.GetCachedDataTable(TableName,
@@ -514,24 +715,48 @@ public DataTable GetCacheableTable(TCacheable{#SUBMODULE}TablesEnum ACacheableTa
 /// the Cache need to match.</param>
 /// <param name="AVerificationResult">Will be filled with any
 /// VerificationResults if errors occur.</param>
-/// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null gets passed
-/// then the Method executes DB commands with the 'globally available' <see cref="DBAccess.GDBAccessObj" /> instance, otherwise 
-/// with the instance that gets passed in with this Argument!</param>
+/// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null 
+/// gets passed then the Method executes DB commands with the 'globally available' 
+/// <see cref="DBAccess.GDBAccessObj" /> instance (if it isn't running a DB Transaction, otherwise a separate 
+/// DB Connection will be established automatically and get closed automatically after it got used), otherwise 
+/// with the instance that gets passed in with this Argument. Hence if you want this Method to use the 
+/// <see cref="DBAccess.GDBAccessObj" /> instance while the caller has got a DB Transaction running on that 
+/// instance then you will need to pass in that instance with this Argument, otherwise the Method will open a
+/// separate DB Connection (needlessly)! This Argument must be null if <paramref name="ASeparateDBConnection"/> 
+/// is set to true!</param>
+/// <param name="ASeparateDBConnection">Set to true if a separate instance of <see cref="TDataBase" /> should 
+/// be created and an equally separate DB Connection should be established for the loading of the Cacheable 
+/// DataTable through this. If this is false, the 'globally available' <see cref="DBAccess.GDBAccessObj" /> 
+/// instance gets used (with the 'globally available' open DB Connection that exists for the  users' AppDomain) 
+/// if it isn't running a DB Transaction, otherwise a separate DB Connection will be established automatically. 
+/// Any separate DB Connection will be closed automatically.
+/// </param>
 /// <returns>Status of the operation.</returns>
 public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceTablesEnum ACacheableTable,
     ref TTypedDataTable ASubmitTable,
     int ALedgerNumber,
     out TVerificationResultCollection AVerificationResult, 
-    TDataBase ADataBase = null)
+    TDataBase ADataBase = null,
+    bool ASeparateDBConnection = false)
 {
+    const string StrDBTransName = "Cacheable DataTable (saving) DB Transaction";
+    const string StrDBConnName = "Cacheable DataTable (saving) DB Connection";
+    TDataBase DBConnectionObj = null;
     TDBTransaction SubmitChangesTransaction = null;
     TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
     string CacheableDTName = Enum.GetName(typeof(TCacheableFinanceTablesEnum), ACacheableTable);
     TTypedDataTable SubmitTable = ASubmitTable;
     TVerificationResultCollection VerificationResult;    
     Type TmpType;
+    bool ASeparateDBConnectionEstablished = false;
+    
+    if ((ASeparateDBConnection) 
+        && (ADataBase != null))
+    {
+        throw new ArgumentException("ADataBase must be null when ASeparateDBConnection is set to true");
+    }
 
-    // Console.WriteLine("Entering Finance.SaveChangedStandardCacheableTable...");
+    // Console.WriteLine("Entering {#SUBMODULE}.SaveChangedStandardCacheableTable...");
     AVerificationResult = null;
 
     // TODO: check write permissions
@@ -543,40 +768,79 @@ public TSubmitChangesResult SaveChangedStandardCacheableTable(TCacheableFinanceT
 
         try
         {
-            DBAccess.GetDBAccessObj(ADataBase).BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction, 
-                ref SubmissionResult, 
-            delegate
-            {        
-                switch (ACacheableTable)
+            try
+            {
+                if (ASeparateDBConnection)
                 {
-                    {#SAVETABLE}
+                    // Open a separate DB Connection
+                    DBConnectionObj =  DBAccess.SimpleEstablishDBConnection(StrDBConnName);
 
-                    default:
-
-                        throw new Exception(
-                        "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
+                    // ...and start a DB Transction on that separate DB Connection
+                    SubmitChangesTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable,
+                        ATransactionName: StrDBTransName);
                 }
-            });
-        }            
-        catch (Exception e)
-        {
-            TLogging.Log(
-                "TFinanceCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
-                CacheableDTName +
-                "':  Exception " + e.ToString());
+                else
+                {
+                    if (ADataBase == null)
+                    {
+                        // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and  
+                        // hence can be used to start a DB Transaction.
+                        SubmitChangesTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.Serializable,
+                            out DBConnectionObj, out ASeparateDBConnectionEstablished,
+                            StrDBConnName,
+                            StrDBTransName);
+                    }
+                    else
+                    {
+                        SubmitChangesTransaction = ADataBase.BeginTransaction(IsolationLevel.Serializable,
+                            ATransactionName: StrDBTransName);
+                    }
+                }
 
-            throw;
+                // Automatic handling of a (write) DB Transaction
+                DBConnectionObj.AutoTransaction(ref SubmitChangesTransaction, ref SubmissionResult,
+                    delegate
+                    {        
+                        switch (ACacheableTable)
+                        {
+                            {#SAVETABLE}
+
+                            default:
+
+                                throw new Exception(
+                                "TFinanceCacheable.SaveChangedStandardCacheableTable: unsupported Cacheable DataTable '" + CacheableDTName + "'");
+                        }
+                    });
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(
+                    "TFinanceCacheable.SaveChangedStandardCacheableTable: after SubmitChanges call for Cacheable DataTable '" +
+                    CacheableDTName +
+                    "':  Exception " + e.ToString());
+
+                throw;
+            }
+            
+            // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
+            // Cache and inform all other Clients that they need to reload this Cacheable DataTable
+            // the next time something in the Client accesses it.
+            if (SubmissionResult == TSubmitChangesResult.scrOK)
+            {
+                //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
+                GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType, DBConnectionObj);
+
+                AfterSaving(ACacheableTable);
+            }
         }
-    }
-
-    // If saving of the DataTable was successful, update the Cacheable DataTable in the Servers'
-    // Cache and inform all other Clients that they need to reload this Cacheable DataTable
-    // the next time something in the Client accesses it.
-    if (SubmissionResult == TSubmitChangesResult.scrOK)
-    {
-        //FCacheableTablesManager.AddOrRefreshCachedTable(ATableName, ASubmitTable, DomainManager.GClientID);
-        GetCacheableTable(ACacheableTable, String.Empty, true, ALedgerNumber, out TmpType);
-        AfterSaving(ACacheableTable);
+        finally
+        {
+            // Close separate DB Connection if we opened one earlier
+            if (ASeparateDBConnection || ASeparateDBConnectionEstablished)
+            {
+                DBConnectionObj.CloseDBConnection();
+            }
+        }
     }
 
     if (AVerificationResult.Count > 0)
