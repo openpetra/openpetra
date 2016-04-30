@@ -27,7 +27,7 @@ RootNode:
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
-            
+
         grpDates:
             Label: Commitment Dates
             Dock: Top
@@ -36,7 +36,7 @@ RootNode:
             Label: Commitment Status
             Dock: Fill
             Controls: [chkSelectedStatus, grdStatuses, chkNoSelectedStatus]
-            
+
         dtpStartDate:
             Label: Commitment starts between
         dtpEndDate:
@@ -48,13 +48,11 @@ RootNode:
         grdStatuses:
             AutoFindColumn: 1
             Height: 200
-            Width: 320
-            #Margin: 24,5,0,0
+            Width: 420
         chkNoSelectedStatus:
             Label: Include Persons with no Commitment Status set
             CheckBoxAttachedLabel: right
-            #Margin: 24,30,30,30
-            
+
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
             Name: Start Date

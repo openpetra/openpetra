@@ -371,6 +371,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        /// <summary>
+        /// Calls the AutoResizeGrid method on the details grid
+        /// </summary>
+        public void AutoResizeGrid()
+        {
+            grdDetails.AutoResizeGrid();
+        }
+
         #endregion
     }
 }

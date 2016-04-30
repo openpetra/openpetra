@@ -245,8 +245,9 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// BackupDatabaseToYmlGZ
+        /// Returns a string with yml.gz data.
         /// </summary>
+        /// <returns></returns>
         public override string BackupDatabaseToYmlGZ()
         {
             if (FImportExportManager != null)
@@ -261,19 +262,31 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
-        /// RestoreDatabaseFromYmlGZ
+        /// Restore the database from a string with yml.gz data.
         /// </summary>
+        /// <returns></returns>
         public override bool RestoreDatabaseFromYmlGZ(string AYmlGzData)
         {
             return FImportExportManager.RestoreDatabaseFromYmlGZ(AYmlGzData);
         }
 
         /// <summary>
-        /// RefreshAllCachedTables
+        /// Marks all DataTables in the Cache to be no longer up-to-date (=out of sync
+        /// with the data that was originally placed in the DataTable).
         /// </summary>
         public override void RefreshAllCachedTables()
         {
             TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
+        }
+
+        /// <summary>
+        /// Clears (flushes) all RDMBS Connection Pools and returns the new number of DB Connections after clearing all
+        /// RDMBS Connection Pools.
+        /// </summary>
+        /// <returns>New number of DB Connections after clearing all RDMBS Connection Pools.</returns>
+        public override int ClearConnectionPoolAndGetNumberOfDBConnections()
+        {
+            return TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(TSrvSetting.RDMBSType);
         }
 
         /// <summary>

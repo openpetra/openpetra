@@ -59,7 +59,7 @@
                         PUB_p_church.p_partner_key_n AS ChurchPartnerKey,
                         PUB_p_partner.p_partner_short_name_c AS ChurchName
                     FROM   
-                        PUB_p_partner_relationship, PUB_p_church, PUB_p_partner_type, PUB_p_partner
+                        PUB_p_church, PUB_p_partner_type, PUB_p_partner
                 </value>
             </queryDetail>
             <queryDetail condition="eq({param_selection},one partner)">

@@ -28,9 +28,11 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
@@ -89,7 +91,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
                         " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
                         " AND p_partner_type.p_type_code_c LIKE '" +
-                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+                        TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +
 
                         // true if the gift is restricted for the user
@@ -685,6 +687,182 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 });
 
             return Results;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// Derived from the existing method in MFinanceQueries\ReportFinance.cs
+        /// </summary>
+        [NoRemoting]
+        public static DataTable MotivationResponse(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable ReturnTable = new DataTable();
+
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string ReportType = AParameters["param_report_type"].ToString();
+            DateTime FromDate = AParameters["param_from_date"].ToDate();
+            DateTime ToDate = AParameters["param_to_date"].ToDate();
+            bool AllMotivationGroups = AParameters["param_all_motivation_groups"].ToBool();
+            bool AllMotivationDetails = AParameters["param_all_motivation_details"].ToBool();
+            bool SurpressDetailForGifts = AParameters["param_suppress_detail"].ToBool();
+            string MailingCode = AParameters["param_mailing_code"].ToString();
+
+            const string ANONYMOUS = "ANONYMOUS";
+
+            string Query = string.Empty;
+
+            if (ReportType == "Detailed") // Detailed report only
+            {
+                Query = "SELECT a_gift.a_receipt_number_i AS ReceiptNumber, a_gift.a_date_entered_d AS DateEntered," +
+                        " a_gift_detail.a_gift_amount_n AS Amount," +
+                        " a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c,";
+            }
+            else // Brief and Totals reports only
+            {
+                Query = "SELECT DISTINCT SUM (a_gift_detail.a_gift_amount_n) AS Amount," +
+                        " COUNT(*) AS Quantity,";
+            }
+
+            Query += " a_gift.a_first_time_gift_l," +
+                     " a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, a_gift_detail.a_confidential_gift_flag_l,"
+                     +
+                     " a_motivation_detail.a_motivation_detail_desc_c,";
+
+            // all reports
+            Query += " CASE WHEN a_gift_detail.a_confidential_gift_flag_l = 'false' THEN to_char(a_gift.p_donor_key_n, 'FM0000000000')" +
+                     " ELSE '" + ANONYMOUS + "' END AS DonorKey," +
+                     " CASE WHEN a_gift_detail.a_confidential_gift_flag_l = 'false' THEN p_partner.p_partner_short_name_c" +
+                     " ELSE '' END AS DonorName" +
+
+                     " FROM a_gift, a_gift_batch, a_gift_detail, a_motivation_detail, p_partner" +
+
+                     " WHERE a_gift.a_ledger_number_i = " + LedgerNumber +
+                     " AND a_gift.a_date_entered_d >= '" + FromDate.Date.ToString() + "'" +
+                     " AND a_gift.a_date_entered_d <= '" + ToDate.Date.ToString() + "'" +
+                     " AND a_gift_batch.a_ledger_number_i = " + LedgerNumber +
+                     " AND a_gift_batch.a_batch_number_i  = a_gift.a_batch_number_i" +
+                     " AND a_gift_batch.a_batch_status_c = 'Posted'" +
+                     " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber +
+                     " AND a_gift_detail.a_batch_number_i = a_gift_batch.a_batch_number_i" +
+                     " AND a_gift_detail.a_gift_transaction_number_i = a_gift.a_gift_transaction_number_i" +
+                     " AND a_motivation_detail.a_ledger_number_i = " + LedgerNumber +
+                     " AND a_motivation_detail.a_motivation_detail_code_c = a_gift_detail.a_motivation_detail_code_c" +
+                     " AND a_motivation_detail.a_motivation_group_code_c = a_gift_detail.a_motivation_group_code_c" +
+                     " AND p_partner.p_partner_key_n = a_gift.p_donor_key_n";
+
+            if (!AllMotivationGroups)
+            {
+                string MotivationGroups = AParameters["param_motivation_group_quotes"].ToString();
+                Query += " AND a_gift_detail.a_motivation_group_code_c IN (" + MotivationGroups + ")";
+            }
+
+            if (!AllMotivationDetails)
+            {
+                string MotivationGroupDetailPairs = AParameters["param_motivation_group_detail_pairs"].ToString();
+                Query += " AND (a_gift_detail.a_motivation_group_code_c,a_gift_detail.a_motivation_detail_code_c) IN (" +
+                         MotivationGroupDetailPairs + ")";
+            }
+
+            if (!string.IsNullOrEmpty(MailingCode))
+            {
+                Query += " AND a_gift_detail.p_mailing_code_c = '" + MailingCode + "'";
+            }
+
+            if (ReportType == "Detailed") // Detailed report only
+            {
+                Query += " ORDER BY a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, DateEntered";
+            }
+            else // Brief and Totals reports only
+            {
+                Query += " GROUP BY a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, DonorKey," +
+                         " a_gift.a_first_time_gift_l, a_gift_detail.a_confidential_gift_flag_l, a_motivation_detail.a_motivation_detail_desc_c," +
+                         " DonorName" +
+
+                         " ORDER BY a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, DonorKey";
+            }
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ReturnTable = DbAdapter.RunQuery(Query, "MotivationResponse", Transaction);
+
+                    if (ReturnTable != null)
+                    {
+                        // add columns if they do not exist (they need to exist even if empty)
+                        if (!ReturnTable.Columns.Contains("a_gift_comment_one_c"))
+                        {
+                            ReturnTable.Columns.Add("a_gift_comment_one_c", typeof(string));
+                        }
+
+                        if (!ReturnTable.Columns.Contains("a_gift_comment_two_c"))
+                        {
+                            ReturnTable.Columns.Add("a_gift_comment_two_c", typeof(string));
+                        }
+
+                        if (!ReturnTable.Columns.Contains("a_gift_comment_three_c"))
+                        {
+                            ReturnTable.Columns.Add("a_gift_comment_three_c", typeof(string));
+                        }
+
+                        if (!ReturnTable.Columns.Contains("DateEntered"))
+                        {
+                            ReturnTable.Columns.Add("DateEntered", typeof(string));
+                        }
+
+                        if (!ReturnTable.Columns.Contains("ReceiptNumber"))
+                        {
+                            ReturnTable.Columns.Add("ReceiptNumber", typeof(string));
+                        }
+
+                        if (!ReturnTable.Columns.Contains("Quantity"))
+                        {
+                            ReturnTable.Columns.Add("Quantity", typeof(string));
+                        }
+
+                        ReturnTable.Columns.Add("DonorAddress", typeof(string));
+
+                        if ((ReportType == "Detailed") || (ReportType == "Brief"))
+                        {
+                            List <string[]>DonorAddresses = new List <string[]>();
+
+                            // get best address for the partner
+                            foreach (DataRow Row in ReturnTable.Rows)
+                            {
+                                if ((Row["DonorKey"].ToString() != ANONYMOUS)
+                                    && !(SurpressDetailForGifts
+                                         && (Row["a_motivation_group_code_c"].ToString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)))
+                                {
+                                    string[] DonorAddress = DonorAddresses.Find(x => (x[0] == Row["DonorKey"].ToString()));
+
+                                    // if we already have the donor's address...
+                                    if (DonorAddress != null)
+                                    {
+                                        Row["DonorAddress"] = DonorAddress[1];
+                                    }
+                                    else
+                                    {
+                                        PLocationTable DonorLocation;
+                                        string CountryName;
+
+                                        TAddressTools.GetBestAddress(Convert.ToInt64(Row["DonorKey"]), out DonorLocation, out CountryName,
+                                            Transaction);
+
+                                        if (DonorLocation.Rows.Count > 0)
+                                        {
+                                            Row["DonorAddress"] = Calculations.DetermineLocationString(DonorLocation[0],
+                                                Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                                            DonorAddresses.Add(new string[] { Row["DonorKey"].ToString(), Row["DonorAddress"].ToString() });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+            return ReturnTable;
         }
     }
 }

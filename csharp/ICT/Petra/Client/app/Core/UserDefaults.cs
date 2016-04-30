@@ -475,54 +475,72 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="AChangedUserDefaultModId">ModificationID of the changed UserDefault
         /// DataRow
         /// </param>
+        /// <param name="AClientID">The Client ID that requested the refreshing (-1 if none was specified).</param>
         /// <returns>void</returns>
-        public static void RefreshCachedUserDefault(String AChangedUserDefaultCode, String AChangedUserDefaultValue, String AChangedUserDefaultModId)
+        public static void RefreshCachedUserDefault(String AChangedUserDefaultCode, String AChangedUserDefaultValue,
+            String AChangedUserDefaultModId, int AClientID)
         {
-            // TLogging.Log('Refreshing DefaultCode ''' + AChangedUserDefaultCode + ''' with Value: ''' + AChangedUserDefaultValue + '''');
             // Split String into String Array
             String[] ChangedUserDefaultCodes = AChangedUserDefaultCode.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
             String[] ChangedUserDefaultValues = AChangedUserDefaultValue.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
             String[] ChangedUserDefaultModIds = AChangedUserDefaultModId.Split(new Char[] { RemotingConstants.GCLIENTTASKPARAMETER_SEPARATOR[0] });
 
-            for (Int16 Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
+//            TLogging.Log("Refreshing User Default with DefaultCode '" + AChangedUserDefaultCode + "' with Value: '" +
+//                AChangedUserDefaultValue + "'");
+
+            if ((AClientID == -1)
+                || (AClientID == UserInfo.GUserInfo.ProcessID))
             {
-                // TLogging.Log('Refreshing UserDefault ''' + ChangedUserDefaultCodes[Counter] + ''' with value ''' + ChangedUserDefaultValues[Counter] + ''' (ModificationID: ''' + ChangedUserDefaultModIds[Counter] + '''');
-                Int32 FoundInRow = UUserDefaults.Find(ChangedUserDefaultCodes[Counter]);
-
-                if (FoundInRow != -1)
+                for (Int16 Counter = 0; Counter <= ChangedUserDefaultCodes.Length - 1; Counter += 1)
                 {
-                    // User default found
-                    // TLogging.Log('Existing UserDefault ''' +
-                    // UUserDefaults.Item[FoundInRow].Item[SUserDefaultsTable.GetDefaultCodeDBName].ToString + ''' with value ''' +
-                    // UUserDefaults.Item[FoundInRow].Item[SUserDefaultsTable.GetDefaultValueDBName].ToString + ''' (ModificationID: ''' +
-                    // UUserDefaults.Item[FoundInRow].Item[SUserDefaultsTable.GetModificationIDDBName].ToString + '''');
-                    if (ChangedUserDefaultValues[Counter] != UUserDefaults[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()].ToString())
+//                    TLogging.Log("Refreshing single UserDefault '" + ChangedUserDefaultCodes[Counter].ToString() + "' with value '" +
+//                         ChangedUserDefaultValues[Counter] + "' (ModificationID: '" +
+//                         ChangedUserDefaultModIds[Counter].ToString() + "'  (was sent from the same user session of this user on server)");
+                    Int32 FoundInRow = UUserDefaults.Find(ChangedUserDefaultCodes[Counter]);
+
+                    if (FoundInRow != -1)
                     {
-                        // Update only if the value is actually different
-                        UUserDefaults[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
+                        // User default found
+                        // TLogging.Log('Existing UserDefault ''' +
+                        // UUserDefaults.Item[FoundInRow].Item[SUserDefaultsTable.GetDefaultCodeDBName].ToString + ''' with value ''' +
+                        // UUserDefaults.Item[FoundInRow].Item[SUserDefaultsTable.GetDefaultValueDBName].ToString + ''' (ModificationID: ''' +
+                        // UUserDefaults.Item[FoundInRow].Item[SUserDefaultsTable.GetModificationIDDBName].ToString + '''');
+                        if (ChangedUserDefaultValues[Counter] != UUserDefaults[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()].ToString())
+                        {
+                            // Update only if the value is actually different
+                            UUserDefaults[FoundInRow][SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
+                        }
+
+                        UUserDefaults[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()] = Convert.ToDateTime(
+                            ChangedUserDefaultModIds[Counter]);
+
+                        // Mark this refreshed UserDefault as unchanged
+                        UUserDefaults[FoundInRow].Row.AcceptChanges();
                     }
+                    else
+                    {
+                        // User default not found, add it to the user defaults table
+                        // TLogging.Log('UserDefault doesn''t exist yet > creating new one');
+                        DataRowView Tmp = UUserDefaults.AddNew();
+                        Tmp[SUserDefaultsTable.GetUserIdDBName()] = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
+                        Tmp[SUserDefaultsTable.GetDefaultCodeDBName()] = ChangedUserDefaultCodes[Counter];
+                        Tmp[SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
+                        Tmp[SUserDefaultsTable.GetModificationIdDBName()] = ChangedUserDefaultModIds[Counter];
+                        Tmp.EndEdit();
 
-                    UUserDefaults[FoundInRow][SUserDefaultsTable.GetModificationIdDBName()] = Convert.ToDateTime(ChangedUserDefaultModIds[Counter]);
+                        // Mark this refreshed UserDefault as unchanged
+                        Tmp.Row.AcceptChanges();
 
-                    // Mark this refreshed UserDefault as unchanged
-                    UUserDefaults[FoundInRow].Row.AcceptChanges();
+                        // TLogging.Log('UserDefault: new Row added, RowState: ' + Enum(Tmp.Row.RowState).ToString("G"));
+                    }
                 }
-                else
-                {
-                    // User default not found, add it to the user defaults table
-                    // TLogging.Log('UserDefault doesn''t exist yet > creating new one');
-                    DataRowView Tmp = UUserDefaults.AddNew();
-                    Tmp[SUserDefaultsTable.GetUserIdDBName()] = Ict.Petra.Shared.UserInfo.GUserInfo.UserID;
-                    Tmp[SUserDefaultsTable.GetDefaultCodeDBName()] = ChangedUserDefaultCodes[Counter];
-                    Tmp[SUserDefaultsTable.GetDefaultValueDBName()] = ChangedUserDefaultValues[Counter];
-                    Tmp[SUserDefaultsTable.GetModificationIdDBName()] = ChangedUserDefaultModIds[Counter];
-                    Tmp.EndEdit();
-
-                    // Mark this refreshed UserDefault as unchanged
-                    Tmp.Row.AcceptChanges();
-
-                    // TLogging.Log('UserDefault: new Row added, RowState: ' + Enum(Tmp.Row.RowState).ToString("G"));
-                }
+            }
+            else
+            {
+//                TLogging.Log("Refreshing ALL UserDefaults because the request for the refreshing of SINGLE user default was sent " +
+//                    "from a DIFFERENT user session of THIS user on the server [hence we need to first update the server-side-held " +
+//                    "UserDefaults for THIS session of the same user, and then the client-side-held UserDefaults, too])");
+                ReloadCachedUserDefaultsOnServerAndClient();
             }
         }
 
@@ -534,7 +552,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>void</returns>
         public static void ReloadCachedUserDefaults()
         {
-            MessageBox.Show("in ReloadCachedUserDefaults");
+//            TLogging.Log("ReloadCachedUserDefaults got called");
             SUserDefaultsTable TempUserDefaultsDataTable;
             DataSet UserDefaultsDS;
 
@@ -556,14 +574,17 @@ namespace Ict.Petra.Client.App.Core
         }
 
         /// <summary>
-        /// Reload the User Defaults if called on the server.
-        ///
+        /// Update the server-side-held UserDefaults for this session of the same user and then the client-side-held
+        /// UserDefaults, too.
         /// </summary>
-        /// <returns>void</returns>
-        public static void ReloadCachedUserDefaultsOnServer()
+        public static void ReloadCachedUserDefaultsOnServerAndClient()
         {
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.ReloadUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+//            TLogging.Log("ReloadCachedUserDefaultsOnServerAndClient got called");
+            // First update the server-side-held UserDefaults for this session of the same user...
+            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.ReloadUserDefaults(UserInfo.GUserInfo.UserID,
                 out UUserDefaultsDataTable);
+
+            // ...then the client-side-held UserDefaults, too!
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
         }

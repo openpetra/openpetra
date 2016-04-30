@@ -10,6 +10,7 @@ RootNode:
     WindowHeight: 700
     Actions:
         actExportPartnersInExtract: {ActionClick=ExportPartnersInExtract}
+        actExportPartnersInExtractToPetra: {ActionClick=ExportPartnersInExtractToPetra}
         actMaintainExtract: {ActionClick=MaintainExtract}
         actVerifyAndUpdateExtract: {ActionClick=VerifyAndUpdateExtract}
         actPurgeExtracts: {ActionClick=PurgeExtracts}
@@ -60,7 +61,8 @@ RootNode:
 
     Menu:
         mniFile:
-            mniExportPartnersInExtract: {Label=Export Partners in Extract..., Action=actExportPartnersInExtract}
+            mniExportPartnersInExtract: {Label=Export Partners in Extract to OpenPetra..., Action=actExportPartnersInExtract}
+            mniExportPartnersInExtractToPetra: {Label=Export Partners in Extract to Petra..., Action=actExportPartnersInExtractToPetra}
         mniCreateExtract:
             Label: &Create Extract
             mniCreateGeneralExtract: {Label=General Extract, Action=actCreateGeneralExtract}

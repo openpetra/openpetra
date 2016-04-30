@@ -200,10 +200,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 MessageBox.Show(ex.Message);
             }
-            catch (Exception ex)
+            catch
             {
                 Cursor.Current = Cursors.Default;
-                throw ex;
+                throw;
             }
 
             Cursor.Current = Cursors.Default;

@@ -196,7 +196,7 @@ namespace Ict.Common
 
             TLogging.Context = "";
 
-            if (ULogWriter == null || TLogWriter.GetLogFileName() == String.Empty)
+            if ((ULogWriter == null) || (TLogWriter.GetLogFileName() == String.Empty))
             {
                 ULogWriter = new TLogWriter(AFileName);
                 ULogWriter.SuppressDateAndTime = ASuppressDateAndTime;
@@ -281,16 +281,18 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// Logs a message. Output goes to both Screen and Logfile.
-        ///
+        /// Logs a message. Output goes to both Screen and Logfile and - if a callback has been set up with
+        /// <see cref="SetStatusBarProcedure"/> or gets passed in with
+        /// <paramref name="ACustomStatusCallbackProcedure"/> - to a Status Bar of a Form, too.
         /// </summary>
         /// <param name="Text">Log message</param>
-        /// <returns>void</returns>
-        public static void Log(string Text)
+        /// <param name="ACustomStatusCallbackProcedure">Optional instance of a custom callback procedure for writing
+        /// to the StatusBar of a Form (default = null).</param>
+        public static void Log(string Text, TStatusCallbackProcedure ACustomStatusCallbackProcedure = null)
         {
             if (ULogWriter != null)
             {
-                Log(Text, TLoggingType.ToLogfile | TLoggingType.ToConsole);
+                Log(Text, TLoggingType.ToLogfile | TLoggingType.ToConsole, ACustomStatusCallbackProcedure);
             }
             else
             {
@@ -331,7 +333,10 @@ namespace Ict.Common
         /// <param name="Text">Log message</param>
         /// <param name="ALoggingType">Determines the output destination.
         /// Note: More than one output destination can be chosen!</param>
-        public static void Log(string Text, TLoggingType ALoggingType)
+        /// <param name="ACustomStatusCallbackProcedure">Optional instance of a custom callback procedure for writing
+        /// to the StatusBar of a Form (default = null).</param>
+        public static void Log(string Text, TLoggingType ALoggingType,
+            TStatusCallbackProcedure ACustomStatusCallbackProcedure = null)
         {
             if (((ALoggingType & TLoggingType.ToConsole) != 0) && (ULogTextAsString != null) && (ULogTextAsString.Length > 0))
             {
@@ -362,7 +367,7 @@ namespace Ict.Common
             {
                 Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
-                if ((TLogging.Context != null) && (TLogging.Context.Length != 0))
+                if (!string.IsNullOrEmpty(TLogging.Context))
                 {
                     Console.Error.WriteLine("  Context: " + TLogging.Context);
                 }
@@ -371,16 +376,25 @@ namespace Ict.Common
             if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0)
                 || ((ALoggingType & TLoggingType.ToStatusBar) != 0))
             {
-                if (TLogging.StatusBarProcedureValid && (Text.IndexOf("SELECT") == -1))
+                // don't print sql statements to the statusbar in debug mode
+                if (Text.IndexOf("SELECT") == -1)
                 {
-                    // don't print sql statements to the statusbar in debug mode
-
-                    if (TLogging.Context.Length != 0)
+                    if (!string.IsNullOrEmpty(TLogging.Context))
                     {
                         Text += "; Context: " + TLogging.Context;
                     }
 
-                    StatusBarProcedure(Text);
+                    if (ACustomStatusCallbackProcedure == null)
+                    {
+                        if (TLogging.StatusBarProcedureValid)
+                        {
+                            StatusBarProcedure(Text);
+                        }
+                    }
+                    else
+                    {
+                        ACustomStatusCallbackProcedure(Text);
+                    }
                 }
             }
 
@@ -465,6 +479,24 @@ namespace Ict.Common
 
             msg = msg + "in Appdomain " + AppDomain.CurrentDomain.FriendlyName + Environment.NewLine;
             TLogging.Log(msg, ALoggingtype);
+        }
+
+        /// <summary>
+        /// Logs a number of messages in one go. Output goes to both Screen and Logfile.
+        /// </summary>
+        /// <param name="AEx">The exception to log</param>
+        /// <param name="AMethodSignature">The exception to log</param>
+        /// <returns>void</returns>
+        public static void LogException(Exception AEx, String AMethodSignature = "")
+        {
+            ArrayList AList = new ArrayList();
+
+            AList.Add(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                    AMethodSignature,
+                    Environment.NewLine,
+                    AEx.ToString()));
+
+            Log(AList, true);
         }
 
         /// <summary>

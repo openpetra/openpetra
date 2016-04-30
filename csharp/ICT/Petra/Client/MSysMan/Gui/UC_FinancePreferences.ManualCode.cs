@@ -43,21 +43,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void InitializeManualCode()
         {
-            //int DefaultLedger = TUserDefaults.GetInt32Default(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER);
-
-            //FCurrentLedger = TLstTasks.CurrentLedger;
             FInitiallySelectedLedger = TLstTasks.InitiallySelectedLedger;
 
             cmbDefaultLedger.SetSelectedInt32(FInitiallySelectedLedger);
-
-            /*if (DefaultLedger > 0)
-             * {
-             *  cmbDefaultLedger.SetSelectedInt32(DefaultLedger);
-             * }
-             * else
-             * {
-             *  cmbDefaultLedger.SetSelectedInt32(FCurrentLedger);
-             * }*/
 
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             chkNewDonorWarning.Checked = FNewDonorWarning;
@@ -101,7 +89,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             int NewLedger = cmbDefaultLedger.GetSelectedInt32();
 
-            //if (FCurrentLedger != NewLedger)
             if (FInitiallySelectedLedger != NewLedger)
             {
                 TUserDefaults.SetDefault(TUserDefaults.FINANCE_DEFAULT_LEDGERNUMBER, NewLedger);

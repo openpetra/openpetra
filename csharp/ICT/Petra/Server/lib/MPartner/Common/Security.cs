@@ -53,11 +53,15 @@ namespace Ict.Petra.Server.MPartner.Common
         /// advantage of not needing a Server roundtrip for a DB lookup!</para>
         /// </remarks>
         /// <param name="APartnerRow">Partner for which access should be checked for.</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns><see cref="T:TPartnerAccessLevelEnum.palGranted" /> if access
         /// to the Partner is granted, otherwise a different
         /// <see cref="T:TPartnerAccessLevelEnum" /> value.</returns>
         public static TPartnerAccessLevelEnum CanAccessPartner(
-            PPartnerRow APartnerRow)
+            PPartnerRow APartnerRow, TDataBase ADataBase = null)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -69,7 +73,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (APartnerRow.PartnerClass == SharedTypes.PartnerClassEnumToString(
                         TPartnerClass.ORGANISATION))
                 {
-                    ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
                         IsolationLevel.ReadCommitted,
                         TEnforceIsolationLevel.eilMinimum,
                         out NewTransaction);
@@ -123,13 +127,16 @@ namespace Ict.Petra.Server.MPartner.Common
         /// if access to the Partner is not granted, thereby ensuring that a denied access
         /// doesn't go unnoticed.</remarks>
         /// <param name="APartnerRow">Partner for which access should be checked for.</param>
-        /// <returns>void</returns>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <exception cref="T:ESecurityPartnerAccessDeniedException">Thrown if access is not granted.</exception>
-        public static void CanAccessPartnerExc(PPartnerRow APartnerRow)
+        public static void CanAccessPartnerExc(PPartnerRow APartnerRow, TDataBase ADataBase = null)
         {
             TPartnerAccessLevelEnum AccessLevel;
 
-            AccessLevel = CanAccessPartner(APartnerRow);
+            AccessLevel = CanAccessPartner(APartnerRow, ADataBase);
 
             Ict.Petra.Shared.MPartner.TSecurity.AccessLevelExceptionEvaluatorAndThrower(
                 APartnerRow, AccessLevel);
@@ -143,11 +150,15 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="APartnerKey">PartnerKey of Partner for which access should
         /// be checked for.</param>
         /// <param name="AThrowExceptionIfDenied"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns><see cref="TPartnerAccessLevelEnum.palGranted" /> if access
         /// to the Partner is granted (or Partner doesn't exist), otherwise a different
         /// <see cref="TPartnerAccessLevelEnum" /> value.</returns>
         public static TPartnerAccessLevelEnum CanAccessPartnerByKey(Int64 APartnerKey,
-            bool AThrowExceptionIfDenied)
+            bool AThrowExceptionIfDenied, TDataBase ADataBase = null)
         {
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -155,7 +166,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (APartnerKey != 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
+                ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     out NewTransaction);
@@ -170,11 +181,11 @@ namespace Ict.Petra.Server.MPartner.Common
                         // Partner exists, now check Access Level
                         if (!AThrowExceptionIfDenied)
                         {
-                            return CanAccessPartner(PartnerTable[0]);
+                            return CanAccessPartner(PartnerTable[0], ADataBase);
                         }
                         else
                         {
-                            CanAccessPartnerExc(PartnerTable[0]);
+                            CanAccessPartnerExc(PartnerTable[0], ADataBase);
 
                             /*
                              * The previous Method call would throw an Exception
@@ -195,7 +206,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (NewTransaction)
                     {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                        DBAccess.GetDBAccessObj(ADataBase).CommitTransaction();
                         TLogging.LogAtLevel(8, "TSecurity.CanAccessPartnerByKey: committed own transaction.");
                     }
                 }

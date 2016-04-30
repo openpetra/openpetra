@@ -208,28 +208,6 @@
         </query>
       </calculation>
 
-      <calculation id="SelectQualifications" returns="Automatic" returnsFormat="row">
-        <query>
-          <queryDetail>
-            <value>
-              SELECT DISTINCT 
-                PUB_pm_person_qualification.pm_informal_flag_l,
-                PUB_pm_person_qualification.pt_qualification_area_name_c,
-                PUB_pm_person_qualification.pm_years_of_experience_i,
-                PUB_pm_person_qualification.pm_years_of_experience_as_of_d,
-                PUB_pm_person_qualification.pm_comment_c,
-                PUB_pm_person_qualification.pt_qualification_level_i,
-                PUB_pt_qualification_level.pt_qualification_level_descr_c
-              FROM 
-                PUB_pm_person_qualification, PUB_pt_qualification_level
-              WHERE
-                  PUB_pm_person_qualification.p_partner_key_n = {{StaffPartnerKey}}
-                AND PUB_pt_qualification_level.pt_qualification_level_i = PUB_pm_person_qualification.pt_qualification_level_i
-            </value>
-          </queryDetail>
-        </query>
-      </calculation>
-
       <calculation id="CalculateTotalSupport" returns="TotalSupport" returnsFormat="text">
         <query>
           <queryDetail>
@@ -306,8 +284,7 @@
           <lowerLevelReport level="Passport Level" condition="eq({param_chkPassport}, true)"></lowerLevelReport>
           <lowerLevelReport level="Personal Documents Level" condition="eq({param_chkPersonalDocuments}, true)"></lowerLevelReport>
           <lowerLevelReport level="Special Need Level" condition="eq({param_chkSpecialNeeds}, true)"></lowerLevelReport>
-          <lowerLevelReport level="Professional Areas Level" condition="eq({param_chkQualifications}, true)"></lowerLevelReport>
-          <lowerLevelReport level="Ability Level" condition="eq({param_chkAbilities}, true)"></lowerLevelReport>
+          <lowerLevelReport level="Skill Level" condition="eq({param_chkSkills}, true)"></lowerLevelReport>
           <lowerLevelReport level="Language Level" condition="eq({param_chkLanguages}, true)"></lowerLevelReport>
           <lowerLevelReport level="Previous Experience Level" condition="eq({param_chkPreviousExperiences}, true)"></lowerLevelReport>
         </detail>
@@ -764,90 +741,37 @@
         </detail>
       </level>
 
-      <level name="Professional Areas Level" identification="StaffPartnerKey" condition="HasChildRows">
+      <level name="Skill Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">
-            <value text="************** Professional Areas *************"/>
+            <value text="***************** Skills *****************"/>
           </field>
         </header>
         <detail>
-          <lowerLevelReport level="Professional Areas lower Level" calculation="SelectQualifications"></lowerLevelReport>
+          <lowerLevelReport level="Skill lower Level" calculation="SelectSkills"></lowerLevelReport>
         </detail>
       </level>
-      <level name="Professional Areas lower Level" identification="StaffPartnerKey">
+
+      <level name="Skill lower Level" identification="StaffPartnerKey">
         <detail>
-          <lowerLevelReport level="Professional Areas Lowest Level1"/>
-          <lowerLevelReport level="Professional Areas Lowest Level2"/>
-          <lowerLevelReport level="Professional Areas Lowest Level3"/>
+          <lowerLevelReport level="Skill Lowest Level1"/>
         </detail>
       </level>
-      <level name="Professional Areas Lowest Level1" identification="StaffPartnerKey">
+      <level name="Skill Lowest Level1" identification="StaffPartnerKey">
         <detail>
           <field whichfield="column 0" pos="1cm">
-            <value text="Qualification Area: " />
-            <value variable="pt_qualification_area_name_c"/>
+            <value text="Category: " />
+            <value variable="pm_skill_category_code_c"/>
+            <value text="  Skill: " />
+            <value variable="pm_description_english_c"/>
+            <value text=" -- " condition="and(gt(length({pm_description_english_c}), 0),gt(length({pm_description_local_c}), 0))"/>
+            <value variable="pm_description_local_c"/>
             <value text="  Level: " />
-            <value variable="pt_qualification_level_i"/>
-            <value text="  Description: " />
-            <value variable="pt_qualification_level_descr_c"/>
+            <value variable="pt_description_c"/>
           </field>
         </detail>
       </level>
-      <level name="Professional Areas Lowest Level2" identification="StaffPartnerKey">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value text="Years of experience: " />
-            <value variable="pm_years_of_experience_i"/>
-            <value text="     As of: "/>
-            <value variable="pm_years_of_experience_as_of_d"/>
-            <value text="    Informal Training?: YES" condition="{pm_informal_flag_l}"/>
-            <value text="    Informal Training?: NO" condition="not({pm_informal_flag_l})"/>
-          </field>
-        </detail>
-      </level>
-      <level name="Professional Areas Lowest Level3" identification="StaffPartnerKey">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value text="Comment: " />
-            <value variable="pm_comment_c"/>
-            <value text="--" condition="lt(length({pm_comment_c}), 1)"/>
-          </field>
-        </detail>
-      </level>
-
-      <level name="Ability Level" identification="StaffPartnerKey" condition="HasChildRows">
-        <header>
-          <field whichfield="header 0" pos="0cm">
-            <value text="***************** Ability Areas *****************"/>
-          </field>
-        </header>
-        <detail>
-          <lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
-        </detail>
-      </level>
-
-      <level name="Ability lower Level" identification="StaffPartnerKey">
-        <detail>
-          <lowerLevelReport level="Ability Lowest Level1"/>
-        </detail>
-      </level>
-      <level name="Ability Lowest Level1" identification="StaffPartnerKey">
-        <detail>
-          <field whichfield="column 0" pos="1cm">
-            <value text="Ability Area: " />
-            <value variable="pt_ability_area_name_c"/>
-            <value text="  Level: " />
-            <value variable="pt_ability_level_i"/>
-            <value text="  Description: " />
-            <value variable="pt_ability_level_descr_c"/>
-            <value text="  Years of Experience: " />
-            <value variable="pm_years_of_experience_i"/>
-            <value text=" As of: " />
-            <value variable="pm_years_of_experience_as_of_d"/>
-          </field>
-        </detail>
-      </level>
-
+      
       <level name="Language Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
           <field whichfield="header 0" pos="0cm">

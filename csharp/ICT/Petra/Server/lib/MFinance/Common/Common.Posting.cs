@@ -152,11 +152,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return RetVal;
@@ -252,11 +249,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return RetVal;
@@ -311,11 +305,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return GLBatchDS;
@@ -394,11 +385,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return GLBatchDS;
@@ -488,11 +476,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return PostingDS;
@@ -571,11 +556,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -1002,11 +984,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
@@ -1164,7 +1143,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     foreach (DataRowView drv in tempDV)
                     {
-                        errMessage += string.Format("{0}Batch:{1} Journal:{2}",
+                        errMessage += string.Format("{0}GL Batch:{1} Journal:{2}",
                             Environment.NewLine,
                             drv[jBatchNumberAlias],
                             drv[jJournalNumberAlias]);
@@ -1210,11 +1189,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
@@ -2194,11 +2170,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             AVerifications = Verifications;
@@ -2225,7 +2198,10 @@ namespace Ict.Petra.Server.MFinance.Common
         /// post several GL Batches at once
         /// Returns true if it seems to be OK.
         /// </summary>
-        public static bool PostGLBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        public static bool PostGLBatches(Int32 ALedgerNumber,
+            List <Int32>ABatchNumbers,
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             //Used in validation of arguments
             AVerifications = new TVerificationResultCollection();
@@ -2234,9 +2210,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (ALedgerNumber <= 0)
             {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting GL Batch",
+                        "The Ledger number must be greater than 0!",
+                        TResultSeverity.Resv_Critical));
+                return false;
             }
             else if (ABatchNumbers.Count == 0)
             {
@@ -2252,9 +2231,12 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (batchNumber <= 0)
                 {
-                    throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
-                                "Function:{0} - The Batch number must be greater than 0!"),
-                            Utilities.GetMethodName(true)), ALedgerNumber, batchNumber);
+                    AVerifications.Add(
+                        new TVerificationResult(
+                            "Posting GL Batch",
+                            "The Batch number must be greater than 0!",
+                            TResultSeverity.Resv_Critical));
+                    return false;
                 }
             }
 
@@ -2270,7 +2252,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -2312,11 +2294,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             AVerifications = VerificationResult;
@@ -2407,11 +2386,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return RetVal;
@@ -2714,11 +2690,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             if (AVerifications.HasCriticalErrors)
@@ -2794,11 +2767,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -2888,11 +2858,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -2978,11 +2945,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -3078,11 +3042,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return CreationSuccessful;
@@ -3192,11 +3153,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return CreationSuccessful;

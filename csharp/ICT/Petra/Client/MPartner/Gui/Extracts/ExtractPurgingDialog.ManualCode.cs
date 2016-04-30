@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void InitializeManualCode()
         {
             // set the number of days to default according to settings used in System Manager
-            String NumberOfDays = TSystemDefaults.GetSystemDefault
+            String NumberOfDays = TSystemDefaults.GetStringDefault
                                       (SharedConstants.SYSDEFAULT_PURGEEXTRACTS, "no,365").Split(',')[1];
 
             txtNumberOfDays.NumberValueInt = Convert.ToInt32(NumberOfDays);

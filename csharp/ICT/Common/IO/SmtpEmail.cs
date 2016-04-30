@@ -305,7 +305,7 @@ namespace Ict.Common.IO
 
                         return true;
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
                         if (AttemptCount > 0)
                         {
@@ -313,7 +313,8 @@ namespace Ict.Common.IO
                         }
                         else
                         {
-                            throw e;
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
+                            throw;
                         }
                     }
                 }

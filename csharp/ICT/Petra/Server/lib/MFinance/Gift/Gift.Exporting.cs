@@ -218,14 +218,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 FTransaction,
                                 parameters.ToArray());
                         }
-                        catch (ApplicationException ex)
-                        {
-                            throw ex;
-                        }
                         catch (Exception ex)
                         {
-                            TLogging.Log("Error in ExportAllGiftBatchData: " + ex.Message);
-                            throw ex;
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
+                            throw;
                         }
                     });
 

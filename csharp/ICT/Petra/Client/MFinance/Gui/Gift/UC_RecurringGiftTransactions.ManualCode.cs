@@ -2614,6 +2614,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if ((grdDetails != null) && grdDetails.CanFocus)
             {
+                grdDetails.AutoResizeGrid();
                 grdDetails.Focus();
             }
         }

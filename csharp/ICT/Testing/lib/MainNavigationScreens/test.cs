@@ -128,7 +128,7 @@ namespace Tests.MainNavigationScreens
                     XmlNode ActionNode = ((IHasXmlNode)iterator.Current).GetNode();
 
                     // look at the permissions module the window came from
-                    string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                    string Module = TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
                     TLogging.Log(String.Format("{0,-36}{1,-36}{2}", ActionNode.Name, ActionNode.Attributes["ActionOpenScreen"].Value, Module));
                 }
             }
@@ -273,7 +273,7 @@ namespace Tests.MainNavigationScreens
                     }
 
                     // look at the permissions module the window came from
-                    string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                    string Module = TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
 
                     TLstTasks.CurrentLedger = TFrmMainWindowNew.CurrentLedger;
 
@@ -320,7 +320,7 @@ namespace Tests.MainNavigationScreens
                             }
                             else
                             {
-                                string permissions = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                                string permissions = TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
                                 string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " + permissions;
 
                                 if (permissions.Contains("SYSMAN"))
@@ -340,7 +340,7 @@ namespace Tests.MainNavigationScreens
                             BadFailures++;
 
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                                     TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                                                     TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
 
                             notOpened.Add(WindowAndModule);
                         }
@@ -359,8 +359,8 @@ namespace Tests.MainNavigationScreens
                         {
                             NoOtherPermissionCount++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                                     TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired",
-                                true) + Environment.NewLine +
+                                                     TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired") +
+                                                     Environment.NewLine +
                                                      "                                 " + ledger;
                             otherPermissions.Add(WindowAndModule);
                         }
@@ -368,8 +368,7 @@ namespace Tests.MainNavigationScreens
                         {
                             BadFailures++;
                             string WindowAndModule = ActionNode.Name + Environment.NewLine + "            Permission Required: " +
-                                                     TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired",
-                                true);
+                                                     TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
 
                             if (ledgerNumber != String.Empty)
                             {
@@ -404,7 +403,7 @@ namespace Tests.MainNavigationScreens
                 notOpened.Count + Environment.NewLine + "      " + notOpenedString + Environment.NewLine);
 
             //Now the loop is finished so fail if there were exceptions
-            Assert.GreaterOrEqual(TotalWindowsOpened, 220, "Expected to open at least 220 windows");
+            Assert.GreaterOrEqual(TotalWindowsOpened, 190, "Expected to open at least 190 windows");
             Assert.GreaterOrEqual(sysManPermissions.Count, 3, "Expected to fail to open at least 3 windows requiring SYSMAN permissions");
             Assert.AreEqual(notOpened.Count, 0, "Failed to open at least one window for unexplained reasons");
             Assert.AreEqual(otherPermissions.Count,

@@ -123,8 +123,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 }
             }
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // calculates each step's (optional and non-optional) percentage for the progress tracker
             TrackerPercent = 100 / (NumberOfCategories + 3);

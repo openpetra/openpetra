@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using Ict.Common;
 
-namespace Ict.Common.Remoting.Server
+namespace Ict.Common
 {
     /// <summary>
     /// Static class for storing Server settings. Once instantiated, Server settings
@@ -62,6 +62,7 @@ namespace Ict.Common.Remoting.Server
         private string FIntranetDataDestinationEmail;
         private string FIntranetDataSenderEmail;
         private bool FRunAsStandalone;
+        private String FApplicationBinFolder;
 
         #region Properties
         private static TSrvSetting USingletonSrvSetting = null;
@@ -75,7 +76,7 @@ namespace Ict.Common.Remoting.Server
             }
         }
 
-        /// <summary>Name of .NET Configuration File, if specified via command line options</summary>
+        /// <summary>Path and name of .NET Configuration File (e.g. specified via command line option '-C').</summary>
         public static String ConfigurationFile
         {
             get
@@ -313,6 +314,20 @@ namespace Ict.Common.Remoting.Server
             }
         }
 
+        /// <summary>
+        /// Folder that the Application is running from. Important only when the Server is run as a
+        /// Windows Service as in this situation the folder that the Application is running from
+        /// cannot be automatically determined (SERVICES.EXE is running the application in that
+        /// situation from the {%SystemRoot%}\System32 directory)!
+        /// </summary>
+        public static string ApplicationBinFolder
+        {
+            get
+            {
+                return USingletonSrvSetting.FApplicationBinFolder;
+            }
+        }
+
         #endregion
 
         /// Copy constructor
@@ -347,6 +362,7 @@ namespace Ict.Common.Remoting.Server
             FRunAsStandalone = ACopyFrom.FRunAsStandalone;
             FIntranetDataDestinationEmail = ACopyFrom.FIntranetDataDestinationEmail;
             FIntranetDataSenderEmail = ACopyFrom.FIntranetDataSenderEmail;
+            FApplicationBinFolder = ACopyFrom.FApplicationBinFolder;
         }
 
         /// <summary>
@@ -372,6 +388,8 @@ namespace Ict.Common.Remoting.Server
             FDatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             FDBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
             FDBPassword = TAppSettingsManager.GetValue("Server.DBPassword", string.Empty, false);
+
+            FApplicationBinFolder = TAppSettingsManager.GetValue("Server.ApplicationBinDirectory", string.Empty, false);
 
             if (FDBPassword == "PG_OPENPETRA_DBPWD")
             {

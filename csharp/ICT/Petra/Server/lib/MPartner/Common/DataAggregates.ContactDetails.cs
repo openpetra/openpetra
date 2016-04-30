@@ -151,14 +151,25 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// </summary>
         /// <param name="APartnerKey"></param>
         /// <param name="AEmailAddress"></param>
-        /// <returns></returns>
-        public static bool GetWithinOrganisationOrPrimaryEmailAddress(Int64 APartnerKey, out string AEmailAddress)
+        /// <param name="AEmailType"></param>
+        /// <returns>true if there seems to be one</returns>
+        public static bool GetWithinOrganisationOrPrimaryEmailAddress(Int64 APartnerKey, out string AEmailAddress, out String AEmailType)
         {
             Calculations.TPartnersOverallContactSettings PrimaryContactAttributes = GetPartnersOverallCS(APartnerKey,
                 Calculations.TOverallContSettingKind.ocskPrimaryEmailAddress | Calculations.TOverallContSettingKind.ocskEmailAddressWithinOrg);
-            return Calculations.GetWithinOrganisationEmailAddress(PrimaryContactAttributes, out AEmailAddress)
-                   ||
-                   Calculations.GetPrimaryEmailAddress(PrimaryContactAttributes, out AEmailAddress);
+            Boolean foundOne = Calculations.GetWithinOrganisationEmailAddress(PrimaryContactAttributes, out AEmailAddress);
+
+            if (foundOne)
+            {
+                AEmailType = "FIELD";
+            }
+            else
+            {
+                foundOne = Calculations.GetPrimaryEmailAddress(PrimaryContactAttributes, out AEmailAddress);
+                AEmailType = "PRIMARY";
+            }
+
+            return foundOne;
         }
 
         /// <summary>
@@ -248,7 +259,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// is marked with 'true' in the special Column
         /// <see cref="Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN"/>!
         /// </returns>
-        private static PPartnerAttributeTable GetPartnersContactDetailAttributes(Int64 APartnerKey)
+        public static PPartnerAttributeTable GetPartnersContactDetailAttributes(Int64 APartnerKey)
         {
             PPartnerAttributeTable ReturnValue = null;
             TDBTransaction ReadTransaction = null;

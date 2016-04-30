@@ -13,7 +13,7 @@ RootNode:
         actPostBatch: {Label=P&ost Batch, ActionClick=PostBatch}
         actExportBatches: {Label=E&xport Batches, ActionClick=ExportBatches}
         actImportBatches: {Label=&Import Batches From File, ActionClick=ImportBatches}
-        actImportFromClipboard: {Label=I&mport Batches From Clipboard, ActionClick=ImportFromClipboard}
+        actImportFromClipboard: {Label=Import Batches From &Clipboard, ActionClick=ImportFromClipboard}
         actReverseGiftBatch: {Label=Re&verse Gift Batch, ActionClick=ReverseGiftBatch}
         actSetExchangeRate:{Label=Get/Set Exchange Rate, ActionClick=SetExchangeRateValue}
         actFieldAdjustment:{Label=Field Change Adjustment, ActionClick=FieldAdjustment}
@@ -66,8 +66,8 @@ RootNode:
             TableName: AGiftBatch
             Columns: [BatchNumber, GlEffectiveDate, BatchStatus, BatchDescription, HashTotal, BatchTotal, CurrencyCode, BankCostCentre, BankAccountCode, GiftType, DateModified]
             CustomColumns:
-                HashTotal: {Type=Currency}
-                BatchTotal: {Type=Currency}
+                HashTotal: {Label=Hash Total, Type=Currency}
+                BatchTotal: {Label=Batch Total, Type=Currency}
             ActionFocusRow: FocusedRowChanged
             #ActionDoubleClickCell: ShowTransactionTab  # the generator does not support this event
             ActionEnterKeyPressed: ShowTransactionTab
@@ -108,7 +108,7 @@ RootNode:
             mniReverseGiftBatch: {Action=actReverseGiftBatch}
             mniSeparator: {Label=-}
             mniImportTransactions: {Label=&Import Batches From File, Action: actImportBatches}
-            mniImportFromClipboard: {Label=I&mport Batches From Clipboard, Action: actImportFromClipboard}
+            mniImportFromClipboard: {Label=Import Batches From Clipboard, Action: actImportFromClipboard}
             mniSeparator: {Label=-}
             mniFieldAdjustment: {Action=actFieldAdjustment}
     Toolbar:

@@ -173,5 +173,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 this.Close();
             }
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            grdTypes.AutoResizeGrid();
+        }
     }
 }

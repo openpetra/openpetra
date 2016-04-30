@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// Populates the grid for the dialog for selecting Addresses to be merged.
         /// </summary>
-        public void InitializeAddressGrid(long APartnerKey)
+        public bool InitializeAddressGrid(long APartnerKey)
         {
             // set text for label
             lblInfo.Text = Catalog.GetString("The following addresses exist for the Partner being merged. Select the addresses to be transferred.") +
@@ -81,36 +81,46 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 
             FMainDS = TRemote.MPartner.Partner.WebConnectors.GetPartnerDetails(APartnerKey, true, false, false);
-            DataView MyDataView = FMainDS.PLocation.DefaultView;
 
-            FDataTable = MyDataView.ToTable(true, new string[] { Address1, Street2, Address3, City, LocationKey, SiteKey });
-            FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
-            FDataTable.Columns.Add(LocationType, typeof(string));
-
-            for (int Counter = 0; Counter < FMainDS.PLocation.Rows.Count; ++Counter)
+            if ((FMainDS != null) && (FMainDS.PLocation != null) && (FMainDS.PLocation.Rows.Count > 0))
             {
-                FDataTable.Rows[Counter][LocationType] = FMainDS.PPartnerLocation.Rows[Counter][LocationType];
+                DataView MyDataView = FMainDS.PLocation.DefaultView;
+
+                FDataTable = MyDataView.ToTable(true, new string[] { Address1, Street2, Address3, City, LocationKey, SiteKey });
+                FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+                FDataTable.Columns.Add(LocationType, typeof(string));
+
+                for (int Counter = 0; Counter < FMainDS.PLocation.Rows.Count; ++Counter)
+                {
+                    FDataTable.Rows[Counter][LocationType] = FMainDS.PPartnerLocation.Rows[Counter][LocationType];
+                }
+
+                clbRecords.Columns.Clear();
+                clbRecords.AddCheckBoxColumn("", FDataTable.Columns[CheckedMember], 17, false);
+                clbRecords.AddTextColumn("Address-1", FDataTable.Columns[Address1]);
+                clbRecords.AddTextColumn("Street-2", FDataTable.Columns[Street2]);
+                clbRecords.AddTextColumn("Address-3", FDataTable.Columns[Address3]);
+                clbRecords.AddTextColumn("City", FDataTable.Columns[City]);
+                clbRecords.AddTextColumn("Location Type", FDataTable.Columns[LocationType]);
+                clbRecords.ValueChanged += new EventHandler(OnCheckboxChange);
+
+                clbRecords.DataBindGrid(FDataTable, Address1, CheckedMember, Address1, false, true, false);
+                clbRecords.SetCheckedStringList("");
+
+                clbRecords.AutoResizeGrid();
+
+                return true;
             }
-
-            clbRecords.Columns.Clear();
-            clbRecords.AddCheckBoxColumn("", FDataTable.Columns[CheckedMember], 17, false);
-            clbRecords.AddTextColumn("Address-1", FDataTable.Columns[Address1]);
-            clbRecords.AddTextColumn("Street-2", FDataTable.Columns[Street2]);
-            clbRecords.AddTextColumn("Address-3", FDataTable.Columns[Address3]);
-            clbRecords.AddTextColumn("City", FDataTable.Columns[City]);
-            clbRecords.AddTextColumn("Location Type", FDataTable.Columns[LocationType]);
-            clbRecords.ValueChanged += new EventHandler(OnCheckboxChange);
-
-            clbRecords.DataBindGrid(FDataTable, Address1, CheckedMember, Address1, false, true, false);
-            clbRecords.SetCheckedStringList("");
-
-            clbRecords.AutoResizeGrid();
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Populates the grid for the dialog for selecting Addresses to be merged.
         /// </summary>
-        public void InitializeContactDetailGrid(long AFromPartnerKey, long AToPartnerKey)
+        public bool InitializeContactDetailGrid(long AFromPartnerKey, long AToPartnerKey)
         {
             // set text for label
             lblInfo.Text = Catalog.GetString(
@@ -131,34 +141,44 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PartnerEditTDSPPartnerAttributeTable ContactDetails =
                 TRemote.MPartner.Partner.WebConnectors.GetPartnerContactDetails(AFromPartnerKey, AToPartnerKey);
-            DataView MyDataView = ContactDetails.DefaultView;
 
-            FDataTable = MyDataView.ToTable(true, new string[]
-                { ContactCategory, ContactType, Sequence, Value, Primary, Business, Current, NoLongerCurrentFrom, Comment });
-            FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
+            if ((ContactDetails != null) && (ContactDetails.Rows.Count > 0))
+            {
+                DataView MyDataView = ContactDetails.DefaultView;
 
-            clbRecords.Columns.Clear();
-            clbRecords.AddCheckBoxColumn("", FDataTable.Columns[CheckedMember], 17, false);
-            clbRecords.AddTextColumn("Category", FDataTable.Columns[ContactCategory]);
-            clbRecords.AddTextColumn("Type", FDataTable.Columns[ContactType]);
-            clbRecords.AddTextColumn("Value", FDataTable.Columns[Value]);
-            clbRecords.AddCheckBoxColumn("Primary", FDataTable.Columns[Primary], true);
-            clbRecords.AddCheckBoxColumn("Business", FDataTable.Columns[Business], true);
-            clbRecords.AddCheckBoxColumn("Current", FDataTable.Columns[Current], true);
-            clbRecords.AddDateColumn("No Longer Current From", FDataTable.Columns[NoLongerCurrentFrom]);
-            clbRecords.AddTextColumn("Comment", FDataTable.Columns[Comment]);
-            clbRecords.ValueChanged += new EventHandler(OnCheckboxChange);
+                FDataTable = MyDataView.ToTable(true,
+                    new string[] { ContactCategory, ContactType, Sequence, Value, Primary, Business, Current, NoLongerCurrentFrom, Comment });
+                FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
 
-            clbRecords.DataBindGrid(FDataTable, ContactCategory + ", " + ContactType + ", " + Value, CheckedMember, Value, false, true, false);
-            clbRecords.SetCheckedStringList("");
+                clbRecords.Columns.Clear();
+                clbRecords.AddCheckBoxColumn("", FDataTable.Columns[CheckedMember], 17, false);
+                clbRecords.AddTextColumn("Category", FDataTable.Columns[ContactCategory]);
+                clbRecords.AddTextColumn("Type", FDataTable.Columns[ContactType]);
+                clbRecords.AddTextColumn("Value", FDataTable.Columns[Value]);
+                clbRecords.AddCheckBoxColumn("Primary", FDataTable.Columns[Primary], true);
+                clbRecords.AddCheckBoxColumn("Business", FDataTable.Columns[Business], true);
+                clbRecords.AddCheckBoxColumn("Current", FDataTable.Columns[Current], true);
+                clbRecords.AddDateColumn("No Longer Current From", FDataTable.Columns[NoLongerCurrentFrom]);
+                clbRecords.AddTextColumn("Comment", FDataTable.Columns[Comment]);
+                clbRecords.ValueChanged += new EventHandler(OnCheckboxChange);
 
-            clbRecords.AutoResizeGrid();
+                clbRecords.DataBindGrid(FDataTable, ContactCategory + ", " + ContactType + ", " + Value, CheckedMember, Value, false, true, false);
+                clbRecords.SetCheckedStringList("");
+
+                clbRecords.AutoResizeGrid();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
         /// Populates the grid for the dialog for selecting which bank account should be the main one.
         /// </summary>
-        public void InitializeBankAccountGrid(long AFromPartnerKey, long AToPartnerKey)
+        public bool InitializeBankAccountGrid(long AFromPartnerKey, long AToPartnerKey)
         {
             // set text for label
             lblInfo.Text = Catalog.GetString("Please choose the Bank Account that should become the Main Account for the merged Partner.");
@@ -166,16 +186,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             PBankingDetailsTable BankingDetailsTable = TRemote.MPartner.Partner.WebConnectors.GetPartnerBankingDetails(
                 AFromPartnerKey, AToPartnerKey);
 
-            clbRecords.Columns.Clear();
-            clbRecords.AddTextColumn("Account Name", BankingDetailsTable.ColumnAccountName);
-            clbRecords.AddTextColumn("Account Number", BankingDetailsTable.ColumnBankAccountNumber);
-            clbRecords.AddTextColumn("IBAN", BankingDetailsTable.ColumnBankingDetailsKey);
+            if ((BankingDetailsTable != null) && (BankingDetailsTable.Rows.Count > 0))
+            {
+                clbRecords.Columns.Clear();
+                clbRecords.AddTextColumn("Account Name", BankingDetailsTable.ColumnAccountName);
+                clbRecords.AddTextColumn("Account Number", BankingDetailsTable.ColumnBankAccountNumber);
+                clbRecords.AddTextColumn("IBAN", BankingDetailsTable.ColumnBankingDetailsKey);
 
-            DataView MyDataView = BankingDetailsTable.DefaultView;
-            MyDataView.AllowNew = false;
-            clbRecords.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+                DataView MyDataView = BankingDetailsTable.DefaultView;
+                MyDataView.AllowNew = false;
+                clbRecords.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
 
-            clbRecords.AutoResizeGrid();
+                clbRecords.AutoResizeGrid();
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -269,18 +298,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             DialogResult dlgResult;
 
             TFrmGetMergeDataDialog SelectDialog = new TFrmGetMergeDataDialog(AParentForm);
+            bool RecordsExist = true;
 
             if (AMergeAction == TMergeActionEnum.ADDRESS)
             {
-                SelectDialog.InitializeAddressGrid(AFromPartnerKey);
+                RecordsExist = SelectDialog.InitializeAddressGrid(AFromPartnerKey);
             }
             else if (AMergeAction == TMergeActionEnum.CONTACTDETAIL)
             {
-                SelectDialog.InitializeContactDetailGrid(AFromPartnerKey, AToPartnerKey);
+                RecordsExist = SelectDialog.InitializeContactDetailGrid(AFromPartnerKey, AToPartnerKey);
             }
             else if (AMergeAction == TMergeActionEnum.BANKACCOUNT)
             {
                 SelectDialog.InitializeBankAccountGrid(AFromPartnerKey, AToPartnerKey);
+            }
+
+            if (!RecordsExist)
+            {
+                return true;
             }
 
             dlgResult = SelectDialog.ShowDialog();

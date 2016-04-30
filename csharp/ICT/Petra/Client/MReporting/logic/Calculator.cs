@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, ChristianK
 //
 // Copyright 2004-2015 by OM International
 //
@@ -22,17 +22,18 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Windows.Forms;
-using Ict.Common.Remoting.Shared;
-using Ict.Petra.Shared.Interfaces.MReporting;
-using Ict.Petra.Shared.MReporting;
 using System.Collections.Specialized;
-using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.CommonForms;
+using System.Threading;
+
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
-using System.Threading;
+using Ict.Common.Remoting.Shared;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.Interfaces.MReporting;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Logic
 {
@@ -63,6 +64,7 @@ namespace Ict.Petra.Client.MReporting.Logic
         protected TimeSpan Duration;
         private IReportingUIConnectorsReportGenerator FReportingGenerator;
         private Boolean FKeepUpProgressCheck;
+        private TLogging.TStatusCallbackProcedure FStatusBarProcedure;
 
         /// <summary>
         /// constructor
@@ -476,12 +478,18 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <returns>
         /// true if the report was successfully generated
         /// </returns>
-        public Boolean GenerateResultRemoteClient()
+        public Boolean GenerateResultRemoteClient(TLogging.TStatusCallbackProcedure AStatusBarProcedure = null)
         {
             Boolean ReturnValue;
             Thread ProgressCheckThread;
 
             ReturnValue = false;
+
+            if (AStatusBarProcedure != null)
+            {
+                FStatusBarProcedure = AStatusBarProcedure;
+            }
+
             FReportingGenerator = TRemote.MReporting.UIConnectors.ReportGenerator();
             FKeepUpProgressCheck = true;
 
@@ -489,6 +497,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             {
                 this.Results = new TResultList();
                 FReportingGenerator.Start(this.Parameters.ToDataTable());
+
                 ProgressCheckThread = new Thread(new ThreadStart(AsyncProgressCheckThread));
                 ProgressCheckThread.Start();
             }
@@ -519,7 +528,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 {
                     TLogging.Log("Extract calculation finished. Look for extract '" +
                         Parameters.Get("param_extract_name").ToString() +
-                        "' in Extract Master List.", TLoggingType.ToStatusBar);
+                        "' in Extract Master List.", TLoggingType.ToStatusBar, FStatusBarProcedure);
 
                     TFormsMessage BroadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcExtractCreated);
                     BroadcastMessage.SetMessageDataName(Parameters.Get("param_extract_name").ToString());
@@ -527,7 +536,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 }
                 else
                 {
-                    TLogging.Log("Report calculation finished.", TLoggingType.ToStatusBar);
+                    TLogging.Log("Report calculation finished.", TLoggingType.ToStatusBar, FStatusBarProcedure);
                 }
             }
 
@@ -563,7 +572,26 @@ namespace Ict.Petra.Client.MReporting.Logic
 
                         if (ErrorMessage != null)
                         {
-                            TLogging.Log(FReportingGenerator.GetErrorMessage());
+                            if (ErrorMessage != String.Empty)
+                            {
+                                if (!ErrorMessage.StartsWith(
+                                        SharedConstants.NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX,
+                                        StringComparison.InvariantCulture))
+                                {
+                                    TLogging.Log(FReportingGenerator.GetErrorMessage(), FStatusBarProcedure);
+                                }
+                                else
+                                {
+                                    FStatusBarProcedure(ErrorMessage.Substring(
+                                            SharedConstants.NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX.Length));
+                                }
+                            }
+                            else
+                            {
+                                // We get here e.g. when Report Generation was cancelled: this clears anything that the
+                                // Status Bar has previously shown.
+                                FStatusBarProcedure(String.Empty);
+                            }
                         }
                     }
 
@@ -573,7 +601,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                 {
                     if ((state.StatusMessage != null) && (!OldLoggingText.Equals(state.StatusMessage)))
                     {
-                        TLogging.Log(state.StatusMessage, TLoggingType.ToStatusBar);
+                        TLogging.Log(state.StatusMessage, TLoggingType.ToStatusBar, FStatusBarProcedure);
                         OldLoggingText = state.StatusMessage;
                     }
                 }

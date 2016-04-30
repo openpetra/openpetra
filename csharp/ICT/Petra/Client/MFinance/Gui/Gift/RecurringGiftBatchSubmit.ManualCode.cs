@@ -99,6 +99,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitializeManualCode()
         {
             dtpEffectiveDate.Date = DateTime.Now;
+            this.AcceptButton = btnOK;
+            this.CancelButton = btnClose;
         }
 
         private void SetCurrencyControls()
@@ -211,21 +213,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
+            //Need to run this here just in case the user presses <ENTER> on keyboard
+            // after changing the date but no OnLeave event occurs for the date box.
+            CheckBatchEffectiveDate(null, null);
+
             // This should never happen - but ...
             if (txtExchangeRateToBase.NumberValueDecimal <= 0.0m)
             {
-                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0.0"));
+                MessageBox.Show(Catalog.GetString("The exchange rate must be a number greater than 0.0!"),
+                    Catalog.GetString("Submit Recurring Gift Batch"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
                 btnGetSetExchangeRate.Enabled = true;
                 return;
             }
-
             //check the gift batch date
-            if ((dtpEffectiveDate.Date < FStartDateCurrentPeriod)
-                || (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod))
+            else if ((dtpEffectiveDate.Date < FStartDateCurrentPeriod)
+                     || (dtpEffectiveDate.Date > FEndDateLastForwardingPeriod))
             {
-                MessageBox.Show(Catalog.GetString("The batch date is outside the allowed posting period start/end date range: " +
-                        FStartDateCurrentPeriod.ToShortDateString() + " to " +
-                        FEndDateLastForwardingPeriod.ToShortDateString()));
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The batch date is outside the allowed posting period start/end date range: {0} to {1}!"),
+                        FStartDateCurrentPeriod.ToShortDateString(),
+                        FEndDateLastForwardingPeriod.ToShortDateString()),
+                    Catalog.GetString("Submit Recurring Gift Batch"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+
                 dtpEffectiveDate.Focus();
                 dtpEffectiveDate.SelectAll();
                 return;
@@ -238,18 +252,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             requestParams.Add("AExchangeRateToBase", FExchangeRateToBase);
             requestParams.Add("AExchangeRateIntlToBase", FExchangeRateIntlToBase);
 
-            TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams);
+            int CreatedGiftBatchNumber = 0;
 
-            MessageBox.Show(Catalog.GetString("Your recurring batch was submitted successfully!"),
-                Catalog.GetString("Success"),
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            try
+            {
+                if (TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out CreatedGiftBatchNumber))
+                {
+                    string successMessage =
+                        String.Format(Catalog.GetString(
+                                "Your recurring batch was submitted successfully as new Gift Batch {0}!{1}{1}" +
+                                "If the Gift Batches form is open it will try to refresh its data."),
+                            CreatedGiftBatchNumber,
+                            Environment.NewLine);
 
-            // refresh gift batch screen
-            TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcRefreshGiftBatches, this.ToString());
-            TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+                    MessageBox.Show(successMessage,
+                        Catalog.GetString("Submit Recurring Gift Batch"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
 
-            Close();
+                    // refresh gift batch screen
+                    TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcRefreshGiftBatches, this.ToString());
+                    TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+
+                    Close();
+                }
+                else
+                {
+                    MessageBox.Show(Catalog.GetString("The recurring Gift Batch failed to submit!"),
+                        Catalog.GetString("Submit Recurring Gift Batch"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
+                }
+            }
+            catch (Exception ex)
+            {
+                string errMsg = String.Format(Catalog.GetString("Unexpected error trying to submit recurring Gift Batch: {0}:{1}{1}{2}{1}{1}{3}"),
+                    FBatchNumber,
+                    Environment.NewLine,
+                    ex.Message,
+                    Catalog.GetString("Refer to the Server.Log text file for more details."));
+
+                MessageBox.Show(errMsg,
+                    Catalog.GetString("Submit Recurring Gift Batch"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+            }
         }
 
         void BtnCloseClick(object sender, EventArgs e)

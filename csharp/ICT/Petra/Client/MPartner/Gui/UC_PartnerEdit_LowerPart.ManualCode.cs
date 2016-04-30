@@ -119,6 +119,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void RunOnceOnParentActivationManual()
+        {
+            ucoPartnerTabSet.RunOnceOnParentActivation();
+        }
+
         #endregion
 
         #region Properties

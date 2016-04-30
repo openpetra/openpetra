@@ -157,8 +157,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     );
 
                 TFormLettersTools.AttachNextPage(ref HtmlDoc, HtmlPage);
-                ReceiptedDonorsList += (DonorShortName + "\r\n");
                 NumberOfDonors++;
+                ReceiptedDonorsList += String.Format("{0}: {1}{2}", NumberOfDonors, DonorShortName, Environment.NewLine);
 
                 foreach (AGiftRow GiftRow in GiftsPerDonor[DonorKey].Rows)
                 {

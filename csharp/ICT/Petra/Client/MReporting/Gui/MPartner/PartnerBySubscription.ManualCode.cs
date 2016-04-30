@@ -71,6 +71,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             dtpDateOfSendingCopy.Date = DateTime.Now;
 
+            int offset = chkFreeSubscriptionsOnly.Top - (pnlDetails.Height - chkFreeSubscriptionsOnly.Height - 6);
+            chkFreeSubscriptionsOnly.Top -= offset;
+            lblDateOfSendingCopy.Top -= offset;
+            dtpDateOfSendingCopy.Top -= offset;
+
             ActiveSubscriptionsBoxChanged(null, null);
         }
 
@@ -95,6 +100,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 chkFreeSubscriptionsOnly.Hide();
                 ucoChkFilter.Hide();
             }
+
+            rbtSingle.Checked = true;
 
             // enable autofind in list for first character (so the user can press character to find list entry)
             // from Sep 2015 this is handled automatically by the code generator

@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session);
+                    FPagedDataSetObject.ExecuteQuery(session, "Partner Location Find");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "PartnerLocationFind" + Guid.NewGuid().ToString();

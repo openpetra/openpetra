@@ -190,12 +190,10 @@ namespace Ict.Common.Remoting.Server
         public TServerManagerBase() : base()
         {
             FNumberServerManagerInstances = 0;
-
             new TAppSettingsManager(false);
             new TSrvSetting();
             new TLogging(TSrvSetting.ServerLogFile);
             TLogging.DebugLevel = TAppSettingsManager.GetInt16("Server.DebugLevel", 0);
-
             FFirstInstance = (FNumberServerManagerInstances == 0);
             FNumberServerManagerInstances++;
         }
@@ -509,11 +507,22 @@ CheckAllClientsDisconnected:
         }
 
         /// <summary>
-        /// RefreshAllCachedTables
+        /// Marks all DataTables in the Cache to be no longer up-to-date (=out of sync
+        /// with the data that was originally placed in the DataTable).
         /// </summary>
         public virtual void RefreshAllCachedTables()
         {
             // implemented in derived class
+        }
+
+        /// <summary>
+        /// Clears (flushes) all RDMBS Connection Pools and returns the new number of DB Connections after clearing all
+        /// RDMBS Connection Pools.
+        /// </summary>
+        public virtual int ClearConnectionPoolAndGetNumberOfDBConnections()
+        {
+            // implemented in derived class
+            return -1;
         }
 
         /// <summary>

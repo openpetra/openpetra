@@ -13,6 +13,8 @@ WHERE pub_p_subscription.p_publication_code_c IN (?)
     AND (NOT ? OR pub_p_partner.p_status_code_c = 'ACTIVE')
     AND (NOT ? OR pub_p_partner.p_partner_class_c LIKE 'FAMILY%')
     AND (NOT ? OR NOT pub_p_partner.p_no_solicitations_l)
+    AND (pub_p_subscription.p_publication_copies_i >= ?)
+    AND (pub_p_subscription.p_publication_copies_i <= ?)
 ##address_filter_where_clause##    
 ORDER BY pub_p_partner.p_partner_short_name_c
 ##address_filter_order_by_clause##

@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
             DataColumn[] Key = new DataColumn[1];
 
             // Used eg. Select Event Dialog
-            Table = DBAccess.GDBAccessObj.SelectDT(
+            Table = DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +
@@ -124,7 +124,7 @@ namespace Ict.Petra.Server.MPersonnel.Unit.Cacheable
             DataColumn[] Key = new DataColumn[1];
 
             // Used eg. Select Event Dialog
-            Table = DBAccess.GDBAccessObj.SelectDT(
+            Table = DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(
                 "SELECT DISTINCT " +
                 PPartnerTable.GetPartnerShortNameDBName() +
                 ", " + PPartnerTable.GetPartnerClassDBName() +

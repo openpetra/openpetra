@@ -187,6 +187,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnCancelAllSubscriptions.Enabled = false;
             }
 
+            grdDetails.AutoResizeGrid();
+
             // use dictionary of details control as validation is called for dictionary of this class
             FValidationControlsDict = ucoDetails.ValidationControlsDict;
         }

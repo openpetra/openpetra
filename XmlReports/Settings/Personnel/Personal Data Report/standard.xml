@@ -17,8 +17,7 @@
   <Parameter id="param_chkSpecialNeeds" value="eString:true" />
   <Parameter id="param_chkPersonalBudget" value="eString:true" />
   <Parameter id="param_chkVisions" value="eString:true" />
-  <Parameter id="param_chkQualifications" value="eString:true" />
-  <Parameter id="param_chkAbilities" value="eString:true" />
+  <Parameter id="param_chkSkills" value="eString:true" />
   <Parameter id="param_chkLanguages" value="eString:true" />
   <Parameter id="param_chkPreviousExperiences" value="eString:true" />
   <Parameter id="param_chkValuableItems" value="eString:true" />

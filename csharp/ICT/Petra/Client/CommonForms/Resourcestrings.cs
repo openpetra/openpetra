@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>First part of the dialog message</summary>
         public static readonly string StrReuseScreenPositionsMessage1 = Catalog.GetString(
-            "You have chosen to start storing window positions and sizes again.  Open Petra has saved this information in the past.");
+            "You have chosen to start storing window positions and sizes again.  OpenPetra has saved this information in the past.");
 
         /// <summary>Second part of the dialog message</summary>
         public static readonly string StrReuseScreenPositionsMessage2 = Catalog.GetString(

@@ -43,7 +43,7 @@ namespace Ict.Petra.Server.MFinance.DataAggregates
         /// <returns>void</returns>
         public static DataTable GetData(String ATableName, TDBTransaction AReadTransaction)
         {
-            return DBAccess.GDBAccessObj.SelectDT(
+            return DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(
                 String.Format(
                     "SELECT {0} AS LedgerNumber, {1} AS LedgerName FROM pub_{2}, pub_{3} " +
                     "WHERE pub_{2}.{4} = pub_{3}.{4} " + "AND   pub_{2}.{5} = 1",
@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MFinance.DataAggregates
         /// </summary>
         public static DataTable GetData(String ATableName, Int32 ALedgerNumber, TDBTransaction AReadTransaction)
         {
-            return DBAccess.GDBAccessObj.SelectDT(
+            return DBAccess.GetDBAccessObj(AReadTransaction).SelectDT(
                 String.Format(
                     "SELECT {0}, {3}.{1}, {3}.{5}, {2}, {8} FROM pub_{3} " +
                     "LEFT OUTER JOIN PUB_{7} ON PUB_{7}.{1} = PUB_{3}.{1}, pub_{4} " +

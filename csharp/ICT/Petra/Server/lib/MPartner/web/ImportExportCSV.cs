@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 newPartner.LanguageCode = TUserDefaults.GetStringDefault(MSysManConstants.PARTNER_LANGUAGECODE);
             }
 
-            string[] giftReceiptingDefaults = TSystemDefaults.GetSystemDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
+            string[] giftReceiptingDefaults = TSystemDefaults.GetStringDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
             newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
             newPartner.ReceiptEachGift = giftReceiptingDefaults[1] == "YES" || giftReceiptingDefaults[1] == "TRUE";
 

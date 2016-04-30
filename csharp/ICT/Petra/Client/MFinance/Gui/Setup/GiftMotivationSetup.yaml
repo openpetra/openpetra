@@ -7,7 +7,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data,Ict.Petra.Shared.MFinance.Gift.Validation]
     FormType: edit
     Template: windowEdit
-    WindowWidth: 760
+    WindowWidth: 850
     WindowHeight: 600
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
@@ -87,7 +87,7 @@ RootNode:
         txtDetailMotivationDetailCode: {Label=Detail, CharacterCasing=Upper}
         txtDetailMotivationDetailDesc: {Label=Description, Width=210, OnChange=DescriptionTyped}
         txtDetailShortCode: {Label=Short Code} 
-        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=210, Stretch=Horizontally}
+        txtDetailMotivationDetailDescLocal: {Label=Local Description, Width=190}
         cmbDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, Width=400, ColSpan=2}
         cmbDetailAccountCode: {Label=Account, List=UserDefinedList, Width=300, ColSpan=2}
         chkDetailAutopopdesc: {Label=Populate Gift Description}

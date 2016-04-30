@@ -360,11 +360,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
@@ -1110,10 +1107,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             SourceGrid.Conditions.ConditionView conditionAnalysisCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
             conditionAnalysisCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
             {
-                DataRowView row2 = (DataRowView)itemRow2;
-                string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                return !FAnalysisAttributesLogic.AnalysisCodeIsActive(
-                    cmbDetailAccountCode.GetSelectedString(), FCacheDS.AAnalysisAttribute, analysisCode);
+                if (itemRow2 != null)
+                {
+                    DataRowView row2 = (DataRowView)itemRow2;
+                    string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
+                    return !FAnalysisAttributesLogic.AnalysisCodeIsActive(cmbDetailAccountCode.GetSelectedString(),
+                        FCacheDS.AAnalysisAttribute,
+                        analysisCode);
+                }
+                else
+                {
+                    return false;
+                }
             };
 
             // Create a condition, apply the view when true, and assign a delegate to handle it
@@ -1652,11 +1657,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMainDS.Merge(BackupDS);
 
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -1789,7 +1791,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 controlToPass = txtCreditAmount;
             }
-            else if (TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
+            else if (TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, "no") == "yes")
             {
                 controlToPass = txtDetailReference;
             }

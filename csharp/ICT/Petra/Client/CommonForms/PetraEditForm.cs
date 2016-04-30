@@ -943,7 +943,7 @@ namespace Ict.Petra.Client.CommonForms
         public void SetChangedFlag()
         {
             EnableAction("actSave", true);
-
+            EnableAction("actSaveClose", true);
             FHasChanges = true;
         }
 
@@ -953,6 +953,7 @@ namespace Ict.Petra.Client.CommonForms
         override public void InitActionState()
         {
             EnableAction("actSave", FHasChanges);
+            EnableAction("actSaveClose", FHasChanges);
         }
 
         /// <summary>
@@ -963,7 +964,7 @@ namespace Ict.Petra.Client.CommonForms
         public void DisableSaveButton()
         {
             EnableAction("actSave", false);
-
+            EnableAction("actSaveClose", false);
             FHasChanges = false;
         }
 

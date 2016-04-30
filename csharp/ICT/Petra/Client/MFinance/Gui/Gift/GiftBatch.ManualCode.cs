@@ -174,9 +174,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
-        public void RefreshAll(bool AShowStatusDialogOnLoad = true)
+        public void RefreshAll(bool AShowStatusDialogOnLoad = true, bool AIsMessageRefresh = false)
         {
-            ucoBatches.RefreshAllData(AShowStatusDialogOnLoad);
+            ucoBatches.RefreshAllData(AShowStatusDialogOnLoad, AIsMessageRefresh);
         }
 
         private void FileSaveManual(object sender, EventArgs e)
@@ -208,6 +208,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Save AND close the form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void FileSaveClose(object sender, EventArgs e)
+        {
+            if (SaveChanges() == true)
+            {
+                FPetraUtilsObject.CloseFormCheckRun = false;
+                Close();
+            }
         }
 
         /// <summary>
@@ -966,7 +980,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcRefreshGiftBatches)
             {
-                this.RefreshAll(false);
+                this.RefreshAll(false, true);
 
                 MessageProcessed = true;
             }

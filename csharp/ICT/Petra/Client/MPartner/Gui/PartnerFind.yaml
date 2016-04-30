@@ -33,6 +33,7 @@ RootNode:
         actFileSendEmail: {ActionClick=MniFile_Click, Image=Email.ico}
         actFilePrintPartner: {ActionClick=MniFile_Click, Image=Print.ico}
         actFileExportPartner: {ActionClick=MniFile_Click, Image=ExportPetra.ico}        
+        actFileExportPartnerToPetra: {ActionClick=MniFile_Click, Image=ExportPetra.ico}        
         actFileImportPartner: {ActionClick=MniFile_Click, Image=ImportPetra.ico}        
         
         actEditSearch: {ActionClick=MniEdit_Click, Image=Find.ico}
@@ -138,7 +139,8 @@ RootNode:
             mniSeparator: {Label=-}
             mniFilePrintPartner: {Label=&Print Partner...}
             mniSeparator: {Label=-}
-            mniFileExportPartner: {Label=E&xport Partner...}
+            mniFileExportPartner: {Label=E&xport Partner to OpenPetra...}
+            mniFileExportPartnerToPetra: {Label=E&xport Partner to Petra...}
             mniFileImportPartner: {Label=&Import Partner...}
             mniSeparator: {Label=-}
             

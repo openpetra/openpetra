@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             Boolean IsTestContext = (FPetraUtilsObject != null) && (FPetraUtilsObject.GetCallerForm() == null);
 
-            if ((TSystemDefaults.GetSystemDefault("USEXMLREPORTS", "Not Specified") == "Not Specified") && !IsTestContext)
+            if ((TSystemDefaults.GetStringDefault("USEXMLREPORTS", "Not Specified") == "Not Specified") && !IsTestContext)
             {
                 String Msg = "";
 
@@ -288,8 +288,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 ClientVersion.Revision.ToString());
             //
             // Some params are always provided for reports:
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             ACalc.AddParameter("param_tax_deductible_pct", TaxDeductiblePercentageEnabled);
 

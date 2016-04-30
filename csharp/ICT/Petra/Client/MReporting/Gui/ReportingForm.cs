@@ -837,11 +837,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ACallerForm">Parent Form</param>
         /// <param name="AReportName"></param>
         /// <param name="AWrapColumn"></param>
-        public static void GenerateReport(TRptCalculator ACalculator, Form ACallerForm, String AReportName, bool AWrapColumn)
+        /// <param name="AStatusBarProcedure">Optional instance of a custom callback procedure for writing
+        /// to the StatusBar of a Form (default = null).</param>
+        public static void GenerateReport(TRptCalculator ACalculator, Form ACallerForm, String AReportName,
+            bool AWrapColumn, TLogging.TStatusCallbackProcedure AStatusBarProcedure = null)
         {
             try
             {
-                if (ACalculator.GenerateResultRemoteClient())
+                if (ACalculator.GenerateResultRemoteClient(AStatusBarProcedure))
                 {
                     TMyUpdateDelegate myDelegate = @ReportCalculationSuccess;
 
@@ -849,7 +852,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     {
                         ACallerForm.Invoke((System.Delegate) new TMyUpdateDelegate(
                                 myDelegate), new object[] { ACalculator, ACallerForm, AReportName, AWrapColumn });
-                        TLogging.Log("", TLoggingType.ToStatusBar);
+                        TLogging.Log("", TLoggingType.ToStatusBar, AStatusBarProcedure);
                     }
                     else
                     {
@@ -862,10 +865,16 @@ namespace Ict.Petra.Client.MReporting.Gui
                     if (ACalculator.CalculatesExtract)
                     {
                         // let the user know the extract generation was successful
-                        MessageBox.Show(ACallerForm,
-                            Catalog.GetString("Extract successfully generated."),
-                            Catalog.GetString("Generate Extract"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (ACallerForm.InvokeRequired)
+                        {
+                            ACallerForm.Invoke((MethodInvoker) delegate
+                                {
+                                    MessageBox.Show(ACallerForm,
+                                        Catalog.GetString("Extract successfully generated."),
+                                        Catalog.GetString("Generate Extract"),
+                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                });
+                        }
                     }
                 }
             }
@@ -903,7 +912,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         private void GenerateReport()
         {
-            GenerateReport(FCalculator, FWinForm, FReportName, FWrapColumn);
+            GenerateReport(FCalculator, FWinForm, FReportName, FWrapColumn, WriteToStatusBar);
             UpdateParentFormEndOfReport();
         }
 

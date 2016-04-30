@@ -322,6 +322,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FFirstTime = false;
             }
+
+            grdDetails.AutoResizeGrid();
         }
 
         private void ShowDetailsManual(PBankingDetailsRow ARow)

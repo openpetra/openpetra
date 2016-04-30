@@ -43,7 +43,8 @@ namespace Ict.Petra.Client.MPartner.Logic
         /// <param name="APartnerKey">Partner Key of the Partner.</param>
         /// <param name="ASiteKey">SiteKey of the Location.</param>
         /// <param name="ALocationKey">LocationKey of the Location.</param>
-        public static void ExportSinglePartner(Int64 APartnerKey, Int64 ASiteKey, int ALocationKey)
+        /// <param name="AOldPetraFormat">Set to true if old format should be used.</param>
+        public static void ExportSinglePartner(Int64 APartnerKey, Int64 ASiteKey, int ALocationKey, Boolean AOldPetraFormat)
         {
             bool Result = false;
             StringCollection ASpecificBuildingInfo = null;
@@ -55,10 +56,10 @@ namespace Ict.Petra.Client.MPartner.Logic
             {
                 if (FileName.EndsWith("ext"))
                 {
-                    ExtFormattedDocument = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader();
+                    ExtFormattedDocument = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader(AOldPetraFormat);
 
                     ExtFormattedDocument += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
-                        APartnerKey, ASiteKey, ALocationKey, false, ASpecificBuildingInfo);
+                        APartnerKey, ASiteKey, ALocationKey, false, ASpecificBuildingInfo, AOldPetraFormat);
 
                     ExtFormattedDocument += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
 

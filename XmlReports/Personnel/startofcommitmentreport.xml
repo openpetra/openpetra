@@ -107,7 +107,7 @@
         <!--  Prints only records without commitment status  -->
                 person.p_partner_key_n = partner.p_partner_key_n
                 AND person.p_partner_key_n = staff.p_partner_key_n
-                AND staff.pm_receiving_field_office_n = unit.p_partner_key_n
+                AND staff.pm_receiving_field_n = unit.p_partner_key_n
                 AND partner.p_status_code_c = 'ACTIVE'
                 AND staff.pm_start_of_commitment_d &gt;= {#param_dtpStartDate#}
                 AND staff.pm_start_of_commitment_d &lt;= {#param_dtpEndDate#}

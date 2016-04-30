@@ -332,6 +332,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnDataLoadingFinished();
         }
 
+        private void RunOnceOnParentActivationManual()
+        {
+            FUcoAddresses.RunOnceOnParentActivation();
+        }
+
         /// <summary>
         /// Performs data validation.
         /// </summary>

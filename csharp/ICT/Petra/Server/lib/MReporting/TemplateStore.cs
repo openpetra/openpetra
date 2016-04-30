@@ -30,6 +30,7 @@ using Ict.Common.Data;
 using Ict.Petra.Server.App.Core.Security;
 using System.IO;
 using Ict.Common;
+using Ict.Petra.Server.MCommon;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -48,18 +49,17 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// For Development only, templates are also kept in a disc file.
         /// This means that Bazaar does the internal update management for us.
         /// </summary>
-        private static void LoadTemplatesFromBackupFile(String AType)
+        private static void LoadTemplatesFromBackupFile(String AType, TDataBase dbConnection)
         {
             String BackupFilename = TemplateBackupFilename(AType, "*");
 
             String[] BackupFiles = Directory.GetFiles(Path.GetDirectoryName(BackupFilename), Path.GetFileName(BackupFilename));
-
             TDBTransaction Transaction = null;
-            Boolean submissionOk = true;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
+            Boolean submissionOk = false;
+
+            dbConnection.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 ref submissionOk,
+                "LoadTemplatesFromBackupFile",
                 delegate
                 {
                     foreach (String fname in BackupFiles)
@@ -67,10 +67,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         if (File.Exists(fname))
                         {
                             String Query = File.ReadAllText(fname);
-                            DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
+                            Transaction.DataBaseObj.ExecuteNonQuery(Query, Transaction);
+                            submissionOk = true;
                         }
                     }
-                }); // Get NewOrExisting AutoReadTransaction
+                });
         }
 
         //
@@ -136,33 +137,44 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         [RequireModulePermission("none")]
         public static SReportTemplateTable GetTemplateVariants(String AReportType, String AAuthor, Boolean ADefaultOnly = false)
         {
-            LoadTemplatesFromBackupFile(AReportType);
             SReportTemplateTable Tbl = new SReportTemplateTable();
-            SReportTemplateRow TemplateRow = Tbl.NewRowTyped(false);
-            TemplateRow.ReportType = AReportType;
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    Tbl = SReportTemplateAccess.LoadUsingTemplate(TemplateRow, Transaction);
-                });
-
-            String filter = String.Format("(s_author_c ='{0}' OR s_private_l=false)", AAuthor);
-
-            if (ADefaultOnly)
-            {
-                filter += " AND (s_default_l=true OR s_private_default_l=true)";
-            }
-
-            Tbl.DefaultView.RowFilter = filter;
-            Tbl.DefaultView.Sort =
-                (ADefaultOnly) ? "s_private_default_l DESC, s_default_l DESC" : "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
-
             SReportTemplateTable Ret = new SReportTemplateTable();
-            Ret.Merge(Tbl.DefaultView.ToTable());
-            Ret.AcceptChanges();
+            TDBTransaction Transaction = null;
+            TDataBase dbConnection = new TDataBase();
+
+            try
+            {
+                dbConnection = TReportingDbAdapter.EstablishDBConnection(true, "GetTemplateVariants");
+                LoadTemplatesFromBackupFile(AReportType, dbConnection);
+
+                dbConnection.BeginAutoReadTransaction(
+                    ref Transaction,
+                    delegate
+                    {
+                        SReportTemplateRow TemplateRow = Tbl.NewRowTyped(false);
+                        TemplateRow.ReportType = AReportType;
+
+                        Tbl = SReportTemplateAccess.LoadUsingTemplate(TemplateRow, Transaction);
+                    });
+
+                String filter = String.Format("(s_author_c ='{0}' OR s_private_l=false)", AAuthor);
+
+                if (ADefaultOnly)
+                {
+                    filter += " AND (s_default_l=true OR s_private_default_l=true)";
+                }
+
+                Tbl.DefaultView.RowFilter = filter;
+                Tbl.DefaultView.Sort =
+                    (ADefaultOnly) ? "s_private_default_l DESC, s_default_l DESC" : "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
+
+                Ret.Merge(Tbl.DefaultView.ToTable());
+                Ret.AcceptChanges();
+            }
+            finally
+            {
+                dbConnection.CloseDBConnection();
+            }
             return Ret;
         }
 

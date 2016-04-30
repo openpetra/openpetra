@@ -142,7 +142,7 @@ namespace Ict.Petra.Server.MFinance.GL
             try
             {
                 ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session);
+                    FPagedDataSetObject.ExecuteQuery(session, "GL Transaction Find");
                 };
                 FFindThread = new Thread(myThreadStart);
                 FFindThread.Name = "GLTransactionFind" + Guid.NewGuid().ToString();

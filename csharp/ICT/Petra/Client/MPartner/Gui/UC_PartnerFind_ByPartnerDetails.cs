@@ -672,7 +672,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (AToolStripItem.Name == "mniFileExportPartner")
             {
                 TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
-                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
+                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, false);
+            }
+            else if (AToolStripItem.Name == "mniFileExportPartnerToPetra")
+            {
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
+                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, true);
             }
             else if (AToolStripItem.Name == "mniFileImportPartner")
             {
@@ -1328,24 +1333,31 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoPartnerFindCriteria.PetraUtilsObject = FPetraUtilsObject;
             ucoPartnerFindCriteria.InitUserControl();
 
-            // Load items that should go into the left and right columns from User Defaults
+            // Load items that should go into the left and right columns
             if (!FBankDetailsTab)
             {
                 ucoPartnerFindCriteria.CriteriaFieldsLeft =
-                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT,
-                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
+                    new ArrayList("PartnerName;PersonalName;PreviousName;Address1;Address2;Address3;City;PostCode;Country".Split(
+                            new Char[] { (';') }));
                 ucoPartnerFindCriteria.CriteriaFieldsRight =
-                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
-                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
+                    new ArrayList("PartnerClass;PartnerKey;LocationKey;PartnerStatus;MailingAddressOnly;Email;PhoneNumber".Split(
+                            new Char[] { (';') }));
+
+                // Note: In Petra 2.3 the Criteria Fields were not hard-coded but read from a UserDefault like this:
+//                ucoPartnerFindCriteria.CriteriaFieldsLeft =
+//                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT,
+//                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
+//                ucoPartnerFindCriteria.CriteriaFieldsRight =
+//                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT,
+//                            TFindOptionsForm.PARTNER_FINDOPTIONS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
             }
             else if (FBankDetailsTab)
             {
                 ucoPartnerFindCriteria.CriteriaFieldsLeft =
-                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT,
-                            TFindOptionsForm.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSLEFT_DEFAULT).Split(new Char[] { (';') }));
+                    new ArrayList("PartnerName;AccountName;AccountNumber;Iban;BranchCode;Bic;BankKey;BankName;BankCode".Split(
+                            new Char[] { (';') }));
                 ucoPartnerFindCriteria.CriteriaFieldsRight =
-                    new ArrayList(TUserDefaults.GetStringDefault(TUserDefaults.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT,
-                            TFindOptionsForm.PARTNER_FINDOPTIONSBYBANKDETAILS_CRITERIAFIELDSRIGHT_DEFAULT).Split(new Char[] { (';') }));
+                    new ArrayList("PartnerClass;OMSSKey;PartnerStatus".Split(new Char[] { (';') }));
             }
 
             ucoPartnerFindCriteria.DisplayCriteriaFieldControls();

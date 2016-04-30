@@ -88,6 +88,13 @@ namespace Ict.Petra.Client.MPartner
         public static readonly string StrErrorCopyAddress2 = Catalog.GetString("copying an Address");
 
         /// <summary>todoComment</summary>
+        public static readonly string StrSelectValidAddress = Catalog.GetString(
+            "Please select a valid address for this Partner on the Address tab.  Then you can add a new Person to the Family.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrAddFamilyMemberTitle = Catalog.GetString("Add Family Member");
+
+        /// <summary>todoComment</summary>
         public static readonly string StrErrorNoEmailAddressForThisPartner = Catalog.GetString(
             "No e-mail address for this Partner in the selected address record.");
 

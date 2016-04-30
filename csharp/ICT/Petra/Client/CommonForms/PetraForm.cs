@@ -250,6 +250,7 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     // (Note: Nant tests do not have a caller so we need to allow for this possibility)
                     if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit")
+                        || (FWinForm.Name == "TPartnerFindScreen")
                         || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                     {
                         // Either we are loading the main window or we have been opened by the main window
@@ -891,6 +892,41 @@ namespace Ict.Petra.Client.CommonForms
             // Momentarily remove focus from active control. This ensures OnLeave event is fired for control.
             theForm.ActiveControl = null;
             theForm.ActiveControl = CurrentActiveControl;
+        }
+
+        private FormWindowState FFormWindowState = FormWindowState.Normal;
+
+        /// <summary>
+        /// A method to refresh a specific control after it has been resized as a result of a Maximize or a Restore.
+        /// This seems to be necessary on the Personnel control in Partner-Edit
+        /// </summary>
+        /// <param name="AControl">The control to refresh - usually pnlDetailGrid</param>
+        public void RefreshSpecificControlOnWindowMaxOrRestore(Control AControl)
+        {
+            if (FWinForm == null)
+            {
+                return;
+            }
+
+            FormWindowState curWindowState = FWinForm.WindowState;
+
+            switch (curWindowState)
+            {
+                case FormWindowState.Maximized:
+                    AControl.Refresh();
+                    break;
+
+                case FormWindowState.Normal:
+
+                    if (FFormWindowState == FormWindowState.Maximized /*|| !FDoneFirstResize */)
+                    {
+                        AControl.Refresh();
+                    }
+
+                    break;
+            }
+
+            FFormWindowState = curWindowState;
         }
     }
 

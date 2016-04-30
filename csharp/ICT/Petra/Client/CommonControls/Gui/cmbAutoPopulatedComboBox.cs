@@ -178,6 +178,9 @@ namespace Ict.Petra.Client.CommonControls
             LedgerNameList,
 
             /// <summary>todoComment</summary>
+            LedgerNameCurrentUserPermissionList,
+
+            /// <summary>todoComment</summary>
             LocationTypeList,
 
             /// <summary>todoComment</summary>
@@ -819,6 +822,27 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.LedgerNameCurrentUserPermissionList:
+
+                    SortedCacheableDataTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+
+                    for (int i = 0; i < SortedCacheableDataTable.Rows.Count; i++)
+                    {
+                        if (!UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(SortedCacheableDataTable.Rows[i]["LedgerNumber"])))
+                        {
+                            SortedCacheableDataTable.Rows.RemoveAt(i);
+                        }
+                    }
+
+                    SortedCacheableDataTable.DefaultView.Sort = "LedgerNumber ASC";
+
+                    InitialiseUserControl(
+                    SortedCacheableDataTable,
+                    "LedgerNumber",
+                    "LedgerName",
+                    null);
+                    break;
+
                 case TListTableEnum.LocationTypeList:
 
                     InitialiseUserControl(
@@ -1435,6 +1459,11 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.LedgerNameList:
+                    this.ColumnWidthCol1 = 55;
+                    this.ColumnWidthCol2 = 200;
+                    break;
+
+                case TListTableEnum.LedgerNameCurrentUserPermissionList:
                     this.ColumnWidthCol1 = 55;
                     this.ColumnWidthCol2 = 200;
                     break;

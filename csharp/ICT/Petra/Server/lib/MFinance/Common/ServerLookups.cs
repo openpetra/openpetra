@@ -50,6 +50,40 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
     public class TFinanceServerLookups
     {
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AStartDateCurrentPeriod"></param>
+        /// <param name="AEndDateCurrentPeriod"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean GetCurrentPeriodDates(Int32 ALedgerNumber,
+            out DateTime AStartDateCurrentPeriod,
+            out DateTime AEndDateCurrentPeriod)
+        {
+            DateTime startDate = new DateTime();
+            DateTime endDate = new DateTime();
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                    AAccountingPeriodTable accountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
+                        ledgerTable[0].CurrentPeriod,
+                        Transaction);
+                    startDate = accountingPeriodTable[0].PeriodStartDate;
+                    endDate = accountingPeriodTable[0].PeriodEndDate;
+                });
+
+            AStartDateCurrentPeriod = startDate;
+            AEndDateCurrentPeriod = endDate;
+            return true;
+        }
+
+        /// <summary>
         /// Returns starting and ending posting dates for the ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -237,11 +271,10 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
             string ReturnValue = "";
             TDBTransaction ReadTransaction = null;
 
-            // Need to use 'GetNewOrExistingAutoReadTransaction' rather than 'BeginAutoReadTransaction' to allow
-            // opening of the 'GL Transaction Find' screen while a Report is calculating (Bug #3879).
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
+                "TFinanceServerLookups.GetLedgerBaseCurrency", out ReadTransaction,
                 delegate
                 {
                     ReturnValue = ((ALedgerRow)ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ReadTransaction).Rows[0]).BaseCurrency;

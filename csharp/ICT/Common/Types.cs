@@ -100,8 +100,20 @@ namespace Ict.Common
         /// Win7
         eosWin7,
 
-        /// Win8
-        eosWin8,
+        /// <summary>
+        /// Covers Windows 8.0 and above (ONLY if the application is manifested for versions below Windows 8.1)
+        /// </summary>
+        eosWin8Plus,
+
+        /// <summary>
+        /// Windows 8.1 (only if manifested for it)
+        /// </summary>
+        eosWin81,
+
+        /// <summary>
+        /// Windows 10 (only if manifested for it)
+        /// </summary>
+        eosWin10,
 
         /// <summary>
         /// unknown and unsupported

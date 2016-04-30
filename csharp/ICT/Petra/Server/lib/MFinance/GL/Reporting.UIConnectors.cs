@@ -1814,8 +1814,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                      " AND GiftBatch.a_gl_effective_date_d <= '" + dateEnd.ToString("yyyy-MM-dd") + "' ";
                     }
 
-                    bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+                    bool TaxDeductiblePercentageEnabled =
+                        TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
                     String Query = string.Empty;
 
@@ -2957,8 +2957,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DateTime endDate = AParameters["param_EndDate"].ToDate();
             string strEndDate = endDate.ToString("#yyyy-MM-dd#");
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
 
@@ -3122,8 +3122,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Decimal MinAmount = AParameters["param_min_amount"].ToDecimal();
             Decimal MaxAmount = AParameters["param_max_amount"].ToDecimal();
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             DataTable resultTable = new DataTable();
             String ExtractTables = " ";

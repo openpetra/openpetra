@@ -666,7 +666,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             TotalNumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);

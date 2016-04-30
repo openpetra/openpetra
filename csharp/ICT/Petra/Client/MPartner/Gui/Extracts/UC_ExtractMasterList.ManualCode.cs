@@ -77,6 +77,27 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <returns></returns>
         public bool ExportPartnersInExtract(System.Object sender, EventArgs e)
         {
+            return ExportPartnersInExtract(false);
+        }
+
+        /// <summary>
+        /// export all partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        public bool ExportPartnersInExtractToPetra(System.Object sender, EventArgs e)
+        {
+            return ExportPartnersInExtract(true);
+        }
+
+        /// <summary>
+        /// export all partners in selected extract
+        /// </summary>
+        /// <param name="AOldPetraFormat"></param>
+        /// <returns></returns>
+        public bool ExportPartnersInExtract(Boolean AOldPetraFormat)
+        {
             Boolean Result = false;
 
             if (!WarnIfNotSingleSelection(Catalog.GetString("Export Partners in Extract"))
@@ -107,7 +128,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         string Doc = string.Empty;
 
                         // run in thread so we can have Progress Dialog
-                        Thread t = new Thread(() => ExportToFile(ExportFamiliesPersons, ref Doc));
+                        Thread t = new Thread(() => ExportToFile(ExportFamiliesPersons, ref Doc, AOldPetraFormat));
 
                         using (TProgressDialog dialog = new TProgressDialog(t))
                         {
@@ -154,9 +175,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             return false;
         }
 
-        private void ExportToFile(bool AExportFamiliesPersons, ref string ADoc)
+        private void ExportToFile(bool AExportFamiliesPersons, ref string ADoc, Boolean AOldPetraFormat)
         {
-            ADoc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(GetSelectedDetailRow().ExtractId, AExportFamiliesPersons);
+            ADoc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(
+                GetSelectedDetailRow().ExtractId, AExportFamiliesPersons, AOldPetraFormat);
         }
 
         /// <summary>

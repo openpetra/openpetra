@@ -2621,6 +2621,11 @@
                 format="X(200)"
                 label="Partner Attribute Value"
                 notnull="yes"/>
+    <tablefield name="p_value_country_c"
+                type="varchar"
+                descr="The country of the value of the attribute (only relevant for Telephone and Fax Numbers)."
+                format="X(200)"
+                label="Partner Attribute Value Country" />
     <tablefield name="p_comment_c"
                 type="varchar"
                 descr="Any comment to explain this attribute value, or some additional info that may be required."
@@ -2684,6 +2689,11 @@
                 thisFields="p_attribute_type_c"
                 otherTable="p_partner_attribute_type"
                 otherFields="p_attribute_type_c"/>
+    <foreignkey name="p_partner_attribute_fk3"
+                descr=""
+                thisFields="p_value_country_c"
+                otherTable="p_country"
+                otherFields="p_country_code_c"/>
   </table>
   <table name="u_unit_type"
          descr="General information about the unit such as unit type and entry conference. "

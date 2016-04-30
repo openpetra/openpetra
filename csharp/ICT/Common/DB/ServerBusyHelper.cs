@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Threading;
 
 using Ict.Common;
 using Ict.Common.DB.Exceptions;
@@ -104,6 +105,8 @@ namespace Ict.Common.DB
                                 ": Server is busy (DB Transaction in use by another Thread), retrying acquisition of DB Transaction... (Retry #{0} of {1})",
                                 ServerCallRetries, MaxRetries));
                     }
+
+                    Thread.Sleep(400);
                 }
                 catch (EDBCoordinatedDBAccessWaitingTimeExceededException)
                 {

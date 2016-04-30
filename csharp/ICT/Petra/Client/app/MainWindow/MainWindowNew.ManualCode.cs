@@ -133,8 +133,8 @@ namespace Ict.Petra.Client.App.PetraClient
             stbMain.UseOpenPetraToolStripRenderer = true;
 
             // this is needed for one screen which should only be displayed if tax deductibility is enabled
-            FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            FTaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             InitialiseTopPanel();
 
@@ -266,16 +266,45 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
-            string PermissionsRequired = TXMLParser.GetAttributeRecursive(ANode, "PermissionsRequired", true);
+            string PermissionsRequired = TYml2Xml.GetAttributeRecursive(ANode, "PermissionsRequired");
+            bool gotPermission = PermissionsRequired.Length == 0;
 
-            while (PermissionsRequired.Length > 0)
+            if (!gotPermission)
             {
-                string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired);
-
-                if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                // The node has some permissions specified
+                if (PermissionsRequired.IndexOf('+') > 0)
                 {
-                    return false;
+                    // There are multiple permissions which must be AND'ed
+                    while (PermissionsRequired.Length > 0)
+                    {
+                        string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired, "+");
+
+                        if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                        {
+                            gotPermission = false;
+                            break;
+                        }
+                    }
                 }
+                else
+                {
+                    // There is one or more permission that can be OR'ed
+                    while (PermissionsRequired.Length > 0)
+                    {
+                        string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired, ";");
+
+                        if (UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                        {
+                            gotPermission = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!gotPermission)
+            {
+                return false;
             }
 
             if (ACheckLedgerPermissions)
@@ -621,6 +650,9 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 MergePluginUINavigation(PluginsPath, ref UINavigation);
             }
+
+            // Remove nodes from Partner that the user does not have permission for
+            RemoveUnprivilegedSubModuleNodes(UINavigation, "PartnerMain");
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
@@ -1030,8 +1062,9 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void UpdateSubsystemLinkStatus(int ALedgerNumber, TTaskList ATaskList, XmlNode ATaskListNode)
         {
-            bool ServerCallSuccessful;
             ALedgerRow LedgerDR = null;
+            bool AccountsPayableActivated = false;
+            bool GiftProcessingActivated = false;
 
             if ((ATaskListNode != null) && (ATaskListNode.ParentNode != null)
                 && (ATaskListNode.ParentNode.Name == "Finance"))
@@ -1051,40 +1084,22 @@ namespace Ict.Petra.Client.App.PetraClient
                     PetraClientShutdown.Shutdown.StopPetraClient(true, true, true, StrDataLoadingErrorMessage);
                 }
 
+                TRemote.MFinance.Setup.WebConnectors.GetActivatedSubsystems(ALedgerNumber,
+                    out AccountsPayableActivated, out GiftProcessingActivated);
+
                 XmlNode TempNode = ATaskListNode.ParentNode.FirstChild;
 
                 while (TempNode != null)
                 {
-                    ServerCallSuccessful = false;
-
-                    Ict.Common.DB.TServerBusyHelper.CoordinatedAutoRetryCall("Finance Sub-system Activated inquiry", ref ServerCallSuccessful,
-                        delegate
-                        {
-                            if (TempNode.Name == "GiftProcessing")
-                            {
-                                ATaskList.EnableDisableTaskItem(TempNode,
-                                    TRemote.MFinance.Setup.WebConnectors.IsGiftProcessingSubsystemActivated(ALedgerNumber));
-                            }
-                            else if (TempNode.Name == "AccountsPayable")
-                            {
-                                ATaskList.EnableDisableTaskItem(TempNode,
-                                    TRemote.MFinance.Setup.WebConnectors.IsAccountsPayableSubsystemActivated(ALedgerNumber));
-                            }
-
-                            ServerCallSuccessful = true;
-                        });
-
-                    if (!ServerCallSuccessful)
+                    if (TempNode.Name == "GiftProcessing")
                     {
-                        TLogging.Log("Inquiring of Finance Subsystems' Activated States failed; the CLIENT NEEDS TO BE RESTARTED!");
-                        TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
-
-                        // RESTART CLIENT!
-                        PetraClientShutdown.Shutdown.StopPetraClient(true, true, true, StrDataLoadingErrorMessage);
-
-                        // ALL-IMPORTANT EXIT statement: without this, a number of OpenPetra Clients might get
-                        // started from within this while loop!!!
-                        Environment.Exit(0);
+                        ATaskList.EnableDisableTaskItem(TempNode,
+                            GiftProcessingActivated);
+                    }
+                    else if (TempNode.Name == "AccountsPayable")
+                    {
+                        ATaskList.EnableDisableTaskItem(TempNode,
+                            AccountsPayableActivated);
                     }
 
                     TempNode = TempNode.NextSibling;
@@ -1102,6 +1117,31 @@ namespace Ict.Petra.Client.App.PetraClient
             }
 
             UpdateSubsystemLinkStatus(ALedgerNr, APnlCollapsible.TaskListInstance, APnlCollapsible.TaskListNode.FirstChild);
+        }
+
+        /// <summary>
+        /// Remove sub modules for which the user does not have access rights
+        /// </summary>
+        /// <param name="AUINavigation">A UI Navigation document</param>
+        /// <param name="AModuleNodeName">The module node name</param>
+        private static void RemoveUnprivilegedSubModuleNodes(XmlDocument AUINavigation, string AModuleNodeName)
+        {
+            XmlNode moduleNode = AUINavigation.SelectSingleNode("//" + AModuleNodeName);
+
+            if (moduleNode != null)
+            {
+                XmlNodeList subModuleNodes = moduleNode.ChildNodes;
+
+                for (int i = subModuleNodes.Count - 1; i >= 0; i--)
+                {
+                    XmlNode subModuleNode = subModuleNodes[i];
+
+                    if (!HasAccessPermission(subModuleNode, UserInfo.GUserInfo.UserID, true))
+                    {
+                        moduleNode.RemoveChild(subModuleNode);
+                    }
+                }
+            }
         }
     }
 }

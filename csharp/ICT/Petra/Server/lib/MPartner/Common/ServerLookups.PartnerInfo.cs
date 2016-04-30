@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,11 +58,13 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALocationKey" >Location Key of the Location that the information should be
         /// retrieved for.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <returns>True if Partner exists, otherwise false.</returns>
         public static bool LocationPartnerLocationAndRestOnly(Int64 APartnerKey, TLocationPK ALocationKey,
-            ref PartnerInfoTDS APartnerInfoDS)
+            ref PartnerInfoTDS APartnerInfoDS, TDBTransaction AReadTransaction)
         {
-            return LocationPartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, true);
+            return LocationPartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, true,
+                AReadTransaction);
         }
 
         /// <summary>
@@ -73,11 +75,13 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALocationKey" >Location Key of the Location that the information should be
         /// retrieved for.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <returns>True if Partner exists, otherwise false.</returns>
         public static bool LocationPartnerLocationOnly(Int64 APartnerKey, TLocationPK ALocationKey,
-            ref PartnerInfoTDS APartnerInfoDS)
+            ref PartnerInfoTDS APartnerInfoDS, TDBTransaction AReadTransaction)
         {
-            return LocationPartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, false);
+            return LocationPartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, false,
+                AReadTransaction);
         }
 
         /// <summary>
@@ -88,11 +92,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALocationKey" >Location Key of the Location that the information should be
         /// retrieved for.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <returns>True if Partner exists, otherwise false.</returns>
         public static bool PartnerLocationAndRestOnly(Int64 APartnerKey, TLocationPK ALocationKey,
-            ref PartnerInfoTDS APartnerInfoDS)
+            ref PartnerInfoTDS APartnerInfoDS, TDBTransaction AReadTransaction)
         {
-            return PartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, true);
+            return PartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, true, AReadTransaction);
         }
 
         /// <summary>
@@ -103,11 +108,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ALocationKey" >Location Key of the Location that the information should be
         /// retrieved for.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <returns>True if Partner exists, otherwise false.</returns>
         public static bool PartnerLocationOnly(Int64 APartnerKey, TLocationPK ALocationKey,
-            ref PartnerInfoTDS APartnerInfoDS)
+            ref PartnerInfoTDS APartnerInfoDS, TDBTransaction AReadTransaction)
         {
-            return PartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, false);
+            return PartnerLocationInternal(APartnerKey, ALocationKey, ref APartnerInfoDS, false, AReadTransaction);
         }
 
         /// <summary>
@@ -115,10 +121,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the PartnerInfo data for</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <returns>True if Partner exists, otherwise false.</returns>
-        public static bool PartnerAttributesOnly(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS)
+        public static bool PartnerAttributesOnly(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS,
+            TDBTransaction AReadTransaction)
         {
-            return PartnerAttributesInternal(APartnerKey, ref APartnerInfoDS, false);
+            return PartnerAttributesInternal(APartnerKey, ref APartnerInfoDS, false, AReadTransaction);
         }
 
         /// <summary>
@@ -126,12 +134,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the PartnerInfo data for</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <returns>True if Partner exists, otherwise false.</returns>
-        public static bool AllPartnerInfoData(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS)
+        public static bool AllPartnerInfoData(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS,
+            TDBTransaction AReadTransaction)
         {
             bool ReturnValue = false;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PPartnerRow PartnerDR;
 
             TLocationPK BestLocationPK;
@@ -142,15 +150,12 @@ namespace Ict.Petra.Server.MPartner.Common
             PLocationTable LocationDT;
             PPartnerLocationTable PartnerLocationDT;
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, out NewTransaction);
-
             try
             {
                 /*
                  * Check for existance of Partner
                  */
-                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true);
+                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true, AReadTransaction.DataBaseObj);
 
                 if (PartnerDR != null)
                 {
@@ -158,13 +163,13 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Perform security checks; these throw ESecurityPartnerAccessDeniedException
                      * in case access isn't granted.
                      */
-                    TSecurity.CanAccessPartnerExc(PartnerDR);
+                    TSecurity.CanAccessPartnerExc(PartnerDR, AReadTransaction.DataBaseObj);
 
                     /*
                      * Get the Partner's Address data of its 'Best' Address
                      */
                     if (TMailing.GetPartnersBestLocationData(APartnerKey, out BestLocationPK,
-                            out LocationDR, out PartnerLocationDR))
+                            out LocationDR, out PartnerLocationDR, AReadTransaction.DataBaseObj))
                     {
                         #region Process Address
 
@@ -214,12 +219,13 @@ namespace Ict.Petra.Server.MPartner.Common
                         // Apply Address Security
                         LocationDT = APartnerInfoDS.PLocation;
                         PartnerLocationDT = APartnerInfoDS.PPartnerLocation;
+
                         TPPartnerAddressAggregate.ApplySecurity(ref PartnerLocationDT,
                             ref LocationDT);
 
                         // Process 'Head' data and rest of data for the Partner
                         HeadInternal(PartnerDR, ref APartnerInfoDS);
-                        RestInternal(PartnerDR, ReadTransaction, ref APartnerInfoDS);
+                        RestInternal(PartnerDR, ref APartnerInfoDS, AReadTransaction);
 
                         ReturnValue = true;
                     }
@@ -234,15 +240,8 @@ namespace Ict.Petra.Server.MPartner.Common
             {
                 TLogging.Log("TServerLookups_PartnerInfo.AllPartnerInfoData exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
+
                 throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.AllPartnerInfoData: committed own transaction.");
-                }
             }
 
             return ReturnValue;
@@ -257,28 +256,22 @@ namespace Ict.Petra.Server.MPartner.Common
         /// retrieved for.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
         /// <param name="AIncludeRest">Include 'Rest' data as well</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         private static bool LocationPartnerLocationInternal(Int64 APartnerKey, TLocationPK ALocationKey,
             ref PartnerInfoTDS APartnerInfoDS,
-            bool AIncludeRest)
+            bool AIncludeRest, TDBTransaction AReadTransaction)
         {
             bool ReturnValue = false;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PPartnerRow PartnerDR;
             PLocationTable LocationDT;
             PPartnerLocationTable PartnerLocationDT;
-
-
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
             try
             {
                 /*
                  * Check for existance of Partner
                  */
-                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true);
+                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true, AReadTransaction.DataBaseObj);
 
                 if (PartnerDR != null)
                 {
@@ -286,29 +279,30 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Perform security checks; these throw ESecurityPartnerAccessDeniedException
                      * in case access isn't granted.
                      */
-                    TSecurity.CanAccessPartnerExc(PartnerDR);
+                    TSecurity.CanAccessPartnerExc(PartnerDR, AReadTransaction.DataBaseObj);
 
                     /*
                      * Load Partner Location data and rest of data first
                      */
-                    PartnerLocationInternal(APartnerKey, ALocationKey, ReadTransaction, ref APartnerInfoDS);
+                    PartnerLocationInternal(APartnerKey, ALocationKey, AReadTransaction, ref APartnerInfoDS);
 
                     /*
                      * Load Location Information; this gets merged into the already retrieved
                      * information in APartnerInfoDS (eg. Partner Location data and rest of data)
                      */
                     APartnerInfoDS.Merge(TPPartnerAddressAggregate.LoadByPrimaryKey(
-                            ALocationKey.SiteKey, ALocationKey.LocationKey, ReadTransaction));
+                            ALocationKey.SiteKey, ALocationKey.LocationKey, AReadTransaction));
 
                     // Apply Address Security
                     LocationDT = APartnerInfoDS.PLocation;
                     PartnerLocationDT = APartnerInfoDS.PPartnerLocation;
+
                     TPPartnerAddressAggregate.ApplySecurity(ref PartnerLocationDT,
                         ref LocationDT);
 
                     if (AIncludeRest)
                     {
-                        RestInternal(PartnerDR, ReadTransaction, ref APartnerInfoDS);
+                        RestInternal(PartnerDR, ref APartnerInfoDS, AReadTransaction);
                     }
 
                     ReturnValue = true;
@@ -328,15 +322,8 @@ namespace Ict.Petra.Server.MPartner.Common
             {
                 TLogging.Log("TServerLookups_PartnerInfo.PartnerLocationInternal exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
+
                 throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly: committed own transaction.");
-                }
             }
 
             return ReturnValue;
@@ -351,25 +338,20 @@ namespace Ict.Petra.Server.MPartner.Common
         /// retrieved for.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
         /// <param name="AIncludeRest">Include 'Rest' data as well</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         private static bool PartnerLocationInternal(Int64 APartnerKey, TLocationPK ALocationKey,
             ref PartnerInfoTDS APartnerInfoDS,
-            bool AIncludeRest)
+            bool AIncludeRest, TDBTransaction AReadTransaction)
         {
             bool ReturnValue = false;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PPartnerRow PartnerDR;
-
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
             try
             {
                 /*
                  * Check for existance of Partner
                  */
-                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true);
+                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true, AReadTransaction.DataBaseObj);
 
                 if (PartnerDR != null)
                 {
@@ -377,16 +359,16 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Perform security checks; these throw ESecurityPartnerAccessDeniedException
                      * in case access isn't granted.
                      */
-                    TSecurity.CanAccessPartnerExc(PartnerDR);
+                    TSecurity.CanAccessPartnerExc(PartnerDR, AReadTransaction.DataBaseObj);
 
                     /*
                      * Partner exists --> we can go ahead with data gathering
                      */
-                    PartnerLocationInternal(APartnerKey, ALocationKey, ReadTransaction, ref APartnerInfoDS);
+                    PartnerLocationInternal(APartnerKey, ALocationKey, AReadTransaction, ref APartnerInfoDS);
 
                     if (AIncludeRest)
                     {
-                        RestInternal(PartnerDR, ReadTransaction, ref APartnerInfoDS);
+                        RestInternal(PartnerDR, ref APartnerInfoDS, AReadTransaction);
                     }
 
                     ReturnValue = true;
@@ -406,15 +388,8 @@ namespace Ict.Petra.Server.MPartner.Common
             {
                 TLogging.Log("TServerLookups_PartnerInfo.PartnerLocationInternal exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
+
                 throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.PartnerLocationInternal: committed own transaction.");
-                }
             }
 
             return ReturnValue;
@@ -427,24 +402,19 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
         /// <param name="AIncludeRest">Include 'Rest' data as well</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         private static bool PartnerAttributesInternal(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS,
-            bool AIncludeRest)
+            bool AIncludeRest, TDBTransaction AReadTransaction)
         {
             bool ReturnValue = false;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             PPartnerRow PartnerDR;
-
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
 
             try
             {
                 /*
                  * Check for existance of Partner
                  */
-                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true);
+                PartnerDR = MCommonMain.CheckPartnerExists2(APartnerKey, true, AReadTransaction.DataBaseObj);
 
                 if (PartnerDR != null)
                 {
@@ -452,16 +422,16 @@ namespace Ict.Petra.Server.MPartner.Common
                      * Perform security checks; these throw ESecurityPartnerAccessDeniedException
                      * in case access isn't granted.
                      */
-                    TSecurity.CanAccessPartnerExc(PartnerDR);
+                    TSecurity.CanAccessPartnerExc(PartnerDR, AReadTransaction.DataBaseObj);
 
                     /*
                      * Partner exists --> we can go ahead with data gathering
                      */
-                    PartnerAttributesInternal(APartnerKey, ReadTransaction, ref APartnerInfoDS);
+                    PartnerAttributesInternal(APartnerKey, ref APartnerInfoDS, AReadTransaction);
 
                     if (AIncludeRest)
                     {
-                        RestInternal(PartnerDR, ReadTransaction, ref APartnerInfoDS);
+                        RestInternal(PartnerDR, ref APartnerInfoDS, AReadTransaction);
                     }
 
                     ReturnValue = true;
@@ -481,15 +451,8 @@ namespace Ict.Petra.Server.MPartner.Common
             {
                 TLogging.Log("TServerLookups_PartnerInfo.PartnerAttributesInternal exception: " + Exp.ToString(), TLoggingType.ToLogfile);
                 TLogging.Log(Exp.StackTrace, TLoggingType.ToLogfile);
+
                 throw;
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TServerLookups_PartnerInfo.PartnerAttributesInternal: committed own transaction.");
-                }
             }
 
             return ReturnValue;
@@ -519,10 +482,10 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Retrieves PartnerAttribute information.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
-        /// <param name="AReadTransaction">Open Database Transaction.</param>
         /// <param name="APartnerInfoDS">Typed DataSet that contains the requested data.</param>
-        private static void PartnerAttributesInternal(Int64 APartnerKey, TDBTransaction AReadTransaction,
-            ref PartnerInfoTDS APartnerInfoDS)
+        /// <param name="AReadTransaction">Open Database Transaction.</param>
+        private static void PartnerAttributesInternal(Int64 APartnerKey, ref PartnerInfoTDS APartnerInfoDS,
+            TDBTransaction AReadTransaction)
         {
             /*
              * Load PartnerAttribute Information; this gets merged into the already retrieved
@@ -535,11 +498,11 @@ namespace Ict.Petra.Server.MPartner.Common
         /// Retrieves 'Rest' of Partner Information data.
         /// </summary>
         /// <param name="APartnerDR">DataRow that contains the Partner data.</param>
-        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         /// <param name="APartnerInfoDS" >Typed PartnerInfoTDS DataSet</param>
+        /// <param name="AReadTransaction" >Open DB Transaction.</param>
         private static void RestInternal(PPartnerRow APartnerDR,
-            TDBTransaction AReadTransaction,
-            ref PartnerInfoTDS APartnerInfoDS)
+            ref PartnerInfoTDS APartnerInfoDS,
+            TDBTransaction AReadTransaction)
         {
             PartnerInfoTDSPartnerAdditionalInfoRow PartnerInfoDR;
             TPartnerClass PartnerClass;
@@ -597,7 +560,7 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             // Determination of Last Contact Date
-            TMailroom.GetLastContactDate(PartnerKey, out LastContactDate);
+            TMailroom.GetLastContactDate(PartnerKey, out LastContactDate, AReadTransaction.DataBaseObj);
             PartnerInfoDR.LastContact = LastContactDate;
 
 
@@ -653,7 +616,7 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             // Get Partners' PartnerAttributes
-            PartnerAttributesInternal(PartnerKey, ref APartnerInfoDS, false);
+            PartnerAttributesInternal(PartnerKey, ref APartnerInfoDS, false, AReadTransaction);
             // TODO: Apply Contact Details Security
 
             if (APartnerInfoDS.PartnerAdditionalInfo.Rows.Count == 0)
@@ -797,7 +760,7 @@ namespace Ict.Petra.Server.MPartner.Common
             FamilyPersonsDT = new PPersonTable();
             TmpDS.Tables.Add(FamilyPersonsDT);
 
-            DBAccess.GDBAccessObj.Select(TmpDS,
+            DBAccess.GetDBAccessObj(AReadTransaction).Select(TmpDS,
                 "SELECT " + "PUB_" + PPartnerTable.GetTableDBName() + '.' +
                 PPartnerTable.GetPartnerKeyDBName() + ", " +
                 PPersonTable.GetFamilyNameDBName() + ", " +

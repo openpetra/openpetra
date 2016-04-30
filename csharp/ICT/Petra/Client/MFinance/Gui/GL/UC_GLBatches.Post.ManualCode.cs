@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
@@ -201,13 +202,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 catch (Exception ex)
                 {
-                    string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of a GL Batch!{0}{1}{2}{1}    {3}"),
-                                      Utilities.GetMethodSignature(),
+                    string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of GL Batch {0}!{1}{1}{2}{1}{1}{3}"),
+                                      CurrentBatchNumber,
                                       Environment.NewLine,
                                       ex.Message,
                                       ex.InnerException!=null?ex.InnerException.Message:String.Empty));
 
-                    TLogging.Log(msg);
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
                     MessageBox.Show(msg, "Post GL Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally
@@ -334,7 +335,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             ANumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
@@ -480,6 +482,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             TVerificationResultCollection Verifications;
+            TFrmExtendedMessageBox ExtendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
 
             FMyForm.Cursor = Cursors.WaitCursor;
 
@@ -498,64 +501,140 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                          verif.ResultText + Environment.NewLine;
                     }
 
-                    System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-                }
-                else if (Result.Count < 25)
-                {
-                    string message = string.Empty;
-
-                    foreach (TVariant value in Result)
-                    {
-                        ArrayList compValues = value.ToComposite();
-
-                        message +=
-                            string.Format(
-                                Catalog.GetString("{1}/{0} ({3}/{2}) is: {4} and would be: {5}"),
-                                ((TVariant)compValues[0]).ToString(),
-                                ((TVariant)compValues[2]).ToString(),
-                                ((TVariant)compValues[1]).ToString(),
-                                ((TVariant)compValues[3]).ToString(),
-                                StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
-                                StringHelper.FormatCurrency((TVariant)compValues[5], "currency")) +
-                            Environment.NewLine;
-                    }
-
-                    MessageBox.Show(message, Catalog.GetString("Result of Test Posting"));
+                    ExtendedMessageBox.ShowDialog(ErrorMessages,
+                        Catalog.GetString("Test Post Failed"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
                 }
                 else
                 {
-                    // store to CSV file
+                    string header = string.Empty;
                     string message = string.Empty;
 
                     foreach (TVariant value in Result)
                     {
                         ArrayList compValues = value.ToComposite();
 
-                        string[] columns = new string[] {
+                        message += String.Format(Catalog.GetString("--{1}/{0} ({3}/{2}) is: {4} and would be: {5}{6}"),
                             ((TVariant)compValues[0]).ToString(),
-                            ((TVariant)compValues[1]).ToString(),
                             ((TVariant)compValues[2]).ToString(),
+                            ((TVariant)compValues[1]).ToString(),
                             ((TVariant)compValues[3]).ToString(),
-                            StringHelper.FormatCurrency((TVariant)compValues[4], "CurrencyCSV"),
-                            StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
-                        };
-
-                        message += StringHelper.StrMerge(columns,
-                            Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
-                                   Environment.NewLine;
+                            StringHelper.FormatCurrency((TVariant)compValues[4], "currency"),
+                            StringHelper.FormatCurrency((TVariant)compValues[5], "currency"),
+                            Environment.NewLine);
                     }
 
-                    string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" + ACurrentBatchRow.BatchNumber.ToString() +
-                                         "_TestPosting.csv";
-                    StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
-                    sw.Write(message);
-                    sw.Close();
+                    if (Result.Count > 25)
+                    {
+                        string line = new String('_', 70);
+                        header =
+                            String.Format(Catalog.GetString(
+                                    "{0}{1}{1}{2} results listed below. Do you want to export this list to a CSV file?{1}{0}{1}{1}"),
+                                line,
+                                Environment.NewLine,
+                                Result.Count);
 
-                    MessageBox.Show(
-                        String.Format(Catalog.GetString("Please see file {0} for the result of the test posting"), CSVFilePath),
-                        Catalog.GetString("Result of Test Posting"));
+                        if (ExtendedMessageBox.ShowDialog((header + message),
+                                Catalog.GetString("Result of Test Posting"), string.Empty,
+                                TFrmExtendedMessageBox.TButtons.embbYesNo,
+                                TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes)
+                        {
+                            // store to CSV file
+                            string cSVForExport = string.Empty;
+                            string messageExport = string.Empty;
+
+                            foreach (TVariant value in Result)
+                            {
+                                ArrayList compValues = value.ToComposite();
+
+                                string[] columns = new string[] {
+                                    ((TVariant)compValues[0]).ToString(),
+                                    ((TVariant)compValues[1]).ToString(),
+                                    ((TVariant)compValues[2]).ToString(),
+                                    ((TVariant)compValues[3]).ToString(),
+                                    StringHelper.FormatCurrency((TVariant)compValues[4], "CurrencyCSV"),
+                                    StringHelper.FormatCurrency((TVariant)compValues[5], "CurrencyCSV")
+                                };
+
+                                cSVForExport += StringHelper.StrMerge(columns,
+                                    Thread.CurrentThread.CurrentCulture.TextInfo.ListSeparator[0]) +
+                                                Environment.NewLine;
+                            }
+
+                            try
+                            {
+                                string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" +
+                                                     ACurrentBatchRow.BatchNumber.ToString() +
+                                                     "_TestPosting.csv";
+
+                                StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
+                                sw.Write(cSVForExport);
+                                sw.Close();
+
+                                messageExport = String.Format(Catalog.GetString("Please see the results in the file:{1}{1}'{0}'{1}{1}"),
+                                    CSVFilePath,
+                                    Environment.NewLine);
+                                messageExport += "Do you want to open the file for viewing now?";
+
+                                if (MessageBox.Show(messageExport,
+                                        Catalog.GetString("Result of Test Posting"),
+                                        MessageBoxButtons.YesNo,
+                                        MessageBoxIcon.Question) == DialogResult.Yes)
+                                {
+                                    try
+                                    {
+                                        ProcessStartInfo si = new ProcessStartInfo(CSVFilePath);
+                                        si.UseShellExecute = true;
+                                        si.Verb = "open";
+
+                                        Process p = new Process();
+                                        p.StartInfo = si;
+                                        p.Start();
+                                    }
+                                    catch
+                                    {
+                                        MessageBox.Show(Catalog.GetString(
+                                                "Unable to launch the default application to open: '") + CSVFilePath + "'!", Catalog.GetString(
+                                                "Result of Test Posting"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+
+                                        //If windows start Windows File Explorer
+                                        TExecutingOSEnum osVersion = Utilities.DetermineExecutingOS();
+
+                                        if ((osVersion >= TExecutingOSEnum.eosWinXP)
+                                            && (osVersion < TExecutingOSEnum.oesUnsupportedPlatform))
+                                        {
+                                            try
+                                            {
+                                                Process.Start("explorer.exe", string.Format("/select,\"{0}\"", CSVFilePath));
+                                            }
+                                            catch
+                                            {
+                                                MessageBox.Show(Catalog.GetString(
+                                                        "Unable to launch Windows File Explorer to open: '") + CSVFilePath + "'!", Catalog.GetString(
+                                                        "Result of Test Posting"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Error trying to export test posting results to CSV file: " + ex.Message,
+                                    "Test Posting Results Export",
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Error);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ExtendedMessageBox.ShowDialog(message,
+                            Catalog.GetString("Result of Test Posting"), string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbOK,
+                            TFrmExtendedMessageBox.TIcon.embiInformation);
+                    }
                 }
             }
             finally

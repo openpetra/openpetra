@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.App.Gui
         {
             String LocalisedCountyLabel;
 
-            LocalisedCountyLabel = TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_LOCALISEDCOUNTYLABEL, String.Empty);
+            LocalisedCountyLabel = TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_LOCALISEDCOUNTYLABEL);
 
             if (LocalisedCountyLabel.Trim() != String.Empty)
             {

@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -55,6 +55,7 @@ namespace Ict.Petra.Server.MFinance.Common
         static ReaderWriterLockSlim FReadWriteLock = new ReaderWriterLockSlim();
         static Dictionary <int, string>FLedgerNamesDict = new Dictionary <int, string>();
         static Dictionary <int, string>FLedgerCountryCodeDict = new Dictionary <int, string>();
+        static Dictionary <int, string>FLedgerBaseCurrencyDict = new Dictionary <int, string>();
 
         //
         // Several utilities may each have their own TLedgerInfo object, so several objects can be created for the same ledger.
@@ -96,10 +97,12 @@ namespace Ict.Petra.Server.MFinance.Common
             //Prepare a temp dictionaries for minimum time in lock
             Dictionary <int, string>LedgerNamesDictTemp = new Dictionary <int, string>();
             Dictionary <int, string>LedgerCountryCodesDictTemp = new Dictionary <int, string>();
+            Dictionary <int, string>LedgerBaseCurrencyDictTemp = new Dictionary <int, string>();
 
             //Take a backup for reversion purposes if error occurs
             Dictionary <int, string>LedgerNamesDictBackup = null;
             Dictionary <int, string>LedgerCountryCodesDictBackup = null;
+            Dictionary <int, string>LedgerBaseCurrencyDictBackup = null;
 
             TDBTransaction Transaction = null;
 
@@ -110,7 +113,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     ref Transaction,
                     delegate
                     {
-                        String strSql = "SELECT a_ledger_number_i, p_partner_short_name_c, a_country_code_c" +
+                        String strSql = "SELECT a_ledger_number_i, p_partner_short_name_c, a_country_code_c, a_base_currency_c" +
                                         " FROM PUB_a_ledger, PUB_p_partner" +
                                         " WHERE PUB_a_ledger.p_partner_key_n = PUB_p_partner.p_partner_key_n;";
 
@@ -130,15 +133,18 @@ namespace Ict.Petra.Server.MFinance.Common
                         int currentLedger = 0;
                         string currentLedgerName = string.Empty;
                         string currentLedgerCountryCode = string.Empty;
+                        string currentLedgerBaseCurrency = string.Empty;
 
                         for (int i = 0; i < ledgerData.Rows.Count; i++)
                         {
-                            currentLedger = (int)ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()];
+                            currentLedger = Convert.ToInt32(ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()]);
                             currentLedgerName = Convert.ToString(ledgerData.Rows[i][PPartnerTable.GetPartnerShortNameDBName()]);
                             currentLedgerCountryCode = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetCountryCodeDBName()]);
+                            currentLedgerBaseCurrency = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetBaseCurrencyDBName()]);
 
                             LedgerNamesDictTemp.Add(currentLedger, currentLedgerName);
                             LedgerCountryCodesDictTemp.Add(currentLedger, currentLedgerCountryCode);
+                            LedgerBaseCurrencyDictTemp.Add(currentLedger, currentLedgerBaseCurrency);
                         }
 
                         bool lockEntered = false;
@@ -154,13 +160,16 @@ namespace Ict.Petra.Server.MFinance.Common
                                     //Backup dictionaries
                                     LedgerNamesDictBackup = new Dictionary <int, string>(FLedgerNamesDict);
                                     LedgerCountryCodesDictBackup = new Dictionary <int, string>(FLedgerCountryCodeDict);
+                                    LedgerBaseCurrencyDictBackup = new Dictionary <int, string>(FLedgerBaseCurrencyDict);
 
                                     FLedgerNamesDict.Clear();
                                     FLedgerCountryCodeDict.Clear();
+                                    FLedgerBaseCurrencyDict.Clear();
                                 }
 
                                 FLedgerNamesDict = new Dictionary <int, string>(LedgerNamesDictTemp);
                                 FLedgerCountryCodeDict = new Dictionary <int, string>(LedgerCountryCodesDictTemp);
+                                FLedgerBaseCurrencyDict = new Dictionary <int, string>(LedgerBaseCurrencyDictTemp);
                             }
                         }
                         finally
@@ -178,13 +187,11 @@ namespace Ict.Petra.Server.MFinance.Common
                 {
                     FLedgerNamesDict = new Dictionary <int, string>(LedgerNamesDictBackup);
                     FLedgerCountryCodeDict = new Dictionary <int, string>(LedgerCountryCodesDictBackup);
+                    FLedgerBaseCurrencyDict = new Dictionary <int, string>(LedgerBaseCurrencyDictBackup);
                 }
 
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -272,7 +279,48 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// Get the name for this Ledger
+        /// Get the base currency for this Ledger
+        /// </summary>
+        public static string GetLedgerBaseCurrency(int ALedgerNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            string LedgerBaseCurrency = string.Empty;
+
+            try
+            {
+                PopulateLedgerDictionaries(ALedgerNumber);
+
+                FReadWriteLock.EnterReadLock();
+
+                LedgerBaseCurrency = FLedgerBaseCurrencyDict[ALedgerNumber];
+
+                FReadWriteLock.ExitReadLock();
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
+                        Utilities.GetMethodSignature(),
+                        Environment.NewLine,
+                        ex.Message));
+
+                throw ex;
+            }
+
+            return LedgerBaseCurrency;
+        }
+
+        /// <summary>
+        /// Get the country code for this Ledger
         /// </summary>
         public static string GetLedgerCountryCode(int ALedgerNumber)
         {
@@ -301,12 +349,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return LedgerCountryCode;
@@ -868,11 +912,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -902,11 +943,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
     }

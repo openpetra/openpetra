@@ -843,8 +843,42 @@ namespace Ict.Common.Controls
 
             this.MouseDown += new MouseEventHandler(TSgrdDataGrid_MouseDown);
             this.MouseUp += new MouseEventHandler(TSgrdDataGrid_MouseUp);
+            this.SizeChanged += TSgrdDataGrid_SizeChanged;
 
             TToolTipModel.InitializeUnit();
+        }
+
+        private FormWindowState FFormWindowState = FormWindowState.Normal;
+        private bool FDoneFirstResize = false;
+        private void TSgrdDataGrid_SizeChanged(object sender, EventArgs e)
+        {
+            Form form = FindForm();
+
+            if (form == null)
+            {
+                return;
+            }
+
+            FormWindowState curWindowState = form.WindowState;
+
+            switch (curWindowState)
+            {
+                case FormWindowState.Maximized:
+                    AutoResizeGrid();
+                    break;
+
+                case FormWindowState.Normal:
+
+                    if ((FFormWindowState == FormWindowState.Maximized) || !FDoneFirstResize)
+                    {
+                        AutoResizeGrid();
+                    }
+
+                    break;
+            }
+
+            FFormWindowState = curWindowState;
+            FDoneFirstResize = true;
         }
 
         /// <summary>

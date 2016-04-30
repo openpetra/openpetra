@@ -21,11 +21,11 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        Partner: {Label=Pa&rtner, Icon=partner.ico, PermissionsRequired=PTNRUSER}
+        Partner: {Label=Pa&rtner, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, Icon=partner.ico}  #Permissions are OR'ed
             # Module
-            Main: {SkipThisLevel=true}
+            PartnerMain: {SkipThisLevel=true}
                 # Sub Module
-                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, DontShowNestedTasksAsLinks=true}
+                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Partner]
                     MaintainPartners:
 
@@ -47,14 +47,11 @@ OpenPetra:
 #                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}
                     Contacts:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contacts of Partners}
-                    ImportExport: {Label=Import}
-#                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                     Subscriptions: {Label=Subscriptions}
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
                     Addresses: {Label=Addresses}
                         DuplicateAddressCheck: {ActionOpenScreen=TFrmDuplicateAddressCheck, Label=Duplicate Address Check, Description=Search addresses for possible duplicates}
-                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
+                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}
                     GenerateExtracts: {Label=Generate Partner Extract}
@@ -78,7 +75,7 @@ OpenPetra:
                         DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtractCrossLedger}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtractCrossLedger}
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtractCrossLedger}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
                         PrintPartner: {ActionOpenScreen=TFrmPrintPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -95,8 +92,14 @@ OpenPetra:
                         SubscriptionReport: {Label=Subscription Report, ActionOpenScreen=TFrmSubscriptionReport}
                         LocalPartnerDataReport: {Label=Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport}
            
+                ImportExport: {Label=Import/Export, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, DontShowNestedTasksAsLinks=true}  #Permissions are OR'ed
+                    Import:
+                        ImportPartners: {Label=Import Partners, Description=Import Partners from a file or satellite database, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerImport}
+                    Export:
+#                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
+                        CalebExport: {Label=Caleb Export, Description=Export Partner/Personnel/Finance Data to Caleb, Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
-                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
+                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     General:           
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
@@ -187,7 +190,7 @@ OpenPetra:
                         HOSA: {Description: Home Office Statement of Accounts, ActionOpenScreen=TFrmHOSA}
                         SurplusDeficit: {ActionOpenScreen=TFrmSurplusDeficit}
                         BalanceSheetStandard: {Label=Standard Balance Sheet, ActionOpenScreen=TFrmBalanceSheetStandard}
-                        BalanceSheetMultiLedger: {Label=Multi Ledger Balance Sheet, ActionOpenScreen=TFrmBalanceSheetMultiLedger}
+                        #BalanceSheetMultiLedger: {Label=Multi Ledger Balance Sheet, ActionOpenScreen=TFrmBalanceSheetMultiLedger}
                             #CurrentPeriod:
                             #EndOfLastYear:
                             #SpecifyParameters:
@@ -195,7 +198,7 @@ OpenPetra:
                             #MyFancyBalanceSheetWithCoolGraph:
                         IncomeExpenseStatement: {ActionOpenScreen=TFrmIncomeExpenseStmt}
                       # IncomeExpenseStatementMultiPeriod: {Label=Multi Period Statement, ActionOpenScreen=TFrmIncomeExpenseMultiPeriod}
-                        IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
+                        #IncomeExpenseStatementMultiLedger: {Label=Multi Ledger Statement, ActionOpenScreen=TFrmIncomeExpenseMultiLedger}
                         AFO: {Description: Monthly report to be sent to Area Finance Officer, ActionOpenScreen=TFrmAFO}
                         ExecutiveSummary: {Description: Key financial information for the year to date, ActionOpenScreen=TFrmExecutiveSummary}
                 GiftProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.Gift, DontShowNestedTasksAsLinks=true}
@@ -228,6 +231,7 @@ OpenPetra:
                         GiftBatchDetail: {ActionOpenScreen=TFrmGiftBatchDetail}
                         RecipientTaxDeductiblePercentages: {ActionOpenScreen=TFrmRecipientTaxDeductiblePercentages}
                         EsrInpaymentSlip: {Label=ESR Inpayment Slip, ActionOpenScreen=TFrmEsrInpaymentSlip}
+                        MotivationResponse: {ActionOpenScreen=TFrmMotivationResponse}
                     #Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                         #ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                         #RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}
@@ -383,60 +387,60 @@ OpenPetra:
                         AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
                         LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
                         
-        ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
-            Main: {SkipThisLevel=true}
-                Conference: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
-                    Conference:
-                        SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
-                        NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
-                        DeleteConference: {Label=Delete This Conference, Description="Careful: Delete the conference with all conference data", ActionClick=TDeleteConference.DeleteThisConference}
-                    Attendees:
-                        AttendeeList: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Browse Conference Attendees, ActionClick=TConferenceMain.AttendeeListForSelectedConference}
-                        RefreshAttendees: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Refresh conference attendees after adding/importing new attendees, ActionClick=TConferenceMain.RefreshAttendees}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
-                    Reports:
-                        AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
-                        AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
-                        AgeSummaryReport: {ActionOpenScreen=TFrmAgeSummaryReport}
-                        ArrivalDepartureGroupReport: {ActionOpenScreen=TFrmArrivalDepartureGroup}
-                        ArrivalListingReport: {ActionOpenScreen=TFrmArrivalListingReport}
-                        AttendanceSummaryReport: {ActionOpenScreen=TFrmAttendanceSummaryReport}
-                        AttendeeReport: {ActionOpenScreen=TFrmAttendeeReport}
-                        ChildrenReport: {ActionOpenScreen=TFrmChildrenReport}
-                        CommentsReport: {ActionOpenScreen=TFrmCommentsReport}
-                        ConferenceRoleReport: {ActionOpenScreen=TFrmConferenceRoleReport}
-                        ExtraCostsReport: {ActionOpenScreen=TFrmExtraCostsReport}
-                        FamilyListingReport: {ActionOpenScreen=TFrmFamilyListingReport}
-                        GroupReports: {ActionOpenScreen=TFrmGroupReports}
-                        LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
-                        NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
-                        PresentAttendeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
-                        TransportReport: {ActionOpenScreen=TFrmTransportReport}
-                        #Payment:  {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, ActionOpenScreen=TFrmARConferencePayments}
-                    FieldReports:
-                        ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
-                        SendingFieldReport: {ActionOpenScreen=TFrmSendingFieldReport}
-                        ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
-                        RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
-                        OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
-                Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
-                    CurrentConference:
-                        MasterSettings: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionClick=TConferenceMain.MasterSettingsForSelectedConference}
-                        ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
-                        ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
-                        EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
-                        OutreachSupplement: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Outreach Supplements, Description=Maintain Outreach Supplements, ActionClick=TConferenceMain.OutreachSupplementsForSelectedConference}
-                    General:
-                        ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
+        #ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
+        #    Main: {SkipThisLevel=true}
+        #        Conference: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
+        #            Conference:
+        #                SelectConference: {Description=Select a Conference to work on, ActionOpenScreen=TFrmConferenceFindForm}
+        #                NewConference: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Create a new Conference, ActionClick=TConferenceMain.NewConference}
+        #                DeleteConference: {Label=Delete This Conference, Description="Careful: Delete the conference with all conference data", ActionClick=TDeleteConference.DeleteThisConference}
+        #            Attendees:
+        #                AttendeeList: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Browse Conference Attendees, ActionClick=TConferenceMain.AttendeeListForSelectedConference}
+        #                RefreshAttendees: {Namespace=Ict.Petra.Client.MConference.Gui, Description=Refresh conference attendees after adding/importing new attendees, ActionClick=TConferenceMain.RefreshAttendees}
+        #        Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MConference, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
+        #            Reports:
+        #                AbsenteeReport: {ActionOpenScreen=TFrmAbsenteeReport}
+        #                AccommodationReport: {ActionOpenScreen=TFrmAccommodationReport}
+        #                AgeSummaryReport: {ActionOpenScreen=TFrmAgeSummaryReport}
+        #                ArrivalDepartureGroupReport: {ActionOpenScreen=TFrmArrivalDepartureGroup}
+        #                ArrivalListingReport: {ActionOpenScreen=TFrmArrivalListingReport}
+        #                AttendanceSummaryReport: {ActionOpenScreen=TFrmAttendanceSummaryReport}
+        #                AttendeeReport: {ActionOpenScreen=TFrmAttendeeReport}
+        #                ChildrenReport: {ActionOpenScreen=TFrmChildrenReport}
+        #                CommentsReport: {ActionOpenScreen=TFrmCommentsReport}
+        #                ConferenceRoleReport: {ActionOpenScreen=TFrmConferenceRoleReport}
+        #                ExtraCostsReport: {ActionOpenScreen=TFrmExtraCostsReport}
+        #                FamilyListingReport: {ActionOpenScreen=TFrmFamilyListingReport}
+        #                GroupReports: {ActionOpenScreen=TFrmGroupReports}
+        #                LanguageReport: {ActionOpenScreen=TFrmLanguagesReport}
+        #                NationalitySummaryReport: {ActionOpenScreen=TFrmNationalitySummaryReport}
+        #                PresentAttendeeReport: {ActionOpenScreen=TFrmPresentAttendeeReport}
+        #                TransportReport: {ActionOpenScreen=TFrmTransportReport}
+        #                #Payment:  {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, ActionOpenScreen=TFrmARConferencePayments}
+        #            FieldReports:
+        #                ChargedFieldReport: {ActionOpenScreen=TFrmChargedFieldReport}
+        #                SendingFieldReport: {ActionOpenScreen=TFrmSendingFieldReport}
+        #                ReceivingFieldReport: {ActionOpenScreen=TFrmReceivingFieldReport}
+        #                RegisteringFieldReport: {ActionOpenScreen=TFrmRegisteringFieldReport}
+        #                OutreachReport: {ActionOpenScreen=TFrmOutreachReport}
+        #        Setup: {Namespace=Ict.Petra.Client.MConference.Gui.Setup, DontShowNestedTasksAsLinks=true}
+        #            CurrentConference:
+        #                MasterSettings: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Master Settings, Description=Maintain Conference Master Settings, ActionClick=TConferenceMain.MasterSettingsForSelectedConference}
+        #                ChildDiscount: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Child Discounts, Description=Maintain Child Discounts, ActionClick=TConferenceMain.ChildDiscountsForSelectedConference}
+        #                ConferenceStandardCost: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Conference Standard Costs, Description=Maintain Conference Standard Costs, ActionClick=TConferenceMain.StandardCostsForSelectedConference}
+        #                EarlyLateRegistration: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Early and Late Registrations, Description=Maintain Early and Late Registrations, ActionClick=TConferenceMain.EarlyLateRegistrationsForSelectedConference}
+        #                OutreachSupplement: {Namespace=Ict.Petra.Client.MConference.Gui, Label=Outreach Supplements, Description=Maintain Outreach Supplements, ActionClick=TConferenceMain.OutreachSupplementsForSelectedConference}
+        #            General:
+        #                ConferenceCostType: {Label=Conference Cost Types, Description=Maintain Conference Cost Types, ActionOpenScreen=TFrmConferenceCostTypeSetup}
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Main: {SkipThisLevel=true}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     Reports:
-                        IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
-                        LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
-                        DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
+                        #IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
+                        #LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
+                        #DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
                         TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
-                        MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
+                        #MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
                         ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
                         DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}
                         GiftsOverMinimumAmount: {ActionOpenScreen=TFrmGiftsOverMinimumAmount}

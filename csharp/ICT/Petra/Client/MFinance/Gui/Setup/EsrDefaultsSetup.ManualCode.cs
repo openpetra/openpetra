@@ -1,4 +1,4 @@
-﻿// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       Tim Ingham
@@ -21,6 +21,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using SourceGrid;
@@ -36,38 +37,51 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         private DataTable FesrDefaults;
         DataRow FselectedRow = null;
         Int32 FLedgerNumber = 0;
-        Boolean FsuppressChangeEvent = false;
+        Int32 FsuppressChangeEvent = 0;
 
         private void InitializeManualCode()
         {
             FesrDefaults = TRemote.MFinance.Gift.WebConnectors.GetEsrDefaults();
-            grdDetails.Columns.Add("a_partner_key_n", "Partner Key", typeof(Int64));
-            grdDetails.Columns.Add("a_new_partner_key_n", "Replacement", typeof(Int64));
+            grdDetails.Columns.Add("a_partner_key_n", "ESR Key", typeof(Int64));
+            grdDetails.Columns.Add("a_new_partner_key_n", "Substitute", typeof(Int64));
             grdDetails.Columns.Add("a_motiv_group_s", "Motiv. Group", typeof(String));
             grdDetails.Columns.Add("a_motiv_detail_s", "Motiv. Detail", typeof(String));
 
             grdDetails.Selection.SelectionChanged += Selection_SelectionChanged;
             grdDetails.Selection.FocusRowLeaving += UpdateGrid;
-            txtPartnerKey.Leave += initNewPartnerKey;
+            txtPartnerKey.Leave += OnLeavePartnerKey;
             txtNewPartnerKey.Leave += UpdateGrid;
             cmbMotivGroup.SelectedValueChanged += UpdateMotivationDetail;
             cmbMotivDetail.SelectedValueChanged += UpdateGrid;
 
             FesrDefaults.DefaultView.Sort = "a_partner_key_n";
             FesrDefaults.DefaultView.AllowNew = false;
+            FesrDefaults.DefaultView.AllowEdit = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FesrDefaults.DefaultView);
         }
 
         void UpdateGrid(object sender, EventArgs e)
         {
-            if (!FsuppressChangeEvent)
+            if (FsuppressChangeEvent == 0)
             {
-                GetDataFromControls();
+                GetDataFromControlsManual();
             }
         }
 
-        void initNewPartnerKey(object sender, EventArgs e)
+        void OnLeavePartnerKey(object sender, EventArgs e)
         {
+            if (FsuppressChangeEvent > 0)
+            {
+                return;
+            }
+
+            Control PrevFocus = FPetraUtilsObject.GetFocusedControl(this);
+
+            if (PrevFocus == null)
+            {
+                PrevFocus = txtNewPartnerKey;
+            }
+
             String PartnerKeySt = txtPartnerKey.Text;
 
             if (PartnerKeySt == "")
@@ -93,15 +107,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 return;
             }
 
-            FesrDefaults.DefaultView.Sort = "a_partner_key_n";  // I don't know why I need to do this, since it was done previously in
+            //
+            // If the user didn't change the value,
+            // there's nothing more to do here.
 
-            // InitializeManualCode. But without it, I'm seeing exceptions here.
-            if (FesrDefaults.DefaultView.Find(PartnerKeySt) > 0)
+            if ((FselectedRow["a_new_partner_key_n"] != System.DBNull.Value)
+                && (Convert.ToInt64(FselectedRow["a_partner_key_n"]) == PartnerKey))
+            {
+                return;
+            }
+
+            FesrDefaults.DefaultView.Sort = "a_partner_key_n";  // I don't know why I need to do this, since it was done previously in
+                                                                // InitializeManualCode. But without it, I'm seeing exceptions here.
+
+            if (FesrDefaults.DefaultView.Find(PartnerKey) > 0)
             {
                 MessageBox.Show(String.Format("Error: An entry already exists for partner key {0}.", PartnerKeySt),
                     "ESR Defaults", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtPartnerKey.Text = FselectedRow["a_partner_key_n"].ToString();
                 txtPartnerKey.Focus();
+
+                return;
             }
 
             if (txtNewPartnerKey.Text == "0000000000")
@@ -110,6 +136,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
 
             UpdateGrid(sender, e);
+
+            FsuppressChangeEvent++;
+            // Since the Primary Key could have changed,
+            // I need to re-select the correct row in the grid:
+            Int32 NewRowPos = FesrDefaults.DefaultView.Find(PartnerKey);
+            grdDetails.SelectRowInGrid(1 + NewRowPos, true); // This ends up calling back here!
+            PrevFocus.Focus();
+            FsuppressChangeEvent--;
         }
 
         void UpdateMotivationDetail(object sender, EventArgs e)
@@ -117,7 +151,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             String motivationGroup = cmbMotivGroup.GetSelectedString();
 
             TFinanceControls.ChangeFilterMotivationDetailList(ref cmbMotivDetail, motivationGroup);
-            UpdateGrid(sender, e);
+
+            if (FsuppressChangeEvent == 0)
+            {
+                UpdateGrid(sender, e);
+            }
         }
 
         /// <summary>
@@ -128,8 +166,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             set
             {
                 FLedgerNumber = value;
+                FsuppressChangeEvent++;
                 TFinanceControls.InitialiseMotivationGroupList(ref cmbMotivGroup, FLedgerNumber, true);
                 TFinanceControls.InitialiseMotivationDetailList(ref cmbMotivDetail, FLedgerNumber, true);
+                FsuppressChangeEvent--;
+
                 grdDetails.SelectRowInGrid(1, true);
             }
         }
@@ -149,16 +190,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 if (Int64.TryParse(txtPartnerKey.Text, out partnerKey))
                 {
-                    FselectedRow["a_partner_key_n"] = partnerKey;
+                    if (FselectedRow["a_partner_key_n"].ToString() != txtPartnerKey.Text)
+                    {
+                        FselectedRow["a_partner_key_n"] = partnerKey;
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+
                     Int64 newPartnerKey = partnerKey;
 
                     if (Int64.TryParse(txtNewPartnerKey.Text, out newPartnerKey))
                     {
-                        FselectedRow["a_new_partner_key_n"] = newPartnerKey;
+                        if ((FselectedRow["a_new_partner_key_n"] == System.DBNull.Value)
+                            || (Convert.ToInt64(FselectedRow["a_new_partner_key_n"]) != newPartnerKey))
+                        {
+                            FselectedRow["a_new_partner_key_n"] = newPartnerKey;
+                            FPetraUtilsObject.SetChangedFlag();
+                        }
                     }
 
-                    FselectedRow["a_motiv_group_s"] = cmbMotivGroup.GetSelectedString();
-                    FselectedRow["a_motiv_detail_s"] = cmbMotivDetail.GetSelectedString();
+                    String SelString = cmbMotivGroup.GetSelectedString();
+
+                    if (FselectedRow["a_motiv_group_s"].ToString() != SelString)
+                    {
+                        FselectedRow["a_motiv_group_s"] = SelString;
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
+
+                    SelString = cmbMotivDetail.GetSelectedString();
+
+                    if (FselectedRow["a_motiv_detail_s"].ToString() != SelString)
+                    {
+                        FselectedRow["a_motiv_detail_s"] = SelString;
+                        FPetraUtilsObject.SetChangedFlag();
+                    }
                 }
                 else
                 {
@@ -182,12 +246,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private void ShowDataRow(DataRow Row)
         {
-            FsuppressChangeEvent = true;
+            FPetraUtilsObject.SuppressChangeDetection = true;
+            FsuppressChangeEvent++;
             txtPartnerKey.Text = Row["a_partner_key_n"].ToString();
             txtNewPartnerKey.Text = Row["a_new_partner_key_n"].ToString();
             cmbMotivGroup.SetSelectedString(Row["a_motiv_group_s"].ToString());
             cmbMotivDetail.SetSelectedString(Row["a_motiv_detail_s"].ToString());
-            FsuppressChangeEvent = false;
+            FsuppressChangeEvent--;
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -225,7 +290,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         {
             Msg = "";
             DataTable changes = FesrDefaults.GetChanges();
-            return changes.Rows.Count;
+
+            return (changes == null) ? 0 : changes.Rows.Count;
         }
 
         /// <summary>

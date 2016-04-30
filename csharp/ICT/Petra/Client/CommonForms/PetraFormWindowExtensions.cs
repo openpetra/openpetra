@@ -81,7 +81,7 @@ namespace Ict.Petra.Client.CommonForms
                 // Restore the window positions if we know them
                 // (Note: Nant tests do not have a caller so we need to allow for this possibility)
                 if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch")
-                    || (FWinForm.Name == "TFrmGLBatch")
+                    || (FWinForm.Name == "TFrmGLBatch") || (FWinForm.Name == "TPartnerFindScreen")
                     || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
@@ -141,7 +141,8 @@ namespace Ict.Petra.Client.CommonForms
                                 ex.Message), TLoggingType.ToLogfile);
                     }
                 }
-                else if ((FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch") || (FWinForm.Name == "TFrmGLBatch"))
+                else if ((FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch") || (FWinForm.Name == "TFrmGLBatch")
+                         || (FWinForm.Name == "TPartnerFindScreen"))
                 {
                     // We always save the settings for these forms - they can be launched from the main window or from Partner/Find or several other ways
                     GetWindowPositionProperties();

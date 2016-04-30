@@ -152,13 +152,80 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ReconcileKeyMinistryFromCombo();
         }
 
+        /// <summary>
+        /// This implements keyboard shortcuts to match Petra 2.x
+        /// </summary>
+        /// <param name="msg">The message</param>
+        /// <param name="keyData">The key data</param>
+        /// <returns></returns>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.A | Keys.Alt))
+            {
+                txtDetailGiftTransactionAmount.Focus();
+                return true;
+            }
+
+            if (keyData == (Keys.M | Keys.Alt))
+            {
+                bool comment1 = txtDetailGiftCommentOne.Focused;
+                bool comment2 = txtDetailGiftCommentTwo.Focused;
+                bool comment3 = txtDetailGiftCommentThree.Focused;
+
+                if (!comment1 && !comment2 && !comment3)
+                {
+                    txtDetailGiftCommentOne.Focus();
+                    return true;
+                }
+
+                if (comment1)
+                {
+                    txtDetailGiftCommentTwo.Focus();
+                    return true;
+                }
+
+                if (comment2)
+                {
+                    txtDetailGiftCommentThree.Focus();
+                    return true;
+                }
+
+                if (comment3)
+                {
+                    txtDetailGiftCommentOne.Focus();
+                    return true;
+                }
+            }
+
+            if (keyData == (Keys.V | Keys.Alt))
+            {
+                cmbDetailMotivationGroupCode.Focus();
+                return true;
+            }
+
+            if (keyData == (Keys.D | Keys.Alt))
+            {
+                txtDetailDonorKey.SetTextboxFocus();
+
+                return true;
+            }
+
+            if (keyData == (Keys.C | Keys.Alt))
+            {
+                txtDetailRecipientKey.SetTextboxFocus();
+                return true;
+            }
+
+            return false;
+        }
+
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
             // should Tax Deductibility Percentage be enabled? (specifically for OM Switzerland)
-            FTaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            FTaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // user default to determine if screen should be auto saved when creating a new gift or adding a gift detail
             // (default false)
@@ -1307,6 +1374,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FBatchRow != null)
             {
                 txtDetailGiftTransactionAmount.CurrencyCode = FBatchRow.CurrencyCode;
+                txtTaxDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
+                txtNonDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
                 txtBatchStatus.Text = FBatchStatus;
             }
 
@@ -1595,6 +1664,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (txtDetailGiftTransactionAmount.CurrencyCode != ACurrencyCode)
             {
                 txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if (txtTaxDeductAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtTaxDeductAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if (txtNonDeductAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtNonDeductAmount.CurrencyCode = ACurrencyCode;
             }
 
             if ((txtGiftTotal.CurrencyCode != ACurrencyCode)
@@ -2025,6 +2104,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if ((grdDetails != null) && grdDetails.CanFocus)
             {
+                grdDetails.AutoResizeGrid();
                 grdDetails.Focus();
             }
         }
@@ -2040,6 +2120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
+                FMainDS.AGift.Rows.Clear();
                 FMainDS.AGiftDetail.Rows.Clear();
             }
 
@@ -2120,7 +2201,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPreviouslySelectedDetailRow == null)
             {
-                MessageBox.Show(Catalog.GetString("Please select a Gift to Reverse."));
+                MessageBox.Show(Catalog.GetString("Please select a Gift to Adjust/Reverse."));
                 ParentGiftBatchForm.Cursor = Cursors.Default;
                 return;
             }
@@ -2132,12 +2213,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
-            if (FTaxDeductiblePercentageEnabled)
+            if (AdjustGift)
             {
-                revertForm.CheckTaxDeductPctChange = true;
-            }
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    revertForm.CheckTaxDeductPctChange = true;
+                }
 
-            revertForm.CheckGiftDestinationChange = true;
+                revertForm.CheckGiftDestinationChange = true;
+            }
 
             try
             {

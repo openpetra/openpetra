@@ -145,6 +145,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(contextView);
             grdDetails.Refresh();
 
+            grdDetails.AutoResizeGrid();
             SelectRowInGrid(1);
         }
 

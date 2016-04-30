@@ -880,9 +880,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoUpperPart.ValidateAllData(TErrorProcessingMode.Epm_None);
             ucoLowerPart.ValidateAllData(TErrorProcessingMode.Epm_None);
 
-            bool ignoreWarnings = !FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
             ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
-                this.GetType(), null, ignoreWarnings);
+                this.GetType(), null, true);
 
             if (ReturnValue)
             {
@@ -1911,6 +1910,18 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 
         #region Event Handlers
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FileSaveClose(object sender, EventArgs e)
+        {
+            if (SaveChanges())
+            {
+                this.Close();
+            }
+        }
 
         private void TFrmPartnerEdit2_Load(System.Object sender, System.EventArgs e)
         {
@@ -2354,7 +2365,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0);
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0, false);
+        }
+
+        private void FileExportPartnerToPetra(System.Object sender, System.EventArgs e)
+        {
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0, true);
         }
 
         /// <summary>
@@ -2549,7 +2565,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // if tab group is about to be changed make sure that validation is ok
             if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
-                if (!ucoLowerPart.ValidateCurrentModuleTabGroupData())
+                bool bOk = ucoLowerPart.ValidateCurrentModuleTabGroupData() && FPetraUtilsObject.IsDataSaved();
+
+                if (!bOk)
                 {
                     return;
                 }
@@ -2567,17 +2585,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ViewPersonnelData(System.Object sender, System.EventArgs e)
         {
-            // if tab group is about to be changed make sure that validation is ok
-            if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel)
-            {
-                if (!ucoLowerPart.ValidateCurrentModuleTabGroupData())
-                {
-                    return;
-                }
-            }
-
             if (UserHasPersonnelAccess())
             {
+                // if tab group is about to be changed make sure that validation is ok
+                if (ucoLowerPart.CurrentModuleTabGroup != TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel)
+                {
+                    bool bOk = ucoLowerPart.ValidateCurrentModuleTabGroupData() && FPetraUtilsObject.IsDataSaved();
+
+                    if (!bOk)
+                    {
+                        return;
+                    }
+                }
+
                 if (FPartnerClass != SharedTypes.PartnerClassEnumToString(TPartnerClass.UNIT))
                 {
                     tbbViewPersonnelData.Checked = true;
@@ -3653,6 +3673,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 mniFileNewPartner.Enabled = false;
                 tbbNewPartner.Enabled = false;
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ucoLowerPart.RunOnceOnParentActivation();
         }
 
         /// <summary>

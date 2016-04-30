@@ -221,7 +221,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Refresh the data in the grid and the details after the database content was changed on the server
         /// The current filter is not changed.  The highlighted row index remains the same (if possible) after the refresh.
         /// </summary>
-        public void RefreshAllData(bool AShowStatusDialogOnLoad = true)
+        public void RefreshAllData(bool AShowStatusDialogOnLoad = true, bool AIsMessageRefresh = false)
         {
             TFrmGiftBatch myParentForm = (TFrmGiftBatch)ParentForm;
 
@@ -229,10 +229,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int nCurrentRowIndex = GetSelectedRowIndex();
             int nCurrentBatchNumber = -1;
 
-            if (myParentForm.InitialBatchNumber > 0)
+            if ((myParentForm != null) && (myParentForm.InitialBatchNumber > 0))
             {
                 nCurrentBatchNumber = myParentForm.InitialBatchNumber;
                 myParentForm.InitialBatchNumber = -1;
+            }
+            else if (AIsMessageRefresh)
+            {
+                if (FPetraUtilsObject.HasChanges && !myParentForm.SaveChanges())
+                {
+                    string msg = String.Format(Catalog.GetString("A validation error has occured on the Gift Batches" +
+                            " form while trying to refresh.{0}{0}" +
+                            "You will need to close and reopen the Gift Batches form to see the new batch" +
+                            " after you have fixed the validation error."),
+                        Environment.NewLine);
+
+                    MessageBox.Show(msg, "Refresh Gift Batches");
+                    return;
+                }
+
+                nCurrentBatchNumber = 1;
             }
             else if (FPreviouslySelectedDetailRow != null)
             {
@@ -1014,6 +1030,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     Cursor = Cursors.Default;
                     MessageBox.Show(Catalog.GetString("The Gift Batch is empty!"), Catalog.GetString("Posting failed"),
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+                    dlgStatus.Close();
+                    LoadDialogVisible = false;
                     return;
                 }
 
@@ -1021,6 +1040,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed))
                 {
+                    dlgStatus.Close();
+                    LoadDialogVisible = false;
                     return;
                 }
 
@@ -1049,21 +1070,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+
                 string errMsg;
 
                 if (!Success)
                 {
-                    errMsg = Catalog.GetString("Error trying to post batch");
+                    errMsg = Catalog.GetString("Error trying to post Gift Batch");
                 }
                 else
                 {
-                    errMsg = Catalog.GetString("Error trying to print gift receipts for batch");
+                    errMsg = Catalog.GetString("There was an error trying to print gift receipts after the successful posting of Gift Batch");
                 }
 
-                errMsg += String.Format(" {0}:{1}{1}{2}",
+                errMsg += String.Format(" {0}!{1}{1}{2}{1}{1}{3}",
                     FPreviouslySelectedDetailRow.BatchNumber,
                     Environment.NewLine,
-                    ex.Message);
+                    ex.Message,
+                    Success ? Catalog.GetString("Please close and reopen the Gift Batches form to refresh the data correctly!") : Catalog.GetString(
+                        "Refer to the Server.Log text file for more details."));
 
                 MessageBox.Show(errMsg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
@@ -1072,6 +1097,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (LoadDialogVisible)
                 {
                     dlgStatus.Close();
+                    LoadDialogVisible = false;
                 }
 
                 Cursor = Cursors.Default;

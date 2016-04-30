@@ -700,7 +700,8 @@ namespace Tests.MFinance.Server.Gift
             requestParams.Add("AExchangeRateToBase", (decimal)1);
             requestParams.Add("AExchangeRateIntlToBase", (decimal)1);
 
-            TGiftTransactionWebConnector.SubmitRecurringGiftBatch(requestParams);
+            int NewBatchNo = 0;
+            TGiftTransactionWebConnector.SubmitRecurringGiftBatch(requestParams, out NewBatchNo);
 
             //
             // Assert
@@ -1228,7 +1229,7 @@ namespace Tests.MFinance.Server.Gift
             // AddToFeeTotals with null dataset
             try
             {
-                TGiftTransactionWebConnector.AddToFeeTotals(null, null, "", 0, 0);
+                TGiftTransactionWebConnector.AddToFeeTotals(FLedgerNumber, null, null, "", 0, 0);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemDataObjectNullOrEmptyException e)
@@ -1246,7 +1247,7 @@ namespace Tests.MFinance.Server.Gift
             // AddToFeeTotals with null datarow
             try
             {
-                TGiftTransactionWebConnector.AddToFeeTotals(MainDS, null, "", 0, 0);
+                TGiftTransactionWebConnector.AddToFeeTotals(FLedgerNumber, MainDS, null, "", 0, 0);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemDataObjectNullOrEmptyException e)
@@ -1264,7 +1265,7 @@ namespace Tests.MFinance.Server.Gift
             // AddToFeeTotals with blank admin fee
             try
             {
-                TGiftTransactionWebConnector.AddToFeeTotals(MainDS, GiftDetailRow, "", 0, 0);
+                TGiftTransactionWebConnector.AddToFeeTotals(FLedgerNumber, MainDS, GiftDetailRow, "", 0, 0);
                 Assert.Fail(Message);
             }
             catch (ArgumentException e)

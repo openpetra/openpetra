@@ -85,6 +85,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             LoadDataOnDemand();
 
             //FDocumentCodeDT = (PDocumentTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.DocumentCodeList);
+            this.SizeChanged += TUC_IndividualData_PersonalDocuments_SizeChanged;
+
+            // Cannot resize the grid here because the grid columns have not been defined yet
+        }
+
+        private void TUC_IndividualData_PersonalDocuments_SizeChanged(object sender, EventArgs e)
+        {
+            Control control = this.Parent;
+
+            while (control as TUC_IndividualData == null)
+            {
+                control = control.Parent;
+            }
+
+            TUC_IndividualData myParent = control as TUC_IndividualData;
+
+            if (myParent.CurrentControl == TUC_IndividualData.TDynamicLoadableUserControls.dlucPersonalDocuments)
+            {
+                FPetraUtilsObject.RefreshSpecificControlOnWindowMaxOrRestore(pnlDetailGrid);
+            }
         }
 
         /// <summary>
@@ -177,6 +197,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AdjustAfterResizing()
         {
+            pnlDetailGrid.Refresh();
         }
 
         /// <summary>
@@ -246,6 +267,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TSharedPersonnelValidation_Personnel.ValidatePersonalDocumentManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict);
+        }
+
+        private void ShowDataManual()
+        {
+            grdDetails.AutoResizeGrid();
         }
     }
 }

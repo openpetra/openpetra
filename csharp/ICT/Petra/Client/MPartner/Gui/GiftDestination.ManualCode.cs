@@ -131,8 +131,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 DataRowView row = (DataRowView)itemRow;
 
-                if (row[PPartnerGiftDestinationTable.ColumnDateEffectiveId].ToString() ==
-                    row[PPartnerGiftDestinationTable.ColumnDateExpiresId].ToString())
+                if ((row[PPartnerGiftDestinationTable.ColumnDateEffectiveId].ToString() ==
+                     row[PPartnerGiftDestinationTable.ColumnDateExpiresId].ToString())
+                    && !string.IsNullOrEmpty(row[PPartnerGiftDestinationTable.ColumnDateEffectiveId].ToString()))
                 {
                     return true;
                 }

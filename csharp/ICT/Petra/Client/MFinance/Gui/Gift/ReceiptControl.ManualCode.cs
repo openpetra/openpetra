@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateRecordNumberDisplay();
+            grdDetails.AutoResizeGrid();
         }
 
         private void RunOnceOnActivationManual()
@@ -311,10 +312,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 grdDetails.SelectRowInGrid(SelectedIndex);
             }
-            catch (Exception ex)
+            catch
             {
                 this.Cursor = Cursors.Default;
-                throw ex;
+                throw;
             }
 
             this.Cursor = Cursors.Default;

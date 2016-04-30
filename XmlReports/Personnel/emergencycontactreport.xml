@@ -87,19 +87,18 @@
 					PUB_p_person.p_date_of_birth_d AS DateOfBirth
 					
 				FROM
-					PUB_p_person, PUB_p_partner,
+					PUB_p_person, PUB_p_partner, PUB_pm_short_term_application, PUB_pm_general_application
 			</value></queryDetail>
 			
 			<!-- event and related options -->
 			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, related))"><value>
-					PUB_pm_short_term_application, PUB_pm_general_application
 				WHERE
 					PUB_pm_short_term_application.pm_confirmed_option_code_c LIKE {param_conference_code}
 			</value></queryDetail>
 			
 			<!-- this event only -->
 			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))"><value>
-					PUB_p_unit,  PUB_pm_short_term_application, PUB_pm_general_application
+					, PUB_p_unit
 				WHERE
 					PUB_p_unit.p_partner_key_n = {{param_unit_key}}
 					AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
@@ -107,14 +106,13 @@
 			
 			<!-- all events -->
 			<queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
-					PUB_pm_short_term_application, PUB_pm_general_application
 				WHERE
 					PUB_p_person.p_partner_key_n = PUB_p_partner.p_partner_key_n
 			</value></queryDetail>
 			
 			<!-- extract and this event only -->
 			<queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit
+					, PUB_m_extract, PUB_m_extract_master, PUB_p_unit
 				WHERE
 					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
@@ -125,7 +123,7 @@
 			
 			<!-- extract and event and related otions -->
 			<queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit
+					, PUB_m_extract, PUB_m_extract_master
 				WHERE
 					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
@@ -135,7 +133,7 @@
 			
 			<!-- extract and all events -->
 			<queryDetail condition="and(eq({param_event_selection}, all), eq({param_source}, Extract))"><value>
-					PUB_m_extract, PUB_m_extract_master,  PUB_pm_short_term_application, PUB_pm_general_application, PUB_p_unit
+					, PUB_m_extract, PUB_m_extract_master
 				WHERE
 					 PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
 					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i

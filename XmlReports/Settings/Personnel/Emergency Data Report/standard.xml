@@ -13,7 +13,7 @@
   <Parameter id="param_chkPersonalDocuments" value="eString:true" />
   <Parameter id="param_chkOtherEmergencyData" value="eString:true" />
   <Parameter id="param_chkSpecialNeeds" value="eString:true" />
-  <Parameter id="param_chkAbilities" value="eString:true" />
+  <Parameter id="param_chkSkills" value="eString:true" />
   <Parameter id="param_chkLanguages" value="eString:true" />
   <Parameter id="param_chkEmergencyContacts" value="eString:true" />
   <Parameter id="param_chkProofQuestion" value="eString:true" />

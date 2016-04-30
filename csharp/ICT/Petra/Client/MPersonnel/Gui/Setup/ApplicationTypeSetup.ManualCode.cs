@@ -66,6 +66,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
         private void RunOnceOnActivationManual()
         {
             chkDetailDeletableFlag.Enabled = false;
+            grdDetails.AutoResizeGrid();
         }
 
         private void NewRowManual(ref PtApplicationTypeRow ARow)

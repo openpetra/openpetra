@@ -219,6 +219,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     grdDetails.Focus();
                 }
 
+                grdDetails.AutoResizeGrid();
                 FInitialFocusActionComplete = true;
             }
         }

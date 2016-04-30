@@ -111,13 +111,15 @@ namespace Ict.Petra.Client.App.Core
             /// <param name="APartnerInfoScope">Scope of data that should be loaded and
             /// returned by the PetraServer.</param>
             /// <param name="APartnerInfoDS">Typed DataSet that contains the requested Partner data.</param>
+            /// <param name="ASeparateDBConnection">If you *must have* a separate DB Connection</param>
             /// <returns>True if the Partner exists, otherwise false.</returns>
             public static Boolean PartnerInfo(Int64 APartnerKey,
                 TPartnerInfoScopeEnum APartnerInfoScope,
-                out PartnerInfoTDS APartnerInfoDS)
+                out PartnerInfoTDS APartnerInfoDS,
+                Boolean ASeparateDBConnection = false)
             {
                 return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerInfo(APartnerKey,
-                    APartnerInfoScope, out APartnerInfoDS);
+                    APartnerInfoScope, out APartnerInfoDS, ASeparateDBConnection);
             }
 
             /// <summary>
@@ -131,13 +133,15 @@ namespace Ict.Petra.Client.App.Core
             /// <param name="APartnerInfoScope">Scope of data that should be loaded and
             /// returned by the PetraServer.</param>
             /// <param name="APartnerInfoDS">Typed DataSet that contains the requested Partner data.</param>
+            /// <param name="ASeparateDBConnection">If you *must have* a separate DB Connection</param>
             /// <returns>True if the Partner exists, otherwise false.</returns>
             public static Boolean PartnerInfo(Int64 APartnerKey, TLocationPK ALocationKey,
                 TPartnerInfoScopeEnum APartnerInfoScope,
-                out PartnerInfoTDS APartnerInfoDS)
+                out PartnerInfoTDS APartnerInfoDS,
+                Boolean ASeparateDBConnection = false)
             {
                 return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerInfo(APartnerKey,
-                    ALocationKey, APartnerInfoScope, out APartnerInfoDS);
+                    ALocationKey, APartnerInfoScope, out APartnerInfoDS, ASeparateDBConnection);
             }
 
             /// <summary>

@@ -86,14 +86,13 @@ namespace Ict.Petra.Server.App.Core
 
         /// <summary>
         /// Returns the System Defaults as a Typed DataTable.
-        ///
+        /// <para>
         /// The caller doesn't need to know whether the Cache is already populated - if
         /// this should be necessary, this function will make a request to populate the
         /// cache.
-        ///
+        /// </para>
         /// </summary>
-        /// <returns>System Defaults as a Typed DataTable.
-        /// </returns>
+        /// <returns>System Defaults as a Typed DataTable.</returns>
         public SSystemDefaultsTable GetSystemDefaultsTable()
         {
             SSystemDefaultsTable ReturnValue;
@@ -130,22 +129,45 @@ namespace Ict.Petra.Server.App.Core
         }
 
         /// <summary>
+        /// Call this Method to find out whether a System Default is defined, that is, if it exists in the System Defaults table.
+        /// </summary>
+        /// <remarks>SystemDefault Names are not case sensitive.</remarks>
+        /// <param name="ASystemDefaultName">The System Default that should be checked.</param>
+        /// <returns>True if the System Default is defined, false if it isn't.</returns>
+        public bool IsSystemDefaultDefined(String ASystemDefaultName)
+        {
+            String Tmp = GetSystemDefault(ASystemDefaultName);
+
+            if (Tmp != SharedConstants.SYSDEFAULT_NOT_FOUND)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Returns the value of the specified System Default.
-        ///
+        /// <para>
         /// The caller doesn't need to know whether the Cache is already populated - if
         /// this should be necessary, this function will make a request to populate the
         /// cache.
-        ///
+        /// </para>
         /// </summary>
-        /// <param name="ASystemDefaultName">The System Default for which the value should be
-        /// returned</param>
-        /// <returns>The value of the System Default, or SYSDEFAULT_NOT_FOUND if the
-        /// specified System Default doesn't exist
+        /// <remarks>SystemDefault Names are not case sensitive.</remarks>
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default, or SharedConstants.SYSDEFAULT_NOT_FOUND if the
+        /// specified System Default doesn't exist.
         /// </returns>
-        private String GetSystemDefault(String ASystemDefaultName)
+        public String GetSystemDefault(String ASystemDefaultName)
         {
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
+
+            // SystemDefault Names are not case sensitive
+            ASystemDefaultName = ASystemDefaultName.ToUpper();
 
             // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
             // FTableCached value!
@@ -190,20 +212,18 @@ namespace Ict.Petra.Server.App.Core
 
         /// <summary>
         /// Returns the value of the specified System Default.
-        ///
+        /// <para>
         /// The caller doesn't need to know whether the Cache is already populated - if
         /// this should be necessary, this function will make a request to populate the
         /// cache.
-        ///
+        /// </para>
         /// </summary>
-        /// <param name="ASystemDefaultName">The System Default for which the value should be
-        /// returned</param>
-        /// <param name="ADefault">The value that should be returned if the System Default was
-        /// not found</param>
-        /// <returns>The value of the System Default, or the value of the ADefault
-        /// parameter if the specified System Default was not found
-        /// </returns>
-        private String GetSystemDefault(String ASystemDefaultName, String ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <remarks>SystemDefault Names are not case sensitive.</remarks>
+        /// <returns>The value of the System Default, or the value of <paramref name="ADefault" /> if the
+        /// specified System Default was not found.</returns>
+        public String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
             String ReturnValue;
             String Tmp;
@@ -222,161 +242,168 @@ namespace Ict.Petra.Server.App.Core
             return ReturnValue;
         }
 
+        // The following set of functions serve as shortcuts to get User Defaults of a
+        // specific type.
+
         /// <summary>
-        /// get boolean default value
+        /// Gets the value of a System Default as a bool.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public bool GetBooleanDefault(String AKey, bool ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <returns>The value of the System Default as a bool, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public bool GetBooleanDefault(String ASystemDefaultName, bool ADefault)
         {
-            return Convert.ToBoolean(GetSystemDefault(AKey, ADefault.ToString()));
+            return Convert.ToBoolean(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get boolean default value
+        /// Gets the value of a System Default as a bool.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>true if the key does not exist, otherwise value of key</returns>
-        public bool GetBooleanDefault(String AKey)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default as a bool, or true if the specified System Default
+        /// was not found.</returns>
+        public bool GetBooleanDefault(String ASystemDefaultName)
         {
-            return GetBooleanDefault(AKey, true);
+            return GetBooleanDefault(ASystemDefaultName, true);
         }
 
         /// <summary>
-        /// get char default
+        /// Gets the value of a System Default as a char.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public System.Char GetCharDefault(String AKey, System.Char ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <returns>The value of the System Default as a char, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public System.Char GetCharDefault(String ASystemDefaultName, System.Char ADefault)
         {
-            return Convert.ToChar(GetSystemDefault(AKey, ADefault.ToString()));
+            return Convert.ToChar(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get char default
+        /// Gets the value of a System Default as a char.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>space if key does not exist</returns>
-        public System.Char GetCharDefault(String AKey)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default as a char, or the space character if the specified System Default
+        /// was not found.</returns>
+        public System.Char GetCharDefault(String ASystemDefaultName)
         {
-            return GetCharDefault(AKey, ' ');
+            return GetCharDefault(ASystemDefaultName, ' ');
         }
 
         /// <summary>
-        /// get double default
+        /// Gets the value of a System Default as a double.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public double GetDoubleDefault(String AKey, double ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <returns>The value of the System Default as a double, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public double GetDoubleDefault(String ASystemDefaultName, double ADefault)
         {
-            return Convert.ToDouble(GetSystemDefault(AKey, ADefault.ToString()));
+            return Convert.ToDouble(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get double default
+        /// Gets the value of a System Default as a double.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0.0 if key does not exist</returns>
-        public double GetDoubleDefault(String AKey)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default as a double, or 0.0 if the specified System Default was not found.</returns>
+        public double GetDoubleDefault(String ASystemDefaultName)
         {
-            return GetDoubleDefault(AKey, 0.0);
+            return GetDoubleDefault(ASystemDefaultName, 0.0);
         }
 
         /// <summary>
-        /// Put other User Default Constants here as well.
-        /// -------------------------------------------------------------------------------}// ...{
-        /// The following set of functions serve as shortcuts to get User Defaults of a
-        /// specific type.
-        ///
+        /// Gets the value of a System Default as an Int16.
         /// </summary>
-        /// <param name="AKey">The Key of the User Default that should get retrieved.</param>
-        /// <param name="ADefault">The value that should be returned in case the Key is not (yet)
-        /// in the User Defaults.
-        /// </param>
-        /// <returns>void</returns>
-        public System.Int16 GetInt16Default(String AKey, System.Int16 ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <returns>The value of the System Default as an Int16, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public System.Int16 GetInt16Default(String ASystemDefaultName, System.Int16 ADefault)
         {
-            return Convert.ToInt16(GetSystemDefault(AKey, ADefault.ToString()));
+            return Convert.ToInt16(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get int default
+        /// Gets the value of a System Default as an Int16.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public System.Int16 GetInt16Default(String AKey)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default as an Int16, or 0 if the specified System Default was not found.</returns>
+        public System.Int16 GetInt16Default(String ASystemDefaultName)
         {
-            return GetInt16Default(AKey, 0);
+            return GetInt16Default(ASystemDefaultName, 0);
         }
 
         /// <summary>
-        /// get int default
+        /// Gets the value of a System Default as an Int32.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public System.Int32 GetInt32Default(String AKey, System.Int32 ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <returns>The value of the System Default as an Int32, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public System.Int32 GetInt32Default(String ASystemDefaultName, System.Int32 ADefault)
         {
-            return Convert.ToInt32(GetSystemDefault(AKey, ADefault.ToString()));
+            return Convert.ToInt32(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get int default
+        /// Gets the value of a System Default as an Int32.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>0 if key does not exist</returns>
-        public System.Int32 GetInt32Default(String AKey)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default as an Int32, or 0 if the specified System Default was not found.</returns>
+        public System.Int32 GetInt32Default(String ASystemDefaultName)
         {
-            return GetInt32Default(AKey, 0);
+            return GetInt32Default(ASystemDefaultName, 0);
         }
 
         /// <summary>
-        /// get int default
+        /// Gets the value of a System Default as an Int64.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="ADefault"></param>
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <remarks><em>Do not inquire the 'SiteKey' System Default with this Method!</em> Rather, always use the
         /// <see cref="GetSiteKeyDefault"/> Method!</remarks>
-        /// <returns></returns>
-        public System.Int64 GetInt64Default(String AKey, System.Int64 ADefault)
+        /// <returns>The value of the System Default as an Int64, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public System.Int64 GetInt64Default(String ASystemDefaultName, System.Int64 ADefault)
         {
-            return Convert.ToInt64(GetSystemDefault(AKey, ADefault.ToString()));
+            return Convert.ToInt64(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
         }
 
         /// <summary>
-        /// get int default
+        /// Gets the value of a System Default as an Int64.
         /// </summary>
-        /// <param name="AKey"></param>
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <remarks><em>Do not inquire the 'SiteKey' System Default with this Method!</em> Rather, always use the
         /// <see cref="GetSiteKeyDefault"/> Method!</remarks>
-        /// <returns>0 if key does not exist</returns>
-        public System.Int64 GetInt64Default(String AKey)
+        /// <returns>The value of the System Default as an Int64, or 0 if the specified System Default was not found.</returns>
+        public System.Int64 GetInt64Default(String ASystemDefaultName)
         {
-            return GetInt64Default(AKey, 0);
+            return GetInt64Default(ASystemDefaultName, 0);
         }
 
         /// <summary>
-        /// get string default
+        /// Gets the value of a System Default as a string.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <param name="ADefault"></param>
-        /// <returns></returns>
-        public String GetStringDefault(String AKey, String ADefault)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
+        /// <returns>The value of the System Default as a string, or the value of <paramref name="ADefault" />
+        /// if the specified System Default was not found.</returns>
+        public String GetStringDefault(String ASystemDefaultName, String ADefault)
         {
-            return GetSystemDefault(AKey, ADefault);
+            return GetSystemDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
-        /// get string default
+        /// Gets the value of a System Default as a string.
         /// </summary>
-        /// <param name="AKey"></param>
-        /// <returns>empty string if key does not exist</returns>
-        public String GetStringDefault(String AKey)
+        /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
+        /// <returns>The value of the System Default as a string, or <see cref="string.Empty" />
+        /// if the specified System Default was not found.</returns>
+        public String GetStringDefault(String ASystemDefaultName)
         {
-            return GetStringDefault(AKey, "");
+            return GetStringDefault(ASystemDefaultName, "");
         }
 
         /// <summary>
@@ -506,12 +533,15 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AKey">Name of the System Default.</param>
         /// <param name="AValue">Value of the System Default.</param>
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
+        /// <remarks>SystemDefault Names are not case sensitive.</remarks>
+
         public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
             Boolean NewTransaction = false;
             Boolean ShouldCommit = false;
             SSystemDefaultsTable SystemDefaultsDT;
 
+            AKey = AKey.ToUpper();
             try
             {
                 TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(

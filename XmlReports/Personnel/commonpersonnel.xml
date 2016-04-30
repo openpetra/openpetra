@@ -171,21 +171,23 @@
         </query>
       </calculation>
 
-      <calculation id="SelectAbilities" returns="Automatic" returnsFormat="row">
+      <calculation id="SelectSkills" returns="Automatic" returnsFormat="row">
         <query>
           <queryDetail>
             <value>
               SELECT
-                PUB_pm_person_ability.pt_ability_area_name_c,
-                PUB_pm_person_ability.pt_ability_level_i,
-                PUB_pm_person_ability.pm_years_of_experience_i,
-                PUB_pm_person_ability.pm_years_of_experience_as_of_d,
-                PUB_pt_ability_level.pt_ability_level_descr_c
+                PUB_pm_person_skill.pm_skill_category_code_c,
+                PUB_pm_person_skill.pm_description_english_c,
+                PUB_pm_person_skill.pm_description_local_c,
+                PUB_pm_person_skill.pm_professional_skill_l,
+                PUB_pm_person_skill.pm_current_occupation_l,
+                PUB_pm_person_skill.pm_skill_level_i,
+                PUB_pt_skill_level.pt_description_c
               FROM
-                PUB_pm_person_ability, PUB_pt_ability_level
+                PUB_pm_person_skill, PUB_pt_skill_level
               WHERE
-                PUB_pm_person_ability.p_partner_key_n = {{StaffPartnerKey}}
-                AND PUB_pt_ability_level.pt_ability_level_i = PUB_pm_person_ability.pt_ability_level_i
+                PUB_pm_person_skill.p_partner_key_n = {{StaffPartnerKey}}
+                AND PUB_pt_skill_level.pt_level_i = PUB_pm_person_skill.pm_skill_level_i
             </value>
           </queryDetail>
         </query>

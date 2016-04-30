@@ -259,7 +259,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
                         catch (Exception ex)
                         {
-                            throw ex;
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
+                            throw;
                         }
 
                         if (LastGiftDS.Tables[AGiftTable.GetTableName()].Rows.Count == 0)

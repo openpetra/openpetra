@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,7 +50,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
     /// <summary>
     /// Performs server-side lookups for the Client in the MPartner.ServerLookups
     /// sub-namespace.
-    ///
     /// </summary>
     public class TPartnerServerLookups
     {
@@ -74,12 +73,27 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             out TPartnerClass APartnerClass,
             Boolean AMergedPartners)
         {
-            Boolean ReturnValue;
-            TStdPartnerStatusCode PartnerStatus;
+            Boolean ReturnValue = false;
+            TDBTransaction ReadTransaction = null;
+            TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
+            String PartnerShortName = null;
+            TPartnerClass PartnerClass = TPartnerClass.BANK;
 
-            ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, out PartnerStatus);
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
+                "TPartnerServerLookups.GetPartnerShortName", out ReadTransaction,
+                delegate
+                {
+                    ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName,
+                        out PartnerClass, out PartnerStatus, ReadTransaction.DataBaseObj);
+                });
 
-            if (((!AMergedPartners)) && (PartnerStatus == TStdPartnerStatusCode.spscMERGED))
+            APartnerShortName = PartnerShortName;
+            APartnerClass = PartnerClass;
+
+            if ((!AMergedPartners)
+                && (PartnerStatus == TStdPartnerStatusCode.spscMERGED))
             {
                 ReturnValue = false;
             }
@@ -102,22 +116,20 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
         /// <summary>
         /// Verifies the existence of a Partner.
-        ///
         /// </summary>
-        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for</param>
+        /// <param name="APartnerKey">PartnerKey of Partner to find the short name for.</param>
         /// <param name="AValidPartnerClasses">Pass in a array of valid PartnerClasses that the
         /// Partner is allowed to have (eg. [PERSON, FAMILY], or an empty array ( [] ).</param>
         /// <param name="APartnerExists">True if the Partner exists in the database or if PartnerKey is 0.</param>
         /// <param name="APartnerShortName">ShortName for the found Partner ('' if Partner
-        /// doesn't exist or PartnerKey is 0)</param>
+        /// doesn't exist or PartnerKey is 0).</param>
         /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
-        /// doesn't exist or PartnerKey is 0)</param>
+        /// doesn't exist or PartnerKey is 0).</param>
         /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
-        /// otherwise false</param>
+        /// otherwise false.</param>
         /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
         /// an empty array and the found Partner isn't of a PartnerClass that is in the
-        /// Set) or PartnerKey is 0, otherwise false
-        /// </returns>
+        /// Set) or PartnerKey is 0, otherwise false.</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartner(Int64 APartnerKey,
             TPartnerClass[] AValidPartnerClasses,
@@ -126,13 +138,26 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             out TPartnerClass APartnerClass,
             out Boolean AIsMergedPartner)
         {
-            Boolean ReturnValue;
-            TStdPartnerStatusCode PartnerStatus;
+            bool ReturnValue = false;
+            bool PartnerExists = false;
+            TDBTransaction ReadTransaction = null;
+            string PartnerShortName = null;
+            TPartnerClass PartnerClass = TPartnerClass.BANK;
+            TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
 
-            ReturnValue = APartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
-                out APartnerShortName,
-                out APartnerClass,
-                out PartnerStatus);
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.VerifyPartner", out ReadTransaction,
+                delegate
+                {
+                    ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
+                        out PartnerShortName, out PartnerClass, out PartnerStatus, ReadTransaction.DataBaseObj);
+                });
+
+            APartnerShortName = PartnerShortName;
+            APartnerClass = PartnerClass;
+            APartnerExists = PartnerExists;
+
 //          TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: " + Convert.ToInt32(AValidPartnerClasses.Length));
 
             if (AValidPartnerClasses.Length != 0)
@@ -546,14 +571,16 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// for the Partner.</param>
         /// <param name="APartnerInfoDS">Typed DataSet of Type <see cref="PartnerInfoTDS" /> that
         /// contains the Partner Information that was requested for the Partner.</param>
+        /// <param name="ASeparateDBConnection">If you *must have* a separate DB Connection</param>
         /// <returns>True if Partner was found in DB, otherwise false.
         /// </returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerInfo(Int64 APartnerKey,
             TPartnerInfoScopeEnum APartnerInfoScope,
-            out PartnerInfoTDS APartnerInfoDS)
+            out PartnerInfoTDS APartnerInfoDS,
+            Boolean ASeparateDBConnection = false)
         {
-            return PartnerInfo(APartnerKey, null, APartnerInfoScope, out APartnerInfoDS);
+            return PartnerInfo(APartnerKey, null, APartnerInfoScope, out APartnerInfoDS, ASeparateDBConnection);
         }
 
         /// <summary>
@@ -573,112 +600,86 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// for the Partner.</param>
         /// <param name="APartnerInfoDS">Typed DataSet of Type <see cref="PartnerInfoTDS" /> that
         /// contains the Partner Information that was requested for the Partner.</param>
+        /// <param name="ASeparateDBConnection">If you *must have* a separate DB Connection</param>
         /// <returns>True if Partner was found in DB, otherwise false.
         /// </returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerInfo(Int64 APartnerKey, TLocationPK ALocationKey,
             TPartnerInfoScopeEnum APartnerInfoScope,
-            out PartnerInfoTDS APartnerInfoDS)
+            out PartnerInfoTDS APartnerInfoDS,
+            Boolean ASeparateDBConnection = false)
         {
             const string DATASET_NAME = "PartnerInfo";
 
             Boolean ReturnValue = false;
+            TDBTransaction ReadTransaction = null;
 
             APartnerInfoDS = new PartnerInfoTDS(DATASET_NAME);
+            Boolean newTransaction = false;
 
-            switch (APartnerInfoScope)
+            TDataBase DBConnectionObj = (ASeparateDBConnection) ?
+                                        DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo")
+                                        :
+                                        DBAccess.GDBAccessObj;
+            try
             {
-                case TPartnerInfoScopeEnum.pisHeadOnly:
+                ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
 
-                    throw new NotImplementedException();
+                switch (APartnerInfoScope)
+                {
+                    case TPartnerInfoScopeEnum.pisHeadOnly:
 
-                case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly:
+                        throw new NotImplementedException();
 
-                    if (TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
-                            ALocationKey, ref APartnerInfoDS))
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
+                    case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly:
 
-                    break;
+                        ReturnValue = TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
+                        ALocationKey, ref APartnerInfoDS, ReadTransaction);
+                        break;
 
-                case TPartnerInfoScopeEnum.pisPartnerLocationOnly:
+                    case TPartnerInfoScopeEnum.pisPartnerLocationOnly:
 
-                    if (TServerLookups_PartnerInfo.PartnerLocationOnly(APartnerKey,
-                            ALocationKey, ref APartnerInfoDS))
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
+                        ReturnValue = TServerLookups_PartnerInfo.PartnerLocationOnly(APartnerKey,
+                        ALocationKey, ref APartnerInfoDS, ReadTransaction);
+                        break;
 
-                    break;
+                    case TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly:
 
-                case TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly:
+                        ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly(APartnerKey,
+                        ALocationKey, ref APartnerInfoDS, ReadTransaction);
+                        break;
 
-                    if (TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly(APartnerKey,
-                            ALocationKey, ref APartnerInfoDS))
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
+                    case TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly:
 
-                    break;
+                        ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationOnly(APartnerKey,
+                        ALocationKey, ref APartnerInfoDS, ReadTransaction);
+                        break;
 
-                case TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly:
+                    case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
 
-                    if (TServerLookups_PartnerInfo.LocationPartnerLocationOnly(APartnerKey,
-                            ALocationKey, ref APartnerInfoDS))
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
+                        ReturnValue = TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
+                        ref APartnerInfoDS, ReadTransaction);
+                        break;
 
-                    break;
+                    case TPartnerInfoScopeEnum.pisFull:
 
-                case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
+                        ReturnValue = TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,
+                        ref APartnerInfoDS, ReadTransaction);
+                        break;
+                } // switch
 
-                    if (TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
-                            ref APartnerInfoDS))
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
+            } // try
+            finally
+            {
+                if (newTransaction)
+                {
+                    DBConnectionObj.RollbackTransaction();
+                }
 
-                    break;
-
-                case TPartnerInfoScopeEnum.pisFull:
-
-                    if (TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,
-                            ref APartnerInfoDS))
-                    {
-                        ReturnValue = true;
-                    }
-                    else
-                    {
-                        ReturnValue = false;
-                    }
-
-                    break;
-
-                default:
-
-                    break;
+                if (ASeparateDBConnection)
+                {
+                    DBConnectionObj.CloseDBConnection();
+                }
             }
 
             return ReturnValue;
@@ -701,8 +702,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             TDBTransaction ReadTransaction = null;
             PPartnerTable PartnerTbl = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper(
+                "GetPartnerReceiptingInfo",
+                out ReadTransaction,
                 delegate
                 {
                     PartnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
@@ -736,8 +738,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static Boolean GetExtractDescription(String AExtractName, out String AExtractDescription)
         {
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction;
+            TDBTransaction ReadTransaction = null;
             Boolean ReturnValue = false;
 
             AExtractDescription = "Can not retrieve description";
@@ -746,28 +747,19 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
 
-            ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                out NewTransaction);
-
             // Load data
-
             MExtractMasterTable TemplateExtractDT = new MExtractMasterTable();
             MExtractMasterRow TemplateRow = TemplateExtractDT.NewRowTyped(false);
             TemplateRow.ExtractName = AExtractName;
 
-            try
-            {
-                ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
-            }
-            finally
-            {
-                if (NewTransaction)
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
+                "TPartnerServerLookups.GetExtractDescription", out ReadTransaction,
+                delegate
                 {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(7, "TPartnerServerLookups.GetExtractDescription: committed own transaction.");
-                }
-            }
+                    ExtractMasterDT = MExtractMasterAccess.LoadUsingTemplate(TemplateRow, ReadTransaction);
+                });
 
             if (ExtractMasterDT.Rows.Count < 1)
             {

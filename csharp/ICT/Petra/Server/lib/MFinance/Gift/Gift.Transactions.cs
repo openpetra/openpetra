@@ -41,6 +41,7 @@ using Ict.Common.Remoting.Server;
 
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.Cacheable;
 using Ict.Petra.Server.MFinance.Common;
@@ -52,6 +53,7 @@ using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -141,11 +143,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -208,11 +207,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -222,10 +218,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// create a gift batch from a recurring gift batch
         /// including gift and gift detail
         /// </summary>
-        /// <param name="requestParams">HashTable with many parameters</param>
+        /// <param name="ARequestParams">HashTable with many parameters</param>
+        /// <param name="ANewGiftBatchNo">The new gift batch number</param>
         [RequireModulePermission("FINANCE-1")]
-        public static void SubmitRecurringGiftBatch(Hashtable requestParams)
+        public static bool SubmitRecurringGiftBatch(Hashtable ARequestParams, out int ANewGiftBatchNo)
         {
+            ANewGiftBatchNo = 0;
+
             Int32 ALedgerNumber;
             Int32 ABatchNumber;
             DateTime AEffectiveDate;
@@ -236,19 +235,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                ALedgerNumber = (Int32)requestParams["ALedgerNumber"];
-                ABatchNumber = (Int32)requestParams["ABatchNumber"];
-                AEffectiveDate = (DateTime)requestParams["AEffectiveDate"];
-                AExchangeRateToBase = (Decimal)requestParams["AExchangeRateToBase"];
-                AExchangeRateIntlToBase = (Decimal)requestParams["AExchangeRateIntlToBase"];
+                ALedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
+                ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
+                AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
+                AExchangeRateToBase = (Decimal)ARequestParams["AExchangeRateToBase"];
+                AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             if (ALedgerNumber <= 0)
@@ -278,8 +274,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Parameter Arguments
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
             bool TransactionInIntlCurrency = false;
 
             int NewGiftBatchNumber = -1;
@@ -298,6 +294,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     delegate
                     {
                         ALedgerTable ledgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
+                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainRecurringDS, ALedgerNumber, ABatchNumber, Transaction);
 
                         #region Validate Data
 
@@ -307,159 +304,162 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         "Function:{0} - Details for Ledger {1} could not be accessed!"), Utilities.GetMethodSignature(),
                                     ALedgerNumber));
                         }
+                        else if ((MainRecurringDS.ARecurringGiftBatch == null) || (MainRecurringDS.ARecurringGiftBatch.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Details for Recurring Gift Batch {1} could not be accessed!"), Utilities.GetMethodSignature(),
+                                    ABatchNumber));
+                        }
 
                         #endregion Validate Data
 
-                        ARecurringGiftBatchAccess.LoadByPrimaryKey(MainRecurringDS, ALedgerNumber, ABatchNumber, Transaction);
+                        // Assuming all relevant data is loaded in MainRecurringDS
+                        ARecurringGiftBatchRow recBatch = (ARecurringGiftBatchRow)MainRecurringDS.ARecurringGiftBatch[0];
 
-                        // Assuming all relevant data is loaded in RMainDS
-                        foreach (ARecurringGiftBatchRow recBatch in MainRecurringDS.ARecurringGiftBatch.Rows)
+                        if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
                         {
-                            if ((recBatch.BatchNumber == ABatchNumber) && (recBatch.LedgerNumber == ALedgerNumber))
+                            Decimal batchTotal = 0;
+
+                            AGiftBatchRow batch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS,
+                                ref Transaction,
+                                ref ledgerTable,
+                                ALedgerNumber,
+                                AEffectiveDate);
+
+                            NewGiftBatchNumber = batch.BatchNumber;
+
+                            batch.BatchDescription = recBatch.BatchDescription;
+                            batch.BankCostCentre = recBatch.BankCostCentre;
+                            batch.BankAccountCode = recBatch.BankAccountCode;
+                            batch.ExchangeRateToBase = AExchangeRateToBase;
+                            batch.MethodOfPaymentCode = recBatch.MethodOfPaymentCode;
+                            batch.GiftType = recBatch.GiftType;
+                            batch.HashTotal = recBatch.HashTotal;
+                            batch.CurrencyCode = recBatch.CurrencyCode;
+
+                            TransactionInIntlCurrency = (batch.CurrencyCode == ledgerTable[0].IntlCurrency);
+
+                            foreach (ARecurringGiftRow recGift in MainRecurringDS.ARecurringGift.Rows)
                             {
-                                Decimal batchTotal = 0;
-
-                                AGiftBatchRow batch = TGiftBatchFunctions.CreateANewGiftBatchRow(ref MainDS,
-                                    ref Transaction,
-                                    ref ledgerTable,
-                                    ALedgerNumber,
-                                    AEffectiveDate);
-
-                                NewGiftBatchNumber = batch.BatchNumber;
-
-                                batch.BatchDescription = recBatch.BatchDescription;
-                                batch.BankCostCentre = recBatch.BankCostCentre;
-                                batch.BankAccountCode = recBatch.BankAccountCode;
-                                batch.ExchangeRateToBase = AExchangeRateToBase;
-                                batch.MethodOfPaymentCode = recBatch.MethodOfPaymentCode;
-                                batch.GiftType = recBatch.GiftType;
-                                batch.HashTotal = recBatch.HashTotal;
-                                batch.CurrencyCode = recBatch.CurrencyCode;
-
-                                TransactionInIntlCurrency = (batch.CurrencyCode == ledgerTable[0].IntlCurrency);
-
-                                foreach (ARecurringGiftRow recGift in MainRecurringDS.ARecurringGift.Rows)
+                                if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
                                 {
-                                    if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
+                                    //Look if there is a detail which is in the donation period (else continue)
+                                    bool foundDetail = false;
+
+                                    foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
                                     {
-                                        //Look if there is a detail which is in the donation period (else continue)
-                                        bool foundDetail = false;
-
-                                        foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
+                                        if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
+                                            && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                            && ((recGiftDetail.StartDonations == null) || (AEffectiveDate >= recGiftDetail.StartDonations))
+                                            && ((recGiftDetail.EndDonations == null) || (AEffectiveDate <= recGiftDetail.EndDonations))
+                                            )
                                         {
-                                            if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
-                                                && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
-                                                && ((recGiftDetail.StartDonations == null) || (AEffectiveDate >= recGiftDetail.StartDonations))
-                                                && ((recGiftDetail.EndDonations == null) || (AEffectiveDate <= recGiftDetail.EndDonations))
-                                                )
-                                            {
-                                                foundDetail = true;
-                                                break;
-                                            }
+                                            foundDetail = true;
+                                            break;
                                         }
-
-                                        if (!foundDetail)
-                                        {
-                                            continue;
-                                        }
-
-                                        // make the gift from recGift
-                                        AGiftRow gift = MainDS.AGift.NewRowTyped();
-                                        gift.LedgerNumber = batch.LedgerNumber;
-                                        gift.BatchNumber = batch.BatchNumber;
-                                        gift.GiftTransactionNumber = ++batch.LastGiftNumber;
-                                        gift.DonorKey = recGift.DonorKey;
-                                        gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
-                                        gift.DateEntered = AEffectiveDate;
-
-                                        if (gift.MethodOfGivingCode.Length == 0)
-                                        {
-                                            gift.SetMethodOfGivingCodeNull();
-                                        }
-
-                                        gift.MethodOfPaymentCode = recGift.MethodOfPaymentCode;
-
-                                        if (gift.MethodOfPaymentCode.Length == 0)
-                                        {
-                                            gift.SetMethodOfPaymentCodeNull();
-                                        }
-
-                                        gift.Reference = recGift.Reference;
-                                        gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
-
-
-                                        MainDS.AGift.Rows.Add(gift);
-                                        //TODO (not here, but in the client or while posting) Check for Ex-OM Partner
-                                        //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
-
-                                        foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
-                                        {
-                                            //decimal amtIntl = 0M;
-                                            decimal amtBase = 0M;
-                                            decimal amtTrans = 0M;
-
-                                            if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
-                                                && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
-                                                && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= AEffectiveDate))
-                                                && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
-                                                )
-                                            {
-                                                AGiftDetailRow detail = MainDS.AGiftDetail.NewRowTyped();
-                                                detail.LedgerNumber = gift.LedgerNumber;
-                                                detail.BatchNumber = gift.BatchNumber;
-                                                detail.GiftTransactionNumber = gift.GiftTransactionNumber;
-                                                detail.DetailNumber = ++gift.LastDetailNumber;
-
-                                                amtTrans = recGiftDetail.GiftAmount;
-                                                detail.GiftTransactionAmount = amtTrans;
-                                                batchTotal += amtTrans;
-                                                amtBase = GLRoutines.Divide((decimal)amtTrans, AExchangeRateToBase);
-                                                detail.GiftAmount = amtBase;
-
-                                                if (!TransactionInIntlCurrency)
-                                                {
-                                                    detail.GiftAmountIntl = GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
-                                                }
-                                                else
-                                                {
-                                                    detail.GiftAmountIntl = amtTrans;
-                                                }
-
-                                                detail.RecipientKey = recGiftDetail.RecipientKey;
-                                                detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
-
-                                                detail.ChargeFlag = recGiftDetail.ChargeFlag;
-                                                detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
-                                                detail.TaxDeductible = recGiftDetail.TaxDeductible;
-                                                detail.MailingCode = recGiftDetail.MailingCode;
-
-                                                if (detail.MailingCode.Length == 0)
-                                                {
-                                                    detail.SetMailingCodeNull();
-                                                }
-
-                                                detail.MotivationGroupCode = recGiftDetail.MotivationGroupCode;
-                                                detail.MotivationDetailCode = recGiftDetail.MotivationDetailCode;
-
-                                                detail.GiftCommentOne = recGiftDetail.GiftCommentOne;
-                                                detail.CommentOneType = recGiftDetail.CommentOneType;
-                                                detail.GiftCommentTwo = recGiftDetail.GiftCommentTwo;
-                                                detail.CommentTwoType = recGiftDetail.CommentTwoType;
-                                                detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
-                                                detail.CommentThreeType = recGiftDetail.CommentThreeType;
-
-                                                if (TaxDeductiblePercentageEnabled)
-                                                {
-                                                    // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
-                                                    TGift.SetDefaultTaxDeductibilityData(ref detail, gift.DateEntered, Transaction);
-                                                }
-
-                                                MainDS.AGiftDetail.Rows.Add(detail);
-                                            }
-                                        }
-
-                                        batch.BatchTotal = batchTotal;
                                     }
+
+                                    if (!foundDetail)
+                                    {
+                                        continue;
+                                    }
+
+                                    // make the gift from recGift
+                                    AGiftRow gift = MainDS.AGift.NewRowTyped();
+                                    gift.LedgerNumber = batch.LedgerNumber;
+                                    gift.BatchNumber = batch.BatchNumber;
+                                    gift.GiftTransactionNumber = ++batch.LastGiftNumber;
+                                    gift.DonorKey = recGift.DonorKey;
+                                    gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
+                                    gift.DateEntered = AEffectiveDate;
+
+                                    if (gift.MethodOfGivingCode.Length == 0)
+                                    {
+                                        gift.SetMethodOfGivingCodeNull();
+                                    }
+
+                                    gift.MethodOfPaymentCode = recGift.MethodOfPaymentCode;
+
+                                    if (gift.MethodOfPaymentCode.Length == 0)
+                                    {
+                                        gift.SetMethodOfPaymentCodeNull();
+                                    }
+
+                                    gift.Reference = recGift.Reference;
+                                    gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
+
+
+                                    MainDS.AGift.Rows.Add(gift);
+                                    //TODO (not here, but in the client or while posting) Check for Ex-OM Partner
+                                    //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
+
+                                    foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
+                                    {
+                                        //decimal amtIntl = 0M;
+                                        decimal amtBase = 0M;
+                                        decimal amtTrans = 0M;
+
+                                        if ((recGiftDetail.GiftTransactionNumber == recGift.GiftTransactionNumber)
+                                            && (recGiftDetail.BatchNumber == ABatchNumber) && (recGiftDetail.LedgerNumber == ALedgerNumber)
+                                            && ((recGiftDetail.StartDonations == null) || (recGiftDetail.StartDonations <= AEffectiveDate))
+                                            && ((recGiftDetail.EndDonations == null) || (recGiftDetail.EndDonations >= AEffectiveDate))
+                                            )
+                                        {
+                                            AGiftDetailRow detail = MainDS.AGiftDetail.NewRowTyped();
+                                            detail.LedgerNumber = gift.LedgerNumber;
+                                            detail.BatchNumber = gift.BatchNumber;
+                                            detail.GiftTransactionNumber = gift.GiftTransactionNumber;
+                                            detail.DetailNumber = ++gift.LastDetailNumber;
+
+                                            amtTrans = recGiftDetail.GiftAmount;
+                                            detail.GiftTransactionAmount = amtTrans;
+                                            batchTotal += amtTrans;
+                                            amtBase = GLRoutines.Divide((decimal)amtTrans, AExchangeRateToBase);
+                                            detail.GiftAmount = amtBase;
+
+                                            if (!TransactionInIntlCurrency)
+                                            {
+                                                detail.GiftAmountIntl = GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
+                                            }
+                                            else
+                                            {
+                                                detail.GiftAmountIntl = amtTrans;
+                                            }
+
+                                            detail.RecipientKey = recGiftDetail.RecipientKey;
+                                            detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
+
+                                            detail.ChargeFlag = recGiftDetail.ChargeFlag;
+                                            detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
+                                            detail.TaxDeductible = recGiftDetail.TaxDeductible;
+                                            detail.MailingCode = recGiftDetail.MailingCode;
+
+                                            if (detail.MailingCode.Length == 0)
+                                            {
+                                                detail.SetMailingCodeNull();
+                                            }
+
+                                            detail.MotivationGroupCode = recGiftDetail.MotivationGroupCode;
+                                            detail.MotivationDetailCode = recGiftDetail.MotivationDetailCode;
+
+                                            detail.GiftCommentOne = recGiftDetail.GiftCommentOne;
+                                            detail.CommentOneType = recGiftDetail.CommentOneType;
+                                            detail.GiftCommentTwo = recGiftDetail.GiftCommentTwo;
+                                            detail.CommentTwoType = recGiftDetail.CommentTwoType;
+                                            detail.GiftCommentThree = recGiftDetail.GiftCommentThree;
+                                            detail.CommentThreeType = recGiftDetail.CommentThreeType;
+
+                                            if (TaxDeductiblePercentageEnabled)
+                                            {
+                                                // Sets TaxDeductiblePct and uses it to calculate the tax deductibility amounts for a Gift Detail
+                                                TGift.SetDefaultTaxDeductibilityData(ref detail, gift.DateEntered, Transaction);
+                                            }
+
+                                            MainDS.AGiftDetail.Rows.Add(detail);
+                                        }
+                                    }
+
+                                    batch.BatchTotal = batchTotal;
                                 }
                             }
                         }
@@ -473,14 +473,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         SubmissionOK = true;
                     });
+
+                ANewGiftBatchNo = NewGiftBatchNumber;
+                return SubmissionOK;
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -592,11 +592,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return ReturnTable;
@@ -653,11 +650,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -756,11 +750,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -823,11 +814,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -892,11 +880,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -993,11 +978,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -1174,11 +1156,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -1235,11 +1214,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -1311,11 +1287,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -1426,11 +1399,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return CostCentreCode;
@@ -1607,11 +1577,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return true;
@@ -1674,11 +1641,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -1741,11 +1705,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return MainDS;
@@ -1876,10 +1837,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                TLogging.Log("Error in LoadDonorRecipientHistory: " + e.Message);
-                throw e;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             MainDS.AcceptChanges();
@@ -2158,11 +2119,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.Log(String.Format("Method:{0} - Unexpected error trying to save gift batch!{1}{1}{2}",
-                                    Utilities.GetMethodSignature(),
-                                    Environment.NewLine,
-                                    ex.Message));
-                            throw ex;
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
+                            throw;
                         }
                     }
                 }
@@ -2414,11 +2372,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                         catch (Exception ex)
                         {
-                            TLogging.Log(String.Format("Method:{0} - Unexpected error trying to save recurring gift batch!{1}{1}{2}",
-                                    Utilities.GetMethodSignature(),
-                                    Environment.NewLine,
-                                    ex.Message));
-                            throw ex;
+                            TLogging.LogException(ex, Utilities.GetMethodSignature());
+                            throw;
                         }
                     }
                 }
@@ -2462,7 +2417,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
                             {
-                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
+                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
                                             "EX-WORKER")))
                                 {
                                     ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
@@ -2491,8 +2446,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ABatchRow batch = GLDataset.ABatch[0];
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
             batch.DateEffective = giftBatch.GlEffectiveDate;
@@ -2695,7 +2650,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (transaction.TransactionAmount == 0)
             {
+                int transNumToDelete = transaction.TransactionNumber;
+
                 transaction.Delete();
+
+                //Renumber transactions above
+                AGLDataset.ATransaction.DefaultView.RowFilter = String.Format("{0}>{1}",
+                    ATransactionTable.GetTransactionNumberDBName(),
+                    transNumToDelete);
+                AGLDataset.ATransaction.DefaultView.Sort = ATransactionTable.GetTransactionNumberDBName() + " ASC";
+
+                foreach (DataRowView drv in AGLDataset.ATransaction.DefaultView)
+                {
+                    ATransactionRow tR = (ATransactionRow)drv.Row;
+                    tR.TransactionNumber--;
+                }
+
+                AJournal.LastTransactionNumber--;
             }
         }
 
@@ -2703,7 +2674,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             bool ARecurring,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
-            ref TDBTransaction ATransaction)
+            TDBTransaction ATransaction)
         {
             #region Validate Arguments
 
@@ -2739,8 +2710,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (!ARecurring)
                 {
-                    TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+                    TaxDeductiblePercentageEnabled =
+                        TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 }
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();
@@ -2765,7 +2736,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getDonorSQL = getDonorSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getDonorSQL, AGiftDS.DonorPartners.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getDonorSQL, AGiftDS.DonorPartners.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2793,7 +2764,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientSQL = getRecipientSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientSQL, AGiftDS.RecipientPartners.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientSQL, AGiftDS.RecipientPartners.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2806,7 +2777,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientFamilySQL = getRecipientFamilySQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientFamilySQL, AGiftDS.RecipientFamily.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientFamilySQL, AGiftDS.RecipientFamily.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2819,7 +2790,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientPersonSQL = getRecipientPersonSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientPersonSQL, AGiftDS.RecipientPerson.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientPersonSQL, AGiftDS.RecipientPerson.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
 
@@ -2832,17 +2803,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     getRecipientUnitSQL = getRecipientUnitSQL.Replace("PUB_a_gift", "PUB_a_recurring_gift");
                 }
 
-                DBAccess.GDBAccessObj.Select(AGiftDS, getRecipientUnitSQL, AGiftDS.RecipientUnit.TableName,
+                ATransaction.DataBaseObj.Select(AGiftDS, getRecipientUnitSQL, AGiftDS.RecipientUnit.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -2894,10 +2862,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             tempDataSet.Clear();
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in CheckCostCentreLinkForRecipient: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
+                        throw;
                     }
                 });
 
@@ -2948,10 +2916,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
                         }
                     }
-                    catch (Exception e)
+                    catch (Exception ex)
                     {
-                        TLogging.Log("Error in GetGiftDestinationForRecipient: " + e.Message);
-                        throw e;
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
+                        throw;
                     }
                 });
 
@@ -3019,11 +2987,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             ACostCentreCode = CostCentreCode;
@@ -3063,9 +3028,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
             TDBTransaction Transaction = null;
 
+            TDataBase DBConnection = DBAccess.SimpleEstablishDBConnection("ReadGiftTds");
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -3075,18 +3041,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (ChangesToCommit)
                 {
-                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                    GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
                 }
 
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+            finally
+            {
+                DBConnection.CloseDBConnection();
             }
 
             return MainDS;
@@ -3176,7 +3143,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             #endregion Validate Data 1
 
             //Load related donor data
-            LoadGiftDonorRelatedData(MainDS, false, ALedgerNumber, ABatchNumber, ref ATransaction);
+            LoadGiftDonorRelatedData(MainDS, false, ALedgerNumber, ABatchNumber, ATransaction);
 
             DataView giftView = new DataView(MainDS.AGift);
             giftView.Sort = AGiftTable.GetGiftTransactionNumberDBName();
@@ -3382,10 +3349,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             GiftBatchTDS MainDS = new GiftBatchTDS();
 
             TDBTransaction Transaction = null;
+            TDataBase DBConnection = DBAccess.SimpleEstablishDBConnection("ReadRecurringGifts");
 
             try
             {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                DBConnection.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref Transaction,
                     delegate
@@ -3397,20 +3365,20 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 if (ChangesToCommit)
                 {
                     // if RecipientLedgerNumber has been updated then this should immediately be saved to the database
-                    GiftBatchTDSAccess.SubmitChanges(MainDS);
+                    GiftBatchTDSAccess.SubmitChanges(MainDS, DBConnection);
                 }
 
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
-
+            finally
+            {
+                DBConnection.CloseDBConnection();
+            }
             return MainDS;
         }
 
@@ -3487,7 +3455,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Data 1
 
-            LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ref ATransaction);
+            LoadGiftDonorRelatedData(MainDS, true, ALedgerNumber, ABatchNumber, ATransaction);
 
             DataView giftView = new DataView(MainDS.ARecurringGift);
             giftView.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName();
@@ -3775,11 +3743,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             // calculate the admin fee for the specific amount and admin fee. see gl4391.p
@@ -3791,7 +3756,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Public for tests
         /// </summary>
         [NoRemoting]
-        public static void AddToFeeTotals(GiftBatchTDS AMainDS,
+        public static void AddToFeeTotals(Int32 ALedgerNumber,
+            GiftBatchTDS AMainDS,
             AGiftDetailRow AGiftDetailRow,
             string AFeeCode,
             decimal AFeeAmount,
@@ -3799,7 +3765,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         {
             #region Validate Arguments
 
-            if (AMainDS == null)
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (AMainDS == null)
             {
                 throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
                             "Function:{0} - The Gift Batch dataset is null!"),
@@ -3819,8 +3791,43 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
+            string LedgerBaseCurrency = TLedgerInfo.GetLedgerBaseCurrency(ALedgerNumber);
+            int NumDecPlaces = 2;
+
             try
             {
+                TDBTransaction Transaction = null;
+                //Round AFeeAmount
+
+                /* 0003 Finds for ledger base currency format, for report currency format */
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ACurrencyTable currencyInfo = ACurrencyAccess.LoadByPrimaryKey(LedgerBaseCurrency, Transaction);
+
+                        #region Validate Data
+
+                        if ((currencyInfo == null) || (currencyInfo.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Currency data for Ledger base currency {1} does not exist or could not be accessed!"),
+                                    Utilities.GetMethodName(true),
+                                    LedgerBaseCurrency));
+                        }
+
+                        #endregion Validate Data
+
+                        ACurrencyRow currencyRow = (ACurrencyRow)currencyInfo.Rows[0];
+
+                        string numericFormat = currencyRow.DisplayFormat;
+                        NumDecPlaces = THelperNumeric.CalcNumericFormatDecimalPlaces(numericFormat);
+                    });
+
+                //Round the fee amount
+                AFeeAmount = Math.Round(AFeeAmount, NumDecPlaces);
+
+
                 /* Get the record for the totals of the processed fees. */
                 AProcessedFeeTable ProcessedFeeDataTable = AMainDS.AProcessedFee;
                 AProcessedFeeRow ProcessedFeeRow =
@@ -3851,11 +3858,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -4070,18 +4074,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             TResultSeverity.Resv_Critical));
                 }
 
-                if ((GiftBatchRow.CurrencyCode != LedgerBaseCurrency)
-                    && !IsDailyExchangeRateIsStillValid(GiftBatchRow.CurrencyCode, LedgerBaseCurrency, GiftBatchRow.GlEffectiveDate,
-                        GiftBatchRow.ExchangeRateToBase, ATransaction))
-                {
-                    AVerifications.Add(
-                        new TVerificationResult(
-                            "Posting Gift Batch",
-                            String.Format(Catalog.GetString("Exchange rate to base currency is invalid in Batch {0}!"),
-                                ABatchNumber),
-                            TResultSeverity.Resv_Critical));
-                }
-
                 if (AVerifications.Count > 0)
                 {
                     continue;
@@ -4126,7 +4118,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         if (FeeAmount != 0)
                         {
-                            AddToFeeTotals(MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
+                            AddToFeeTotals(ALedgerNumber, MainDS, giftDetail, motivationFeeRow.FeeCode, FeeAmount, GiftBatchRow.BatchPeriod);
                         }
                     }
                 }
@@ -4138,32 +4130,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return MainDS;
-        }
-
-        private static bool IsDailyExchangeRateIsStillValid(string ACurrencyFrom,
-            string ACurrencyTo,
-            DateTime ADateEffective,
-            decimal ARateOfExchange,
-            TDBTransaction ATransaction)
-        {
-            ADailyExchangeRateTable DailyExchangeRateTable = null;
-
-            ADailyExchangeRateTable TempTable = new ADailyExchangeRateTable();
-            ADailyExchangeRateRow TempRow = TempTable.NewRowTyped(false);
-
-            TempRow.FromCurrencyCode = ACurrencyFrom;
-            TempRow.ToCurrencyCode = ACurrencyTo;
-            TempRow.DateEffectiveFrom = ADateEffective;
-            TempRow.RateOfExchange = ARateOfExchange;
-
-            DailyExchangeRateTable = ADailyExchangeRateAccess.LoadUsingTemplate(TempRow, ATransaction);
-
-            if ((DailyExchangeRateTable != null) && (DailyExchangeRateTable.Rows.Count > 0))
-            {
-                return true;
-            }
-
-            return false;
         }
 
         /// <summary>
@@ -4265,7 +4231,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         //[RequireModulePermission("FINANCE-2")]
         [NoRemoting]
-        public static bool PostGiftBatches(Int32 ALedgerNumber, List <Int32>ABatchNumbers, out TVerificationResultCollection AVerifications)
+        public static bool PostGiftBatches(Int32 ALedgerNumber,
+            List <Int32>ABatchNumbers,
+            out TVerificationResultCollection AVerifications,
+            TDataBase ADataBase = null)
         {
             //Used in validation of arguments
             AVerifications = new TVerificationResultCollection();
@@ -4280,12 +4249,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             else if (ABatchNumbers.Count == 0)
             {
-                AVerifications.Add(
-                    new TVerificationResult(
-                        "Posting Gift Batch",
-                        "No Gift Batches to post",
-                        TResultSeverity.Resv_Noncritical));
-                return false;
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - No batches present to post!"),
+                        Utilities.GetMethodName(true)));
             }
 
             foreach (Int32 batchNumber in ABatchNumbers)
@@ -4323,7 +4289,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             try
             {
-                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable,
+                DBAccess.GetDBAccessObj(ADataBase).BeginAutoTransaction(IsolationLevel.Serializable,
                     ref Transaction,
                     ref SubmissionOK,
                     delegate
@@ -4443,11 +4409,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             string ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
 
-                            ////TODO: remove
-                            ////Test purposes
-                            //TLogging.Log("Post-Ledger Name = " + ledgerName);
-
-                            //
                             // Print Gift Batch Detail report (on the client!)
                             foreach (Int32 BatchNumber in ABatchNumbers)
                             {
@@ -4476,17 +4437,19 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 VerificationResult = new TVerificationResultCollection();
                 VerificationResult.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
 
-                throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                if (ex.InnerException != null)
+                {
+                    throw new EVerificationResultsException(ErrorMessage, VerificationResult, ex.InnerException);
+                }
+                else
+                {
+                    throw;
+                }
             }
             catch (Exception ex)
             {
-                // show the full stacktrace of the caught exception
-                TLogging.Log(ex.ToString());
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
@@ -4853,11 +4816,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             if (DataLoaded)
@@ -5043,11 +5003,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             AIsActive = IsActive;
@@ -5105,11 +5062,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return KeyMinistryIsActive;
@@ -5155,11 +5109,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             AFieldNumber = FieldNumber;
@@ -5322,11 +5273,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return AInactiveKMsTable.Rows.Count > 0;

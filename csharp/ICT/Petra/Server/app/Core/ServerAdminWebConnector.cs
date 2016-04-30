@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -264,6 +264,16 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         public static void RefreshAllCachedTables()
         {
             TServerManagerBase.TheServerManager.RefreshAllCachedTables();
+        }
+
+        /// <summary>
+        /// Clears (flushes) all RDMBS Connection Pools and returns the new number of DB Connections after clearing all
+        /// RDMBS Connection Pools.
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static int ClearConnectionPoolAndGetNumberOfDBConnections()
+        {
+            return TServerManagerBase.TheServerManager.ClearConnectionPoolAndGetNumberOfDBConnections();
         }
 
         /// <summary>

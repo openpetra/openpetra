@@ -184,13 +184,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             String fileContents = string.Empty;
             Int32 budgetCount = 0;
 
-            if (txtFilename.Text == String.Empty)
+            if (FExportFileName == String.Empty)
             {
                 MessageBox.Show(Catalog.GetString("Please choose a location for the Export File."),
                     Catalog.GetString("Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
                 return;
+            }
+            else if (!FExportFileName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
+            {
+                FExportFileName += ".csv";
             }
 
             if (!Directory.Exists(Path.GetDirectoryName(FExportFileName)))
@@ -307,6 +311,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 this.Cursor = Cursors.Default;
             }
 
+            bool ShowExportedFileInExplorer = false;
+
             // Offer the client the chance to open the file in Excel or whatever
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "{0} Budget rows were exported successfully! Would you like to open the file in your default application?"),
@@ -316,13 +322,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBoxIcon.Information,
                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
             {
-                ProcessStartInfo si = new ProcessStartInfo(txtFilename.Text);
-                si.UseShellExecute = true;
-                si.Verb = "open";
+                try
+                {
+                    ProcessStartInfo si = new ProcessStartInfo(FExportFileName);
+                    si.UseShellExecute = true;
+                    si.Verb = "open";
 
-                Process p = new Process();
-                p.StartInfo = si;
-                p.Start();
+                    Process p = new Process();
+                    p.StartInfo = si;
+                    p.Start();
+                }
+                catch
+                {
+                    MessageBox.Show(Catalog.GetString(
+                            "Unable to launch the default application to open: '") + FExportFileName + "'!", Catalog.GetString(
+                            "Budget Export"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                    ShowExportedFileInExplorer = true;
+                }
+            }
+            else
+            {
+                ShowExportedFileInExplorer = true;
+            }
+
+            if (ShowExportedFileInExplorer)
+            {
+                //If windows start Windows File Explorer
+                TExecutingOSEnum osVersion = Utilities.DetermineExecutingOS();
+
+                if ((osVersion >= TExecutingOSEnum.eosWinXP)
+                    && (osVersion < TExecutingOSEnum.oesUnsupportedPlatform))
+                {
+                    try
+                    {
+                        Process.Start("explorer.exe", string.Format("/select,\"{0}\"", FExportFileName));
+                    }
+                    catch
+                    {
+                        MessageBox.Show(Catalog.GetString(
+                                "Unable to launch Windows File Explorer to open: '") + FExportFileName + "'!", Catalog.GetString(
+                                "Budget Export"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
             }
 
             Close();

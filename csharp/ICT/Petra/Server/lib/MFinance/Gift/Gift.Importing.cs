@@ -199,8 +199,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // Initialise our working variables
             AGiftBatchRow giftBatch = null;
@@ -781,7 +781,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             Boolean shouldCommit = true;
             DataTable Res = new DataTable();
 
-            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction,
                 ref shouldCommit,
                 delegate
@@ -892,8 +892,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             FCultureInfoDate = new CultureInfo("en-GB");
             FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // Initialise our working variables
             decimal totalBatchAmount = 0;
@@ -1533,9 +1533,19 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
-            AGiftDetails.CostCentreCode = TGiftTransactionWebConnector.RetrieveCostCentreCodeForRecipient(
-                AGiftDetails.LedgerNumber, AGiftDetails.RecipientKey, AGiftDetails.RecipientLedgerNumber,
-                AGift.DateEntered, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode);
+            try
+            {
+                AGiftDetails.CostCentreCode = TGiftTransactionWebConnector.RetrieveCostCentreCodeForRecipient(
+                    AGiftDetails.LedgerNumber, AGiftDetails.RecipientKey, AGiftDetails.RecipientLedgerNumber,
+                    AGift.DateEntered, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode);
+            }
+            catch (ArgumentException ex)
+            {
+                AMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLineColumn,
+                            ARowNumber, Catalog.GetString("Cost Centre")),
+                        ex.Message,
+                        TResultSeverity.Resv_Critical));
+            }
 
             // All the remaining columns are optional and can contain database NULL
             AGiftDetails.GiftCommentOne = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Gift comment one"),

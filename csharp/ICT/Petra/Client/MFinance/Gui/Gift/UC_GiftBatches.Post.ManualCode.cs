@@ -109,13 +109,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
+                DataView batchGiftDetailsDV = new DataView(FMainDS.AGiftDetail);
 
-                foreach (GiftBatchTDSAGiftDetailRow Row in FMainDS.AGiftDetail.Rows)
+                batchGiftDetailsDV.RowFilter = string.Format("{0}={1}",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber);
+
+                batchGiftDetailsDV.Sort = string.Format("{0} ASC, {1} ASC, {2} ASC",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    AGiftDetailTable.GetDetailNumberDBName());
+
+                foreach (DataRowView drv in batchGiftDetailsDV)
                 {
-                    if (Row.BatchNumber == FSelectedBatchNumber)
-                    {
-                        BatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
-                    }
+                    GiftBatchTDSAGiftDetailRow gBRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
+
+                    BatchGiftDetails.Rows.Add((object[])gBRow.ItemArray.Clone());
                 }
 
                 bool CancelledDueToExWorkerOrAnonDonor;
@@ -137,7 +146,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             //Check for missing international exchange rate
@@ -243,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
                     StringBuilder errorMessages = new StringBuilder();
                     int counter = 0;
 
@@ -257,7 +268,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     extendedMessageBox.ShowDialog(errorMessages.ToString(),
-                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        Catalog.GetString("Post Batch Error"),
+                        string.Empty,
                         TFrmExtendedMessageBox.TButtons.embbOK,
                         TFrmExtendedMessageBox.TIcon.embiWarning);
                 }
@@ -270,15 +282,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
-                string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of a Gift Batch!{0}{1}{2}{1}    {3}"),
-                                  Utilities.GetMethodSignature(),
-                                  Environment.NewLine,
-                                  ex.Message,
-                                  ex.InnerException.Message));
-
-                TLogging.Log(msg);
-                throw ex;
-                //MessageBox.Show(msg, "Post Gift Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
