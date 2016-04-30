@@ -296,7 +296,7 @@ namespace Ict.Common.Remoting.Server
             if (DBAccess.GDBAccessObj != null)
             {
                 TLogging.Log("EndSession (for client '" + this.ClientName + "'): Closing DB connection");
-                DBAccess.GDBAccessObj.CloseDBConnection();
+                DBAccess.GDBAccessObj.CloseDBConnection(true);
             }
 
             TLogging.Log("EndSession (for client '" + this.ClientName + "'): Checking whether there is a HttpSession.Current object");

@@ -1269,10 +1269,15 @@ namespace Ict.Common.DB
         /// <summary>
         /// Closes the DB connection.
         /// </summary>
-        /// <returns>void</returns>
+        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that 
+        /// calls this Method is the Thread that established the DB Connection. <em>WARNING: 
+        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will 
+        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and 
+        /// that Thread will be different from the Thread that established the 'globally available' DB Connection 
+        /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
-        public void CloseDBConnection()
+        public void CloseDBConnection(bool ASuppressThreadCompatibilityCheck = false)
         {
             WaitForCoordinatedDBAccess();
 
@@ -1280,7 +1285,7 @@ namespace Ict.Common.DB
             {
                 if ((FSqlConnection != null) && (FSqlConnection.State != ConnectionState.Closed))
                 {
-                    CloseDBConnectionInternal();
+                    CloseDBConnectionInternal(ASuppressThreadCompatibilityCheck);
                 }
             }
             finally
@@ -1292,10 +1297,15 @@ namespace Ict.Common.DB
         /// <summary>
         /// Closes the DB connection.
         /// </summary>
-        /// <returns>void</returns>
+        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that 
+        /// calls this Method is the Thread that established the DB Connection. <em>WARNING: 
+        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will 
+        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and 
+        /// that Thread will be different from the Thread that established the 'globally available' DB Connection 
+        /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
-        private void CloseDBConnectionInternal()
+        private void CloseDBConnectionInternal(bool ASuppressThreadCompatibilityCheck = false)
         {
             if (ConnectionReady(false))
             {
@@ -1304,18 +1314,21 @@ namespace Ict.Common.DB
                     TLogging.Log("    Closing Database connection..." + GetDBConnectionIdentifier());
                 }
 
-                if (!CheckEstablishedDBConnectionThreadIsCompatible(false))
+                if (!ASuppressThreadCompatibilityCheck)
                 {
-                    var Exc1 =
-                        new EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(
-                            "TDataBase.CloseDBConnectionInternal would close established DB Connection that got " +
-                            "established on a different Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
-                            ThreadingHelper.GetThreadIdentifier(ThreadThatConnectionWasEstablishedOn),
-                            ThreadingHelper.GetCurrentThreadIdentifier());
+                    if (!CheckEstablishedDBConnectionThreadIsCompatible(false))
+                    {
+                        var Exc1 =
+                            new EDBAttemptingToCloseDBConnectionThatGotEstablishedOnDifferentThreadException(
+                                "TDataBase.CloseDBConnectionInternal would close established DB Connection that got " +
+                                "established on a different Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                                ThreadingHelper.GetThreadIdentifier(ThreadThatConnectionWasEstablishedOn),
+                                ThreadingHelper.GetCurrentThreadIdentifier());
 
-                    TLogging.Log(Exc1.ToString());
+                        TLogging.Log(Exc1.ToString());
 
-                    throw Exc1;
+                        throw Exc1;
+                    }
                 }
 
                 // If a DB Transaction is still open and it hasn't been committed or rolled back yet
