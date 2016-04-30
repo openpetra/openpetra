@@ -196,7 +196,7 @@ namespace Ict.Common
 
             TLogging.Context = "";
 
-            if (ULogWriter == null || TLogWriter.GetLogFileName() == String.Empty)
+            if ((ULogWriter == null) || (TLogWriter.GetLogFileName() == String.Empty))
             {
                 ULogWriter = new TLogWriter(AFileName);
                 ULogWriter.SuppressDateAndTime = ASuppressDateAndTime;
@@ -367,7 +367,7 @@ namespace Ict.Common
             {
                 Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
-                if (!string.IsNullOrEmpty(TLogging.Context)) 
+                if (!string.IsNullOrEmpty(TLogging.Context))
                 {
                     Console.Error.WriteLine("  Context: " + TLogging.Context);
                 }

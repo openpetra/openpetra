@@ -84,9 +84,19 @@ namespace Ict.Common
                     {
                         return TExecutingOSEnum.eosWin7;
                     }
+                    //Applications not manifested for Windows 8.1 or Windows 10 will return the Windows 8 OS version value (6.2)
                     else if ((OSVersion.Major == 6) && (OSVersion.Minor == 2))
                     {
-                        return TExecutingOSEnum.eosWin8;
+                        return TExecutingOSEnum.eosWin8Plus;
+                    }
+                    //The next two only occur if the application is manifested for Win8.1 and Win10 respectively
+                    else if ((OSVersion.Major == 6) && (OSVersion.Minor == 3))
+                    {
+                        return TExecutingOSEnum.eosWin81;
+                    }
+                    else if ((OSVersion.Major == 10) && (OSVersion.Minor == 0))
+                    {
+                        return TExecutingOSEnum.eosWin10;
                     }
 
                     return TExecutingOSEnum.eosWinNTOrLater;

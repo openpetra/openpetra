@@ -1014,6 +1014,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     Cursor = Cursors.Default;
                     MessageBox.Show(Catalog.GetString("The Gift Batch is empty!"), Catalog.GetString("Posting failed"),
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+                    dlgStatus.Close();
+                    LoadDialogVisible = false;
                     return;
                 }
 
@@ -1021,6 +1024,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed))
                 {
+                    dlgStatus.Close();
+                    LoadDialogVisible = false;
                     return;
                 }
 
@@ -1072,6 +1077,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (LoadDialogVisible)
                 {
                     dlgStatus.Close();
+                    LoadDialogVisible = false;
                 }
 
                 Cursor = Cursors.Default;
