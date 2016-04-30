@@ -147,9 +147,10 @@ namespace Ict.Common
             string Extension = Path.GetExtension(LogFileName);
             string LogFileNameWithoutExtension = Path.GetFileNameWithoutExtension(LogFileName);
 
-            int NumberOfLogFilesToKeep = TAppSettingsManager.GetInt16("NumberOfLogFilesToKeep", -1);
+            int NumberOfLogFilesToKeep = TAppSettingsManager.GetInt16("NumberOfLogFilesToKeep", -2);
 
-            if (NumberOfLogFilesToKeep == -1)
+            if ((NumberOfLogFilesToKeep == -2)      // -2: log rotation config file setting doesn't exist
+                || (NumberOfLogFilesToKeep == -1))  // -1: log rotation config file setting -1 means: do not rotate log.
             {
                 // rotation is disabled
                 return;
