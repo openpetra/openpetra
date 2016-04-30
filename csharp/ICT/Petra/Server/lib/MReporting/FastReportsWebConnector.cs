@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -181,6 +181,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.TotalGiftsThroughField(AParameters, FDbAdapter);
                     break;
 
+                case "MotivationResponse":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
+                    ResultTbl = TFinanceReportingWebConnector.MotivationResponse(AParameters, FDbAdapter);
+                    break;
 
                 case "DonorGiftsToField":
                     FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.

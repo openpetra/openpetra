@@ -228,6 +228,7 @@ OpenPetra:
                         GiftBatchDetail: {ActionOpenScreen=TFrmGiftBatchDetail}
                         RecipientTaxDeductiblePercentages: {ActionOpenScreen=TFrmRecipientTaxDeductiblePercentages}
                         EsrInpaymentSlip: {Label=ESR Inpayment Slip, ActionOpenScreen=TFrmEsrInpaymentSlip}
+                        MotivationResponse: {ActionOpenScreen=TFrmMotivationResponse}
                     #Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                         #ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                         #RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}

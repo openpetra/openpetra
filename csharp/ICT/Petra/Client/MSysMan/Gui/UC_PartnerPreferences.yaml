@@ -18,12 +18,14 @@ RootNode:
             Label: Number Formatting For Partner, Personnel and Conference
             Width: 430
             Height: 190
+
         pnlNewPartners:
             Controls: [cmbAcquisitionCode, cmbLanguageCode]
             Width: 410
             Height: 60
         cmbAcquisitionCode: {List=AcquisitionCodeList}
         cmbLanguageCode: {List=LanguageCodeList}
+
         pnlNumberFormatting:
             Controls: [chkMoneyFormat, chkDecimalFormat, chkShowThousands, pnlExamples]
             Width: 410

@@ -1307,6 +1307,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FBatchRow != null)
             {
                 txtDetailGiftTransactionAmount.CurrencyCode = FBatchRow.CurrencyCode;
+                txtTaxDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
+                txtNonDeductAmount.CurrencyCode = FBatchRow.CurrencyCode;
                 txtBatchStatus.Text = FBatchStatus;
             }
 
@@ -1595,6 +1597,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (txtDetailGiftTransactionAmount.CurrencyCode != ACurrencyCode)
             {
                 txtDetailGiftTransactionAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if (txtTaxDeductAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtTaxDeductAmount.CurrencyCode = ACurrencyCode;
+            }
+
+            if (txtNonDeductAmount.CurrencyCode != ACurrencyCode)
+            {
+                txtNonDeductAmount.CurrencyCode = ACurrencyCode;
             }
 
             if ((txtGiftTotal.CurrencyCode != ACurrencyCode)
@@ -2132,12 +2144,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int workingTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
             int workingDetailNumber = FPreviouslySelectedDetailRow.DetailNumber;
 
-            if (FTaxDeductiblePercentageEnabled)
+            if (AdjustGift)
             {
-                revertForm.CheckTaxDeductPctChange = true;
-            }
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    revertForm.CheckTaxDeductPctChange = true;
+                }
 
-            revertForm.CheckGiftDestinationChange = true;
+                revertForm.CheckGiftDestinationChange = true;
+            }
 
             try
             {

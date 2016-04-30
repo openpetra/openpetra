@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:Finance\\donorgiftstofieldsreport.xml,Finance\\finance.xml,common.xml" />
+  <Parameter id="currentReport" value="eString:DonorGiftToFields" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_report_type" value="eString:Complete" />
+  <Parameter id="param_donor" value="eString:All Donors" />
+  <Parameter id="param_min_amount" value="eInteger:0" />
+  <Parameter id="param_max_amount" value="eInteger:999999999" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_calculation" column="0" value="eString:Recipient Name" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4615063718147915776" />
+  <Parameter id="param_ytd" column="0" value="eString:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Field" />
+  <Parameter id="ColumnWidth" column="1" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="1" value="eString:false" />
+  <Parameter id="param_calculation" column="2" value="eString:Gift Date" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="param_ytd" column="2" value="eString:false" />
+  <Parameter id="param_calculation" column="3" value="eString:Receipt" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="param_ytd" column="3" value="eString:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Gift Type" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_ytd" column="4" value="eString:false" />
+  <Parameter id="param_calculation" column="5" value="eString:Method" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="param_ytd" column="5" value="eString:false" />
+  <Parameter id="param_calculation" column="6" value="eString:Gift Amount" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_ytd" column="6" value="eString:false" />
+  <Parameter id="param_currency_format" value="eString:CurrencyComplete" />
+  <Parameter id="param_field_selection" value="eString:all_fields" />
+  <Parameter id="param_donorkey" value="eInteger:0" />
+  <Parameter id="param_extract_name" value="eString:" />
+  <Parameter id="param_gift_amount_column" value="eInteger:6" />
+  <Parameter id="param_clbFields" value="eString:" />
+</Parameters>

@@ -374,7 +374,7 @@ namespace Ict.Petra.Client.CommonControls
                     hintText += Environment.NewLine;
                     hintText +=
                         String.Format(Catalog.GetString(
-                                "No hint text is available for the following screen:{0}{1}.{0}Please inform the Open Petra team if you see this message."),
+                                "No hint text is available for the following screen:{0}{1}.{0}Please inform the OpenPetra team if you see this message."),
                             Environment.NewLine, AHostContext.ToString());
                 }
 

@@ -1,0 +1,86 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Motivation Response Report
+    WindowWidth: 700
+    WindowHeight: 500
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        REPORTNAME: Motivation Response
+        CURRENTREPORT: Motivation Response
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        SETCONTROLSLOCALVARS: BLANK
+        REPORTSETTINGSDIRECTORY: Finance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Actions:
+        actSelectAllMotDetail: {Label=Select All, ActionClick=SelectAllMotivationDetail}
+        actDeselectAllMotDetail: {Label=Deselect All, ActionClick=DeselectAllMotivationDetail}
+        actSelectAllMotGroup: {Label=Select All, ActionClick=SelectAllMotivationGroup}
+        actDeselectAllMotGroup: {Label=Deselect All, ActionClick=DeselectAllMotivationGroup}
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [grpReportType, grpSelectionCriteria, grpDateSelection]
+
+        grpReportType:
+            Stretch: horizontally
+            Controls: [cmbReportType, chkSuppressDetail]
+            ControlsOrientation: horizontal
+        grpSelectionCriteria:
+            Stretch: horizontally
+            Controls:
+                Row0: [lblMotivationGroup, clbMotivationGroup]
+                Row1: [btnSelectAllMotGroup]
+                Row2: [btnDeselectAllMotGroup]
+                Row3: [lblMotivationDetail, clbMotivationDetail]
+                Row4: [btnSelectAllMotDetail]
+                Row5: [btnDeselectAllMotDetail]
+                Row6: [cmbMailingCode]
+            
+        grpDateSelection:
+            Label: Select Date
+            Stretch: horizontally
+            Controls: [dtpFromDate, dtpToDate]
+            ControlsOrientation: horizontal
+
+        cmbReportType:
+            ParameterName: param_report_type
+            OptionalValues: [=Detailed, Brief, Totals]
+            OnChange: ReportTypeChanged
+        chkSuppressDetail:
+            Label: Suppress Detail for Gifts
+            ParameterName: param_suppress_detail
+            
+        lblMotivationGroup: {Label=Motivation Group}
+        btnSelectAllMotGroup: {Label=Select all, Action=actSelectAllMotGroup}
+        btnDeselectAllMotGroup: {Label=Deselect all, Action=actDeselectAllMotGroup}
+        clbMotivationGroup:
+            NoLabel: true
+            ParameterName: param_motivation_group
+            Width: 540
+            Height: 125
+            RowSpan:3
+        lblMotivationDetail: {Label=Motivation Detail}
+        btnSelectAllMotDetail: {Label=Select all, Action=actSelectAllMotDetail}
+        btnDeselectAllMotDetail: {Label=Deselect all, Action=actDeselectAllMotDetail}
+        clbMotivationDetail:
+            NoLabel: true
+            ParameterName: param_motivation_detail
+            Width: 540
+            Height: 125
+            RowSpan:3
+        cmbMailingCode: {List=MailingList, ClearIfSettingEmpty=true}
+            ColSpan: 2
+            ParameterName: param_mailing_code
+
+        dtpFromDate:
+            Label: From
+            ParameterName: param_from_date
+        dtpToDate:
+            Label: To
+            ParameterName: param_to_date

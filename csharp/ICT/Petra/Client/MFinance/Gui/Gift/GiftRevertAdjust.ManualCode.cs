@@ -193,7 +193,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             set
             {
-                FCheckTaxDeductPctChange = true;
+                FCheckTaxDeductPctChange = value;
             }
         }
 
@@ -205,7 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             set
             {
-                FCheckGiftDestinationChange = true;
+                FCheckGiftDestinationChange = value;
             }
         }
 

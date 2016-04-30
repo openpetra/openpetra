@@ -31,6 +31,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
@@ -154,6 +155,21 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void ShowCountyStateField(bool AShow)
         {
+            if (AShow)
+            {
+                // replace county label with system default if it exists
+                string LocalisedCountyLabel;
+                string Name;
+
+                LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out Name);
+                LocalisedCountyLabel = LocalisedCountyLabel.Replace(":", "").Replace("&", "");
+
+                if (!string.IsNullOrEmpty(LocalisedCountyLabel))
+                {
+                    lblCounty.Text = LocalisedCountyLabel + ":";
+                }
+            }
+
             lblCounty.Visible = AShow;
             txtCounty.Visible = AShow;
         }

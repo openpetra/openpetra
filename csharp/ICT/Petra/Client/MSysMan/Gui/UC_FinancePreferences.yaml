@@ -27,7 +27,7 @@ RootNode:
             Width: 410
             Height: 40
         cmbDefaultLedger:
-            List: LedgerNameList
+            List: LedgerNameCurrentUserPermissionList
             Width: 390
         pnlGiftProcessing:
             Controls: [chkNewDonorWarning, chkAutoSave]

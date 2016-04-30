@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="param_report_type" value="Detailed" />
+</Parameters>

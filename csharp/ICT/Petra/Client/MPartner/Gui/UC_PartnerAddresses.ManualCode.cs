@@ -785,6 +785,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             FMainDS.InitVars();
 
             SpecialInitUserControl();
+
+            // replace county label with system default if it exists
+            string LocalisedCountyLabel;
+            string Name;
+
+            LocalisedStrings.GetLocStrCounty(out LocalisedCountyLabel, out Name);
+            LocalisedCountyLabel = LocalisedCountyLabel.Replace(":", "").Replace("&", "");
+
+            if (!string.IsNullOrEmpty(LocalisedCountyLabel))
+            {
+                lblLocationCounty.Text = LocalisedCountyLabel + ":";
+            }
         }
 
         /// <summary>

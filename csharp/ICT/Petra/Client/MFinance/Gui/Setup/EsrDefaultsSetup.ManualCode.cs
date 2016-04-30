@@ -1,4 +1,4 @@
-﻿// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
 //       Tim Ingham
@@ -126,6 +126,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                     "ESR Defaults", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtPartnerKey.Text = FselectedRow["a_partner_key_n"].ToString();
                 txtPartnerKey.Focus();
+
                 return;
             }
 
