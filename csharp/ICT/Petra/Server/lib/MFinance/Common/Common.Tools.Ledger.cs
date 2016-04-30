@@ -133,7 +133,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         for (int i = 0; i < ledgerData.Rows.Count; i++)
                         {
-                            currentLedger = (int)ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()];
+                            currentLedger = Convert.ToInt32(ledgerData.Rows[i][ALedgerTable.GetLedgerNumberDBName()]);
                             currentLedgerName = Convert.ToString(ledgerData.Rows[i][PPartnerTable.GetPartnerShortNameDBName()]);
                             currentLedgerCountryCode = Convert.ToString(ledgerData.Rows[i][ALedgerTable.GetCountryCodeDBName()]);
 
