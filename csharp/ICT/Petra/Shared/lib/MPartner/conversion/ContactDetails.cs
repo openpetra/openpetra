@@ -241,6 +241,9 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 IconForSortingCol.Expression = "IIF(Icon = 1, 2, IIF(Icon = 2, 1, 3))"; // exchanges instead of Icon=1 we get Icon=2
                 ReturnValue.Columns.Add(IconForSortingCol);
 
+                // Add extra column for Country Code
+                ReturnValue.Columns.Add(new System.Data.DataColumn("p_value_country_c", typeof(string)));
+
                 // Specify the Primary Key of the new DataTabe
                 ReturnValue.PrimaryKey = new DataColumn[] {
                     ReturnValue.Columns["p_partner_key_n"], ReturnValue.Columns["p_site_key_n"], ReturnValue.Columns["p_location_key_i"]
@@ -343,6 +346,14 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             /// Value Column data.
             /// </summary>
             public string Value
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// Value Country Column data.
+            /// </summary>
+            public string ValueCountry
             {
                 get; set;
             }
@@ -575,6 +586,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             string AlternatePhoneNumberString = (string)APartnerLocationDR["p_alternate_telephone_c"];
             string UrlString = (string)APartnerLocationDR["p_url_c"];
             string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
+            string CountryCode = (string)APartnerLocationDR["p_value_country_c"];
             string PartnerClass;
 
             FInsertionOrderPerPartner++;
@@ -600,6 +612,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                         PPARecord.Value = TelephoneNumber;
+                        PPARecord.ValueCountry = CountryCode;
                         PPARecord.AttributeType = ATTR_TYPE_PHONE;
 
                         if ((i == 0)
@@ -668,6 +681,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
                     // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
                     PPARecord.Value = FaxNumber;
+                    PPARecord.ValueCountry = CountryCode;
                     PPARecord.AttributeType = ATTR_TYPE_FAX;
 
                     PPARecordList.Add(PPARecord);
@@ -686,6 +700,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
                     // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
                     PPARecord.Value = MobileNumber;
+                    PPARecord.ValueCountry = CountryCode;
                     PPARecord.AttributeType = ATTR_TYPE_MOBILE_PHONE;
 
                     if ((!AnyTelephoneNumberSetAsPrimary)
@@ -719,6 +734,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
                     // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
                     PPARecord.Value = AlternatePhoneNumber;
+                    PPARecord.ValueCountry = CountryCode;
                     PPARecord.AttributeType = ATTR_TYPE_PHONE;
 
                     if ((!AnyTelephoneNumberSetAsPrimary)
@@ -816,7 +832,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                        Current = CurrentFlag,
                        Confidential = ((string)APartnerLocationDR["p_location_type_c"]).EndsWith(SECURITY_CAN_LOCATIONTYPE,
                            StringComparison.InvariantCulture),
-                       NoLongerCurrentFrom = NoLongerCurrentFromDate
+                       NoLongerCurrentFrom = NoLongerCurrentFromDate,
+                       ValueCountry = null
             };
         }
 
