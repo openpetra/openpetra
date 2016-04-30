@@ -465,7 +465,7 @@ namespace PetraServerAdminConsole
                         case 'V':
                             Console.WriteLine(Environment.NewLine + "-> Clearing all RDBMS Connection Pools... <-");
 
-                            int NumberOfDBConnectionsAfterClearing = ClearConnectionPoolAndGetNumberOfDBConnections(TRemote);
+                            int NumberOfDBConnectionsAfterClearing = ClearConnectionPoolAndGetNumberOfDBConnections();
 
                             Console.WriteLine(Environment.NewLine + "  Number of DB Connections after clearing all " +
                             "RDBMS Connection Pools: " + NumberOfDBConnectionsAfterClearing.ToString());
