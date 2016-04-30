@@ -210,6 +210,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return false;
         }
 
+        
+        /// <summary>
+        /// Save AND close the form
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void FileSaveClose(object sender, EventArgs e)
+        {
+            
+            if (SaveChanges() == true)
+            {
+                FPetraUtilsObject.CloseFormCheckRun = false;
+                Close();
+            }
+        }
+
         /// <summary>
         /// Checks to be made before saving and posting
         /// </summary>

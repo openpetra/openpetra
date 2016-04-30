@@ -152,6 +152,75 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ReconcileKeyMinistryFromCombo();
         }
 
+        /// <summary>
+        /// This implements keyboard shortcuts to match Petra 2.x
+        /// </summary>
+        /// <param name="msg">The message</param>
+        /// <param name="keyData">The key data</param>
+        /// <returns></returns>
+        private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
+        {
+            if (keyData == (Keys.A | Keys.Alt))
+            {
+                txtDetailGiftTransactionAmount.Focus();
+                return true;
+            }
+
+            if (keyData == (Keys.M | Keys.Alt))
+            {
+                bool comment1 = txtDetailGiftCommentOne.Focused;
+                bool comment2 = txtDetailGiftCommentTwo.Focused;
+                bool comment3 = txtDetailGiftCommentThree.Focused;
+
+                if (!comment1 && !comment2 && !comment3)
+                {
+                    txtDetailGiftCommentOne.Focus();
+                    return true;
+                }
+
+                if (comment1)
+                {
+                    txtDetailGiftCommentTwo.Focus();
+                    return true;
+                }
+
+                if (comment2)
+                {
+                    txtDetailGiftCommentThree.Focus();
+                    return true;
+                }
+
+                if (comment3)
+                {
+                    txtDetailGiftCommentOne.Focus();
+                    return true;
+                }
+
+            }
+
+            if (keyData == (Keys.V | Keys.Alt))
+            {
+                cmbDetailMotivationGroupCode.Focus();
+                return true;
+            }
+
+            if (keyData == (Keys.D | Keys.Alt))
+            {
+                txtDetailDonorKey.SetTextboxFocus();
+                
+                return true;
+            }
+
+            if (keyData == (Keys.C | Keys.Alt))
+            {
+                txtDetailRecipientKey.SetTextboxFocus();
+                return true;
+            }
+
+
+            return false;
+        }
+
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);

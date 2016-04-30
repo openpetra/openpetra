@@ -128,16 +128,16 @@ RootNode:
                 Row11: [txtTaxDeductAmount, txtDeductibleAccount]
         dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
+        txtDetailDonorKey: {Label=&Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
         txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
+        txtDetailRecipientKey: {Label=Re&cipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
-        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
+        cmbDetailMotivationGroupCode: {Label=Moti&vation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
@@ -146,7 +146,7 @@ RootNode:
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
         txtDetailRecipientKeyMinistry: {Label=Key Ministry}
-        txtDetailGiftTransactionAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
+        txtDetailGiftTransactionAmount: {Label=&Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?, ActionClick=ToggleTaxDeductible}
         chkNoReceiptOnAdjustment: {Label=Do not print on periodic receipt, CheckBoxAttachedLabel=right, Tooltip=Tick this if you want to exclude this adjusting gift from periodic receipts}
@@ -154,9 +154,9 @@ RootNode:
         txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
         txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
-        txtDetailGiftCommentOne: {Label=Comment 1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Co&mment 1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Co&mment 2, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Co&mment 3, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]
@@ -181,7 +181,7 @@ RootNode:
             mniReverseGift: {Label=Reverse &Gift, Action=actReverseGift}
             mniReverseGiftDetail: {Label=Re&verse Gift Detail, Action=actReverseGiftDetail}
             mniSeparator: {Label=-}
-            mniDonorHistory: {Label=&Donor History, Action: actDonorHistory, Enabled=false}
+            mniDonorHistory: {Label=Donor History, Action: actDonorHistory, Enabled=false}
             mniDonorFinanceDetails: {Label=Donor &Finance Details, Action: actDonorFinanceDetails, Enabled=false}
             mniRecipientHistory: {Label=Recipient &History, Action: actRecipientHistory, Enabled=false}
             mniRecipientGiftDestination: {Label=Recipient Gift D&estination, Action: actRecipientGiftDestination, Enabled=false}

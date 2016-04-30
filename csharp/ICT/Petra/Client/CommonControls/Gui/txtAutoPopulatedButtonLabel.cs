@@ -2084,6 +2084,14 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Set focus to the textbox control within the controls
+        /// </summary>
+        public void SetTextboxFocus()
+        {
+            this.txtAutoPopulated.txtTextBox.Focus();
+        }
+        
+        /// <summary>
         /// Updates the label for the text button
         /// </summary>
         public void UpdateDisplayedValue()

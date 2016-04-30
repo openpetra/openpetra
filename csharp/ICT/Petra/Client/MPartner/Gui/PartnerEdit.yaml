@@ -32,7 +32,8 @@ RootNode:
         actFilePrintSection: {Label=P&rint Section..., ActionClick=FileDeletePartner, Image: PrintSection.ico}
         actFileExportPartner: {Label=E&xport Partner to OpenPetra..., ActionClick=FileExportPartner, Image: ExportPetra.ico}
         actFileExportPartnerToPetra: {Label=E&xport Partner to Petra..., ActionClick=FileExportPartnerToPetra, Image: ExportPetra.ico}
-        
+        actSaveClose: {Label=Save and Close, ActionClick=FileSaveClose, Tooltip=Save and Close, Image=Save.ico}
+		
         actEditFind: {Label=&Find Partner..., ActionClick=EditFindPartner}
         
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
@@ -93,6 +94,7 @@ RootNode:
 #                mniFileNewPartnerWithShepherdChurch:
 #                mniFileNewPartnerWithShepherdOrganisation:
 #                mniFileNewPartnerWithShepherdUnit:
+            mniFileSaveClose: {Action=actSaveClose, ShortcutKeys=Keys.S | Keys.Alt}
             mniFileDeactivatePartner:
             mniFileDeletePartner:
             mniSeparator:
