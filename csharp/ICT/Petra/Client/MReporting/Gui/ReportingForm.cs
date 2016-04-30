@@ -865,10 +865,16 @@ namespace Ict.Petra.Client.MReporting.Gui
                     if (ACalculator.CalculatesExtract)
                     {
                         // let the user know the extract generation was successful
-                        MessageBox.Show(ACallerForm,
-                            Catalog.GetString("Extract successfully generated."),
-                            Catalog.GetString("Generate Extract"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        if (ACallerForm.InvokeRequired)
+                        {
+                            ACallerForm.Invoke((MethodInvoker) delegate
+                                {
+                                    MessageBox.Show(ACallerForm,
+                                        Catalog.GetString("Extract successfully generated."),
+                                        Catalog.GetString("Generate Extract"),
+                                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                });
+                        }
                     }
                 }
             }

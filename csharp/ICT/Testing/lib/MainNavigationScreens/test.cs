@@ -273,7 +273,7 @@ namespace Tests.MainNavigationScreens
                     }
 
                     // look at the permissions module the window came from
-                    string Module = TXMLParser.GetAttributeRecursive(ActionNode, "PermissionsRequired", true);
+                    string Module = TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
 
                     TLstTasks.CurrentLedger = TFrmMainWindowNew.CurrentLedger;
 

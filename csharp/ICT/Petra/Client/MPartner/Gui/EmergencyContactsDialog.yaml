@@ -1,0 +1,33 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Emergency Contacts
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 700
+    WindowHeight: 320
+
+    Actions:
+        actViewPrimaryContact: {ActionClick=ViewPrimaryContact}
+        actViewSecondaryContact: {ActionClick=ViewSecondaryContact}
+
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls: [pnlContacts, pnlButtons]
+        pnlContacts:
+            Dock: Fill
+            Controls:
+                Row0: [txtContact1, txtContact2]
+        pnlButtons:
+            Dock: Bottom
+            Controls:
+                Row0: [btnView1, btnView2]
+
+        txtContact1: {NoLabel=true, Multiline=true, ScrollBars=Both, Height=200, Width=335, ReadOnly=true, Stretch=vertically}
+        txtContact2: {NoLabel=true, Multiline=true, ScrollBars=Both, Height=200, Width=335, ReadOnly=true, Stretch=vertically}
+        btnView1: {Label=View This Partner's Details, Action=actViewPrimaryContact}
+        btnView2: {Label=View This Partner's Details, Action=actViewSecondaryContact}
+
+        btnOK: {Visible=false, ActionClick=}
+        btnCancel: {Label=Close}

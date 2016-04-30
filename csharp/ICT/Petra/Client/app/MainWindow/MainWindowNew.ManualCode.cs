@@ -266,16 +266,45 @@ namespace Ict.Petra.Client.App.PetraClient
         {
             // TODO: if this is an action node, eg. opens a screen, check the static function that tells RequiredPermissions of the screen
 
-            string PermissionsRequired = TXMLParser.GetAttributeRecursive(ANode, "PermissionsRequired", true);
+            string PermissionsRequired = TYml2Xml.GetAttributeRecursive(ANode, "PermissionsRequired");
+            bool gotPermission = PermissionsRequired.Length == 0;
 
-            while (PermissionsRequired.Length > 0)
+            if (!gotPermission)
             {
-                string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired);
-
-                if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                // The node has some permissions specified
+                if (PermissionsRequired.IndexOf('+') > 0)
                 {
-                    return false;
+                    // There are multiple permissions which must be AND'ed
+                    while (PermissionsRequired.Length > 0)
+                    {
+                        string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired, "+");
+
+                        if (!UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                        {
+                            gotPermission = false;
+                            break;
+                        }
+                    }
                 }
+                else
+                {
+                    // There is one or more permission that can be OR'ed
+                    while (PermissionsRequired.Length > 0)
+                    {
+                        string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired, ";");
+
+                        if (UserInfo.GUserInfo.IsInModule(PermissionRequired))
+                        {
+                            gotPermission = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!gotPermission)
+            {
+                return false;
             }
 
             if (ACheckLedgerPermissions)
@@ -621,6 +650,9 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 MergePluginUINavigation(PluginsPath, ref UINavigation);
             }
+
+            // Remove nodes from Partner that the user does not have permission for
+            RemoveUnprivilegedSubModuleNodes(UINavigation, "PartnerMain");
 
             ALedgerTable AvailableLedgers = new ALedgerTable();
 
@@ -1085,6 +1117,31 @@ namespace Ict.Petra.Client.App.PetraClient
             }
 
             UpdateSubsystemLinkStatus(ALedgerNr, APnlCollapsible.TaskListInstance, APnlCollapsible.TaskListNode.FirstChild);
+        }
+
+        /// <summary>
+        /// Remove sub modules for which the user does not have access rights
+        /// </summary>
+        /// <param name="AUINavigation">A UI Navigation document</param>
+        /// <param name="AModuleNodeName">The module node name</param>
+        private static void RemoveUnprivilegedSubModuleNodes(XmlDocument AUINavigation, string AModuleNodeName)
+        {
+            XmlNode moduleNode = AUINavigation.SelectSingleNode("//" + AModuleNodeName);
+
+            if (moduleNode != null)
+            {
+                XmlNodeList subModuleNodes = moduleNode.ChildNodes;
+
+                for (int i = subModuleNodes.Count - 1; i >= 0; i--)
+                {
+                    XmlNode subModuleNode = subModuleNodes[i];
+
+                    if (!HasAccessPermission(subModuleNode, UserInfo.GUserInfo.UserID, true))
+                    {
+                        moduleNode.RemoveChild(subModuleNode);
+                    }
+                }
+            }
         }
     }
 }

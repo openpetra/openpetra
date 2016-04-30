@@ -124,12 +124,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
-                ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
             }
             else
             {
                 btnEditOtherPartner.Enabled = false;
             }
+
+            grdDetails.AutoResizeGrid();
         }
 
         /// <summary>

@@ -73,25 +73,39 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Enumeration of dynamic loadable UserControls which are used
         /// on this UserControl.
         /// </summary>
-        private enum TDynamicLoadableUserControls
+        public enum TDynamicLoadableUserControls
         {
+            /// <summary>Personal Data</summary>
             dlucPersonalData,
+            /// <summary>Emergency Data</summary>
             dlucEmergencyData,
+            /// <summary>Passport Details</summary>
             dlucPassportDetails,
+            /// <summary>Personal Documents</summary>
             dlucPersonalDocuments,
-            ///<summary>Denotes dynamic loadable UserControl FUcoSpecialNeeds</summary>
+            ///<summary>Special Needs</summary>
             dlucSpecialNeeds,
+            ///<summary>Local Personnel Data</summary>
             dlucLocalPersonnelData,
+            ///<summary>Professional Areas</summary>
             dlucProfessionalAreas,
-            ///<summary>Denotes dynamic loadable UserControl FUcoPersonalLanguages</summary>
+            ///<summary>Personalanguages</summary>
             dlucPersonalLanguages,
+            ///<summary>Personal Abilities</summary>
             dlucPersonalAbilities,
+            ///<summary>Previous Experience</summary>
             dlucPreviousExperience,
+            ///<summary>Commitment Periods</summary>
             dlucCommitmentPeriods,
+            ///<summary>Job Assignments</summary>
             dlucJobAssignments,
+            ///<summary>Progress Reports</summary>
             dlucProgressReports,
+            ///<summary>Person Skills</summary>
             dlucPersonSkills,
         }
+
+        private TDynamicLoadableUserControls FCurrentControl;
 
         #region Properties
 
@@ -120,6 +134,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FPartnerEditTDS = value;
+            }
+        }
+
+        /// <summary>
+        /// The active user control (the one that has been 'brought to the front')
+        /// </summary>
+        public TDynamicLoadableUserControls CurrentControl
+        {
+            get
+            {
+                return FCurrentControl;
+            }
+            private set
+            {
+                FCurrentControl = value;
             }
         }
 
@@ -654,6 +683,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         public void AdjustAfterResizing()
         {
+            ucoSummaryData.AutoResizeGrid();
         }
 
         #endregion
@@ -1192,6 +1222,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 LimitTabStopToItem(FUcoSpecialNeeds);
                 FUcoSpecialNeeds.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucSpecialNeeds;
             }
             else if (ASender == llbLanguages)
             {
@@ -1232,16 +1263,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoPersonalLanguages.AdjustAfterResizing();
-                    }
+                    FUcoPersonalLanguages.AdjustAfterResizing();
                 }
 
                 llbLanguages.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoPersonalLanguages);
                 FUcoPersonalLanguages.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPersonalLanguages;
             }
             else if (ASender == llbProgressReports)
             {
@@ -1282,16 +1311,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoProgressReports.AdjustAfterResizing();
-                    }
+                    FUcoProgressReports.AdjustAfterResizing();
                 }
 
                 llbProgressReports.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoProgressReports);
                 FUcoProgressReports.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucProgressReports;
             }
             else if (ASender == llbCommitmentPeriods)
             {
@@ -1332,16 +1359,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoCommitmentPeriods.AdjustAfterResizing();
-                    }
+                    FUcoCommitmentPeriods.AdjustAfterResizing();
                 }
 
                 llbCommitmentPeriods.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoCommitmentPeriods);
                 FUcoCommitmentPeriods.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucCommitmentPeriods;
             }
             else if (ASender == llbPersonSkills)
             {
@@ -1382,16 +1407,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoPersonSkills.AdjustAfterResizing();
-                    }
+                    FUcoPersonSkills.AdjustAfterResizing();
                 }
 
                 llbPersonSkills.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoPersonSkills);
                 FUcoPersonSkills.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPersonSkills;
             }
             else if (ASender == llbPersonalAbilities)
             {
@@ -1432,16 +1455,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoPersonalAbilities.AdjustAfterResizing();
-                    }
+                    FUcoPersonalAbilities.AdjustAfterResizing();
                 }
 
                 llbPersonalAbilities.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoPersonalAbilities);
                 FUcoPersonalAbilities.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPersonalAbilities;
             }
             else if (ASender == llbPassportDetails)
             {
@@ -1482,16 +1503,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoPassportDetails.AdjustAfterResizing();
-                    }
+                    FUcoPassportDetails.AdjustAfterResizing();
                 }
 
                 llbPassportDetails.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoPassportDetails);
                 FUcoPassportDetails.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPassportDetails;
             }
             else if (ASender == llbPersonalData)
             {
@@ -1538,6 +1557,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 LimitTabStopToItem(FUcoPersonalData);
                 FUcoPersonalData.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPersonalData;
             }
             else if (ASender == llbEmergencyData)
             {
@@ -1584,6 +1604,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 LimitTabStopToItem(FUcoEmergencyData);
                 FUcoEmergencyData.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucEmergencyData;
             }
             else if (ASender == llbPreviousExperience)
             {
@@ -1624,16 +1645,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoPreviousExperience.AdjustAfterResizing();
-                    }
+                    FUcoPreviousExperience.AdjustAfterResizing();
                 }
 
                 llbPreviousExperience.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoPreviousExperience);
                 FUcoPreviousExperience.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPreviousExperience;
             }
             else if (ASender == llbPersonalDocuments)
             {
@@ -1674,16 +1693,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoPersonalDocuments.AdjustAfterResizing();
-                    }
+                    FUcoPersonalDocuments.AdjustAfterResizing();
                 }
 
                 llbPersonalDocuments.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoPersonalDocuments);
                 FUcoPersonalDocuments.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucPersonalDocuments;
             }
             else if (ASender == llbJobAssignments)
             {
@@ -1725,16 +1742,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                      * The following command seems strange and unnecessary; however, it is necessary
                      * to make things scale correctly on "Large Fonts (120DPI)" display setting.
                      */
-                    if (TClientSettings.GUIRunningOnNonStandardDPI)
-                    {
-                        FUcoJobAssignments.AdjustAfterResizing();
-                    }
+                    FUcoJobAssignments.AdjustAfterResizing();
                 }
 
                 llbJobAssignments.BackColor = PanelHelperBackGround;
 
                 LimitTabStopToItem(FUcoJobAssignments);
                 FUcoJobAssignments.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucJobAssignments;
             }
             else if (ASender == llbLocalPersonnelData)
             {
@@ -1785,6 +1800,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 LimitTabStopToItem(FUcoLocalPersonnelData);
                 FUcoLocalPersonnelData.Parent.BringToFront();
+                FCurrentControl = TDynamicLoadableUserControls.dlucLocalPersonnelData;
             }
 
             // remember the currently selected link label

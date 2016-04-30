@@ -73,6 +73,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Holds a reference to an ImageList containing Icons that can be shown in Grid Rows</summary>
         private ImageList FGridRowIconsImageList;
 
+        /// <summary>The initial row to select when the screen is activated for the first time</summary>
+        private int FInitiallySelectedRowNum = 1;
+
         #region Public Methods
 
         /// <summary>todoComment</summary>
@@ -517,9 +520,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public void SpecialInitUserControl()
         {
-            int RowNumber;
             TLocationPK BestLocationPK;
-            Boolean FoundBestLocation = false;
             String ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir", true);
 
             // initialize Image List
@@ -584,31 +585,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (grdDetails.Rows.Count > 1)
             {
-                FoundBestLocation = false;
+                // Find the row with the best location, if it exists
+                DevAge.ComponentModel.BoundDataView gridView = (DevAge.ComponentModel.BoundDataView)grdDetails.DataSource;
 
-                for (RowNumber = 0; RowNumber < grdDetails.DataSource.Count; RowNumber++)
+                for (int RowNumber = 0; RowNumber < grdDetails.DataSource.Count; RowNumber++)
                 {
-                    if ((Convert.ToInt64((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[RowNumber][PPartnerLocationTable.
-                                                                                                                            GetSiteKeyDBName()]) ==
-                         BestLocationPK.SiteKey)
-                        && (Convert.ToInt32((grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView[RowNumber][PPartnerLocationTable.
-                                                                                                                               GetLocationKeyDBName()
-                                ]) == BestLocationPK.LocationKey))
+                    DataRowView drv = gridView.DataView[RowNumber];
+
+                    if ((Convert.ToInt64(drv[PPartnerLocationTable.GetSiteKeyDBName()]) == BestLocationPK.SiteKey)
+                        && (Convert.ToInt32(drv[PPartnerLocationTable.GetLocationKeyDBName()]) == BestLocationPK.LocationKey))
                     {
-                        FoundBestLocation = true;
+                        FInitiallySelectedRowNum = RowNumber + 1;
                         break;
                     }
-                }
-
-                if (FoundBestLocation)
-                {
-                    grdDetails.SelectRowInGrid(RowNumber + 1);
-                    ShowDetails(RowNumber + 1); // do this as for some reason details are not automatically show here at the moment
-                }
-                else
-                {
-                    grdDetails.SelectRowInGrid(1);
-                    ShowDetails(1); // do this as for some reason details are not automatically show here at the moment
                 }
             }
 
@@ -618,6 +607,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             SetAddressFieldOrder();
 
             ApplySecurity();
+            grdDetails.AutoResizeGrid();
+        }
+
+        private void RunOnceOnParentActivationManual()
+        {
+            grdDetails.SelectRowInGrid(FInitiallySelectedRowNum);
         }
 
         /// <summary>
@@ -946,6 +941,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // initialize location type with default value depending on partner class
             ARow.LocationType =
                 TSharedAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
+
+            // Initialise this to a mailing address - it normally will be (Mantis 4534)
+            ARow.SendMail = true;
 
             // make sure this is initialized as otherwise initial drawing of cell gives problems
             ARow.BestAddress = false;

@@ -95,6 +95,27 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             // make sure action can be taken when data is saved successfully
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            this.SizeChanged += TUC_IndividualData_Passport_SizeChanged;
+
+            // This can go here because InitUserControl does not mess with the columns
+            grdDetails.AutoResizeGrid();
+        }
+
+        private void TUC_IndividualData_Passport_SizeChanged(object sender, EventArgs e)
+        {
+            Control control = this.Parent;
+
+            while (control as TUC_IndividualData == null)
+            {
+                control = control.Parent;
+            }
+
+            TUC_IndividualData myParent = control as TUC_IndividualData;
+
+            if (myParent.CurrentControl == TUC_IndividualData.TDynamicLoadableUserControls.dlucPassportDetails)
+            {
+                FPetraUtilsObject.RefreshSpecificControlOnWindowMaxOrRestore(pnlDetailGrid);
+            }
         }
 
         /// <summary>
@@ -118,6 +139,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void AdjustAfterResizing()
         {
+            pnlDetailGrid.Refresh();
         }
 
         /// <summary>

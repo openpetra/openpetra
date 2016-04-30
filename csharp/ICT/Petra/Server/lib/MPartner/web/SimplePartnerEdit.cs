@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
@@ -115,6 +116,30 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         }
                     }
                 });
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// Return the existing data of a partner, including address information and primary phone and email
+        /// </summary>
+        /// <param name="APartnerKey">The partner</param>
+        /// <param name="AWithSubscriptions">Option to return subscriptions information</param>
+        /// <param name="AWithRelationships">Option to return relationships information</param>
+        /// <param name="APrimaryPhoneNumber">Returns the primary phone</param>
+        /// <param name="APrimaryEmailAddress">Returns the primary email</param>
+        /// <returns>A PartnerEdit data set</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerEditTDS GetPartnerDetails(Int64 APartnerKey, bool AWithSubscriptions, bool AWithRelationships,
+            out string APrimaryPhoneNumber, out string APrimaryEmailAddress)
+        {
+            // Call the standard method including address details
+            PartnerEditTDS MainDS = GetPartnerDetails(APartnerKey, true, AWithSubscriptions, AWithRelationships);
+
+            // Now get the primary email and phone
+            PPartnerAttributeTable attributeTable = TContactDetailsAggregate.GetPartnersContactDetailAttributes(APartnerKey);
+
+            Calculations.GetPrimaryEmailAndPrimaryPhone(attributeTable, out APrimaryPhoneNumber, out APrimaryEmailAddress);
 
             return MainDS;
         }

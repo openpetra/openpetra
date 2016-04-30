@@ -2689,7 +2689,7 @@ namespace Ict.Petra.Client.CommonControls
                     AControlLabel.Font = new System.Drawing.Font("Verdana", 7F);
                     AControlLabel.TabIndex = 0;
 
-                    NextControlVPos = 17;
+                    NextControlVPos = 16;
                 }
 
                 AControl.Location = new System.Drawing.Point(3, NextControlVPos);

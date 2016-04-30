@@ -288,11 +288,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 {
                     clbDetails.AddCheckBoxColumn("Select", FDataTable.Columns[FCheckedColumnName], 17, false);
                 }
+                else
+                {
+                    clbDetails.AutoFindColumn = 0;
+                }
 
-                clbDetails.AddTextColumn("Extract Name", FDataTable.Columns[NameMember], 200);
-                clbDetails.AddCheckBoxColumn("Deletable", FDataTable.Columns[DeletableMember], 120);
-                clbDetails.AddTextColumn("Key Count", FDataTable.Columns[KeyCountMember], 80);
-                clbDetails.AddTextColumn("Description", FDataTable.Columns[DescriptionMember], 300);
+                clbDetails.AddTextColumn("Extract Name", FDataTable.Columns[NameMember] /*, 200*/);
+                clbDetails.AddCheckBoxColumn("Deletable", FDataTable.Columns[DeletableMember] /*, 120*/);
+                clbDetails.AddTextColumn("Key Count", FDataTable.Columns[KeyCountMember] /*, 80*/);
+                clbDetails.AddTextColumn("Description", FDataTable.Columns[DescriptionMember] /*, 300*/);
 
                 clbDetails.DataBindGrid(FDataTable, NameMember, CheckedMember, NameMember, false, true, false);
                 clbDetails.SetCheckedStringList("");
@@ -300,6 +304,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             PrepareButtons();
 
+            clbDetails.AutoResizeGrid();
             clbDetails.Select();
         }
 

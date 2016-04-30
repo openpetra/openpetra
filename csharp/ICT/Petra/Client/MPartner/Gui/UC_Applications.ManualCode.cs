@@ -114,6 +114,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 pnlDetails.Visible = false;
             }
+
+            grdDetails.AutoResizeGrid();
         }
 
         /// <summary>

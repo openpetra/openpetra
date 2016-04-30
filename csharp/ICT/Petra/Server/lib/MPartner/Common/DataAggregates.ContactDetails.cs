@@ -248,7 +248,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// is marked with 'true' in the special Column
         /// <see cref="Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN"/>!
         /// </returns>
-        private static PPartnerAttributeTable GetPartnersContactDetailAttributes(Int64 APartnerKey)
+        public static PPartnerAttributeTable GetPartnersContactDetailAttributes(Int64 APartnerKey)
         {
             PPartnerAttributeTable ReturnValue = null;
             TDBTransaction ReadTransaction = null;

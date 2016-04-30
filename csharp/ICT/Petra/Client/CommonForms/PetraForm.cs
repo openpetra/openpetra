@@ -892,6 +892,41 @@ namespace Ict.Petra.Client.CommonForms
             theForm.ActiveControl = null;
             theForm.ActiveControl = CurrentActiveControl;
         }
+
+        private FormWindowState FFormWindowState = FormWindowState.Normal;
+
+        /// <summary>
+        /// A method to refresh a specific control after it has been resized as a result of a Maximize or a Restore.
+        /// This seems to be necessary on the Personnel control in Partner-Edit
+        /// </summary>
+        /// <param name="AControl">The control to refresh - usually pnlDetailGrid</param>
+        public void RefreshSpecificControlOnWindowMaxOrRestore(Control AControl)
+        {
+            if (FWinForm == null)
+            {
+                return;
+            }
+
+            FormWindowState curWindowState = FWinForm.WindowState;
+
+            switch (curWindowState)
+            {
+                case FormWindowState.Maximized:
+                    AControl.Refresh();
+                    break;
+
+                case FormWindowState.Normal:
+
+                    if (FFormWindowState == FormWindowState.Maximized /*|| !FDoneFirstResize */)
+                    {
+                        AControl.Refresh();
+                    }
+
+                    break;
+            }
+
+            FFormWindowState = curWindowState;
+        }
     }
 
     /// <summary>todoComment</summary>

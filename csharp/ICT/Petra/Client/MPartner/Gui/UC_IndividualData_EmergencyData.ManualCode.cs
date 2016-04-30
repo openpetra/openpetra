@@ -27,7 +27,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Remoting.Client;
-using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -58,6 +58,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         #endregion
+
+        #region Public methods
 
         /// <summary>
         /// todoComment
@@ -122,6 +124,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        #endregion
+
+        #region Private methods including LoadDataOnDemand and Emergency Contacts
+
         /// <summary>
         /// Loads Summary Data from Petra Server into FMainDS, if not already loaded.
         /// </summary>
@@ -175,10 +181,128 @@ namespace Ict.Petra.Client.MPartner.Gui
             return ReturnValue;
         }
 
+        #region Emergency Contacts
+
         private void ShowEmergencyContacts(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            string contactFor = string.Empty;
+            string primaryContact = Catalog.GetString("PRIMARY EMERGENCY CONTACT") + Environment.NewLine + Environment.NewLine;
+            string secondaryContact = Catalog.GetString("SECONDARY EMERGENCY CONTACT") + Environment.NewLine + Environment.NewLine;
+            Int64 primaryContactKey = 0;
+            Int64 secondaryContactKey = 0;
+
+            if ((FMainDS.PPerson != null) && (FMainDS.PPerson.Rows.Count > 0))
+            {
+                PPersonRow row = (PPersonRow)FMainDS.PPerson.Rows[0];
+                contactFor = String.Format(Catalog.GetString("Emergency Contact Information For: {0} {1} {2} [{3:0000000000}]"),
+                    row.Title, row.FirstName, row.FamilyName, row.PartnerKey);
+
+                FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
+                PPartnerRelationshipTable relationshipTable = TRemote.MPartner.Partner.WebConnectors.GetPartnerRelationships(row.PartnerKey);
+                FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
+
+                for (int i = 0; i < relationshipTable.Rows.Count; i++)
+                {
+                    PPartnerRelationshipRow relationshipRow = (PPartnerRelationshipRow)relationshipTable.Rows[i];
+
+                    if (string.Compare(relationshipRow.RelationName, "EMER-1", true) == 0)
+                    {
+                        ParseEmergencyContactData(ref primaryContact, relationshipRow);
+                        primaryContactKey = relationshipRow.PartnerKey;
+                    }
+                    else if (string.Compare(relationshipRow.RelationName, "EMER-2", true) == 0)
+                    {
+                        ParseEmergencyContactData(ref secondaryContact, relationshipRow);
+                        secondaryContactKey = relationshipRow.PartnerKey;
+                    }
+                }
+            }
+
+            if (primaryContactKey == 0)
+            {
+                primaryContact += Catalog.GetString("No primary contact");
+            }
+
+            if (secondaryContactKey == 0)
+            {
+                secondaryContact += Catalog.GetString("No secondary contact");
+            }
+
+            if ((primaryContactKey != 0) || (secondaryContactKey != 0))
+            {
+                // Show the emergency contacts dialog and pass it the inofrmation we have found
+                TFrmEmergencyContactsDialog dlg = new TFrmEmergencyContactsDialog(FPetraUtilsObject.GetCallerForm());
+                dlg.SetParameters(contactFor, primaryContact, secondaryContact, primaryContactKey, secondaryContactKey);
+                dlg.Show();
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("There is no emergency contact information for this person."),
+                    Catalog.GetString("Emergency Contacts"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
+
+        private void ParseEmergencyContactData(ref string AContact, PPartnerRelationshipRow ARelationshipRow)
+        {
+            string primaryPhone;
+            string primaryEmail;
+            PartnerEditTDS editTDS = TRemote.MPartner.Partner.WebConnectors.GetPartnerDetails(ARelationshipRow.PartnerKey,
+                false, false, out primaryPhone, out primaryEmail);
+
+            if ((editTDS.PPartner != null) && (editTDS.PPartner.Rows.Count > 0))
+            {
+                PPartnerRow partnerRow = (PPartnerRow)editTDS.PPartner.Rows[0];
+                AContact += String.Format("{0}{1}{1}", partnerRow.PartnerShortName, Environment.NewLine);
+            }
+
+            DateTime? dtLastModified = null;
+
+            if (!ARelationshipRow.IsDateModifiedNull())
+            {
+                // We have a modified date
+                dtLastModified = ARelationshipRow.DateModified;
+
+                // Just check to make sure that the created date is not later for some starnge reason
+                if (!ARelationshipRow.IsDateCreatedNull())
+                {
+                    if (ARelationshipRow.DateCreated > dtLastModified)
+                    {
+                        dtLastModified = ARelationshipRow.DateCreated;
+                    }
+                }
+            }
+            else if (!ARelationshipRow.IsDateCreatedNull())
+            {
+                // No date modifed but we do have the original creation date
+                dtLastModified = ARelationshipRow.DateCreated;
+            }
+
+            if (dtLastModified.HasValue)
+            {
+                AContact += String.Format(Catalog.GetString("This contact was last set on: {0}{1}{1}"),
+                    StringHelper.DateToLocalizedString(dtLastModified.Value), Environment.NewLine);
+            }
+
+            if (primaryPhone.Length > 0)
+            {
+                AContact += String.Format(Catalog.GetString("Primary phone: {0}{1}"), primaryPhone, Environment.NewLine);
+            }
+
+            if (primaryEmail.Length > 0)
+            {
+                AContact += String.Format(Catalog.GetString("Primary email: {0}{1}"), primaryEmail, Environment.NewLine);
+            }
+
+            if (ARelationshipRow.Comment.Length > 0)
+            {
+                AContact += String.Format(Catalog.GetString("Extra information:{1}   {0}{1}"), ARelationshipRow.Comment, Environment.NewLine);
+            }
+        }
+
+        #endregion
+
+        #endregion
 
         #region Menu and command key handlers for our user controls
 

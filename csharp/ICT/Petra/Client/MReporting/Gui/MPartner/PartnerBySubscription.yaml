@@ -34,11 +34,10 @@ RootNode:
             Dock: Fill
         pnlSettingsCriteria:
             Controls: 
-                Row0: [chkIncludeActiveSubscriptionsOnly, chkFreeSubscriptionsOnly]
-                Row1: [cmbSubscriptionStatus]
-                Row2: [ucoAddress, ucoChkFilter]
-#                Row4: [dtpStartDateFrom, dtpStartDateTo]
-#                Row5: [dtpExpiryDateFrom, dtpExpiryDateTo]
+                Row0: [cmbSubscriptionStatus]
+                Row1: [ucoAddress, ucoChkFilter]
+#                Row2: [dtpStartDateFrom, dtpStartDateTo]
+#                Row3: [dtpExpiryDateFrom, dtpExpiryDateTo]
             Dock: Bottom
         lblIncludePublication:
             Label: Report on all partners that have one of these subscriptions
@@ -49,19 +48,29 @@ RootNode:
             ParameterName: param_explicit_publication
             Dock: Fill
         pnlDetails:
-            Controls: [dtpDateOfSendingCopy]
+            Controls: 
+                Row0: [chkIncludeActiveSubscriptionsOnly, rgrCopies]
+                Row1: [chkFreeSubscriptionsOnly, dtpDateOfSendingCopy]
             Dock: Bottom
-            Height: 30
+            Height: 65
         dtpDateOfSendingCopy:
             ParameterName: param_date_effective
         chkIncludeActiveSubscriptionsOnly: {OnChange=ActiveSubscriptionsBoxChanged}
-            Label: Active Subscriptions
+            Label: Active Subscriptions only
             CheckBoxAttachedLabel: right
             ParameterName: param_include_active_subscriptions_only
         chkFreeSubscriptionsOnly:
             Label: Free Subscriptions only
             CheckBoxAttachedLabel: right
             ParameterName: param_free_subscriptions_only
+        rgrCopies:
+            OptionalValues: [Bulk, Single, All]
+            ControlsOrientation: horizontal
+            BorderVisible: false
+            Padding: 145,-15,0,0
+        rbtBulk:
+        rbtSingle:
+        rbtAll:
         cmbSubscriptionStatus:
             Label: Subscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]

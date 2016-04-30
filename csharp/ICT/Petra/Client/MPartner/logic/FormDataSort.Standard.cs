@@ -311,6 +311,25 @@ namespace Ict.Petra.Client.MPartner.Logic
                 else
                 {
                     // ...and y is not null, use the standard case-insensitive string compare
+                    // If the strings look like numbers then they are compared numerically
+                    Int32 intX, intY;
+
+                    if (Int32.TryParse(x, out intX) && Int32.TryParse(y, out intY))
+                    {
+                        if (intX == intY)
+                        {
+                            return 0;
+                        }
+                        else if (intX < intY)
+                        {
+                            return -1;
+                        }
+                        else
+                        {
+                            return 1;
+                        }
+                    }
+
                     return String.Compare(x, y, true);
                 }
             }

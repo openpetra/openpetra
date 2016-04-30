@@ -886,8 +886,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress != null)
                 {
-                    FamilysCurrentLocationKey = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress().LocationKey;
-                    FamilysCurrentSiteKey = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress().SiteKey;
+                    PartnerEditTDSPPartnerLocationRow locationRow = FDelegateGetPartnerLocationRowOfCurrentlySelectedAddress();
+
+                    if (locationRow == null)
+                    {
+                        MessageBox.Show(MPartnerResourcestrings.StrSelectValidAddress, MPartnerResourcestrings.StrAddFamilyMemberTitle);
+                        return;
+                    }
+
+                    FamilysCurrentLocationKey = locationRow.LocationKey;
+                    FamilysCurrentSiteKey = locationRow.SiteKey;
                 }
                 else
                 {

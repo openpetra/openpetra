@@ -118,10 +118,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             // set fixed column widths as otherwise grid will spend a long time recalculating optimal width with big extracts
             grdDetails.Columns.Clear();
-            grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerKeyDBName()], 100);
-            grdDetails.AddTextColumn("Class", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerClassDBName()], 100);
-            grdDetails.AddTextColumn("Partner Name", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerShortNameDBName()], 300);
-            grdDetails.AddTextColumn("Location Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetLocationKeyDBName()], 100);
+            grdDetails.AddPartnerKeyColumn("Partner Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerKeyDBName()] /*, 100*/);
+            grdDetails.AddTextColumn("Class", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerClassDBName()] /*, 100*/);
+            grdDetails.AddTextColumn("Partner Name", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetPartnerShortNameDBName()] /*, 300*/);
+            grdDetails.AddTextColumn("Location Key", FMainDS.MExtract.Columns[ExtractTDSMExtractTable.GetLocationKeyDBName()] /*, 100*/);
 
             LoadData();
 
@@ -137,14 +137,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
-                ShowDetails(1);
-
                 UpdateRecordNumberDisplay();
             }
             else
             {
                 btnEdit.Enabled = false;
             }
+
+            grdDetails.AutoResizeGrid();
         }
 
         /// <summary>

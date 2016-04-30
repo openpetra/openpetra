@@ -21,11 +21,11 @@ OpenPetra:
             Label: Search for Task
     MainMenu:
         # Department
-        Partner: {Label=Pa&rtner, Icon=partner.ico, PermissionsRequired=PTNRUSER}
+        Partner: {Label=Pa&rtner, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, Icon=partner.ico}  #Permissions are OR'ed
             # Module
-            Main: {SkipThisLevel=true}
+            PartnerMain: {SkipThisLevel=true}
                 # Sub Module
-                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, DontShowNestedTasksAsLinks=true}
+                Partners: {Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Partner]
                     MaintainPartners:
 
@@ -47,14 +47,11 @@ OpenPetra:
 #                        AddNewChurchShepherd: {ActionOpenScreen=TShepherdChurchForm}
                     Contacts:
                         FindAndDeleteContacts: {ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contacts of Partners}
-                    ImportExport: {Label=Import}
-#                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
-                        ImportPartners: {ActionOpenScreen=TFrmPartnerImport, Label=Import Partners, Description=Import Partners from a file or satellite database}
                     Subscriptions: {Label=Subscriptions}
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
                     Addresses: {Label=Addresses}
                         DuplicateAddressCheck: {ActionOpenScreen=TFrmDuplicateAddressCheck, Label=Duplicate Address Check, Description=Search addresses for possible duplicates}
-                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true}
+                Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     Administration:
                         ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster, Singleton=true}
                     GenerateExtracts: {Label=Generate Partner Extract}
@@ -78,7 +75,7 @@ OpenPetra:
                         DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtractCrossLedger}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtractCrossLedger}
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtractCrossLedger}
-                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
+                Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
                         PrintPartner: {ActionOpenScreen=TFrmPrintPartner}
                         PartnerByCity: {ActionOpenScreen=TFrmPartnerByCity}
@@ -95,8 +92,14 @@ OpenPetra:
                         SubscriptionReport: {Label=Subscription Report, ActionOpenScreen=TFrmSubscriptionReport}
                         LocalPartnerDataReport: {Label=Local Partner Data, ActionOpenScreen=TFrmLocalPartnerDataReport}
            
+                ImportExport: {Label=Import/Export, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, DontShowNestedTasksAsLinks=true}  #Permissions are OR'ed
+                    Import:
+                        ImportPartners: {Label=Import Partners, Description=Import Partners from a file or satellite database, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerImport}
+                    Export:
+#                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
+                        CalebExport: {Label=Caleb Export, Description=Export Partner/Personnel/Finance Data to Caleb, Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
-                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true}
+                Setup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     General:           
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              

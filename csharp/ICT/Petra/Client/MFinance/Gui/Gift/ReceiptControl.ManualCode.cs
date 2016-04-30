@@ -76,6 +76,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             UpdateRecordNumberDisplay();
+            grdDetails.AutoResizeGrid();
         }
 
         private void RunOnceOnActivationManual()

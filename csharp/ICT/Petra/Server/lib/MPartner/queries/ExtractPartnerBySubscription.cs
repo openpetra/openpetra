@@ -110,6 +110,40 @@ namespace Ict.Petra.Server.MPartner.queries
                 {
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()
                 });
+
+            if (AParameters.Get("param_rgrCopies").ToString() == "Single")
+            {
+                ASQLParameterList.Add(new OdbcParameter("param_min_copies", OdbcType.Int)
+                    {
+                        Value = 1
+                    });
+                ASQLParameterList.Add(new OdbcParameter("param_max_copies", OdbcType.Int)
+                    {
+                        Value = 1
+                    });
+            }
+            else if (AParameters.Get("param_rgrCopies").ToString() == "Bulk")
+            {
+                ASQLParameterList.Add(new OdbcParameter("param_min_copies", OdbcType.Int)
+                    {
+                        Value = 2
+                    });
+                ASQLParameterList.Add(new OdbcParameter("param_max_copies", OdbcType.Int)
+                    {
+                        Value = 999999
+                    });
+            }
+            else
+            {
+                ASQLParameterList.Add(new OdbcParameter("param_min_copies", OdbcType.Int)
+                    {
+                        Value = 1
+                    });
+                ASQLParameterList.Add(new OdbcParameter("param_max_copies", OdbcType.Int)
+                    {
+                        Value = 999999
+                    });
+            }
         }
     }
 }

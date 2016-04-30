@@ -120,7 +120,7 @@ namespace Ict.Petra.Shared.MCommon
         public const String FORM_CODE_REMITTANCE = "REMITTANCE";
 
         /// <summary>Form Design Type Code</summary>
-        public const string FORM_TYPE_CODE_STANDARD = "Standard";
+        public const string FORM_TYPE_CODE_STANDARD = "STANDARD";
 
         /// <summary>Form Design Gift Options</summary>
         public const string FORM_OPTION_ALL = "All";

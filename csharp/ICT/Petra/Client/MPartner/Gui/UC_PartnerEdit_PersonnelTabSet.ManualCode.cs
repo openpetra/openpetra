@@ -316,17 +316,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void CorrectDataGridWidthsAfterDataChange()
         {
-            if (TClientSettings.GUIRunningOnNonStandardDPI)
+            if (FUcoIndividualData != null)
             {
-                if (FUcoIndividualData != null)
-                {
-                    FUcoIndividualData.AdjustAfterResizing();
-                }
+                FUcoIndividualData.AdjustAfterResizing();
+            }
 
-                if (FUcoApplications != null)
-                {
-                    FUcoApplications.AdjustAfterResizing();
-                }
+            if (FUcoApplications != null)
+            {
+                FUcoApplications.AdjustAfterResizing();
             }
         }
 

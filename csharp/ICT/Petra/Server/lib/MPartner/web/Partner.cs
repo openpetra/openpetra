@@ -1663,5 +1663,26 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return ResultValue;
         }
+
+        /// <summary>
+        /// Gets a data table containing the relationships associated with the specified partner key
+        /// </summary>
+        /// <param name="APartnerRelationKey">The specific relation key in the PPartnerRelationshipTable</param>
+        /// <returns>A data table</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PPartnerRelationshipTable GetPartnerRelationships(Int64 APartnerRelationKey)
+        {
+            TDBTransaction Transaction = null;
+            PPartnerRelationshipTable ReturnValue = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    ReturnValue = PPartnerRelationshipAccess.LoadViaPPartnerRelationKey(APartnerRelationKey, Transaction);
+                });
+
+            return ReturnValue;
+        }
     }
 }

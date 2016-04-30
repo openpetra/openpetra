@@ -663,6 +663,23 @@ namespace Ict.Common.Printing
             Int32 result = 0;
             firstWordLength = 0;
 
+            if ((AWidth == 0) && (ATxt.Length > 0))
+            {
+                string trimmedAText = ATxt.TrimStart(whitespace);
+                firstWordLength = trimmedAText.IndexOfAny(whitespace);
+
+                if (firstWordLength == -1)
+                {
+                    firstWordLength = ATxt.Length;
+                }
+                else
+                {
+                    firstWordLength += (ATxt.Length - trimmedAText.Length);
+                }
+
+                return 0;
+            }
+
             while (GetWidthString(fittingText, AFont) < AWidth)
             {
                 result = fittingText.Length + previousWhitespace.Length;
