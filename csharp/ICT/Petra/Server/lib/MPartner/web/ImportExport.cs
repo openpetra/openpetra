@@ -1651,13 +1651,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         ///
         /// </summary>
+        /// <param name="AOldPetraFormat">Set to true if old Petra format should be used</param>
         /// <returns>A string that will form the first two lines of a .ext file</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static string GetExtFileHeader()
+        public static string GetExtFileHeader(Boolean AOldPetraFormat)
         {
             TPartnerFileExport Exporter = new TPartnerFileExport();
 
-            return Exporter.ExtFileHeader();
+            return Exporter.ExtFileHeader(AOldPetraFormat);
         }
 
         /// <summary>
@@ -1679,13 +1680,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="ALocationKey">Partner's primary location key</param>
         /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
         /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
+        /// <param name="AOldPetraFormat">Set this flag if export to be done in old format</param>
         /// <returns>One partner in EXT format</returns>
         [RequireModulePermission("PTNRUSER")]
         public static string ExportPartnerExt(Int64 APartnerKey,
             Int64 ASiteKey,
             Int32 ALocationKey,
             Boolean ANoFamily,
-            StringCollection ASpecificBuildingInfo)
+            StringCollection ASpecificBuildingInfo,
+            Boolean AOldPetraFormat)
         {
             String extRecord = "";
             //
@@ -1726,14 +1729,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     if ((FamilyKey > 0) && PartnerAccessOk && UserCanAccessPartner)
                     {
                         PartnerImportExportTDS FamilyDS = TExportAllPartnerData.ExportPartner(FamilyKey);
-                        extRecord += Exporter.ExportPartnerExt(FamilyDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+                        extRecord += Exporter.ExportPartnerExt(FamilyDS, ASiteKey, ALocationKey, ASpecificBuildingInfo, AOldPetraFormat);
                     }
 
                     // TODO: If I couldn't access the FAMILY for a PERSON, I should perhaps stop exporting?
                 }
             }
 
-            extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo);
+            extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo, AOldPetraFormat);
             return extRecord;
         }
 
@@ -1772,10 +1775,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// </summary>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers)
+        public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers, Boolean AOldPetraFormat)
         {
             TDBTransaction ReadTransaction = null;
-            String ExtText = GetExtFileHeader();
+            String ExtText = GetExtFileHeader(AOldPetraFormat);
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS MainDS;
             DataTable ExtractPartners = new MExtractTable();
@@ -1835,7 +1838,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                             {
                                 // export the family partner in the extract
                                 MainDS = TExportAllPartnerData.ExportPartner(PartnerKey, TPartnerClass.FAMILY);
-                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
 
                                 PPersonTable Persons = PPersonAccess.LoadViaPFamily(PartnerKey, ReadTransaction);
 
@@ -1853,7 +1856,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                     if (PPartnerLocationAccess.Exists(Row.PartnerKey, SiteKey, LocationKey, ReadTransaction))
                                     {
                                         // export the person member with the same address as family partner
-                                        ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                        ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
                                     }
                                     else
                                     {
@@ -1866,7 +1869,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                         {
                                             // export the person member with the person partner's best address
                                             LocationKey = LocationTable[0].LocationKey;
-                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
                                         }
                                     }
                                 }
@@ -1885,7 +1888,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                     if (PPartnerLocationAccess.Exists(PersonRecord.FamilyKey, SiteKey, LocationKey, ReadTransaction))
                                     {
                                         // export the family member with the same address as person member
-                                        ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                        ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
                                     }
                                     else
                                     {
@@ -1898,14 +1901,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                         {
                                             // export the family with the family partner's best address
                                             LocationKey = LocationTable[0].LocationKey;
-                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
                                         }
                                     }
                                 }
 
                                 // export the person partner in the extract
                                 MainDS = TExportAllPartnerData.ExportPartner(PartnerKey, TPartnerClass.PERSON);
-                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
                             }
                             else
                             {
@@ -1913,7 +1916,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 MainDS =
                                     TExportAllPartnerData.ExportPartner(PartnerKey,
                                         SharedTypes.PartnerClassStringToEnum(ExtractPartner["p_partner_class_c"].ToString()));
-                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null);
+                                ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
                             }
                         }
                     }
@@ -1937,7 +1940,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static String ExportAllPartnersExt()
         {
             TDBTransaction ReadTransaction = null;
-            String ExtText = GetExtFileHeader();
+            String ExtText = GetExtFileHeader(false);
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS MainDS;
             PPartnerTable Partners = new PPartnerTable();
@@ -1954,7 +1957,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 if ((Partner.PartnerKey != 0) && (Partner.PartnerKey != 1000000)) // skip organization root and 0 when exporting
                 {
                     MainDS = TExportAllPartnerData.ExportPartner(Partner.PartnerKey);
-                    ExtText += Exporter.ExportPartnerExt(MainDS, /*ASiteKey*/ 0, /*ALocationKey*/ 0, null);
+                    ExtText += Exporter.ExportPartnerExt(MainDS, /*ASiteKey*/ 0, /*ALocationKey*/ 0, null, false);
                 }
             }
 

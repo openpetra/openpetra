@@ -30,7 +30,7 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
             Dock: Fill
         grpReportDetails:
-            Controls: [chkPersonalInfo, chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkPersonalBudget, chkVisions, chkQualifications, chkAbilities, chkLanguages, chkPreviousExperiences, chkValuableItems]
+            Controls: [chkPersonalInfo, chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkPersonalBudget, chkVisions, chkSkills, chkLanguages, chkPreviousExperiences, chkValuableItems]
             
         chkPersonalInfo:
             Label: Show Personal Info
@@ -62,11 +62,8 @@ RootNode:
         chkVisions:
             Label: Show Visions
             CheckBoxAttachedLabel: right
-        chkQualifications:
-            Label: Show Qualifications
-            CheckBoxAttachedLabel: right
-        chkAbilities:
-            Label: Show Abilities
+        chkSkills:
+            Label: Show Skills
             CheckBoxAttachedLabel: right
         chkLanguages:
             Label: Show Languages

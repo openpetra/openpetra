@@ -672,7 +672,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (AToolStripItem.Name == "mniFileExportPartner")
             {
                 TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
-                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey);
+                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, false);
+            }
+            else if (AToolStripItem.Name == "mniFileExportPartnerToPetra")
+            {
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
+                    FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, true);
             }
             else if (AToolStripItem.Name == "mniFileImportPartner")
             {

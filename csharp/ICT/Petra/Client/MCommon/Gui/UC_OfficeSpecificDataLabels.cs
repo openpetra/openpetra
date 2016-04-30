@@ -1457,7 +1457,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             }
 
             if (MissingTableAccessRight != "")
-            {
+            {   
                 /*
                  * Disable anything editable in Column 1 of the Grid
                  */

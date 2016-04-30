@@ -112,7 +112,7 @@
                 <value function="assign(AlternateTelephone, not known)" condition="lt(length({AlternateTelephone}), 1)"/>
                 <value function="assign(EmailAddress, not known)" condition="lt({EmailAddress}, 1)"/>
                 <value function="assign(MobileNumber, not known)" condition="lt(length({MobileNumber}), 1)"/>
-				<value function="assign(PartnerAddress, {Locality})"/>
+                <value function="assign(PartnerAddress, {Locality})"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
                 <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
@@ -176,7 +176,7 @@
             <lowerLevelReport level="Personal Documents Level" condition="eq({param_chkPersonalDocuments}, true)"></lowerLevelReport>
             <lowerLevelReport level="Other Emergency Data Level" condition="eq({param_chkOtherEmergencyData}, true)"></lowerLevelReport>
             <lowerLevelReport level="Special Need Level" condition="eq({param_chkSpecialNeeds}, true)"></lowerLevelReport>
-            <lowerLevelReport level="Ability Level" condition="eq({param_chkAbilities}, true)"></lowerLevelReport>
+            <lowerLevelReport level="Skill Level" condition="eq({param_chkSkills}, true)"></lowerLevelReport>
             <lowerLevelReport level="Language Level" condition="eq({param_chkLanguages}, true)"></lowerLevelReport>
             <lowerLevelReport level="Emergency Contact Level" condition="eq({param_chkEmergencyContacts}, true)"></lowerLevelReport>
             <lowerLevelReport level="Proof Of Life Level" condition="eq({param_chkProofQuestion}, true)"></lowerLevelReport>
@@ -596,34 +596,30 @@
         </detail>
     </level>
 
-    <level name="Ability Level" identification="StaffPartnerKey" condition="HasChildRows">
+    <level name="Skill Level" identification="StaffPartnerKey" condition="HasChildRows">
         <header>
             <field whichfield="header 0" pos="0cm">
-                <value text="***************** Ability Areas *****************"/>
+                <value text="***************** Skills *****************"/>
             </field>
         </header>
         <detail>
-            <lowerLevelReport level="Ability lower Level" calculation="SelectAbilities"></lowerLevelReport>
+            <lowerLevelReport level="Skill lower Level" calculation="SelectSkills"></lowerLevelReport>
         </detail>
     </level>
-    <level name="Ability lower Level" identification="StaffPartnerKey" condition="HasChildRows">
+    <level name="Skill lower Level" identification="StaffPartnerKey" condition="HasChildRows">
         <detail>
-            <lowerLevelReport level="Ability Lowest Level1"/>
+            <lowerLevelReport level="Skill Lowest Level1"/>
         </detail>
     </level>
-    <level name="Ability Lowest Level1" identification="StaffPartnerKey">
+    <level name="Skill Lowest Level1" identification="StaffPartnerKey">
         <detail>
             <field whichfield="column 0" pos="1cm">
-                <value text="Ability Area: " />
-                <value variable="pt_ability_area_name_c"/>
+                <value text="Category: " />
+                <value variable="pm_skill_category_code_c"/>
+                <value text="  Skill: " />
+                <value variable="pm_description_english_c"/>
                 <value text="  Level: " />
-                <value variable="pt_ability_level_i"/>
-                <value text="  Description: " />
-                <value variable="pt_ability_level_descr_c"/>
-                <value text="  Years of Experience: " />
-                <value variable="pm_years_of_experience_i"/>
-                <value text=" As of: " />
-                <value variable="pm_years_of_experience_as_of_d"/>
+                <value variable="pt_description_c"/>
             </field>
         </detail>
     </level>

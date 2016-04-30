@@ -974,6 +974,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         /// <summary>
+        /// Export partners in selected extract
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportPartnersInExtractToPetra(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.ExportPartnersInExtractToPetra(sender, e);
+        }
+
+        /// <summary>
         /// Open screen to maintain contents of an extract
         /// </summary>
         /// <param name="sender"></param>

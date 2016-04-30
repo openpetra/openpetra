@@ -30,7 +30,7 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
             Dock: Fill
         grpReportDetails:
-            Controls: [chkFamilyMembers, chkAddress, chkPassport, chkPersonalDocuments, chkOtherEmergencyData, chkSpecialNeeds, chkAbilities, chkLanguages, chkEmergencyContacts, chkProofQuestion]
+            Controls: [chkFamilyMembers, chkAddress, chkPassport, chkPersonalDocuments, chkOtherEmergencyData, chkSpecialNeeds, chkSkills, chkLanguages, chkEmergencyContacts, chkProofQuestion]
             
         chkFamilyMembers:
             Label: Show Family Members
@@ -50,8 +50,8 @@ RootNode:
         chkSpecialNeeds:
             Label: Show Special Needs
             CheckBoxAttachedLabel: right
-        chkAbilities:
-            Label: Show Abilities
+        chkSkills:
+            Label: Show Skills
             CheckBoxAttachedLabel: right
         chkLanguages:
             Label: Show Languages

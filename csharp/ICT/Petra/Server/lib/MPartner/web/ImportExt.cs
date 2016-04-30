@@ -376,17 +376,25 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             if (APetraVersion.FileMajorPart < 3)
             {
                 // cover data conversion from 2.x to 3.x
-                if ((ALanguageLevel >= 0) && (ALanguageLevel <= 3))
+                if ((ALanguageLevel >= 0) && (ALanguageLevel <= 2))
                 {
                     return 1;
                 }
-                else if ((ALanguageLevel >= 4) && (ALanguageLevel <= 7))
+                if (ALanguageLevel == 3)
                 {
                     return 2;
                 }
-                else if ((ALanguageLevel >= 8) && (ALanguageLevel != 99))
+                else if ((ALanguageLevel >= 4) && (ALanguageLevel <= 7))
                 {
                     return 3;
+                }
+                else if ((ALanguageLevel >= 8) && (ALanguageLevel <= 9))
+                {
+                    return 4;
+                }
+                else if ((ALanguageLevel >= 10) && (ALanguageLevel != 99))
+                {
+                    return 5;
                 }
                 else if (ALanguageLevel == 99)
                 {

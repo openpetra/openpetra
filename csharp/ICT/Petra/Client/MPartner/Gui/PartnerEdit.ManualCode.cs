@@ -2354,7 +2354,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0);
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0, false);
+        }
+
+        private void FileExportPartnerToPetra(System.Object sender, System.EventArgs e)
+        {
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0, true);
         }
 
         /// <summary>
