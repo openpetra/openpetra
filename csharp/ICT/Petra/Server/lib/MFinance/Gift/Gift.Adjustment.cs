@@ -550,8 +550,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             TDBTransaction ATransaction,
             Hashtable ARequestParams = null)
         {
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             GiftAdjustmentFunctionEnum Function = (GiftAdjustmentFunctionEnum)ARequestParams["Function"];
 

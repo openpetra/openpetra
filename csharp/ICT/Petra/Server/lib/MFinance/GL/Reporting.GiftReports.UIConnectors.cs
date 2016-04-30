@@ -91,7 +91,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
                         " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
                         " AND p_partner_type.p_type_code_c LIKE '" +
-                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
+                        TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +
 
                         // true if the gift is restricted for the user

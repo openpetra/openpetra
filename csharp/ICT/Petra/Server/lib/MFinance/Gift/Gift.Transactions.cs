@@ -278,8 +278,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Parameter Arguments
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled = 
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
             bool TransactionInIntlCurrency = false;
 
             int NewGiftBatchNumber = -1;
@@ -2462,7 +2462,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             foreach (PPartnerTypeRow TypeRow in PartnerTypeTable.Rows)
                             {
-                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
+                                if (TypeRow.TypeCode.StartsWith(TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE,
                                             "EX-WORKER")))
                                 {
                                     ReturnValue.Rows.Add((object[])Row.ItemArray.Clone());
@@ -2491,8 +2491,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ABatchRow batch = GLDataset.ABatch[0];
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled = 
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
             batch.DateEffective = giftBatch.GlEffectiveDate;
@@ -2739,8 +2739,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (!ARecurring)
                 {
-                    TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                        TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+                    TaxDeductiblePercentageEnabled = 
+                        TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 }
 
                 List <OdbcParameter>parameters = new List <OdbcParameter>();

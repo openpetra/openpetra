@@ -136,7 +136,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         else
                                         {
                                             MotivationDetail =
-                                                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
+                                                TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
                                                     MFinanceConstants.GROUP_DETAIL_FIELD);
 
                                             // if system default is empty then set to FIELD

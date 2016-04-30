@@ -258,8 +258,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return "";
             }
 
-            bool TaxDeductiblePercentageEnabled = Convert.ToBoolean(
-                TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, "FALSE"));
+            bool TaxDeductiblePercentageEnabled = 
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             string msg = AHTMLTemplate;
 

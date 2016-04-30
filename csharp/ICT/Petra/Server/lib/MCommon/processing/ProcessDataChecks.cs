@@ -59,7 +59,7 @@ namespace Ict.Petra.Server.MCommon.Processing
                     TVariant.DecodeFromString(
 
 
-                        TSystemDefaults.GetSystemDefault(
+                        TSystemDefaults.GetStringDefault(
                             PROCESSDATACHECK_LAST_RUN,
                             new TVariant(DateTime.MinValue).EncodeToString())).ToDate();
 

@@ -78,7 +78,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             int BatchNumber = -1;
             int ExWorkerGifts = 0;
 
-            string ExWorkerSpecialType = TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER");
+            string ExWorkerSpecialType = TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER");
 
             // first check for Ex-Workers in the batch that is being posted/submitted (if a batch is being posted/submitted)
             if ((APostingGiftDetails != null) && (APostingGiftDetails.Rows.Count > 0))
