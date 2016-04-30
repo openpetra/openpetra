@@ -465,8 +465,9 @@ namespace Ict.Common.DB
         /// <summary>
         /// Starts a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
         /// hence can be used to start a DB Transaction and executes code that is passed in via a C# Delegate in
-        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction gets rolled back and the
-        /// DB Connection gets closed if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
+        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction either gets committed or 
+        /// rolled back (depending on the value of <paramref name="ASubmissionOK"/>) and the DB Connection gets closed 
+        /// if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
         /// </summary>
         /// <param name="AContext">Context in which the Method runs (passed as Name to a newly established DB Connection
         /// (if one indeed needs to be established) and as Name to the DB Transaction, too.</param>
@@ -479,7 +480,7 @@ namespace Ict.Common.DB
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public static void SimpleAutoTransactionWrapper(string AContext, out TDBTransaction ATransaction,
-            bool ASubmissionOK,
+            ref bool ASubmissionOK,
             Action AEncapsulatedDBAccessCode)
         {
             TDataBase DBConnectionObj;
@@ -492,15 +493,16 @@ namespace Ict.Common.DB
 
             // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was
             // established in the call above!
-            DBAccess.AutoTransaction(ref ATransaction, SeparateDBConnectionEstablished, ASubmissionOK,
+            DBAccess.AutoTransaction(ref ATransaction, SeparateDBConnectionEstablished, ref ASubmissionOK,
                 AEncapsulatedDBAccessCode);
         }
 
         /// <summary>
         /// Starts a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
         /// hence can be used to start a DB Transaction and executes code that is passed in via a C# Delegate in
-        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction gets rolled back and the
-        /// DB Connection gets closed if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
+        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction either gets committed or 
+        /// rolled back (depending on the value of <paramref name="ASubmitChangesResult"/>) and the DB Connection 
+        /// gets closed if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
         /// </summary>
         /// <param name="AContext">Context in which the Method runs (passed as Name to a newly established DB Connection
         /// (if one indeed needs to be established) and as Name to the DB Transaction, too.</param>
@@ -522,6 +524,79 @@ namespace Ict.Common.DB
             // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
             // hence can be used to start a DB Transaction.
             ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(out DBConnectionObj,
+                out SeparateDBConnectionEstablished, AContext + " DB Connection", AContext + " DB Transaction");
+
+            // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was
+            // established in the call above!
+            DBAccess.AutoTransaction(ref ATransaction, SeparateDBConnectionEstablished, ref ASubmitChangesResult,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// Starts a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
+        /// hence can be used to start a DB Transaction and executes code that is passed in via a C# Delegate in
+        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction either gets committed or 
+        /// rolled back (depending on the value of <paramref name="ASubmissionOK"/>) and the DB Connection gets closed 
+        /// if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
+        /// </summary>
+        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" />.</param>
+        /// <param name="AContext">Context in which the Method runs (passed as Name to a newly established DB Connection
+        /// (if one indeed needs to be established) and as Name to the DB Transaction, too.</param>
+        /// <param name="ATransaction">DB Transaction that got started inside this Method. <em>WARNING: </em>
+        /// This either gets rolled back / gets committed automatically after the C# Delegate in
+        /// <paramref name="AEncapsulatedDBAccessCode"/> got executed - depending on the value of the
+        /// <paramref name="ASubmissionOK"/> flag!</param>
+        /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) gets issued.
+        /// </param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public static void SimpleAutoTransactionWrapper(IsolationLevel AIsolationLevel, string AContext,
+            out TDBTransaction ATransaction, ref bool ASubmissionOK,
+            Action AEncapsulatedDBAccessCode)
+        {
+            TDataBase DBConnectionObj;
+            bool SeparateDBConnectionEstablished;
+
+            // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
+            // hence can be used to start a DB Transaction.
+            ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(AIsolationLevel, out DBConnectionObj,
+                out SeparateDBConnectionEstablished, AContext + " DB Connection", AContext + " DB Transaction");
+
+            // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was
+            // established in the call above!
+            DBAccess.AutoTransaction(ref ATransaction, SeparateDBConnectionEstablished, ref ASubmissionOK,
+                AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// Starts a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
+        /// hence can be used to start a DB Transaction and executes code that is passed in via a C# Delegate in
+        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction either gets committed or 
+        /// rolled back (depending on the value of <paramref name="ASubmitChangesResult"/>) and the DB Connection 
+        /// gets closed if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
+        /// </summary>
+        /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" />.</param>
+        /// <param name="AContext">Context in which the Method runs (passed as Name to a newly established DB Connection
+        /// (if one indeed needs to be established) and as Name to the DB Transaction, too.</param>
+        /// <param name="ATransaction">DB Transaction that got started inside this Method. <em>WARNING: </em>
+        /// This either gets rolled back / gets committed automatically after the C# Delegate in
+        /// <paramref name="AEncapsulatedDBAccessCode"/> got executed - depending on the value of
+        /// <paramref name="ASubmitChangesResult"/>!</param>
+        /// <param name="ASubmitChangesResult">Controls whether a Commit (when true) or Rollback (when false) gets issued.
+        /// </param>
+        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
+        /// automatic DB Transaction handling scope that this Method provides.</param>
+        public static void SimpleAutoTransactionWrapper(IsolationLevel AIsolationLevel, string AContext, 
+            out TDBTransaction ATransaction,
+            ref TSubmitChangesResult ASubmitChangesResult,
+            Action AEncapsulatedDBAccessCode)
+        {
+            TDataBase DBConnectionObj;
+            bool SeparateDBConnectionEstablished;
+
+            // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
+            // hence can be used to start a DB Transaction.
+            ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(AIsolationLevel, out DBConnectionObj,
                 out SeparateDBConnectionEstablished, AContext + " DB Connection", AContext + " DB Transaction");
 
             // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was
@@ -572,11 +647,11 @@ namespace Ict.Common.DB
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
         public static void AutoTransaction(ref TDBTransaction ATransaction, bool ACloseSeparateDBConnection,
-            bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+            ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             try
             {
-                ATransaction.DataBaseObj.AutoTransaction(ref ATransaction, ASubmissionOK,
+                ATransaction.DataBaseObj.AutoTransaction(ref ATransaction, ref ASubmissionOK,
                     AEncapsulatedDBAccessCode);
             }
             finally
@@ -1297,16 +1372,18 @@ namespace Ict.Common.DB
         /// <summary>
         /// Closes the DB connection.
         /// </summary>
-        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that
-        /// calls this Method is the Thread that established the DB Connection. <em>WARNING:
-        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will
-        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
-        /// that Thread will be different from the Thread that established the 'globally available' DB Connection
+        /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that 
+        /// calls this Method is the Thread that established the DB Connection. <em>WARNING: 
+        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will 
+        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and 
+        /// that Thread will be different from the Thread that established the 'globally available' DB Connection 
         /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
         private void CloseDBConnectionInternal(bool ASuppressThreadCompatibilityCheck = false)
         {
+            bool RunningDBTransactionThreadIsCompatible;
+
             if (ConnectionReady(false))
             {
                 if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
@@ -1338,35 +1415,50 @@ namespace Ict.Common.DB
                 if ((FTransaction != null)
                     && (FTransaction.Valid))
                 {
-                    // Multi-threading 'Sanity Check':
-                    // Check if the current Thread is the same Thread that the current Transaction was started on:
-                    // if not, throw Exception!
-                    if (!CheckRunningDBTransactionThreadIsCompatible(false))
+                    RunningDBTransactionThreadIsCompatible = CheckRunningDBTransactionThreadIsCompatible(false);
+
+                    if (!ASuppressThreadCompatibilityCheck)
                     {
-                        var Exc2 =
-                            new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
-                                "TDataBase.CloseDBConnectionInternal would roll back still running DB Transaction that got " +
-                                "started on a different Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
-                                ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
-                                ThreadingHelper.GetCurrentThreadIdentifier());
+                        // Multi-threading 'Sanity Check':
+                        // Check if the current Thread is the same Thread that the current Transaction was started on:
+                        // if not, throw Exception!
+                        if (!RunningDBTransactionThreadIsCompatible)
+                        {
+                            var Exc2 =
+                                new EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException(
+                                    "TDataBase.CloseDBConnectionInternal would roll back still running DB Transaction that got " +
+                                    "started on a different Thread and this isn't supported (ADO.NET provider isn't thread-safe!)",
+                                    ThreadingHelper.GetThreadIdentifier(FTransaction.ThreadThatTransactionWasStartedOn),
+                                    ThreadingHelper.GetCurrentThreadIdentifier());
 
-                        TLogging.Log(Exc2.ToString());
+                            TLogging.Log(Exc2.ToString());
 
-                        throw Exc2;
+                            throw Exc2;
+                        }
                     }
 
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    // We are rolling back a running DB Transaction only if it was established on the same Thread, otherwise
+                    // we leave it alone and just close the DB Connection. Skipping the roll-back of a DB Transaction should 
+                    // be fine when we are closing the DB Connection anyway!
+                    // (This guards against getting a EDBAttemptingToWorkWithTransactionThatGotStartedOnDifferentThreadException
+                    // thrown from the RollbackTransaction Method.)
+                    // Situation in which such a constellation occurs: if a user had started 'some process in OpenPetra' that 
+                    // runs for some time and then closes the Client without stopping that process first. Example: XML Reports!
+                    if (RunningDBTransactionThreadIsCompatible)
                     {
-                        TLogging.Log("TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
-                            " before calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                    }
+                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log("TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
+                                " before calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                        }
 
-                    this.RollbackTransaction(false);
+                        this.RollbackTransaction(false);
 
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                    {
-                        TLogging.Log("TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
-                            " after calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log("TDataBase.CloseDBConnectionInternal:" + GetDBConnectionIdentifier() +
+                                " after calling this.RollbackTransaction", TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                        }
                     }
                 }
 
@@ -6034,7 +6126,7 @@ namespace Ict.Common.DB
         /// <param name="ASubmissionOK">Controls whether a Commit (when true) or Rollback (when false) is issued.</param>
         /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
         /// automatic DB Transaction handling scope that this Method provides.</param>
-        public void AutoTransaction(ref TDBTransaction ATransaction, bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
+        public void AutoTransaction(ref TDBTransaction ATransaction, ref bool ASubmissionOK, Action AEncapsulatedDBAccessCode)
         {
             bool ExceptionThrown = true;
 
