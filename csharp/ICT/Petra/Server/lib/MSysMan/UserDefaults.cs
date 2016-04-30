@@ -309,12 +309,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// <param name="AMergeChangesToServerSideCache">Set to true if the UserDefaults were
         /// (re)loaded for the current user and the internal cache needs to be updated</param>
         /// <param name="AUserDefaultsDataTable">The loaded UserDefaults DataTable</param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         /// <returns>true if loading of UserDefaults was successful
         /// </returns>
         [NoRemoting]
         public static Boolean LoadUserDefaultsTable(String AUserName,
-            Boolean AMergeChangesToServerSideCache,
-            out SUserDefaultsTable AUserDefaultsDataTable)
+            Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)
         {
             Boolean ReturnValue;
             TDBTransaction ReadTransaction;
@@ -324,77 +327,74 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
             LockCookie UpgradeLockCookie = new LockCookie();
 
             TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable called in the AppDomain " + Thread.GetDomain().FriendlyName + '.');
+
             WriteLockTakenOut = false;
             ReaderLockWasHeld = false;
+
             try
             {
                 try
                 {
-                    try
-                    {
-                        ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                            TEnforceIsolationLevel.eilMinimum,
-                            out NewTransaction);
+                    ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
+                        TEnforceIsolationLevel.eilMinimum,
+                        out NewTransaction);
 
-                        if (SUserDefaultsAccess.CountViaSUser(AUserName, ReadTransaction) != 0)
-                        {
-                            AUserDefaultsDataTable = SUserDefaultsAccess.LoadViaSUser(AUserName, null, ReadTransaction,
-                                StringHelper.InitStrArr(new string[] { "ORDER BY", SUserDefaultsTable.GetDefaultCodeDBName() }), 0, 0);
-                            AUserDefaultsDataTable.AcceptChanges();
-                        }
-                        else
-                        {
-                            AUserDefaultsDataTable = new SUserDefaultsTable();
-                        }
-                    }
-                    finally
+                    if (SUserDefaultsAccess.CountViaSUser(AUserName, ReadTransaction) != 0)
                     {
-                        if (NewTransaction)
-                        {
-                            DBAccess.GDBAccessObj.CommitTransaction();
-                            TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable: committed own transaction.");
-                        }
-                    }
+                        AUserDefaultsDataTable = SUserDefaultsAccess.LoadViaSUser(AUserName, null, ReadTransaction,
+                            StringHelper.InitStrArr(new string[] { "ORDER BY", SUserDefaultsTable.GetDefaultCodeDBName() }), 0, 0);
 
-                    if ((AUserName == UserInfo.GUserInfo.UserID) && (AMergeChangesToServerSideCache))
+                        AUserDefaultsDataTable.AcceptChanges();
+                    }
+                    else
                     {
-                        /*
-                         * The UserDefaults were (re)loaded for the current user --> update
-                         * internal cache (modified UserDefaults in the cache will be replaced
-                         * with values from the DB, deleted UserDefaults in the cache will be
-                         * recreated from the DB, added UserDefaults in the cache will be
-                         * unaffected).
-                         */
-                        MergeChanges(UUserDefaultsDT, AUserDefaultsDataTable);
-                        UUserDefaultsDT.AcceptChanges();
+                        AUserDefaultsDataTable = new SUserDefaultsTable();
                     }
-
-                    ReturnValue = true;
                 }
                 finally
                 {
-                    if (WriteLockTakenOut)
+                    if (NewTransaction)
                     {
-                        if (!ReaderLockWasHeld)
-                        {
-                            // Other threads are now free to obtain a read lock on the cache table.
-                            UReadWriteLock.ReleaseWriterLock();
-                            TLogging.LogAtLevel(7, "TUserDefaults.LoadUserDefaultsTable released the WriterLock.");
-                        }
-                        else
-                        {
-                            TLogging.LogAtLevel(7, "TUserDefaults.ReloadUserDefaults waiting for downgrading to a ReaderLock...");
-                            // Downgrade from a WriterLock to a ReaderLock again!
-                            UReadWriteLock.DowngradeFromWriterLock(ref UpgradeLockCookie);
-                            TLogging.LogAtLevel(7, "TUserDefaults.ReloadUserDefaults downgraded to a ReaderLock.");
-                        }
+                        DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
+                        TLogging.LogAtLevel(9, "TUserDefaults.LoadUserDefaultsTable: rolled back own transaction.");
+                    }
+                }
+
+                if ((AUserName == UserInfo.GUserInfo.UserID) && (AMergeChangesToServerSideCache))
+                {
+                    /*
+                     * The UserDefaults were (re)loaded for the current user --> update
+                     * internal cache (modified UserDefaults in the cache will be replaced
+                     * with values from the DB, deleted UserDefaults in the cache will be
+                     * recreated from the DB, added UserDefaults in the cache will be
+                     * unaffected).
+                     */
+                    MergeChanges(UUserDefaultsDT, AUserDefaultsDataTable);
+                    UUserDefaultsDT.AcceptChanges();
+                }
+
+                ReturnValue = true;
+            }
+            finally
+            {
+                if (WriteLockTakenOut)
+                {
+                    if (!ReaderLockWasHeld)
+                    {
+                        // Other threads are now free to obtain a read lock on the cache table.
+                        UReadWriteLock.ReleaseWriterLock();
+                        TLogging.LogAtLevel(7, "TUserDefaults.LoadUserDefaultsTable released the WriterLock.");
+                    }
+                    else
+                    {
+                        TLogging.LogAtLevel(7, "TUserDefaults.ReloadUserDefaults waiting for downgrading to a ReaderLock...");
+                        // Downgrade from a WriterLock to a ReaderLock again!
+                        UReadWriteLock.DowngradeFromWriterLock(ref UpgradeLockCookie);
+                        TLogging.LogAtLevel(7, "TUserDefaults.ReloadUserDefaults downgraded to a ReaderLock.");
                     }
                 }
             }
-            catch (Exception)
-            {
-                throw;
-            }
+
             return ReturnValue;
         }
 
@@ -493,10 +493,15 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// <param name="AUserName"></param>
         /// <param name="AMergeChangesToServerSideCache"></param>
         /// <param name="AUserDefaultsDataTable"></param>
+        /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
+        /// gets passed then the Method executes DB commands with the 'globally available'
+        /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
+        /// Argument!</param>
         [NoRemoting]
-        public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache, out SUserDefaultsTable AUserDefaultsDataTable)
+        public static void ReloadUserDefaults(String AUserName, Boolean AMergeChangesToServerSideCache,
+            out SUserDefaultsTable AUserDefaultsDataTable, TDataBase ADataBase = null)
         {
-            LoadUserDefaultsTable(AUserName, AMergeChangesToServerSideCache, out AUserDefaultsDataTable);
+            LoadUserDefaultsTable(AUserName, AMergeChangesToServerSideCache, out AUserDefaultsDataTable, ADataBase);
         }
 
         /// <summary>
@@ -664,13 +669,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         /// error.
         /// </returns>
         [NoRemoting]
-        public static void SaveUserDefaultsTable(String AUserName,
+        public static bool SaveUserDefaultsTable(String AUserName,
             ref SUserDefaultsTable AUserDefaultsDataTable,
             TDBTransaction AWriteTransaction,
             Boolean ASendUpdateInfoToClient)
         {
+            Boolean ReturnValue = false;
             Boolean NewTransaction = false;
-            Boolean SubmissionOK = false;
             TDBTransaction WriteTransaction;
             Int32 SavingAttempts = 0;
             SUserDefaultsTable ChangedUserDefaultsDT;
@@ -710,7 +715,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                             {
                                 SUserDefaultsAccess.SubmitChanges(AUserDefaultsDataTable, WriteTransaction);
 
-                                SubmissionOK = true;
+                                ReturnValue = true;
 
                                 SavingAttempts = SavingAttempts + 1;
                             }
@@ -725,7 +730,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                                 // > Read in the UserDefaults for this user again and merge them
                                 // into the ones that are to be submitted, notify the Client to
                                 // reload the UserDefaults and start submitting again!
-                                ReloadUserDefaults(UserInfo.GUserInfo.UserID, false, out RefreshedUserDefaultsDataTable);
+                                ReloadUserDefaults(AUserName, true, out RefreshedUserDefaultsDataTable, AWriteTransaction.DataBaseObj);
+
                                 DataUtilities.CopyModificationIDsOver(ChangedUserDefaultsDT, RefreshedUserDefaultsDataTable);
                                 DataUtilities.CopyModificationIDsOver(AUserDefaultsDataTable, ChangedUserDefaultsDT);
                                 SavingAttempts = SavingAttempts + 1;
@@ -740,7 +746,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 
                                 throw;
                             }
-                        } while (!((SavingAttempts > 1) || SubmissionOK));
+                        } while (!((SavingAttempts > 1) || ReturnValue));
 
                         TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: after saving.");
                         TLogging.LogAtLevel(
@@ -817,6 +823,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                 // nothing to save!
                 TLogging.LogAtLevel(8, "TMaintenanceUserDefaults.SaveUserDefaultsTable: nothing to save: no UserDefaults in memory!");
             }
+
+            return ReturnValue;
         }
 
         /// <summary>
@@ -845,6 +853,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
         public static void SaveUserDefaultsFromServerSide(
             Boolean ASendUpdateInfoToClient = true)
         {
+            TDBTransaction SubmitChangesTransaction = null;
+            bool SubmissionOK = false;
+
             TLogging.LogAtLevel(7, "TMaintenanceUserDefaults.SaveUserDefaultsFromServerSide waiting for a ReaderLock...");
 
             // Prevent other threads from obtaining a read lock on the cache table while we are reading values from the cache table!
@@ -857,10 +868,20 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 
                 if (DefaultsDT.Rows.Count > 0)
                 {
-                    TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
-                        ref DefaultsDT,
-                        null,
-                        ASendUpdateInfoToClient);
+                    // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction
+                    // running and hence can be used to start a DB Transaction.
+                    // After the delegate has been executed the DB Transaction either gets committed or
+                    // rolled back (depending on the value of SubmissionOK) and the DB Connection gets closed
+                    // if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
+                    DBAccess.SimpleAutoTransactionWrapper(IsolationLevel.Serializable,
+                        "SaveUserDefaultsFromServerSide", out SubmitChangesTransaction, ref SubmissionOK,
+                        delegate
+                        {
+                            SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
+                                ref UUserDefaultsDT,
+                                SubmitChangesTransaction,
+                                ASendUpdateInfoToClient);
+                        });
 
                     // we don't have any unsaved changes anymore in the cache table.
                     DefaultsDT.AcceptChanges();
@@ -971,7 +992,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                             AChangedUserDefaultCode,
                             AChangedUserDefaultValue,
                             AChangedUserDefaultModId,
-                            null,
+                            UserInfo.GUserInfo.ProcessID,
                             1);
                     }
                 }

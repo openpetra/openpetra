@@ -90,19 +90,23 @@ namespace Ict.Petra.Client.App.Core
                     {
                         if (FClientTaskDataRow["TaskCode"].ToString() == "All")
                         {
-                            // MessageBox.Show('FClientTaskDataRow[''TaskCode''] = All!');
+//                            TLogging.Log("FClientTaskDataRow[TaskCode] = All!");
                             TUserDefaults.ReloadCachedUserDefaults();
                             TUserDefaults.SaveChangedUserDefaults();
                         }
                         else
                         {
-                            // MessageBox.Show('FClientTaskDataRow[''TaskCode''] <> All, but ''' + FClientTaskDataRow['TaskCode'].ToString + '''');
-                            // MessageBox.Show('FClientTaskDataRow[''TaskParameter1'']: ' + FClientTaskDataRow['TaskParameter1'].ToString + "\r\n" +
-                            // 'FClientTaskDataRow[''TaskParameter2'']: ' + FClientTaskDataRow['TaskParameter2'].ToString + "\r\n" +
-                            // 'FClientTaskDataRow[''TaskParameter3'']: ' + FClientTaskDataRow['TaskParameter3'].ToString);
+//                            TLogging.Log("FClientTaskDataRow[TaskCode] <> All, but '" + FClientTaskDataRow["TaskCode"].ToString() + "'" +
+//                                "FClientTaskDataRow[TaskParameter1]: '" + FClientTaskDataRow["TaskParameter1"].ToString() + "'\r\n" +
+//                                "FClientTaskDataRow[TaskParameter2]: '" + FClientTaskDataRow["TaskParameter2"].ToString() + "'\r\n" +
+//                                "FClientTaskDataRow[TaskParameter3]: '" + FClientTaskDataRow["TaskParameter3"].ToString() + "'" +
+//                                ((FClientTaskDataRow["TaskParameter4"] != System.DBNull.Value) ? "\r\nFClientTaskDataRow[TaskParameter4]: '" +
+//                                 FClientTaskDataRow["TaskParameter4"].ToString() + "'" : "\r\nFClientTaskDataRow[TaskParameter4]: DBNull"));
                             TUserDefaults.RefreshCachedUserDefault(
                                 FClientTaskDataRow["TaskParameter1"].ToString(), FClientTaskDataRow["TaskParameter2"].ToString(),
-                                FClientTaskDataRow["TaskParameter3"].ToString());
+                                FClientTaskDataRow["TaskParameter3"].ToString(),
+                                ((FClientTaskDataRow["TaskParameter4"] != System.DBNull.Value) ?
+                                 Convert.ToInt32(FClientTaskDataRow["TaskParameter4"]) : -1));
                         }
 
                         break;
