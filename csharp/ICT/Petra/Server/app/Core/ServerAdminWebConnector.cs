@@ -273,7 +273,7 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         [RequireModulePermission("SYSMAN")]
         public static int ClearConnectionPoolAndGetNumberOfDBConnections()
         {
-            TServerManagerBase.TheServerManager.ClearConnectionPoolAndGetNumberOfDBConnections();
+            return TServerManagerBase.TheServerManager.ClearConnectionPoolAndGetNumberOfDBConnections();
         }
 
         /// <summary>

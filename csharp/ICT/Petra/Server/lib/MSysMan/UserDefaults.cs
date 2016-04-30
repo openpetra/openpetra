@@ -878,7 +878,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                         delegate
                         {
                             SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
-                                ref UUserDefaultsDT,
+                                ref DefaultsDT,
                                 SubmitChangesTransaction,
                                 ASendUpdateInfoToClient);
                         });
