@@ -360,11 +360,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     methodName,
                     Environment.NewLine);
 
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}{1}{1} - {3}",
+                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
                         Utilities.GetMethodSignature(),
                         Environment.NewLine,
-                        ex.Message,
-                        ex.InnerException.Message));
+                        ex.Message));
 
                 MessageBox.Show(errorMsg, methodName, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

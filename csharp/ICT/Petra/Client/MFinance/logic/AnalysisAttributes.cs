@@ -751,7 +751,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 //The server call is needed
                 requiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
                     AAccountCode,
-                    true);
+                    false);
 
                 //Populate current codes and which ones to add or delete
                 // (Check if loading required)
