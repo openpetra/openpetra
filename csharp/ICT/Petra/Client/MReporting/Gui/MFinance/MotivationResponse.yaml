@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Motivation Response Report
     WindowWidth: 700
-    WindowHeight: 500
+    WindowHeight: 520
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         REPORTNAME: Motivation Response
@@ -17,31 +17,22 @@
         REPORTSETTINGSDIRECTORY: Finance
     Security:
         ModulePermissionRequired: [FINANCE-1]
-    Actions:
-        actSelectAllMotDetail: {Label=Select All, ActionClick=SelectAllMotivationDetail}
-        actDeselectAllMotDetail: {Label=Deselect All, ActionClick=DeselectAllMotivationDetail}
-        actSelectAllMotGroup: {Label=Select All, ActionClick=SelectAllMotivationGroup}
-        actDeselectAllMotGroup: {Label=Deselect All, ActionClick=DeselectAllMotivationGroup}
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [grpReportType, grpSelectionCriteria, grpDateSelection]
+            Controls: [grpReportType, ucoMotivationCriteria, grpMailingCode, grpDateSelection]
 
         grpReportType:
             Stretch: horizontally
             Controls: [cmbReportType, chkSuppressDetail]
             ControlsOrientation: horizontal
-        grpSelectionCriteria:
+        ucoMotivationCriteria:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
             Stretch: horizontally
-            Controls:
-                Row0: [lblMotivationGroup, clbMotivationGroup]
-                Row1: [btnSelectAllMotGroup]
-                Row2: [btnDeselectAllMotGroup]
-                Row3: [lblMotivationDetail, clbMotivationDetail]
-                Row4: [btnSelectAllMotDetail]
-                Row5: [btnDeselectAllMotDetail]
-                Row6: [cmbMailingCode]
-            
+            Height: 280
+        grpMailingCode:
+            Stretch: horizontally
+            Controls: [cmbMailingCode]
         grpDateSelection:
             Label: Select Date
             Stretch: horizontally
@@ -55,27 +46,8 @@
         chkSuppressDetail:
             Label: Suppress Detail for Gifts
             ParameterName: param_suppress_detail
-            
-        lblMotivationGroup: {Label=Motivation Group}
-        btnSelectAllMotGroup: {Label=Select all, Action=actSelectAllMotGroup}
-        btnDeselectAllMotGroup: {Label=Deselect all, Action=actDeselectAllMotGroup}
-        clbMotivationGroup:
-            NoLabel: true
-            ParameterName: param_motivation_group
-            Width: 540
-            Height: 125
-            RowSpan:3
-        lblMotivationDetail: {Label=Motivation Detail}
-        btnSelectAllMotDetail: {Label=Select all, Action=actSelectAllMotDetail}
-        btnDeselectAllMotDetail: {Label=Deselect all, Action=actDeselectAllMotDetail}
-        clbMotivationDetail:
-            NoLabel: true
-            ParameterName: param_motivation_detail
-            Width: 540
-            Height: 125
-            RowSpan:3
+
         cmbMailingCode: {List=MailingList, ClearIfSettingEmpty=true}
-            ColSpan: 2
             ParameterName: param_mailing_code
 
         dtpFromDate:

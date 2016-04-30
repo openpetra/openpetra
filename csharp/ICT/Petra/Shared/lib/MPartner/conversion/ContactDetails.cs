@@ -569,12 +569,12 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             bool IsBestAddr = BestAddressHelper.IsBestAddressPartnerLocationRecord(APartnerLocationDR);
             bool AnyTelephoneNumberSetAsPrimary = false;
             // Variables that hold record information
-            string TelephoneNumber = (string)APartnerLocationDR["p_telephone_number_c"];
-            string FaxNumber = (string)APartnerLocationDR["p_fax_number_c"];
-            string MobileNumber = (string)APartnerLocationDR["p_mobile_number_c"];
-            string AlternatePhoneNumber = (string)APartnerLocationDR["p_alternate_telephone_c"];
-            string Url = (string)APartnerLocationDR["p_url_c"];
-            string EmailAddress = (string)APartnerLocationDR["p_email_address_c"];
+            string TelephoneNumberString = (string)APartnerLocationDR["p_telephone_number_c"];
+            string FaxNumberString = (string)APartnerLocationDR["p_fax_number_c"];
+            string MobileNumberString = (string)APartnerLocationDR["p_mobile_number_c"];
+            string AlternatePhoneNumberString = (string)APartnerLocationDR["p_alternate_telephone_c"];
+            string UrlString = (string)APartnerLocationDR["p_url_c"];
+            string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
             string PartnerClass;
 
             FInsertionOrderPerPartner++;
@@ -584,38 +584,48 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             // a Contact Detail record - if they hold data.
             //
 
-            if ((TelephoneNumber != FEmptyStringIndicator)
-                || (EmailAddress != FEmptyStringIndicator))
+            if ((TelephoneNumberString != FEmptyStringIndicator)
+                || (EmailAddressString != FEmptyStringIndicator))
             {
                 // Set data parts that depend on certain conditions
-                if (TelephoneNumber != FEmptyStringIndicator)
+                if (TelephoneNumberString != FEmptyStringIndicator)
                 {
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+                    // There could be a number of phone numbers seperated by a semi colon. We need to split these up and add them seperately.
+                    string[] TelephoneNumbers = TelephoneNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                    PPARecord.Value = TelephoneNumber;
-                    PPARecord.AttributeType = ATTR_TYPE_PHONE;
-
-                    if ((IsBestAddr)
-                        && (PPARecord.Current))
+                    for (int i = 0; i < TelephoneNumbers.Length; i++)
                     {
-                        // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                        PPARecord.Primary = true;
+                        string TelephoneNumber = TelephoneNumbers[i].Trim();
 
-                        AnyTelephoneNumberSetAsPrimary = true;
+                        PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
-//                        TLogging.Log(String.Format(
-//                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-//                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                        PPARecord.Value = TelephoneNumber;
+                        PPARecord.AttributeType = ATTR_TYPE_PHONE;
+
+                        if ((i == 0)
+                            && (IsBestAddr)
+                            && (PPARecord.Current))
+                        {
+                            // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
+                            PPARecord.Primary = true;
+
+                            AnyTelephoneNumberSetAsPrimary = true;
+
+                            //                        TLogging.Log(String.Format(
+                            //                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                            //                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                        }
+
+                        PPARecordList.Add(PPARecord);
                     }
-
-                    PPARecordList.Add(PPARecord);
                 }
 
-                if (EmailAddress != FEmptyStringIndicator)
+                if (EmailAddressString != FEmptyStringIndicator)
                 {
+                    // Do not yet split up email addresses that could seperated by a semi colon!
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
-                    PPARecord.Value = EmailAddress;
+                    PPARecord.Value = EmailAddressString;
                     PPARecord.AttributeType = ATTR_TYPE_EMAIL;
 
                     if ((IsBestAddr)
@@ -630,13 +640,13 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         {
                             if (PartnerClass == "PERSON")
                             {
-                                if (EmailAddress.EndsWith("@om.org", StringComparison.InvariantCulture))
+                                if (EmailAddressString.EndsWith("@om.org", StringComparison.InvariantCulture))
                                 {
                                     PPARecord.WithinOrganisation = true;
 
-//                                    TLogging.Log(String.Format(
-//                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
-//                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                                    //                                    TLogging.Log(String.Format(
+                                    //                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
+                                    //                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                                 }
                             }
                         }
@@ -646,74 +656,106 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 }
             }
 
-            if (FaxNumber != FEmptyStringIndicator)
+            if (FaxNumberString != FEmptyStringIndicator)
             {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = FaxNumber;
-                PPARecord.AttributeType = ATTR_TYPE_FAX;
+                // There could be a number of fax numbers seperated by a semi colon. We need to split these up and add them seperately.
+                string[] FaxNumbers = FaxNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                PPARecordList.Add(PPARecord);
-            }
-
-            if (MobileNumber != FEmptyStringIndicator)
-            {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = MobileNumber;
-                PPARecord.AttributeType = ATTR_TYPE_MOBILE_PHONE;
-
-                if ((!AnyTelephoneNumberSetAsPrimary)
-                    && (IsBestAddr)
-                    && (PPARecord.Current))
+                for (int i = 0; i < FaxNumbers.Length; i++)
                 {
-                    // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
-                    // when the Contact Detail is current!
-                    PPARecord.Primary = true;
+                    string FaxNumber = FaxNumbers[i].Trim();
 
-                    AnyTelephoneNumberSetAsPrimary = true;
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+                    PPARecord.Value = FaxNumber;
+                    PPARecord.AttributeType = ATTR_TYPE_FAX;
 
-//                    TLogging.Log(String.Format(
-//                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-//                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                    PPARecordList.Add(PPARecord);
                 }
-
-                PPARecordList.Add(PPARecord);
             }
 
-            if (AlternatePhoneNumber != FEmptyStringIndicator)
+            if (MobileNumberString != FEmptyStringIndicator)
             {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = AlternatePhoneNumber;
-                PPARecord.AttributeType = ATTR_TYPE_PHONE;
+                // There could be a number of mobile numbers seperated by a semi colon. We need to split these up and add them seperately.
+                string[] MobileNumbers = MobileNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                if ((!AnyTelephoneNumberSetAsPrimary)
-                    && (IsBestAddr)
-                    && (PPARecord.Current))
+                for (int i = 0; i < MobileNumbers.Length; i++)
                 {
-                    // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
-                    // when the Contact Detail is current!
-                    PPARecord.Primary = true;
+                    string MobileNumber = MobileNumbers[i].Trim();
 
-                    AnyTelephoneNumberSetAsPrimary = true;
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+                    PPARecord.Value = MobileNumber;
+                    PPARecord.AttributeType = ATTR_TYPE_MOBILE_PHONE;
 
-//                    TLogging.Log(String.Format(
-//                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-//                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                    if ((!AnyTelephoneNumberSetAsPrimary)
+                        && (IsBestAddr)
+                        && (PPARecord.Current))
+                    {
+                        // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
+                        // when the Contact Detail is current!
+                        PPARecord.Primary = true;
+
+                        AnyTelephoneNumberSetAsPrimary = true;
+
+                        //                    TLogging.Log(String.Format(
+                        //                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                        //                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                    }
+
+                    PPARecordList.Add(PPARecord);
                 }
-
-                PPARecordList.Add(PPARecord);
             }
 
-            if (Url != FEmptyStringIndicator)
+            if (AlternatePhoneNumberString != FEmptyStringIndicator)
             {
-                PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
-                PPARecord.Value = Url;
-                PPARecord.AttributeType = ATTR_TYPE_WEBSITE;
+                // There could be a number of mobile numbers seperated by a semi colon. We need to split these up and add them seperately.
+                string[] AlternatePhoneNumbers = AlternatePhoneNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-                PPARecordList.Add(PPARecord);
+                for (int i = 0; i < AlternatePhoneNumbers.Length; i++)
+                {
+                    string AlternatePhoneNumber = AlternatePhoneNumbers[i].Trim();
+
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+                    PPARecord.Value = AlternatePhoneNumber;
+                    PPARecord.AttributeType = ATTR_TYPE_PHONE;
+
+                    if ((!AnyTelephoneNumberSetAsPrimary)
+                        && (IsBestAddr)
+                        && (PPARecord.Current))
+                    {
+                        // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
+                        // when the Contact Detail is current!
+                        PPARecord.Primary = true;
+
+                        AnyTelephoneNumberSetAsPrimary = true;
+
+                        //                    TLogging.Log(String.Format(
+                        //                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                        //                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                    }
+
+                    PPARecordList.Add(PPARecord);
+                }
+            }
+
+            if (UrlString != FEmptyStringIndicator)
+            {
+                // There could be a number of urls seperated by a semi colon. We need to split these up and add them seperately.
+                string[] Urls = UrlString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+                for (int i = 0; i < Urls.Length; i++)
+                {
+                    string Url = Urls[i].Trim();
+
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+                    PPARecord.Value = Url;
+                    PPARecord.AttributeType = ATTR_TYPE_WEBSITE;
+
+                    PPARecordList.Add(PPARecord);
+                }
             }
 
             // Now add all created records to the ReturnValue

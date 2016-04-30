@@ -962,6 +962,11 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             if (RefreshCachedSpecialNeedRow(APartnerKey))
             {
                 Dietary = FCachedSpecialNeedRow.DietaryComment;
+
+                if (FCachedSpecialNeedRow.VegetarianFlag)
+                {
+                    Dietary += Catalog.GetString("Vegetarian");
+                }
             }
 
             return Dietary;

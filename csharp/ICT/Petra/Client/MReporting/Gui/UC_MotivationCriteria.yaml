@@ -1,0 +1,42 @@
+RootNode:
+    BaseClass: UserControl
+    UtilObjectClass: TFrmPetraReportingUtils
+    Namespace: Ict.Petra.Client.MReporting.Gui  
+    UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerInfoTDS
+    FormType: edit
+    Template: usercontrolUnbound
+    Actions:
+        actSelectAllMotDetail: {Label=Select All, ActionClick=SelectAllMotivationDetail}
+        actDeselectAllMotDetail: {Label=Deselect All, ActionClick=DeselectAllMotivationDetail}
+        actSelectAllMotGroup: {Label=Select All, ActionClick=SelectAllMotivationGroup}
+        actDeselectAllMotGroup: {Label=Deselect All, ActionClick=DeselectAllMotivationGroup}
+    Controls:
+        grpMotivationCriteria:
+            Dock: Fill
+            Controls:
+                Row0: [lblMotivationGroup, clbMotivationGroup]
+                Row1: [btnSelectAllMotGroup]
+                Row2: [btnDeselectAllMotGroup]
+                Row3: [lblMotivationDetail, clbMotivationDetail]
+                Row4: [btnSelectAllMotDetail]
+                Row5: [btnDeselectAllMotDetail]
+
+        lblMotivationGroup: {Label=Motivation Group}
+        btnSelectAllMotGroup: {Label=Select all, Action=actSelectAllMotGroup}
+        btnDeselectAllMotGroup: {Label=Deselect all, Action=actDeselectAllMotGroup}
+        clbMotivationGroup:
+            NoLabel: true
+            ParameterName: param_motivation_group
+            Width: 540
+            Height: 125
+            RowSpan:3
+        lblMotivationDetail: {Label=Motivation Detail}
+        btnSelectAllMotDetail: {Label=Select all, Action=actSelectAllMotDetail}
+        btnDeselectAllMotDetail: {Label=Deselect all, Action=actDeselectAllMotDetail}
+        clbMotivationDetail:
+            NoLabel: true
+            ParameterName: param_motivation_detail
+            Width: 540
+            Height: 125
+            RowSpan:3
