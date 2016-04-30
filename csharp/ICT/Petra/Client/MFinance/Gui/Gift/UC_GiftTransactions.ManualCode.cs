@@ -2053,6 +2053,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
             {
+                FMainDS.AGift.Rows.Clear();
                 FMainDS.AGiftDetail.Rows.Clear();
             }
 

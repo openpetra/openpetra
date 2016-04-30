@@ -1164,7 +1164,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     foreach (DataRowView drv in tempDV)
                     {
-                        errMessage += string.Format("{0}Batch:{1} Journal:{2}",
+                        errMessage += string.Format("{0}GL Batch:{1} Journal:{2}",
                             Environment.NewLine,
                             drv[jBatchNumberAlias],
                             drv[jJournalNumberAlias]);

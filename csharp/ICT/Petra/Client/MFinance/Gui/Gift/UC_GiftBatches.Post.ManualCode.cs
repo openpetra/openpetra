@@ -109,13 +109,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
+                DataView batchGiftDetailsDV = new DataView(FMainDS.AGiftDetail);
 
-                foreach (GiftBatchTDSAGiftDetailRow Row in FMainDS.AGiftDetail.Rows)
+                batchGiftDetailsDV.RowFilter = string.Format("{0}={1}",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber);
+
+                batchGiftDetailsDV.Sort = string.Format("{0} ASC, {1} ASC, {2} ASC",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    AGiftDetailTable.GetDetailNumberDBName());
+
+                foreach (DataRowView drv in batchGiftDetailsDV)
                 {
-                    if (Row.BatchNumber == FSelectedBatchNumber)
-                    {
-                        BatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
-                    }
+                    GiftBatchTDSAGiftDetailRow gBRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
+
+                    BatchGiftDetails.Rows.Add((object[])gBRow.ItemArray.Clone());
                 }
 
                 bool CancelledDueToExWorkerOrAnonDonor;
