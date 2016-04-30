@@ -367,7 +367,7 @@ namespace Ict.Common
             {
                 Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
-                if ((TLogging.Context != null) && (TLogging.Context.Length != 0))
+                if (!string.IsNullOrEmpty(TLogging.Context)) 
                 {
                     Console.Error.WriteLine("  Context: " + TLogging.Context);
                 }
@@ -379,9 +379,7 @@ namespace Ict.Common
                 // don't print sql statements to the statusbar in debug mode
                 if (Text.IndexOf("SELECT") == -1)
                 {
-                    // don't print sql statements to the statusbar in debug mode
-
-                    if (TLogging.Context.Length != 0)
+                    if (!string.IsNullOrEmpty(TLogging.Context))
                     {
                         Text += "; Context: " + TLogging.Context;
                     }
