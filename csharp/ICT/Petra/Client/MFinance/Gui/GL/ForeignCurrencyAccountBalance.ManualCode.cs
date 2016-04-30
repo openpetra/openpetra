@@ -117,6 +117,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()]);
             grdDetails.AddCurrencyColumn(Catalog.GetString("YTD Total (BASE)"),
                 FForeignCurrencyAccountsDT.Columns[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()]);
+
+            grdDetails.AutoResizeGrid();
         }
 
         private void EditAccount(System.Object sender, EventArgs e)

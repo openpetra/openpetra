@@ -558,6 +558,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Address-3", FMainDS.PPartnerLocation.Columns[PartnerEditTDSPPartnerLocationTable.GetLocationAddress3DBName()]);
             grdDetails.AddTextColumn("City", FMainDS.PPartnerLocation.Columns[PartnerEditTDSPPartnerLocationTable.GetLocationCityDBName()]);
             grdDetails.AddTextColumn("Location Type", FMainDS.PPartnerLocation.ColumnLocationType);
+            grdDetails.Columns[0].Width = 20;
+            grdDetails.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            grdDetails.Columns[1].Width = 20;
+            grdDetails.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.None;
 
             grdDetails.ToolTipTextDelegate = @GetToolTipTextForGridRow;
 

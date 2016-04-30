@@ -124,6 +124,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ShowDataManual()
         {
+            grdDetails.AutoResizeGrid();
         }
 
         private void NewRecord(object sender, EventArgs e)
