@@ -222,7 +222,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     throw new EUserRetiredException(StrInvalidUserIDPassword);
                 }
 
-                int FailedLoginsUntilRetire = 
+                int FailedLoginsUntilRetire =
                     TSystemDefaults.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_RETIRE, 10);
 
                 // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +

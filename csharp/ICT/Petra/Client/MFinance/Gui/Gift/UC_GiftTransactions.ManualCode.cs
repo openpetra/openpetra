@@ -157,7 +157,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
             // should Tax Deductibility Percentage be enabled? (specifically for OM Switzerland)
-            FTaxDeductiblePercentageEnabled = 
+            FTaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             // user default to determine if screen should be auto saved when creating a new gift or adding a gift detail

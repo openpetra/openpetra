@@ -278,7 +278,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Parameter Arguments
 
-            bool TaxDeductiblePercentageEnabled = 
+            bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
             bool TransactionInIntlCurrency = false;
 
@@ -2491,7 +2491,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             ABatchRow batch = GLDataset.ABatch[0];
             AGiftBatchRow giftBatch = AGiftDataset.AGiftBatch[0];
 
-            bool TaxDeductiblePercentageEnabled = 
+            bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             batch.BatchDescription = Catalog.GetString("Gift Batch " + giftBatch.BatchNumber.ToString());
@@ -2739,7 +2739,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                 if (!ARecurring)
                 {
-                    TaxDeductiblePercentageEnabled = 
+                    TaxDeductiblePercentageEnabled =
                         TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 }
 

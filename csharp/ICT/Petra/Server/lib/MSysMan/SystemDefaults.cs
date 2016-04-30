@@ -44,7 +44,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// Call this Method to find out whether a System Default is defined, that is, if it exists in the System Defaults table.
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default that should be checked.</param>
-        /// <returns>True if the System Default is defined, false if it isn't.</returns>        
+        /// <returns>True if the System Default is defined, false if it isn't.</returns>
         [RequireModulePermission("NONE")]
         public static bool IsSystemDefaultDefined(String ASystemDefaultName)
         {
@@ -81,7 +81,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
         /// <param name="ADefault">The value that should be returned if the System Default was not found.</param>
         /// <remarks>SystemDefault Names are not case sensitive.</remarks>
-        /// <returns>The value of the System Default, or the value of <paramref name="ADefault" /> if the 
+        /// <returns>The value of the System Default, or the value of <paramref name="ADefault" /> if the
         /// specified System Default was not found.</returns>
         [RequireModulePermission("NONE")]
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
@@ -109,7 +109,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// Gets the value of a System Default as a bool.
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
-        /// <returns>The value of the System Default as a bool, or true if the specified System Default 
+        /// <returns>The value of the System Default as a bool, or true if the specified System Default
         /// was not found.</returns>
         [RequireModulePermission("NONE")]
         public static bool GetBooleanDefault(String ASystemDefaultName)
@@ -134,7 +134,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// Gets the value of a System Default as a char.
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
-        /// <returns>The value of the System Default as a char, or the space character if the specified System Default 
+        /// <returns>The value of the System Default as a char, or the space character if the specified System Default
         /// was not found.</returns>
         [RequireModulePermission("NONE")]
         public static System.Char GetCharDefault(String ASystemDefaultName)
@@ -259,7 +259,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
         /// Gets the value of a System Default as a string.
         /// </summary>
         /// <param name="ASystemDefaultName">The System Default for which the value should be returned.</param>
-        /// <returns>The value of the System Default as a string, or <see cref="string.Empty" /> 
+        /// <returns>The value of the System Default as a string, or <see cref="string.Empty" />
         /// if the specified System Default was not found.</returns>
         [RequireModulePermission("NONE")]
         public static String GetStringDefault(String ASystemDefaultName)

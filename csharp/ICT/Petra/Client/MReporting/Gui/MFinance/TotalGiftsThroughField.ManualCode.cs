@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FLedgerNumber = value;
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
 
-                FTaxDeductiblePercentageEnabled = 
+                FTaxDeductiblePercentageEnabled =
                     TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);

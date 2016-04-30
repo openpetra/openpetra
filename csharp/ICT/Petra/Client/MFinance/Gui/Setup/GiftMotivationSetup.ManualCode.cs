@@ -100,7 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 UpdateRecordNumberDisplay();
 
                 // should Tax Deductibility Percentage be enabled? (specifically for OM Switzerland)
-                FTaxDeductiblePercentageEnabled = 
+                FTaxDeductiblePercentageEnabled =
                     TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
                 if (FTaxDeductiblePercentageEnabled)

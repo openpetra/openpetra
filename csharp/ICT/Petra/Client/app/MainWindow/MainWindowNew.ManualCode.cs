@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.App.PetraClient
             stbMain.UseOpenPetraToolStripRenderer = true;
 
             // this is needed for one screen which should only be displayed if tax deductibility is enabled
-            FTaxDeductiblePercentageEnabled = 
+            FTaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             InitialiseTopPanel();

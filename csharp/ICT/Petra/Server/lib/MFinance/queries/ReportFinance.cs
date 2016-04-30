@@ -170,7 +170,7 @@ namespace Ict.Petra.Server.MFinance.queries
             string YearStart = String.Format("#{0:0000}-01-01#", Year);
             string YearEnd = String.Format("#{0:0000}-12-31#", Year);
 
-            bool TaxDeductiblePercentageEnabled = 
+            bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             string SqlQuery = "SELECT batch.a_gl_effective_date_d as Date, motive.a_report_column_c AS ReportColumn, ";
@@ -307,7 +307,7 @@ namespace Ict.Petra.Server.MFinance.queries
         /// </summary>
         public static DataTable TotalGiftsThroughFieldYear(TParameterList AParameters, TResultList AResults)
         {
-            bool TaxDeductiblePercentageEnabled = 
+            bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
             Int32 LedgerNum = AParameters.Get("param_ledger_number_i").ToInt32();
