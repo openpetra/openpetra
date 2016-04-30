@@ -253,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
                     StringBuilder errorMessages = new StringBuilder();
                     int counter = 0;
 
@@ -267,7 +268,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     extendedMessageBox.ShowDialog(errorMessages.ToString(),
-                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        Catalog.GetString("Post Batch Error"),
+                        string.Empty,
                         TFrmExtendedMessageBox.TButtons.embbOK,
                         TFrmExtendedMessageBox.TIcon.embiWarning);
                 }

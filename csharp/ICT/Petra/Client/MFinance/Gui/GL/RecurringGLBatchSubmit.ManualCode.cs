@@ -151,6 +151,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             txtDetailTransactionCurrency.ReadOnly = true;
             txtDetailExchangeRateToBase.ReadOnly = true;
             dtpEffectiveDate.Date = DateTime.Now;
+
+            this.AcceptButton = btnSubmit;
+            this.CancelButton = btnClose;
         }
 
         private void ShowDetailsManual(ARecurringJournalRow ARow)
@@ -369,9 +372,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (NewGLBatchNumber > 0)
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Your Recurring GL Batch was submitted successfully as new GL Batch: {0}!"),
-                        NewGLBatchNumber),
-                    Catalog.GetString("Success"),
+                string successMessage =
+                    String.Format(Catalog.GetString(
+                            "Your Recurring GL Batch was submitted successfully as new GL Batch: {0}!{1}{1}" +
+                            "If the GL Batches form is open it will try to refresh its data."),
+                        NewGLBatchNumber,
+                        Environment.NewLine);
+
+                MessageBox.Show(successMessage,
+                    Catalog.GetString("Submit Recurring GL Batch"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
@@ -393,7 +402,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                      verif.ResultText + Environment.NewLine;
                 }
 
-                MessageBox.Show(errorMessages, Catalog.GetString("Recurring GL Batch Submit failed"),
+                MessageBox.Show(errorMessages, Catalog.GetString("Submit Recurring GL Batch"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 

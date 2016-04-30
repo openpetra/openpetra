@@ -875,9 +875,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAll(bool AIsFromMessage = false)
         {
-            ucoBatches.ReloadBatches();
+            ucoBatches.ReloadBatches(AIsFromMessage);
         }
 
         #region Menu and command key handlers for our user controls
@@ -955,7 +955,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcRefreshGLBatches)
             {
-                this.RefreshAll();
+                this.RefreshAll(true);
 
                 MessageProcessed = true;
             }

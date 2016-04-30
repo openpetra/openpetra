@@ -56,7 +56,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Reload the batches
         /// </summary>
-        void ReloadBatches();
+        void ReloadBatches(bool AIsFromMessage = false);
 
         /// <summary>
         /// Create a New Batch
@@ -623,34 +623,60 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Reload batches after an import
         /// </summary>
-        public void ReloadBatches()
+        public void ReloadBatches(bool AIsFromMessage = false)
         {
-            FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
-
-            // Before we re-load make a note of the 'last' batch number so we can work out which batches have been imported.
-            DataView dv = new DataView(FMainDS.ABatch, String.Empty, String.Format("{0} DESC",
-                    ABatchTable.GetBatchNumberDBName()), DataViewRowState.CurrentRows);
-            int lastBatchNumber = (dv.Count == 0) ? 0 : ((ABatchRow)dv[0].Row).BatchNumber;
-
-            // Merge the new batches into our data set
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FCurrentLedgerYear, 0));
-
-            // Go round each imported batch loading its journals
-            // Start with the highest batch number and continue until we reach the 'old' last batch
-            for (int i = 0; i < dv.Count; i++)
+            try
             {
-                int batchNumber = ((ABatchRow)dv[i].Row).BatchNumber;
+                FPetraUtilsObject.GetForm().Cursor = Cursors.WaitCursor;
 
-                if (batchNumber <= lastBatchNumber)
+                if (!AIsFromMessage)
                 {
-                    break;
+                    // Before we re-load make a note of the 'last' batch number so we can work out which batches have been imported.
+                    DataView dv = new DataView(FMainDS.ABatch, String.Empty, String.Format("{0} DESC",
+                            ABatchTable.GetBatchNumberDBName()), DataViewRowState.CurrentRows);
+                    int lastBatchNumber = (dv.Count == 0) ? 0 : ((ABatchRow)dv[0].Row).BatchNumber;
+
+                    // Merge the new batches into our data set
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FCurrentLedgerYear, 0));
+
+                    // Go round each imported batch loading its journals
+                    // Start with the highest batch number and continue until we reach the 'old' last batch
+                    for (int i = 0; i < dv.Count; i++)
+                    {
+                        int batchNumber = ((ABatchRow)dv[i].Row).BatchNumber;
+
+                        if (batchNumber <= lastBatchNumber)
+                        {
+                            break;
+                        }
+
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, batchNumber));
+                    }
+
+                    EnsureNewBatchIsVisible();
                 }
+                else
+                {
+                    if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch)ParentForm).SaveChanges())
+                    {
+                        string msg = String.Format(Catalog.GetString("A validation error has occured on the GL Batches" +
+                                " form while trying to refresh.{0}{0}" +
+                                "You will need to close and reopen the GL Batches form to see the new batch" +
+                                " after you have fixed the validation error."),
+                            Environment.NewLine);
 
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, batchNumber));
+                        MessageBox.Show(msg, "Refresh GL Batches");
+                        return;
+                    }
+
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatch(FLedgerNumber, FCurrentLedgerYear, 0));
+                    grdDetails.SelectRowInGrid(1);
+                }
             }
-
-            FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
-            EnsureNewBatchIsVisible();
+            finally
+            {
+                FPetraUtilsObject.GetForm().Cursor = Cursors.Default;
+            }
         }
 
         private bool SaveOutstandingChanges()

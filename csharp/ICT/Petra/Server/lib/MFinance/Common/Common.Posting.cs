@@ -2207,9 +2207,12 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (ALedgerNumber <= 0)
             {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
+                AVerifications.Add(
+                    new TVerificationResult(
+                        "Posting GL Batch",
+                        "The Ledger number must be greater than 0!",
+                        TResultSeverity.Resv_Critical));
+                return false;
             }
             else if (ABatchNumbers.Count == 0)
             {
@@ -2225,9 +2228,12 @@ namespace Ict.Petra.Server.MFinance.Common
             {
                 if (batchNumber <= 0)
                 {
-                    throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
-                                "Function:{0} - The Batch number must be greater than 0!"),
-                            Utilities.GetMethodName(true)), ALedgerNumber, batchNumber);
+                    AVerifications.Add(
+                        new TVerificationResult(
+                            "Posting GL Batch",
+                            "The Batch number must be greater than 0!",
+                            TResultSeverity.Resv_Critical));
+                    return false;
                 }
             }
 

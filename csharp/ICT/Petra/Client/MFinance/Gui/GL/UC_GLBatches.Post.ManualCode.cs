@@ -202,13 +202,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 catch (Exception ex)
                 {
-                    string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of a GL Batch!{0}{1}{2}{1}    {3}"),
-                                      Utilities.GetMethodSignature(),
+                    string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of GL Batch {0}!{1}{1}{2}{1}{1}{3}"),
+                                      CurrentBatchNumber,
                                       Environment.NewLine,
                                       ex.Message,
                                       ex.InnerException!=null?ex.InnerException.Message:String.Empty));
 
-                    TLogging.Log(msg);
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
                     MessageBox.Show(msg, "Post GL Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally

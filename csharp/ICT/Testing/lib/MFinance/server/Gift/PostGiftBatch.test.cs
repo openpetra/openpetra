@@ -700,7 +700,8 @@ namespace Tests.MFinance.Server.Gift
             requestParams.Add("AExchangeRateToBase", (decimal)1);
             requestParams.Add("AExchangeRateIntlToBase", (decimal)1);
 
-            TGiftTransactionWebConnector.SubmitRecurringGiftBatch(requestParams);
+            int NewBatchNo = 0;
+            TGiftTransactionWebConnector.SubmitRecurringGiftBatch(requestParams, out NewBatchNo);
 
             //
             // Assert
