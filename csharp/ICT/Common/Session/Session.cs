@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -194,7 +194,7 @@ namespace Ict.Common.Session
         {
             SortedList <string, object>session = GetSession();
 
-            if (session.Keys.Contains(name) && (GetSession()[name] != null))
+            if (session.Keys.Contains(name) && (session[name] != null))
             {
                 return true;
             }
@@ -214,7 +214,7 @@ namespace Ict.Common.Session
 
             if (session.Keys.Contains(name))
             {
-                return GetSession()[name];
+                return session[name];
             }
 
             return null;
