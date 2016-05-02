@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -121,7 +121,7 @@ namespace Ict.Common.DB.Testing
                 new AsyncCallback(TestCallDBCommand1Callback), FTestCallDBCommand1);
 
             // 2nd Step: Wait until the first Thread has started the DB Transaction
-            while (DBAccess.GDBAccessObj.Transaction == null)
+            while (FTestDBInstance1 == null || FTestDBInstance1.Transaction == null)
             {
                 Thread.Sleep(100);
             }
@@ -472,11 +472,22 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
                        {
                            FTestingThread1 = Thread.CurrentThread;
                            FTestingThread1.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           if (FTestDBInstance1 == null)
+                           {
+                               FTestDBInstance1 = EstablishDBConnectionAndReturnIt("Thread 1", true);
+                           }
+
+                           DBAccess.GDBAccessObj = FTestDBInstance1;
                        }
                        else
                        {
                            FTestingThread2 = Thread.CurrentThread;
                            FTestingThread2.Name = String.Format(TestThreadName, AThreadNumber);
+
+                           // reusing test instance from first thread
+                           DBAccess.GDBAccessObj = FTestDBInstance1;
+                           FTestDBInstance2 = DBAccess.GDBAccessObj;
                        }
 
                        try
@@ -649,6 +660,8 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
             // Create a separate instance of TDataBase and establish a separate DB connection on it
             TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
+            DBAccess.GDBAccessObj = TestDBInstance;
+            FTestDBInstance1 = TestDBInstance;
 
             //
             // Act
@@ -671,7 +684,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             DBTransOnDefaultTDataBaseInstance = DBAccess.GDBAccessObj.Transaction;
 
             // Guard Assert
-            Assert.IsNotNull(DBTransOnDefaultTDataBaseInstance);
+            Assert.IsNotNull(DBTransOnDefaultTDataBaseInstance, "DBTransOnDefaultTDataBaseInstance must not be null");
 
             // Primary Assert
             Assert.IsFalse(TDataBase.CheckDBTransactionThreadIsCompatible(DBTransOnDefaultTDataBaseInstance),
@@ -770,6 +783,10 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             // another Thread, which otherwise is not possible within a NUnit Test!
             FTestCallDBCommand1 = GetActionDelegateForGNoET(1, false);
 
+            // Create an instance of TDataBase and establish a DB connection on it
+            TDataBase TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
+            DBAccess.GDBAccessObj = TestDBInstance;
+            FTestDBInstance1 = TestDBInstance;
 
             //
             // Act
@@ -792,7 +809,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             DBTransOnDefaultTDataBaseInstance = DBAccess.GDBAccessObj.Transaction;
 
             // Guard Assert
-            Assert.IsNotNull(DBTransOnDefaultTDataBaseInstance);
+            Assert.IsNotNull(DBTransOnDefaultTDataBaseInstance, "DBTransOnDefaultTDataBaseInstance must not be null");
 
             // Primary Assert
             Assert.IsFalse(DBAccess.GDBAccessObj.CheckRunningDBTransactionThreadIsCompatible(),
@@ -945,6 +962,11 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             // another Thread, which otherwise is not possible within a NUnit Test!
             FTestCallDBCommand1 = GetActionDelegateForGNoET(1, false);
 
+            // Create an instance of TDataBase and establish a DB connection on it
+            TDataBase TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
+            DBAccess.GDBAccessObj = TestDBInstance;
+            FTestDBInstance1 = TestDBInstance;
+
 
             //
             // Act
@@ -967,7 +989,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
             DBTransOnDefaultTDataBaseInstance = DBAccess.GDBAccessObj.Transaction;
 
             // Guard Assert
-            Assert.IsNotNull(DBTransOnDefaultTDataBaseInstance);
+            Assert.IsNotNull(DBTransOnDefaultTDataBaseInstance, "DBTransOnDefaultTDataBaseInstance must not be null");
 
             // Primary Assert
             Assert.IsFalse(DBAccess.GDBAccessObj.CheckRunningDBTransactionIsCompatible(IsolationLevel.ReadCommitted,
