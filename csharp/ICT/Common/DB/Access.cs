@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1530,13 +1530,23 @@ namespace Ict.Common.DB
 
                 if (ATransaction == null)
                 {
-                    ReturnValue = Convert.ToInt32(DBAccess.GetDBAccessObj(ADataBase).ExecuteScalar(
+                    TDataBase db = DBAccess.GetDBAccessObj(ADataBase);
+
+                    if (db != null)
+                    {
+                        ReturnValue = Convert.ToInt32(db.ExecuteScalar(
                             SqlQueryStr, IsolationLevel.Serializable));
+                    }
                 }
                 else
                 {
-                    ReturnValue = Convert.ToInt32(DBAccess.GetDBAccessObj(ATransaction).ExecuteScalar(
+                    TDataBase db = DBAccess.GetDBAccessObj(ATransaction);
+
+                    if (db != null)
+                    {
+                        ReturnValue = Convert.ToInt32(db.ExecuteScalar(
                             SqlQueryStr, ATransaction));
+                    }
                 }
             }
 
