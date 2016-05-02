@@ -111,6 +111,11 @@ namespace Ict.Common.DB.Testing
             FTestCallDBCommand1 = GetActionDelegateForGNoET(1, ASimulateLongerRunningThread);
             FTestCallDBCommand2 = GetActionDelegateForGNoET(2, false);
 
+            // Create a separate instance of TDataBase and establish a separate DB connection on it
+            TDataBase TestDBInstance = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), false);
+            DBAccess.GDBAccessObj = TestDBInstance;
+            FTestDBInstance1 = TestDBInstance;
+
             //
             // Act
             //
@@ -273,6 +278,25 @@ ATransactionName: "GNoETransaction_throws_no_Exception 2"); });
             //
 
             // Clear Connection Pool and keep record of how many DB Connections are open before we open any of our own in this Method
+            if (FTestDBInstance1 != null)
+            {
+                FTestDBInstance1.CloseDBConnection();
+                FTestDBInstance1 = null;
+            }
+
+            if (FTestDBInstance2 != null)
+            {
+                FTestDBInstance2.CloseDBConnection();
+                FTestDBInstance2 = null;
+            }
+
+            if (DBAccess.GDBAccessObj != null)
+            {
+                DBAccess.GDBAccessObj.CloseDBConnection();
+                DBAccess.GDBAccessObj = null;
+            }
+
+            DBAccess.GDBAccessObj = EstablishDBConnectionAndReturnIt(String.Format(TestConnectionName, 1), true);
             InitialNumberOfDBConnections = TDataBase.ClearConnectionPoolAndGetNumberOfDBConnections(FDBType);
 
             // Create ManualResetEvents for signalling between the Thread this Test runs on and the two
@@ -1154,7 +1178,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
             TestAction.EndInvoke(ar);
 
-            TLogging.Log("FTestCallDBCommand1 Action Delegate (that got spawned on a seaparate Thread) finished its work.");
+            TLogging.Log("FTestCallDBCommand1 Action Delegate (that got spawned on a separate Thread) finished its work.");
         }
 
         private void TestCallDBCommand2Callback(IAsyncResult ar)
@@ -1163,7 +1187,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
             TestAction.EndInvoke(ar);
 
-            TLogging.Log("FTestCallDBCommand2 Action Delegate (that got spawned on a seaparate Thread) finished its work.");
+            TLogging.Log("FTestCallDBCommand2 Action Delegate (that got spawned on a separate Thread) finished its work.");
         }
 
         private DateTime GetNextSleepTime()
@@ -1367,7 +1391,7 @@ ATransactionName: "GNoETransaction_throws_proper_Exception " + AThreadNumber.ToS
 
         private TDataBase CallEstablishDBConnection(string AConnectionName)
         {
-            return EstablishDBConnectionAndReturnIt(AConnectionName, true);;
+            return EstablishDBConnectionAndReturnIt(AConnectionName, false);
         }
 
         #endregion
