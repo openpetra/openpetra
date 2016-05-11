@@ -488,6 +488,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
+                        // retrieve Subscription information
+                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription)
+                            || ((AFormLetterInfo.FormLetterPrintOptions != null)
+                                && (AFormLetterInfo.FormLetterPrintOptions.PublicationCodes.Length > 0)))
+                        {
+                            PSubscriptionTable SubscriptionTable;
+                            TFormDataSubscription SubscriptionRecord;
+
+                            SubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ReadTransaction);
+
+                            foreach (PSubscriptionRow SubscriptionRow in SubscriptionTable.Rows)
+                            {
+                                SubscriptionRecord = new TFormDataSubscription();
+
+                                SubscriptionRecord.PublicationCode = SubscriptionRow.PublicationCode;
+                                SubscriptionRecord.Status = SubscriptionRow.SubscriptionStatus;
+                                SubscriptionRecord.PublicationCopies =
+                                    SubscriptionRow.IsPublicationCopiesNull() ? 1 : SubscriptionRow.PublicationCopies;
+
+                                formData.AddSubscription(SubscriptionRecord);
+                            }
+                        }
+
                         // retrieve Location and formality information
                         if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocation)
                             || AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocationBlock)
@@ -530,6 +553,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                     formData.CountryName = CountryRow.CountryName;
                                     formData.CountryInLocalLanguage = CountryRow.CountryNameLocal;
                                 }
+
+                                if (AFormLetterInfo.FormLetterPrintOptions != null)
+                                {
+                                    formData.MailingCode = AFormLetterInfo.FormLetterPrintOptions.MailingCode;
+                                    formData.PublicationCodes = AFormLetterInfo.FormLetterPrintOptions.PublicationCodes;
+                                    formData.Enclosures = BuildEnclosuresList(formData, AFormLetterInfo);
+                                }
                             }
 
                             // build address block (need to have retrieved location data beforehand)
@@ -569,25 +599,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 ContactLogRecord.Notes = ContactLogRow.ContactComment;
 
                                 formData.AddContactLog(ContactLogRecord);
-                            }
-                        }
-
-                        // retrieve Subscription information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription))
-                        {
-                            PSubscriptionTable SubscriptionTable;
-                            TFormDataSubscription SubscriptionRecord;
-
-                            SubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ReadTransaction);
-
-                            foreach (PSubscriptionRow SubscriptionRow in SubscriptionTable.Rows)
-                            {
-                                SubscriptionRecord = new TFormDataSubscription();
-
-                                SubscriptionRecord.PublicationCode = SubscriptionRow.PublicationCode;
-                                SubscriptionRecord.Status = SubscriptionRow.SubscriptionStatus;
-
-                                formData.AddSubscription(SubscriptionRecord);
                             }
                         }
 
@@ -1112,6 +1123,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             PFamilyTable FamilyTable;
             PFamilyRow FamilyRow = null;
             Int64 ContactPartnerKey = 0;
+            string workingText = string.Empty;
 
 
             AddressTokenList = BuildTokenListFromAddressLayoutBlock(AAddressLayoutBlock);
@@ -1394,6 +1406,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         AddressLineText += ConvertIfUpperCase(AFormData.PostalCode, CapsOn);
                         break;
 
+                    case "[[Enclosures]]":
+                        AddressLineText += AFormData.Enclosures;
+                        break;
+
+                    case "[[MailingCode]]":
+                        AddressLineText += AFormData.MailingCode;
+                        break;
+
                     case "[[Tab]]":
                         AddressLineText += "\t";
                         break;
@@ -1454,6 +1474,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Builds the list of enclosures string
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        private static string BuildEnclosuresList(TFormDataPartner AFormData, TFormLetterInfo ALetterInfo)
+        {
+            string publicationsInMailing = "," + AFormData.PublicationCodes + ",";
+            string publicationsForThisPartner = string.Empty;
+            string ReturnValue = string.Empty;
+
+            foreach (TFormDataSubscription item in AFormData.Subscription)
+            {
+                if (publicationsInMailing.Contains("," + item.PublicationCode + ","))
+                {
+                    if (publicationsForThisPartner.Length > 0)
+                    {
+                        publicationsForThisPartner += ",  ";
+                    }
+
+                    publicationsForThisPartner += (item.PublicationCode + ": " + item.PublicationCopies.ToString());
+                }
+            }
+
+            if (publicationsForThisPartner.Length > 0)
+            {
+                ReturnValue = "( " + publicationsForThisPartner + " )";
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// build and return the address according to country and address layout code
         /// </summary>
         /// <param name="AAddressLayoutBlock"></param>
@@ -1494,6 +1545,110 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             } while (AddressBlock.Length > 0);
 
             return TokenList;
+        }
+
+        /// <summary>
+        /// Update the partner subscriptions for specifed publications.  Partner keys come from an extract
+        /// </summary>
+        /// <param name="AExtractId">Extract ID</param>
+        /// <param name="APublicationsCSVList">CSV list of publications</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool UpdateSubscriptionsReceivedFromExtract(Int32 AExtractId, String APublicationsCSVList)
+        {
+            MExtractTable ExtractTable;
+            Int32 RowCounter = 0;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"));
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOk = false;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+                delegate
+                {
+                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
+
+                    RowCounter = 0;
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"), 0.0m);
+
+                    // query all rows of given extract
+                    foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                    {
+                        RowCounter++;
+                        UpdateSubscriptionsReceived(ExtractRow.PartnerKey, APublicationsCSVList, Transaction);
+
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        {
+                            TLogging.Log("UpdateSubscriptionsReceivedFromExtract - Job cancelled");
+                            break;
+                        }
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
+                            (RowCounter * 100) / ExtractTable.Rows.Count);
+                    }
+
+                    SubmissionOk = true;
+                });
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+            return SubmissionOk;
+        }
+
+        /// <summary>
+        /// Update the partner subscriptions for specifed publications.  An individual Partner keys is supplied
+        /// </summary>
+        /// <param name="APartnerKey">The specific partner key</param>
+        /// <param name="APublicationsCSVList">CSV list of publications</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool UpdateSubscriptionsReceivedForPartner(long APartnerKey, String APublicationsCSVList)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOk = false;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+                delegate
+                {
+                    UpdateSubscriptionsReceived(APartnerKey, APublicationsCSVList, Transaction);
+                    SubmissionOk = true;
+                });
+
+            return SubmissionOk;
+        }
+
+        private static void UpdateSubscriptionsReceived(long APartnerKey, String APublicationsCSVList, TDBTransaction ATransaction)
+        {
+            bool dataChanged = false;
+            string publicationCSVList = "," + APublicationsCSVList + ",";
+            PSubscriptionTable subsTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ATransaction);
+
+            foreach (PSubscriptionRow row in subsTable.Rows)
+            {
+                string pubCode = "," + row.PublicationCode + ",";
+
+                if (publicationCSVList.Contains(pubCode))
+                {
+                    // Here is a publication to update
+                    dataChanged = true;
+                    row.NumberIssuesReceived++;
+                    row.LastIssue = DateTime.Today;
+
+                    if (!row.FirstIssue.HasValue)
+                    {
+                        row.FirstIssue = DateTime.Today;
+                    }
+
+                    TLogging.LogAtLevel(1,
+                        "Updated subscription info for partner " + APartnerKey.ToString() + "   " + row.PublicationCode + "   Issues are now " +
+                        row.NumberIssuesReceived.ToString());
+                }
+            }
+
+            if (dataChanged)
+            {
+                PSubscriptionAccess.SubmitChanges(subsTable, ATransaction);
+            }
         }
 
         /// <summary>

@@ -1119,7 +1119,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.MailingDate,
-                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, false,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection

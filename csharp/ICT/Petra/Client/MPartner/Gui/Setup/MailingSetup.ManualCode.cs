@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.IO;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
@@ -45,6 +46,40 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmMailingSetup
     {
+        private bool FIsModal = false;
+        private string FModalResult = string.Empty;
+
+        /// <summary>
+        /// Set this to true if the dialog is running modally and displaying Accept/Cancel buttons
+        /// </summary>
+        public bool RunAsModalDialog
+        {
+            set
+            {
+                FIsModal = value;
+
+                if (FIsModal)
+                {
+                    grdDetails.DoubleClick += grdDetails_DoubleClick;
+                }
+                else
+                {
+                    pnlModalButtons.Visible = false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the selected Mailing Code if the Accept button was clicked - otherwise an empty string
+        /// </summary>
+        public string ModalDialogResult
+        {
+            get
+            {
+                return FModalResult;
+            }
+        }
+
         private void NewRowManual(ref PMailingRow ARow)
         {
             // Deal with the primary key - we need a unique mailing code
@@ -119,6 +154,48 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     txtDetailMailingCost.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
                 }
             }
+
+            FPetraUtilsObject.DataSaved += FPetraUtilsObject_DataSaved;
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (e.Success)
+            {
+                // We need to notify a listener such as the Form Letter dialog
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcMailingSetupSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+            }
+        }
+
+        private void btnAccept_Click(object sender, EventArgs e)
+        {
+            if (!ValidateAllData(true, TErrorProcessingMode.Epm_All))
+            {
+                return;
+            }
+
+            if (!FPetraUtilsObject.IsDataSaved())
+            {
+                return;
+            }
+
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                FModalResult = FPreviouslySelectedDetailRow.MailingCode;
+            }
+
+            Close();
+        }
+
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void grdDetails_DoubleClick(object sender, EventArgs e)
+        {
+            btnAccept_Click(null, null);
         }
     }
 }

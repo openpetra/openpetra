@@ -125,13 +125,17 @@ namespace Ict.Petra.Server.MFinance.queries
                     ExtractQueryBase.PostcodeFilter(ref partnerkeys, ref AddressFilterAdded, AParameters, Transaction);
 
                     // create an extract with the given name in the parameters
+                    int keyCount;
+                    List <long>ignoredPartnerKeys = null;
                     ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                         AParameters.Get("param_extract_name").ToString(),
                         AParameters.Get("param_extract_description").ToString(),
                         out ExtractId,
                         partnerkeys,
                         0,
-                        AddressFilterAdded);
+                        AddressFilterAdded,
+                        out keyCount,
+                        out ignoredPartnerKeys);
                 });
             AExtractId = ExtractId;
             return ReturnValue;

@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
@@ -1146,6 +1147,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 try
                 {
+                    int keyCount;
+                    List <long>ignoredPartnerKeys = null;
                     TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                         AExtractName,
                         AExtractDescription,
@@ -1153,6 +1156,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         PartnerKeysTable,
                         1,
                         LocationInfoProvided,
+                        out keyCount,
+                        out ignoredPartnerKeys,
                         false);
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");

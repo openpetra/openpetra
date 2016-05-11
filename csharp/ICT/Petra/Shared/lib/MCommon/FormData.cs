@@ -177,6 +177,28 @@ namespace Ict.Petra.Shared.MCommon
         }
 
         /// <summary>
+        /// Class to keep information about Form Letter printing options
+        /// </summary>
+        [Serializable()]
+        public class TFormLetterPrintOptions
+        {
+            /// The selected mailing code
+            public string MailingCode
+            {
+                get; set;
+            }
+
+            /// The selected publication codes as a delimited string
+            public string PublicationCodes
+            {
+                get; set;
+            }
+        }
+
+        /// <summary>A single instance of the options that apply for this Form Letter print run</summary>
+        public TFormLetterPrintOptions FormLetterPrintOptions = null;
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TFormLetterInfo(List <String>ATagList, String AFileName, Int32 AFormalityLevel = 1)
@@ -596,6 +618,18 @@ namespace Ict.Petra.Shared.MCommon
         public Boolean ContainsTag(String ATag)
         {
             return TagList.Contains(ATag);
+        }
+
+        /// <summary>
+        /// This constructor sets all the Form Letter print options and is set by the GUI
+        /// </summary>
+        /// <param name="AMailingCode"></param>
+        /// <param name="APublicationCodes"></param>
+        public void AddFormLetterPrintOptions(string AMailingCode, string APublicationCodes)
+        {
+            FormLetterPrintOptions = new TFormLetterPrintOptions();
+            FormLetterPrintOptions.MailingCode = AMailingCode;
+            FormLetterPrintOptions.PublicationCodes = APublicationCodes;
         }
     }
 
@@ -1085,6 +1119,20 @@ namespace Ict.Petra.Shared.MCommon
         }
         /// assembled address block
         public String AddressBlock {
+            get; set;
+        }
+
+        // Enclosures related
+        ///
+        public string PublicationCodes {
+            get; set;
+        }
+        ///
+        public string MailingCode {
+            get; set;
+        }
+        ///
+        public string Enclosures {
             get; set;
         }
 
@@ -1596,6 +1644,11 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Status
         public String Status {
+            get; set;
+        }
+
+        /// Number of copies to send
+        public int PublicationCopies {
             get; set;
         }
     }

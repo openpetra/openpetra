@@ -75,6 +75,8 @@ OpenPetra:
                         DonorByMotivation: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Motivation, ActionClick=TFinanceMain.DonorByMotivationExtractCrossLedger}
                         DonorByAmount: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Amount, ActionClick=TFinanceMain.DonorByAmountExtractCrossLedger}
                         DonorByMiscellaneous: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Donor by Miscellaneous, ActionClick=TFinanceMain.DonorByMiscellaneousExtractCrossLedger}
+                    Import: {Label=Import}
+                        ImportExtract: {Label=Import Extract, Description=Import an extract from the clipboard or a file, ActionOpenScreen=TFrmImportExtractDialog, Singleton=true}
                 Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPartner, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PartnerReports:
                         PrintPartner: {ActionOpenScreen=TFrmPrintPartner}
@@ -141,7 +143,7 @@ OpenPetra:
                         LetterFormalities: {Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
 
                     Mailing:
-                        Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup}
+                        Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup, RunAsModalDialog=false}
 
                     LocalData: {Label=Local Data}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}

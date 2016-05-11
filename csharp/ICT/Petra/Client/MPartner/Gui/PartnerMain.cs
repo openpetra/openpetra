@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common;

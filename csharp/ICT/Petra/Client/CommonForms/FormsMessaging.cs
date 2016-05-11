@@ -150,6 +150,9 @@ namespace Ict.Petra.Client.CommonForms
         /// just got changed in the DB.</summary>
         mcFamilyMembersChanged,
 
+        /// <summary>Mailings setup screen just got saved to the DB.</summary>
+        mcMailingSetupSaved,
+
         /// <summary>Gift Destination records have been edited, added or deleted through Personnel Commitments.</summary>
         mcPersonnelCommitmentChanged,
 

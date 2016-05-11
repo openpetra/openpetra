@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+using System.Collections.Generic;
 using Ict.Common;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
@@ -108,6 +109,9 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
             bool AAddressFilterAdded)
         {
             bool Success;
+            int keyCount;
+
+            List <long>ignoredPartnerKeys = null;
 
             Success = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                 AExtractName,
@@ -115,7 +119,9 @@ namespace Ict.Petra.Server.MPartner.Extracts.UIConnectors
                 out ANewExtractId,
                 APartnerKeysTable,
                 APartnerKeyColumn,
-                AAddressFilterAdded);
+                AAddressFilterAdded,
+                out keyCount,
+                out ignoredPartnerKeys);
 
             if (Success)
             {

@@ -119,13 +119,17 @@ namespace Ict.Petra.Server.MCommon.queries
                             TLogging.Log("Preparing the extract...", TLoggingType.ToStatusBar);
 
                             // create an extract with the given name in the parameters
+                            int keyCount;
+                            List <long>ignoredPartnerKeys = null;
                             ReturnValue = TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                                 AParameters.Get("param_extract_name").ToString(),
                                 AParameters.Get("param_extract_description").ToString(),
                                 out ExtractId,
                                 partnerkeys,
                                 0,
-                                AddressFilterAdded);
+                                AddressFilterAdded,
+                                out keyCount,
+                                out ignoredPartnerKeys);
                         }
                     }
 

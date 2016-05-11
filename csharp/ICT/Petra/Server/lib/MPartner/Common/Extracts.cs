@@ -24,18 +24,21 @@
 using System;
 using System.Data;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MCommon.Data.Cascading;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MCommon;
 
 namespace Ict.Petra.Server.MPartner.Extracts
 {
@@ -404,7 +407,12 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="AKeyCount">The number of keys that were actually added to the extract (any duplicates are excluded)</param>
+        /// <param name="AIgnoredKeyList">A reference to a List of long.  The server will fill this with the partner keys that were ignored.  Does not include duplicates.</param>
         /// <param name="AIgnoreDuplicates"></param>
+        /// <param name="AIgnoreInactive">true if inactive partners should be ignored</param>
+        /// <param name="AIgnoreNonMailingLocations">true to ignore if the partner's best address is a non-mailing location</param>
+        /// <param name="AIgnoreNoSolicitations">true to ignore partners where the No Solicitations flag is set</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -413,19 +421,46 @@ namespace Ict.Petra.Server.MPartner.Extracts
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             bool AAddressFilterAdded,
-            bool AIgnoreDuplicates = true)
+            out Int32 AKeyCount,
+            out List <long>AIgnoredKeyList,
+            bool AIgnoreDuplicates = true,
+            bool AIgnoreInactive = false,
+            bool AIgnoreNonMailingLocations = false,
+            bool AIgnoreNoSolicitations = true)
         {
             if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
-                return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, 2, 3, AIgnoreDuplicates);
+                return CreateExtractFromListOfPartnerKeys(AExtractName,
+                    AExtractDescription,
+                    out ANewExtractId,
+                    APartnerKeysTable,
+                    APartnerKeyColumn,
+                    2,
+                    3,
+                    out AKeyCount,
+                    out AIgnoredKeyList,
+                    AIgnoreDuplicates,
+                    AIgnoreInactive,
+                    AIgnoreNonMailingLocations,
+                    AIgnoreNoSolicitations);
             }
             else
             {
                 // if no address filter was added (no location keys were added): set location and site key to -1
-                return CreateExtractFromListOfPartnerKeys(AExtractName, AExtractDescription, out ANewExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, -1, -1, AIgnoreDuplicates);
+                return CreateExtractFromListOfPartnerKeys(AExtractName,
+                    AExtractDescription,
+                    out ANewExtractId,
+                    APartnerKeysTable,
+                    APartnerKeyColumn,
+                    -1,
+                    -1,
+                    out AKeyCount,
+                    out AIgnoredKeyList,
+                    AIgnoreDuplicates,
+                    AIgnoreInactive,
+                    AIgnoreNonMailingLocations,
+                    AIgnoreNoSolicitations);
             }
         }
 
@@ -440,7 +475,12 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="ASiteKeyColumn">number of the column that contains the site keys</param>
         /// <param name="ALocationKeyColumn">number of the column that contains the location keys</param>
+        /// <param name="AKeyCount">The number of keys that were actually added to the extract (any duplicates are excluded)</param>
+        /// <param name="AIgnoredKeyList">A reference to a List of long.  The server will fill this with the partner keys that were ignored.  Does not include duplicates.</param>
         /// <param name="AIgnoreDuplicates"></param>
+        /// <param name="AIgnoreInactive">true if inactive partners should be ignored</param>
+        /// <param name="AIgnoreNonMailingLocations">true to ignore if the partner's best address is a non-mailing location</param>
+        /// <param name="AIgnoreNoSolicitations">true to ignore partners where the No Solicitations flag is set</param>
         /// <returns>True if the new Extract was created, otherwise false.</returns>
         public static bool CreateExtractFromListOfPartnerKeys(
             String AExtractName,
@@ -450,7 +490,12 @@ namespace Ict.Petra.Server.MPartner.Extracts
             Int32 APartnerKeyColumn,
             Int32 ASiteKeyColumn,
             Int32 ALocationKeyColumn,
-            bool AIgnoreDuplicates = true)
+            out Int32 AKeyCount,
+            out List <long>AIgnoredKeyList,
+            bool AIgnoreDuplicates = true,
+            bool AIgnoreInactive = false,
+            bool AIgnoreNonMailingLocations = false,
+            bool AIgnoreNoSolicitations = true)
         {
             bool ReturnValue = false;
             bool ExtractAlreadyExists;
@@ -465,8 +510,22 @@ namespace Ict.Petra.Server.MPartner.Extracts
 
             if (ReturnValue)
             {
-                ExtendExtractFromListOfPartnerKeys(ANewExtractId, APartnerKeysTable, APartnerKeyColumn,
-                    ASiteKeyColumn, ALocationKeyColumn, AIgnoreDuplicates);
+                ExtendExtractFromListOfPartnerKeys(ANewExtractId,
+                    APartnerKeysTable,
+                    APartnerKeyColumn,
+                    ASiteKeyColumn,
+                    ALocationKeyColumn,
+                    out AKeyCount,
+                    out AIgnoredKeyList,
+                    AIgnoreDuplicates,
+                    AIgnoreInactive,
+                    AIgnoreNonMailingLocations,
+                    AIgnoreNoSolicitations);
+            }
+            else
+            {
+                AKeyCount = 0;
+                AIgnoredKeyList = new List <long>();
             }
 
             return ReturnValue;
@@ -479,25 +538,35 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeysTable"></param>
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="AAddressFilterAdded">true if location key fields exist in APartnerKeysTable</param>
+        /// <param name="AKeyCount">The number of keys that were actually added to the extract (any duplicates are excluded)</param>
+        /// <param name="AIgnoredKeyList">A reference to a List of long.  The server will fill this with the partner keys that were ignored.  Does not include duplicates.</param>
         /// <param name="AIgnoreDuplicates">true if duplicates should be looked out for. Can be set to false if called only once and not several times per extract.</param>
+        /// <param name="AIgnoreInactive">true if inactive partners should be ignored</param>
+        /// <param name="AIgnoreNonMailingLocations">true to ignore if the partner's best address is a non-mailing location</param>
+        /// <param name="AIgnoreNoSolicitations">true to ignore partners where the No Solicitations flag is set</param>
         public static void ExtendExtractFromListOfPartnerKeys(
             Int32 AExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             bool AAddressFilterAdded,
-            bool AIgnoreDuplicates)
+            out Int32 AKeyCount,
+            out List <long>AIgnoredKeyList,
+            bool AIgnoreDuplicates,
+            bool AIgnoreInactive = false,
+            bool AIgnoreNonMailingLocations = false,
+            bool AIgnoreNoSolicitations = true)
         {
             if (AAddressFilterAdded)
             {
                 // if address filter was added then site key is in third and location in fourth column
-                ExtendExtractFromListOfPartnerKeys(AExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, 2, 3, AIgnoreDuplicates);
+                ExtendExtractFromListOfPartnerKeys(AExtractId, APartnerKeysTable, APartnerKeyColumn, 2, 3, out AKeyCount, out AIgnoredKeyList,
+                    AIgnoreDuplicates, AIgnoreInactive, AIgnoreNonMailingLocations, AIgnoreNoSolicitations);
             }
             else
             {
                 // if no address filter was added (no location keys were added): set location and site key to -1
-                ExtendExtractFromListOfPartnerKeys(AExtractId,
-                    APartnerKeysTable, APartnerKeyColumn, -1, -1, AIgnoreDuplicates);
+                ExtendExtractFromListOfPartnerKeys(AExtractId, APartnerKeysTable, APartnerKeyColumn, -1, -1, out AKeyCount, out AIgnoredKeyList,
+                    AIgnoreDuplicates, AIgnoreInactive, AIgnoreNonMailingLocations, AIgnoreNoSolicitations);
             }
         }
 
@@ -509,18 +578,30 @@ namespace Ict.Petra.Server.MPartner.Extracts
         /// <param name="APartnerKeyColumn">number of the column that contains the partner keys</param>
         /// <param name="ASiteKeyColumn">number of the column that contains the site keys</param>
         /// <param name="ALocationKeyColumn">number of the column that contains the location keys</param>
+        /// <param name="AKeyCount">The number of keys that were actually added to the extract (any duplicates are excluded)</param>
+        /// <param name="AIgnoredKeyList">A reference to a List of long.  If not null the server will fill it with the partner keys that were ignored.  Does not include duplicates.</param>
         /// <param name="AIgnoreDuplicates">true if duplicates should be looked out for. Can be set to false if called only once and not several times per extract.</param>
+        /// <param name="AIgnoreInactive">true if inactive partners should be ignored</param>
+        /// <param name="AIgnoreNonMailingLocations">true to ignore if the partner's best address is a non-mailing location</param>
+        /// <param name="AIgnoreNoSolicitations">true to ignore partners where the No Solicitations flag is set</param>
         public static void ExtendExtractFromListOfPartnerKeys(
             Int32 AExtractId,
             DataTable APartnerKeysTable,
             Int32 APartnerKeyColumn,
             Int32 ASiteKeyColumn,
             Int32 ALocationKeyColumn,
-            bool AIgnoreDuplicates)
+            out Int32 AKeyCount,
+            out List <long>AIgnoredKeyList,
+            bool AIgnoreDuplicates,
+            bool AIgnoreInactive,
+            bool AIgnoreNonMailingLocations,
+            bool AIgnoreNoSolicitations)
         {
             int RecordCounter = 0;
             PPartnerLocationTable PartnerLocationKeysTable;
             Int64 PartnerKey;
+
+            List <long>ignoredKeyList = new List <long>();
 
             TDBTransaction Transaction = null;
             bool SubmissionOK = true;
@@ -528,6 +609,52 @@ namespace Ict.Petra.Server.MPartner.Extracts
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
                 delegate
                 {
+                    // Pre-process the table to remove partner rows that do not match the filter requirements
+                    for (int i = APartnerKeysTable.Rows.Count - 1; i >= 0; i--)
+                    {
+                        DataRow dr = APartnerKeysTable.Rows[i];
+                        Int64 partnerKey = Convert.ToInt64(dr[APartnerKeyColumn]);
+
+                        // Get a partner record containing our fields of interest
+                        StringCollection fields = new StringCollection();
+                        fields.Add(PPartnerTable.GetStatusCodeDBName());
+                        fields.Add(PPartnerTable.GetNoSolicitationsDBName());
+                        DataTable dt = PPartnerAccess.LoadByPrimaryKey(partnerKey, fields, Transaction);
+
+                        if (dt.Rows.Count > 0)
+                        {
+                            if (AIgnoreInactive || AIgnoreNoSolicitations)
+                            {
+                                bool isActive = false;
+                                bool isNoSolicitation = false;
+                                object o = dt.Rows[0][PPartnerTable.GetStatusCodeDBName()];
+
+                                if (o != null)
+                                {
+                                    TStdPartnerStatusCode statusCode = SharedTypes.StdPartnerStatusCodeStringToEnum(o.ToString());
+                                    isActive = (statusCode == TStdPartnerStatusCode.spscACTIVE);
+                                }
+
+                                o = dt.Rows[0][PPartnerTable.GetNoSolicitationsDBName()];
+
+                                if (o != null)
+                                {
+                                    isNoSolicitation = Convert.ToBoolean(o);
+                                }
+
+                                if ((AIgnoreInactive && !isActive) || (AIgnoreNoSolicitations && isNoSolicitation))
+                                {
+                                    ignoredKeyList.Add(partnerKey);
+                                    APartnerKeysTable.Rows.Remove(dr);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ignoredKeyList.Add(partnerKey);
+                        }
+                    }
+
                     MExtractTable ExtractTable = new MExtractTable();
                     ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
 
@@ -540,10 +667,27 @@ namespace Ict.Petra.Server.MPartner.Extracts
                     // use the returned table which contains partner and location keys to build the extract
                     foreach (PPartnerLocationRow PartnerLocationRow in PartnerLocationKeysTable.Rows)
                     {
-                        PartnerKey = Convert.ToInt64(PartnerLocationRow[PPartnerLocationTable.GetPartnerKeyDBName()]);
+                        PartnerKey = PartnerLocationRow.PartnerKey;
 
                         if (PartnerKey > 0)
                         {
+                            if (AIgnoreNonMailingLocations)
+                            {
+                                // The PartnerLocationRow only contains the PK fields so now we need to get the SendMail column
+                                StringCollection fields = new StringCollection();
+                                fields.Add(PPartnerLocationTable.GetSendMailDBName());
+
+                                PPartnerLocationTable t =
+                                    PPartnerLocationAccess.LoadByPrimaryKey(PartnerKey, PartnerLocationRow.SiteKey,
+                                        PartnerLocationRow.LocationKey, fields, Transaction);
+
+                                if ((t != null) && (t.Rows.Count > 0) && (((PPartnerLocationRow)t.Rows[0]).SendMail == false))
+                                {
+                                    ignoredKeyList.Add(PartnerKey);
+                                    continue;
+                                }
+                            }
+
                             RecordCounter += 1;
                             TLogging.LogAtLevel(1, "Preparing Partner " + PartnerKey + " (Record Number " + RecordCounter + ")");
 
@@ -575,6 +719,9 @@ namespace Ict.Petra.Server.MPartner.Extracts
                         MExtractMasterAccess.SubmitChanges(ExtractMaster, Transaction);
                     }
                 });
+
+            AKeyCount = RecordCounter;
+            AIgnoredKeyList = ignoredKeyList;
         }
 
         /// <summary>
