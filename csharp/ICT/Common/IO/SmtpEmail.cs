@@ -186,7 +186,7 @@ namespace Ict.Common.IO
         /// Create a mail message and send it
         /// </summary>
         /// <returns></returns>
-        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body,
+        public bool SendEmail(string fromemail, string fromDisplayName, string recipients, string subject, string body,
             string[] attachfiles = null)
         {
             try
@@ -196,7 +196,7 @@ namespace Ict.Common.IO
                     //From and To
                     email.Sender = new MailAddress(fromemail, fromDisplayName);
                     email.From = new MailAddress(fromemail, fromDisplayName);
-                    email.To.Add(receipients);
+                    email.To.Add(recipients);
 
                     if (CcEverythingTo != "")
                     {

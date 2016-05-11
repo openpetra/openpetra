@@ -557,14 +557,20 @@ namespace Ict.Petra.Server.MCommon.queries
 
             if ((PostcodeLettersA == 0) && (PostcodeLettersB == 0))
             {
-                Int64 PostcodeNumberA = Convert.ToInt64(APostcodeA.Replace(" ", "").Replace("-", ""));
-                Int64 PostcodeNumberB = Convert.ToInt64(APostcodeB.Replace(" ", "").Replace("-", ""));
+                Decimal PostcodeNumberA = 0;
+                Decimal PostcodeNumberB = 0;
+                Boolean canCompareNumeric =
+                    Decimal.TryParse(Regex.Replace(APostcodeA, "[^0-9.]*", ""), out PostcodeNumberA)
+                    && Decimal.TryParse(Regex.Replace(APostcodeB, "[^0-9.]*", ""), out PostcodeNumberB);
 
-                return PostcodeNumberA.CompareTo(PostcodeNumberB);
+                if (canCompareNumeric)
+                {
+                    return PostcodeNumberA.CompareTo(PostcodeNumberB);
+                }
             }
 
             //
-            // if postcode contains letters as well
+            // if postcodes can't be compared as numbers
             //
 
             // if postcode contains a space or a hyphen then use recursion to compare both halves

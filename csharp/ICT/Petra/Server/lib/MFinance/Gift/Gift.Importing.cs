@@ -468,15 +468,37 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                         // Do our standard validation on this gift
                                         AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
-                                        TSharedFinanceValidation_Gift.ValidateGiftManual(this, gift, giftBatch.BatchYear, giftBatch.BatchPeriod,
-                                            null, ref Messages, EmptyControlsDict, MethodOfGivingTable, MethodOfPaymentTable);
+                                        TSharedFinanceValidation_Gift.ValidateGiftManual(
+                                            this,
+                                            gift,
+                                            giftBatch.BatchYear,
+                                            giftBatch.BatchPeriod,
+                                            null,
+                                            ref Messages,
+                                            EmptyControlsDict,
+                                            MethodOfGivingTable,
+                                            MethodOfPaymentTable);
 
                                         ImportMessage = Catalog.GetString("Validating the gift details data");
 
-                                        AGiftDetailValidation.Validate(this, giftDetails, ref Messages, EmptyControlsDict);
-                                        TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, Row,
-                                            ref Messages, EmptyControlsDict, null, CostCentreTable, AccountTable,
-                                            MotivationGroupTable, MotivationDetailTable, MailingTable, giftDetails.RecipientKey);
+                                        AGiftDetailValidation.Validate(
+                                            this,
+                                            giftDetails,
+                                            ref Messages,
+                                            EmptyControlsDict);
+
+                                        TSharedFinanceValidation_Gift.ValidateGiftDetailManual(
+                                            this,
+                                            Row,
+                                            ref Messages,
+                                            EmptyControlsDict,
+                                            null,
+                                            CostCentreTable,
+                                            AccountTable,
+                                            MotivationGroupTable,
+                                            MotivationDetailTable,
+                                            MailingTable,
+                                            giftDetails.RecipientKey);
 
                                         // Fix up the messages
                                         for (int i = messageCountBeforeValidate; i < Messages.Count; i++)
@@ -1386,14 +1408,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             decimal AIntlRateFromBase,
             TVerificationResultCollection AMessages,
             AMotivationDetailTable AMotivationDetailTable,
-//            TValidationControlsDict AValidationControlsDictGift,
-//            TValidationControlsDict AValidationControlsDictGiftDetail,
-//            ACostCentreTable AValidationCostCentreTable,
-//            AAccountTable AValidationAccountTable,
-//            AMotivationGroupTable AValidationMotivationGroupTable,
-//            AMethodOfGivingTable AValidationMethodOfGivingTable,
-//            AMethodOfPaymentTable AValidationMethodOfPaymentTable,
-//            PMailingTable AValidationMailingTable,
             GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
             AGiftDetailRow AGiftDetails)
         {
@@ -1499,6 +1513,13 @@ namespace Ict.Petra.Server.MFinance.Gift
             // we always calculate RecipientLedgerNumber
             AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
                 AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
+
+            // If the gift has a recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
+            if ((AGiftDetails.RecipientLedgerNumber == 0) && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            {
+                ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
+                ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftDetails.ItemArray.Clone());
+            }
 
             decimal currentGiftAmount =
                 TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Gift amount"),
@@ -1719,6 +1740,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             Agift.DonorKey = DonorKey;
             Agift.MethodOfGivingCode = "DEFAULT";
             Agift.MethodOfPaymentCode = "ESR";
+            Agift.DateEntered = AgiftBatch.GlEffectiveDate;
             FMainDS.AGift.Rows.Add(Agift);
 
             AgiftDetails.RecipientKey = RecipientKey;
@@ -1772,7 +1794,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             FMainDS.AGiftDetail.Rows.Add(AgiftDetails);
             return true;
-        }
+        } // Parse Esr Transaction Line
 
         /// <summary>
         /// returns the most recently imported gift batch

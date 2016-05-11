@@ -327,7 +327,7 @@ namespace Ict.Petra.Server.MFinance.Common
 
             if (AAccount.Trim().Length == 0)
             {
-                throw new Exception("account code is empty");
+                throw new Exception("Empty Account Code in transaction with Cost Centre " + ACostCenter);
             }
 
             if (FForeignJournal)

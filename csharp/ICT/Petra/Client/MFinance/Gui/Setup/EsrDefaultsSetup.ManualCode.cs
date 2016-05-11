@@ -58,6 +58,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             FesrDefaults.DefaultView.AllowNew = false;
             FesrDefaults.DefaultView.AllowEdit = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FesrDefaults.DefaultView);
+
+            txtPartnerKey.Enabled = false;
+            txtNewPartnerKey.Enabled = false;
+            cmbMotivGroup.Enabled = false;
+            cmbMotivDetail.Enabled = false;
         }
 
         void UpdateGrid(object sender, EventArgs e)
@@ -111,8 +116,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             // If the user didn't change the value,
             // there's nothing more to do here.
 
-            if ((FselectedRow["a_new_partner_key_n"] != System.DBNull.Value)
-                && (Convert.ToInt64(FselectedRow["a_partner_key_n"]) == PartnerKey))
+            if ((FselectedRow == null) || ((FselectedRow["a_new_partner_key_n"] != System.DBNull.Value)
+                                           && (Convert.ToInt64(FselectedRow["a_partner_key_n"]) == PartnerKey)))
             {
                 return;
             }
@@ -240,6 +245,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             if (rowView != null)
             {
                 FselectedRow = rowView.Row;
+
+                txtPartnerKey.Enabled = true;
+                txtNewPartnerKey.Enabled = true;
+                cmbMotivGroup.Enabled = true;
+                cmbMotivDetail.Enabled = true;
+
                 ShowDataRow(FselectedRow);
             }
         }
@@ -272,6 +283,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             int gridRow = grdDetails.Selection.ActivePosition.Row;
 
             FselectedRow.Delete();
+            FselectedRow = null;
             grdDetails.SelectRowInGrid(gridRow, true);
             FPetraUtilsObject.SetChangedFlag();
         }

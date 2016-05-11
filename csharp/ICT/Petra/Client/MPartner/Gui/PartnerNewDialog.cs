@@ -347,13 +347,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                     bool APartnerExists;
                     String APartnerShortName;
                     TPartnerClass APartnerClass;
-                    Boolean AIsMergedPartner;
+                    TStdPartnerStatusCode APartnerStatus;
 
                     if (!TServerLookup.TMPartner.VerifyPartner(FFamilyPartnerKey, AValidPartnerClasses,
                             out APartnerExists,
                             out APartnerShortName,
                             out APartnerClass,
-                            out AIsMergedPartner))
+                            out APartnerStatus))
                     {
                         MessageBox.Show(StrCorrectFamilyKeyNeedsToBeEntered,
                             StrCorrectFamilyKeyNeedsToBeEnteredTitle,

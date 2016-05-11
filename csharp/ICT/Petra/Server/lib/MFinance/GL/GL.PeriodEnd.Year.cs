@@ -101,7 +101,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         Catalog.GetString("Year End"),
                         Catalog.GetString("Exception: ") + e.Message,
                         TResultSeverity.Resv_Critical));
-                return false;
+                return true;
             }
         }
     }

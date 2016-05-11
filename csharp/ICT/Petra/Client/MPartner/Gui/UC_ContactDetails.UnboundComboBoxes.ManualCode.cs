@@ -1003,11 +1003,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AContactComboType == TOverallContactComboType.occtPrimaryPhone)
             {
-                ErrorCode = PetraErrorCodes.ERR_PRIMARY_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_PRIMARY_PHONE_NR_SET_DESPITE_NO_PHONE_NR_AVAIL;
             }
             else if (AContactComboType == TOverallContactComboType.occtPhoneWithinOrganisation)
             {
-                ErrorCode = PetraErrorCodes.ERR_OFFICE_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_OFFICE_PHONE_NR_SET_DESPITE_NO_PHONE_NR_AVAIL;
             }
             else
             {
@@ -1127,7 +1127,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             VerificationResult = new TScreenVerificationResult(
                 new TVerificationResult((object)ResCont,
-                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL),
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESPITE_EMAIL_ADDR_AVAIL),
                     FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
                 null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
 
@@ -1180,15 +1180,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AContactComboType == TOverallContactComboType.occtPrimaryEmail)
             {
-                ErrorCode = PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL;
             }
             else if (AContactComboType == TOverallContactComboType.occtSecondaryEmail)
             {
-                ErrorCode = PetraErrorCodes.ERR_SECONDARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_SECONDARY_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL;
             }
             else if (AContactComboType == TOverallContactComboType.occtEmailWithinOrganisation)
             {
-                ErrorCode = PetraErrorCodes.ERR_OFFICE_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_OFFICE_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL;
             }
             else
             {

@@ -802,7 +802,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                       && (APartnerKey == ARow.PartnerKey)))
                 {
                     VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
-                        ARow.PartnerKey, new TPartnerClass[] { }, false, "",
+                        ARow.PartnerKey,
+                        new TPartnerClass[] { },
+                        false, false, "",
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
@@ -840,7 +842,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                       && (APartnerKey == ARow.RelationKey)))
                 {
                     VerificationResult = TSharedPartnerValidation_Partner.IsValidPartner(
-                        ARow.RelationKey, new TPartnerClass[] { }, false, "",
+                        ARow.RelationKey,
+                        new TPartnerClass[] { },
+                        false, false, "",
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Since the validation can result in different ResultTexts we need to remove any validation result manually as a call to
@@ -896,6 +900,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <param name="APartnerKey">PartnerKey.</param>
         /// <param name="AValidPartnerClasses">An array of PartnerClasses. If the Partner exists, but its
         /// PartnerClass isn't in the array, a TVerificationResult is still returned.</param>
+        /// <param name="AMustBeActive">The Partner status.must be labelled with PartnerIsActive (Default: false)</param>
         /// <param name="AZeroPartnerKeyIsValid">Set to true if <paramref name="APartnerKey" /> 0 should be considered
         /// as valid (Default: false)</param>
         /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
@@ -909,75 +914,74 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// is false.
         /// </returns>
         public static TVerificationResult IsValidPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses,
+            Boolean AMustBeActive = false,
             bool AZeroPartnerKeyIsValid = false, string AErrorMessageText = "", object AResultContext = null,
             System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
         {
             TVerificationResult ReturnValue = null;
-            string ShortName;
-            TPartnerClass PartnerClass;
-            bool PartnerExists;
-            bool IsMergedPartner;
-            string ValidPartnerClassesStr = String.Empty;
-            bool PartnerClassValid = false;
-            string PartnerClassInvalidMessageStr = Catalog.GetString("The Partner Class of the Partner needs to be '{0}', but it is '{1}'.");
-            string PartnerClassConcatStr = Catalog.GetString(" or ");
 
-            if ((AZeroPartnerKeyIsValid)
-                && (APartnerKey == 0))
+            if (APartnerKey == 0)
             {
-                return null;
-            }
-            else if ((!AZeroPartnerKeyIsValid)
-                     && (APartnerKey == 0))
-            {
-                if (AErrorMessageText == String.Empty)
+                if (AZeroPartnerKeyIsValid)
                 {
-                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                            PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO, new string[] { APartnerKey.ToString("0000000000") }));
+                    return null;
                 }
                 else
-                {
-                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                            PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO));
-                    ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
-                }
-            }
-            else
-            {
-                bool VerificationOK = TSharedPartnerValidationHelper.VerifyPartner(APartnerKey, AValidPartnerClasses, out PartnerExists,
-                    out ShortName, out PartnerClass, out IsMergedPartner);
-
-                if ((!VerificationOK)
-                    || (IsMergedPartner))
                 {
                     if (AErrorMessageText == String.Empty)
                     {
                         ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString("0000000000") }));
+                                PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO, new string[] { APartnerKey.ToString("0000000000") }));
                     }
                     else
                     {
                         ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
-                                PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString("0000000000") }));
+                                PetraErrorCodes.ERR_PARTNERKEY_INVALID_NOZERO));
+                        ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                    }
+                }
+            }
+            else
+            {
+                bool PartnerExists;
+                string ShortName;
+                TPartnerClass partnerClass;
+                TStdPartnerStatusCode partnerStatus;
+                bool VerificationOK = TSharedPartnerValidationHelper.VerifyPartner(APartnerKey, AValidPartnerClasses, out PartnerExists,
+                    out ShortName, out partnerClass, out partnerStatus);
+
+                if (!VerificationOK)
+                {
+                    ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                            PetraErrorCodes.ERR_PARTNERKEY_INVALID, new string[] { APartnerKey.ToString("0000000000") }));
+
+                    if (AErrorMessageText != String.Empty)
+                    {
                         ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
                     }
 
-                    if ((PartnerExists)
-                        && (!IsMergedPartner))
+                    if (PartnerExists)
                     {
+                        string PartnerClassInvalidMessageStr = Catalog.GetString(
+                            "The Partner Class of the Partner needs to be '{0}', but it is '{1}'.");
+
                         if ((AValidPartnerClasses.Length == 1)
-                            && (AValidPartnerClasses[0] != PartnerClass))
+                            && (AValidPartnerClasses[0] != partnerClass))
                         {
                             ReturnValue.OverrideResultText(ReturnValue.ResultText + " " +
-                                String.Format(PartnerClassInvalidMessageStr, AValidPartnerClasses[0], PartnerClass));
+                                String.Format(PartnerClassInvalidMessageStr, AValidPartnerClasses[0], partnerClass));
                         }
                         else if (AValidPartnerClasses.Length > 1)
                         {
+                            bool PartnerClassValid = false;
+                            string ValidPartnerClassesStr = String.Empty;
+                            string PartnerClassConcatStr = Catalog.GetString(" or ");
+
                             for (int Counter = 0; Counter < AValidPartnerClasses.Length; Counter++)
                             {
                                 ValidPartnerClassesStr += "'" + AValidPartnerClasses[Counter] + "'" + PartnerClassConcatStr;
 
-                                if (AValidPartnerClasses[Counter] == PartnerClass)
+                                if (AValidPartnerClasses[Counter] == partnerClass)
                                 {
                                     PartnerClassValid = true;
                                 }
@@ -988,12 +992,20 @@ namespace Ict.Petra.Shared.MPartner.Validation
                                 ValidPartnerClassesStr = ValidPartnerClassesStr.Substring(0,
                                     ValidPartnerClassesStr.Length - PartnerClassConcatStr.Length - 1);      // strip off "' or "
                                 ReturnValue.OverrideResultText(ReturnValue.ResultText + " " +
-                                    String.Format(PartnerClassInvalidMessageStr, ValidPartnerClassesStr, PartnerClass));
+                                    String.Format(PartnerClassInvalidMessageStr, ValidPartnerClassesStr, partnerClass));
                             }
                         }
                     }
+                } // !VerificationOK
+                else // Partner exists and it's the right class..
+                {
+                    if (AMustBeActive && !TSharedPartnerValidationHelper.PartnerHasActiveStatus(APartnerKey))
+                    {
+                        ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                                PetraErrorCodes.ERR_PARTNER_NOT_ACTIVE, new string[] { APartnerKey.ToString("0000000000") }));
+                    }
                 }
-            }
+            } // PartnerKey != 0
 
             if ((ReturnValue != null)
                 && (AResultColumn != null))
@@ -1072,7 +1084,10 @@ namespace Ict.Petra.Shared.MPartner.Validation
             string AErrorMessageText = "", object AResultContext = null, System.Data.DataColumn AResultColumn = null,
             System.Windows.Forms.Control AResultControl = null)
         {
-            return IsValidPartner(APartnerKey, new TPartnerClass[] { TPartnerClass.UNIT }, AZeroPartnerKeyIsValid,
+            return IsValidPartner(APartnerKey,
+                new TPartnerClass[] { TPartnerClass.UNIT },
+                false,
+                AZeroPartnerKeyIsValid,
                 AErrorMessageText, AResultContext, AResultColumn, AResultControl);
         }
 
@@ -1439,7 +1454,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (ARow.BankKey != 0)
                 {
                     VerificationResult = IsValidPartner(
-                        ARow.BankKey, new TPartnerClass[] { TPartnerClass.BANK }, false, string.Empty,
+                        ARow.BankKey,
+                        new TPartnerClass[] { TPartnerClass.BANK },
+                        false, false, "",
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl
                         );
                 }
@@ -1716,7 +1733,9 @@ namespace Ict.Petra.Shared.MPartner.Validation
                 if (!ARow.IsFieldKeyNull())
                 {
                     VerificationResult = IsValidPartner(
-                        ARow.FieldKey, new TPartnerClass[] { TPartnerClass.UNIT }, true, string.Empty,
+                        ARow.FieldKey,
+                        new TPartnerClass[] { TPartnerClass.UNIT },
+                        false, true, "",
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl
                         );
                 }

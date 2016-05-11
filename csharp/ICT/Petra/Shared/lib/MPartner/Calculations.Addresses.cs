@@ -467,6 +467,17 @@ namespace Ict.Petra.Shared.MPartner
 
             SBuilder = new StringBuilder(200);
 
+            ABuilding1 = ABuilding1.Trim();
+            ABuilding2 = ABuilding2.Trim();
+            ALocality = ALocality.Trim();
+            AStreetName = AStreetName.Trim();
+            AAddress3 = AAddress3.Trim();
+            ASuburb = ASuburb.Trim();
+            ACity = ACity.Trim();
+            ACounty = ACounty.Trim();
+            APostalCode = APostalCode.Trim();
+            ACountryName = ACountryName.Trim();
+
             if ((ABuilding1 != null) && (ABuilding1 != ""))
             {
                 SBuilder.Append(ABuilding1 + Separator);

@@ -287,7 +287,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo FledgerInfo;
 
-        GetSuspenseAccountInfo getSuspenseAccountInfo = null;
+        GetSuspenseAccountInfo suspenseAccountInfo = null;
 
         public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
         {
@@ -359,7 +359,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             Catalog.GetString("Currency revaluation"),
                             Catalog.GetString(
                                 "Before proceeding you may want to revalue the foreign currency accounts."), "",
-                            TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Noncritical);
+                            TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Status);
                         // Error is non-critical - the user can choose to continue.
                         FverificationResults.Add(tvr);
                     }
@@ -386,28 +386,31 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckForSuspenseAccounts()
         {
-            if (getSuspenseAccountInfo == null)
+            if (suspenseAccountInfo == null)
             {
-                getSuspenseAccountInfo =
+                suspenseAccountInfo =
                     new GetSuspenseAccountInfo(FledgerInfo.LedgerNumber);
             }
 
-            if (getSuspenseAccountInfo.RowCount != 0)
+            if (suspenseAccountInfo.RowCount != 0)
             {
-                TLogging.LogAtLevel(1, String.Format("MonthEnd: {0} suspense accounts in use.", getSuspenseAccountInfo.RowCount));
+                TLogging.LogAtLevel(1, String.Format("MonthEnd: {0} suspense accounts in use.", suspenseAccountInfo.RowCount));
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("Suspense Accounts found"),
                     String.Format(
                         Catalog.GetString(
                             "Have you checked the details of suspense account {0}?"),
-                        getSuspenseAccountInfo.ToString()),
+                        suspenseAccountInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
                 FverificationResults.Add(tvr);
             }
-            else
-            {
-                TLogging.LogAtLevel(1, "MonthEnd: No suspense accounts used.");
-            }
+
+/*
+ *          else
+ *          {
+ *              TLogging.LogAtLevel(1, "MonthEnd: No suspense accounts used.");
+ *          }
+ */
         }
 
         private void CheckForUnpostedGiftBatches()
@@ -436,19 +439,19 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 // This means: The last accounting period of the year is running!
 
-                if (getSuspenseAccountInfo == null)
+                if (suspenseAccountInfo == null)
                 {
-                    getSuspenseAccountInfo =
+                    suspenseAccountInfo =
                         new GetSuspenseAccountInfo(FledgerInfo.LedgerNumber);
                 }
 
-                if (getSuspenseAccountInfo.RowCount > 0)
+                if (suspenseAccountInfo.RowCount > 0)
                 {
                     ASuspenseAccountRow aSuspenseAccountRow;
 
-                    for (int i = 0; i < getSuspenseAccountInfo.RowCount; ++i)
+                    for (int i = 0; i < suspenseAccountInfo.RowCount; ++i)
                     {
-                        aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
+                        aSuspenseAccountRow = suspenseAccountInfo.Row(i);
                         TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(FledgerInfo.LedgerNumber,
                             aSuspenseAccountRow.SuspenseAccountCode,
                             FledgerInfo.CurrentFinancialYear);
@@ -462,11 +465,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 TVerificationResult tvr = new TVerificationResult(
                                     Catalog.GetString("Non Zero Suspense Account found"),
-                                    String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
-                                        getSuspenseAccountInfo.ToString(),
+                                    String.Format(Catalog.GetString("Suspense account {0} has the balance value {1:F2}. It is required to be zero."),
+                                        suspenseAccountInfo.ToString(),
                                         get_GLMp_Info.ActualBase), "",
                                     TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
-                                FverificationResults.Add(tvr);
 
                                 FHasCriticalErrors = true;
                                 FverificationResults.Add(tvr);
