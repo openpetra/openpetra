@@ -230,10 +230,11 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             TPeriodEndOperations.FwasCancelled = false;
+
             /*
              * TDBTransaction Transaction = null;
              * Boolean ShouldCommit = false;
-            */
+             */
 
             /*
              * DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -288,6 +289,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
 
                 TLogging.LogAtLevel(1, "RunYearEnd: No errors; transaction will be committed.");
+
                 /* ShouldCommit = true; */ // Commenting out for now until Transaction is used again
             }
 
