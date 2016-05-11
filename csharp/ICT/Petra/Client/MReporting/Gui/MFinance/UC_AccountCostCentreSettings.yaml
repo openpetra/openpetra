@@ -30,7 +30,6 @@ RootNode:
             Label: Select Range
             Controls: [cmbFromAccountCode, cmbToAccountCode]
         rbtAccountFromList:
-            Stretch: horizontally
             Label: From List
             Controls: [pnlAccountFromList]
             OnChange: AccountChanged
@@ -39,7 +38,7 @@ RootNode:
             Controls: 
                 Row0: [clbAccountCodes, btnUnselectAllAccountCodes]
                 Row1: [btnAllExpenseAccounts]
-            
+
         rgrCostCentre: 
             ParameterName: param_costcentreoptions
             Controls: [rbtAllCostCentres, rbtCostCentreRange, rbtCostCentreFromList]
@@ -59,7 +58,7 @@ RootNode:
                 Row0: [clbCostCentres, btnUnselectAllCostCentres]
                 Row1: [cmbSummaryCostCentres]
                 Row2: [btnSelectAllReportingCostCentres]
-        
+
         clbAccountCodes: 
             List: UserDefinedList
             AutoFindColumn: 2

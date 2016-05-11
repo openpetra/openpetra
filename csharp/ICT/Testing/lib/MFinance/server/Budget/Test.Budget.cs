@@ -101,7 +101,7 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
                 ImportString,
                 budgetTestFile,
                 new string[] { ",", "dmy", "American" },
-                ImportDS,
+                ref ImportDS,
                 out NumBudgetsUpdated,
                 out NumFailedRows,
                 out VerificationResult);

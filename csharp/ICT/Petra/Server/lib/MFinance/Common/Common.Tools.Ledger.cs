@@ -590,25 +590,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        public int YearEndProcessStatus
-        {
-            get
-            {
-                GetDataRow();
-                return FLedgerRow.YearEndProcessStatus;
-            }
-            set
-            {
-                GetDataRow();
-                FLedgerRow.YearEndProcessStatus = value;
-                CommitLedgerChange();
-            }
-        }
-
-
-        /// <summary>
-        ///
-        /// </summary>
         public bool IltAccountFlag
         {
             get

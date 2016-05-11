@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// </summary>
         /// <param name="ASelectedBudgetYear"></param>
         /// <param name="AMainDS"></param>
-        public void ImportBudget(int ASelectedBudgetYear, BudgetTDS AMainDS)
+        public void ImportBudget(int ASelectedBudgetYear, ref BudgetTDS AMainDS)
         {
             TVerificationResultCollection Messages = new TVerificationResultCollection();
 
@@ -144,7 +144,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                             ImportString,
                             OFDialog.FileName,
                             FdlgSeparatorVal,
-                            AMainDS,
+                            ref AMainDS,
                             out NumRecsUpdated,
                             out NumRowsFailed,
                             out Messages);
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         FParentForm.UseWaitCursor = true;
 
                         UpdateABudgetPeriodAmounts(AMainDS, ASelectedBudgetYear);
-                        FUserControl.SetBudgetDefaultView();
+                        FUserControl.SetBudgetDefaultView(AMainDS);
                     }
                     finally
                     {

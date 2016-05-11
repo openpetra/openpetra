@@ -93,7 +93,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddParameter("param_batch_number_i", txtBatchNumber.Text);
+            Int32.TryParse(txtBatchNumber.Text, out FBatchNumber);
         }
 
         private void RunOnceOnActivationManual()

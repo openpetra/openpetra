@@ -698,6 +698,31 @@ namespace Ict.Petra.Client.MReporting.Gui
             return SendReport;
         } // AutoEmailReports
 
+        private void ShowBadBatchNumMessageInUiThread(Int32 ABatchNumber)
+        {
+            if (FPetraUtilsObject == null)
+            {
+                return;
+            }
+
+            Form ParentForm = FPetraUtilsObject.GetCallerForm();
+
+            if (ParentForm.InvokeRequired)
+            {
+                ParentForm.Invoke((MethodInvoker) delegate
+                    {
+                        ShowBadBatchNumMessageInUiThread(ABatchNumber);
+                        return;
+                    });;
+            }
+            else
+            {
+                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} not found"), ABatchNumber),
+                    Catalog.GetString("Batch Posting Register"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+        }
+
         /// <summary>Get all the data for the report</summary>
         /// <remarks>Called from the server during batch posting, and also from File/Print gui</remarks>
         /// <param name="ACalc"></param>
@@ -706,13 +731,19 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns></returns>
         public Boolean RegisterBatchPostingData(TRptCalculator ACalc, Int32 ALedgerNumber, Int32 ABatchNumber)
         {
-            GLBatchTDS BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContentUsingPrivateDb(ALedgerNumber, ABatchNumber);
+            GLBatchTDS BatchTDS = null;
 
-            if (BatchTDS.ABatch.Rows.Count < 1)
+            try
             {
-                MessageBox.Show(Catalog.GetString("Batch not found"),
-                    Catalog.GetString("Batch Posting Register"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContentUsingPrivateDb(ALedgerNumber, ABatchNumber);
+            }
+            catch
+            {
+            }         // Ignore this error and instead detect the empty batch, below:
+
+            if ((BatchTDS == null) || (BatchTDS.ABatch == null) || (BatchTDS.ABatch.Rows.Count < 1))
+            {
+                ShowBadBatchNumMessageInUiThread(ABatchNumber);
                 return false;
             }
 

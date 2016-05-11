@@ -174,22 +174,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Test_07_ProcessStatus
-        /// </summary>
-        [Test]
-        public void Test_07_ProcessStatus()
-        {
-            TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
-
-            LedgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT;
-            Assert.AreEqual((int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT, LedgerInfo.YearEndProcessStatus,
-                "OK");
-            LedgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.GIFT_CLOSED_OUT;
-            Assert.AreEqual((int)TYearEndProcessStatus.GIFT_CLOSED_OUT, LedgerInfo.YearEndProcessStatus,
-                "OK");
-        }
-
-        /// <summary>
         /// Test of the Routines HasNoChilds and ChildList
         /// of TGetAccountHierarchyDetailInfo
         /// </summary>

@@ -110,32 +110,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 namespace Ict.Petra.Server.MFinance.GL
 {
     /// <summary>
-    /// This is the list of status values of a_ledger.a_year_end_process_status_i which has been
-    /// copied from Petra. The status begins by counting from RESET_Status up to LEDGER_UPDATED
-    /// and each higher level status includes the lower level ones.
-    /// (May be obsolete - wait until Year end is done)
-    /// </summary>
-    public enum TYearEndProcessStatus
-    {
-        /// <summary>Status initial value</summary>
-        RESET_STATUS = 0,
-        /// <summary></summary>
-        GIFT_CLOSED_OUT = 1,
-        /// <summary></summary>
-        ACCOUNT_CLOSED_OUT = 2,
-        /// <summary></summary>
-        GLMASTER_CLOSED_OUT = 3,
-        /// <summary></summary>
-        BUDGET_CLOSED_OUT = 4,
-        /// <summary></summary>
-        PERIODS_UPDATED = 7,
-        /// <summary></summary>
-        SET_NEW_YEAR = 8,
-        /// <summary>The leger is completely updated.</summary>
-        LEDGER_UPDATED = 10
-    }
-
-    /// <summary>
     /// Module for the year end calculations ...
     /// </summary>
     public class TYearEnd : TPeriodEndOperations
@@ -255,64 +229,69 @@ namespace Ict.Petra.Server.MFinance.GL
                 return true;
             }
 
-            TDBTransaction Transaction = null;
-            Boolean ShouldCommit = false;
             TPeriodEndOperations.FwasCancelled = false;
+            /*
+             * TDBTransaction Transaction = null;
+             * Boolean ShouldCommit = false;
+            */
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                ref ShouldCommit,
-                delegate
-                {
-                    Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
+            /*
+             * DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+             *  TEnforceIsolationLevel.eilMinimum,
+             *  ref Transaction,
+             *  ref ShouldCommit,
+             *  delegate
+             *  {
+             */
+            Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
 
-                    RunPeriodEndSequence(new TArchive(FledgerInfo),
-                        Catalog.GetString("Archive old financial information"));
+            RunPeriodEndSequence(new TArchive(FledgerInfo),
+                Catalog.GetString("Archive old financial information"));
 
-                    RunPeriodEndSequence(new TReallocation(FledgerInfo),
-                        Catalog.GetString("Reallocate all income and expense accounts"));
+            RunPeriodEndSequence(new TReallocation(FledgerInfo),
+                Catalog.GetString("Reallocate all income and expense accounts"));
 
-                    RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
-                        Catalog.GetString("Initialize the database for next year"));
+            RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
+                Catalog.GetString("Initialize the database for next year"));
 
-                    /* As far as we can tell, there's nothing to do for budgets:
-                     *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
-                     *              Catalog.GetString("Initialise budgets for next year"));
-                     */
+            /* As far as we can tell, there's nothing to do for budgets:
+             *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
+             *              Catalog.GetString("Initialise budgets for next year"));
+             */
 
-                    RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
-                        Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
+            RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
+                Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
-                    RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
-                        Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
+            RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
+                Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
 
-                    PurgeProcessedFeeTable();
-                    PurgeIchStewardshipTable();
+            PurgeProcessedFeeTable();
+            PurgeIchStewardshipTable();
 
-                    if (TPeriodEndOperations.FwasCancelled)
-                    {
-                        FverificationResults.Add(new TVerificationResult(Catalog.GetString("Year End"),
-                                Catalog.GetString("Process was cancelled by user."), "",
-                                TPeriodEndErrorAndStatusCodes.PEEC_12.ToString(),
-                                TResultSeverity.Resv_Critical));
-                        FHasCriticalErrors = true;
-                    }
+            if (TPeriodEndOperations.FwasCancelled)
+            {
+                FverificationResults.Add(new TVerificationResult(Catalog.GetString("Year End"),
+                        Catalog.GetString("Process was cancelled by user."), "",
+                        TPeriodEndErrorAndStatusCodes.PEEC_12.ToString(),
+                        TResultSeverity.Resv_Critical));
+                FHasCriticalErrors = true;
+            }
 
-                    if (!FInfoMode && !FHasCriticalErrors)
-                    {
-                        FledgerInfo.ProvisionalYearEndFlag = false;
+            if (!FInfoMode && !FHasCriticalErrors)
+            {
+                FledgerInfo.ProvisionalYearEndFlag = false;
 
-                        // Refresh cached ledger table, so that the client will know the current period
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                            TCacheableFinanceTablesEnum.LedgerDetails.ToString());
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                            TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
+                // Refresh cached ledger table, so that the client will know the current period
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableFinanceTablesEnum.LedgerDetails.ToString());
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
 
-                        TLogging.LogAtLevel(1, "RunYearEnd: No errors; transaction will be committed.");
-                        ShouldCommit = true;
-                    }
-                }); // New Or Existing AutoTransaction
+                TLogging.LogAtLevel(1, "RunYearEnd: No errors; transaction will be committed.");
+                /* ShouldCommit = true; */ // Commenting out for now until Transaction is used again
+            }
+
+//              }); // New Or Existing AutoTransaction
 
             return FHasCriticalErrors;
         } // RunYearEnd

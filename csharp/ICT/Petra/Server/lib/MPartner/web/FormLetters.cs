@@ -253,8 +253,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                                     // add space only if title is not empty
                                     formData.TitleAndSpace = formData.Title;
-                                    if (formData.TitleAndSpace != null
-                                        && formData.TitleAndSpace.Length > 0)
+
+                                    if ((formData.TitleAndSpace != null)
+                                        && (formData.TitleAndSpace.Length > 0))
                                     {
                                         formData.TitleAndSpace += " ";
                                     }
@@ -300,14 +301,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                                 // add space only if first / last name is not empty
                                 formData.FirstNameAndSpace = formData.FirstName;
-                                if (formData.FirstNameAndSpace != null
-                                    && formData.FirstNameAndSpace.Length > 0)
+
+                                if ((formData.FirstNameAndSpace != null)
+                                    && (formData.FirstNameAndSpace.Length > 0))
                                 {
                                     formData.FirstNameAndSpace += " ";
                                 }
+
                                 formData.LastNameAndSpace = formData.LastName;
-                                if (formData.LastNameAndSpace != null
-                                    && formData.LastNameAndSpace.Length > 0)
+
+                                if ((formData.LastNameAndSpace != null)
+                                    && (formData.LastNameAndSpace.Length > 0))
                                 {
                                     formData.LastNameAndSpace += " ";
                                 }
@@ -318,6 +322,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 formData.FirstInitial = ConvertIfUpperCase(formData.FirstName.Substring(0, 1), true);
                                 formData.FirstInitialAndSpace = formData.FirstInitial;
+
                                 // only add space if first initial is not empty
                                 if (formData.FirstInitialAndSpace.Length > 0)
                                 {
@@ -1349,11 +1354,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             AddressLineTokenText = ConvertIfUpperCase(AFormData.FirstName, CapsOn);
                         }
 
-                        if (AddressLineTokenText != null
-                            && AddressLineTokenText.Length > 0)
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
                         {
                             AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
+
                         break;
 
                     case "[[FirstInitial]]":
@@ -1386,11 +1392,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
-                        if (AddressLineTokenText != null
-                            && AddressLineTokenText.Length > 0)
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
                         {
                             AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
+
                         break;
 
                     case "[[LastName]]":
@@ -1414,11 +1421,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             AddressLineTokenText = ConvertIfUpperCase(AFormData.LastName, CapsOn);
                         }
 
-                        if (AddressLineTokenText != null
-                            && AddressLineTokenText.Length > 0)
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
                         {
                             AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
+
                         break;
 
                     case "[[Address1]]":
@@ -1504,11 +1512,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     case "[[Title]]":
                     case "[[TitleAndSpace]]":
                         AddressLineTokenText = ConvertIfUpperCase(AFormData.Title, CapsOn);
-                        if (AddressLineTokenText != null
-                            && AddressLineTokenText.Length > 0)
+
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
                         {
                             AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
+
                         break;
 
                     case "[[NoSuppress]]":
