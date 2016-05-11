@@ -444,6 +444,34 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        #region Splitting Email addresses
+
+        /// <summary>
+        /// If this is true multiple email addresses are split and applied one by one to the same partner on multiple rows
+        /// </summary>
+        public bool SplitEmailAddresses
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Value used internally to specify a pointer into one of multiple email addresses
+        /// </summary>
+        public int CurrentEmailInstance
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Value used internally to specify the next pointer to use where there are multiple email addresses
+        /// </summary>
+        public int NextEmailInstance
+        {
+            get; set;
+        }
+
+        #endregion
+
         /// <summary>
         /// Add retrieval section flag if not there yet
         /// </summary>

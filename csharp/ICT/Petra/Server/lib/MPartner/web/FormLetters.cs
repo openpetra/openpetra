@@ -94,7 +94,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     foreach (MExtractRow ExtractRow in ExtractTable.Rows)
                     {
                         RowCounter++;
-                        dataList.Add(FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey, ExtractRow.LocationKey));
+                        AFormLetterInfo.NextEmailInstance = 0;
+
+                        do
+                        {
+                            AFormLetterInfo.CurrentEmailInstance = AFormLetterInfo.NextEmailInstance;
+                            dataList.Add(FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey, ExtractRow.LocationKey));
+                        } while (AFormLetterInfo.NextEmailInstance > AFormLetterInfo.CurrentEmailInstance);
 
                         if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
                         {
@@ -508,6 +514,28 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                             formData.PrimaryPhone = Phone;
                             formData.PrimaryEmail = Email;
+
+                            if (AFormLetterInfo.SplitEmailAddresses && (Email != null) && (Email.Length > 0))
+                            {
+                                // We have been instructed to split multiple email addresses
+                                string[] addresses = StringHelper.SplitEmailAddresses(Email);
+
+                                if (AFormLetterInfo.CurrentEmailInstance < addresses.Length)
+                                {
+                                    // Extract the correct one and use it for this partner instance
+                                    formData.PrimaryEmail = addresses[AFormLetterInfo.CurrentEmailInstance];
+                                }
+
+                                if ((AFormLetterInfo.CurrentEmailInstance + 1) < addresses.Length)
+                                {
+                                    // There is another one available so return the next instance in our FormLetterInfo
+                                    AFormLetterInfo.NextEmailInstance = AFormLetterInfo.CurrentEmailInstance + 1;
+                                }
+                                else
+                                {
+                                    AFormLetterInfo.NextEmailInstance = -1;
+                                }
+                            }
 
                             // check for skype as it may not often be used
                             // if there is more than one skype id then at the moment the first one found is used

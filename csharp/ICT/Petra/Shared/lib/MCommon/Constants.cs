@@ -149,6 +149,12 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>Form Design Adjustment Options</summary>
         public const string FORM_OPTION_EXCLUDE_ADJUSTMENTS = "Exclude Adjustments";
 
+        /// <summary>Form Design Email Options</summary>
+        public const string FORM_OPTION_BEST_EMAIL = "Best";
+
+        /// <summary>Form Design Email Options</summary>
+        public const string FORM_OPTION_SPLIT_EMAIL = "Split";
+
 
         #endregion
 
