@@ -9,6 +9,8 @@
   <Parameter id="param_sort_by" value="eString:Donor Name" />
   <Parameter id="param_exclude_anonymous_donors" value="eString:false" />
   <Parameter id="param_exclude_no_solicitations" value="eString:false" />
+  <Parameter id="param_motivation_group" value="eString:All" />
+  <Parameter id="param_motivation_detail" value="eString:All" />
   <Parameter id="param_calculation" column="0" value="eString:Gift Date" />
   <Parameter id="ColumnWidth" column="0" value="eInteger:2" />
   <Parameter id="param_ytd" column="0" value="eString:false" />

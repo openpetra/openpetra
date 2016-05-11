@@ -2,7 +2,7 @@
     BaseYaml: FinancialDevelopmentReportingForm.yaml
     FormType: report
     FormTitle: Gifts over Minimum Amount
-    WindowWidth: 650
+    WindowWidth: 700
     WindowHeight: 600
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
@@ -20,11 +20,21 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, grpSelection, grpCurrencySelection, rgrSorting, grpExcludePartners]
+            Controls:
+                Row0: [lblLedger]
+                Row1: [grpSelection, rgrSorting]
+                Row2: [grpCurrencySelection, grpExcludePartners]
+                Row3: [ucoMotivationCriteria]
+            Stretch: horizontally
         tpgColumns:
             Label: Columns
             Controls: [ucoReportColumns]
           
+        ucoMotivationCriteria:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
+            Stretch: horizontally
+            Height: 280
+            ColSpan: 2
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill

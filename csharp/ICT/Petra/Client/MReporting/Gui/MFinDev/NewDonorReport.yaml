@@ -2,8 +2,8 @@
     BaseYaml: FinancialDevelopmentReportingForm.yaml
     FormType: report
     FormTitle: New Donor Report
-    WindowWidth: 650
-    WindowHeight: 500
+    WindowWidth: 700
+    WindowHeight: 530
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\newdonorreport.xml, common.xml]
@@ -20,11 +20,20 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, grpDateSelection, rgrSorting]
+            Controls:
+                Row0: [lblLedger]
+                Row1: [grpDateSelection, rgrSorting]
+                Row2: [ucoMotivationCriteria]
+            Stretch: horizontally
         tpgColumns:
             Label: Columns
             Controls: [ucoReportColumns]
-          
+        
+        ucoMotivationCriteria:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
+            Stretch: horizontally
+            Height: 280
+            ColSpan: 2
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
@@ -35,9 +44,10 @@
         rgrSorting:
             Label: Sort by
             Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
+
         lblLedger:
             Label: Ledger
-           
+
         dtpStartDate:
             Label: Start Date
             ParameterName: param_start_date

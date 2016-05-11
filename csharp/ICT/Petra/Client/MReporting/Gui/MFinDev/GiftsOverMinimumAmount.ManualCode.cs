@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.MReporting.Gui.MFinance;

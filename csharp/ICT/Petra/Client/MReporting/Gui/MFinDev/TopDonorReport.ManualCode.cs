@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
@@ -115,26 +116,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 ACalc.AddParameter("param_extract_name", txtExtract.Text);
             }
 
-            ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
-
-            if ((txtMotivationDetail.Text.Length == 0)
-                || (txtMotivationDetail.Text == "*"))
+            if (rbtAllRecipients.Checked)
             {
-                ACalc.AddParameter("param_motivation_detail", "%");
+                ACalc.AddParameter("param_recipientkey", "0");
             }
             else
             {
-                ACalc.AddParameter("param_motivation_detail", txtMotivationDetail.Text.Replace('*', '%'));
-            }
-
-            if ((txtMotivationGroup.Text.Length == 0)
-                || (txtMotivationGroup.Text == "*"))
-            {
-                ACalc.AddParameter("param_motivation_group", "%");
-            }
-            else
-            {
-                ACalc.AddParameter("param_motivation_group", txtMotivationGroup.Text.Replace('*', '%'));
+                ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
             }
 
             if (rbtBottomDonor.Checked)
@@ -187,8 +175,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
             txtRecipient.Text = AParameters.Get("param_recipientkey").ToString();
 
-            txtMotivationGroup.Text = AParameters.Get("param_motivation_group").ToString().Replace('%', '*');
-            txtMotivationDetail.Text = AParameters.Get("param_motivation_detail").ToString().Replace('%', '*');
+            if (Convert.ToInt64(txtRecipient.Text) == 0)
+            {
+                rbtAllRecipients.Checked = true;
+            }
+            else
+            {
+                rbtRecipient.Checked = true;
+            }
 
             rbtTopDonor.Checked = (AParameters.Get("param_donor_type").ToString() == "top");
             rbtMiddleDonor.Checked = (AParameters.Get("param_donor_type").ToString() == "middle");
