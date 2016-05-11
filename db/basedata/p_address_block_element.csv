@@ -15,8 +15,8 @@ FirstInitial,Initial of first name,false,?,?,?,?,?
 FirstInitialAndSpace,Initial of first name (add space if not empty),false,?,?,?,?,?
 FirstName,First name,false,?,?,?,?,?
 FirstNameAndSpace,First name (add space if not empty),false,?,?,?,?,?
-LastName,Last name (Family, Person) or name (other Partner Classes),false,?,?,?,?,?
-LastNameAndSpace,Last name (Family, Person) or name (add space if not empty),false,?,?,?,?,?
+LastName,Last name (Family/Person) or name (other Partner Classes),false,?,?,?,?,?
+LastNameAndSpace,Last name (Family/Person) or name (add space if not empty),false,?,?,?,?,?
 LocalName,Name in local language,false,?,?,?,?,?
 LocationKey,Location Key,false,?,?,?,?,?
 MiddleName,Middle name,false,?,?,?,?,?
