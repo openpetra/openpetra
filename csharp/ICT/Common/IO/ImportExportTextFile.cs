@@ -158,6 +158,8 @@ namespace Ict.Common.IO
         /// <returns></returns>
         private string ReadNextStringItem()
         {
+            String CurrentLineTemp = "";
+
             if (EndOfFile())
             {
                 throw new Exception("ReadNextStringItem: there is no data anymore");
@@ -180,13 +182,25 @@ namespace Ict.Common.IO
 
                     try
                     {
-                        NextStringItem = StringHelper.GetNextCSV(ref FCurrentLine, SPACE);
+                        CurrentLineTemp = FCurrentLine;
+                        NextStringItem = StringHelper.GetNextCSV(ref CurrentLineTemp, SPACE);
                         AcrossSeveralLines = false;
                     }
                     catch (System.IndexOutOfRangeException)
                     {
                         // the current data row is across several lines
                         AcrossSeveralLines = true;
+                    }
+
+                    if (NextStringItem == StringHelper.CSV_STRING_FORMAT_ERROR)
+                    {
+                        // the current data row is across several lines
+                        AcrossSeveralLines = true;
+                    }
+                    else
+                    {
+                        // reading next csv was fine and all is on one line --> assign shortened line string
+                        FCurrentLine = CurrentLineTemp;
                     }
                 } while (AcrossSeveralLines);
             }

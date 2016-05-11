@@ -532,7 +532,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 FamilyRow.MaritalStatus = ReadString();
                 FamilyRow.MaritalStatusSince = ReadNullableDate();
-                FamilyRow.MaritalStatusComment = ReadString();
+                FamilyRow.MaritalStatusComment = ReadMultiLine();
 
                 //
                 // The EXT file can have the same family record more than once (where several Partners share a family)
@@ -557,7 +557,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PersonRow.Gender = ReadString();
                 PersonRow.MaritalStatus = ReadString();
                 PersonRow.MaritalStatusSince = ReadNullableDate();
-                PersonRow.MaritalStatusComment = ReadString();
+                PersonRow.MaritalStatusComment = ReadMultiLine();
 
                 if (APetraVersion.FileMajorPart < 3)
                 {
@@ -773,7 +773,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonAbilityRow.YearsOfExperience = ReadInt32();
             PersonAbilityRow.BringingInstrument = ReadBoolean();
             PersonAbilityRow.YearsOfExperienceAsOf = ReadNullableDate();
-            PersonAbilityRow.Comment = ReadString();
+            PersonAbilityRow.Comment = ReadMultiLine();
 
             if (!FIgnorePartner)
             {
@@ -967,7 +967,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadInt32(); // field removed: ShortTermApplicationRow.ArrivalExpMinute
             }
 
-            ShortTermApplicationRow.ArrivalComments = ReadString();
+            ShortTermApplicationRow.ArrivalComments = ReadMultiLine();
             ShortTermApplicationRow.TransportInterest = ReadBoolean();
 
             ShortTermApplicationRow.DepartureDetailsStatus = ReadString();
@@ -980,7 +980,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 ReadInt32(); // field removed: ShortTermApplicationRow.DepartureExpMinute
             }
 
-            ShortTermApplicationRow.DepartureComments = ReadString();
+            ShortTermApplicationRow.DepartureComments = ReadMultiLine();
 
             /*
              *  I don't think that this should be done - In "old Petra" we could have 0 in StFieldCharged,
@@ -1075,7 +1075,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ReadBoolean(); // field removed: ApplicationFormRow.FormSent
 
             ReadInt64(); // field removed: ApplicationFormRow.ReferencePartnerKey
-            ReadString(); // field removed: ApplicationFormRow.Comment
+            ReadMultiLine(); // field removed: ApplicationFormRow.Comment
         }
 
         private void ImportApplication(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
@@ -1208,7 +1208,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private void ImportComment(PPartnerRow APartnerRow)
         {
-            APartnerRow.Comment = ReadString();
+            APartnerRow.Comment = ReadMultiLine();
         }
 
         private void ImportCommentSeq()
@@ -1218,7 +1218,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerCommentRow.PartnerKey = FPartnerKey;
 
             PartnerCommentRow.Sequence = ReadInt32();
-            PartnerCommentRow.Comment = ReadString();
+            PartnerCommentRow.Comment = ReadMultiLine();
 
             if (!FIgnorePartner)
             {
@@ -1251,7 +1251,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             StaffDataRow.JobTitle = ReadString();
-            StaffDataRow.StaffDataComments = ReadString();
+            StaffDataRow.StaffDataComments = ReadMultiLine();
 
             if (StaffDataRow.ReceivingField == 0)
             {
@@ -1330,7 +1330,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonLanguageRow.YearsOfExperience = ReadInt32();
             PersonLanguageRow.LanguageLevel = CheckLanguageLevel(ReadInt32(), APetraVersion, ATransaction);
             PersonLanguageRow.YearsOfExperienceAsOf = ReadNullableDate();
-            PersonLanguageRow.Comment = ReadString();
+            PersonLanguageRow.Comment = ReadMultiLine();
 
             if (!FIgnorePartner && (PersonLanguageRow.LanguageCode != ""))
             {
@@ -1364,7 +1364,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PastExperienceRow.Category = ReadString();
             }
 
-            PastExperienceRow.PastExpComments = ReadString();
+            PastExperienceRow.PastExpComments = ReadMultiLine();
 
             if (!FIgnorePartner)
             {
@@ -1428,7 +1428,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.DateOfExpiration = ReadNullableDate();
             DocumentRow.AssocDocId = ReadString();
             DocumentRow.ContactPartnerKey = ReadInt64();
-            DocumentRow.DocComment = ReadString();
+            DocumentRow.DocComment = ReadMultiLine();
 
             if (!FIgnorePartner)
             {
@@ -1472,7 +1472,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PersonalDataRow.BelieverSinceYear = BelieverSinceYear.Value;
                 }
 
-                PersonalDataRow.BelieverSinceComment = ReadString();
+                PersonalDataRow.BelieverSinceComment = ReadMultiLine();
                 PersonalDataRow.BloodType = ReadString();
             }
 
@@ -1493,7 +1493,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonQualificationRow.InformalFlag = ReadBoolean();
             PersonQualificationRow.YearsOfExperience = ReadInt32();
             PersonQualificationRow.YearsOfExperienceAsOf = ReadNullableDate();
-            PersonQualificationRow.Comment = ReadString();
+            PersonQualificationRow.Comment = ReadMultiLine();
             PersonQualificationRow.QualificationDate = ReadNullableDate();
             PersonQualificationRow.QualificationExpiry = ReadNullableDate();
 
@@ -1518,7 +1518,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PersonEvaluationRow.Evaluator = ReadString();
             PersonEvaluationRow.EvaluationType = ReadString();
             PersonEvaluationRow.NextEvaluationDate = ReadNullableDate();
-            PersonEvaluationRow.EvaluationComments = ReadString();
+            PersonEvaluationRow.EvaluationComments = ReadMultiLine();
             PersonEvaluationRow.PersonEvalAction = ReadString();
 
             if (!FIgnorePartner)
@@ -1547,9 +1547,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
 
             SpecialNeedRow.VegetarianFlag = ReadBoolean();
-            SpecialNeedRow.DietaryComment = ReadString();
-            SpecialNeedRow.MedicalComment = ReadString();
-            SpecialNeedRow.OtherSpecialNeed = ReadString();
+            SpecialNeedRow.DietaryComment = ReadMultiLine();
+            SpecialNeedRow.MedicalComment = ReadMultiLine();
+            SpecialNeedRow.OtherSpecialNeed = ReadMultiLine();
 
             if (!FIgnorePartner)
             {
@@ -1599,7 +1599,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 TSequenceNames.seq_partner_attribute_index);
             PartnerAttributeRow.Index = ReadInt32();
             PartnerAttributeRow.Value = ReadString();
-            PartnerAttributeRow.Comment = ReadString();
+            PartnerAttributeRow.Comment = ReadMultiLine();
             PartnerAttributeRow.Primary = ReadBoolean();
             PartnerAttributeRow.WithinOrganisation = ReadBoolean();
             PartnerAttributeRow.Specialised = ReadBoolean();
@@ -1640,7 +1640,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerInterestRow.Interest = ReadString();
             PartnerInterestRow.Category = ReadString(); // Category
             PartnerInterestRow.Level = ReadInt32();
-            PartnerInterestRow.Comment = ReadString();
+            PartnerInterestRow.Comment = ReadMultiLine();
 
             if (!FIgnorePartner)
             {
@@ -1665,7 +1665,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             GiftDestinationRow.Active = ReadBoolean();
             GiftDestinationRow.DefaultGiftDestination = ReadBoolean();
             GiftDestinationRow.PartnerClass = ReadString();
-            GiftDestinationRow.Comment = ReadString();
+            GiftDestinationRow.Comment = ReadMultiLine();
 
             // do not import job record if unit does not exist
             if (!PUnitAccess.Exists(GiftDestinationRow.FieldKey, ATransaction))
@@ -1940,7 +1940,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             /* UnitLanguageReq */ ReadString();
 
-            /* UnitLangComment */ ReadString();
+            /* UnitLangComment */ ReadMultiLine();
         }
 
         private void ImportUnitStructure(TDBTransaction ATransaction)
@@ -2015,7 +2015,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             ReadString(); /* Vision Area */
 
             ReadInt32(); /* Vision Level */
-            ReadString(); /* Vision Comment */
+            ReadMultiLine(); /* Vision Comment */
         }
 
         private void ImportOptionalDetails(PPartnerRow APartnerRow, TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
