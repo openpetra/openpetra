@@ -209,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return true;
             }
 
-            if (keyData == (Keys.C | Keys.Alt))
+            if (keyData == (Keys.P | Keys.Alt))
             {
                 txtDetailRecipientKey.PerformButtonClick();
 

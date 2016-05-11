@@ -15,7 +15,7 @@ RootNode:
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
-        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllGifts}
+        actDeleteAll: {Label=Delete All, ActionClick=DeleteAllGifts}
         actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
@@ -134,7 +134,7 @@ RootNode:
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Re&cipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
+        txtDetailRecipientKey: {Label=Reci&pient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         cmbDetailMotivationGroupCode: {Label=Moti&vation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}

@@ -94,7 +94,6 @@ RootNode:
 #                mniFileNewPartnerWithShepherdChurch:
 #                mniFileNewPartnerWithShepherdOrganisation:
 #                mniFileNewPartnerWithShepherdUnit:
-            mniFileSaveClose: {Action=actSaveClose, ShortcutKeys=Keys.S | Keys.Alt}
             mniFileDeactivatePartner:
             mniFileDeletePartner:
             mniSeparator:

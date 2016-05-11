@@ -24,7 +24,7 @@ RootNode:
         mniFile: 
             Label: &File
             Order: AlwaysFirst
-            mniClose: {Action=actClose, Order=AlwaysLast}
+            mniClose: {Action=actClose, Order=AlwaysLast, ShortcutKeys=Keys.C | Keys.Alt}
         mniHelp: 
             Label: &Help
             Order: AlwaysLast

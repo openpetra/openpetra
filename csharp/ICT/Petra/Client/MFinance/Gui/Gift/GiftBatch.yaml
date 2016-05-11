@@ -36,7 +36,6 @@ RootNode:
         mniFile:
             mniFilePrint:
                 ActionClick:FilePrint
-            mniFileSaveClose: {Action=actSaveClose, ShortcutKeys=Keys.S | Keys.Alt}
             mniSeparator: {Label=-, Visible=false}
             mniNewDonorWarning: {Label=&New Donor Warning}
                 Action: actNewDonorWarning

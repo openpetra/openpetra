@@ -14,7 +14,7 @@ RootNode:
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail}
         actDelete: {Label=&Delete Detail, SkipReferenceCheck=true, ActionClick=DeleteRecord}
-        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllGifts}
+        actDeleteAll: {Label=Delete All, ActionClick=DeleteAllGifts}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
