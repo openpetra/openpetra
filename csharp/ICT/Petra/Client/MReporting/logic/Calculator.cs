@@ -548,6 +548,7 @@ namespace Ict.Petra.Client.MReporting.Logic
             String OldLoggingText;
             DateTime startTime;
             String ErrorMessage = null;
+            Exception ServersideException;
 
             OldLoggingText = "";
             startTime = DateTime.Now;
@@ -568,7 +569,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                     }
                     else
                     {
-                        ErrorMessage = FReportingGenerator.GetErrorMessage();
+                        ErrorMessage = FReportingGenerator.GetErrorMessage(out ServersideException);
 
                         if (ErrorMessage != null)
                         {
@@ -578,7 +579,7 @@ namespace Ict.Petra.Client.MReporting.Logic
                                         SharedConstants.NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX,
                                         StringComparison.InvariantCulture))
                                 {
-                                    TLogging.Log(FReportingGenerator.GetErrorMessage(), FStatusBarProcedure);
+                                    TLogging.Log(ErrorMessage, FStatusBarProcedure);
                                 }
                                 else
                                 {
@@ -591,6 +592,13 @@ namespace Ict.Petra.Client.MReporting.Logic
                                 // We get here e.g. when Report Generation was cancelled: this clears anything that the
                                 // Status Bar has previously shown.
                                 FStatusBarProcedure(String.Empty);
+                            }
+
+                            // Let any Exception that happened server-side escalate to the 'Unhandled Exception Handler'
+                            // to give it visibility
+                            if (ServersideException != null)
+                            {
+                                throw ServersideException;
                             }
                         }
                     }

@@ -58,6 +58,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         private TResultList FResultList;
         private TParameterList FParameterList;
         private String FErrorMessage = string.Empty;
+        private Exception FException = null;
         private Boolean FSuccess;
         private String FProgressID;
 
@@ -184,7 +185,7 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage))
+                        if (FDatacalculator.GenerateResult(ref FParameterList, ref FResultList, ref FErrorMessage, ref FException))
                         {
                             FSuccess = true;
                             SubmissionOK = true;
@@ -195,10 +196,16 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                         }
                     });
             }
-            catch (Exception e)
+            catch (Exception Exc)
             {
-                TLogging.Log("problem calculating report: " + e.Message);
-                TLogging.Log(e.StackTrace, TLoggingType.ToLogfile);
+                TLogging.Log("Problem calculating report: " + Exc.ToString());
+                TLogging.Log(Exc.StackTrace, TLoggingType.ToLogfile);
+
+                FSuccess = false;
+                SubmissionOK = false;
+
+                FErrorMessage = Exc.Message;
+                FException = Exc;
             }
 
             TProgressTracker.FinishJob(FProgressID);
@@ -231,8 +238,10 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
         /// <summary>
         /// error message that happened during report calculation
         /// </summary>
-        public String GetErrorMessage()
+        public String GetErrorMessage(out Exception AException)
         {
+            AException = FException;
+
             return FErrorMessage;
         }
 

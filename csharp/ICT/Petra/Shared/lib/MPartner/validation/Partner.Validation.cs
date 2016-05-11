@@ -1889,6 +1889,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
             TVerificationResult VerificationResult = null;
+            bool IntlTelephoneCodeWarningIssued = false;
 
             // Don't validate deleted DataRows
             if (ARow.RowState == DataRowState.Deleted)
@@ -1923,6 +1924,74 @@ namespace Ict.Petra.Shared.MPartner.Validation
                     // Handle addition to/removal from TVerificationResultCollection
                     AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
                 }
+            }
+            else if (AValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
+            {
+                DataView PhoneAttributesDV = Calculations.DeterminePhoneAttributes(
+                    (PPartnerAttributeTypeTable)TSharedDataCache.TMPartner.GetCacheablePartnerTable(
+                        TCacheablePartnerTablesEnum.ContactTypeList));
+
+                // If this record is about a Phone Number or a Fax Number...
+                if (Calculations.RowHasPhoneOrFaxAttributeType(PhoneAttributesDV, ARow, false))
+                {
+                    // ...then the Phone Number / Fax Number must...
+                    ValidationColumn = ARow.Table.Columns[PPartnerAttributeTable.ColumnValueId];
+
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        VerificationResult = null;
+
+                        if ((!ARow.IsValueCountryNull())
+                            && (ARow.Value.StartsWith("+")))
+                        {
+                            // ...not start with + when an International Telephone Country Code is chosen
+                            VerificationResult = new TScreenVerificationResult(
+                                new TVerificationResult(Catalog.GetString("Phone/Fax Number Validation"),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS1)),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+                        else if ((ARow.IsValueCountryNull())
+                                 && (ARow.Value.StartsWith("+")))
+                        {
+                            // ...not start with + when no International Telephone Country Code is chosen
+                            VerificationResult = new TScreenVerificationResult(
+                                new TVerificationResult(Catalog.GetString("Phone/Fax Number Validation"),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS2)),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+                        }
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+
+                    // ...then the International Telephone Country Code ought to be set for a Phone Number / Fax Number
+                    ValidationColumn = ARow.Table.Columns[PPartnerAttributeTable.ColumnValueCountryId];
+
+                    if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                    {
+                        VerificationResult = null;
+
+                        if ((ARow.IsValueCountryNull())
+                            && (!ARow.Value.StartsWith("+")))
+                        {
+                            VerificationResult = new TScreenVerificationResult(
+                                new TVerificationResult(Catalog.GetString("Phone/Fax Number Validation"),
+                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INTL_PHONE_PREFIX_OUGHT_TO_BE_SET)),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            IntlTelephoneCodeWarningIssued = true;
+                        }
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
+            }
+
+            if ((!IntlTelephoneCodeWarningIssued)
+                && (AVerificationResultCollection.Contains(ARow.Table.Columns[PPartnerAttributeTable.ColumnValueCountryId])))
+            {
+                AVerificationResultCollection.Remove(ARow.Table.Columns[PPartnerAttributeTable.ColumnValueCountryId]);
             }
 
             // 'No Longer Current From Date' must not be a future date if the 'Current' Flag is set to false

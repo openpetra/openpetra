@@ -140,6 +140,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private PPartnerAttributeTypeTable FPartnerAttributeTypeDT;
 
+        private DataView FPhoneAttributesDV;
+
         private Dictionary <string, Tuple <TPartnerAttributeTypeValueKind, string>>HyperlinkWithValueArguments;
 
         /// <summary>Scope of data that is already available client-side.</summary>
@@ -475,6 +477,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPartnerAttributeTypeDT = (PPartnerAttributeTypeTable)TDataCache.TMPartner.GetCacheablePartnerTable2(
                 TCacheablePartnerTablesEnum.ContactTypeList,
                 PPartnerAttributeTypeTable.GetTableName());
+
+            FPhoneAttributesDV = Calculations.DeterminePhoneAttributes(FPartnerAttributeTypeDT);
 
             FPetraUtilsObject.SetToolTip(btnReload, Catalog.GetString("Reload Partner Info"));
         }
@@ -1664,6 +1668,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void UpdateControlsContactDetailsData()
         {
             const string LABEL_VALUE_SEPARATOR = ": ";
+            string Value;
             string PrimarySuffix = Catalog.GetString("  (Primary)");
             var DisplayHelper = new TRtbHyperlinks.DisplayHelper(rtbContactDetails);
             PartnerInfoTDSPPartnerAttributeRow AttributeDR;
@@ -1692,20 +1697,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 AttributeDR = (PartnerInfoTDSPPartnerAttributeRow)ContactDetailsDV[Counter].Row;
 
-                ContactTypeDR = (PPartnerAttributeTypeRow)FPartnerInfoDS.PPartnerAttributeType.Rows.Find(
-                    AttributeDR.AttributeType);
-
-                if (!Enum.TryParse <TPartnerAttributeTypeValueKind>(ContactTypeDR.AttributeTypeValueKind, out ValueKind))
-                {
-                    // Fallback!
-                    ValueKind = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
-                }
+                Calculations.DetermineValueKindOfPartnerAttributeRecord(AttributeDR,
+                    FPartnerInfoDS.PPartnerAttributeType,
+                    out ContactTypeDR,
+                    out ValueKind);
 
                 switch (ValueKind)
                 {
                     case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
                         DisplayHelper.DisplayPlainText(AttributeDR[Calculations.CALCCOLUMNNAME_CONTACTTYPE] + LABEL_VALUE_SEPARATOR, true, false);
-                        DisplayHelper.DisplayPlainText(AttributeDR.Value + (AttributeDR.Primary ? PrimarySuffix : String.Empty), true);
+
+                        if (Calculations.RowHasPhoneOrFaxAttributeType(FPhoneAttributesDV, AttributeDR, false))
+                        {
+                            Value = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(AttributeDR);
+                        }
+                        else
+                        {
+                            Value = AttributeDR.Value;
+                        }
+
+                        DisplayHelper.DisplayPlainText(Value + (AttributeDR.Primary ? PrimarySuffix : String.Empty), true);
                         break;
 
                     case TPartnerAttributeTypeValueKind.CONTACTDETAIL_HYPERLINK:

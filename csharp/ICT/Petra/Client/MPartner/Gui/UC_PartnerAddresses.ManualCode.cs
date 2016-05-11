@@ -1454,6 +1454,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Returns the Country Code of the 'Best Address'.
+        /// </summary>
+        /// <returns></returns>
+        public string GetBestAddressesCountryCode()
+        {
+            // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
+            Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);
+            var BestLocationPK = Calculations.DetermineBestAddress((DataSet)FMainDS);
+
+            var BestLocation = Calculations.FindBestAddressLocation(BestLocationPK, FMainDS.PLocation);
+
+            return BestLocation.CountryCode;
+        }
+
+        /// <summary>
         /// Returns a DataView that contains only Current DataRows.
         ///
         /// </summary>

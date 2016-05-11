@@ -31,6 +31,7 @@ using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
@@ -230,8 +231,14 @@ namespace Ict.Petra.Shared.MPartner
         public static readonly string CALCCOLUMNNAME_CONTACTTYPE = "ContactType";
         /// <summary>Column name for a column that can get added to a PPartnerAttribute Table (gets added by Method
         /// <see cref="CreateCustomDataColumnsForAttributeTable"/>).</summary>
-        public static readonly string CALCCOLUMNNAME_CATEGORYINDEX = "CategoryIndex";
+        public static readonly string CALCCOLUMNNAME_INTLPHONEPREFIX = "InternationalPhonePrefix";
+        /// <summary>Column name for a column that can get added to a PPartnerAttribute Table (gets added by Method
+        /// <see cref="CreateCustomDataColumnsForAttributeTable"/>).</summary>
+        public static readonly string CALCCOLUMNNAME_VALUE = "CalculatedValue";
 
+        /// <summary>Column name for a column that can get added to a PPartnerAttribute Table (gets added by Method
+        /// <see cref="CreateCustomDataColumnsForAttributeTable"/>).</summary>
+        public static readonly string CALCCOLUMNNAME_CATEGORYINDEX = "CategoryIndex";
 
         /// <summary>
         /// Gets the 'Primary E-Mail Address' of a Partner.
@@ -848,7 +855,7 @@ namespace Ict.Petra.Shared.MPartner
                 }
                 else
                 {
-                    APartnersOvrlCS.PrimaryPhoneNumber = APartnerAttributeDR.Value;
+                    APartnersOvrlCS.PrimaryPhoneNumber = ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(APartnerAttributeDR);
                 }
             }
 
@@ -861,7 +868,7 @@ namespace Ict.Petra.Shared.MPartner
                 }
                 else
                 {
-                    APartnersOvrlCS.PhoneNumberWithinOrg = APartnerAttributeDR.Value;
+                    APartnersOvrlCS.PhoneNumberWithinOrg = ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(APartnerAttributeDR);
                 }
             }
         }
@@ -900,6 +907,113 @@ namespace Ict.Petra.Shared.MPartner
                         TCacheablePartnerTablesEnum.PartnerAttributeSystemCategoryTypeList), out tmp));
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether the DataRow passed in with <paramref name="APartnerAttributeRow"/> has got an
+        /// AttributeType that constitutes a Phone Number (but not a Fax Number).
+        /// </summary>
+        /// <param name="APhoneAttributesDV">Must be the return value of a call to Method
+        /// <see cref="DeterminePhoneAttributes"/>.</param>
+        /// <param name="APartnerAttributeRow">Typed p_partner_attribute Row.</param>
+        /// <returns>Whether the DataRow passed in with <paramref name="APartnerAttributeRow"/> has got an
+        /// AttributeType that constitutes a Phone Number (but not a Fax Number).</returns>
+        public static bool RowHasPhoneAttributeType(DataView APhoneAttributesDV, PPartnerAttributeRow APartnerAttributeRow)
+        {
+            return RowHasPhoneOrFaxAttributeType(APhoneAttributesDV, APartnerAttributeRow, true);
+        }
+
+        /// <summary>
+        /// Checks whether the DataRow passed in with <paramref name="APartnerAttributeRow"/> has got an
+        /// AttributeType that constitutes a Phone Number or a Fax Number (but the latter only if
+        /// <paramref name="AExcludeFax"/> isn't true).
+        /// </summary>
+        /// <param name="APhoneAttributesDV">Must be the return value of a call to Method
+        /// <see cref="DeterminePhoneAttributes"/>.</param>
+        /// <param name="APartnerAttributeRow">Typed p_partner_attribute Row.</param>
+        /// <param name="AExcludeFax">Set to true to exclude Fax Numbers in the check, set to false to
+        /// include them in the check.</param>
+        /// <returns>Whether the DataRow passed in with <paramref name="APartnerAttributeRow"/> has got an
+        /// AttributeType that constitutes a Phone Number or a Fax Number (but the latter only if
+        /// <paramref name="AExcludeFax"/> isn't true).</returns>
+        public static bool RowHasPhoneOrFaxAttributeType(DataView APhoneAttributesDV, PPartnerAttributeRow APartnerAttributeRow, bool AExcludeFax)
+        {
+            for (int Counter = 0; Counter < APhoneAttributesDV.Count; Counter++)
+            {
+                if (APartnerAttributeRow.AttributeType == ((PPartnerAttributeTypeRow)APhoneAttributesDV[Counter].Row).AttributeType)
+                {
+                    if (!AExcludeFax
+                        || (AExcludeFax && ((APartnerAttributeRow.AttributeType != "Fax"))))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Prefixes a Phone Number or Fax Number with the International Country Code.
+        /// </summary>
+        /// <param name="ARow">Type p_partner_attribute row.</param>
+        /// <returns>Phone Number / Fax Number prefixed with the International Country Code.</returns>
+        public static string ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(PPartnerAttributeRow ARow)
+        {
+            PCountryRow TypedCountryDR;
+            string InternatTelephoneCode = String.Empty;
+
+            if (!ARow.IsValueCountryNull())
+            {
+                TypedCountryDR = (PCountryRow)FindCountryRowInCachedCountryList(ARow.ValueCountry);
+
+                if (TypedCountryDR != null)
+                {
+                    if (!TypedCountryDR.IsInternatTelephoneCodeNull())
+                    {
+                        InternatTelephoneCode = TypedCountryDR.InternatTelephoneCode.ToString();
+                    }
+                }
+                else
+                {
+                    throw new EOPAppException("ConcatenatePhoneOrFaxNumberWithIntlCountyPrefix: Can't find Country '" +
+                        ARow.ValueCountry + "' in Cacheable DataTable 'CountryList' - Either this is an invalid country code " +
+                        "or the Cacheable DataTable is out of sync!");
+                }
+
+                return ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(
+                    ARow.Value, InternatTelephoneCode);
+            }
+            else
+            {
+                // Fallback in case this Method gets called for a PPartnerAttributeRow that hasn't got a ValueCountry set
+                // (that is, if it isn't holding a Phone Number / Fax Number).
+                return ARow.Value;
+            }
+        }
+
+        /// <summary>
+        /// Looks up a Country by its Country Code in the 'CountryList' Cacheable DataTable.
+        /// </summary>
+        /// <param name="ACountryCode">Country Code of the Country that is to be looked up.</param>
+        /// <returns>DataRow of a Country that was found in the 'CountryList' Cacheable DataTable
+        /// with the Country Code that got passed in with <paramref name="ACountryCode" /> (or null if it wasn't found.)</returns>
+        public static DataRow FindCountryRowInCachedCountryList(string ACountryCode)
+        {
+            var CountryCachableDT = (PCountryTable)TSharedDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+
+            return CountryCachableDT.Rows.Find(new object[] { ACountryCode });
+        }
+
+        /// <summary>
+        /// Prefixes a Phone Number or Fax Number with the International Country Code.
+        /// </summary>
+        /// <param name="AValue">Phone Number or Fax Number.</param>
+        /// <param name="AInternatTelephoneCode">International Country Code for a Phone Number.</param>
+        /// <returns>Phone Number / Fax Number prefixed with the International Country Code.</returns>
+        public static string ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(string AValue, string AInternatTelephoneCode)
+        {
+            return ((AInternatTelephoneCode != String.Empty) ? "+" + AInternatTelephoneCode + " " : "") + AValue;
         }
 
         /// <summary>
@@ -1079,7 +1193,7 @@ namespace Ict.Petra.Shared.MPartner
                 // If no current 'Fax Numbers' were found we return null; otherwise we simply return the first current
                 // 'Fax Number' we find; should there be several current 'Fax Numbers' then the one that comes first
                 // (in the order as seen by the user) gets returned.
-                return FaxDV.Count == 0 ? null : ((PPartnerAttributeRow)FaxDV[0].Row).Value;
+                return FaxDV.Count == 0 ? null : ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix((PPartnerAttributeRow)FaxDV[0].Row);
             }
             else
             {
@@ -1363,6 +1477,71 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Determines the Value Kind (<see cref="TPartnerAttributeTypeValueKind" />) of a p_partner_attribute record.
+        /// </summary>
+        /// <param name="AAttributeDR">Typed p_partner_attribute record. Must be of one of the following Types:
+        /// <see cref="PPartnerAttributeTypeRow"/>, <see cref="PartnerEditTDSPPartnerAttributeRow" /> or
+        /// <see cref="PartnerInfoTDSPPartnerAttributeRow" />!</param>
+        /// <param name="APPartnerAttributeType">Typed p_partner_attribute Table.</param>
+        /// <param name="AContactTypeDR">Typed p_partner_attribute row that matches the Attribute Type of
+        /// <paramref name="AAttributeDR" />.</param>
+        /// <param name="AValueKind">Value Kind (<see cref="TPartnerAttributeTypeValueKind" />) of the
+        /// p_partner_attribute record that got passed in with Argument <paramref name="AAttributeDR"/>.</param>
+        public static void DetermineValueKindOfPartnerAttributeRecord(object AAttributeDR,
+            PPartnerAttributeTypeTable APPartnerAttributeType, out PPartnerAttributeTypeRow AContactTypeDR,
+            out TPartnerAttributeTypeValueKind AValueKind)
+        {
+            PPartnerAttributeTypeRow StandardAttributeDR = null;
+            PartnerEditTDSPPartnerAttributeRow PartnerEditAttributeDR = null;
+            PartnerInfoTDSPPartnerAttributeRow PartnerInfoAttributeDR = null;
+
+            StandardAttributeDR = AAttributeDR as PPartnerAttributeTypeRow;
+
+            if (StandardAttributeDR == null)
+            {
+                PartnerEditAttributeDR = AAttributeDR as PartnerEditTDSPPartnerAttributeRow;
+
+                if (PartnerEditAttributeDR == null)
+                {
+                    PartnerInfoAttributeDR = AAttributeDR as PartnerInfoTDSPPartnerAttributeRow;
+                }
+            }
+
+            if ((StandardAttributeDR == null)
+                && (PartnerEditAttributeDR == null)
+                && (PartnerInfoAttributeDR == null))
+            {
+                throw new ArgumentException("AAttributeDR must be of Type PPartnerAttributeTypeRow, PartnerEditTDSPPartnerAttributeRow " +
+                    "or PartnerInfoTDSPPartnerAttributeRow", "AAttributeDR");
+            }
+
+            AContactTypeDR = (PPartnerAttributeTypeRow)APPartnerAttributeType.Rows.Find(
+                ((StandardAttributeDR != null) ? StandardAttributeDR.AttributeType :
+                 ((PartnerEditAttributeDR != null) ? PartnerEditAttributeDR.AttributeType : PartnerInfoAttributeDR.AttributeType)));
+
+            AValueKind = GetValueKind(AContactTypeDR);
+        }
+
+        /// <summary>
+        /// Gets the Value Kind (<see cref="TPartnerAttributeTypeValueKind" />) of a p_partner_attribute_type record.
+        /// </summary>
+        /// <param name="AContactTypeDR">Type p_partner_attribute_type record.</param>
+        /// <returns>Value Kind (<see cref="TPartnerAttributeTypeValueKind" />) of the p_partner_attribute_type record
+        /// that got passed in with <paramref name="AContactTypeDR"/></returns>
+        public static TPartnerAttributeTypeValueKind GetValueKind(PPartnerAttributeTypeRow AContactTypeDR)
+        {
+            TPartnerAttributeTypeValueKind ReturnValue;
+
+            if (!Enum.TryParse <TPartnerAttributeTypeValueKind>(AContactTypeDR.AttributeTypeValueKind, out ReturnValue))
+            {
+                // Fallback!
+                ReturnValue = TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Creates custom DataColumns that will be added to an instance of a PPartnerAttribute Table.
         /// </summary>
         /// <returns>void</returns>
@@ -1407,6 +1586,15 @@ namespace Ict.Petra.Shared.MPartner
                 APPartnerAttributeDT.Columns.Add(ForeignTableColumn);
             }
 
+            if (!APPartnerAttributeDT.Columns.Contains(CALCCOLUMNNAME_VALUE))
+            {
+                ForeignTableColumn = new DataColumn();
+                ForeignTableColumn.DataType = System.Type.GetType("System.String");
+                ForeignTableColumn.ColumnName = CALCCOLUMNNAME_VALUE;
+                ForeignTableColumn.Expression = "";  // The real expression will be set in Method 'SetColumnExpressions'!
+                APPartnerAttributeDT.Columns.Add(ForeignTableColumn);
+            }
+
             if (!APPartnerAttributeTypeDT.Columns.Contains(CALCCOLUMNNAME_CATEGORYINDEX))
             {
                 ForeignTableColumn = new DataColumn();
@@ -1414,6 +1602,16 @@ namespace Ict.Petra.Shared.MPartner
                 ForeignTableColumn.ColumnName = CALCCOLUMNNAME_CATEGORYINDEX;
                 ForeignTableColumn.Expression = "Parent." + PPartnerAttributeCategoryTable.GetIndexDBName();
                 APPartnerAttributeTypeDT.Columns.Add(ForeignTableColumn);
+            }
+
+            // This not a Column with an Expression - rather, the column content will be dynamically updated through Method
+            // 'UpdateIntlPhonePrefixColumn' in the GUI...
+            if (!APPartnerAttributeDT.Columns.Contains(CALCCOLUMNNAME_INTLPHONEPREFIX))
+            {
+                ForeignTableColumn = new DataColumn();
+                ForeignTableColumn.DataType = System.Type.GetType("System.String");
+                ForeignTableColumn.ColumnName = CALCCOLUMNNAME_INTLPHONEPREFIX;
+                APPartnerAttributeDT.Columns.Add(ForeignTableColumn);
             }
 
             SetColumnExpressions(APPartnerAttributeDT);
@@ -1438,6 +1636,9 @@ namespace Ict.Petra.Shared.MPartner
                 PPartnerAttributeTypeTable.GetSpecialLabelDBName() + ", Parent." + PPartnerAttributeTypeTable.GetAttributeTypeDBName() +
                 "), Parent." +
                 PPartnerAttributeTypeTable.GetAttributeTypeDBName() + ")";
+
+            APPartnerAttributeDT.Columns[CALCCOLUMNNAME_VALUE].Expression =
+                "ISNULL(" + CALCCOLUMNNAME_INTLPHONEPREFIX + ",'') + " + PPartnerAttributeTable.GetValueDBName();
         }
 
         /// <summary>

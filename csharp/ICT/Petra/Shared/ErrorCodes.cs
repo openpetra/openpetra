@@ -492,6 +492,25 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_OFFICE_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00051V";
 
+        /// <summary>Contact Details - Phone/Fax Number: Phone Number must not start with + when a International Telephone Country Code is chosen.</summary>
+        [ErrCodeAttribute(
+             "Phone Number / Fax Number must not start with the + sign (the chosen International Telephone Country Code already adds that).",
+             ErrorMessageText =
+                 "A Phone Number / Fax Number must not start with the + sign (the chosen International Telephone Country Code already adds that).")]
+        public const String ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS1 = "PARTN.00059V";
+
+        /// <summary>Contact Details - Phone/Fax Number: Phone Number must not start with +.</summary>
+        [ErrCodeAttribute("Phone Number / Fax Number must not start with the + sign. Please choose an International Telephone Country Code instead.",
+             ErrorMessageText =
+                 "A Phone Number / Fax Number must not start with the + sign. Please choose an International Telephone Country Code instead.")]
+        public const String ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS2 = "PARTN.00060V";
+
+        /// <summary>Contact Details - Phone/Fax Number: International Telephone Country Code ought to be set.</summary>
+        [ErrCodeAttribute("International Telephone Country Code ought to be set",
+             ErrorMessageText = "An International Telephone Country Code ought to be set - unless the Phone Number / Fax Number is a special " +
+                                "in-country number (e.g. a toll-free number or local-rate number).")]
+        public const String ERR_INTL_PHONE_PREFIX_OUGHT_TO_BE_SET = "PARTN.00061N";
+
         /// <summary>The Address Block text has mis-matched tags.</summary>
         [ErrCodeAttribute("Address Block text contains an unknown data placeholder",
              ErrorMessageText =

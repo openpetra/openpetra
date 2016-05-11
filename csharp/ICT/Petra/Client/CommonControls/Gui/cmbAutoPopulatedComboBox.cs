@@ -166,6 +166,9 @@ namespace Ict.Petra.Client.CommonControls
             InternationalPostalTypeList,
 
             /// <summary>todoComment</summary>
+            InternationalPhonePrefixList,
+
+            /// <summary>todoComment</summary>
             JobAssignmentTypeList,
 
             /// <summary>todoComment</summary>
@@ -786,6 +789,38 @@ namespace Ict.Petra.Client.CommonControls
                     null);
                     break;
 
+                case TListTableEnum.InternationalPhonePrefixList:
+                    const string PhoneCodePrefixWithPlusColumnName = "InternatTelephoneCodeWithPlusPrefix";
+                    DataTable PhonePrefixListPrefixedWithPlusDT;
+                    DataColumn PhonePrefixWithPlus;
+
+                    int DBColumnIndex = PCountryTable.ColumnInternatTelephoneCodeId;
+
+                    // Add the + character in front of the International Phone Prefix (which is just a number
+                    // without the + prefix in p_country, e.g. '44' instead of '+44' for the United Kingdom)
+                    PhonePrefixListPrefixedWithPlusDT = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+
+                    PhonePrefixWithPlus = new DataColumn(PhoneCodePrefixWithPlusColumnName, typeof(string), "'+' + " +
+                    PCountryTable.GetInternatTelephoneCodeDBName());
+                    PhonePrefixListPrefixedWithPlusDT.Columns.Add(PhonePrefixWithPlus);
+
+                    PhonePrefixListPrefixedWithPlusDT.DefaultView.Sort =
+                        PCountryTable.GetInternatTelephoneCodeDBName();
+
+                    AllowDbNull = true;
+
+                    InitialiseUserControl(PhonePrefixListPrefixedWithPlusDT,
+                    PCountryTable.GetCountryCodeDBName(),
+                    PhoneCodePrefixWithPlusColumnName,
+                    PCountryTable.GetCountryCodeDBName(),
+                    PCountryTable.GetCountryCodeDBName() + ", " + PCountryTable.GetInternatAccessCodeDBName()
+                    );
+
+                    cmbCombobox.DisplayInColumn2 = PCountryTable.GetCountryNameDBName();
+                    cmbCombobox.DisplayInColumn3 = PCountryTable.GetCountryCodeDBName();
+
+                    break;
+
                 case TListTableEnum.JobAssignmentTypeList:
 
                     InitialiseUserControl(
@@ -1163,11 +1198,22 @@ namespace Ict.Petra.Client.CommonControls
                 // Now add the row
                 DataRow Dr = FDataCache_ListTable.NewRow();
                 Dr[AValueDBName] = DBNull.Value;
-                Dr[ADisplayDBName] = String.Empty;
 
-                if (ADescDBName != null)
+                if (FListTable != TListTableEnum.InternationalPhonePrefixList)
                 {
-                    Dr[ADescDBName] = FNullValueDesciption;
+                    Dr[ADisplayDBName] = String.Empty;
+
+                    if (ADescDBName != null)
+                    {
+                        Dr[ADescDBName] = FNullValueDesciption;
+                    }
+                }
+                else
+                {
+                    if (ADescDBName != null)
+                    {
+                        Dr[ADescDBName] = String.Empty;
+                    }
                 }
 
                 FDataCache_ListTable.Rows.InsertAt(Dr, 0);
@@ -1441,6 +1487,12 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.InternationalPostalTypeList:
                     this.ColumnWidthCol1 = 100;
                     this.ColumnWidthCol2 = 230;
+                    break;
+
+                case TListTableEnum.InternationalPhonePrefixList:
+                    this.ColumnWidthCol1 = 50;
+                    this.ColumnWidthCol2 = 200;
+                    this.ColumnWidthCol3 = 80;
                     break;
 
                 case TListTableEnum.JobAssignmentTypeList:

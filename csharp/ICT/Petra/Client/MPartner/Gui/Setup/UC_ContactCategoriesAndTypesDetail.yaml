@@ -23,6 +23,7 @@ RootNode:
         pnlFilterAndFind:
             Dock: Left
             ExpandedWidth: 175
+            FilterButton: F&ilter;Click to show or hide the Contact Types filter panel
             FilterControls: [chkDetailUnassignable, chkDetailDeletable]
             FindControls: [chkDetailUnassignable, chkDetailDeletable]
         pnlButtons:

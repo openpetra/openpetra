@@ -38,6 +38,7 @@ RootNode:
         pnlFilterAndFind:
             Dock: Left
             ExpandedWidth: 175
+            FilterButton: ;Click to show or hide the Contact Categories filter panel
             FilterControls: [txtDetailCategoryCode, chkDetailDeletable]
             FindControls: [txtDetailCategoryCode, chkDetailDeletable]
         pnlButtons:
