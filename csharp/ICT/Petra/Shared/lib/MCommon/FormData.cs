@@ -1050,6 +1050,10 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String TitleAndSpace {
+            get; set;
+        }
+        ///
         public String AddresseeType {
             get; set;
         }
@@ -1058,11 +1062,23 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String FirstNameAndSpace {
+            get; set;
+        }
+        ///
         public String FirstInitial {
             get; set;
         }
         ///
+        public String FirstInitialAndSpace {
+            get; set;
+        }
+        ///
         public String LastName {
+            get; set;
+        }
+        ///
+        public String LastNameAndSpace {
             get; set;
         }
         ///

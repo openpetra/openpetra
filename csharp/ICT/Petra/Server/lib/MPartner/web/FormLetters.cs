@@ -250,39 +250,66 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 if (PartnerRow.PartnerShortName.Contains(","))
                                 {
                                     formData.Title = Calculations.FormatShortName(PartnerRow.PartnerShortName, eShortNameFormat.eOnlyTitle);
+
+                                    // add space only if title is not empty
+                                    formData.TitleAndSpace = formData.Title;
+                                    if (formData.TitleAndSpace != null
+                                        && formData.TitleAndSpace.Length > 0)
+                                    {
+                                        formData.TitleAndSpace += " ";
+                                    }
                                 }
                                 else
                                 {
                                     formData.Title = "";
+                                    formData.TitleAndSpace = "";
                                 }
-                            }
 
-                            if (PartnerClass == TPartnerClass.PERSON)
-                            {
-                                PPersonTable PersonTable;
-                                PPersonRow PersonRow;
-                                PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                                if (PersonTable.Count > 0)
+                                if (PartnerClass == TPartnerClass.PERSON)
                                 {
-                                    PersonRow = (PPersonRow)PersonTable.Rows[0];
+                                    PPersonTable PersonTable;
+                                    PPersonRow PersonRow;
+                                    PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                                    formData.FirstName = PersonRow.FirstName;
-                                    formData.LastName = PersonRow.FamilyName;
+                                    if (PersonTable.Count > 0)
+                                    {
+                                        PersonRow = (PPersonRow)PersonTable.Rows[0];
+
+                                        formData.FirstName = PersonRow.FirstName;
+                                        formData.LastName = PersonRow.FamilyName;
+                                    }
                                 }
-                            }
-                            else if (PartnerClass == TPartnerClass.FAMILY)
-                            {
-                                PFamilyTable FamilyTable;
-                                PFamilyRow FamilyRow;
-                                FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                                if (FamilyTable.Count > 0)
+                                else if (PartnerClass == TPartnerClass.FAMILY)
                                 {
-                                    FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
+                                    PFamilyTable FamilyTable;
+                                    PFamilyRow FamilyRow;
+                                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                                    formData.FirstName = FamilyRow.FirstName;
-                                    formData.LastName = FamilyRow.FamilyName;
+                                    if (FamilyTable.Count > 0)
+                                    {
+                                        FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
+
+                                        formData.FirstName = FamilyRow.FirstName;
+                                        formData.LastName = FamilyRow.FamilyName;
+                                    }
+                                }
+                                else
+                                {
+                                    formData.LastName = PartnerRow.PartnerShortName;
+                                }
+
+                                // add space only if first / last name is not empty
+                                formData.FirstNameAndSpace = formData.FirstName;
+                                if (formData.FirstNameAndSpace != null
+                                    && formData.FirstNameAndSpace.Length > 0)
+                                {
+                                    formData.FirstNameAndSpace += " ";
+                                }
+                                formData.LastNameAndSpace = formData.LastName;
+                                if (formData.LastNameAndSpace != null
+                                    && formData.LastNameAndSpace.Length > 0)
+                                {
+                                    formData.LastNameAndSpace += " ";
                                 }
                             }
 
@@ -290,6 +317,12 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 && (formData.FirstName.Length > 0))
                             {
                                 formData.FirstInitial = ConvertIfUpperCase(formData.FirstName.Substring(0, 1), true);
+                                formData.FirstInitialAndSpace = formData.FirstInitial;
+                                // only add space if first initial is not empty
+                                if (formData.FirstInitialAndSpace.Length > 0)
+                                {
+                                    formData.FirstInitialAndSpace += " ";
+                                }
                             }
                         }
 
@@ -1114,9 +1147,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             List <String>AddressTokenList = new List <String>();
             String AddressLineText = "";
+            String AddressLineTokenText = "";
             Boolean PrintAnyway = false;
             Boolean CapsOn = false;
             Boolean UseContact = false;
+            String SpacePlaceholder = "";
 
             PPersonTable PersonTable;
             PPersonRow PersonRow = null;
@@ -1134,6 +1169,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             foreach (String AddressLineToken in AddressTokenList)
             {
+                switch (AddressLineToken)
+                {
+                    case "[[TitleAndSpace]]":
+                    case "[[FirstNameAndSpace]]":
+                    case "[[FirstInitialAndSpace]]":
+                    case "[[LastNameAndSpace]]":
+
+                        SpacePlaceholder = " ";
+                        break;
+
+                    default:
+
+                        SpacePlaceholder = "";
+                        break;
+                }
+
                 switch (AddressLineToken)
                 {
                     case "[[AcademicTitle]]":
@@ -1278,26 +1329,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         break;
 
                     case "[[FirstName]]":
+                    case "[[FirstNameAndSpace]]":
+
+                        AddressLineTokenText = "";
 
                         if (UseContact)
                         {
                             if (PersonRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(PersonRow.FirstName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(PersonRow.FirstName, CapsOn);
                             }
                             else if (FamilyRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(FamilyRow.FirstName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(FamilyRow.FirstName, CapsOn);
                             }
                         }
                         else
                         {
-                            AddressLineText += ConvertIfUpperCase(AFormData.FirstName, CapsOn);
+                            AddressLineTokenText = ConvertIfUpperCase(AFormData.FirstName, CapsOn);
                         }
 
+                        if (AddressLineTokenText != null
+                            && AddressLineTokenText.Length > 0)
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
+                        }
                         break;
 
                     case "[[FirstInitial]]":
+                    case "[[FirstInitialAndSpace]]":
+
+                        AddressLineTokenText = "";
 
                         if (UseContact)
                         {
@@ -1305,14 +1367,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 if (PersonRow.FirstName.Length > 0)
                                 {
-                                    AddressLineText += ConvertIfUpperCase(PersonRow.FirstName.Substring(0, 1), CapsOn);
+                                    AddressLineTokenText = ConvertIfUpperCase(PersonRow.FirstName.Substring(0, 1), CapsOn);
                                 }
                             }
                             else if (FamilyRow != null)
                             {
                                 if (PersonRow.FirstName.Length > 0)
                                 {
-                                    AddressLineText += ConvertIfUpperCase(FamilyRow.FirstName.Substring(0, 1), CapsOn);
+                                    AddressLineTokenText = ConvertIfUpperCase(FamilyRow.FirstName.Substring(0, 1), CapsOn);
                                 }
                             }
                         }
@@ -1320,30 +1382,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             if (AFormData.FirstName.Length > 0)
                             {
-                                AddressLineText += ConvertIfUpperCase(AFormData.FirstName.Substring(0, 1), CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(AFormData.FirstName.Substring(0, 1), CapsOn);
                             }
                         }
 
+                        if (AddressLineTokenText != null
+                            && AddressLineTokenText.Length > 0)
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
+                        }
                         break;
 
                     case "[[LastName]]":
+                    case "[[LastNameAndSpace]]":
+
+                        AddressLineTokenText = "";
 
                         if (UseContact)
                         {
                             if (PersonRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(PersonRow.FamilyName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(PersonRow.FamilyName, CapsOn);
                             }
                             else if (FamilyRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(FamilyRow.FamilyName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(FamilyRow.FamilyName, CapsOn);
                             }
                         }
                         else
                         {
-                            AddressLineText += ConvertIfUpperCase(AFormData.LastName, CapsOn);
+                            AddressLineTokenText = ConvertIfUpperCase(AFormData.LastName, CapsOn);
                         }
 
+                        if (AddressLineTokenText != null
+                            && AddressLineTokenText.Length > 0)
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
+                        }
                         break;
 
                     case "[[Address1]]":
@@ -1427,7 +1502,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         break;
 
                     case "[[Title]]":
-                        AddressLineText += ConvertIfUpperCase(AFormData.Title, CapsOn);
+                    case "[[TitleAndSpace]]":
+                        AddressLineTokenText = ConvertIfUpperCase(AFormData.Title, CapsOn);
+                        if (AddressLineTokenText != null
+                            && AddressLineTokenText.Length > 0)
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
+                        }
                         break;
 
                     case "[[NoSuppress]]":
