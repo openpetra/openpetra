@@ -1297,7 +1297,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Comment", FMainDS.PPartnerAttribute.ColumnComment);
 
             // Value
-            // TODO: Prefix phone numbers / fax numbers with 'International Telephone Code'
             grdDetails.AddTextColumn("Value", FMainDS.PPartnerAttribute.Columns[Calculations.CALCCOLUMNNAME_VALUE]);
 
             // Current
