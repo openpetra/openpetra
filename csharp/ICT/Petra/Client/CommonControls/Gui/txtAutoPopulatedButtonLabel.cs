@@ -2092,6 +2092,14 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Simulate a click on the controls button
+        /// </summary>
+        public void PerformButtonClick()
+        {
+            this.txtAutoPopulated.btnFindScreen.PerformClick();
+        }
+
+        /// <summary>
         /// Updates the label for the text button
         /// </summary>
         public void UpdateDisplayedValue()

@@ -161,7 +161,11 @@ namespace Ict.Common.Controls
 
         /// <summary> Required designer variable. </summary>
         protected System.ComponentModel.IContainer components = null;
-        private TbtnVarioText btnFindScreen;
+        
+        /// <summary>
+        /// Button for Find Screen
+        /// </summary>
+        public TbtnVarioText btnFindScreen;
 
         private Color? FOriginalPartnerClassColor = null;
 

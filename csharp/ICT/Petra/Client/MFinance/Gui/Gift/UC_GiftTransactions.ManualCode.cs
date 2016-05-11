@@ -205,14 +205,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (keyData == (Keys.D | Keys.Alt))
             {
-                txtDetailDonorKey.SetTextboxFocus();
-
+                txtDetailDonorKey.PerformButtonClick();
                 return true;
             }
 
             if (keyData == (Keys.C | Keys.Alt))
             {
-                txtDetailRecipientKey.SetTextboxFocus();
+                txtDetailRecipientKey.PerformButtonClick();
+
                 return true;
             }
 
