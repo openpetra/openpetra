@@ -161,7 +161,7 @@ namespace Ict.Common.Controls
 
         /// <summary> Required designer variable. </summary>
         protected System.ComponentModel.IContainer components = null;
-        
+
         /// <summary>
         /// Button for Find Screen
         /// </summary>
