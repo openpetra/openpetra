@@ -56,6 +56,7 @@ inc/cfg/benerator/benerator.log
 i18n/template.pot.withallsources
 *.de-DE.yaml
 *.da-DK.yaml
+*.fr-FR.yaml
 *.es-ES.yaml
 -*.xml
 csharp/ICT/Testing/lib/Common/IO/TestData/testUnzip

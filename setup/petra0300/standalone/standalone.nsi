@@ -122,6 +122,8 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\delivery\bin\es-ES\OpenPetra.resources.dll
   SetOutPath "$INSTDIR\bin30\da-DK"
   File ..\..\..\delivery\bin\da-DK\OpenPetra.resources.dll
+  SetOutPath "$INSTDIR\bin30\fr-FR"
+  File ..\..\..\delivery\bin\fr-FR\OpenPetra.resources.dll
   SetOutPath "$INSTDIR\reports30"
   File ..\..\..\XmlReports\*.xml
   SetOutPath "$INSTDIR\reports30"
@@ -228,6 +230,7 @@ Section "Uninstall"
   Delete "$INSTDIR\bin30\de-DE\*.dll"
   Delete "$INSTDIR\bin30\es-ES\*.dll"
   Delete "$INSTDIR\bin30\da-DK\*.dll"
+  Delete "$INSTDIR\bin30\fr-FR\*.dll"
   Delete "$INSTDIR\bin30\*.exe"
   Delete "$INSTDIR\bin30\*.yml"
   Delete "$INSTDIR\bin30\version.txt"
@@ -249,6 +252,7 @@ Section "Uninstall"
   RMDir "$INSTDIR\bin30\de-DE"
   RMDir "$INSTDIR\bin30\es-ES"
   RMDir "$INSTDIR\bin30\da-DK"
+  RMDir "$INSTDIR\bin30\fr-FR"
   RMDir "$INSTDIR\bin30"
   RMDir "$INSTDIR\reports30\Settings"  
   RMDir "$INSTDIR\reports30"

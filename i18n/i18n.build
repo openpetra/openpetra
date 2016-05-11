@@ -46,6 +46,7 @@ ENDLOCAL
     <move file="${dir.root}/i18n/de.po" tofile="${dir.root}/i18n/de-DE.po"/>
     <move file="${dir.root}/i18n/da.po" tofile="${dir.root}/i18n/da-DK.po"/>
     <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po"/>
+    <move file="${dir.root}/i18n/fr.po" tofile="${dir.root}/i18n/fr-FR.po"/>
    </if>
    <if test="${'unix'!=platform::get-name()}" >
      <fail message="not implemented for Windows"/>
