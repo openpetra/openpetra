@@ -158,12 +158,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     return false;
                 }
-
-                if (F_resultSeverity != TResultSeverity.Resv_Critical)
-                {
-                    new TLedgerInitFlagHandler(F_LedgerNum,
-                        TLedgerInitFlagEnum.Revaluation).Flag = true; // Set the REVALUATION flag on the Ledger. THIS FLAG IS NOW IGNORED.
-                }
             }
             catch (EVerificationException terminate)
             {
@@ -195,6 +189,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (GlmTable.Rows.Count > 0)
                 {
                     RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
+                    TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
                 }
             }
 

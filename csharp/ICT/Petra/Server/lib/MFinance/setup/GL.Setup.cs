@@ -1814,56 +1814,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
         }
 
-        private static void AddOrRemoveLedgerInitFlag(Int32 ALedgerNumber, String AInitFlagName,
-            Boolean AAdd, TDBTransaction ATransaction)
-        {
-            #region Validate Arguments
-
-            if (ALedgerNumber <= 0)
-            {
-                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
-                            "Function:{0} - The Ledger number must be greater than 0!"),
-                        Utilities.GetMethodName(true)), ALedgerNumber);
-            }
-            else if (AInitFlagName.Length == 0)
-            {
-                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Init Flag name is empty!"),
-                        Utilities.GetMethodName(true)));
-            }
-            else if (ATransaction == null)
-            {
-                throw new EFinanceSystemDBTransactionNullException(String.Format(Catalog.GetString(
-                            "Function:{0} - Database Transaction must not be NULL!"),
-                        Utilities.GetMethodName(true)));
-            }
-
-            #endregion Validate Arguments
-
-            if (AAdd)
-            {
-                // add flag if not there yet
-                if (!ALedgerInitFlagAccess.Exists(ALedgerNumber, AInitFlagName, ATransaction))
-                {
-                    ALedgerInitFlagTable InitFlagTable = new ALedgerInitFlagTable();
-
-                    ALedgerInitFlagRow InitFlagRow = InitFlagTable.NewRowTyped();
-                    InitFlagRow.LedgerNumber = ALedgerNumber;
-                    InitFlagRow.InitOptionName = AInitFlagName;
-                    InitFlagTable.Rows.Add(InitFlagRow);
-
-                    ALedgerInitFlagAccess.SubmitChanges(InitFlagTable, ATransaction);
-                }
-            }
-            else
-            {
-                // remove flag from table if it exists
-                if (ALedgerInitFlagAccess.Exists(ALedgerNumber, AInitFlagName, ATransaction))
-                {
-                    ALedgerInitFlagAccess.DeleteByPrimaryKey(ALedgerNumber, AInitFlagName, ATransaction);
-                }
-            }
-        }
-
         /// <summary>
         /// save general ledger settings
         /// </summary>
@@ -2198,17 +2148,17 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         // international currency: "INTL-CURRENCY" (this is a new flag for OpenPetra)
                         // current period (start of ledger date): CURRENT-PERIOD
                         // calendar settings: CAL
-                        AddOrRemoveLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_SUSP_ACC, LedgerRow.SuspenseAccountFlag,
-                            Transaction);
-                        AddOrRemoveLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_BUDGET, LedgerRow.BudgetControlFlag, Transaction);
-                        AddOrRemoveLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENCY, !LedgerRow.IsBaseCurrencyNull(),
-                            Transaction);
-                        AddOrRemoveLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_INTL_CURRENCY, !LedgerRow.IsIntlCurrencyNull(),
-                            Transaction);
-                        AddOrRemoveLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENT_PERIOD, !LedgerRow.IsCurrentPeriodNull(),
-                            Transaction);
-                        AddOrRemoveLedgerInitFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CAL, !LedgerRow.IsNumberOfAccountingPeriodsNull(),
-                            Transaction);
+                        // (Apparently no-one currently looks for the presence of any of these flags?)
+
+                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_SUSP_ACC, LedgerRow.SuspenseAccountFlag);
+                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_BUDGET, LedgerRow.BudgetControlFlag);
+                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENCY, !LedgerRow.IsBaseCurrencyNull());
+                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_INTL_CURRENCY,
+                            !LedgerRow.IsIntlCurrencyNull());
+                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CURRENT_PERIOD,
+                            !LedgerRow.IsCurrentPeriodNull());
+                        TLedgerInitFlag.SetOrRemoveFlag(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_CAL,
+                            !LedgerRow.IsNumberOfAccountingPeriodsNull());
 
                         GLSetupTDSAccess.SubmitChanges(InspectDS);
 

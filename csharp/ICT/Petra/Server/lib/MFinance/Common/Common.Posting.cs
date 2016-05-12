@@ -1863,6 +1863,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         gLMRow.YtdActualForeign += postingLevelElement.TransAmount;
                     }
+
+                    TLedgerInitFlag.SetFlagComponent(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, accountRow.AccountCode);
                 }
 
                 if (APostingDS.ALedger[0].ProvisionalYearEndFlag)

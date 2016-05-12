@@ -276,6 +276,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 glmNewYearInit.IsInInfoMode = false;
 //              Assert.Greater(glmNewYearInit.GetJobSize(), 0, "Check that NewYearInit has work to do"); // in this version, GetJobSize returns 0
                 glmNewYearInit.RunOperation();
+                YearEndOperator.SetNextPeriod();
             }
 
             Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "After YearEnd, Ledger is in year 2");

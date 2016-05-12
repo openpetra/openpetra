@@ -337,8 +337,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 Assert.Greater(20, Counter, "Too many loops");
 
                 // Set revaluation flag ...
-                new TLedgerInitFlagHandler(FLedgerNumber,
-                    TLedgerInitFlagEnum.Revaluation).Flag = true;
+                new TLedgerInitFlag(FLedgerNumber,
+                    "Reval").IsSet = true;
 
                 // Run MonthEnd ...
                 TVerificationResultCollection verificationResult;

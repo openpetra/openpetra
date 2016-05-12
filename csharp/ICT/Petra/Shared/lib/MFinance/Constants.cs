@@ -418,6 +418,8 @@ namespace Ict.Petra.Shared.MFinance
         public const string LEDGER_INIT_FLAG_CURRENT_PERIOD = "CURRENT-PERIOD";
         ///Ledger Init Flags
         public const string LEDGER_INIT_FLAG_CAL = "CAL";
+        ///Ledger Init Flags
+        public const string LEDGER_INIT_FLAG_REVAL = "REVAL";
     }
 
     /// <summary>

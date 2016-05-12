@@ -230,20 +230,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             TPeriodEndOperations.FwasCancelled = false;
-
-            /*
-             * TDBTransaction Transaction = null;
-             * Boolean ShouldCommit = false;
-             */
-
-            /*
-             * DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-             *  TEnforceIsolationLevel.eilMinimum,
-             *  ref Transaction,
-             *  ref ShouldCommit,
-             *  delegate
-             *  {
-             */
             Int32 OldYearNum = FledgerInfo.CurrentFinancialYear;
 
             RunPeriodEndSequence(new TArchive(FledgerInfo),
@@ -263,7 +249,7 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
                 Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
-            RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo),
+            RunPeriodEndSequence(new TResetForwardPeriodICH(FledgerInfo, OldYearNum),
                 Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
 
             PurgeProcessedFeeTable();
@@ -280,24 +266,13 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (!FInfoMode && !FHasCriticalErrors)
             {
-                FledgerInfo.ProvisionalYearEndFlag = false;
-
-                // Refresh cached ledger table, so that the client will know the current period
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                    TCacheableFinanceTablesEnum.LedgerDetails.ToString());
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                    TCacheableFinanceTablesEnum.AccountingPeriodList.ToString());
-
-                TLogging.LogAtLevel(1, "RunYearEnd: No errors; transaction will be committed.");
-
-                /* ShouldCommit = true; */ // Commenting out for now until Transaction is used again
+                SetNextPeriod();
+                TLogging.LogAtLevel(1, "RunYearEnd: Process complete.");
             }
 
-//              }); // New Or Existing AutoTransaction
-
             return FHasCriticalErrors;
-        } // RunYearEnd
-    } // TYearEnd
+        } // Run YearEnd
+    } // T YearEnd
 
     /// <summary>
     /// If the oldest year of data is now beyond the retention period, archive it to file and delete those records.
@@ -728,8 +703,8 @@ namespace Ict.Petra.Server.MFinance.GL
                 });
 
             return JobSize;
-        }  // RunOperation
-    } // TAccountPeriodToNewYear
+        }  // Run Operation
+    } // T AccountPeriod To NewYear
 
     /// <summary>
     /// Read all glm year end records of the actual year
@@ -856,11 +831,12 @@ namespace Ict.Petra.Server.MFinance.GL
             Int32 TempGLMSequence = -1;
             Int32 EntryCount = 0;
 
-            if (!FInfoMode)
-            {
-                FYearEndOperator.SetNextPeriod();
-            }
-
+/*
+ *          if (!FInfoMode)
+ *          {
+ *              FYearEndOperator.SetNextPeriod();
+ *          }
+ */
             foreach (AGeneralLedgerMasterRow GlmRowFrom in FGlmPostingFrom.Rows)
             {
                 if (TPeriodEndOperations.FwasCancelled)
@@ -1024,7 +1000,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             return EntryCount;
         } // RunOperation
-    } // TGlmNewYearInit
+    } // T Glm NewYear Init
 
     /*
      * As far as we can tell, there's nothing to do with the budgets:
@@ -1218,20 +1194,23 @@ namespace Ict.Petra.Server.MFinance.GL
     public class TResetForwardPeriodICH : AbstractPeriodEndOperation
     {
         private TLedgerInfo FLedgerInfo;
+        private Int32 FoldYearNum;
 
         /// <summary>
         /// </summary>
         /// <param name="ALedgerInfo"></param>
-        public TResetForwardPeriodICH(TLedgerInfo ALedgerInfo)
+        /// <param name="AoldYearNum"></param>
+        public TResetForwardPeriodICH(TLedgerInfo ALedgerInfo, Int32 AoldYearNum)
         {
             FLedgerInfo = ALedgerInfo;
+            FoldYearNum = AoldYearNum;
         }
 
         /// <summary>
         /// </summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new TResetForwardPeriodICH(FLedgerInfo);
+            return new TResetForwardPeriodICH(FLedgerInfo, FoldYearNum);
         }
 
         /// <summary>
@@ -1248,7 +1227,7 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// TResetForwardPeriodICH.RunOperation
+        /// RunOperation
         /// Delete old year and update periods for those in new year (eg. 13 becomes 1, 14 becomes 2, etc)
         /// </summary>
         public override Int32 RunOperation()
@@ -1268,7 +1247,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         String Query =
                             "SELECT * FROM PUB_a_ich_stewardship WHERE " +
-                            "a_ledger_number_i=" + FLedgerInfo.LedgerNumber;
+                            "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
+                            " AND (a_year_i=" + FoldYearNum + " OR a_year_i=0)";
                         DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AIchStewardship", Transaction);
 
                         if (Tbl.Rows.Count > 0)
@@ -1283,12 +1263,18 @@ namespace Ict.Petra.Server.MFinance.GL
                                 if (StewardshipRow.PeriodNumber > FLedgerInfo.NumberOfAccountingPeriods)
                                 {
                                     StewardshipRow.PeriodNumber -= FLedgerInfo.NumberOfAccountingPeriods;
+                                    StewardshipRow.Year = FoldYearNum + 1;
                                     JobSize++;
                                 }
-                                else
-                                {
-                                    StewardshipRow.Delete();
-                                }
+
+/*
+ * This kind of purge is not required now - we're keeping old Stewardship rows, until further notice:
+ *
+ *                              else
+ *                              {
+ *                                  StewardshipRow.Delete();
+ *                              }
+ */
                             }
 
                             if (!FInfoMode)
@@ -1308,5 +1294,5 @@ namespace Ict.Petra.Server.MFinance.GL
 
             return JobSize;
         }
-    }     // TResetForwardPeriodICH
+    }     // T Reset ForwardPeriod ICH
 } // Ict.Petra.Server.MFinance.GL

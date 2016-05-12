@@ -581,6 +581,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         //MainDS.Tables.Add(IchStewardshipTable);
 
                         ICHStewardshipRow.LedgerNumber = ALedgerNumber;
+                        ICHStewardshipRow.Year = LedgerRow.CurrentFinancialYear;
                         ICHStewardshipRow.PeriodNumber = APeriodNumber;
                         ICHStewardshipRow.IchNumber = ICHProcessing;
                         ICHStewardshipRow.DateProcessed = DateTime.Today;
@@ -766,7 +767,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             }
 
             return IsSuccessful;
-        }
+        } // Generate ICH Stewardship Batch
 
         /// <summary>
         /// To build a CSV list of accounts

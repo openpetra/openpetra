@@ -183,6 +183,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             AMessages = Messages;
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+            NeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
 
             FMainDS = new GiftBatchTDS();
             StringReader sr = new StringReader(AImportString);
@@ -974,7 +975,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ImportMessage = Catalog.GetString("Parsing first line");
                         AGiftRow previousGift = null;
 
-                        // Go round a loop reading the file line by line
                         FImportLine = sr.ReadLine();
                         Boolean ImportingEsr = false;
                         Int32 PercentDone = 10;
@@ -984,6 +984,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                         Int32 totalRows = AImportString.Split('\n').Length;
                         TValidationControlsDict EmptyControlsDict = new TValidationControlsDict();
 
+                        if (FDelimiter.Length < 1)
+                        {
+                            FDelimiter = ",";
+                        }
+
+                        // Go round a loop reading the file line by line
                         while (FImportLine != null)
                         {
                             RowNumber++;
@@ -996,10 +1002,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count + 1;
                                 Boolean IsEsrString = false;
 
-                                if (numberOfElements == 2)
-                                {
-                                    IsEsrString = ((FImportLine.Trim().Length == 100) && (FImportLine.Substring(53, 2) == "  "));
-                                }
+                                IsEsrString = ((numberOfElements == 2) && (FImportLine.Trim().Length == 100) && (FImportLine.Substring(53, 2) == "  "));
 
                                 if (ImportingEsr && !IsEsrString) // I did previously succeed with ESR, but now not so much -
                                 {                                 // I'm probably at the last line of the file.
@@ -1062,11 +1065,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                     int messageCountBeforeValidate = preParseMessageCount;
 
-                                    TPartnerClass RecipientClass;
-                                    string RecipientDescription;
-                                    TPartnerServerLookups.GetPartnerShortName(giftDetails.RecipientKey, out RecipientDescription, out RecipientClass);
+                                    TPartnerClass recipientClass;
+                                    string partnerShortName;
+                                    TPartnerServerLookups.GetPartnerShortName(giftDetails.RecipientKey, out partnerShortName, out recipientClass);
                                     GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)giftDetails;
-                                    Row.RecipientClass = RecipientClass.ToString();
+                                    Row.RecipientClass = recipientClass.ToString();
+                                    Row.RecipientDescription = partnerShortName;
 
                                     // Do our standard validation on this gift
                                     AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
@@ -1515,9 +1519,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
 
             // If the gift has a recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
-            if ((AGiftDetails.RecipientLedgerNumber == 0) && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            if ((AGiftDetails.RecipientLedgerNumber == 0)
+                && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                && (ANeedRecipientLedgerNumber.DefaultView.Find(AGiftDetails.RecipientKey) == -1)
+                )
             {
-                ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
+//                ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
                 ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftDetails.ItemArray.Clone());
             }
 
@@ -1785,10 +1792,13 @@ namespace Ict.Petra.Server.MFinance.Gift
             AgiftDetails.AccountCode = NewAccountCode;
             AgiftDetails.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
 
-            // If the gift has a recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
-            if ((AgiftDetails.RecipientLedgerNumber == 0) && (AgiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+            // If the gift has a recipient with no Gift Destination then the import will fail. Gift detail is added to a table and returned to client.
+            if ((AgiftDetails.RecipientLedgerNumber == 0)
+                && (AgiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                && (ANeedRecipientLedgerNumber.DefaultView.Find(RecipientKey) == -1)
+                )
             {
-                ((GiftBatchTDSAGiftDetailRow)AgiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
+//                ((GiftBatchTDSAGiftDetailRow)AgiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
                 ANeedRecipientLedgerNumber.Rows.Add((object[])AgiftDetails.ItemArray.Clone());
             }
 

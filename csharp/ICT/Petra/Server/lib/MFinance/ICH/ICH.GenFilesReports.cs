@@ -143,6 +143,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 AIchStewardshipRow TemplateRow = (AIchStewardshipRow)IchStewTable.NewRowTyped(false);
 
                 TemplateRow.LedgerNumber = ALedgerNumber;
+                TemplateRow.Year = LedgerRow.CurrentFinancialYear;
                 TemplateRow.PeriodNumber = APeriodNumber;
 
                 StringCollection operators = StringHelper.InitStrArr(new string[] { "=", "=" });

@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       wolfgangu, timop
+//       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -326,44 +327,39 @@ namespace Ict.Petra.Server.MFinance.GL
                 return;
             }
 
-            /*
-             * I'm no longer looking at this flag,
-             * since it can be set even though some accounts are left requiring revaluation.
-             * See Mantis 0004059
-             *
-             * if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-             *       TLedgerInitFlagEnum.Revaluation).Flag))
-             * {
-             *  return; // Revaluation has been performed for the current period.
-             * }
-             */
+            String RevalAccounts = TLedgerInitFlag.GetFlagValue(FledgerInfo.LedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL);
 
-            TDBTransaction Transaction = null;
+            if (RevalAccounts == "")
+            {
+                return; // Revaluation has been performed.
+            }
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
-                    string testForForeignKeyAccount =
-                        String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                            AAccountTable.GetLedgerNumberDBName(),
-                            FledgerInfo.LedgerNumber,
-                            AAccountTable.GetForeignCurrencyFlagDBName());
+            TVerificationResult tvr;
 
-                    Int32 ForeignAccountCount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction));
+            if (FledgerInfo.CurrentPeriod < FledgerInfo.NumberOfAccountingPeriods)
+            {
+                tvr = new TVerificationResult(
+                    Catalog.GetString("Currency revaluation"),
+                    String.Format(
+                        Catalog.GetString("Before proceeding you may want to revalue foreign currency accounts {0}."),
+                        RevalAccounts),
+                    "",
+                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Status);
+                // Error is non-critical - the user can choose to continue.
+            }
+            else
+            {
+                tvr = new TVerificationResult(
+                    Catalog.GetString("Currency revaluation"),
+                    String.Format(
+                        Catalog.GetString("The foreign currency accounts {0} need to be revalued."),
+                        RevalAccounts),
+                    "",
+                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
+                // Error is critical - the user nust do a reval.
+            }
 
-                    if (ForeignAccountCount > 0)
-                    {
-                        TVerificationResult tvr = new TVerificationResult(
-                            Catalog.GetString("Currency revaluation"),
-                            Catalog.GetString(
-                                "Before proceeding you may want to revalue the foreign currency accounts."), "",
-                            TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Status);
-                        // Error is non-critical - the user can choose to continue.
-                        FverificationResults.Add(tvr);
-                    }
-                }); // Get NewOrExisting AutoReadTransaction
+            FverificationResults.Add(tvr);
         }
 
         private void CheckForUnpostedBatches()
