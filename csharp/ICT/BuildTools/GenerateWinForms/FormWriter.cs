@@ -1575,6 +1575,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("ADDMAINCONTROLS", "this.KeyPreview = true;" + Environment.NewLine);
             }
 
+            if (TYml2Xml.HasAttribute(rootNode, "FormBorderStyle"))
+            {
+                string style = TYml2Xml.GetAttribute(rootNode, "FormBorderStyle");
+                FTemplate.AddToCodelet("ADDMAINCONTROLS",
+                    string.Format("this.FormBorderStyle = FormBorderStyle.{0};{1}", style, Environment.NewLine));
+            }
+
             string initialFocusControl = String.Empty;
 
             if (FCodeStorage.FControlList.ContainsKey("grdDetails"))

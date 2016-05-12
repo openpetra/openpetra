@@ -162,6 +162,7 @@ namespace Ict.Petra.Client.App.Gui
             try
             {
                 bool allDocumentsOpened;
+                bool printOnCompletion;
                 TTemplaterAccess.PrintTemplaterDocument(TModule.mPartner,
                     formDataList,
                     templatePath,
@@ -169,8 +170,16 @@ namespace Ict.Petra.Client.App.Gui
                     APreviewOnly,
                     !APreviewOnly,
                     out allDocumentsOpened,
+                    out printOnCompletion,
                     targetDir,
                     ATitleText);
+
+                if (printOnCompletion && !APreviewOnly)
+                {
+                    string msg = Catalog.GetString("The print run unexpectedly produced multiple documents when only one was expected.  ");
+                    msg += Catalog.GetString("Please check that your template uses List Tags");
+                    MessageBox.Show(msg, msgTitle, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
             }
             catch (Exception ex)
             {

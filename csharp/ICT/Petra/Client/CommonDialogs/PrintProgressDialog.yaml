@@ -1,0 +1,45 @@
+RootNode:
+    BaseYaml: ../CommonForms/PetraFormBasic.yaml
+    DesignerTemplate: designerBasic
+    Template: windowBasic
+    FormType: edit
+    FormTitle: Printing Progress
+    Namespace: Ict.Petra.Client.CommonDialogs
+    WindowWidth: 320
+    WindowHeight: 140
+    FormBorderStyle: FixedSingle
+
+    Events:
+    #    Load: {class=System.EventHandler, method=Form_Load} 
+        
+    Actions:
+        actPauseOrResume: {ActionClick=btnPauseOrResume_Click}
+        actAbortPrint: {ActionClick=btnAbortPrint_Click}
+        
+    Controls:
+        pnlContent:
+            Controls: [pnlProgress, pnlButtons]
+            Dock: Fill
+
+        pnlProgress:
+            Dock: Fill
+            Controls: [lblStatus]
+                        
+        pnlButtons:
+            Dock: Bottom
+            Controls:
+                Row0: [btnPauseOrResume, btnAbortPrint]
+            
+        lblStatus:
+            Margin: 20,10,0,0
+            Stretch: horizontally
+        btnPauseOrResume:
+            Margin: 20,0,0,0
+            Width: 125
+            Action: actPauseOrResume
+            Label: Resume Printing
+        btnAbortPrint:
+            Margin: 40,0,0,0
+            Width: 125
+            Action: actAbortPrint
+            Label: Abort Print Job
