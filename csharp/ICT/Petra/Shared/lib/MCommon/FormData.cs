@@ -1045,6 +1045,7 @@ namespace Ict.Petra.Shared.MCommon
             Gift = new List <TFormDataGift>();
             FamilyMember = new List <TFormDataFamilyMember>();
             Custom1 = Custom2 = Custom3 = Custom4 = Custom5 = Custom6 = Custom7 = Custom8 = String.Empty;
+            AddressIsOriginal = true;
         }
 
         // General Info
@@ -1129,6 +1130,10 @@ namespace Ict.Petra.Shared.MCommon
         }
         ///
         public Int32 LocationKey {
+            get; set;
+        }
+        /// set to true if address was retrieved from original LocationKey, otherwise false if updated (for example to BestAddress)
+        public bool AddressIsOriginal {
             get; set;
         }
         ///
@@ -1409,6 +1414,10 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String MaritalStatusDesc {
+            get; set;
+        }
+        ///
         public String OccupationCode {
             get; set;
         }
@@ -1422,6 +1431,11 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Nationality code taken from main passport
+        public String PassportNationalityCode {
+            get; set;
+        }
+
         /// Number taken from main passport
         public String PassportNumber {
             get; set;
@@ -1429,6 +1443,26 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Name taken from main passport
         public String PassportName {
+            get; set;
+        }
+
+        ///
+        public DateTime ? PassportDateOfIssue {
+            get; set;
+        }
+
+        /// Place of issue taken from main passport
+        public String PassportPlaceOfIssue {
+            get; set;
+        }
+
+        /// Date of expiry taken from main passport
+        public DateTime ? PassportDateOfExpiry {
+            get; set;
+        }
+
+        /// Place of birth taken from main passport
+        public String PassportPlaceOfBirth {
             get; set;
         }
 
@@ -1709,6 +1743,11 @@ namespace Ict.Petra.Shared.MCommon
     [Serializable()]
     public class TFormDataPassport : TFormData
     {
+        /// Is Main Passport?
+        public Boolean IsMainPassport {
+            get; set;
+        }
+
         /// Passport Number
         public String Number {
             get; set;

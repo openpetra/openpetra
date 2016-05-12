@@ -98,8 +98,17 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         do
                         {
+                            TFormDataPartner formData;
                             AFormLetterInfo.CurrentEmailInstance = AFormLetterInfo.NextEmailInstance;
-                            dataList.Add(FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey, ExtractRow.LocationKey));
+                            formData =
+                                (TFormDataPartner)FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey,
+                                    ExtractRow.LocationKey);
+
+                            // at the moment we include all partners, also the ones that had outdated addresses which have been updated during FillFormDataFromPartner
+                            //if (formData.AddressIsOriginal)
+                            //{
+                            dataList.Add(formData);
+                            //}
                         } while (AFormLetterInfo.NextEmailInstance > AFormLetterInfo.CurrentEmailInstance);
 
                         if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
@@ -360,6 +369,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PersonFormData.DateOfBirth = PersonRow.DateOfBirth;
                                 PersonFormData.Gender = PersonRow.Gender;
                                 PersonFormData.MaritalStatus = PersonRow.MaritalStatus;
+
+                                if (!PersonRow.IsMaritalStatusNull()
+                                    && (PersonRow.MaritalStatus != ""))
+                                {
+                                    // retrieve marital status description from marital status table
+                                    TPartnerCacheable CachePopulator = new TPartnerCacheable();
+                                    PtMaritalStatusTable MaritalStatusTable =
+                                        (PtMaritalStatusTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.MaritalStatusList);
+                                    PtMaritalStatusRow MaritalStatusRow =
+                                        (PtMaritalStatusRow)MaritalStatusTable.Rows.Find(new object[] { PersonRow.MaritalStatus });
+
+                                    if (MaritalStatusRow != null)
+                                    {
+                                        PersonFormData.MaritalStatusDesc = MaritalStatusRow.Description;
+                                    }
+                                }
+
                                 PersonFormData.OccupationCode = PersonRow.OccupationCode;
 
                                 if (!PersonRow.IsOccupationCodeNull()
@@ -595,7 +621,19 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                             else
                             {
-                                LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
+                                if (PPartnerLocationAccess.Exists(APartnerKey, ASiteKey, ALocationKey, ReadTransaction))
+                                {
+                                    // given location key is found for this partner
+                                    LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
+                                    formData.AddressIsOriginal = true;
+                                }
+                                else
+                                {
+                                    // given location key not found for this partner
+                                    // -> update with best address and set flag "AddressIsOriginal" to false
+                                    TAddressTools.GetBestAddress(APartnerKey, out LocationTable, out CountryName, ReadTransaction);
+                                    formData.AddressIsOriginal = false;
+                                }
                             }
 
                             if (LocationTable.Count > 0)
