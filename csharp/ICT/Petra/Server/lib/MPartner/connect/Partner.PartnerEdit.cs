@@ -2501,6 +2501,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (FPartnerClass == TPartnerClass.PERSON)
                 {
                     if ((AInspectDS.Tables.Contains(PartnerEditTDSPPersonTable.GetTableName()))
+                        && (AInspectDS.PPerson != null)
+                        && (AInspectDS.PPerson.Rows.Count > 0)
+                        && (AInspectDS.PPerson[0] != null)
                         && (AInspectDS.PPerson[0].RowState == DataRowState.Added))
                     {
                         SpecialSubmitProcessingNewPerson(AInspectDS.PPerson[0], ASubmitChangesTransaction);
@@ -3304,13 +3307,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             int FamilyID;
             string ProblemMessage;
 
-            if (new TPartnerFamilyIDHandling().GetNewFamilyID(FPartnerEditScreenDS.PPerson[0].FamilyKey, out FamilyID, out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
-            {
-                // this should not really happen  but we cannot continue if it does
-                throw new EPartnerFamilyIDException(ProblemMessage);
-            }
+            var FamilyDT = PFamilyAccess.LoadByPrimaryKey(ACurrentPersonDR.FamilyKey, ASubmitChangesTransaction);
 
-            ACurrentPersonDR.FamilyId = FamilyID;
+            // Make sure the Family of the PERSON exists - of course it always should, but there are 
+            // currently some Partner Module Unit Tests in place that are using a wrong approach and where  
+            // this is not the case due to that (which ought to be fixed - Bug #3787) - for the time being  
+            // ensure that those NUnit Tests don't trip over here...
+            if (FamilyDT.Rows.Count != 0)
+            {
+                if (new TPartnerFamilyIDHandling().GetNewFamilyID(ACurrentPersonDR.FamilyKey, out FamilyID, out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
+                {
+                    // this should not really happen  but we cannot continue if it does
+                    throw new EPartnerFamilyIDException(ProblemMessage);
+                }
+    
+                ACurrentPersonDR.FamilyId = FamilyID;                
+            }
         }
         
         /// <summary>
