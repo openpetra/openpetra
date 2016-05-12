@@ -3648,13 +3648,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     #endregion Validate Data 1
 
-                    GiftPercentageAmount = feeReceivableRow.ChargePercentage * AGiftAmount / 100;
+                    GiftPercentageAmount = GLRoutines.Divide(feeReceivableRow.ChargePercentage * AGiftAmount, 100);
                     ChargeOption = feeReceivableRow.ChargeOption.ToUpper();
                     ChargeAmount = feeReceivableRow.ChargeAmount;
                 }
                 else
                 {
-                    GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
+                    GiftPercentageAmount = GLRoutines.Divide(feePayableRow.ChargePercentage * AGiftAmount, 100);
                     ChargeOption = feePayableRow.ChargeOption.ToUpper();
                     ChargeAmount = feePayableRow.ChargeAmount;
                 }
