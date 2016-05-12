@@ -450,16 +450,16 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         }
                     }
 
-                    // if any gift for this query is a "FirstDon" then also set this for the donor record for this receipt
-                    if (firstDonation)
-                    {
-                        formData.IsFirstDon = true;
-                        formData.FirstDon = "N";
-                    }
-
                     prevCurrency = currency;
                     prevDateEntered = dateEntered;
                     prevgifttype = gifttype;
+                }
+
+                // if any gift for this query is a "FirstDon" then also set this for the donor record for this receipt
+                if (firstDonation)
+                {
+                    formData.IsFirstDon = true;
+                    formData.FirstDon = "N";
                 }
             }
 

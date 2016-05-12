@@ -4080,9 +4080,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 //Calculate GiftAmount
-                
-                giftDetail.GiftAmount = GLRoutines.Divide(giftDetail.GiftTransactionAmount , GiftBatchRow.ExchangeRateToBase);
-                
+
+                giftDetail.GiftAmount = GLRoutines.Divide(giftDetail.GiftTransactionAmount, GiftBatchRow.ExchangeRateToBase);
+
                 if (BatchTransactionCurrency != LedgerIntlCurrency)
                 {
                     giftDetail.GiftAmountIntl = GLRoutines.Divide(giftDetail.GiftAmount, IntlToBaseExchRate);
