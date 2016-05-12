@@ -205,7 +205,6 @@ useful parameters
       <exclude name="**/test*-generated.*cs" />
     </fileset>
   </delete>
-  <mkdir dir="${dir.bin}"/>
   <echo message="Target quickClean finished at: ${datetime::now()}" /> 
 </target>
 
