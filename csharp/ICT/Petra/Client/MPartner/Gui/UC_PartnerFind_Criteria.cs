@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -461,10 +461,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.rbtStatusActive.Text = Catalog.GetString("Acti&ve");
             this.rbtStatusAll.Text = Catalog.GetString("All");
             this.lblPartnerStatus.Text = Catalog.GetString("Status") + ":";
-            this.lblPhoneNumber.Text = Catalog.GetString("Phone Number") + ":";
+            this.lblPhoneNumber.Text = Catalog.GetString("Phone / Fa&x Number") + ":";
             this.lblAddress3.Text = Catalog.GetString("Address &3") + ":";
             this.lblAddress2.Text = Catalog.GetString("Address &2") + ":";
-            this.lblEmail.Text = Catalog.GetString("&Email") + ":";
+            this.lblEmail.Text = Catalog.GetString("&Email Address") + ":";
             this.lblPartnerName.Text = Catalog.GetString("&Partner Name") + ":";
             this.lblPersonalName.Text = Catalog.GetString("Personal (First) &Name") + ":";
             this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
@@ -901,6 +901,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
         {
+            throw new NotImplementedException("Lookup of Location Key isn't implemented in OpenPetra yet. " +
+                "(You can manually enter a Location Key if you know it, though.)");
 // TODO BtnLocationKey_Click
 #if TODO
             TLocationFindDialogWinForm frmPartnerLS;
@@ -1295,7 +1297,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtEmail_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            GeneralKeyHandler(txtEmail, critEmail, e);
+            if (txtEmail.Text.Length == 0)
+            {
+                this.EnableAllPanel();
+            }
+
+            if (txtEmail.Text.Length > 0)
+            {
+                this.DisableAllPanel(pnlEmail);
+            }
         }
 
         private void TxtEmail_Leave(System.Object sender, EventArgs e)
@@ -1305,7 +1315,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtPhoneNumber_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            GeneralKeyHandler(txtPhoneNumber, critPhoneNumber, e);
+            if (txtPhoneNumber.Text.Length == 0)
+            {
+                this.EnableAllPanel();
+            }
+
+            if (txtPhoneNumber.Text.Length > 0)
+            {
+                this.DisableAllPanel(pnlPhoneNumber);
+            }
         }
 
         private void TxtPhoneNumber_Leave(System.Object sender, EventArgs e)
@@ -1899,12 +1917,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             FindCriteriaUserDefaultRestore();
 
             ShowOrHidePartnerKeyMatchInfoText();
-
-            // Due to the Contact Details implementation the previous ways in which
-            // Email and Phone Number were found are no longer working -> disable
-            // those Criteria until they work again... (Bug #4048)!
-            txtEmail.Enabled = false;
-            txtPhoneNumber.Enabled = false;
 
             // put focus on txtPartnerName on screen load
             this.ActiveControl = txtPartnerName;

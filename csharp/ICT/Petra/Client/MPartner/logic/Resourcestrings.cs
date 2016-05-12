@@ -154,7 +154,8 @@ namespace Ict.Petra.Client.MPartner
         public static readonly string StrMailingOnlyFindHelpText = Catalog.GetString("Restricts returned Addresses to Mailing Addresses if ticked");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrPhoneNumberFindHelpText = Catalog.GetString("Searches for a phone number or an alternate phone number");
+        public static readonly string StrPhoneNumberFindHelpText = Catalog.GetString(
+            "Enter any phone number or fax number (if entered, an Int'l Phone Code must start with + and must be separated with a space: +44 xxx)");
 
         #endregion
 
