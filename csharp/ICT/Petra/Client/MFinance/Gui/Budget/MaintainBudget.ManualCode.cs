@@ -527,7 +527,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, System.EventArgs e)
         {
-            FImportLogicObject.ImportBudget(FSelectedBudgetYear, ref FMainDS);
+            if (FSelectedBudgetYear < FCurrentFinancialYear)
+            {
+                MessageBox.Show(Catalog.GetString("You can only import budget data when the current or next financial year is selected."),
+                    "Budget Import", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            //Import and refresh grid
+            FImportLogicObject.ImportBudget(FCurrentFinancialYear, ref FMainDS);
+
+            grdDetails.DataSource = null;
+            SetBudgetDefaultView(FMainDS);
+            SelectRowInGrid(1);
         }
 
         // This is not used (and imcomplete...)
