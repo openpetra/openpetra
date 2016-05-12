@@ -1770,7 +1770,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="APartnerKey">Partner key</param>
         /// <param name="ASiteKey">Partner's site key</param>
         /// <param name="ALocationKey">Partner's primary location key</param>
-        /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
+        /// <param name="AIncludeFamilyWithPerson">Set this flag to false for a PERSON, to prevent the FAMILY being exported too.</param>
+        /// <param name="AIncludePersonWithFamily">Set this flag to false for a FAMILY, to prevent the PERSONs being exported too.</param>
         /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
         /// <param name="AOldPetraFormat">Set this flag if export to be done in old format</param>
         /// <returns>One partner in EXT format</returns>
@@ -1778,7 +1779,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static string ExportPartnerExt(Int64 APartnerKey,
             Int64 ASiteKey,
             Int32 ALocationKey,
-            Boolean ANoFamily,
+            Boolean AIncludeFamilyWithPerson,
+            Boolean AIncludePersonWithFamily,
             StringCollection ASpecificBuildingInfo,
             Boolean AOldPetraFormat)
         {
@@ -1806,11 +1808,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS AMainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
 
-            if (!ANoFamily)  // I'll check whether there's a FAMILY to go with this Partner.
+            if (AMainDS.PPartner.Rows.Count == 0)
             {
-                PPartnerRow PartnerRow = AMainDS.PPartner[0];
+                return extRecord;  // This is empty - TODO: I'm not returning any error code here.
+            }
 
-                if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            PPartnerRow PartnerRow = AMainDS.PPartner[0];
+
+            if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                if (AIncludeFamilyWithPerson)  // I'll check whether there's a FAMILY to go with this Partner.
                 {
                     PPersonRow PersonRow = AMainDS.PPerson[0];
                     long FamilyKey = PersonRow.FamilyKey;
@@ -1829,6 +1836,57 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
 
             extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo, AOldPetraFormat);
+
+            if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                if (AIncludePersonWithFamily)
+                {
+                    // We need to export the Persons in this Family as well
+                    TDBTransaction ReadTransaction = null;
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                        ref ReadTransaction,
+                        delegate
+                        {
+                            PPersonTable Persons = PPersonAccess.LoadViaPFamily(APartnerKey, ReadTransaction);
+
+                            foreach (PPersonRow Row in Persons.Rows)
+                            {
+                                long personKey = Row.PartnerKey;
+                                PartnerAccessOk = TPartnerServerLookups.VerifyPartner(personKey,
+                                    out ShortName, out PartnerClass,
+                                    out IsMergedPartner, out UserCanAccessPartner);
+
+                                if ((personKey > 0) && PartnerAccessOk && UserCanAccessPartner)
+                                {
+                                    PartnerImportExportTDS PersonDS = TExportAllPartnerData.ExportPartner(personKey, TPartnerClass.PERSON);
+
+                                    // if member has same address as family
+                                    if (PPartnerLocationAccess.Exists(personKey, ASiteKey, ALocationKey, ReadTransaction))
+                                    {
+                                        // export the person member with the same address as family partner
+                                        extRecord += Exporter.ExportPartnerExt(PersonDS, ASiteKey, ALocationKey, null, AOldPetraFormat);
+                                    }
+                                    else
+                                    {
+                                        PLocationTable LocationTable;
+                                        string CountryName;
+
+                                        TAddressTools.GetBestAddress(personKey, out LocationTable, out CountryName, ReadTransaction);
+
+                                        if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
+                                        {
+                                            // export the person member with the person partner's best address
+                                            //LocationKey = LocationTable[0].LocationKey;
+                                            extRecord +=
+                                                Exporter.ExportPartnerExt(PersonDS, ASiteKey, LocationTable[0].LocationKey, null, AOldPetraFormat);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+            }
+
             return extRecord;
         }
 
@@ -1960,8 +2018,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                         if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
                                         {
                                             // export the person member with the person partner's best address
-                                            LocationKey = LocationTable[0].LocationKey;
-                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
+                                            //LocationKey = LocationTable[0].LocationKey;
+                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationTable[0].LocationKey, null, AOldPetraFormat);
                                         }
                                     }
                                 }

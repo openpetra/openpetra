@@ -671,12 +671,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else if (AToolStripItem.Name == "mniFileExportPartner")
             {
-                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey, FLogic.DetermineCurrentPartnerClass(),
                     FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, false);
             }
             else if (AToolStripItem.Name == "mniFileExportPartnerToPetra")
             {
-                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey,
+                TPartnerExportLogic.ExportSinglePartner(FLogic.PartnerKey, FLogic.DetermineCurrentPartnerClass(),
                     FLogic.DetermineCurrentLocationPK().SiteKey, FLogic.DetermineCurrentLocationPK().LocationKey, true);
             }
             else if (AToolStripItem.Name == "mniFileImportPartner")
