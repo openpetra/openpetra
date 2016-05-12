@@ -357,17 +357,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
                     }
 
-                    GiftRecord.IsFirstDon = firstDonation;
-
-                    if (firstDonation)
-                    {
-                        GiftRecord.FirstDon = "N";
-                    }
-                    else
-                    {
-                        GiftRecord.FirstDon = "";
-                    }
-
                     GetUnitLabels(currency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
 
                     rowTexts += RowTemplate.
@@ -402,17 +391,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         else if (prevgifttype == MFinanceConstants.GIFT_TYPE_GIFT)
                         {
                             RowTemplate = TPrinterHtml.RemoveDivWithClass(RowTemplate, MFinanceConstants.GIFT_TYPE_GIFT_IN_KIND);
-                        }
-
-                        GiftRecord.IsFirstDon = firstDonation;
-
-                        if (firstDonation)
-                        {
-                            GiftRecord.FirstDon = "N";
-                        }
-                        else
-                        {
-                            GiftRecord.FirstDon = "";
                         }
 
                         GetUnitLabels(prevCurrency, ref MajorUnitSingular, ref MajorUnitPlural, ref MinorUnitSingular, ref MinorUnitPlural);
@@ -453,13 +431,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     prevCurrency = currency;
                     prevDateEntered = dateEntered;
                     prevgifttype = gifttype;
-                }
-
-                // if any gift for this query is a "FirstDon" then also set this for the donor record for this receipt
-                if (firstDonation)
-                {
-                    formData.IsFirstDon = true;
-                    formData.FirstDon = "N";
                 }
             }
 

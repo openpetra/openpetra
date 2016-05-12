@@ -1852,7 +1852,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                             foreach (PPersonRow Row in Persons.Rows)
                             {
                                 long personKey = Row.PartnerKey;
-                                PartnerAccessOk = TPartnerServerLookups.VerifyPartner(personKey,
+                                PartnerAccessOk = TPartnerServerLookups.VerifyPartnerAndGetDetails(personKey,
                                     out ShortName, out PartnerClass,
                                     out IsMergedPartner, out UserCanAccessPartner);
 
