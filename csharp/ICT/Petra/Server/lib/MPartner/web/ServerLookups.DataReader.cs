@@ -360,15 +360,24 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         [RequireModulePermission("PTNRUSER")]
         public static int GetNewKeyForPartnerGiftDestination()
         {
+            return GetNewKeyForPartnerGiftDestination(null);
+        }
+
+        /// <summary>
+        /// Gets the next available key for PPartnerGiftDestination
+        /// </summary>
+        /// <param name="ADBTransaction">Transaction (if already exists in caller method)</param>
+        /// <returns>The next available key</returns>
+        internal static int GetNewKeyForPartnerGiftDestination(TDBTransaction ADBTransaction)
+        {
             int ReturnValue = 0;
 
-            TDBTransaction Transaction = null;
-
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
+            DBAccess.GetDBAccessObj(ADBTransaction).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadUncommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ADBTransaction,
                 delegate
                 {
-                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(Transaction);
+                    PPartnerGiftDestinationTable Table = PPartnerGiftDestinationAccess.LoadAll(ADBTransaction);
 
                     foreach (PPartnerGiftDestinationRow Row in Table.Rows)
                     {

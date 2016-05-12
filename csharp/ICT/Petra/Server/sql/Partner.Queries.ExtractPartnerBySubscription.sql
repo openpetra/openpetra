@@ -4,6 +4,7 @@ SELECT DISTINCT pub_p_partner.p_partner_key_n,
 FROM pub_p_partner, pub_p_subscription ##address_filter_tables##
 WHERE pub_p_subscription.p_publication_code_c IN (?)
     AND pub_p_partner.p_partner_key_n = pub_p_subscription.p_partner_key_n
+    AND pub_p_subscription.p_start_date_d <= DATE(NOW())
     AND (NOT ? OR pub_p_subscription.p_gratis_subscription_l)
     AND (   (? AND pub_p_subscription.p_subscription_status_c <> 'EXPIRED'
                AND pub_p_subscription.p_subscription_status_c <> 'CANCELLED'

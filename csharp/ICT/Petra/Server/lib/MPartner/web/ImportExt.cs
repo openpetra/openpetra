@@ -1530,6 +1530,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.DateOfExpiration = ReadNullableDate();
             DocumentRow.AssocDocId = ReadString();
             DocumentRow.ContactPartnerKey = ReadInt64();
+
+            if (!PPartnerAccess.Exists(DocumentRow.ContactPartnerKey, ATransaction))
+            {
+                // make sure that contact partner key exists in the database already, otherwise reset to take
+                // care of referential integrity
+                AddVerificationResult("Contact Partner for Document (Partner: " + FPartnerKey.ToString(
+                        "0000000000") + "/Type: " + DocumentRow.DocCode + "/Id: " + DocumentRow.DocumentId + ") not set" +
+                    " as Partner Key " + DocumentRow.ContactPartnerKey.ToString("0000000000") + " does not exist in database.");
+                DocumentRow.SetContactPartnerKeyNull();
+            }
+
             DocumentRow.DocComment = ReadString();
 
             if (!FIgnorePartner)
@@ -1961,7 +1972,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
                     }
 
-                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination());
+                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination(ATransaction));
                 }
                 else
                 {

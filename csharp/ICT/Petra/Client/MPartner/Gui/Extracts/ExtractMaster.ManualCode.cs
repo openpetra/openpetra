@@ -330,6 +330,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                         ReplaceAddressCurrentAndMailingNoToAll = true;
                                     }
                                 }
+                                else if (ReplaceAddressCurrentAndMailingYesToAll)
+                                {
+                                    ReplaceAddress = true;
+                                }
+                                else if (ReplaceAddressCurrentAndMailingNoToAll)
+                                {
+                                    ReplaceAddress = false;
+                                }
                             }
                         }
                         else if (!AddressIsCurrent)
@@ -383,6 +391,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                         ReplaceAddressCurrentNoToAll = true;
                                     }
                                 }
+                                else if (ReplaceAddressCurrentYesToAll)
+                                {
+                                    ReplaceAddress = true;
+                                }
+                                else if (ReplaceAddressCurrentNoToAll)
+                                {
+                                    ReplaceAddress = false;
+                                }
                             }
                         }
                         else if (!AddressIsMailing)
@@ -435,6 +451,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                     {
                                         ReplaceAddressMailingNoToAll = true;
                                     }
+                                }
+                                else if (ReplaceAddressMailingYesToAll)
+                                {
+                                    ReplaceAddress = true;
+                                }
+                                else if (ReplaceAddressMailingNoToAll)
+                                {
+                                    ReplaceAddress = false;
                                 }
                             }
                         }
