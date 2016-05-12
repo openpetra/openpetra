@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,15 +61,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     {
         private int FLedgerNumber;
         private TLedgerInfo FledgerInfo;
-
-        /// <summary>
-        ///
-        /// </summary>
-        public TestGLPeriodicEndMonth()
-        {
-            FLedgerNumber = 43;
-            FledgerInfo = new TLedgerInfo(FLedgerNumber);
-        }
 
         /// <summary>
         /// Tests if unposted batches are detected correctly
@@ -364,6 +355,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             TPetraServerConnector.Connect();
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            FledgerInfo = new TLedgerInfo(FLedgerNumber);
 
             // add costcentre 7300 for gift batch
             ACostCentreTable CostCentres = new ACostCentreTable();

@@ -201,6 +201,16 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("TRUE;", "1;");
             ReturnValue = ReturnValue.Replace("FALSE;", "0;");
 
+            ReturnValue = ReturnValue.Replace("EXTRACT(YEAR FROM", "strftime('%Y', ");
+            ReturnValue = ReturnValue.Replace("EXTRACT(MONTH FROM", "strftime('%m', ");
+
+            // UPDATE FROM: try to convert to WHERE EXISTS(SELECT * ...)
+            if (ReturnValue.ToUpper().StartsWith("UPDATE") && ReturnValue.ToUpper().Contains(" FROM ")
+                && !ReturnValue.ToUpper().Contains("SELECT * FROM"))
+            {
+                ReturnValue = ReturnValue.Replace(" FROM ", " WHERE EXISTS(SELECT * FROM ") + " )";
+            }
+
             // INSERT INTO table () VALUES
             ReturnValue = ReturnValue.Replace("() VALUES", " VALUES");
 
