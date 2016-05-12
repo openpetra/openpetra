@@ -230,21 +230,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Csv = StringHelper.AddCSV(
                 Csv,
                 "ATransaction/" +
-                "SELECT t.* FROM a_transaction t, a_journal j, a_cost_centre c " +
-                " WHERE t.a_ledger_number_i = j.a_ledger_number_i" +
-                "   AND t.a_batch_number_i = j.a_batch_number_i" +
-                "   AND t.a_journal_number_i = j.a_journal_number_i" +
-                "   AND t.a_ledger_number_i = c.a_ledger_number_i" +
-                "   AND t.a_cost_centre_code_c = c.a_cost_centre_code_c" +
-                "   AND t." + LedgerFilter +
+                "SELECT a_transaction.* FROM a_transaction, a_journal, a_cost_centre" +
+                " WHERE a_transaction.a_ledger_number_i = a_journal.a_ledger_number_i" +
+                "   AND a_transaction.a_batch_number_i = a_journal.a_batch_number_i" +
+                "   AND a_transaction.a_journal_number_i = a_journal.a_journal_number_i" +
+                "   AND a_transaction.a_ledger_number_i = a_cost_centre.a_ledger_number_i" +
+                "   AND a_transaction.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c" +
+                "   AND a_transaction." + LedgerFilter +
                 TranctDateFilter +
                 CostCentreFilter +
-                "   AND j.a_journal_status_c = '" + MFinanceConstants.BATCH_POSTED + "'" +
-                "   AND NOT (t.a_system_generated_l = true" +
-                "           AND (t.a_narrative_c LIKE 'Gifts received - Gift Batch%'" +
-                "                OR t.a_narrative_c LIKE 'GB - Gift Batch%'" +
-                "                OR t.a_narrative_c LIKE 'Year end re-allocation%'))" +
-                " ORDER BY t.a_account_code_c, t.a_transaction_date_d");
+                "   AND a_journal.a_journal_status_c = '" + MFinanceConstants.BATCH_POSTED + "'" +
+                "   AND NOT (a_transaction.a_system_generated_l = true" +
+                "           AND (a_transaction.a_narrative_c LIKE 'Gifts received - Gift Batch%'" +
+                "                OR a_transaction.a_narrative_c LIKE 'GB - Gift Batch%'" +
+                "                OR a_transaction.a_narrative_c LIKE 'Year end re-allocation%'))" +
+                " ORDER BY a_transaction.a_account_code_c, a_transaction.a_transaction_date_d");
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;
