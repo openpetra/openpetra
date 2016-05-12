@@ -192,13 +192,28 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.DonorGiftsToField(AParameters, FDbAdapter);
                     break;
 
+                case "GiftDestination":
+                    FDbAdapter = new TReportingDbAdapter(false);
+
+                    ResultTbl = TFinanceReportingWebConnector.GiftDestination(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
                     break;
             }
 
-            FDbAdapter.CloseConnection();
-            return (FDbAdapter.IsCancelled) ? null : ResultTbl;
+            if (FDbAdapter != null)
+            {
+                FDbAdapter.CloseConnection();
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    ResultTbl = null;
+                }
+            }
+
+            return ResultTbl;
         }
 
         /// <summary>

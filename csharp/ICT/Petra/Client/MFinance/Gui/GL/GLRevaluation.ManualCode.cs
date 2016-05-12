@@ -294,14 +294,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 Message = Catalog.GetString("Revaluation Successful.");
             }
 
+            MessageBox.Show(Message, Catalog.GetString("Revaluation"));
+
             if (blnRevalutationState)
             {
-                MessageBox.Show(Message, Catalog.GetString("Revaluation"));
-            }
-            else
-            {
-                MessageBox.Show(Message, Catalog.GetString("Revaluation"));
-
                 // Notify the exchange rate screen, if it is there
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);

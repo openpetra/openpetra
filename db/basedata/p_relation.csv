@@ -1,31 +1,31 @@
 AUNT,Aunt of,FAMILY,false,Nephew/Niece of,true,?,?,?,?,?
-EMER-1,first emergency contact for,OTHER,false,first emergency contact is,true,?,?,?,?,?
-EMER-2,second emergency contact for,OTHER,false,second emergency contact is,true,?,?,?,?,?
-EMER-OTHER,is emergency contact for,OTHER,false,has as emergency contact,true,?,?,?,?,?
+EMER-1,First emergency contact for,OTHER,false,First emergency contact is,true,?,?,?,?,?
+EMER-2,Second emergency contact for,OTHER,false,Second emergency contact is,true,?,?,?,?,?
+EMER-OTHER,Is emergency contact for,OTHER,false,Has as emergency contact,true,?,?,?,?,?
 EMPLOYER,Employer of,OTHER,false,Employee of,true,?,?,?,?,?
 FAMILY,Family of,FAMILY,false,Belongs to Family,true,?,?,?,?,?
-FATHER,Father of,FAMILY,false,Son/Daugther of,true,?,?,?,?,?
+FATHER,Father of,FAMILY,false,Son/Daughter of,true,?,?,?,?,?
 FIELDLDR,Field Leader of,OTHER,false,Led by,true,?,?,?,?,?
-FINDEVDIR,is Financial Dev. Director for,OTHER,true,Financial Dev. Director is,true,?,?,?,?,?
+FINDEVDIR,Is Financial Dev. Director for,OTHER,true,Financial Dev. Director is,true,?,?,?,?,?
 G'PARENT,Grandparent of,FAMILY,false,Grandchild of,true,?,?,?,?,?
 GUARDIAN,Guardian of,OTHER,false,Ward of,true,?,?,?,?,?
 HQ,Headquarters for,OTHER,false,Subsidiary/Branch of,true,?,?,?,?,?
 HUSBAND,Husband of,FAMILY,false,Wife of,true,?,?,?,?,?
-MBRCARECRD,is Member Care Coordinator for,OTHER,true,Member Care Coordinator is,true,?,?,?,?,?
-MEMBER,Member of,OTHER,false,has as Member,true,?,?,?,?,?
-MISSNCOORD,has as missions coordinator,OTHER,false,missions coordinator of,true,?,?,?,?,?
+MBRCARECRD,Is Member Care Coordinator for,OTHER,true,Member Care Coordinator is,true,?,?,?,?,?
+MEMBER,Member of,OTHER,false,Has as Member,true,?,?,?,?,?
+MISSNCOORD,Has as missions coordinator,OTHER,false,Missions coordinator of,true,?,?,?,?,?
 MOTHER,Mother of,FAMILY,false,Son/Daughter of,true,?,?,?,?,?
 NOK-OTHER,Next of kin of,OTHER,false,Next of kin of,true,?,?,?,?,?
 OWNER,Owner of,OTHER,false,Owned by,true,?,?,?,?,?
 PARENT,Parent of,FAMILY,false,Child of,true,?,?,?,?,?
-PASTOR,pastored by,CHURCH,false,pastor of,true,?,?,?,?,?
+PASTOR,Pastored by,CHURCH,false,Pastor of,true,?,?,?,?,?
 PRAYER-SEC,Prayer secretary of,OTHER,false,Prayer support organised by,true,?,?,?,?,?
-REFERENCE,gave a reference for,OTHER,false,was given a reference by,true,?,?,?,?,?
-REGIONDIR,is Regional Director for,OTHER,true,Regional Director is,true,?,?,?,?,?
+REFERENCE,Gave a reference for,OTHER,false,Was given a reference by,true,?,?,?,?,?
+REGIONDIR,Is Regional Director for,OTHER,true,Regional Director is,true,?,?,?,?,?
 RELATIVE,Relative of,FAMILY,false,Relative of,true,?,?,?,?,?
-SECRETARY,has as secretary,OTHER,false,secretary of,true,?,?,?,?,?
+SECRETARY,Has as secretary,OTHER,false,Secretary of,true,?,?,?,?,?
 SIBLING,Brother/Sister of,FAMILY,false,Brother/Sister of,true,?,?,?,?,?
 SUPPCHURCH,Supporting Church of,CHURCH,false,Supporting church is,true,?,?,?,?,?
 SUPPORTER,Supporter of,OTHER,false,Supported by,true,?,?,?,?,?
-TREASURER,has as treasurer,CHURCH,false,treasurer of,true,?,?,?,?,?
+TREASURER,Has as treasurer,CHURCH,false,Treasurer of,true,?,?,?,?,?
 UNCLE,Uncle of,OTHER,false,Nephew/Niece of,true,?,?,?,?,?

@@ -179,6 +179,44 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
+        /// Any foreign account that has a non-zero opening balance should be marked
+        /// for revaluation.
+        /// </summary>
+        private void NoteForexRevalRequired(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
+        {
+            TDBTransaction transaction = null;
+            Boolean submissionOK = true;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref transaction,
+                ref submissionOK,
+                delegate
+                {
+                    string strSQL = "SELECT Account.a_account_code_c," +
+                                    "SUM (GLMP.a_actual_foreign_n) AS Balance" +
+                                    " FROM PUB_a_account Account, PUB_a_general_ledger_master GLM, PUB_a_general_ledger_master_period GLMP" +
+                                    " WHERE Account.a_ledger_number_i=" + ALedgerNumber +
+                                    " AND Account.a_foreign_currency_flag_l=true" +
+                                    " AND GLM.a_ledger_number_i=" + ALedgerNumber +
+                                    " AND GLM.a_account_code_c=Account.a_account_code_c" +
+                                    " AND GLM.a_year_i= " + AYear +
+                                    " AND GLMP.a_glm_sequence_i=GLM.a_glm_sequence_i" +
+                                    " AND GLMP.a_period_number_i=" + ABatchPeriod +
+                                    " GROUP BY Account.a_account_code_c, GLMP.a_actual_foreign_n";
+                    DataTable Balance = DBAccess.GDBAccessObj.SelectDT(strSQL, "Balance", transaction);
+
+                    foreach (DataRow Row in Balance.Rows)
+                    {
+                        if (Convert.ToDecimal(Row["Balance"]) != 0)
+                        {
+                            TLedgerInitFlag.SetFlagComponent(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL,
+                                Row["a_account_code_c"].ToString());
+                        }
+                    }
+                });
+        }
+
+        /// <summary>
         /// Main Entry point. The parameters are the same as in
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
@@ -262,6 +300,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (!FHasCriticalErrors)
                 {
                     SetNextPeriod();
+                    NoteForexRevalRequired(FledgerInfo.LedgerNumber, FledgerInfo.CurrentFinancialYear, FledgerInfo.CurrentPeriod);
                     // refresh cached ledger table, so that the client will know the current period
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.LedgerDetails.ToString());

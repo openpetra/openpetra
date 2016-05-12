@@ -1,0 +1,26 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Gift Destination for Recipients
+    WindowWidth: 640
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        REPORTNAME: GiftDestination
+        CURRENTREPORT: GiftDestination
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION: BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Controls:[lblIntro, dtpGiftDate]
+        lblIntro:
+            Text: Enter the date for a Gift Batch. The report shows the Gift Destination for all recipients on that date, and highlights any missing entries.
+            Width: 300
+            Height:60
+        dtpGiftDate:

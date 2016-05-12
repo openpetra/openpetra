@@ -3860,6 +3860,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
+        /// Returns true if it seems to be OK.
         [RequireModulePermission("FINANCE-3")]
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {

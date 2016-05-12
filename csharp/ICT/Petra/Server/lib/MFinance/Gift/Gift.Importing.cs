@@ -1518,6 +1518,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
                 AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
 
+            // I feel that I shouldn't need to do this here, since it's been done already...
+            ANeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
+
             // If the gift has a recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
             if ((AGiftDetails.RecipientLedgerNumber == 0)
                 && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
@@ -1791,6 +1794,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             AgiftDetails.TaxDeductible = IsTaxDeductible;
             AgiftDetails.AccountCode = NewAccountCode;
             AgiftDetails.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
+
+            // I feel that I shouldn't need to do this here, since it's been done already...
+            ANeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
 
             // If the gift has a recipient with no Gift Destination then the import will fail. Gift detail is added to a table and returned to client.
             if ((AgiftDetails.RecipientLedgerNumber == 0)

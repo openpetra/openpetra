@@ -65,7 +65,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
         /// <param name="ACostCentre">Which Cost Centre should win / lose money in this process</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
-        /// <returns></returns>
+        /// <returns>true if it seems to be OK.</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool Revaluate(
             int ALedgerNum,
@@ -110,8 +110,6 @@ namespace Ict.Petra.Server.MFinance.GL
         string strStatusContent = Catalog.GetString("Revaluation");
 
         private TVerificationResultCollection FVerificationCollection;
-        private TResultSeverity F_resultSeverity;
-
 
         /// <summary>
         /// Constructor to initialize a variable set.
@@ -126,7 +124,6 @@ namespace Ict.Petra.Server.MFinance.GL
             F_ExchangeRate = ANewExchangeRate;
             F_CostCentre = ACostCentre;
             FVerificationCollection = new TVerificationResultCollection();
-            F_resultSeverity = TResultSeverity.Resv_Noncritical;
         }
 
         /// <summary>
@@ -142,6 +139,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
         /// <summary>
         /// Run the revaluation and set the flag for the ledger
+        /// Returns true if it seems to be OK.
         /// </summary>
         public Boolean RunRevaluation()
         {
@@ -154,18 +152,16 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_FinancialYear = ledger.CurrentFinancialYear;
                 F_AccountingPeriod = ledger.CurrentPeriod;
 
-                if (!RunRevaluationIntern())
-                {
-                    return false;
-                }
+                return RunRevaluationIntern();
             }
             catch (EVerificationException terminate)
             {
                 FVerificationCollection = terminate.ResultCollection();
+                return false;
             }
-            return F_resultSeverity == TResultSeverity.Resv_Critical;
         }
 
+        /// Returns true if it seems to be OK.
         private Boolean RunRevaluationIntern()
         {
             TDBTransaction Transaction = null;
@@ -189,11 +185,27 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (GlmTable.Rows.Count > 0)
                 {
                     RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
-                    TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
                 }
             }
 
-            return CloseRevaluationAccountingBatch();
+            Boolean batchPostedOK = CloseRevaluationAccountingBatch();
+
+            if (batchPostedOK)
+            {
+                for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
+                {
+                    TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
+                }
+            }
+            else
+            {
+                FVerificationCollection.Add(new TVerificationResult(
+                        "Post Forex Batch",
+                        "The Revaluation Batch could not be posted.",
+                        TResultSeverity.Resv_Critical));
+            }
+
+            return batchPostedOK;
         }
 
         private void RevaluateAccount(AGeneralLedgerMasterTable AGlmTbl, decimal AExchangeRate, string ACurrencyCode)
@@ -249,6 +261,7 @@ namespace Ict.Petra.Server.MFinance.GL
                             AExchangeRate);
                         FVerificationCollection.Add(new TVerificationResult(
                                 strStatusContent, strMessage, TResultSeverity.Resv_Status));
+                        TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, glmRow.AccountCode);
                     }
                 }
                 catch (EVerificationException terminate)
@@ -350,6 +363,7 @@ namespace Ict.Petra.Server.MFinance.GL
             F_GLDataset.ATransaction.Rows.Add(TransactionRow);
         }
 
+        /// Returns true if it seems to be OK.
         private Boolean CloseRevaluationAccountingBatch()
         {
             Boolean blnReturnValue = false;
@@ -374,18 +388,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
 
             return blnReturnValue;
-        }
-
-        private void AddVerificationResultMessage(
-            string AResultContext, string AResultText, string ALocalCode, TResultSeverity AResultSeverity)
-        {
-            FVerificationCollection.Add(new TVerificationResult(
-                    AResultContext, AResultText, "REVAL", "REVAL:" + ALocalCode, AResultSeverity));
-
-            if (AResultSeverity == TResultSeverity.Resv_Critical)
-            {
-                F_resultSeverity = TResultSeverity.Resv_Critical;
-            }
         }
 
         /// <summary>
