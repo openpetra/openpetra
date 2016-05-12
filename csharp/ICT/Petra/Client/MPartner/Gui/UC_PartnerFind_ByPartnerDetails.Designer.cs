@@ -142,7 +142,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.grpCriteria.TabIndex = 0;
             this.grpCriteria.TabStop = false;
             this.grpCriteria.Text = "Find Criteria";
-            this.grpCriteria.Enter += new System.EventHandler(this.GrpCriteria_Enter);
 
             //
             // linCriteriaDivider

@@ -189,8 +189,12 @@ namespace Ict.Petra.Client.MPartner
         public static readonly string StrCancelButtonHelpText = Catalog.GetString("Closes the window without selecting a ");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrResultGridHelpText = Catalog.GetString(
+        public static readonly string StrResultGridHelpText1 = Catalog.GetString(
             "These are the results of your search. Highlight (or right-click) a line to work with the ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrResultGridHelpText2 = Catalog.GetString(
+            "These are the results of your search. Highlight a line to work with the ");
 
         /// <summary>todoComment</summary>
         public static readonly string StrDetailedResultsHelpText =

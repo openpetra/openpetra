@@ -47,12 +47,21 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 {
     /// <summary>
     /// Partner Location Search Screen UIConnector
-    ///
     /// </summary>
     public class TPartnerLocationFindUIConnector : IPartnerUIConnectorsPartnerLocationFind
     {
-        private Thread FFindThread;
+        /// <summary>Paged query object</summary>
         private TPagedDataSet FPagedDataSetObject;
+
+        /// <summary>Thread that is used for asynchronously executing the Find query</summary>
+        private Thread FFindThread;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        public TPartnerLocationFindUIConnector() : base()
+        {
+        }
 
         /// <summary>Get the current state of progress</summary>
         public TProgressState Progress
@@ -64,26 +73,73 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         }
 
         /// <summary>
-        /// contructor
+        /// Procedure to execute a Find query. Although the full
+        /// query results are retrieved from the DB and stored internally in an object,
+        /// data will be returned in 'pages' of data, each page holding a defined number
+        /// of records.
         /// </summary>
-        /// <param name="ACriteriaData"></param>
-        public TPartnerLocationFindUIConnector(DataTable ACriteriaData) : base()
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
+        public void PerformSearch(DataTable ACriteriaData)
         {
-            Hashtable ColumnNameMapping;
             String CustomWhereCriteria;
-            ArrayList InternalParameters;
-            OdbcParameter miParam;
-            DataRow CriteriaRow;
+
+            OdbcParameter[] ParametersArray;
 
             FPagedDataSetObject = new TPagedDataSet(new PartnerFindTDSSearchResultTable());
-            ColumnNameMapping = null;
 
-            // get the first and only row
-            CriteriaRow = ACriteriaData.Rows[0];
+            // Pass the TAsynchronousExecutionProgress object to FPagedDataSetObject so that it
 
-            // used to help with strong typing of columns
+            // Build WHERE criteria string based on AFindCriteria
+            CustomWhereCriteria = BuildCustomWhereCriteria(ACriteriaData, out ParametersArray);
+
+            TLogging.LogAtLevel(6, "WHERE CLAUSE: " + CustomWhereCriteria);
+
+            FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
+                " p_city_c, p_postal_code_c,  p_locality_c, p_street_name_c, p_address_3_c, p_county_c, p_country_code_c, p_location_key_i, p_site_key_n ",
+                "PUB_p_location ",
+                " p_location_key_i<>-1 " + CustomWhereCriteria + ' ',
+                "p_city_c ",
+                null,
+                ParametersArray);
+
+            // fields
+            // table
+            // where
+            // order by
+            // both empty for now
+
+            string session = TSession.GetSessionID();
+
+            //
+            // Start the Find Thread
+            //
+            ThreadStart myThreadStart = delegate {
+                FPagedDataSetObject.ExecuteQuery(session);
+            };
+            FFindThread = new Thread(myThreadStart);
+            FFindThread.Name = "PartnerLocationFind" + Guid.NewGuid().ToString();
+        }
+
+        /// <summary>
+        /// Used internally to build a SQL WHERE criteria from the AFindCriteria HashTable.
+        ///
+        /// </summary>
+        /// <param name="ACriteriaData">HashTable containing non-empty Partner Find parameters</param>
+        /// <param name="AParametersArray">An array holding 1..n instantiated OdbcParameters
+        /// (including parameter Value)</param>
+        /// <returns>SQL WHERE criteria
+        /// </returns>
+        private String BuildCustomWhereCriteria(DataTable ACriteriaData, out OdbcParameter[] AParametersArray)
+        {
+            String CustomWhereCriteria = "";
+            DataTable CriteriaDataTable;
+            DataRow CriteriaRow;
+            ArrayList InternalParameters;
+            OdbcParameter miParam;
+
+            CriteriaDataTable = ACriteriaData;
+            CriteriaRow = CriteriaDataTable.Rows[0];
             InternalParameters = new ArrayList();
-            CustomWhereCriteria = "";
 
             if (CriteriaRow["Addr1"].ToString().Length > 0)
             {
@@ -152,49 +208,22 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 InternalParameters.Add(miParam);
             }
 
-            Console.WriteLine("WHERE CLAUSE: " + CustomWhereCriteria);
-            FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(
-                " p_city_c, p_postal_code_c,  p_locality_c, p_street_name_c, p_address_3_c, p_county_c, p_country_code_c, p_location_key_i, p_site_key_n ",
-                "PUB_p_location ",
-                " p_location_key_i<>-1 " + CustomWhereCriteria + ' ',
-                "p_city_c ",
-                ColumnNameMapping,
-                ((OdbcParameter[])(InternalParameters.ToArray(typeof(OdbcParameter)))));
+//           TLogging.LogAtLevel(7, "CustomWhereCriteria: " + CustomWhereCriteria);
 
-            // fields
-            // table
-            // where
-            // order by
-            // both empty for now
+            /* Convert ArrayList to a array of ODBCParameters
+             * seem to need to declare a type first
+             */
+            AParametersArray = ((OdbcParameter[])(InternalParameters.ToArray(typeof(OdbcParameter))));
+            InternalParameters = null;             // ensure this is GC'd
 
-            string session = TSession.GetSessionID();
-
-            //
-            // Start the Find Thread
-            //
-            try
-            {
-                ThreadStart myThreadStart = delegate {
-                    FPagedDataSetObject.ExecuteQuery(session, "Partner Location Find");
-                };
-                FFindThread = new Thread(myThreadStart);
-                FFindThread.Name = "PartnerLocationFind" + Guid.NewGuid().ToString();
-                FFindThread.Start();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            return CustomWhereCriteria;
         }
 
-/*
- * /// destructor
- *      ~TPartnerLocationFindUIConnector()
- *      {
- *          TLogging.LogAtLevel (9, "TPartnerLocationFindUIConnector.FINALIZE called!");
- *      }
- */
-
+//        /// destructor
+//        ~TPartnerLocationFindUIConnector()
+//        {
+//            TLogging.LogAtLevel (9, "TPartnerLocationFindUIConnector.FINALIZE called!");
+//        }
 
         /// <summary>
         /// </summary>
@@ -205,13 +234,45 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public DataTable GetDataPagedResult(System.Int16 APage, System.Int16 APageSize, out System.Int32 ATotalRecords, out System.Int16 ATotalPages)
         {
-            TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.GetDataPagedResult called.");
             DataTable ReturnValue;
+
+            TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.GetDataPagedResult called.");
 
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;
-            return (PartnerFindTDSSearchResultTable)ReturnValue;
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Stops the query execution.
+        /// <remarks>It might take some time until the executing query is cancelled by the DB, but this procedure returns
+        /// immediately. The reason for this is that we consider the query cancellation as done since the application can
+        /// 'forget' about the result of the cancellation process (but beware of executing another query while the other is
+        /// stopping - this leads to ADO.NET errors that state that a ADO.NET command is still executing!).
+        /// </remarks>
+        /// </summary>
+        public void StopSearch()
+        {
+            Thread StopQueryThread;
+
+            /* Start a separate Thread that should cancel the executing query
+             * (Microsoft recommends doing it this way!)
+             */
+            TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.StopSearch: Starting StopQuery thread...");
+
+            StopQueryThread = new Thread(new ThreadStart(FPagedDataSetObject.StopQuery));
+            StopQueryThread.Name = UserInfo.GUserInfo.UserID + "__ParnterFind_StopSearch_Thread";
+            StopQueryThread.Start();
+
+            /* It might take some time until the executing query is cancelled by the DB,
+             * but we consider it as done since the application can 'forget' about the
+             * result of the cancellation process (but beware of executing another query
+             * while the other is stopping - this leads to ADO.NET errors that state that
+             * a ADO.NET command is still executing!
+             */
+
+            TLogging.LogAtLevel(7, "TPartnerLocationFindUIConnector.StopSearch: Query cancelled!");
         }
     }
 }
