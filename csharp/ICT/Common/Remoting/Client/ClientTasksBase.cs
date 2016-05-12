@@ -71,19 +71,25 @@ namespace Ict.Common.Remoting.Client
         public void QueueClientTasks()
         {
             TClientTaskInstanceBase ClientTaskInstance;
+            Thread ClientTaskThread;
 
             // TODO 2 ochristiank cClient Tasks : Work the queue of Client Tasks according to their Priority
             foreach (DataRow NewEntryRow in FClientTasksDataTable.Rows)
             {
                 ClientTaskInstance = (TClientTaskInstanceBase)Activator.CreateInstance(ClientTasksInstanceType);
                 ClientTaskInstance.ClientTask = NewEntryRow;
-                ClientTaskInstance.Execute();
 
-                /*
-                 * Thread ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
-                 * ClientTaskThread.SetApartmentState(ApartmentState.STA);
-                 * ClientTaskThread.Start();
-                 */
+                if (ClientTaskInstance.LaunchOnItsOwnThread())
+                {
+                    ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
+                    ClientTaskThread.SetApartmentState(ApartmentState.STA);
+
+                    ClientTaskThread.Start();
+                }
+                else
+                {                    
+                    ClientTaskInstance.Execute();
+                }
             }
         }
     }
@@ -118,6 +124,19 @@ namespace Ict.Common.Remoting.Client
         public virtual void Execute()
         {
             // should be overwritten by a specific class
+        }
+
+        /// <summary>
+        /// Tells the caller whether a given Client Task should be launched on a separate Thread, or not.
+        /// </summary>
+        /// <remarks>If that Method returns false for a given Client Task, the processing of any other Client Tasks
+        /// is suspended until the Client Task that is not to run on its own Thread finishes (this is by design 
+        /// and wanted behaviour)!</remarks>
+        /// <returns>True if the given Client Task should be launched un a separate Thread, false if not.</returns>
+        public virtual bool LaunchOnItsOwnThread()
+        {
+            // should be overwritten by a specific class
+            return true;
         }
     }
 }

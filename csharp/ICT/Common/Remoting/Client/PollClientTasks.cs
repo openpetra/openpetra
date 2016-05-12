@@ -142,15 +142,12 @@ namespace Ict.Common.Remoting.Client
 
                         // Queue new ClientTasks and execute them.
                         ClientTasksQueueInstance = new TClientTasksQueue(FClientID, ClientTasksDataTable);
-                        ClientTasksQueueInstance.QueueClientTasks();
 
-                        /*
-                         * // This is done in a separate Thread to make sure the PollClientTasks thread can run
-                         * // without the risk of being interrupted!
-                         *
-                         * Thread ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
-                         * ClientTaskQueueThread.Start();
-                         */
+                        // This is done in a separate Thread to make sure the PollClientTasks thread can continue to run
+                        // without the risk of being interrupted in case the execution of (a) ClientTask(s) takes some time!
+                        Thread ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
+                        ClientTaskQueueThread.SetApartmentState(ApartmentState.STA);
+                        ClientTaskQueueThread.Start();                        
                     }
                 }
                 catch (System.Runtime.Remoting.RemotingException Exp)
