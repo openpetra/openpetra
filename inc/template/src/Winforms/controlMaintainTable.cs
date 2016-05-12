@@ -67,6 +67,7 @@ namespace {#NAMESPACE}
     private Label FPrimaryKeyLabel = null;
     private string FDefaultDuplicateRecordHint = String.Empty;
     private bool FIgnoreFocusRowLeaving = false;
+    private bool FShowDetailsInProcess = false;
 {#ENDIF SHOWDETAILS}
 #endregion
 
@@ -492,20 +493,32 @@ namespace {#NAMESPACE}
     /// <param name="ARow">The row for which details will be shown</param>
     private void ShowDetails({#DETAILTABLETYPE}Row ARow)
     {
-        FPetraUtilsObject.DisableDataChangedEvent();
+        try
+        {
+            FShowDetailsInProcess = true;
+            FPetraUtilsObject.DisableDataChangedEvent();
 
-        if (ARow == null)
-        {
-            pnlDetails.Enabled = false;
-            {#CLEARDETAILS}
-        }
-        else
-        {
-            pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
-            {#SHOWDETAILS}
-        }
-        
-        {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
+            if (ARow == null)
+            {
+				pnlDetails.Enabled = false;
+				{#CLEARDETAILS}
+			}
+			else
+			{
+				pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+				{#SHOWDETAILS}
+			}
+		}
+		finally
+		{
+			{#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
+			FShowDetailsInProcess = false;
+		}
+    }
+	
+    private bool ShowDetailsInProcess()
+    {
+        return FShowDetailsInProcess;
     }
 {#CANDELETESELECTION}
     #endregion

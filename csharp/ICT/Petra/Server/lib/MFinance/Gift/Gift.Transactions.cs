@@ -4616,6 +4616,64 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Load Partner Data
+        /// </summary>
+        /// <param name="ALedgerNumber">Ledger number</param>
+        /// <param name="ABatchNumber">Batch number</param>
+        /// <returns>Partnertable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PPartnerTable LoadAllPartnerDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodSignature()), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            PPartnerTable PartnerTbl = new PPartnerTable();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    // load all partners for specified batch
+                    string sQL =
+                        String.Format("SELECT DISTINCT p.*" +
+                            " FROM public.p_partner p, public.a_gift g" +
+                            " WHERE p.p_partner_key_n = g.p_donor_key_n" +
+                            "   And g.a_ledger_number_i = {0}" +
+                            "   And g.a_batch_number_i = {1};",
+                            ALedgerNumber,
+                            ABatchNumber);
+
+                    DataTable pTbl = (DataTable)DBAccess.GDBAccessObj.SelectDT(sQL, "PartnerTable", Transaction);
+
+                    if (pTbl.Rows.Count > 0)
+                    {
+                        DataUtilities.ChangeDataTableToTypedDataTable(ref pTbl, typeof(PPartnerTable), "");
+                        PartnerTbl = (PPartnerTable)pTbl;
+                        PartnerTbl.AcceptChanges();
+                    }
+                });
+
+            return PartnerTbl;
+        }
+
+        /// <summary>
         /// Load Donor Banking Details
         /// </summary>
         /// <param name="APartnerKey">Partner Key </param>

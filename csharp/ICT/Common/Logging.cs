@@ -598,4 +598,116 @@ namespace Ict.Common
         {
         }
     }
+
+    /// <summary>
+    /// For timing the length of methods/processes
+    /// </summary>
+    public class TPerformanceTester : IDisposable
+    {
+        private Stopwatch FStopwatch = new Stopwatch();
+        private Action <TimeSpan>FCallback;
+        private String FLog = string.Empty;
+        private Guid FGUID = Guid.Empty;
+
+        /// <summary>
+        /// Instantiator
+        /// </summary>
+        public TPerformanceTester()
+        {
+            FStopwatch.Start();
+            FGUID = Guid.NewGuid();
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify a string to enter in the log on completion
+        /// </summary>
+        /// <param name="ALog"></param>
+        public TPerformanceTester(String ALog) : this()
+        {
+            FLog = ALog;
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify action delegate to run after stopping the stopwatch
+        /// </summary>
+        /// <param name="AGUID"></param>
+        /// <param name="ALog"></param>
+        public TPerformanceTester(Guid AGUID, String ALog) : this()
+        {
+            if (AGUID != Guid.Empty)
+            {
+                FGUID = AGUID;
+            }
+
+            FLog = ALog;
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify action delegate to run after stopping the stopwatch
+        /// </summary>
+        /// <param name="ACallback"></param>
+        public TPerformanceTester(Action <TimeSpan>ACallback) : this()
+        {
+            FCallback = ACallback;
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify a string to enter in the log on completion
+        /// </summary>
+        /// <param name="ALog"></param>
+        /// <returns></returns>
+        public static TPerformanceTester Start(String ALog)
+        {
+            return new TPerformanceTester(ALog);
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify a string to enter in the log on completion
+        /// </summary>
+        /// <param name="AGUID"></param>
+        /// <param name="ALog"></param>
+        /// <returns></returns>
+        public static TPerformanceTester Start(Guid AGUID, String ALog)
+        {
+            return new TPerformanceTester(AGUID, ALog);
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify action delegate to run after stopping the stopwatch
+        /// </summary>
+        /// <param name="ACallback"></param>
+        /// <returns></returns>
+        public static TPerformanceTester Start(Action <TimeSpan>ACallback)
+        {
+            return new TPerformanceTester(ACallback);
+        }
+
+        /// <summary>
+        /// Dispose
+        /// </summary>
+        public void Dispose()
+        {
+            FStopwatch.Stop();
+
+            if (FLog.Length > 0)
+            {
+                TLogging.Log(FLog + " - Elapsed time:" + FStopwatch.Elapsed.TotalSeconds.ToString());
+            }
+            else if (FCallback != null)
+            {
+                FCallback(ElapsedTimeSpan);
+            }
+        }
+
+        /// <summary>
+        /// Return the elapsed time
+        /// </summary>
+        public TimeSpan ElapsedTimeSpan
+        {
+            get
+            {
+                return FStopwatch.Elapsed;
+            }
+        }
+    }
 }

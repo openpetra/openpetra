@@ -25,6 +25,7 @@
 using System;
 using System.Data;
 
+using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
@@ -80,19 +81,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 string MotivationDetail = AMotivationDetail;
 
                 TDBTransaction readTransaction = null;
+
                 DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
                     TEnforceIsolationLevel.eilMinimum,
                     ref readTransaction,
                     delegate
                     {
-                        PPartnerTable myPPartnerTable =
-                            PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+                        PPartnerTable myPPartnerTable = null;
+
+                        myPPartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
                         if (myPPartnerTable.Rows.Count == 1)
                         {
                             // Entry for partnerKey is valid
                             PartnerKeyIsValid = true;
-                            PPartnerRow partnerRow = (PPartnerRow)myPPartnerTable.Rows[0];
+                            PPartnerRow partnerRow = null;
+
+                            partnerRow = (PPartnerRow)myPPartnerTable.Rows[0];
 
                             // Change motivationDetail if ColumnPartnerClass is UNIT
                             if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
@@ -102,7 +107,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 bool KeyMinFound = false;
 
                                 // first check if a motivation detail is linked to this potential key min
-                                AMotivationDetailTable MotivationDetailTable = AMotivationDetailAccess.LoadViaPPartner(APartnerKey, readTransaction);
+                                AMotivationDetailTable MotivationDetailTable = null;
+
+                                MotivationDetailTable = AMotivationDetailAccess.LoadViaPPartner(APartnerKey, readTransaction);
 
                                 if ((MotivationDetailTable != null) && (MotivationDetailTable.Rows.Count > 0))
                                 {
@@ -122,12 +129,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 // second check to see if this is a key min
                                 if (!KeyMinFound)
                                 {
-                                    PUnitTable pUnitTable =
-                                        PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+                                    PUnitTable pUnitTable = null;
+
+                                    pUnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
                                     if (pUnitTable.Rows.Count == 1)
                                     {
-                                        PUnitRow unitRow = (PUnitRow)pUnitTable.Rows[0];
+                                        PUnitRow unitRow = null;
+
+                                        unitRow = (PUnitRow)pUnitTable.Rows[0];
 
                                         if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
                                         {
