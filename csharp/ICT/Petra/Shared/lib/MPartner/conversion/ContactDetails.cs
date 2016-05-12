@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       ChristianK, timop
+//       ChristianK, timop, PeterS
 //
 // Copyright 2004-2015 by OM International
 //
@@ -24,13 +24,16 @@
 using System;
 using System.Data;
 using System.IO;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Exceptions;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Shared.MPartner.Conversion
 {
@@ -66,6 +69,15 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// <summary>As specified in the 'Base Data'.</summary>
         private const String ATTR_TYPE_WEBSITE = "Web Site";
 
+        /// <summary>As specified in the 'Base Data'.</summary>
+        private const String ATTR_TYPE_SKYPE = "Skype";
+
+        /// <summary>Possible prefix that denotes that a Skype ID is to follow.</summary>
+        private const String PREFIX_SKYPE1 = "Skype:";
+
+        /// <summary>Possible prefix that denotes that a Skype ID is to follow.</summary>
+        private const String PREFIX_SKYPE2 = "Skype";
+
         /// <summary>
         /// Holds the p_partner.p_partner_class_c information of each Partner.
         /// </summary>
@@ -93,6 +105,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         private static int FInsertionOrderPerPartner = 0;
 
         private static string FEmptyStringIndicator = null;
+
+        private static string FSiteCountryCode = null;
 
         private static string FSiteInternatAccessCode = null;
 
@@ -144,6 +158,17 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             set
             {
                 FEmptyStringIndicator = value;
+            }
+        }
+
+        /// <summary>
+        /// Country Code the site country
+        /// </summary>
+        public static string SiteCountryCode
+        {
+            set
+            {
+                FSiteCountryCode = value;
             }
         }
 
@@ -621,8 +646,13 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             var ReturnValue = new List <TPartnerContactDetails.PPartnerAttributeRecord>();
             var PPARecordList = new List <PPartnerAttributeRecord>();
             PPartnerAttributeRecord PPARecord;
+            PPartnerAttributeRecord PPARecordEmail = null;
             bool IsBestAddr = BestAddressHelper.IsBestAddressPartnerLocationRecord(APartnerLocationDR);
             bool AnyTelephoneNumberSetAsPrimary = false;
+            bool AnyEmailSetAsPrimary = false;
+            bool AnyEmailSetAsWithinOrganisation = false;
+            bool IsAnEmailAddressInAWrongField = false;
+            bool IsHoldingASkypeID = false;
             // Variables that hold record information
             string TelephoneNumberString = (string)APartnerLocationDR["p_telephone_number_c"];
             string FaxNumberString = (string)APartnerLocationDR["p_fax_number_c"];
@@ -630,12 +660,10 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             string AlternatePhoneNumberString = (string)APartnerLocationDR["p_alternate_telephone_c"];
             string UrlString = (string)APartnerLocationDR["p_url_c"];
             string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
+            string CountryCode = GetCountryCode(APartnerLocationDR);
+            string CountryCodeOrig = String.Copy(CountryCode);
 
-            // by default set value country to same as country code in p_location. If country code does not exist in p_location then set to null.
-            // (This may be changed later in RemoveInternationalCodeFromTelephoneNumber.)
-            string CountryCode = (!APartnerLocationDR.IsNull("p_value_country_c")) ?
-                                 ((string)APartnerLocationDR["p_value_country_c"]) : null;
-            string PartnerClass;
+            ACurrentFieldEmail.Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
             FInsertionOrderPerPartner++;
 
@@ -647,6 +675,41 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             if ((TelephoneNumberString != FEmptyStringIndicator)
                 || (EmailAddressString != FEmptyStringIndicator))
             {
+                // EmailAddressString processing needs to come FIRST as any email address that was really the email address
+                // in the Partner's p_partner_location record ought to take precedence over any other email addresses
+                // that might have been entered into other p_partner_location columns (e.g. the phone number)
+                // (Important for for determining the Primary and WithinOrganisation flags).
+                if (EmailAddressString != FEmptyStringIndicator)
+                {
+                    EmailAddressString = EmailAddressString.Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
+
+                    // Do not yet split up email addresses that could seperated by a semi colon!
+                    PPARecordEmail = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+
+                    IsHoldingASkypeID = IsStringHoldingASkypeID(EmailAddressString);
+
+                    PPARecordEmail.Value = EmailAddressString;
+                    PPARecordEmail.AttributeType = !IsHoldingASkypeID ? ATTR_TYPE_EMAIL : ATTR_TYPE_SKYPE;
+
+                    if (!IsHoldingASkypeID)
+                    {
+                        SpecialEmailProcessing(EmailAddressString,
+                            ACurrentFieldEmail,
+                            APartnerKey,
+                            IsBestAddr,
+                            ref PPARecordEmail,
+                            ref AnyEmailSetAsPrimary,
+                            ref AnyEmailSetAsWithinOrganisation);
+                    }
+                    else
+                    {
+                        SpecialSkypeIDProcessing(ref PPARecordEmail);
+                    }
+
+                    // Caveat: Adding to PPARecordList happens AFTER any potential Telephone got processed
+                    // (important only for helping in comparing various outputs of the data conversion)
+                }
+
                 // Set data parts that depend on certain conditions
                 if (TelephoneNumberString != FEmptyStringIndicator)
                 {
@@ -655,28 +718,59 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                     for (int i = 0; i < TelephoneNumbers.Length; i++)
                     {
-                        string TelephoneNumber = TelephoneNumbers[i].Trim();
+                        string TelephoneNumber = TelephoneNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!;
 
                         PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
-                        TelephoneNumber = RemoveInternationalCodeFromTelephoneNumber(TelephoneNumber, ref CountryCode, ATTR_TYPE_PHONE, APartnerKey);
+                        IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(TelephoneNumber, true) == null;
+                        IsHoldingASkypeID = IsStringHoldingASkypeID(TelephoneNumber);
+
+                        if ((!IsAnEmailAddressInAWrongField)
+                            && (!IsHoldingASkypeID))
+                        {
+                            TelephoneNumber = RemoveInternationalCodeFromTelephoneNumber(TelephoneNumber,
+                                ref CountryCode,
+                                ATTR_TYPE_PHONE,
+                                APartnerKey);
+                        }
 
                         PPARecord.Value = TelephoneNumber;
                         PPARecord.ValueCountry = CountryCode;
-                        PPARecord.AttributeType = ATTR_TYPE_PHONE;
+                        PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_PHONE, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
 
-                        if ((i == 0)
-                            && (IsBestAddr)
-                            && (PPARecord.Current))
+                        if ((!IsAnEmailAddressInAWrongField)
+                            && (!IsHoldingASkypeID))
                         {
-                            // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                            PPARecord.Primary = true;
+                            if ((i == 0)
+                                && (IsBestAddr)
+                                && (PPARecord.Current))
+                            {
+                                // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
+                                PPARecord.Primary = true;
 
-                            AnyTelephoneNumberSetAsPrimary = true;
+                                AnyTelephoneNumberSetAsPrimary = true;
 
-                            //                        TLogging.Log(String.Format(
-                            //                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-                            //                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                                //                        TLogging.Log(String.Format(
+                                //                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                                //                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                            }
+                        }
+                        else
+                        {
+                            if (IsAnEmailAddressInAWrongField)
+                            {
+                                SpecialEmailProcessing(TelephoneNumber,
+                                    ACurrentFieldEmail,
+                                    APartnerKey,
+                                    IsBestAddr,
+                                    ref PPARecord,
+                                    ref AnyEmailSetAsPrimary,
+                                    ref AnyEmailSetAsWithinOrganisation);
+                            }
+                            else
+                            {
+                                SpecialSkypeIDProcessing(ref PPARecord);
+                            }
                         }
 
                         PPARecordList.Add(PPARecord);
@@ -685,39 +779,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                 if (EmailAddressString != FEmptyStringIndicator)
                 {
-                    // Do not yet split up email addresses that could seperated by a semi colon!
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-
-                    PPARecord.Value = EmailAddressString;
-                    PPARecord.AttributeType = ATTR_TYPE_EMAIL;
-
-                    // if the predetermined current field email address
-                    // or if there is no current field email and this is the best current address
-                    if ((!string.IsNullOrEmpty(ACurrentFieldEmail) && (ACurrentFieldEmail == EmailAddressString))
-                        || ((string.IsNullOrEmpty(ACurrentFieldEmail)) && (IsBestAddr) && (PPARecord.Current)))
-                    {
-                        // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
-                        PPARecord.Primary = true;
-
-                        // Mark this Contact Detail as being 'WithinOrganisation' as it has an 'organisation-internal' e-mail-address!
-                        // - but only if the Partner is a PERSON!
-                        if (FPartnerClassInformation.TryGetValue(APartnerKey, out PartnerClass))
-                        {
-                            if (PartnerClass == "PERSON")
-                            {
-                                if (EmailAddressString.EndsWith("@om.org", StringComparison.InvariantCulture))
-                                {
-                                    PPARecord.WithinOrganisation = true;
-
-                                    //                                    TLogging.Log(String.Format(
-                                    //                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
-                                    //                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
-                                }
-                            }
-                        }
-                    }
-
-                    PPARecordList.Add(PPARecord);
+                    PPARecordList.Add(PPARecordEmail);
                 }
             }
 
@@ -728,15 +790,40 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                 for (int i = 0; i < FaxNumbers.Length; i++)
                 {
-                    string FaxNumber = FaxNumbers[i].Trim();
+                    string FaxNumber = FaxNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
-                    FaxNumber = RemoveInternationalCodeFromTelephoneNumber(FaxNumber, ref CountryCode, ATTR_TYPE_FAX, APartnerKey);
+                    IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(FaxNumber, true) == null;
+                    IsHoldingASkypeID = IsStringHoldingASkypeID(FaxNumber);
+
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
+                    {
+                        // In case the CountryCode variable got set to something else above: set it up again.
+                        CountryCode = CountryCodeOrig;
+
+                        FaxNumber = RemoveInternationalCodeFromTelephoneNumber(FaxNumber, ref CountryCode, ATTR_TYPE_FAX, APartnerKey);
+                    }
 
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+
                     PPARecord.Value = FaxNumber;
                     PPARecord.ValueCountry = CountryCode;
-                    PPARecord.AttributeType = ATTR_TYPE_FAX;
+                    PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_FAX, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
+
+                    if (IsAnEmailAddressInAWrongField)
+                    {
+                        SpecialEmailProcessing(FaxNumber,
+                            ACurrentFieldEmail,
+                            APartnerKey,
+                            IsBestAddr,
+                            ref PPARecord,
+                            ref AnyEmailSetAsPrimary,
+                            ref AnyEmailSetAsWithinOrganisation);
+                    }
+                    else if (IsHoldingASkypeID)
+                    {
+                        SpecialSkypeIDProcessing(ref PPARecord);
+                    }
 
                     PPARecordList.Add(PPARecord);
                 }
@@ -749,29 +836,59 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                 for (int i = 0; i < MobileNumbers.Length; i++)
                 {
-                    string MobileNumber = MobileNumbers[i].Trim();
+                    string MobileNumber = MobileNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
-                    MobileNumber = RemoveInternationalCodeFromTelephoneNumber(MobileNumber, ref CountryCode, ATTR_TYPE_MOBILE_PHONE, APartnerKey);
+                    IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(MobileNumber, true) == null;
+                    IsHoldingASkypeID = IsStringHoldingASkypeID(MobileNumber);
+
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
+                    {
+                        // In case the CountryCode variable got set to something else above: set it up again.
+                        CountryCode = CountryCodeOrig;
+
+                        MobileNumber = RemoveInternationalCodeFromTelephoneNumber(MobileNumber, ref CountryCode, ATTR_TYPE_MOBILE_PHONE, APartnerKey);
+                    }
 
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+
                     PPARecord.Value = MobileNumber;
                     PPARecord.ValueCountry = CountryCode;
-                    PPARecord.AttributeType = ATTR_TYPE_MOBILE_PHONE;
+                    PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_MOBILE_PHONE, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
 
-                    if ((!AnyTelephoneNumberSetAsPrimary)
-                        && (IsBestAddr)
-                        && (PPARecord.Current))
+                    if (!IsAnEmailAddressInAWrongField)
                     {
-                        // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
-                        // when the Contact Detail is current!
-                        PPARecord.Primary = true;
+                        if ((!AnyTelephoneNumberSetAsPrimary)
+                            && (IsBestAddr)
+                            && (PPARecord.Current))
+                        {
+                            // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
+                            // when the Contact Detail is current!
+                            PPARecord.Primary = true;
 
-                        AnyTelephoneNumberSetAsPrimary = true;
+                            AnyTelephoneNumberSetAsPrimary = true;
 
-                        //                    TLogging.Log(String.Format(
-                        //                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-                        //                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                            //                    TLogging.Log(String.Format(
+                            //                            "Made MOBILE Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                            //                            MobileNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                        }
+                    }
+                    else
+                    {
+                        if (IsAnEmailAddressInAWrongField)
+                        {
+                            SpecialEmailProcessing(MobileNumber,
+                                ACurrentFieldEmail,
+                                APartnerKey,
+                                IsBestAddr,
+                                ref PPARecord,
+                                ref AnyEmailSetAsPrimary,
+                                ref AnyEmailSetAsWithinOrganisation);
+                        }
+                        else if (IsHoldingASkypeID)
+                        {
+                            SpecialSkypeIDProcessing(ref PPARecord);
+                        }
                     }
 
                     PPARecordList.Add(PPARecord);
@@ -785,32 +902,63 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                 for (int i = 0; i < AlternatePhoneNumbers.Length; i++)
                 {
-                    string AlternatePhoneNumber = AlternatePhoneNumbers[i].Trim();
+                    string AlternatePhoneNumber = AlternatePhoneNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
-                    AlternatePhoneNumber = RemoveInternationalCodeFromTelephoneNumber(AlternatePhoneNumber,
-                        ref CountryCode,
-                        ATTR_TYPE_PHONE,
-                        APartnerKey);
+                    IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(AlternatePhoneNumber, true) == null;
+                    IsHoldingASkypeID = IsStringHoldingASkypeID(AlternatePhoneNumber);
+
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
+                    {
+                        // In case the CountryCode variable got set to something else above: set it up again.
+                        CountryCode = CountryCodeOrig;
+
+                        AlternatePhoneNumber = RemoveInternationalCodeFromTelephoneNumber(AlternatePhoneNumber,
+                            ref CountryCode,
+                            ATTR_TYPE_PHONE,
+                            APartnerKey);
+                    }
 
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+
                     PPARecord.Value = AlternatePhoneNumber;
                     PPARecord.ValueCountry = CountryCode;
-                    PPARecord.AttributeType = ATTR_TYPE_PHONE;
+                    PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_PHONE, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
 
-                    if ((!AnyTelephoneNumberSetAsPrimary)
-                        && (IsBestAddr)
-                        && (PPARecord.Current))
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
                     {
-                        // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
-                        // when the Contact Detail is current!
-                        PPARecord.Primary = true;
+                        if ((!AnyTelephoneNumberSetAsPrimary)
+                            && (IsBestAddr)
+                            && (PPARecord.Current))
+                        {
+                            // Mark this Contact Detail as being 'Primary' - but only if no other telephone number has been set as primary already and
+                            // when the Contact Detail is current!
+                            PPARecord.Primary = true;
 
-                        AnyTelephoneNumberSetAsPrimary = true;
+                            AnyTelephoneNumberSetAsPrimary = true;
 
-                        //                    TLogging.Log(String.Format(
-                        //                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
-                        //                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                            //                    TLogging.Log(String.Format(
+                            //                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
+                            //                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                        }
+                    }
+                    else
+                    {
+                        if (IsAnEmailAddressInAWrongField)
+                        {
+                            SpecialEmailProcessing(AlternatePhoneNumber,
+                                ACurrentFieldEmail,
+                                APartnerKey,
+                                IsBestAddr,
+                                ref PPARecord,
+                                ref AnyEmailSetAsPrimary,
+                                ref AnyEmailSetAsWithinOrganisation);
+                        }
+                        else if (IsHoldingASkypeID)
+                        {
+                            SpecialSkypeIDProcessing(ref PPARecord);
+                        }
                     }
 
                     PPARecordList.Add(PPARecord);
@@ -824,12 +972,30 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                 for (int i = 0; i < Urls.Length; i++)
                 {
-                    string Url = Urls[i].Trim();
+                    string Url = Urls[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
+
+                    IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(Url, true) == null;
+                    IsHoldingASkypeID = IsStringHoldingASkypeID(Url);
 
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
-                    // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
+
                     PPARecord.Value = Url;
-                    PPARecord.AttributeType = ATTR_TYPE_WEBSITE;
+                    PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_WEBSITE, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
+
+                    if (IsAnEmailAddressInAWrongField)
+                    {
+                        SpecialEmailProcessing(Url,
+                            ACurrentFieldEmail,
+                            APartnerKey,
+                            IsBestAddr,
+                            ref PPARecord,
+                            ref AnyEmailSetAsPrimary,
+                            ref AnyEmailSetAsWithinOrganisation);
+                    }
+                    else if (IsHoldingASkypeID)
+                    {
+                        SpecialSkypeIDProcessing(ref PPARecord);
+                    }
 
                     PPARecordList.Add(PPARecord);
                 }
@@ -844,88 +1010,495 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             return ReturnValue;
         }
 
+        private static void SpecialEmailProcessing(string AEmailAddressString, string ACurrentFieldEmail, Int64 APartnerKey,
+            bool AIsBestAddr, ref PPartnerAttributeRecord APPARecord, ref bool AAnyEmailSetAsPrimary, ref bool AAnyEmailSetAsWithinOrganisation)
+        {
+            string PartnerClass;
+
+            // if the predetermined current field email address
+            // or if there is no current field email and this is the best current address
+            if ((!string.IsNullOrEmpty(ACurrentFieldEmail) && (ACurrentFieldEmail == AEmailAddressString))
+                || ((string.IsNullOrEmpty(ACurrentFieldEmail)) && (AIsBestAddr) && (APPARecord.Current)))
+            {
+                // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
+                if (!AAnyEmailSetAsPrimary)
+                {
+                    APPARecord.Primary = true;
+                    AAnyEmailSetAsPrimary = true;
+                }
+
+                // Mark this Contact Detail as being 'WithinOrganisation' as it has an 'organisation-internal' e-mail-address!
+                // - but only if the Partner is a PERSON!
+                if (FPartnerClassInformation.TryGetValue(APartnerKey, out PartnerClass))
+                {
+                    if (PartnerClass == "PERSON")
+                    {
+                        if (AEmailAddressString.EndsWith("@om.org", StringComparison.InvariantCulture))
+                        {
+                            if (!AAnyEmailSetAsWithinOrganisation)
+                            {
+                                APPARecord.WithinOrganisation = true;
+                                AAnyEmailSetAsWithinOrganisation = true;
+                            }
+
+                            //                                    TLogging.Log(String.Format(
+                            //                                            "Made email address '{0}' a 'WithinOrganisation' e-mail address (PartnerKey: {1}, LocationKey: {2})",
+                            //                                            EmailAddress, APartnerKey, APartnerLocationDR["p_location_key_i"]));
+                        }
+                    }
+                }
+            }
+
+            APPARecord.ValueCountry = String.Empty;
+        }
+
+        private static void SpecialSkypeIDProcessing(ref PPartnerAttributeRecord APPARecord)
+        {
+            if (APPARecord.Value.StartsWith(PREFIX_SKYPE1, true, CultureInfo.InvariantCulture))
+            {
+                APPARecord.Value = APPARecord.Value.Substring(PREFIX_SKYPE1.Length + 1).Trim();  // Trim removes any spaces between the position of the prefix and the Skype ID
+                APPARecord.ValueCountry = String.Empty;
+            }
+            else if (APPARecord.Value.StartsWith(PREFIX_SKYPE2, true, CultureInfo.InvariantCulture))
+            {
+                APPARecord.Value = APPARecord.Value.Substring(PREFIX_SKYPE2.Length + 1).Trim();  // Trim removes any spaces between the position of the prefix and the Skype ID
+                APPARecord.ValueCountry = String.Empty;
+            }
+            else
+            {
+                // We can't recognise the prefix that ought to denote that a Skype ID is to follow: no change
+            }
+        }
+
+        private static bool IsStringHoldingASkypeID(string AString)
+        {
+            if ((AString.StartsWith(PREFIX_SKYPE1, true, CultureInfo.InvariantCulture))
+                || (AString.StartsWith(PREFIX_SKYPE2, true, CultureInfo.InvariantCulture)))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static string GetAttributeType(string ADefaultAttributeTypeForThisCase, bool AIsAnEmailAddressInAWrongField, bool AIsSkypeID)
+        {
+            if (!AIsAnEmailAddressInAWrongField
+                && !AIsSkypeID)
+            {
+                return ADefaultAttributeTypeForThisCase;
+            }
+            else if (AIsAnEmailAddressInAWrongField)
+            {
+                return ATTR_TYPE_EMAIL;
+            }
+            else if (AIsSkypeID)
+            {
+                return ATTR_TYPE_SKYPE;
+            }
+
+            // Fallback...
+            return ATTR_TYPE_PHONE;
+        }
+
+        /// <summary>
+        /// Returns the Country Code as set in the p_partner_location Row. (If that did not exist in p_location
+        /// then this will be null. (This may be changed later in RemoveInternationalCodeFromTelephoneNumber.)
+        /// </summary>
+        /// <param name="APartnerLocationDR">PartnerLocation DataRow.</param>
+        /// <returns>Country Code, or null if p_value_country_c is null.</returns>
+        private static string GetCountryCode(DataRow APartnerLocationDR)
+        {
+            return (!APartnerLocationDR.IsNull("p_value_country_c")) ?
+                   ((string)APartnerLocationDR["p_value_country_c"]) : null;
+        }
+
         // This removes the international calling code from the start of a phone/fax/mobile number.
         // It also ensures that the p_partner_attribute country code is correct.
         private static string RemoveInternationalCodeFromTelephoneNumber(string ATelephoneNumber, ref string ACountryCode,
             string AAttributeType, Int64 APartnerKey)
         {
-            string ReturnValue = ATelephoneNumber;
+            const string CheckIntlAccessCodeWarningStr = "Please check International Access Code for {0} '{1}' for partner {2}.";
+
+            string ReturnValue = null;
+            string TelephoneNumberOrig = String.Copy(ATelephoneNumber);
+            string CountryCallingCodeString;
             DataRow CountryRow = FCountryTable.Rows.Find(ACountryCode);
+            bool FSiteInternatAccessCodeIsANumber = true;
 
-            // ++ is never needed
-            ATelephoneNumber = ATelephoneNumber.Replace("++", "+").Replace("+ ", "+");
-
+            // Sanity Check: Check if the country we get passed is in the p_country Table
             if (CountryRow == null)
             {
-                return ReturnValue;
+                // This should never happen, but it case it ever does:
+                // Ensure we don't set a Country Code for the Telephone Number as it would be invalid and we would get an Exception
+                // thrown when the p_partner_attribute Row would get inserted into the DB due to referential integrity checks.
+                // (Telephone Number gets returned unchanged.)
+                ACountryCode = null;
+
+                TLogging.Log(string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
+                        Catalog.GetString(" Country Code could not get interpreted hence the " +
+                            "International Access Code could not be determined: it got set to nothing"), AAttributeType,
+                        TelephoneNumberOrig, APartnerKey));
+
+                return TelephoneNumberOrig;
+            }
+            else
+            {
+                CountryCallingCodeString = CountryRow["p_internat_telephone_code_i"].ToString();
             }
 
-            string CountryCallingCodeString = CountryRow["p_internat_telephone_code_i"].ToString();
+            //
+            // Preparations
+            //
 
-            if (string.IsNullOrEmpty(CountryCallingCodeString))
+            // First strip off any leading whitespace characters (e.g. Space, Tab, etc) to ensure we can always detect a leading + or
+            // FSiteInternatAccessCode, and any trailing whitespace characters in case we need to move any prefixing textual characters
+            // to the end of the Telephone Number string
+            ATelephoneNumber = ATelephoneNumber.Trim();
+
+            Int64 Tmp1;
+
+            if (!Int64.TryParse(FSiteInternatAccessCode, out Tmp1))
             {
-                return ReturnValue;
+                FSiteInternatAccessCodeIsANumber = false;
             }
 
-            int CountryCallingCode = Convert.ToInt32(CountryCallingCodeString);
+            // Turn any textual prefixes into textual postfixes and clad them in parenthesis [e.g. 'xxx 01234 56789' becomes '01234 56789 (xxx)']
+            MoveAnyTexualPrefixesToEndOfTelephoneNumber(ref ATelephoneNumber, FSiteInternatAccessCode,
+                FSiteInternatAccessCodeIsANumber);
 
-            if (ATelephoneNumber.StartsWith("+" + CountryCallingCode)) // e.g. +44 for UK
-            {
-                ReturnValue = ATelephoneNumber.Remove(0, 1 + CountryCallingCode.ToString().Length);
-            }
-            else if (ATelephoneNumber.StartsWith(FSiteInternatAccessCode + CountryCallingCode)) // e.g. 0044 for UK
-            {
-                ReturnValue = ATelephoneNumber.Remove(0, FSiteInternatAccessCode.Length + CountryCallingCode.ToString().Length);
-            }
-            else if (ATelephoneNumber.StartsWith("+") || ATelephoneNumber.StartsWith(FSiteInternatAccessCode))
-            {
-                bool Found = false;
+            //
+            // Checks
+            //
 
-                // If number's country calling code does not match the country calling code corresponding to the country code in p_location record
-                // then find out if one of the p_internat_telephone_code_i in FCountryTable matches the country calling code.
-                // Country calling codes are either 2 or 3 digits and a 2 digit code is never contained in a 3 digit code.
-                foreach (DataRow Row in FCountryTable.Rows)
+            // First check if Telephone Number starts with + and CountryCallingCode (e.g. '+44' for UK)
+            // or with the FSiteInternatAccessCode and CountryCallingCode (e.g. '0044' for UK if the to-be-converted Site is Switzerland)
+            if (!string.IsNullOrEmpty(CountryCallingCodeString))
+            {
+                int CountryCallingCode = Convert.ToInt32(CountryCallingCodeString);
+
+                if (ATelephoneNumber.StartsWith("+" + CountryCallingCode, StringComparison.InvariantCulture))  // e.g. '+44' for UK
                 {
-                    int n;
-
-                    // ignore country codes that are numbers
-                    if (int.TryParse(Row["p_country_code_c"].ToString(), out n))
-                    {
-                        continue;
-                    }
-
-                    if (ATelephoneNumber.StartsWith("+") && ATelephoneNumber.Substring(1).StartsWith(Row["p_internat_telephone_code_i"].ToString()))
-                    {
-                        ACountryCode = Row["p_country_code_c"].ToString();
-                        ReturnValue = ATelephoneNumber.Substring(1 + Row["p_internat_telephone_code_i"].ToString().Length);
-                        Found = true;
-                        break;
-                    }
-                    else if (ATelephoneNumber.StartsWith(FSiteInternatAccessCode)
-                             && ATelephoneNumber.Substring(FSiteInternatAccessCode.Length).StartsWith(Row["p_internat_telephone_code_i"].ToString()))
-                    {
-                        ACountryCode = Row["p_country_code_c"].ToString();
-                        ReturnValue = ATelephoneNumber.Substring(
-                            FSiteInternatAccessCode.Length + Row["p_internat_telephone_code_i"].ToString().Length);
-                        Found = true;
-                        break;
-                    }
+                    ReturnValue = ATelephoneNumber.Remove(0, 1 + CountryCallingCode.ToString().Length);
                 }
-
-                if (!Found)
+                else if (ATelephoneNumber.StartsWith(FSiteInternatAccessCode + CountryCallingCode,
+                             StringComparison.InvariantCulture)) // e.g. '0044' for UK
                 {
-                    ACountryCode = null;
-                    TLogging.Log(string.Format(Catalog.GetString("Please check international access code for {0} for partner {1}."), AAttributeType,
-                            APartnerKey));
+                    ReturnValue = ATelephoneNumber.Remove(0, FSiteInternatAccessCode.Length + CountryCallingCode.ToString().Length);
                 }
             }
-            else if (ACountryCode == null) // also doesn't start with + or FSiteInternatAccessCode
+
+            // If no success so far...
+            if (ReturnValue == null)
             {
-                TLogging.Log(string.Format(Catalog.GetString("Please check international access code for {0} for partner {1}."), AAttributeType,
-                        APartnerKey));
+                // Check if Telephone Number starts with + or with FSiteInternatAccessCode
+                if (ATelephoneNumber.StartsWith("+", StringComparison.InvariantCulture)
+                    || ATelephoneNumber.StartsWith(FSiteInternatAccessCode, StringComparison.InvariantCulture))
+                {
+                    bool Found = false;
+
+                    // If number's country calling code does not match the country calling code corresponding to the country code in p_location record
+                    // then find out if one of the p_internat_telephone_code_i in FCountryTable matches the country calling code.
+                    // Country calling codes are either 2 or 3 digits and a 2 digit code is never contained in a 3 digit code.
+                    foreach (DataRow Row in FCountryTable.Rows)
+                    {
+                        int n;
+                        string InternatTelephoneCode = Row["p_internat_telephone_code_i"].ToString();
+
+                        // Ignore country codes that are numbers
+                        if (int.TryParse(Row["p_country_code_c"].ToString(), out n))
+                        {
+                            continue;
+                        }
+
+                        // Don't try to match against a Country that has got 0 for its Int'l Telephone Code as that is an invalid code
+                        if (InternatTelephoneCode == "0")
+                        {
+                            continue;
+                        }
+
+                        if (ATelephoneNumber.StartsWith("+", StringComparison.InvariantCulture)
+                            && ATelephoneNumber.Substring(1).StartsWith(InternatTelephoneCode,
+                                StringComparison.InvariantCulture))
+                        {
+                            ACountryCode = Row["p_country_code_c"].ToString();
+                            ReturnValue = ATelephoneNumber.Substring(1 + InternatTelephoneCode.Length);
+
+                            DetectAndLogIfMulitpleCountriesHaveSameIntlAccessCode(Row, AAttributeType, APartnerKey,
+                                TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr));
+
+                            DetectAndLogExtraDigitAfterInternatTelephoneCode(ATelephoneNumber, InternatTelephoneCode,
+                                1, AAttributeType, APartnerKey, TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr));
+
+                            Found = true;
+                            break;
+                        }
+                        else if (ATelephoneNumber.StartsWith(FSiteInternatAccessCode, StringComparison.InvariantCulture)
+                                 && ATelephoneNumber.Substring(FSiteInternatAccessCode.Length).StartsWith(
+                                     InternatTelephoneCode, StringComparison.InvariantCulture))
+                        {
+                            ACountryCode = Row["p_country_code_c"].ToString();
+                            ReturnValue = ATelephoneNumber.Substring(
+                                FSiteInternatAccessCode.Length + InternatTelephoneCode.Length);
+
+                            DetectAndLogIfMulitpleCountriesHaveSameIntlAccessCode(Row, AAttributeType, APartnerKey,
+                                TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr));
+
+                            DetectAndLogExtraDigitAfterInternatTelephoneCode(ATelephoneNumber, InternatTelephoneCode,
+                                FSiteInternatAccessCode.Length, AAttributeType, APartnerKey, TelephoneNumberOrig,
+                                Catalog.GetString(CheckIntlAccessCodeWarningStr));
+
+                            Found = true;
+                            break;
+                        }
+                    }
+
+                    if (!Found)
+                    {
+                        ACountryCode = null;
+                        ReturnValue = TelephoneNumberOrig;
+
+                        TLogging.Log(string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
+                                Catalog.GetString("  No country could be found for (what got recognised as) the International Access Code. " +
+                                    "Because of that the International Access Code could not be determined: it got set to nothing"),
+                                AAttributeType, TelephoneNumberOrig, APartnerKey));
+                    }
+                }
+                else
+                {
+                    // Telephone number doesn't start with + or FSiteInternatAccessCode = no need to remove Int'l Telephone Code.
+                    ReturnValue = ATelephoneNumber;
+
+                    if (ACountryCode != FSiteCountryCode)
+                    {
+                        // If this is the case we issue a warning to the user as we can't be totally sure that the phone number is
+                        // really inside the Country of the ACountryCode...
+                        TLogging.Log(string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
+                                Catalog.GetString(" Telephone Number doesn't start with an International Access Code " +
+                                    "and the Country of the Address that it is recorded against ({3}) isn't the Site's Country ({4}) - " +
+                                    "please check whether the International Access Code that was assigned is indeed correct."), AAttributeType,
+                                TelephoneNumberOrig, APartnerKey, ACountryCode, FSiteCountryCode));
+                    }
+                }
             }
 
-            return ReturnValue.Trim().Trim('-').Trim('/');
+            // Sanity Check: Did the algorithm of this method somehow fail to remove the Int'l Code from the Telephone Number?
+            if (ReturnValue == null)
+            {
+                throw new Exception("RemoveInternationalCodeFromTelephoneNumber Method attempted to clear the Telephone Number " +
+                    TelephoneNumberOrig + " due to a problem in the Methods' algorithm, but that must not happen");
+            }
+
+            return ReturnValue.Trim().Trim('-').Trim('/').Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
+        }
+
+        private static void DetectAndLogExtraDigitAfterInternatTelephoneCode(string ATelephoneNumber, string AInternatTelephoneCode,
+            int APrefixDenominatorLength, string AAttributeType, Int64 APartnerKey, string ATelephoneNumberOrig, string AGenericWarningString)
+        {
+            char ExtraDigitCheckChar = ATelephoneNumber[APrefixDenominatorLength + AInternatTelephoneCode.Length];
+
+            if ((ExtraDigitCheckChar >= '0')
+                && (ExtraDigitCheckChar <= '9'))
+            {
+                TLogging.Log(string.Format(Catalog.GetString(AGenericWarningString) +
+                        Catalog.GetString(" What got recognised as the International Access Code +{3} is immediately followed by a number, {4}. " +
+                            "Because of that we can't be totally sure of the International Access Code that we recognised: please check it manually."),
+                        AAttributeType, ATelephoneNumberOrig, APartnerKey, AInternatTelephoneCode, ExtraDigitCheckChar));
+            }
+        }
+
+        /// <summary>
+        /// Turns any textual prefixes into textual postfixes and clads them in parenthesis [e.g. 'xxx 01234 56789' becomes '01234 56789 (xxx)'].
+        /// </summary>
+        /// <remarks>
+        /// The algorithm first establishes where the Telephone Number starts 'for real' in the <paramref name="ATelephoneNumberStr" />
+        /// by looking for:
+        ///   * any digit (0-9);
+        ///   * + sign;
+        ///   * Code needed to dial *out* of the country of the Site that we are converting.
+        /// It then takes everything that comes *before* that starting position, removes it from the start and appends it to the Telephone Number in
+        /// the format of ' (___)' where '___' is what was the postfix. Any trailing colon ( : ) or space also gets removed from the postfix before
+        /// it is appended.
+        /// </remarks>
+        /// <param name="ATelephoneNumberStr">Telephone Number string (this instance gets directly modified)!</param>
+        /// <param name="AInternatAccessCodeOfCountryOfSite">Code needed to dial *out* of the country of the Site that we are converting (often this will be '00',
+        /// but not always, and that code can be a text, not just numbers!).</param>
+        /// <param name="ASiteInternatAccessCodeIsANumber">Pass true if <paramref name="AInternatAccessCodeOfCountryOfSite" /> is a number,
+        /// otherwise false.</param>
+        private static void MoveAnyTexualPrefixesToEndOfTelephoneNumber(ref string ATelephoneNumberStr,
+            string AInternatAccessCodeOfCountryOfSite, bool ASiteInternatAccessCodeIsANumber)
+        {
+            string ATelephoneNumberStrOrig = String.Copy(ATelephoneNumberStr);
+            string PrefixStr;
+            string RemainingTelephoneStr;
+            int CharCounter = 0;
+            int CharCounterReverse;
+
+            List <int>PositionsOfPlusSign = new List <int>();
+            bool PlusPrefixUtilised = false;
+
+            // Find anything that isn't the first digit ( 0..9 ) in the Telephone Number
+            while ((CharCounter < ATelephoneNumberStr.Length)
+                   && !(ATelephoneNumberStr[CharCounter] >= '0' && ATelephoneNumberStr[CharCounter] <= '9'))
+            {
+                CharCounter++;
+            }
+
+            if (CharCounter == 0)
+            {
+                // Telephone Number starts with a digit straight away --> we are done!
+                return;
+            }
+            else if ((CharCounter == 1)
+                     && (ATelephoneNumberStr[0] == '('))
+            {
+                // Telephone Number starts with '(' plus a digit straight away --> we are done as we are assuming a local number prefix then, such as (0)xxx
+                return;
+            }
+
+            // Let our prefix string (for the moment) begin one character before the first digit
+            PrefixStr = ATelephoneNumberStr.Substring(0, CharCounter);
+            RemainingTelephoneStr = ATelephoneNumberStr.Substring(CharCounter);
+
+            // Remove any whitespace from beginning and end of prefix
+            PrefixStr = PrefixStr.Trim();
+
+            //
+            // Handle + sign prefix
+            //
+
+            // Should there be any occurrence of '++', replace it with a single plus sign to make for easier parsing.
+            // We assume that ++ will *always* be a typo because...
+            //   (1) ++ isn't a valid indicator for signalising an Int'l Telephone Code;
+            //   (2) We can't think of any reason why users might have used ++ deliberately in a prefix string!
+            PrefixStr = PrefixStr.Replace("++", "+");
+
+            // Find plus sign (if it's there) starting from the end of the prefix string (and also spot potential multiple occurrences of it!)
+            CharCounterReverse = PrefixStr.Length - 1;
+
+            while (CharCounterReverse >= 0)
+            {
+                if (PrefixStr.Substring(CharCounterReverse, 1) == "+")
+                {
+                    PositionsOfPlusSign.Add(CharCounterReverse);
+                }
+
+                CharCounterReverse--;
+            }
+
+            if (PositionsOfPlusSign.Count == 0)
+            {
+                // No plus sign found in prefix string - prefix string doesn't need to be stripped of any plus sign
+            }
+            else if (PositionsOfPlusSign.Count == 1)
+            {
+                //
+                // Single plus sign found in prefix string
+                //
+
+                if (PositionsOfPlusSign[0] == PrefixStr.Length - 1)
+                {
+                    // Telephone Number starts with + and a digit straight away:
+                    // We let the Telephone Number start with + and anything that starts off with the first digit.
+                    PrefixStr = PrefixStr.Substring(0, PrefixStr.Length - 1);
+                    RemainingTelephoneStr = "+" + RemainingTelephoneStr;
+
+                    PlusPrefixUtilised = true;
+                }
+            }
+            else
+            {
+                //
+                // Multiple plus signs found in the prefix string, starting from the end of the prefix string
+                //
+
+                // The Telephone Number contains a second (or more) plus sign(s) but they can't form the string '++' (as we already got rid of ++
+                // earlier).
+                // Ignore those as they will have a different meaning
+
+                if (PositionsOfPlusSign[0] == PrefixStr.Length - 1)
+                {
+                    // Telephone Number starts with + and a digit straight away:
+                    // We let the Telephone Number start with + and anything that starts off with the first digit.
+                    // (Example: 'A+S: +01234 5678900')
+                    PrefixStr = PrefixStr.Substring(0, PrefixStr.Length - 1);
+                    RemainingTelephoneStr = "+" + RemainingTelephoneStr;
+
+                    PlusPrefixUtilised = true;
+                }
+            }
+
+            //
+            // Handle AInternatAccessCodeOfCountryOfSite prefix
+            //
+            if (!PlusPrefixUtilised)
+            {
+                if (ASiteInternatAccessCodeIsANumber)  // e.g. '00'
+                {
+                    // Parsing will aleady be OK as AInternatAccessCodeOfCountryOfSite will be at the start of RemainingTelephoneStr
+                    // (if it is indeed entered by for the Telephone Number)! Examples: '0049 1234 5678900', 'A+S: 0049 1234 5678900'
+                }
+                else                                  // e.g. '0~0' for Poland, '8~10' for Azerbaijan, '00~' for Algeria, ...
+                {
+                    throw new Exception("MoveAnyTexualPrefixesToEndOfTelephoneNumber: Can't yet handle conversion of Telephone Numbers " +
+                        "for a Site that hasn't got a numeric Int' Access Code!");
+
+                    // TODO: Implement checks for a non-numeric AInternatAccessCodeOfCountryOfSite prefixes!
+                }
+            }
+
+            if (PrefixStr != String.Empty)
+            {
+                // Finally: Strip the prefix off the Telephone Number, remove any whitespace characters from the beginning and end
+                // of the prefix and append it to the Telephone Number (removing any trailing colon ( : ) character, if there is one)
+                ATelephoneNumberStr = RemainingTelephoneStr + " (" + PrefixStr.Trim().Trim(new char[] { ':' }) + ")";
+            }
+            else
+            {
+                ATelephoneNumberStr = RemainingTelephoneStr;
+            }
+        }
+
+        private static void DetectAndLogIfMulitpleCountriesHaveSameIntlAccessCode(DataRow ACountryRow,
+            string AAttributeType, Int64 APartnerKey, string ATelephoneNumberOrig, string AGenericWarningString)
+        {
+            const string MultipleMatchingCountriesWarningStr = " Multiple countries ({3}) have the same International Access Code {4}. " +
+                                                               "Out of those, the country {5} (Country Code '{6}') got chosen.";
+
+            string MultipleMatchingCoutries = MultipleCountriesMatchingSameIntlAccessCode(ACountryRow);
+
+            if (MultipleMatchingCoutries != String.Empty)
+            {
+                TLogging.Log(string.Format(AGenericWarningString + Catalog.GetString(MultipleMatchingCountriesWarningStr),
+                        AAttributeType, ATelephoneNumberOrig, APartnerKey, MultipleMatchingCoutries,
+                        ACountryRow["p_internat_telephone_code_i"].ToString(),
+                        ACountryRow["p_country_name_c"].ToString(), ACountryRow["p_country_code_c"].ToString()));
+            }
+        }
+
+        private static string MultipleCountriesMatchingSameIntlAccessCode(DataRow ACountryRow)
+        {
+            string ReturnValue = String.Empty;
+
+            DataRow[] MatchingCountyDataRows;
+
+            MatchingCountyDataRows = FCountryTable.Select(
+                "p_internat_telephone_code_i = '" + ACountryRow["p_internat_telephone_code_i"].ToString() + "'");
+
+            if (MatchingCountyDataRows.Length > 1)
+            {
+                foreach (DataRow Row in MatchingCountyDataRows)
+                {
+                    ReturnValue += "'" + ACountryRow["p_country_code_c"].ToString() + "' - " + Row["p_country_name_c"].ToString() + "; ";
+                }
+
+                // Strip off trailing separator
+                ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 2);
+            }
+
+            return ReturnValue;
         }
 
         private static PPartnerAttributeRecord GetNewPPartnerAttributeRecord(Int64 APartnerKey, DataRow APartnerLocationDR)

@@ -90,6 +90,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             foreach (PPartnerLocationRow PartnerLocationDR in AMainDS.PPartnerLocation.Rows)
             {
                 PartnerLocationsDT = PartnerLocationsTables[Math.Abs(PartnerLocationDR.PartnerKey) % TPartnerContactDetails.NumberOfTables];
+                DataRow LocationDR = AMainDS.PLocation.Rows.Find(new object[] { PartnerLocationDR.SiteKey, PartnerLocationDR.LocationKey });
 
                 // Phone Extension: Ignore if value in the dumped data is either null or 0
                 if (PartnerLocationDR.IsExtensionNull())
@@ -161,6 +162,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 NewPartnerLocationDR["p_alternate_telephone_c"] = PartnerLocationDR.AlternateTelephone;
                 NewPartnerLocationDR["p_email_address_c"] = PartnerLocationDR.EmailAddress;
                 NewPartnerLocationDR["p_url_c"] = PartnerLocationDR.Url;
+                NewPartnerLocationDR["p_value_country_c"] = LocationDR["p_country_code_c"];
 
                 PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
             }
@@ -182,6 +184,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             TPartnerContactDetails.EmptyStringIndicator = String.Empty;
             TPartnerContactDetails.PartnerAttributeHoldingDataSet = AMainDS;
             TPartnerContactDetails.CountryTable = CountryTable;
+            TPartnerContactDetails.SiteCountryCode = SiteCountryCode;
             TPartnerContactDetails.SiteInternatAccessCode = InternatAccessCode;
             TPartnerContactDetails.PopulatePPartnerAttribute();
 
