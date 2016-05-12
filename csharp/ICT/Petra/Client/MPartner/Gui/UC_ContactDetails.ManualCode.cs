@@ -745,6 +745,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             PartnerEditTDSPPartnerAttributeRow PartnerAttributeDR;
             PCountryRow CountryDR;
+            bool RowWasUnchangedBefore;
 
             for (int Counter = 0; Counter < FMainDS.PPartnerAttribute.Rows.Count; Counter++)
             {
@@ -754,6 +755,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     || (PartnerAttributeDR.RowState == DataRowState.Added)
                     || (PartnerAttributeDR.RowState == DataRowState.Modified))
                 {
+                    RowWasUnchangedBefore = PartnerAttributeDR.RowState == DataRowState.Unchanged;
+
                     if (PartnerAttributeDR.ValueCountry != String.Empty)
                     {
                         CountryDR = (PCountryRow)Calculations.FindCountryRowInCachedCountryList(PartnerAttributeDR.ValueCountry);
@@ -770,6 +773,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = String.Empty;
+                    }
+
+                    if (RowWasUnchangedBefore)
+                    {
+                        PartnerAttributeDR.AcceptChanges();
                     }
                 }
             }
@@ -1296,7 +1304,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             //
             // Contact Type
-            //grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
+//            grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
 
             //
             // Contact Type (Calculated Expression!)
@@ -1314,24 +1322,24 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Confidential
             grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnConfidential);
 
-            //// Sequence (for testing purposes only...)
-            //grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
+//            // Sequence (for testing purposes only...)
+//            grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
 
-            //// Index (for testing purposes only...)
-            //grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
+//            // Index (for testing purposes only...)
+//            grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
 
-            //// Primary (for testing purposes only...)
-            //grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
+//            // Primary (for testing purposes only...)
+//            grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
 
-            //// Within Organsiation (for testing purposes only...)
-            //if (FPartnersPartnerClass == TPartnerClass.PERSON)
-            //{
+//            // Within Organsiation (for testing purposes only...)
+//            if (FPartnersPartnerClass == TPartnerClass.PERSON)
+//            {
 
-            //    grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrganisation);
-            //}
+//                grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrganisation);
+//            }
 
             // Modification TimeStamp (for testing purposes only...)
-            //grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
+//             grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
 
             grdDetails.AutoResizeGrid();
         }
@@ -1746,6 +1754,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 UpdateValueManual();
+
+                EnsureOnlyPhoneAndFaxRowsHaveCountryCodeSet();
+                UpdateIntlPhonePrefixColumn();
 
                 if (!FRunningInsideShowDetails)
                 {

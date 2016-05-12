@@ -1946,7 +1946,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         {
                             // ...not start with + when an International Telephone Country Code is chosen
                             VerificationResult = new TScreenVerificationResult(
-                                new TVerificationResult(Catalog.GetString("Phone/Fax Number Validation"),
+                                new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS1)),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }
@@ -1955,7 +1955,7 @@ namespace Ict.Petra.Shared.MPartner.Validation
                         {
                             // ...not start with + when no International Telephone Country Code is chosen
                             VerificationResult = new TScreenVerificationResult(
-                                new TVerificationResult(Catalog.GetString("Phone/Fax Number Validation"),
+                                new TVerificationResult(AContext,
                                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS2)),
                                 ValidationColumn, ValidationControlsData.ValidationControl);
                         }

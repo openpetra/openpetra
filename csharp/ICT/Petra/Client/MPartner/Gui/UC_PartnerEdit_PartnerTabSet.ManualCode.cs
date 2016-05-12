@@ -747,13 +747,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FUcoAddresses.CleanupRecordsBeforeMerge();
 
-            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
+            if (FUcoContactDetails != null)
             {
-                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucContactDetails);'
-                SetupUserControlContactDetails();
+                FUcoContactDetails.CleanupRecordsBeforeMerge();
             }
-
-            FUcoContactDetails.CleanupRecordsBeforeMerge();
         }
 
         /// <summary>
@@ -769,7 +766,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FUcoAddresses.RefreshRecordsAfterMerge();
 
-            FUcoContactDetails.RefreshRecordsAfterMerge();
+            if (FUcoContactDetails != null)
+            {
+                FUcoContactDetails.RefreshRecordsAfterMerge();
+            }
 
             if (FUcoFinanceDetails != null)
             {

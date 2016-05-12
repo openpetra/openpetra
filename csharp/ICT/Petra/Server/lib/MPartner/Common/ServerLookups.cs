@@ -649,10 +649,14 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             APartnerInfoDS = new PartnerInfoTDS(DATASET_NAME);
             Boolean newTransaction = false;
 
-            TDataBase DBConnectionObj = (ASeparateDBConnection) ?
-                                        DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo")
-                                        :
-                                        DBAccess.GDBAccessObj;
+            // In case ASeparateDBConnection is true:
+            // Always open a separate DB Connection as it can otherwise conflict with the opening of
+            // a Partner Edit screen when the Partner Info Panel is shown on the Partner Find screen
+            // and a user double-clicks on a partner line in the Grid that is not the one for which the
+            // Partner Info is currently displayed.
+            TDataBase DBConnectionObj =
+                (ASeparateDBConnection) ? DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo")
+                : DBAccess.GDBAccessObj;
             try
             {
                 ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
@@ -667,36 +671,42 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisPartnerLocationOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerLocationOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
                         ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisFull:
 
                         ReturnValue = TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,
                         ref APartnerInfoDS, ReadTransaction);
+
                         break;
                 } // switch
 
