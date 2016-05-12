@@ -333,7 +333,7 @@ namespace Tests.MFinance.GLBatches
                 tester2.SendCommand(MessageBoxTester.Command.OK);
             };
 
-            frmBatchExport.ExportBatches();
+            frmBatchExport.ExportBatches(false);
 
             Assert.AreEqual(true, TTextFile.SameContent(TestFile,
                     TestFile + ".new"), "the files should be the same: " + TestFile);
@@ -353,7 +353,7 @@ namespace Tests.MFinance.GLBatches
                 tester2.SendCommand(MessageBoxTester.Command.OK);
             };
 
-            frmBatchExport.ExportBatches();
+            frmBatchExport.ExportBatches(false);
 
             Assert.AreEqual(true, TTextFile.SameContent(TestFile,
                     TestFile + ".new"), "the files should be the same: " + TestFile);

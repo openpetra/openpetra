@@ -244,9 +244,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// Public method to export GL batches
         /// </summary>
         /// <returns>True if the Export succeeded and a file was created, false otherwise</returns>
-        public bool ExportBatches()
+        public bool ExportBatches(bool AWithInteractionOnSuccess = true)
         {
-            if (txtFilename.Text == String.Empty)
+            string ExportFileName = txtFilename.Text;
+
+            if (ExportFileName == String.Empty)
             {
                 MessageBox.Show(Catalog.GetString("Please choose a location for the Export File."),
                     Catalog.GetString("Error"),
@@ -254,8 +256,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxIcon.Error);
                 return false;
             }
+            else if (!ExportFileName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
+            {
+                ExportFileName += ".csv";
+            }
 
-            if (!Directory.Exists(Path.GetDirectoryName(txtFilename.Text)))
+            if (!Directory.Exists(Path.GetDirectoryName(ExportFileName)))
             {
                 MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
                     Catalog.GetString("Error"),
@@ -266,7 +272,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return false;
             }
 
-            if (File.Exists(txtFilename.Text))
+            if (File.Exists(ExportFileName))
             {
                 if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
                         Catalog.GetString("Export Batches"),
@@ -279,7 +285,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 try
                 {
-                    File.Delete(txtFilename.Text);
+                    File.Delete(ExportFileName);
                 }
                 catch (Exception ex)
                 {
@@ -401,35 +407,71 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
 
                 // Now we have the string we can write it to the file
-                StreamWriter sw1 = new StreamWriter(txtFilename.Text);
+                StreamWriter sw1 = new StreamWriter(ExportFileName);
                 sw1.Write(exportString);
                 sw1.Close();
             }
             catch (Exception ex)
             {
-                TLogging.Log("GLBatchExport.ManualCode: " + ex.ToString());
-                MessageBox.Show(ex.Message,
-                    Catalog.GetString("Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return false;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
-            // Offer the client the chance to open the file in Excel or whatever
-            if (MessageBox.Show(Catalog.GetString("Your data was exported successfully! Would you like to open the file in your default application?"),
-                    Catalog.GetString("GL Batch Export"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Information,
-                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
-            {
-                ProcessStartInfo si = new ProcessStartInfo(txtFilename.Text);
-                si.UseShellExecute = true;
-                si.Verb = "open";
+            bool ShowExportedFileInExplorer = false;
 
-                Process p = new Process();
-                p.StartInfo = si;
-                p.Start();
+            if (AWithInteractionOnSuccess)
+            {
+                if (MessageBox.Show(Catalog.GetString(
+                            "GL Batches Exported successfully. Would you like to open the file in your default application?"),
+                        Catalog.GetString("GL Batch Export"),
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Information,
+                        MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    try
+                    {
+                        ProcessStartInfo si = new ProcessStartInfo(ExportFileName);
+                        si.UseShellExecute = true;
+                        si.Verb = "open";
+
+                        Process p = new Process();
+                        p.StartInfo = si;
+                        p.Start();
+                    }
+                    catch
+                    {
+                        MessageBox.Show(Catalog.GetString(
+                                "Unable to launch the default application to open: '") + ExportFileName + "'!", Catalog.GetString(
+                                "GL Export"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        ShowExportedFileInExplorer = true;
+                    }
+                }
+            }
+            else
+            {
+                ShowExportedFileInExplorer = true;
+            }
+
+            if (ShowExportedFileInExplorer)
+            {
+                //If windows start Windows File Explorer
+                TExecutingOSEnum osVersion = Utilities.DetermineExecutingOS();
+
+                if ((osVersion >= TExecutingOSEnum.eosWinXP)
+                    && (osVersion < TExecutingOSEnum.oesUnsupportedPlatform))
+                {
+                    try
+                    {
+                        Process.Start("explorer.exe", string.Format("/select,\"{0}\"", ExportFileName));
+                    }
+                    catch
+                    {
+                        MessageBox.Show(Catalog.GetString(
+                                "Unable to launch Windows File Explorer to open: '") + ExportFileName + "'!", Catalog.GetString(
+                                "GL Export"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
+                }
             }
 
             return true;
