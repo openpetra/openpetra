@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.App.Core
         /// Tells the caller whether a given Client Task should be launched on a separate Thread, or not.
         /// </summary>
         /// <remarks>If that Method returns false for a given Client Task, the processing of any other Client Tasks
-        /// is suspended until the Client Task that is not to run on its own Thread finishes (this is by design 
+        /// is suspended until the Client Task that is not to run on its own Thread finishes (this is by design
         /// and wanted behaviour)!</remarks>
         /// <returns>True if the given Client Task should be launched un a separate Thread, false if not.</returns>
         public override bool LaunchOnItsOwnThread()
@@ -82,7 +82,7 @@ namespace Ict.Petra.Client.App.Core
                     else
                     {
                         return true;
-                    }                    
+                    }
 
                 case SharedConstants.CLIENTTASKGROUP_REPORT:
                     return false;
@@ -226,7 +226,7 @@ namespace Ict.Petra.Client.App.Core
 
             if (ModalRequested)
             {
-                // We are requested to show the MessageBox modally and in front of all other Forms - i.e. 
+                // We are requested to show the MessageBox modally and in front of all other Forms - i.e.
                 // get the 'normal' MessageBox behaviour.
 
                 // Would normally use the code below but cannot due to circular referencing.
@@ -250,7 +250,6 @@ namespace Ict.Petra.Client.App.Core
                 MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), MessageBoxTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1,
                     (MessageBoxOptions)0x40000); // this is the 'MB_TOPMOST' Flag...
-
             }
         }
     }

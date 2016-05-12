@@ -147,7 +147,7 @@ namespace Ict.Common.Remoting.Client
                         // without the risk of being interrupted in case the execution of (a) ClientTask(s) takes some time!
                         Thread ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
                         ClientTaskQueueThread.SetApartmentState(ApartmentState.STA);
-                        ClientTaskQueueThread.Start();                        
+                        ClientTaskQueueThread.Start();
                     }
                 }
                 catch (System.Runtime.Remoting.RemotingException Exp)

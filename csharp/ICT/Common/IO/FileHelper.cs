@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using Microsoft.Win32;
 
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
@@ -376,6 +377,57 @@ namespace Ict.Common.IO
             }
 
             return s;
+        }
+
+        /// <summary>
+        /// Gets the full path to the preferred text editor.  On Unix systems this always returns null.
+        /// On Windows systems it returns a value from the registry for the application associated with a 'txtfile'.
+        /// If the registered application is Notepad but Notepad++ is installed then it return the path to Notepad++.
+        /// Returns null on Windows too if it cannot get any information from the registry.
+        /// </summary>
+        public static String GetPreferredTextEditorPath()
+        {
+            String ReturnValue = null;
+            PlatformID platformId = Environment.OSVersion.Platform;
+
+            if (platformId == PlatformID.Win32NT)
+            {
+                // we are using Windows
+                RegistryKey key = Registry.ClassesRoot.OpenSubKey(@"txtfile\shell\open\command");
+
+                if (key != null)
+                {
+                    // There is an entry for txtfile
+                    ReturnValue = key.GetValue(string.Empty).ToString();
+                }
+
+                if ((ReturnValue != null) && ReturnValue.ToUpper().Contains(@"\NOTEPAD.EXE"))
+                {
+                    // We got a path but it opens Notepad.  Try and see if Notepad++ is available
+                    key = Registry.ClassesRoot.OpenSubKey(@"Applications\notepad++.exe\shell\open\command");
+
+                    if (key != null)
+                    {
+                        string altPathToTextEditor = key.GetValue(string.Empty).ToString();
+
+                        if (altPathToTextEditor != null)
+                        {
+                            // Use the path to Notepad++ instead
+                            ReturnValue = altPathToTextEditor;
+                        }
+                    }
+                }
+
+                if (ReturnValue.Length > 0)
+                {
+                    // Strip off the %1 at the end
+                    ReturnValue = ReturnValue.Replace("%1", "");
+                    ReturnValue = ReturnValue.Replace("\"\"", "");
+                    ReturnValue = ReturnValue.Trim();
+                }
+            }
+
+            return ReturnValue;
         }
     }
 }

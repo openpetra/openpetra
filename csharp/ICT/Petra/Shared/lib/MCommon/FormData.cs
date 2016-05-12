@@ -846,6 +846,8 @@ namespace Ict.Petra.Shared.MCommon
             Partner = new List <TFormDataPartner>();
             FUsedForLabelPrinting = false;
             FColumnIndex = 1;
+
+            P = Partner;
         }
 
         /// <summary>
@@ -898,8 +900,12 @@ namespace Ict.Petra.Shared.MCommon
             }
         }
 
-        /// list of partner records (make provision for up to 8 columns)
+        /// list of partner records (no columns)
         public List <TFormDataPartner>Partner;
+        /// short accessor for Partner (points to the same data)
+        public List <TFormDataPartner>P;
+
+        /// list of partner records (make provision for up to 8 columns)
         /// list of partner records for column 1
         public List <TFormDataPartner>C1;
         /// list of partner records for column 2 (optional)

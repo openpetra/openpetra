@@ -161,12 +161,14 @@ namespace Ict.Petra.Client.App.Gui
             // Send to Templater to print!
             try
             {
+                bool allDocumentsOpened;
                 TTemplaterAccess.PrintTemplaterDocument(TModule.mPartner,
                     formDataList,
                     templatePath,
                     false,
                     APreviewOnly,
                     !APreviewOnly,
+                    out allDocumentsOpened,
                     targetDir,
                     ATitleText);
             }

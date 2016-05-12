@@ -87,7 +87,7 @@ namespace Ict.Common.Remoting.Client
                     ClientTaskThread.Start();
                 }
                 else
-                {                    
+                {
                     ClientTaskInstance.Execute();
                 }
             }
@@ -130,7 +130,7 @@ namespace Ict.Common.Remoting.Client
         /// Tells the caller whether a given Client Task should be launched on a separate Thread, or not.
         /// </summary>
         /// <remarks>If that Method returns false for a given Client Task, the processing of any other Client Tasks
-        /// is suspended until the Client Task that is not to run on its own Thread finishes (this is by design 
+        /// is suspended until the Client Task that is not to run on its own Thread finishes (this is by design
         /// and wanted behaviour)!</remarks>
         /// <returns>True if the given Client Task should be launched un a separate Thread, false if not.</returns>
         public virtual bool LaunchOnItsOwnThread()
