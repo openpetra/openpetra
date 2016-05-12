@@ -643,25 +643,29 @@ namespace Ict.Petra.Server.MPartner.ImportExport
              * }
              */
 
-            foreach (PmPersonSkillRow Row in AMainDS.PmPersonSkill.Rows)
+            // do not export Skills for export to Petra (only to OpenPetra)
+            if (!AOldPetraFormat)
             {
-                Write("SKILL");
-                WriteLine();
-                Write(Row.IsSkillCategoryCodeNull() ? "" : Row.SkillCategoryCode);
-                Write(Row.IsDescriptionEnglishNull() ? "" : Row.DescriptionEnglish);
-                Write(Row.IsDescriptionLocalNull() ? "" : Row.DescriptionLocal);
-                Write(Row.IsDescriptionLanguageNull() ? "" : Row.DescriptionLanguage);
-                WriteLine();
-                Write(Row.IsSkillLevelNull() ? 99 : Row.SkillLevel);
-                Write(Row.IsYearsOfExperienceNull() ? 0 : Row.YearsOfExperience);
-                Write(Row.IsYearsOfExperienceAsOfNull() ? "?" : Row.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
-                Write(Row.IsProfessionalSkillNull() ? false : Row.ProfessionalSkill);
-                Write(Row.IsCurrentOccupationNull() ? false : Row.CurrentOccupation);
-                Write(Row.IsDegreeNull() ? "" : Row.Degree);
-                Write(Row.IsYearOfDegreeNull() ? 0 : Row.YearOfDegree);
-                WriteLine();
-                Write(Row.IsCommentNull() ? "" : Row.Comment);
-                WriteLine();
+                foreach (PmPersonSkillRow Row in AMainDS.PmPersonSkill.Rows)
+                {
+                    Write("SKILL");
+                    WriteLine();
+                    Write(Row.IsSkillCategoryCodeNull() ? "" : Row.SkillCategoryCode);
+                    Write(Row.IsDescriptionEnglishNull() ? "" : Row.DescriptionEnglish);
+                    Write(Row.IsDescriptionLocalNull() ? "" : Row.DescriptionLocal);
+                    Write(Row.IsDescriptionLanguageNull() ? "" : Row.DescriptionLanguage);
+                    WriteLine();
+                    Write(Row.IsSkillLevelNull() ? 99 : Row.SkillLevel);
+                    Write(Row.IsYearsOfExperienceNull() ? 0 : Row.YearsOfExperience);
+                    Write(Row.IsYearsOfExperienceAsOfNull() ? "?" : Row.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
+                    Write(Row.IsProfessionalSkillNull() ? false : Row.ProfessionalSkill);
+                    Write(Row.IsCurrentOccupationNull() ? false : Row.CurrentOccupation);
+                    Write(Row.IsDegreeNull() ? "" : Row.Degree);
+                    Write(Row.IsYearOfDegreeNull() ? 0 : Row.YearOfDegree);
+                    WriteLine();
+                    Write(Row.IsCommentNull() ? "" : Row.Comment);
+                    WriteLine();
+                }
             }
 
             foreach (PmSpecialNeedRow SpecialNeedRow in AMainDS.PmSpecialNeed.Rows)
