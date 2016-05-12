@@ -55,6 +55,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void RunOnceOnActivationManual()
         {
+            dtpGiftDate.Focus();
+
             // if fast reports isn't working then close the screen
             if ((FPetraUtilsObject.GetCallerForm() != null) && !FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
