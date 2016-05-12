@@ -19,6 +19,66 @@
   </foreach>
 </target>
 
+<script language="C#" prefix="OPI18N" >
+  <imports>
+    <import namespace="NAnt.Core.Tasks" />
+    <import namespace="System.IO" />
+  </imports>
+  <code>
+    <![CDATA[
+    // we have a problem with mixed line endings, sometimes \r\n and sometimes \n
+    // the translation must match the original string
+    // to avoid error "'msgid' and 'msgstr' entries do not both begin with '\n'"
+    [Function("FixLineEndingsInPoFile")]
+    public static string FixLineEndingsInPoFile(string AFileName) {
+        StreamReader sr = new StreamReader(AFileName);
+        StreamWriter sw = new StreamWriter(AFileName + ".new");
+        string id_or_str = string.Empty;
+        string lineending = string.Empty;
+
+        while (!sr.EndOfStream)
+        {
+            string line = sr.ReadLine();
+
+            if (line.StartsWith("msgid"))
+            {
+                id_or_str = "id";
+                lineending = "\\n";
+            }
+            else if (line.StartsWith("msgstr"))
+            {
+                id_or_str = "str";
+            }
+
+            if (id_or_str == "id")
+            {
+                if (line.Contains("\\r\\n"))
+                {
+                    lineending = "\\r\\n";
+                }
+                else if (line.Contains("\\n"))
+                {
+                    lineending = "\\n";
+                }
+            }
+            else if (id_or_str == "str")
+            {
+                line = line.Replace("\\n", lineending).Replace("\\r\\r", "\\r");
+            }
+
+            sw.WriteLine(line);
+        }
+
+        sr.Close();
+        sw.Close();
+        File.Delete(AFileName);
+        File.Move(AFileName + ".new", AFileName);
+        return "fixed line endings in " + AFileName;
+    }
+]]>
+    </code>
+</script>
+
 <target name="compilePoFileInternal-windows" if="${platform::is-windows()}" >
   <!-- faking csc, so that it handles path to file with slashes correctly
        csc is only understanding backslashes. %~f6 repairs this in a batch file -->
@@ -43,10 +103,14 @@ ENDLOCAL
       </fileset>
     </move>
     <delete dir="${tempdir}/translationfiles"/>
-    <move file="${dir.root}/i18n/de.po" tofile="${dir.root}/i18n/de-DE.po"/>
-    <move file="${dir.root}/i18n/da.po" tofile="${dir.root}/i18n/da-DK.po"/>
-    <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po"/>
-    <move file="${dir.root}/i18n/fr.po" tofile="${dir.root}/i18n/fr-FR.po"/>
+    <move file="${dir.root}/i18n/de.po" tofile="${dir.root}/i18n/de-DE.po" overwrite="true"/>
+    <move file="${dir.root}/i18n/da.po" tofile="${dir.root}/i18n/da-DK.po" overwrite="true"/>
+    <move file="${dir.root}/i18n/es.po" tofile="${dir.root}/i18n/es-ES.po" overwrite="true"/>
+    <move file="${dir.root}/i18n/fr.po" tofile="${dir.root}/i18n/fr-FR.po" overwrite="true"/>
+    <echo message="${OPI18N::FixLineEndingsInPoFile(dir.root + '/i18n/de-DE.po')}"/>
+    <echo message="${OPI18N::FixLineEndingsInPoFile(dir.root + '/i18n/da-DK.po')}"/>
+    <echo message="${OPI18N::FixLineEndingsInPoFile(dir.root + '/i18n/es-ES.po')}"/>
+    <echo message="${OPI18N::FixLineEndingsInPoFile(dir.root + '/i18n/fr-FR.po')}"/>
    </if>
    <if test="${'unix'!=platform::get-name()}" >
      <fail message="not implemented for Windows"/>
