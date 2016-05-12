@@ -279,7 +279,7 @@ namespace Ict.Petra.Shared
         /// <summary>An active Partner Key is required here.</summary>
         ///
         [ErrCodeAttribute("Invalid Partner.",
-             ErrorMessageText = "Invalid Partner entered: Partner is not active.")]
+             ErrorMessageText = "Invalid Partner entered: Partner {0} is not active.")]
         public const String ERR_PARTNER_NOT_ACTIVE = "PARTN.00058V";
 
         /// <summary>Recipient Field/Motivation Group combination is invalid (must be non-gift for field=0).</summary>

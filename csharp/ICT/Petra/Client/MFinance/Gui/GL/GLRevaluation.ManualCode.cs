@@ -126,10 +126,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 bool blnIsLedger = (FLedgerNumber == (int)row["a_ledger_number_i"]);
                 bool blnAccountActive = (bool)row["a_account_active_flag_l"];
                 bool blnAccountForeign = (bool)row["a_foreign_currency_flag_l"];
-                bool blnAccountHasPostings = (bool)row["a_posting_status_l"];
+                bool blnAccountIsPosting = (bool)row["a_posting_status_l"];
                 String AccountCode = (String)row["a_account_code_c"];
 
-                if (blnIsLedger && blnAccountActive && blnAccountForeign && blnAccountHasPostings)
+                if (blnIsLedger && blnAccountActive && blnAccountForeign && blnAccountIsPosting)
                 {
                     string strCurrencyCode = (string)row["a_foreign_currency_code_c"];
 
@@ -143,8 +143,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     // Get the best (most recent) rate for the selected currency and its effective date
-                    DateTime dateEffectiveFrom = DateTime.MinValue;
-                    decimal rateOfExchange = 0.0m;
+                    DateTime dateEffectiveFrom;
+                    decimal rateOfExchange;
 
                     Boolean InitiallyActive = CommonRoutines.GetBestExchangeRate(exchangeRateData.ADailyExchangeRate, strCurrencyCode,
                         FLedgerBaseCurrency, false, out rateOfExchange, out dateEffectiveFrom);

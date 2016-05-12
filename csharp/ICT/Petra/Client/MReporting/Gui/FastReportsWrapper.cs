@@ -592,7 +592,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             Int32 SuccessfulCount = 0;
             String NoEmailAddr = "";
             String FailedAddresses = "";
-            String SendReport = "";
+            String SendReport = "Auto Email\r\n";
+
+            //
+            // FastReport will use a temporary folder to store HTML files.
+            // I need to ensure that the CurrectDirectory is somewhere writable:
+            String prevCurrentDir = Directory.GetCurrentDirectory();
+
+            Directory.SetCurrentDirectory(
+                Path.Combine(Environment.GetFolderPath(
+                        Environment.SpecialFolder.CommonDocuments), "OpenPetraOrg"));
 
             //
             // I need to find the email addresses for the linked partners I'm sending to.
@@ -683,6 +692,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SendReport +=
                     String.Format(Catalog.GetString("\r\n{0} emailed to {1} addresses."), ReportEngine.FReportName, SuccessfulCount) + "\r\n\r\n";
             }
+            else
+            {
+                SendReport += Catalog.GetString("\r\nError - no page had a linked email address.");
+            }
 
             if (NoEmailAddr != "")
             {
@@ -695,6 +708,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             FormUtils.WriteToStatusBar("");
+            Directory.SetCurrentDirectory(prevCurrentDir);
             return SendReport;
         } // AutoEmailReports
 

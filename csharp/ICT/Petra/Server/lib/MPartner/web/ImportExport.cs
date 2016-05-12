@@ -530,7 +530,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.SkillCategoryCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtSkillCategory.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.SkillCategoryList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.SkillCategoryList.ToString());
                     }
                 }
 

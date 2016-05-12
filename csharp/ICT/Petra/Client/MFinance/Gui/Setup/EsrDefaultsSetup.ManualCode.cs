@@ -317,6 +317,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
             if (Res)
             {
+                FesrDefaults.AcceptChanges();
                 FPetraUtilsObject.DisableSaveButton();
             }
 

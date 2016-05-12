@@ -799,6 +799,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     (PtAbilityAreaTable)CachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.AbilityAreaList);
                 PtAbilityAreaRow AbilityAreaRow =
                     (PtAbilityAreaRow)AbilityAreaTable.Rows.Find(new object[] { AbilityArea });
+
                 if (AbilityAreaRow != null)
                 {
                     // use the description of the ability area if we can find it
@@ -815,6 +816,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 // map ability level to skill level
                 AbilityLevel = ReadInt32();
+
                 if ((AbilityLevel >= 0) && (AbilityLevel <= 3))
                 {
                     SkillLevel = 1;
@@ -1618,6 +1620,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     (PtQualificationAreaTable)CachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.QualificationAreaList);
                 PtQualificationAreaRow QualificationAreaRow =
                     (PtQualificationAreaRow)QualificationAreaTable.Rows.Find(new object[] { QualificationArea });
+
                 if (QualificationAreaRow != null)
                 {
                     // use the description of the qualification area if we can find it
@@ -1634,6 +1637,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 // map ability level to skill level
                 QualificationLevel = ReadInt32();
+
                 if ((QualificationLevel >= 0) && (QualificationLevel <= 3))
                 {
                     SkillLevel = 1;

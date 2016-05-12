@@ -168,6 +168,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
             AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
+            Boolean transactionsWereCreated = false;
 
             glmTemplate.LedgerNumber = F_LedgerNum;
             glmTemplate.Year = F_FinancialYear;
@@ -184,14 +185,27 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 if (GlmTable.Rows.Count > 0)
                 {
-                    RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
+                    transactionsWereCreated |= RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
                 }
             }
 
-            Boolean batchPostedOK = CloseRevaluationAccountingBatch();
+            Boolean batchPostedOK = true;
+
+            if (transactionsWereCreated)
+            {
+                batchPostedOK = CloseRevaluationAccountingBatch();
+            }
 
             if (batchPostedOK)
             {
+                if (!transactionsWereCreated) // If no transactions were needed, I'll just advise the user:
+                {
+                    FVerificationCollection.Add(new TVerificationResult(
+                            "Post Forex Batch",
+                            "Exchange rates are unchanged - no revaluation was required.",
+                            TResultSeverity.Resv_Status));
+                }
+
                 for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
                 {
                     TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
@@ -208,8 +222,10 @@ namespace Ict.Petra.Server.MFinance.GL
             return batchPostedOK;
         }
 
-        private void RevaluateAccount(AGeneralLedgerMasterTable AGlmTbl, decimal AExchangeRate, string ACurrencyCode)
+        private Boolean RevaluateAccount(AGeneralLedgerMasterTable AGlmTbl, decimal AExchangeRate, string ACurrencyCode)
         {
+            Boolean transactionsWereCreated = false;
+
             foreach (AGeneralLedgerMasterRow glmRow in AGlmTbl.Rows)
             {
                 AGeneralLedgerMasterPeriodTable glmpTbl = null;
@@ -251,6 +267,7 @@ namespace Ict.Petra.Server.MFinance.GL
                     {
                         // Now we have the relevant Cost Centre ...
                         RevaluateCostCentre(glmRow.AccountCode, glmRow.CostCentreCode, delta, AExchangeRate, ACurrencyCode);
+                        transactionsWereCreated = true;
                     }
                     else
                     {
@@ -270,6 +287,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             } // foreach
 
+            return transactionsWereCreated;
         }
 
         private void RevaluateCostCentre(string ARelevantAccount, string ACostCentre, decimal Adelta, decimal AExchangeRate, string ACurrencyCode)

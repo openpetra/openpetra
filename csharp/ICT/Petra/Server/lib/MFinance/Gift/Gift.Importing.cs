@@ -1514,9 +1514,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                     FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, null);
             }
 
-            // we always calculate RecipientLedgerNumber
-            AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
-                AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
+            // RecipientLedgerNumber is always calculated, not imported.
+            // This call could throw an exception, but I'm not allowing any panic here.
+            try
+            {
+                AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                    AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
+            }
+            catch (Exception ex)
+            {
+                AMessages.Add(new TVerificationResult("Fund not found for recipient", ex.Message,
+                        TResultSeverity.Resv_Critical));
+            }
 
             // I feel that I shouldn't need to do this here, since it's been done already...
             ANeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
@@ -1766,9 +1775,18 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AgiftDetails.GiftAmountIntl = GLRoutines.Divide(AgiftDetails.GiftAmount, AIntlRateToBase, 2);
             }
 
-            AgiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(AgiftDetails.RecipientKey,
-                AgiftBatch.GlEffectiveDate);
-
+            // RecipientLedgerNumber is always calculated, not imported.
+            // This call could throw an exception, but I'm not allowing any panic here.
+            try
+            {
+                AgiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                    AgiftDetails.RecipientKey, AgiftBatch.GlEffectiveDate);
+            }
+            catch (Exception ex)
+            {
+                AMessages.Add(new TVerificationResult("Fund not found for recipient", ex.Message,
+                        TResultSeverity.Resv_Critical));
+            }
 
             AgiftDetails.MotivationGroupCode = MotivGroup;
             AgiftDetails.MotivationDetailCode = MotivDetail;

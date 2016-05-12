@@ -4838,45 +4838,35 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            try
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    delegate
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
+                    MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                    MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                    MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                    MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+
+                    #region Validate Data
+
+                    if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
                     {
-                        MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
-                        MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                        throw new EFinanceSystemDataTableReturnedNoDataException(Catalog.GetString(
+                                "GetRecipientFundNumber: Ledger Partner Types data does not exist or could not be accessed."));
+                    }
+                    else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "GetRecipientFundNumber: Recipient data for Partner Key {0} does not exist or could not be accessed."),
+                                APartnerKey));
+                    }
 
-                        #region Validate Data
+                    #endregion Validate Data
 
-                        if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Ledger Partner Types data does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true)));
-                        }
-                        else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Recipient data for Partner Key {1} does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true),
-                                    APartnerKey));
-                        }
-
-                        #endregion Validate Data
-
-                        DataLoaded = true;
-                    });
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
+                    DataLoaded = true;
+                });
 
             if (DataLoaded)
             {
