@@ -2452,6 +2452,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftTable.GetBatchNumberDBName(),
                 batchNumber);
 
+            DataView giftDetailDataView = new DataView(FMainDS.AGiftDetail);
+
+            giftDetailDataView.RowFilter = String.Format("{0}={1} And {2}={3}",
+                AGiftDetailTable.GetLedgerNumberDBName(),
+                ledgerNumber,
+                AGiftDetailTable.GetBatchNumberDBName(),
+                batchNumber);
+
             ((TFrmGiftBatch)ParentForm).EnsureGiftDataPresent(ledgerNumber, batchNumber);
 
             if ((FPreviouslySelectedDetailRow != null) && (FBatchNumber == batchNumber))
@@ -2461,12 +2469,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 GetSelectedDetailRow().DateEntered = batchEffectiveDate;
             }
 
+            TFrmGiftBatch ParentGiftBatchForm = (TFrmGiftBatch)ParentForm;
+            ParentGiftBatchForm.Cursor = Cursors.WaitCursor;
+
             //Update all gift rows in this batch
             foreach (DataRowView dv in giftDataView)
             {
                 AGiftRow giftRow = (AGiftRow)dv.Row;
                 giftRow.DateEntered = batchEffectiveDate;
             }
+
+            //Update all gift detail rows in this batch
+            foreach (DataRowView dv in giftDetailDataView)
+            {
+                GiftBatchTDSAGiftDetailRow giftDetailRow = (GiftBatchTDSAGiftDetailRow)dv.Row;
+                RefreshGiftDestinationOnDateChange(ref giftDetailRow, batchEffectiveDate);
+            }
+
+            ParentGiftBatchForm.Cursor = Cursors.Default;
 
             //If current row exists then refresh details
             if (FGLEffectivePeriodChanged)
@@ -2644,10 +2664,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
                 }
+
+                RefreshGiftDestinationOnDateChange(ref FPreviouslySelectedDetailRow, (DateTime)dtpDateEntered.Date);
+
+                if (txtDetailRecipientLedgerNumber.Text != FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString())
+                {
+                    txtDetailRecipientLedgerNumber.Text = FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString();
+                }
             }
             catch
             {
                 //Do nothing
+            }
+        }
+
+        // update Gift Destination
+        private void RefreshGiftDestinationOnDateChange(ref GiftBatchTDSAGiftDetailRow ARow, DateTime ADate)
+        {
+            // only make changes if gift doesn't have a fixed gift destination
+            if ((ARow.IsFixedGiftDestinationNull() || !ARow.FixedGiftDestination)
+                && (ARow.IsModifiedDetailNull() || !ARow.ModifiedDetail)
+                && (ARow.RecipientKey > 0)
+                && (ARow.RecipientClass == TPartnerClass.FAMILY.ToString()))
+            {
+                ARow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(ARow.RecipientKey, ADate);
             }
         }
 

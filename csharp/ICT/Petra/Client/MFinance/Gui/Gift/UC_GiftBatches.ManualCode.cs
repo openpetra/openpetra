@@ -256,7 +256,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
-            Cursor prevCursor = parentForm.Cursor;
+            Cursor prevCursor = null;
+
+            if (parentForm != null)
+            {
+                prevCursor = parentForm.Cursor;
+            }
+            else
+            {
+                prevCursor = this.Cursor;
+            }
 
             parentForm.Cursor = Cursors.WaitCursor;
 

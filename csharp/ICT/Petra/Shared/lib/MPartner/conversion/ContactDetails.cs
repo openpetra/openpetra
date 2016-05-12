@@ -525,10 +525,27 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     DataView SortedRecordsDV = PPartnersLocationsDT.DefaultView;
                     SortedRecordsDV.Sort = "Icon_For_Sorting ASC, p_date_effective_d DESC";
 
+                    string CurrentFieldEmail = string.Empty;
+
+                    // Look for current field address with an email address. If exists then it will be primary email.
+                    for (int Counter = 0; Counter < SortedRecordsDV.Count; Counter++)
+                    {
+                        if ((Convert.ToInt32(SortedRecordsDV[Counter].Row[PARTNERLOCATION_ICON_COLUMN]) == 1)
+                            && (SortedRecordsDV[Counter].Row["p_location_type_c"].ToString() == "FIELD")
+                            && !string.IsNullOrEmpty(SortedRecordsDV[Counter].Row["p_email_address_c"].ToString())
+                            && (SortedRecordsDV[Counter].Row["p_email_address_c"].ToString().Contains("@om.org")
+                                || SortedRecordsDV[Counter].Row["p_email_address_c"].ToString().Contains("@gbaships.org"))
+                            && (SortedRecordsDV[Counter].Row["p_email_address_c"].ToString() != "firstname.lastname@om.org"))
+                        {
+                            CurrentFieldEmail = SortedRecordsDV[Counter].Row["p_email_address_c"].ToString();
+                            break;
+                        }
+                    }
+
                     for (int Counter = 0; Counter < SortedRecordsDV.Count; Counter++)
                     {
                         List <PPartnerAttributeRecord>PPARecordsSingleLocation =
-                            ConstructPPartnerAttributeRecords(PartnerKey, SortedRecordsDV[Counter].Row);
+                            ConstructPPartnerAttributeRecords(PartnerKey, SortedRecordsDV[Counter].Row, CurrentFieldEmail);
 
                         for (int SingleLocCounter = 0; SingleLocCounter < PPARecordsSingleLocation.Count; SingleLocCounter++)
                         {
@@ -598,7 +615,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
         #region Private Methods
 
-        private static List <PPartnerAttributeRecord>ConstructPPartnerAttributeRecords(Int64 APartnerKey, DataRow APartnerLocationDR)
+        private static List <PPartnerAttributeRecord>ConstructPPartnerAttributeRecords(
+            Int64 APartnerKey, DataRow APartnerLocationDR, string ACurrentFieldEmail)
         {
             var ReturnValue = new List <TPartnerContactDetails.PPartnerAttributeRecord>();
             var PPARecordList = new List <PPartnerAttributeRecord>();
@@ -673,8 +691,10 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     PPARecord.Value = EmailAddressString;
                     PPARecord.AttributeType = ATTR_TYPE_EMAIL;
 
-                    if ((IsBestAddr)
-                        && (PPARecord.Current))
+                    // if the predetermined current field email address
+                    // or if there is no current field email and this is the best current address
+                    if ((!string.IsNullOrEmpty(ACurrentFieldEmail) && (ACurrentFieldEmail == EmailAddressString))
+                        || ((string.IsNullOrEmpty(ACurrentFieldEmail)) && (IsBestAddr) && (PPARecord.Current)))
                     {
                         // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
                         PPARecord.Primary = true;
