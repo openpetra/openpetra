@@ -470,6 +470,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             {
                                 GiftDetailRow.IchNumber = ICHProcessing;
                             }
+                            AGiftDetailAccess.SubmitChanges(GiftDetailTable, DBTransaction);
                         }
                     } // if TransferFound
 

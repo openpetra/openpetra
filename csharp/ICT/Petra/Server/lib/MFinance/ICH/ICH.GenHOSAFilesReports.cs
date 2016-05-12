@@ -386,7 +386,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodStartDate"></param>
         /// <param name="APeriodEndDate"></param>
         /// <param name="ACurrencySelect"></param>
-        /// <param name="AIchNumber"></param>
+        /// <param name="AIchNumber">If !=0, only get gifts for this run number</param>
         /// <param name="AExportDataTable"></param>
         /// <param name="AVerificationResult"></param>
         [NoRemoting]
@@ -418,7 +418,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             string tmpLastDetail = string.Empty;
 
             //Find and total each gift transaction
-            string SQLStmt = TDataBase.ReadSqlFile("ICH.HOSAExportGiftsInner.sql");
 
             TDBTransaction DBTransaction = null;
 
@@ -427,41 +426,64 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 ref DBTransaction,
                 delegate
                 {
-                    OdbcParameter parameter;
+                    String IchNumberFilter = "";
+                    if (AIchNumber > 0)
+                    {
+                        IchNumberFilter = " AND GiftDetail.a_ich_number_i = " + AIchNumber;
+                    }
 
-                    List <OdbcParameter>parameters = new List <OdbcParameter>();
-                    parameter = new OdbcParameter("LedgerNumber", OdbcType.Int);
-                    parameter.Value = ALedgerNumber;
-                    parameters.Add(parameter);
-                    parameter = new OdbcParameter("CostCentre", OdbcType.VarChar);
-                    parameter.Value = ACostCentre;
-                    parameters.Add(parameter);
-                    parameter = new OdbcParameter("ICHNumber", OdbcType.Int);
-                    parameter.Value = AIchNumber;
-                    parameters.Add(parameter);
-                    parameter = new OdbcParameter("BatchStatus", OdbcType.VarChar);
-                    parameter.Value = MFinanceConstants.BATCH_POSTED;
-                    parameters.Add(parameter);
-                    parameter = new OdbcParameter("StartDate", OdbcType.DateTime);
-                    parameter.Value = APeriodStartDate;
-                    parameters.Add(parameter);
-                    parameter = new OdbcParameter("EndDate", OdbcType.DateTime);
-                    parameter.Value = APeriodEndDate;
-                    parameters.Add(parameter);
-                    parameter = new OdbcParameter("AccountCode", OdbcType.VarChar);
-                    parameter.Value = AAcctCode;
-                    parameters.Add(parameter);
+                    String Query = "SELECT " +
+                        " GiftDetail.a_ledger_number_i, " +
+                        " GiftDetail.a_batch_number_i, " +
+                        " GiftDetail.a_gift_transaction_number_i, " +
+                        " GiftDetail.a_detail_number_i, " +
+                        " GiftDetail.a_gift_amount_n, " +
+                        " GiftDetail.a_gift_amount_intl_n, " +
+                        " GiftDetail.a_motivation_group_code_c, " +
+                        " GiftDetail.a_motivation_detail_code_c, " +
+                        " GiftDetail.p_recipient_key_n, " +
+                        " Gift.a_gift_status_c, " +
+                        " MotiviationDetail.a_motivation_detail_desc_c, " +
+                        " GiftBatch.a_batch_description_c " +
+                        " FROM " +
+                        " public.a_gift_detail AS GiftDetail, " +
+                        " public.a_gift_batch AS GiftBatch, " +
+                        " public.a_motivation_detail AS MotiviationDetail, " +
+                        " public.a_gift AS Gift " +
+                        " WHERE " +
+                        " GiftDetail.a_ledger_number_i = GiftBatch.a_ledger_number_i  " +
+                        " AND GiftDetail.a_batch_number_i = GiftBatch.a_batch_number_i  " +
+                        " AND GiftDetail.a_ledger_number_i = MotiviationDetail.a_ledger_number_i  " +
+                        " AND GiftDetail.a_motivation_group_code_c = MotiviationDetail.a_motivation_group_code_c  " +
+                        " AND GiftDetail.a_motivation_detail_code_c = MotiviationDetail.a_motivation_detail_code_c  " +
+                        " AND GiftDetail.a_ledger_number_i = Gift.a_ledger_number_i  " +
+                        " AND GiftDetail.a_batch_number_i = Gift.a_batch_number_i  " +
+                        " AND GiftDetail.a_gift_transaction_number_i = Gift.a_gift_transaction_number_i  " +
+                        " AND GiftDetail.a_ledger_number_i = " + ALedgerNumber +
+                        " AND GiftDetail.a_cost_centre_code_c = '" + ACostCentre + "'" +
+                        IchNumberFilter +
+                        " AND GiftBatch.a_batch_status_c = '" + MFinanceConstants.BATCH_POSTED + "'" +
+                        " AND GiftBatch.a_gl_effective_date_d >= " + APeriodStartDate.ToString("#yyyy-MM-dd#") +
+		                " AND GiftBatch.a_gl_effective_date_d <= " + APeriodEndDate.ToString("#yyyy-MM-dd#") +
+                        " AND MotiviationDetail.a_account_code_c = '" + AAcctCode + "'" +
+		                " ORDER BY " +
+		                " GiftDetail.p_recipient_key_n ASC, " +
+		                " GiftDetail.a_motivation_group_code_c ASC, " +
+                        " GiftDetail.a_motivation_detail_code_c ASC;";
 
-                    DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(SQLStmt, "table", DBTransaction, parameters.ToArray());
 
-                    foreach (DataRow untypedTransRow in TmpTable.Rows)
+
+
+                    DataTable TmpTable = DBAccess.GDBAccessObj.SelectDT(Query, "table", DBTransaction);
+
+                    foreach (DataRow Row in TmpTable.Rows)
                     {
                         /* Print totals etc. found for last recipient */
                         /* Only do after first loop due to last recipient key check */
 
-                        tmpLastRecipKey = Convert.ToInt32(untypedTransRow[8]);  //a_gift_detail.p_recipient_key_n
-                        tmpLastGroup = untypedTransRow[6].ToString();           //a_motivation_detail.a_motivation_group_code_c
-                        tmpLastDetail = untypedTransRow[7].ToString();          //a_motivation_detail.a_motivation_detail_code_c
+                        tmpLastRecipKey = Convert.ToInt32(Row["p_recipient_key_n"]);
+                        tmpLastGroup = Row["a_motivation_group_code_c"].ToString();
+                        tmpLastDetail = Row["a_motivation_detail_code_c"].ToString();
 
                         if (!FirstLoopFlag
                             && ((tmpLastRecipKey != LastRecipKey)
@@ -516,7 +538,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         if (ACurrencySelect == MFinanceConstants.CURRENCY_BASE)
                         {
-                            Decimal GiftAmount = Convert.ToDecimal(untypedTransRow[4]);          //a_gift_detail.a_gift_amount_n
+                            Decimal GiftAmount = Convert.ToDecimal(Row["a_gift_amount_n"]);
 
                             if (GiftAmount < 0)
                             {
@@ -529,7 +551,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         }
                         else
                         {
-                            Decimal IntlGiftAmount = Convert.ToDecimal(untypedTransRow[5]);          //a_gift_detail.a_gift_amount_intl_n
+                            Decimal IntlGiftAmount = Convert.ToDecimal(Row["a_gift_amount_intl_n"]);
 
                             if (IntlGiftAmount < 0)
                             {
@@ -545,7 +567,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         LastRecipKey = tmpLastRecipKey;
                         LastGroup = tmpLastGroup;
                         LastDetail = tmpLastDetail;
-                        LastDetailDesc = Convert.ToString(untypedTransRow[10]);         //a_motivation_detail.a_motivation_detail_desc_c
+                        LastDetailDesc = Convert.ToString(Row["a_motivation_detail_desc_c"]);
                         FirstLoopFlag = false;
                     } // foreach
 
