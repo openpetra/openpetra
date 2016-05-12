@@ -2110,8 +2110,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                                                        ATransactionTable.GetJournalNumberDBName();
                                 DataRowView[] TransactionsRowView =
                                     MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
-                                                                                            originalJournalRow.
-                                                                                            JournalNumber });
+                                                                                            originalJournalRow.JournalNumber });
 
                                 foreach (DataRowView rvTransaction in TransactionsRowView)
                                 {
