@@ -748,22 +748,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PartnerAttributeDR = FMainDS.PPartnerAttribute[Counter];
 
-                if (PartnerAttributeDR.ValueCountry != String.Empty)
+                if ((PartnerAttributeDR.RowState == DataRowState.Unchanged)
+                    || (PartnerAttributeDR.RowState == DataRowState.Added)
+                    || (PartnerAttributeDR.RowState == DataRowState.Modified))
                 {
-                    CountryDR = (PCountryRow)Calculations.FindCountryRowInCachedCountryList(PartnerAttributeDR.ValueCountry);
-
-                    if (CountryDR != null)
+                    if (PartnerAttributeDR.ValueCountry != String.Empty)
                     {
-                        PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = "+" + CountryDR.InternatTelephoneCode + " ";
+                        CountryDR = (PCountryRow)Calculations.FindCountryRowInCachedCountryList(PartnerAttributeDR.ValueCountry);
+
+                        if (CountryDR != null)
+                        {
+                            PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = "+" + CountryDR.InternatTelephoneCode + " ";
+                        }
+                        else
+                        {
+                            PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = String.Empty;
+                        }
                     }
                     else
                     {
                         PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = String.Empty;
                     }
-                }
-                else
-                {
-                    PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = String.Empty;
                 }
             }
         }

@@ -634,9 +634,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                     try
                     {
                         TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+                        var PartnerKey = GetPartnerKeySelected();
 
-                        frm.SetParameters(TScreenMode.smEdit, GetPartnerKeySelected());
+                        frm.SetParameters(TScreenMode.smEdit, PartnerKey);
                         frm.Show();
+
+                        // Set Partner to be the "Last Used Partner"
+                        TUserDefaults.NamedDefaults.SetLastPartnerWorkedWith(PartnerKey,
+                            TLastPartnerUse.lpuMailroomPartner,
+                            TPartnerClass.PERSON);
                     }
                     finally
                     {
