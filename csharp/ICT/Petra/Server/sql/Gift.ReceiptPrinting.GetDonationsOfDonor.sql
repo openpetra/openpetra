@@ -1,4 +1,5 @@
-SELECT a_gift.a_date_entered_d AS DateEntered, 
+SELECT a_gift.a_date_entered_d AS DateEntered,
+        a_gift.a_first_time_gift_l AS FirstDonation, 
         a_gift_detail.a_gift_transaction_amount_n AS TransactionAmount,
         a_gift_detail.a_gift_amount_n AS AmountInBaseCurrency,
         a_gift_detail.a_tax_deductible_amount_n AS TaxDeductibleAmount,

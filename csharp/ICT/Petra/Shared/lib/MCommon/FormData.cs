@@ -1287,6 +1287,16 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Is any entry in list "Gift" the first donation of a new donor?
+        public Boolean IsFirstDon {
+            get; set;
+        }
+
+        /// If any entry in list "Gift" is first donation or a new donor: Will be set to "N", otherwise empty
+        public String FirstDon {
+            get; set;
+        }
+
         // Custom fields
         ///
         public String Custom1 {
@@ -1694,6 +1704,16 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Mailing Code
         public String MailingCode {
+            get; set;
+        }
+
+        /// Is First Donation of a new donor?
+        public Boolean IsFirstDon {
+            get; set;
+        }
+
+        /// Will be set to "N" if First Donation of a new donor, otherwise empty
+        public String FirstDon {
             get; set;
         }
     }
