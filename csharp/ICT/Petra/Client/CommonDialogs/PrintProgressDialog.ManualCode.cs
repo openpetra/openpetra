@@ -224,7 +224,8 @@ namespace Ict.Petra.Client.CommonDialogs
                 }
 
                 // The lock is released now (or never held)
-                TTemplaterAccess.RunPrintJob(args.PrinterName, Path.Combine(args.FolderPath, FileName));
+                // Open Source OpenPetra: we do not use Templater here
+                // TTemplaterAccess.RunPrintJob(args.PrinterName, Path.Combine(args.FolderPath, FileName));
                 countDone++;
                 FBackgroundWorker.ReportProgress(
                     (countDone * 100) / countFiles,
