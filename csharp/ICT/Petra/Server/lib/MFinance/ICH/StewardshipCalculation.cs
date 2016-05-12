@@ -56,9 +56,9 @@ using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
-/// <summary>
-/// Class for the performance of the Stewardship Calculation
-/// </summary>
+    /// <summary>
+    /// Class for the performance of the Stewardship Calculation
+    /// </summary>
     public class TStewardshipCalculationWebConnector
     {
         /// <summary>
@@ -73,12 +73,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             int APeriodNumber,
             out TVerificationResultCollection AVerificationResult)
         {
-/*
- *          if (TLogging.DL >= 9)
- *          {
- *              Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation...");
- *          }
- */
+            /*
+             *          if (TLogging.DL >= 9)
+             *          {
+             *              Console.WriteLine("TStewardshipCalculationWebConnector.PerformStewardshipCalculation...");
+             *          }
+             */
             AVerificationResult = new TVerificationResultCollection();
             bool NewTransaction;
 
@@ -197,8 +197,21 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 BatchTemplateRow.LedgerNumber = ALedgerNumber;
                 BatchTemplateRow.BatchPeriod = APeriodNumber;
                 BatchTemplateRow.BatchYear = CurrentFinancialYear;
-//              BatchTemplateRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
-                ABatchTable BatchesInAPeriod = ABatchAccess.LoadUsingTemplate(BatchTemplateRow, DBTransaction);
+                BatchTemplateRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
+
+                StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "=", "=", "=" });
+                StringCollection OrderList0 = new StringCollection();
+
+                OrderList0.Add("ORDER BY");
+                OrderList0.Add(ABatchTable.GetBatchNumberDBName() + " DESC");
+
+                ABatchTable BatchesInAPeriod = ABatchAccess.LoadUsingTemplate(BatchTemplateRow,
+                    Operators0,
+                    null,
+                    DBTransaction,
+                    OrderList0,
+                    0,
+                    0);
 
                 if ((BatchesInAPeriod != null) && (BatchesInAPeriod.Rows.Count > 0))
                 {
@@ -216,12 +229,20 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = Catalog.GetString("Generating the ICH batch");
-                    ErrorMessage =
+                    string msgContext = Catalog.GetString("Generating the ICH batch");
+                    string msg =
                         String.Format(Catalog.GetString("No Batches found to process in Ledger: {0}"),
                             ALedgerNumber);
-                    ErrorType = TResultSeverity.Resv_Noncritical;
-                    throw new System.InvalidOperationException(ErrorMessage);
+                    TResultSeverity msgType = TResultSeverity.Resv_Noncritical;
+
+                    AVerificationResults.Add(new TVerificationResult(msgContext, msg, msgType));
+
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                    }
+
+                    return true;
                 }
 
                 ALedgerRow LedgerRow = (ALedgerRow)PostingDS.ALedger.Rows[0];

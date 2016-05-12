@@ -240,6 +240,7 @@ namespace Tests.MFinance.Server.ICH
             // run possibly empty stewardship calculation, to process all gifts that do not belong to this test
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
                 PeriodNumber, out VerificationResults);
+
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing initial Stewardship Calculation Failed!");
 
