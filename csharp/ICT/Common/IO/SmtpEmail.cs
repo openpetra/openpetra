@@ -279,10 +279,18 @@ namespace Ict.Common.IO
 
             FailedRecipients.Clear();
 
-            if (FSmtpClient.Host.EndsWith("example.org"))
+            if (FSmtpClient.Host == TAppSettingsManager.UNDEFINEDVALUE)
+            {
+                TLogging.Log("Not sending the email, since the SMTP server wasn't configured.");
+                TLogging.Log("You can configure the mail settings in the config file (SmtpHost, etc.).");
+
+                return false;
+            }
+            else if (FSmtpClient.Host.EndsWith("example.org", StringComparison.InvariantCulture))
             {
                 TLogging.Log("Not sending the email, since the configuration is just with an example server: " + FSmtpClient.Host);
-                TLogging.Log("You can configure the mail settings in the config file.");
+                TLogging.Log("You can configure the mail settings in the config file (SmtpHost, etc.).");
+
                 return false;
             }
 
