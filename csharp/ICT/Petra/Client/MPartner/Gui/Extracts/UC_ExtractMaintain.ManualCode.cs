@@ -335,9 +335,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
         {
             bool ChangesMade;
+            bool ChangesNeeded;
             ExtractTDSMExtractTable ExtractTable = FMainDS.MExtract;
 
-            TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), ref ExtractTable, out ChangesMade);
+            TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), ref ExtractTable, out ChangesMade, out ChangesNeeded);
 
             if (ChangesMade)
             {
@@ -496,7 +497,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // Open Partner Edit Screen for selected partner
             if (SelectedRow != null)
             {
-                bool CurrentOrMailingAddress;
+                bool CurrentAddress;
+                bool MailingAddress;
 
                 this.Cursor = Cursors.WaitCursor;
 
@@ -508,7 +510,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             VerifyPartnerAtLocationResult = TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation(
                                 SelectedRow.PartnerKey,
                                 new TLocationPK(SelectedRow.SiteKey, SelectedRow.LocationKey),
-                                out CurrentOrMailingAddress);
+                                out CurrentAddress,
+                                out MailingAddress);
 
                             ServerCallSuccessful = true;
                         });

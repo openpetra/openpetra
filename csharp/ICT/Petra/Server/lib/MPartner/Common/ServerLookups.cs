@@ -147,7 +147,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // Connection where a DB Transaction can be exectued (only if that should be needed).
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TPartnerServerLookups.VerifyPartner", out ReadTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.VerifyPartner", out ReadTransaction,
                 delegate
                 {
                     ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
@@ -192,9 +192,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // Connection where a DB Transaction can be exectued (only if that should be needed).
             TDBTransaction readTransaction = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TPartnerServerLookups.PartnerHasActiveStatus",
-                out readTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.PartnerHasActiveStatus", out readTransaction,
                 delegate
                 {
                     PPartnerTable partnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
@@ -392,13 +390,15 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to be verified</param>
         /// <param name="ALocationKey">Location Key of Partner to be verified</param>
-        /// <param name="AAddressNeitherCurrentNorMailing"></param>
+        /// <param name="AAddressIsCurrent"></param>
+        /// <param name="AAddressIsMailing"></param>
         /// <returns>true if Partner was found in DB at given location, otherwise false</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
-            TLocationPK ALocationKey, out bool AAddressNeitherCurrentNorMailing)
+            TLocationPK ALocationKey, out bool AAddressIsCurrent, out bool AAddressIsMailing)
         {
-            AAddressNeitherCurrentNorMailing = true;
+            AAddressIsCurrent = false;
+            AAddressIsMailing = false;
 
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -431,18 +431,17 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
 
-                // check if the partner location is either current or if it is a mailing address
+                // check if the partner location is either current 
+                AAddressIsCurrent = true;
                 if ((Row.DateEffective > DateTime.Today)
-                    || (!Row.SendMail)
                     || ((Row.DateGoodUntil != null)
                         && (Row.DateGoodUntil < DateTime.Today)))
                 {
-                    AAddressNeitherCurrentNorMailing = true;
+                    AAddressIsCurrent = false;
                 }
-                else
-                {
-                    AAddressNeitherCurrentNorMailing = false;
-                }
+                
+                // check if the partner location is a mailing address
+                AAddressIsMailing = Row.SendMail;
 
                 ReturnValue = true;
             }
@@ -735,7 +734,6 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             PPartnerTable PartnerTbl = null;
 
             DBAccess.SimpleAutoReadTransactionWrapper(
-                IsolationLevel.ReadCommitted,
                 "GetPartnerReceiptingInfo",
                 out ReadTransaction,
                 delegate
