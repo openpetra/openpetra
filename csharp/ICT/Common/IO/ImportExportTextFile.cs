@@ -1,4 +1,4 @@
-﻿//
+//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
@@ -287,59 +287,6 @@ namespace Ict.Common.IO
             }
 
             return NextItem;
-        }
-
-        /// <summary>
-        /// insert a text which can contain several lines, and some characters will be escaped automatically
-        /// </summary>
-        /// <param name="AValue"></param>
-        public void WriteMultiLine(string AValue)
-        {
-            if (!FStartOfLine)
-            {
-                FTextToWrite.Append(SPACE);
-            }
-
-            const string MASK = "\r\n\"'";
-            const string ESCAPE = "\\";
-            const string CODES = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-            // escape 'escape symbol' first, by appending '0'
-            AValue = AValue.Replace(ESCAPE, ESCAPE + CODES[0].ToString());
-
-            // escape the other characters by appending ordinal ascii value to escape symbol
-            for (int CountMask = 0; CountMask < MASK.Length; CountMask++)
-            {
-                AValue = AValue.Replace(MASK[CountMask].ToString(), ESCAPE + CODES[CountMask + 1].ToString());
-            }
-
-            FTextToWrite.Append(QUOTE_MARKS);
-            FTextToWrite.Append(AValue);
-            FTextToWrite.Append(QUOTE_MARKS);
-
-            FStartOfLine = false;
-        }
-
-        /// <summary>
-        /// read a text which can contain several lines, restore all escaped characters
-        /// </summary>
-        public string ReadMultiLine()
-        {
-            string NextStringItem = ReadNextStringItem();
-
-            const string MASK = "\r\n\"'";
-            const string ESCAPE = "\\";
-            const string CODES = "0123456789abcdefghijklmnopqrstuvwxyz";
-
-            // Decode by completely reversing the encoding steps, so that we can be sure that we get back to the original
-            for (int CountMask = MASK.Length - 1; CountMask >= 0; CountMask--)
-            {
-                NextStringItem = NextStringItem.Replace(ESCAPE + CODES[CountMask + 1].ToString(), MASK[CountMask].ToString());
-            }
-
-            NextStringItem = NextStringItem.Replace(ESCAPE + CODES[0].ToString(), ESCAPE);
-
-            return NextStringItem;
         }
 
         /// <summary>

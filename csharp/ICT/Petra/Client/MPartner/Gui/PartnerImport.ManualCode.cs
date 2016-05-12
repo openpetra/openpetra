@@ -1168,6 +1168,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PcRoomTable.GetVenueKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
+        private void AddSkill(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS, bool AUpdateExistingRecord)
+        {
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonSkill, FMainDS.PmPersonSkill,
+                PmPersonSkillTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey, AUpdateExistingRecord);
+        }
+
         private void AddSubscriptions(Int64 AOrigPartnerKey,
             Int64 ANewPartnerKey,
             ref PartnerImportExportTDS ANewPartnerDS,
@@ -1345,6 +1351,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddPersonalData(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddProfessionalData(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddPersonalEvaluation(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
+            AddSkill(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddSpecialNeeds(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddPartnerType(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
 

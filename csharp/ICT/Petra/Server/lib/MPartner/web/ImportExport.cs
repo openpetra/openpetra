@@ -510,6 +510,38 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
         }
 
+        private static void CheckSkillCategoryAndLevel(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
+        {
+            // Skill Category: if there's any skill, they must only be in known categories!
+            // Skill Level: only import known level identifiers
+            foreach (PmPersonSkillRow rv in MainDS.PmPersonSkill.Rows)
+            {
+                if ((rv.SkillCategoryCode != "") && (!PtSkillCategoryAccess.Exists(rv.SkillCategoryCode, Transaction)))
+                {
+                    MainDS.PtSkillCategory.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtSkillCategoryTable.GetCodeDBName(), rv.SkillCategoryCode);
+
+                    if (MainDS.PtSkillCategory.DefaultView.Count == 0) // Check I've not just added this a moment ago..
+                    {
+                        AddVerificationResult(ref ReferenceResults, "Adding new Skill Category " + rv.SkillCategoryCode);
+                        PtSkillCategoryRow Row = MainDS.PtSkillCategory.NewRowTyped();
+                        Row.Code = rv.SkillCategoryCode;
+                        Row.Description = FNewRowDescription;
+                        MainDS.PtSkillCategory.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.SkillCategoryList.ToString());
+                    }
+                }
+
+                if (!PtSkillLevelAccess.Exists(rv.SkillLevel, Transaction))
+                {
+                    AddVerificationResult(ref ReferenceResults, "Removing unknown Skill level " + rv.SkillLevel);
+                    rv.SkillLevel = 99; // If I don't know what this Skill Level means, I can only say, "unknown".
+                }
+            }
+        }
+
         private static void CheckPartnerInterest(PartnerImportExportTDS MainDS,
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
@@ -1571,6 +1603,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckPassport(MainDS, ref ReferenceResults, Transaction);
             CheckPassportType(MainDS, ref ReferenceResults, Transaction);
             CheckDocumentRefs(MainDS, ref ReferenceResults, Transaction);
+            CheckSkillCategoryAndLevel(MainDS, ref ReferenceResults, Transaction);
             CheckSubscriptions(MainDS, ref ReferenceResults, Transaction);
             CheckJobRefs(MainDS, ref ReferenceResults, Transaction);
             return true;
