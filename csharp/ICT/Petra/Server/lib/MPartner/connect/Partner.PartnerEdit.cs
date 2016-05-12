@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2498,6 +2498,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                 }
 
+                if (FPartnerClass == TPartnerClass.PERSON)
+                {
+                    if ((AInspectDS.Tables.Contains(PartnerEditTDSPPersonTable.GetTableName()))
+                        && (AInspectDS.PPerson[0].RowState == DataRowState.Added))
+                    {
+                        SpecialSubmitProcessingNewPerson(AInspectDS.PPerson[0], ASubmitChangesTransaction);
+                    }
+                }
+                
                 if (FPartnerClass == TPartnerClass.BANK)
                 {
                     if (AInspectDS.Tables.Contains(PBankTable.GetTableName()))
@@ -3283,6 +3292,27 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction);
         }
 
+        /// <summary>
+        /// Ensures that the FamilyId of a new PERSON is not yet taken by other Family Members
+        /// (needed in case more than one PERSON get added by a user at once but the user doesn't save the 
+        /// first PERSON before (s)he creates the second/third/... PERSON of the same Family). 
+        /// </summary>
+        /// <param name="ACurrentPersonDR">DataRow that holds the PERSON that is about to get added to the DB.</param>
+        /// <param name="ASubmitChangesTransaction">DB Transaction instance of the overall data saving operation.</param>
+        private void SpecialSubmitProcessingNewPerson(PPersonRow ACurrentPersonDR, TDBTransaction ASubmitChangesTransaction)
+        {
+            int FamilyID;
+            string ProblemMessage;
+
+            if (new TPartnerFamilyIDHandling().GetNewFamilyID(FPartnerEditScreenDS.PPerson[0].FamilyKey, out FamilyID, out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
+            {
+                // this should not really happen  but we cannot continue if it does
+                throw new EPartnerFamilyIDException(ProblemMessage);
+            }
+
+            ACurrentPersonDR.FamilyId = FamilyID;
+        }
+        
         /// <summary>
         /// Get valid current and future Gift Destination records
         /// </summary>
