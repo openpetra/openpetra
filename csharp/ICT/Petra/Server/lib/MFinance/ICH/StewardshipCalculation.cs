@@ -197,20 +197,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 BatchTemplateRow.LedgerNumber = ALedgerNumber;
                 BatchTemplateRow.BatchPeriod = APeriodNumber;
                 BatchTemplateRow.BatchYear = CurrentFinancialYear;
-
-                StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "=" });
-                StringCollection OrderList0 = new StringCollection();
-
-                OrderList0.Add("ORDER BY");
-                OrderList0.Add(ABatchTable.GetBatchNumberDBName() + " DESC");
-
-                ABatchTable BatchesInAPeriod = ABatchAccess.LoadUsingTemplate(BatchTemplateRow,
-                    Operators0,
-                    null,
-                    DBTransaction,
-                    OrderList0,
-                    0,
-                    0);
+//              BatchTemplateRow.BatchStatus = MFinanceConstants.BATCH_POSTED;
+                ABatchTable BatchesInAPeriod = ABatchAccess.LoadUsingTemplate(BatchTemplateRow, DBTransaction);
 
                 if ((BatchesInAPeriod != null) && (BatchesInAPeriod.Rows.Count > 0))
                 {
