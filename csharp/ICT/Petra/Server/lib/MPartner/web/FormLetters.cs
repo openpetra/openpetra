@@ -253,24 +253,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 formData.Notes = PartnerRow.Comment;
                                 formData.ReceiptLetterFrequency = PartnerRow.ReceiptLetterFrequency;
 
-                                if (PartnerRow.PartnerShortName.Contains(","))
-                                {
-                                    formData.Title = Calculations.FormatShortName(PartnerRow.PartnerShortName, eShortNameFormat.eOnlyTitle);
-
-                                    // add space only if title is not empty
-                                    formData.TitleAndSpace = formData.Title;
-
-                                    if ((formData.TitleAndSpace != null)
-                                        && (formData.TitleAndSpace.Length > 0))
-                                    {
-                                        formData.TitleAndSpace += " ";
-                                    }
-                                }
-                                else
-                                {
-                                    formData.Title = "";
-                                    formData.TitleAndSpace = "";
-                                }
+                                // initialize
+                                formData.Title = "";
+                                formData.TitleAndSpace = "";
 
                                 if (PartnerClass == TPartnerClass.PERSON)
                                 {
@@ -284,6 +269,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                                         formData.FirstName = PersonRow.FirstName;
                                         formData.LastName = PersonRow.FamilyName;
+                                        formData.Title = PersonRow.Title;
                                     }
                                 }
                                 else if (PartnerClass == TPartnerClass.FAMILY)
@@ -298,14 +284,20 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                                         formData.FirstName = FamilyRow.FirstName;
                                         formData.LastName = FamilyRow.FamilyName;
+                                        formData.Title = FamilyRow.Title;
                                     }
                                 }
                                 else
                                 {
-                                    formData.LastName = PartnerRow.PartnerShortName;
+                                    // last name is Partner Short Name
+                                    // except: if UNIT then don't print partner name (it should be contained in next address line)
+                                    if (PartnerClass != TPartnerClass.UNIT)
+                                    {
+                                        formData.LastName = PartnerRow.PartnerShortName;
+                                    }
                                 }
 
-                                // add space only if first / last name is not empty
+                                // add space only if first name is not empty
                                 formData.FirstNameAndSpace = formData.FirstName;
 
                                 if ((formData.FirstNameAndSpace != null)
@@ -314,12 +306,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                     formData.FirstNameAndSpace += " ";
                                 }
 
+                                // add space only if last name is not empty
                                 formData.LastNameAndSpace = formData.LastName;
 
                                 if ((formData.LastNameAndSpace != null)
                                     && (formData.LastNameAndSpace.Length > 0))
                                 {
                                     formData.LastNameAndSpace += " ";
+                                }
+
+                                // add space only if title is not empty
+                                formData.TitleAndSpace = formData.Title;
+
+                                if ((formData.TitleAndSpace != null)
+                                    && (formData.TitleAndSpace.Length > 0))
+                                {
+                                    formData.TitleAndSpace += " ";
                                 }
                             }
 

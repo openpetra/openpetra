@@ -25,7 +25,7 @@
 	
 	<reportheader></reportheader>
     <pageheader>
-      <field whichfield="title1"><value text="Emergency Contact Report"></value></field>
+      <field whichfield="title1"><value text="Event Emergency Contact Report"></value></field>
       <field whichfield="title2"><value function="getSiteName()"></value></field>
 	  
       <field whichfield="period1">

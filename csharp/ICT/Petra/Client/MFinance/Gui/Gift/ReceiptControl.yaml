@@ -31,8 +31,10 @@ RootNode:
         txtLedger: {Label=Ledger, ReadOnly=true, Width=150}
 
         btnPrint:
+            Label: Print Tagged
             ActionClick:OnBtnPrint
         btnRemove:
+            Label: Remove Tagged
             ActionClick:OnBtnRemove
         btnRcptNumber:
             ActionClick:OnBtnRcptNumber
