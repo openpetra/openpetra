@@ -94,6 +94,10 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
         private static string FEmptyStringIndicator = null;
 
+        private static string FSiteInternatAccessCode = null;
+
+        private static DataTable FCountryTable = null;
+
         private static DataSet FPartnerAttributeHoldingDataSet;
 
         #endregion
@@ -140,6 +144,28 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             set
             {
                 FEmptyStringIndicator = value;
+            }
+        }
+
+        /// <summary>
+        /// International Access (Exit) Code for dialling out of the site country
+        /// </summary>
+        public static string SiteInternatAccessCode
+        {
+            set
+            {
+                FSiteInternatAccessCode = value;
+            }
+        }
+
+        /// <summary>
+        /// DataTable containing all data in a_country
+        /// </summary>
+        public static DataTable CountryTable
+        {
+            set
+            {
+                FCountryTable = value;
             }
         }
 
@@ -586,8 +612,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             string AlternatePhoneNumberString = (string)APartnerLocationDR["p_alternate_telephone_c"];
             string UrlString = (string)APartnerLocationDR["p_url_c"];
             string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
+
+            // by default set value country to same as country code in p_location. If country code does not exist in p_location then set to null.
+            // (This may be changed later in RemoveInternationalCodeFromTelephoneNumber.)
             string CountryCode = (!APartnerLocationDR.IsNull("p_value_country_c")) ?
-                                 ((string)APartnerLocationDR["p_value_country_c"]) : String.Empty;
+                                 ((string)APartnerLocationDR["p_value_country_c"]) : null;
             string PartnerClass;
 
             FInsertionOrderPerPartner++;
@@ -611,6 +640,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         string TelephoneNumber = TelephoneNumbers[i].Trim();
 
                         PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+
+                        TelephoneNumber = RemoveInternationalCodeFromTelephoneNumber(TelephoneNumber, ref CountryCode, ATTR_TYPE_PHONE, APartnerKey);
 
                         PPARecord.Value = TelephoneNumber;
                         PPARecord.ValueCountry = CountryCode;
@@ -679,6 +710,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 {
                     string FaxNumber = FaxNumbers[i].Trim();
 
+                    FaxNumber = RemoveInternationalCodeFromTelephoneNumber(FaxNumber, ref CountryCode, ATTR_TYPE_FAX, APartnerKey);
+
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
                     // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
                     PPARecord.Value = FaxNumber;
@@ -697,6 +730,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 for (int i = 0; i < MobileNumbers.Length; i++)
                 {
                     string MobileNumber = MobileNumbers[i].Trim();
+
+                    MobileNumber = RemoveInternationalCodeFromTelephoneNumber(MobileNumber, ref CountryCode, ATTR_TYPE_MOBILE_PHONE, APartnerKey);
 
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
                     // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
@@ -731,6 +766,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 for (int i = 0; i < AlternatePhoneNumbers.Length; i++)
                 {
                     string AlternatePhoneNumber = AlternatePhoneNumbers[i].Trim();
+
+                    AlternatePhoneNumber = RemoveInternationalCodeFromTelephoneNumber(AlternatePhoneNumber,
+                        ref CountryCode,
+                        ATTR_TYPE_PHONE,
+                        APartnerKey);
 
                     PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
                     // TODO_LOW - PERHAPS: check if the Value is an email address and in case it is, record it as an e-mail address instead of this Attribute Type! [would need to use TStringChecks.ValidateEmail(xxxx, true)]
@@ -782,6 +822,90 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             }
 
             return ReturnValue;
+        }
+
+        // This removes the international calling code from the start of a phone/fax/mobile number.
+        // It also ensures that the p_partner_attribute country code is correct.
+        private static string RemoveInternationalCodeFromTelephoneNumber(string ATelephoneNumber, ref string ACountryCode,
+            string AAttributeType, Int64 APartnerKey)
+        {
+            string ReturnValue = ATelephoneNumber;
+            DataRow CountryRow = FCountryTable.Rows.Find(ACountryCode);
+
+            // ++ is never needed
+            ATelephoneNumber = ATelephoneNumber.Replace("++", "+").Replace("+ ", "+");
+
+            if (CountryRow == null)
+            {
+                return ReturnValue;
+            }
+
+            string CountryCallingCodeString = CountryRow["p_internat_telephone_code_i"].ToString();
+
+            if (string.IsNullOrEmpty(CountryCallingCodeString))
+            {
+                return ReturnValue;
+            }
+
+            int CountryCallingCode = Convert.ToInt32(CountryCallingCodeString);
+
+            if (ATelephoneNumber.StartsWith("+" + CountryCallingCode)) // e.g. +44 for UK
+            {
+                ReturnValue = ATelephoneNumber.Remove(0, 1 + CountryCallingCode.ToString().Length);
+            }
+            else if (ATelephoneNumber.StartsWith(FSiteInternatAccessCode + CountryCallingCode)) // e.g. 0044 for UK
+            {
+                ReturnValue = ATelephoneNumber.Remove(0, FSiteInternatAccessCode.Length + CountryCallingCode.ToString().Length);
+            }
+            else if (ATelephoneNumber.StartsWith("+") || ATelephoneNumber.StartsWith(FSiteInternatAccessCode))
+            {
+                bool Found = false;
+
+                // If number's country calling code does not match the country calling code corresponding to the country code in p_location record
+                // then find out if one of the p_internat_telephone_code_i in FCountryTable matches the country calling code.
+                // Country calling codes are either 2 or 3 digits and a 2 digit code is never contained in a 3 digit code.
+                foreach (DataRow Row in FCountryTable.Rows)
+                {
+                    int n;
+
+                    // ignore country codes that are numbers
+                    if (int.TryParse(Row["p_country_code_c"].ToString(), out n))
+                    {
+                        continue;
+                    }
+
+                    if (ATelephoneNumber.StartsWith("+") && ATelephoneNumber.Substring(1).StartsWith(Row["p_internat_telephone_code_i"].ToString()))
+                    {
+                        ACountryCode = Row["p_country_code_c"].ToString();
+                        ReturnValue = ATelephoneNumber.Substring(1 + Row["p_internat_telephone_code_i"].ToString().Length);
+                        Found = true;
+                        break;
+                    }
+                    else if (ATelephoneNumber.StartsWith(FSiteInternatAccessCode)
+                             && ATelephoneNumber.Substring(FSiteInternatAccessCode.Length).StartsWith(Row["p_internat_telephone_code_i"].ToString()))
+                    {
+                        ACountryCode = Row["p_country_code_c"].ToString();
+                        ReturnValue = ATelephoneNumber.Substring(
+                            FSiteInternatAccessCode.Length + Row["p_internat_telephone_code_i"].ToString().Length);
+                        Found = true;
+                        break;
+                    }
+                }
+
+                if (!Found)
+                {
+                    ACountryCode = null;
+                    TLogging.Log(string.Format(Catalog.GetString("Please check international access code for {0} for partner {1}."), AAttributeType,
+                            APartnerKey));
+                }
+            }
+            else if (ACountryCode == null) // also doesn't start with + or FSiteInternatAccessCode
+            {
+                TLogging.Log(string.Format(Catalog.GetString("Please check international access code for {0} for partner {1}."), AAttributeType,
+                        APartnerKey));
+            }
+
+            return ReturnValue.Trim().Trim('-').Trim('/');
         }
 
         private static PPartnerAttributeRecord GetNewPPartnerAttributeRecord(Int64 APartnerKey, DataRow APartnerLocationDR)

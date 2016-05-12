@@ -28,7 +28,10 @@ using System.Data;
 
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -162,9 +165,24 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
             }
 
+            // get data for entire country table
+            PCountryTable CountryTable = PCountryAccess.LoadAll(ATransaction);
+
+            string InternatAccessCode = null;
+            string SiteCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(ATransaction);
+            DataRow SiteCountryRow = CountryTable.Rows.Find(SiteCountryCode);
+
+            // get InternatAccessCode for site country
+            if (SiteCountryRow != null)
+            {
+                InternatAccessCode = SiteCountryRow[PCountryTable.GetInternatAccessCodeDBName()].ToString();
+            }
+
             TPartnerContactDetails.CreateContactDetailsRow = CreatePartnerContactDetailRecord;
             TPartnerContactDetails.EmptyStringIndicator = String.Empty;
             TPartnerContactDetails.PartnerAttributeHoldingDataSet = AMainDS;
+            TPartnerContactDetails.CountryTable = CountryTable;
+            TPartnerContactDetails.SiteInternatAccessCode = InternatAccessCode;
             TPartnerContactDetails.PopulatePPartnerAttribute();
 
             Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);

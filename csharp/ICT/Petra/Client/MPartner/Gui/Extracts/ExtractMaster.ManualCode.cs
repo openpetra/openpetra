@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                     SubmitDT.Merge(ExtractTable.GetChangesTyped());
                 }
 
-                if (SubmitDT.Rows.Count == 0
+                if ((SubmitDT.Rows.Count == 0)
                     || !ChangesMade)
                 {
                     if (ChangesNeeded)
@@ -88,11 +88,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             Catalog.GetString("Verify and Update Extract"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
-
                     }
                     else if (!ChangesNeeded)
                     {
-                        MessageBox.Show(Catalog.GetString("Verification and Update of Extract completed.") + "\r\n\r\n" + Catalog.GetString("Extract was already up to date."),
+                        MessageBox.Show(Catalog.GetString("Verification and Update of Extract completed.") + "\r\n\r\n" +
+                            Catalog.GetString("Extract was already up to date."),
                             Catalog.GetString("Verify and Update Extract"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
@@ -178,9 +178,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 if (!TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(Row.PartnerKey))
                 {
                     AChangesNeeded = true;
+
                     if (!DontShowPartnerRemovePartnerKeyNonExistent) // if user has not requested to not see these messages
                     {
-                        // warn the user what is happening 
+                        // warn the user what is happening
                         // (this message really never come up as constraints with this extracts should have prevented the partner to be deleted
                         MsgBox.ShowDialog(String.Format(Catalog.GetString("The following partner record does not exist any longer and " +
                                     "will therefore be removed from this extract: \r\n\r\n" +
@@ -212,7 +213,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             {
                                 // warn the user what is happening
                                 MsgBox = new TFrmExtendedMessageBox(AForm);
-                                MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract no longer exists. \r\n\r\n" +
+                                MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract no longer exists. \r\n\r\n"
+                                            +
                                             "It will therefore be replaced with a current address."),
                                         Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                     Catalog.GetString("Verify and Update Extract"),
@@ -251,10 +253,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         ReplaceAddress = false;
 
                         // first check if any other address is better than the existing one
-                            /* it could be that GetBestAddress still returns a non-current address if
-                             * there is no better one */
+
+                        /* it could be that GetBestAddress still returns a non-current address if
+                         * there is no better one */
                         OtherAddressExists = TRemote.MPartner.Mailing.WebConnectors.GetBestAddress(Row.PartnerKey,
-                                out LocationTable, out CountryName);
+                            out LocationTable, out CountryName);
 
                         if (OtherAddressExists)
                         {
@@ -263,8 +266,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 LocationRow = (PLocationRow)LocationTable.Rows[0];
 
                                 TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation
-                                                    (Row.PartnerKey, new TLocationPK(LocationRow.SiteKey, LocationRow.LocationKey), 
-                                                    out OtherAddressIsCurrent, out OtherAddressIsMailing);
+                                    (Row.PartnerKey, new TLocationPK(LocationRow.SiteKey, LocationRow.LocationKey),
+                                    out OtherAddressIsCurrent, out OtherAddressIsMailing);
 
                                 /* check if existing address is best one */
                                 if ((Row.SiteKey == LocationRow.SiteKey)
@@ -284,7 +287,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 {
                                     // warn the user what is happening
                                     MsgBox = new TFrmExtendedMessageBox(AForm);
-                                    MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not current and not a mailing address. \r\n\r\n" +
+                                    MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                "Address for {0} ({1}) in this extract is not current and not a mailing address. \r\n\r\n" +
                                                 "But it will not be changed as it is still the best one."),
                                             Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                         Catalog.GetString("Verify and Update Extract"),
@@ -303,7 +307,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                     // ask the user if the address should be updates
                                     MsgBox = new TFrmExtendedMessageBox(AForm);
                                     MsgBoxResult =
-                                        MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not current and not a mailing address. \r\n\r\n" +
+                                        MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                    "Address for {0} ({1}) in this extract is not current and not a mailing address. \r\n\r\n" +
                                                     "Do you want to update it with a better one?"),
                                                 Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                             Catalog.GetString("Verify and Update Extract"),
@@ -335,7 +340,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 {
                                     // warn the user what is happening
                                     MsgBox = new TFrmExtendedMessageBox(AForm);
-                                    MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not current. \r\n\r\n" +
+                                    MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                "Address for {0} ({1}) in this extract is not current. \r\n\r\n" +
                                                 "But it will not be changed as it is still the best one."),
                                             Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                         Catalog.GetString("Verify and Update Extract"),
@@ -354,7 +360,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                     // ask the user if the address should be updated
                                     MsgBox = new TFrmExtendedMessageBox(AForm);
                                     MsgBoxResult =
-                                        MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not current. \r\n\r\n" +
+                                        MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                    "Address for {0} ({1}) in this extract is not current. \r\n\r\n" +
                                                     "Do you want to update it with a better one?"),
                                                 Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                             Catalog.GetString("Verify and Update Extract"),
@@ -386,7 +393,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                 {
                                     // warn the user what is happening
                                     MsgBox = new TFrmExtendedMessageBox(AForm);
-                                    MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not a mailing address. \r\n\r\n" +
+                                    MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                "Address for {0} ({1}) in this extract is not a mailing address. \r\n\r\n" +
                                                 "But it will not be changed as it is still the best one."),
                                             Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                         Catalog.GetString("Verify and Update Extract"),
@@ -405,7 +413,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                     // ask the user if the address should be updates
                                     MsgBox = new TFrmExtendedMessageBox(AForm);
                                     MsgBoxResult =
-                                        MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not a mailing address. \r\n\r\n" +
+                                        MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                    "Address for {0} ({1}) in this extract is not a mailing address. \r\n\r\n" +
                                                     "Do you want to update it with a better one?"),
                                                 Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
                                             Catalog.GetString("Verify and Update Extract"),

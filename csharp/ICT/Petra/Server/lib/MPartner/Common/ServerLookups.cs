@@ -431,15 +431,16 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
 
-                // check if the partner location is either current 
+                // check if the partner location is either current
                 AAddressIsCurrent = true;
+
                 if ((Row.DateEffective > DateTime.Today)
                     || ((Row.DateGoodUntil != null)
                         && (Row.DateGoodUntil < DateTime.Today)))
                 {
                     AAddressIsCurrent = false;
                 }
-                
+
                 // check if the partner location is a mailing address
                 AAddressIsMailing = Row.SendMail;
 

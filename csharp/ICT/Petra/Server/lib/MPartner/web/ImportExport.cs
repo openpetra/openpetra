@@ -317,7 +317,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.LocationType;
                         Row.Description = FNewRowDescription;
                         MainDS.PLocationType.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.LocationTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePartnerTablesEnum.LocationTypeList.ToString());
                     }
                 }
             }
@@ -337,7 +338,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.BusinessCode = rv.BusinessCode;
                     Row.BusinessDescription = FNewRowDescription;
                     MainDS.PBusiness.Rows.Add(Row);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.BusinessCodeList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.BusinessCodeList.ToString());
                 }
             }
         }
@@ -384,7 +386,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.LanguageCode = NewLanguage;
                         Row.LanguageDescription = FNewRowDescription;
                         MainDS.PLanguage.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableCommonTablesEnum.LanguageCodeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableCommonTablesEnum.LanguageCodeList.ToString());
                     }
                 }
             }
@@ -403,7 +406,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 Row.AcquisitionCode = PartnerRow.AcquisitionCode;
                 Row.AcquisitionDescription = FNewRowDescription;
                 MainDS.PAcquisition.Rows.Add(Row);
-                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.AcquisitionCodeList.ToString());
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheablePartnerTablesEnum.AcquisitionCodeList.ToString());
             }
         }
 
@@ -504,7 +508,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.AbilityAreaName = rv.AbilityAreaName;
                         Row.AbilityAreaDescr = FNewRowDescription;
                         MainDS.PtAbilityArea.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.AbilityAreaList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.AbilityAreaList.ToString());
                     }
                 }
 
@@ -582,7 +587,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Category = rv.Category;
                         Row.Description = FNewRowDescription;
                         MainDS.PInterestCategory.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.InterestCategoryList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePartnerTablesEnum.InterestCategoryList.ToString());
                     }
                 }
             }
@@ -602,7 +608,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.TypeCode = rv.TypeCode;
                     Row.TypeDescription = FNewRowDescription;
                     MainDS.PType.Rows.Add(Row);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.PartnerTypeList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.PartnerTypeList.ToString());
                 }
             }
         }
@@ -842,7 +849,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.DenominationCode = rv.DenominationCode;
                     Row.DenominationName = FNewRowDescription;
                     MainDS.PDenomination.Rows.Add(Row);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.DenominationList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.DenominationList.ToString());
                 }
             }
         }
@@ -959,7 +967,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = GenAppRow.GenApplicationStatus;
                         Row.Description = FNewRowDescription;
                         MainDS.PtApplicantStatus.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.ApplicantStatusList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ApplicantStatusList.ToString());
                     }
                 }
 
@@ -985,7 +994,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.AppTypeName = GenAppRow.AppTypeName;
                         Row.AppTypeDescr = FNewRowDescription;
                         MainDS.PtApplicationType.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.ApplicationTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ApplicationTypeList.ToString());
                     }
                 }
 
@@ -1000,7 +1010,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.ContactName = GenAppRow.GenContact1;
                         Row.ContactDescr = FNewRowDescription;
                         MainDS.PtContact.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.ContactList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ContactList.ToString());
                     }
                 }
 
@@ -1015,7 +1026,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.ContactName = GenAppRow.GenContact2;
                         Row.ContactDescr = FNewRowDescription;
                         MainDS.PtContact.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.ContactList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ContactList.ToString());
                     }
                 }
             }
@@ -1083,7 +1095,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.ArrivalPointCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtArrivalPoint.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.ArrivalDeparturePointList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ArrivalDeparturePointList.ToString());
                     }
                 }
 
@@ -1099,7 +1112,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.DeparturePointCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtArrivalPoint.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.ArrivalDeparturePointList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ArrivalDeparturePointList.ToString());
                     }
                 }
 
@@ -1114,7 +1128,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.TravelTypeToCongCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtTravelType.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.TransportTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.TransportTypeList.ToString());
                     }
                 }
 
@@ -1130,7 +1145,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.TravelTypeFromCongCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtTravelType.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.TransportTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.TransportTypeList.ToString());
                     }
                 }
 
@@ -1145,7 +1161,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.OutreachRole;
                         Row.Description = FNewRowDescription;
                         MainDS.PtCongressCode.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.EventRoleList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.EventRoleList.ToString());
                     }
                 }
             }
@@ -1226,7 +1243,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.QualificationAreaName = rv.QualificationAreaName;
                         Row.QualificationAreaDescr = FNewRowDescription;
                         MainDS.PtQualificationArea.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.QualificationAreaList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.QualificationAreaList.ToString());
                     }
                 }
 
@@ -1242,7 +1260,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.QualificationLevel = rv.QualificationLevel;
                         Row.QualificationLevelDescr = FNewRowDescription;
                         MainDS.PtQualificationLevel.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.QualificationLevelList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.QualificationLevelList.ToString());
                     }
                 }
             }
@@ -1293,7 +1312,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.OccupationCode = RequiredOccupation;
                     Row.OccupationDescription = FNewRowDescription;
                     MainDS.POccupation.Rows.Add(Row);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.OccupationList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.OccupationList.ToString());
                 }
             }
         }
@@ -1415,7 +1435,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.PassportDetailsType;
                         Row.Description = FNewRowDescription;
                         MainDS.PtPassportType.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.PassportTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.PassportTypeList.ToString());
                     }
                 }
             }
@@ -1444,7 +1465,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.DocCategory;
                         Row.Description = FNewRowDescription;
                         MainDS.PmDocumentCategory.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.DocumentTypeCategoryList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.DocumentTypeCategoryList.ToString());
                     }
                 }
 
@@ -1460,7 +1482,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.DocCategory = rv.DocCategory;
                         Row.Description = FNewRowDescription;
                         MainDS.PmDocumentType.Rows.Add(Row);
-                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePersonTablesEnum.DocumentTypeList.ToString());
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.DocumentTypeList.ToString());
                     }
                 }
             }
@@ -1497,7 +1520,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.Code = SubsRow.ReasonSubsGivenCode;
                     NewRow.Description = FNewRowDescription;
                     MainDS.PReasonSubscriptionGiven.Rows.Add(NewRow);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList.ToString());
                 }
 
                 if ((SubsRow.ReasonSubsCancelledCode != "")
@@ -1508,7 +1532,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.Code = SubsRow.ReasonSubsCancelledCode;
                     NewRow.Description = FNewRowDescription;
                     MainDS.PReasonSubscriptionCancelled.Rows.Add(NewRow);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList.ToString());
                 }
 
                 if ((SubsRow.PublicationCode.Length > 0) && !PPublicationAccess.Exists(SubsRow.PublicationCode, Transaction))
@@ -1519,7 +1544,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.PublicationDescription = FNewRowDescription;
                     NewRow.FrequencyCode = "Daily"; // I can't leave this blank, so I need to make something up...
                     MainDS.PPublication.Rows.Add(NewRow);
-                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableSubscriptionsTablesEnum.PublicationList.ToString());
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableSubscriptionsTablesEnum.PublicationList.ToString());
                 }
             }
         }
