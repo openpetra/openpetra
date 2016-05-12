@@ -125,12 +125,31 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             {
                 // Import from the specified file
                 string pathToFile = txtFileName.Text;
+
+                if (!File.Exists(pathToFile))
+                {
+                    MessageBox.Show(Catalog.GetString(
+                            "Cannot find the file to import from."), this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+
+                string extension = Path.GetExtension(pathToFile);
+
+                if (".txt.csv.".Contains(extension + ".") == false)
+                {
+                    MessageBox.Show(Catalog.GetString("You must choose either a text or CSV file with a file extension of .txt or .csv"),
+                        this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    return;
+                }
+
                 System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(pathToFile);
 
                 //
                 // If it failed to open the file, GetFileEncoding returned null.
                 if (FileEncoding == null)
                 {
+                    MessageBox.Show(Catalog.GetString("Could not open the file."),
+                        this.Text, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
 

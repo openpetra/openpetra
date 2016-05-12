@@ -77,6 +77,7 @@ namespace Ict.Common.Controls
         private bool FAllowBlankValue;
         private bool FCaseSensitiveSearch;
         private bool FSuppressSelectionColor;
+        private bool FHasNonUniqueDisplayMember;
         private String FColumnsToSearchDesignTime;
         private int FSelectedIndexOnDataSourceChange = -1;
         private Timer FStickySelectedValueChangedTimer = new Timer();
@@ -299,6 +300,24 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Get/Set a value that indicates if there can be more than one identical display member for a given value member.
+        /// This property was introduced when the code had to be modified to deal with a situation where this occurs (Intl Dialing Codes).
+        /// By adding this property it was possible to make the code changes yet not affect the way that every other combo box behaves.
+        /// </summary>
+        public bool HasNonUniqueDisplayMember
+        {
+            get
+            {
+                return FHasNonUniqueDisplayMember;
+            }
+
+            set
+            {
+                FHasNonUniqueDisplayMember = value;
+            }
+        }
+
+        /// <summary>
         /// This property manages the new entry event
         /// </summary>
         public event TAcceptNewEntryEventHandler AcceptNewEntries;
@@ -360,6 +379,7 @@ namespace Ict.Common.Controls
             this.FAcceptNewValues = false;
             this.FIgnoreNewValues = false;
             this.FAllowBlankValue = false;
+            this.FHasNonUniqueDisplayMember = false;
 
             // standard font for combo boxes in OpenPetra
             this.Font = new System.Drawing.Font("Verdana", 8.25f, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, (Byte)0);
@@ -771,12 +791,26 @@ namespace Ict.Common.Controls
                 return;
             }
 
-            String mItemString = this.Text;
+            String mItemString;
+            Int32 mFoundIndex;
             TAcceptNewEntryEventArgs mArgs = new TAcceptNewEntryEventArgs();
-            mArgs.ItemString = mItemString;
 
-            // Try to find the text entered in the set of items contained in cmbAutoComplete
-            System.Int32 mFoundIndex = this.FindStringExact(mItemString);
+            if (FHasNonUniqueDisplayMember)
+            {
+                mItemString = GetSelectedString();
+                mArgs.ItemString = mItemString;
+
+                // Try to find the text entered in the set of items contained in cmbAutoComplete
+                mFoundIndex = FindStringInComboBox(mItemString);
+            }
+            else
+            {
+                mItemString = this.Text;
+                mArgs.ItemString = mItemString;
+
+                // Try to find the text entered in the set of items contained in cmbAutoComplete
+                mFoundIndex = this.FindStringExact(mItemString);
+            }
 
             if (mFoundIndex >= 0)
             {
@@ -1336,7 +1370,14 @@ namespace Ict.Common.Controls
             {
                 if (this.Items[SelectedIndex] is System.Data.DataRowView)
                 {
-                    ReturnValue = ((System.Data.DataRowView) this.Items[SelectedIndex])[ColumnNumber].ToString();
+                    if (FHasNonUniqueDisplayMember)
+                    {
+                        ReturnValue = ((System.Data.DataRowView) this.Items[this.Items.IndexOf(SelectedItem)])[ColumnNumber].ToString();
+                    }
+                    else
+                    {
+                        ReturnValue = ((System.Data.DataRowView) this.Items[SelectedIndex])[ColumnNumber].ToString();
+                    }
                 }
                 else if (this.Items[SelectedIndex] is System.String)
                 {

@@ -285,6 +285,11 @@ namespace Ict.Petra.Client.CommonControls
         private Boolean FAllowDbNull = false;
         private string FNullValueDesciption = ApplWideResourcestrings.StrUndefined;
 
+        // Constants used in non-unique tables
+        private const string NonUniqueSortMember = "NonUniqueSortMember";
+        private const string PhoneCodePrefixWithPlusColumnName = "InternatTelephoneCodeWithPlusPrefix";
+
+
         #region Properties
 
         /// <summary>
@@ -790,30 +795,21 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.InternationalPhonePrefixList:
-                    const string PhoneCodePrefixWithPlusColumnName = "InternatTelephoneCodeWithPlusPrefix";
-                    DataTable PhonePrefixListPrefixedWithPlusDT;
-                    DataColumn PhonePrefixWithPlus;
-
-                    int DBColumnIndex = PCountryTable.ColumnInternatTelephoneCodeId;
-
-                    // Add the + character in front of the International Phone Prefix (which is just a number
-                    // without the + prefix in p_country, e.g. '44' instead of '+44' for the United Kingdom)
-                    PhonePrefixListPrefixedWithPlusDT = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
-
-                    PhonePrefixWithPlus = new DataColumn(PhoneCodePrefixWithPlusColumnName, typeof(string), "'+' + " +
-                    PCountryTable.GetInternatTelephoneCodeDBName());
-                    PhonePrefixListPrefixedWithPlusDT.Columns.Add(PhonePrefixWithPlus);
-
-                    PhonePrefixListPrefixedWithPlusDT.DefaultView.Sort =
-                        PCountryTable.GetInternatTelephoneCodeDBName();
+                    // This is an example of a non-unique display member table!!
+                    DataTable PhonePrefixListPrefixedWithPlusDT = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
+                    CreateNonUniqueDataTable(PhonePrefixListPrefixedWithPlusDT, TCacheableCommonTablesEnum.CountryList.ToString());
+                    // Now set the working sort on phone code and non-unique sort memeber
+                    PhonePrefixListPrefixedWithPlusDT.DefaultView.Sort = string.Format("{0}, {1}",
+                    PCountryTable.GetInternatTelephoneCodeDBName(), NonUniqueSortMember);
 
                     AllowDbNull = true;
 
+                    // Standard initialise
                     InitialiseUserControl(PhonePrefixListPrefixedWithPlusDT,
                     PCountryTable.GetCountryCodeDBName(),
                     PhoneCodePrefixWithPlusColumnName,
                     PCountryTable.GetCountryCodeDBName(),
-                    PCountryTable.GetCountryCodeDBName() + ", " + PCountryTable.GetInternatAccessCodeDBName()
+                    null
                     );
 
                     cmbCombobox.DisplayInColumn2 = PCountryTable.GetCountryNameDBName();
@@ -1493,6 +1489,10 @@ namespace Ict.Petra.Client.CommonControls
                     this.ColumnWidthCol1 = 50;
                     this.ColumnWidthCol2 = 200;
                     this.ColumnWidthCol3 = 80;
+                    // Note from AlanP: Without this line MaxDropDownItems has no effect!  (see other instances above)
+                    // I have not changed any others because maybe we have got used to having more items shown...
+                    this.cmbCombobox.IntegralHeight = false;
+                    this.cmbCombobox.MaxDropDownItems = 20;
                     break;
 
                 case TListTableEnum.JobAssignmentTypeList:
@@ -1731,5 +1731,62 @@ namespace Ict.Petra.Client.CommonControls
 
             return ReturnValue;
         }
+
+        #region Non-Unique Data Tables
+
+        /// <summary>
+        /// Takes a DataTable and modifies it so that it can be used where its Display Members are not unique
+        /// </summary>
+        /// <param name="ADataTable">The data table to modify so it works with non-unique display members</param>
+        /// <param name="ATableNameEnumString">The table enumeration as a string</param>
+        private void CreateNonUniqueDataTable(DataTable ADataTable, String ATableNameEnumString)
+        {
+            // Each non-unique table will need its own version of creation code
+
+            if (ATableNameEnumString == TCacheableCommonTablesEnum.CountryList.ToString())
+            {
+                // Add the + character in front of the International Phone Prefix (which is just a number
+                // without the + prefix in p_country, e.g. '44' instead of '+44' for the United Kingdom)
+                DataColumn PhonePrefixWithPlus = new DataColumn(PhoneCodePrefixWithPlusColumnName, typeof(string), "'+' + " +
+                    PCountryTable.GetInternatTelephoneCodeDBName());
+                ADataTable.Columns.Add(PhonePrefixWithPlus);
+
+                // Add the NonUniqueSortMember column
+                DataColumn NonUniqueSortMemberColumn = new DataColumn(NonUniqueSortMember);
+                ADataTable.Columns.Add(NonUniqueSortMemberColumn);
+
+                // Get a view sorted by phone code and country code
+                DataView dv = new DataView(ADataTable, "",
+                    string.Format("{0}, {1}", PCountryTable.GetInternatTelephoneCodeDBName(), PCountryTable.GetCountryCodeDBName()),
+                    DataViewRowState.CurrentRows);
+
+                bool prioritiseUS = TAppSettingsManager.GetBoolean("IntlPhonePrefix.US.HasPriority", false);
+                bool prioritiseGB = TAppSettingsManager.GetBoolean("IntlPhonePrefix.GB.HasPriority", false);
+
+                // Now populate the non unique sort member - simply with the row id
+                for (int i = 0; i < dv.Count; i++)
+                {
+                    if ((dv[i][0].ToString() == "US") && prioritiseUS)
+                    {
+                        // reduse by 2 is enough to put it above Canada
+                        dv[i][NonUniqueSortMember] = i - 2;
+                    }
+                    else if ((dv[i][0].ToString() == "GB") && prioritiseGB)
+                    {
+                        // reduse by 2 is enough to put it above OMSS
+                        dv[i][NonUniqueSortMember] = i - 2;
+                    }
+                    else
+                    {
+                        dv[i][NonUniqueSortMember] = i;
+                    }
+                }
+            }
+
+            // Remember to set the flag!!
+            cmbCombobox.HasNonUniqueDisplayMember = true;
+        }
+
+        #endregion
     }
 }

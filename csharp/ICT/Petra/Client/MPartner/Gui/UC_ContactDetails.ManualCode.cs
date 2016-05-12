@@ -39,6 +39,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -689,6 +690,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblIntlPhonePrefixCountryInfo.ReadOnly = true;
             this.lblIntlPhonePrefixCountryInfo.Location = new System.Drawing.Point(lblValue.Right + 6, cmbIntlPhonePrefix.Bottom + 1);
             this.lblIntlPhonePrefixCountryInfo.TabStop = false;
+            this.lblIntlPhonePrefixCountryInfo.Tag = MCommonResourcestrings.StrCtrlSuppressChangeDetection;
 
             pnlValueGrouping.Controls.Add(lblIntlPhonePrefixCountryInfo);
         }
@@ -1289,10 +1291,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.Columns.Clear();
 
             grdDetails.AddImageColumn(@GetPrimaryIconForGridRow);
+            grdDetails.Columns[0].Width = 20;
+            grdDetails.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
 
             //
             // Contact Type
-//            grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
+            //grdDetails.AddTextColumn("Type Code", FMainDS.PPartnerAttribute.Columns["Parent_" + PPartnerAttributeTypeTable.GetCodeDBName()]);
 
             //
             // Contact Type (Calculated Expression!)
@@ -1310,24 +1314,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Confidential
             grdDetails.AddCheckBoxColumn("Confidential", FMainDS.PPartnerAttribute.ColumnConfidential);
 
-//            // Sequence (for testing purposes only...)
-//            grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
-//
-//            // Index (for testing purposes only...)
-//            grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
-//
-//            // Primary (for testing purposes only...)
-//            grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
-//
-//            // Within Organsiation (for testing purposes only...)
-//            if (FPartnersPartnerClass == TPartnerClass.PERSON)
-//            {
-//
-//                grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrganisation);
-//            }
+            //// Sequence (for testing purposes only...)
+            //grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
+
+            //// Index (for testing purposes only...)
+            //grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
+
+            //// Primary (for testing purposes only...)
+            //grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
+
+            //// Within Organsiation (for testing purposes only...)
+            //if (FPartnersPartnerClass == TPartnerClass.PERSON)
+            //{
+
+            //    grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrganisation);
+            //}
 
             // Modification TimeStamp (for testing purposes only...)
-//             grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
+            //grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
+
+            grdDetails.AutoResizeGrid();
         }
 
         private void ValidateDataDetailsManual(PPartnerAttributeRow ARow)

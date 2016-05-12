@@ -34,7 +34,7 @@ RootNode:
             Stretch: horizontally
 
         rbtClipboard:
-        rbtFile:
+        rbtFile: {Label=File (either .txt or .csv)}
         txtFileName: {Width=450, Stretch=horizontally}
         btnBrowse: {Label=...}
         chkExcludeInactive: {CheckBoxAttachedLabel=right, Label=Only include Active Partners}
