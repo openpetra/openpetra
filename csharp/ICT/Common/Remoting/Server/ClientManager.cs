@@ -110,7 +110,7 @@ namespace Ict.Common.Remoting.Server
                     ClientEnum = UClientObjects.GetEnumerator();
                     try
                     {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot))
+                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
                         {
                             // Iterate over all Clients and count the ones that are currently connected
                             while (ClientEnum.MoveNext())
@@ -462,7 +462,7 @@ namespace Ict.Common.Remoting.Server
                     ClientEnum = UClientObjects.GetEnumerator();
                     try
                     {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot))
+                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
                         {
                             // Iterate over all Clients that are currently connected
                             while (ClientEnum.MoveNext())
@@ -556,7 +556,7 @@ namespace Ict.Common.Remoting.Server
 
             try
             {
-                if (Monitor.TryEnter(UClientObjects.SyncRoot))
+                if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
                 {
                     // Iterate over all Clients that are currently connected
                     while (ClientEnum.MoveNext())
@@ -654,7 +654,7 @@ namespace Ict.Common.Remoting.Server
                     ClientEnum = UClientObjects.GetEnumerator();
                     try
                     {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot))
+                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
                         {
                             // Iterate over all Clients
                             while (ClientEnum.MoveNext())
@@ -902,7 +902,7 @@ namespace Ict.Common.Remoting.Server
                     #endregion
                     try
                     {
-                        if (Monitor.TryEnter(UClientObjects.SyncRoot))
+                        if (Monitor.TryEnter(UClientObjects.SyncRoot, 3000))
                         {
                             ConnectedClient = new TConnectedClient(AClientID, AUserName.ToUpper(), ClientName, AClientComputerName, AClientIPAddress,
                                 AClientServerConnectionType, ClientName);

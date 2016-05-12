@@ -2488,8 +2488,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DateTime StartOfCalendarMonth = new DateTime(EffectiveDate.Year, EffectiveDate.Month, 1);
 
             // used for setting AmountInIntlCurrency
-            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency,
-                LedgerIntlCurrency,
+            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(
+                LedgerIntlCurrency, LedgerBaseCurrency,
                 StartOfCalendarMonth,
                 EffectiveDate);
 
@@ -2520,7 +2520,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         if (batchTransactionCurrency != LedgerIntlCurrency)
                         {
-                            transRow.AmountInIntlCurrency = transRow.AmountInBaseCurrency / IntlToBaseExchRate;
+                            transRow.AmountInIntlCurrency = GLRoutines.CurrencyMultiply(transRow.AmountInBaseCurrency, IntlToBaseExchRate);
                         }
                         else
                         {

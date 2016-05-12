@@ -380,7 +380,7 @@ namespace Ict.Petra.Server.MFinance.Common
             // The International currency calculation is changed to "Base -> International", because it's likely
             // we won't have a "Transaction -> International" conversion rate defined.
             //
-            transRow.AmountInIntlCurrency = GLRoutines.Multiply(transRow.AmountInBaseCurrency,
+            transRow.AmountInIntlCurrency = GLRoutines.CurrencyMultiply(transRow.AmountInBaseCurrency,
                 TExchangeRateTools.GetDailyExchangeRate(
                     FLedgerInfo.BaseCurrency,
                     FLedgerInfo.InternationalCurrency,
