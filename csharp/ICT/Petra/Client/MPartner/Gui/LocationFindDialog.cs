@@ -133,10 +133,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FLocationFindObject = TRemote.MPartner.Partner.UIConnectors.PartnerLocationFind();
 
-            /* Register Object with the TEnsureKeepAlive Class so that it doesn't get GC'd */
-            TEnsureKeepAlive.Register(FLocationFindObject);
-
-
             FPetraUtilsObject.InitActionState();
             FDefaultValues = FFindCriteriaDataTable.NewRow();
 
@@ -275,7 +271,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (Convert.ToBoolean(AEnable))
             {
-                if (FLocationFindObject.AsyncExecProgress.ProgressState != TAsyncExecProgressState.Aeps_Stopped)
+                if (FLocationFindObject.Progress.JobFinished)
                 {
                     if (FPagedDataTable.Rows.Count > 0)
                     {
@@ -469,13 +465,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ReleaseServerObject()
         {
-            if (FLocationFindObject != null)
-            {
-                /* UnRegister Object from the TEnsureKeepAlive Class so that the Object can get GC'd on the PetraServer */
-
-                TEnsureKeepAlive.UnRegister(FLocationFindObject);
-                FLocationFindObject = null;
-            }
+            FLocationFindObject = null;
         }
 
         #endregion
@@ -607,64 +597,39 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void TimerSearchResults_Tick(System.Object sender, System.EventArgs e)
         {
-            TAsyncExecProgressState ProgressState;
+            TProgressState state = FLocationFindObject.Progress;
 
-
-            try
+            if (state.JobFinished)
             {
-                /* The next line of code calls a function on the PetraServer
-                 * > causes a bit of data traffic everytime! */
-                ProgressState = FLocationFindObject.AsyncExecProgress.ProgressState;
+                /* we are finished: */
+                /* prevent further calls */
+                timerSearchResults.Enabled = false;
+                FKeepUpSearchFinishedCheck = false;
+
+                /* Fetch the first page of data */
+                try
+                {
+                    // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
+                    // has already been run! See XML Comment on the called Method
+                    // TSgrdDataGridPaged.LoadFirstDataPage for details!
+                    FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
+                }
+                catch (Exception E)
+                {
+                    MessageBox.Show(E.ToString());
+                }
+
+                EnableDisableUI(true);
             }
-            catch (System.NullReferenceException)
+            else if (state.CancelJob)
             {
-                /*
-                 * This Exception occurs if the screen has been closed by the user
-                 * in the meantime -> don't try to do anything further - it will break!
-                 */
-                return;  // Thread ends here!
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                /* we are finished: */
+                /* prevent further calls */
+                timerSearchResults.Enabled = false;
+                FKeepUpSearchFinishedCheck = false;
 
-            switch (ProgressState)
-            {
-                case TAsyncExecProgressState.Aeps_Finished:
+                EnableDisableUI(true);
 
-                    /* we are finished: */
-                    /* prevent further calls */
-                    timerSearchResults.Enabled = false;
-                    FKeepUpSearchFinishedCheck = false;
-
-                    /* Fetch the first page of data */
-                    try
-                    {
-                        // For speed reasons we must add the necessary amount of emtpy Rows only *after* .AutoSizeCells()
-                        // has already been run! See XML Comment on the called Method
-                        // TSgrdDataGridPaged.LoadFirstDataPage for details!
-                        FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
-                    }
-                    catch (Exception E)
-                    {
-                        MessageBox.Show(E.ToString());
-                    }
-
-                    EnableDisableUI(true);
-
-                    break;
-
-                case TAsyncExecProgressState.Aeps_Stopped:
-
-                    /* we are finished: */
-                    /* prevent further calls */
-                    timerSearchResults.Enabled = false;
-                    FKeepUpSearchFinishedCheck = false;
-
-                    EnableDisableUI(true);
-
-                    break;
             }
         }
 
@@ -961,7 +926,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 Application.DoEvents();
 
                 /* Stop asynchronous search operation */
-                FLocationFindObject.AsyncExecProgress.Cancel();
+                FLocationFindObject.StopSearch();
             }
         }
 
