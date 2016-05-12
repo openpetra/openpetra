@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
@@ -149,7 +150,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // All transactions for all the "Expense" accounts for the selected Cost Centre within the selected dates or periods.
 
             String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
-            String TranctDateFilter = ""; // Optional Date Filter, as periods or dates
+            String TranctDateFilter = string.Empty; // Optional Date Filter, as periods or dates
             String CostCentreCodes = pm.Get("param_cost_centre_codes").ToString();
 
             if (CostCentreCodes == String.Empty)
@@ -208,24 +209,42 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 pm.Add("param_date_title", PeriodTitle);
             }
 
-            TranctDateFilter = "a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") +
-                               "' AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
+            TranctDateFilter = " AND a_transaction_date_d>='" + pm.Get("param_start_date").DateToString("yyyy-MM-dd") + "'" +
+                               " AND a_transaction_date_d<='" + pm.Get("param_end_date").DateToString("yyyy-MM-dd") + "'";
 
             Csv = StringHelper.AddCSV(Csv,
-                "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + " AND a_posting_status_l=true AND a_account_active_flag_l=true");
+                "AAccount/" +
+                "SELECT *" +
+                " FROM a_account" +
+                " WHERE " + LedgerFilter +
+                "   AND a_posting_status_l=true" +
+                "   AND a_account_active_flag_l=true");
             Csv = StringHelper.AddCSV(Csv,
-                "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
-                " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
+                "ACostCentre/" +
+                "SELECT *" +
+                " FROM a_cost_centre" +
+                " WHERE " + LedgerFilter +
+                CostCentreFilter +
+                "   AND a_posting_cost_centre_flag_l=true" +
+                "   AND a_cost_centre_active_flag_l=true");
             Csv = StringHelper.AddCSV(
                 Csv,
-                "ATransaction/SELECT a_transaction.* FROM a_transaction, a_cost_centre WHERE a_transaction." + LedgerFilter +
-                " AND " + TranctDateFilter +
-                " AND NOT (a_system_generated_l = true AND (a_narrative_c LIKE 'Gifts received - Gift Batch%' OR a_narrative_c LIKE 'GB - Gift Batch%' OR a_narrative_c LIKE 'Year end re-allocation%'))"
-                +
-                " AND a_transaction.a_ledger_number_i = a_cost_centre.a_ledger_number_i " +
-                " AND a_transaction.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c " +
+                "ATransaction/" +
+                "SELECT t.* FROM a_transaction t, a_journal j, a_cost_centre c " +
+                " WHERE t.a_ledger_number_i = j.a_ledger_number_i" +
+                "   AND t.a_batch_number_i = j.a_batch_number_i" +
+                "   AND t.a_journal_number_i = j.a_journal_number_i" +
+                "   AND t.a_ledger_number_i = c.a_ledger_number_i" +
+                "   AND t.a_cost_centre_code_c = c.a_cost_centre_code_c" +
+                "   AND t." + LedgerFilter +
+                TranctDateFilter +
                 CostCentreFilter +
-                " ORDER BY a_account_code_c, a_transaction_date_d");
+                "   AND j.a_journal_status_c = '" + MFinanceConstants.BATCH_POSTED + "'" +
+                "   AND NOT (t.a_system_generated_l = true" +
+                "           AND (t.a_narrative_c LIKE 'Gifts received - Gift Batch%'" +
+                "                OR t.a_narrative_c LIKE 'GB - Gift Batch%'" +
+                "                OR t.a_narrative_c LIKE 'Year end re-allocation%'))" +
+                " ORDER BY t.a_account_code_c, t.a_transaction_date_d");
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;
