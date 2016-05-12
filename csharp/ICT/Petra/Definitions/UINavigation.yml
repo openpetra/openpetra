@@ -227,7 +227,7 @@ OpenPetra:
                         TotalGivingForRecipients: {ActionOpenScreen=TFrmTotalGivingForRecipients}
                         FieldGiftTotalsReport: {ActionOpenScreen=TFrmFieldGiftTotalsReport}
                         FieldLeaderGiftSummary: {ActionOpenScreen=TFrmFieldLeaderGiftSummary}
-                        FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
+                        #FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
                         TotalGiftsThroughField: {ActionOpenScreen=TFrmTotalGiftsThroughField}
                         OneYearMonthlyGiving: {ActionOpenScreen=TFrmOneYearMonthlyGiving}
                         GiftBatchDetail: {ActionOpenScreen=TFrmGiftBatchDetail}
