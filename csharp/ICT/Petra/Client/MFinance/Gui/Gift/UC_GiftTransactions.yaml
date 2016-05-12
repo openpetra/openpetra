@@ -141,7 +141,7 @@ RootNode:
         
 		#GIFT DETAIL-Level Controls
         # Bound
-        txtDetailRecipientKey: {Label=&Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
+        txtDetailRecipientKey: {Label=Reci&pient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMotivationGroupCode: {Label=Moti&vation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
