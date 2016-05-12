@@ -814,6 +814,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 CorrectHashValue = txtDetailHashTotal.NumberValueDecimal.Value;
             }
+            else
+            {
+                ARow.HashTotal = 0m;
+            }
 
             if (ARow.HashTotal != CorrectHashValue)
             {
