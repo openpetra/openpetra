@@ -857,8 +857,10 @@ namespace Ict.Petra.Client.CommonControls
 
                     SortedCacheableDataTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
 
-                    for (int i = 0; i < SortedCacheableDataTable.Rows.Count; i++)
+                    for (int i = SortedCacheableDataTable.Rows.Count - 1; i >= 0; i--)
                     {
+                        int led = Convert.ToInt32(SortedCacheableDataTable.Rows[i]["LedgerNumber"]);
+
                         if (!UserInfo.GUserInfo.IsInLedger(Convert.ToInt32(SortedCacheableDataTable.Rows[i]["LedgerNumber"])))
                         {
                             SortedCacheableDataTable.Rows.RemoveAt(i);

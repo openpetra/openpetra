@@ -487,24 +487,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void GetDetailDataFromControlsManual(ACorporateExchangeRateRow ARow)
         {
-            // Check if we have an inverse rate for this date/time and currency pair
-            ACorporateExchangeRateRow mainRow = (ACorporateExchangeRateRow)FMainDS.ACorporateExchangeRate.Rows.Find(
-                new object[] { ARow.ToCurrencyCode, ARow.FromCurrencyCode, ARow.DateEffectiveFrom });
-
-            if ((mainRow != null) && (ARow.RateOfExchange != 0.0m))
+            // only do this is the user has actually changed the exchange rate
+            if ((ARow.RowState != DataRowState.Added)
+                && (Convert.ToDecimal(ARow[ACorporateExchangeRateTable.GetRateOfExchangeDBName(), DataRowVersion.Original]) != ARow.RateOfExchange))
             {
-                // Checking to see if we have a matching rate is tricky because rounding errors mean that the inverse of an inverse
-                // does not always get you back where you started.  So we check both ways to look for a match.
-                // If neither way matches we need to do an update, but if there is a match in at least one direction, we leave the other row as it is.
-                decimal inverseRate = Math.Round(1 / ARow.RateOfExchange, 10);
-                decimal inverseRateAlt = Math.Round(1 / mainRow.RateOfExchange, 10);
+                // Check if we have an inverse rate for this date/time and currency pair
+                ACorporateExchangeRateRow mainRow = (ACorporateExchangeRateRow)FMainDS.ACorporateExchangeRate.Rows.Find(
+                    new object[] { ARow.ToCurrencyCode, ARow.FromCurrencyCode, ARow.DateEffectiveFrom });
 
-                if ((mainRow.RateOfExchange != inverseRate) && (ARow.RateOfExchange != inverseRateAlt))
+                if ((mainRow != null) && (ARow.RateOfExchange != 0.0m))
                 {
-                    // Neither way matches so we must have made a change that requires an update to the inverse row
-                    mainRow.BeginEdit();
-                    mainRow.RateOfExchange = inverseRate;
-                    mainRow.EndEdit();
+                    // Checking to see if we have a matching rate is tricky because rounding errors mean that the inverse of an inverse
+                    // does not always get you back where you started.  So we check both ways to look for a match.
+                    // If neither way matches we need to do an update, but if there is a match in at least one direction, we leave the other row as it is.
+                    decimal inverseRate = Math.Round(1 / ARow.RateOfExchange, 10);
+                    decimal inverseRateAlt = Math.Round(1 / mainRow.RateOfExchange, 10);
+
+                    if ((mainRow.RateOfExchange != inverseRate) && (ARow.RateOfExchange != inverseRateAlt))
+                    {
+                        // Neither way matches so we must have made a change that requires an update to the inverse row
+                        mainRow.BeginEdit();
+                        mainRow.RateOfExchange = inverseRate;
+                        mainRow.EndEdit();
+                    }
                 }
             }
         }
@@ -725,7 +730,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TSubmitChangesResult Result = TRemote.MFinance.Setup.WebConnectors.SaveCorporateExchangeSetupTDS(
                 ref ASubmitChanges, out TransactionsChanged, out AVerificationResult);
 
-            if ((Result == TSubmitChangesResult.scrOK) && (TransactionsChanged != -1))
+            if ((Result == TSubmitChangesResult.scrOK) && (TransactionsChanged > 0))
             {
                 MessageBox.Show(string.Format(Catalog.GetPluralString(
                             "{0} GL Transaction was automatically updated with the new corporate exchange rate.",

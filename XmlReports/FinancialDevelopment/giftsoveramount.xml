@@ -32,11 +32,11 @@
 				<value text="Minimum Amount: "/>
 				<value variable="param_minimum_amount"/>
 			</field>
-			<field whichfield="period3">
+			<!--<field whichfield="period3">
 				<fielddetail condition="eq({param_exclude_support_gifts}, true)">
 					<value text="SUPPORT and PERSONAL Gifts excluded"/>
 				</fielddetail>
-			</field>
+			</field>-->
 			<field whichfield="descr1">
 				<value text="Sorted by: "></value>
 				<value variable="param_sort_by"></value>
@@ -114,13 +114,13 @@
 								AND gd.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>
 					</queryDetail>
-					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+					<!--<queryDetail condition="eq({param_exclude_support_gifts}, true)">
 						<value>
 								AND ((UPPER(gd.a_motivation_group_code_c) = 'GIFT'
 								AND UPPER(gd.a_motivation_detail_code_c) != 'SUPPORT')
 								OR UPPER(gd.a_motivation_group_code_c) != 'GIFT')
 						 </value>
-					</queryDetail>
+					</queryDetail>-->
 					<queryDetail condition="eq({param_all_motivation_groups}, false)">
 						<value>
 								AND gd.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
@@ -206,13 +206,13 @@
 							AND PUB_a_motivation_group.a_ledger_number_i = {{param_ledger_number_i}}
 						 </value>
 					</queryDetail>
-					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+					<!--<queryDetail condition="eq({param_exclude_support_gifts}, true)">
 						<value>
 							AND ((UPPER(PUB_a_gift_detail.a_motivation_group_code_c) = 'GIFT'
 							AND UPPER(PUB_a_gift_detail.a_motivation_detail_code_c) != 'SUPPORT')
 							OR UPPER(PUB_a_gift_detail.a_motivation_group_code_c) != 'GIFT')
 						 </value>
-					</queryDetail>
+					</queryDetail>-->
 					<queryDetail condition="eq({param_all_motivation_groups}, false)">
 						<value>
 								AND PUB_a_gift_detail.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
@@ -249,13 +249,13 @@
 								AND gd.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
 						 </value>
 					</queryDetail>
-					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+					<!--<queryDetail condition="eq({param_exclude_support_gifts}, true)">
 						<value>
 								AND ((UPPER(gd.a_motivation_group_code_c) = 'GIFT'
 								AND UPPER(gd.a_motivation_detail_code_c) != 'SUPPORT')
 								OR UPPER(gd.a_motivation_group_code_c) != 'GIFT')
 						 </value>
-					</queryDetail>
+					</queryDetail>-->
 					<queryDetail condition="eq({param_all_motivation_groups}, false)">
 						<value>
 								AND gd.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})

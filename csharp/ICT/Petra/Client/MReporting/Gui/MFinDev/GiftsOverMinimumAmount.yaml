@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Gifts over Minimum Amount
     WindowWidth: 700
-    WindowHeight: 600
+    WindowHeight: 580
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\giftsoveramount.xml, common.xml]
@@ -41,7 +41,7 @@
             ParameterName: param_partner_source
         grpSelection:
             Label: Selection
-            Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount, chkExcludeSupportGifts]
+            Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount] #, chkExcludeSupportGifts]
         grpCurrencySelection:
             Label: Select Currency
             Controls: [cmbCurrency]
@@ -66,10 +66,10 @@
             Label: Minimum Amount
             ParameterName: param_minimum_amount
             Format: Decimal
-        chkExcludeSupportGifts:
-            Label: Exclude Support Gifts
-            ParameterName: param_exclude_support_gifts
-            CheckBoxAttachedLabel: Right
+#        chkExcludeSupportGifts:
+#            Label: Exclude Support Gifts
+#            ParameterName: param_exclude_support_gifts
+#            CheckBoxAttachedLabel: Right
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International]

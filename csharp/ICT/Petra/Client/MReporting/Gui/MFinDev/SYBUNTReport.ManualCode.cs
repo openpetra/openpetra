@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       berndr, peters
 //
 // Copyright 2004-2010 by OM International
 //
@@ -22,14 +22,20 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
 using System.Windows.Forms;
+
 using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
@@ -48,19 +54,65 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 FLedgerNumber = value;
 
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+
+                ucoGiftsInRange.InitialiseLedger(FLedgerNumber);
+                ucoNoGiftsInRange.InitialiseLedger(FLedgerNumber);
+                ucoNoGiftsInRange.GroupLabel = Catalog.GetString("No Gifts In Range");
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            // if fast reports, then ignore columns tab
+            if ((FPetraUtilsObject.GetCallerForm() != null) && FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
             }
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
-            if ((txtThisYear.Text == "0")
-                || (txtLastYear.Text == "0"))
+            if ((ucoGiftsInRange.RangeTable == null) || (ucoGiftsInRange.RangeTable.Rows.Count == 0))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(
-                    Catalog.GetString("No valid year entered."),
-                    Catalog.GetString("Please enter a valid year."),
+                    Catalog.GetString("'Gifts In Range' Needed."),
+                    Catalog.GetString("Please enter a value for 'Gifts In Range'."),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
+            if ((ucoNoGiftsInRange.RangeTable == null) || (ucoNoGiftsInRange.RangeTable.Rows.Count == 0))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("'No Gifts In Range' Needed."),
+                    Catalog.GetString("Please enter a value for 'No Gifts In Range'."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
+            // check for overlapping in the ranges
+            foreach (DataRow Row in ucoGiftsInRange.RangeTable.Rows)
+            {
+                foreach (DataRow NoRow in ucoNoGiftsInRange.RangeTable.Rows)
+                {
+                    if ((((Convert.ToDateTime(NoRow["From"]) >= Convert.ToDateTime(Row["From"]))
+                          && (Convert.ToDateTime(NoRow["From"]) <= Convert.ToDateTime(Row["To"])))
+                         || ((Convert.ToDateTime(NoRow["To"]) >= Convert.ToDateTime(Row["From"]))
+                             && (Convert.ToDateTime(NoRow["To"]) <= Convert.ToDateTime(Row["To"]))))
+                        || (((Convert.ToDateTime(Row["From"]) >= Convert.ToDateTime(NoRow["From"]))
+                             && (Convert.ToDateTime(Row["From"]) <= Convert.ToDateTime(NoRow["To"])))
+                            || ((Convert.ToDateTime(Row["To"]) >= Convert.ToDateTime(NoRow["From"]))
+                                && (Convert.ToDateTime(Row["To"]) <= Convert.ToDateTime(NoRow["To"])))))
+                    {
+                        TVerificationResult VerificationResult = new TVerificationResult(
+                            Catalog.GetString("Overlapping Ranges"),
+                            Catalog.GetString("'Gifts In Range' and 'No Gifts In Range' overlap. This is not allowed."),
+                            TResultSeverity.Resv_Critical);
+                        FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                    }
+                }
             }
         }
 
@@ -76,26 +128,44 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 ACalc.AddParameter("param_extract_name", txtExtract.Text);
             }
 
-            if ((txtThisYear.Text != "0")
-                && (txtLastYear.Text != "0"))
+            string GiftsInRange = string.Empty;
+            string NoGiftsInRange = string.Empty;
+
+            // get range of dates that gifts must be in
+            if ((ucoGiftsInRange.RangeTable != null) && (ucoGiftsInRange.RangeTable.Rows.Count > 0))
             {
-                int LastYear = Convert.ToInt32(txtLastYear.Text);
-                int ThisYear = Convert.ToInt32(txtThisYear.Text);
-
-                if (LastYear >= ThisYear)
+                foreach (DataRow Row in ucoGiftsInRange.RangeTable.Rows)
                 {
-                    TVerificationResult VerificationResult = new TVerificationResult(
-                        Catalog.GetString("Wrong year entered."),
-                        Catalog.GetString("'Gift given in year' must be less than 'No gifts in year'"),
-                        TResultSeverity.Resv_Critical);
-                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
-                }
+                    if (!string.IsNullOrEmpty(GiftsInRange))
+                    {
+                        GiftsInRange += ",";
+                    }
 
-                //TODO: Calendar vs Financial Date Handling - Confirm if year end is assumed wrongly, i.e. financial year end does not necessarily = calendar year end
-                ACalc.AddParameter("param_this_year_start_date", new DateTime(ThisYear, 1, 1));
-                ACalc.AddParameter("param_this_year_end_date", new DateTime(ThisYear, 12, 31));
-                ACalc.AddParameter("param_last_year_start_date", new DateTime(LastYear - 1, 1, 1));
-                ACalc.AddParameter("param_last_year_end_date", new DateTime(LastYear - 1, 12, 31));
+                    GiftsInRange += Row["From"].ToString() + " - " + Row["To"].ToString();
+                }
+            }
+
+            ACalc.AddParameter("param_gifts_in_range", GiftsInRange);
+
+            // get range of dates that gifts must not be in
+            if ((ucoNoGiftsInRange.RangeTable != null) && (ucoNoGiftsInRange.RangeTable.Rows.Count > 0))
+            {
+                foreach (DataRow Row in ucoNoGiftsInRange.RangeTable.Rows)
+                {
+                    if (!string.IsNullOrEmpty(NoGiftsInRange))
+                    {
+                        NoGiftsInRange += ",";
+                    }
+
+                    NoGiftsInRange += Row["From"].ToString() + " - " + Row["To"].ToString();
+                }
+            }
+
+            ACalc.AddParameter("param_nogifts_in_range", NoGiftsInRange);
+
+            if (string.IsNullOrEmpty(txtMinimumAmount.Text))
+            {
+                ACalc.AddParameter("param_minimum_amount", 0);
             }
         }
 
@@ -104,6 +174,103 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             rbtExtract.Checked = AParameters.Get("param_extract").ToBool();
             rbtAllPartners.Checked = AParameters.Get("param_all_partners").ToBool();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
+
+            string GiftsInRange = AParameters.Get("param_gifts_in_range").ToString();
+            string NoGiftsInRange = AParameters.Get("param_nogifts_in_range").ToString();
+
+            if (!string.IsNullOrEmpty(GiftsInRange))
+            {
+                string[] GiftsInRangeArray = GiftsInRange.Split(',');
+
+                DataRow NewInRow = ucoGiftsInRange.RangeTable.NewRow();
+
+                foreach (string Range in GiftsInRangeArray)
+                {
+                    if (Range.Length == 23) // range must be in this format: yyyy-mm-dd - yyyy-mm-dd
+                    {
+                        NewInRow["From"] = Range.Substring(0, 10);
+                        NewInRow["To"] = Range.Substring(13, 10);
+                        ucoGiftsInRange.RangeTable.Rows.Add(NewInRow);
+                    }
+                }
+            }
+
+            if (!string.IsNullOrEmpty(NoGiftsInRange))
+            {
+                string[] NoGiftsInRangeArray = NoGiftsInRange.Split(',');
+
+                DataRow NewInRow = ucoNoGiftsInRange.RangeTable.NewRow();
+
+                foreach (string Range in NoGiftsInRangeArray)
+                {
+                    if (Range.Length == 23) // range must be in this format: yyyy-mm-dd - yyyy-mm-dd
+                    {
+                        NewInRow["From"] = Range.Substring(0, 10);
+                        NewInRow["To"] = Range.Substring(13, 10);
+                        ucoNoGiftsInRange.RangeTable.Rows.Add(NewInRow);
+                    }
+                }
+            }
+        }
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && !paramsDictionary.ContainsKey(p.name))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("SYBUNT", paramsDictionary);
+
+            if (this.IsDisposed) // There's no cancel function as such - if the user has pressed Esc the form is closed!
+            {
+                return false;
+            }
+
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            DataView Dv = ReportTable.DefaultView;
+
+            // sort the table
+            Dv.Sort = ACalc.GetParameters().Get("param_sortby_readable").ToString().Replace(" ", "");
+
+            ReportTable = Dv.ToTable();
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "SYBUNT");
+            //
+            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
+            {
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+            }
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+
+            Boolean HasData = ReportTable.Rows.Count > 0;
+
+            if (!HasData)
+            {
+                MessageBox.Show(Catalog.GetString("No Motivation Response data found."), "Motivation Response");
+            }
+
+            return HasData;
         }
     }
 }

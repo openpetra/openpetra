@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "MotivationResponse":
-                    FDbAdapter = new TReportingDbAdapter(false);
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.MotivationResponse(AParameters, FDbAdapter);
                     break;
@@ -194,8 +194,15 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 case "GiftDestination":
                     FDbAdapter = new TReportingDbAdapter(false);
-
                     ResultTbl = TFinanceReportingWebConnector.GiftDestination(AParameters, FDbAdapter);
+                    break;
+
+                /* Financial Development */
+
+                case "SYBUNT":
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+                    ResultTbl = TFinanceReportingWebConnector.SYBUNTTable(AParameters, FDbAdapter);
+
                     break;
 
                 default:
