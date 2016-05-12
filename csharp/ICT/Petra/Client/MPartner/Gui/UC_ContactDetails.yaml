@@ -121,18 +121,19 @@ RootNode:
            OnChange: HandleSpecialisedFlagChanged
         pnlValueGrouping:
             ControlsOrientation: horizontal
-            Controls: [txtValue, btnLaunchHyperlinkFromValue]
+            Controls: [txtValue, cmbIntlPhonePrefix, btnLaunchHyperlinkFromValue]
             Padding: 64,0,0,0
             Height: 36
 # TODO SHORTCUTS: rtbValue:           
         txtValue:
             Label: &Value
-            Width: 256
+            Width: 220
             OnLeave: HandleValueLeave
             OnChange: HandleValueChanged
 # TODO SHORTCUTS:             Type: Hyperlink
 
-        btnLaunchHyperlinkFromValue: {NoLabel=true, Width=15, Height=27}
+        cmbIntlPhonePrefix: {NoLabel=true, List=InternationalPhonePrefixList, ComboBoxWidth=65, Width=68, DataField=PPartnerAttribute.ValueCountry, Validation=true, Visible=false, OnLeave=HandleValueLeave}
+        btnLaunchHyperlinkFromValue: {NoLabel=true, Width=15, Height=27}        
         txtComment: {Label=Comment, Multiline=true, Width=245, Height=73, ColSpan=2, RowSpan=3, ScrollBars=Vertical, DataField=PPartnerAttribute.Comment}
 
         pnlCurrentGrouping:

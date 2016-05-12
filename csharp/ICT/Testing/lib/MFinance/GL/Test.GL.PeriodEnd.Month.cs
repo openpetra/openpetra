@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,15 +61,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
     {
         private int FLedgerNumber;
         private TLedgerInfo FledgerInfo;
-
-        /// <summary>
-        ///
-        /// </summary>
-        public TestGLPeriodicEndMonth()
-        {
-            FLedgerNumber = 43;
-            FledgerInfo = new TLedgerInfo(FLedgerNumber);
-        }
 
         /// <summary>
         /// Tests if unposted batches are detected correctly
@@ -296,28 +287,28 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
  */
 
             // run revaluation
-            Boolean blnHasErrors = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
+            Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
                 TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
                 out verificationResult);
 
-            if (blnHasErrors)
+            if (!revalueOk)
             {
-                TLogging.Log("\n\n\nTRevaluationWebConnector.Revaluate returned false, VerificationResult follows:");
+                TLogging.Log("\n\n\nTRevaluationWebConnector.Revaluate had problems. VerificationResult follows:");
                 TLogging.Log(verificationResult.BuildVerificationResultString());
             }
 
-            Assert.IsFalse(blnHasErrors, "Problem running the revaluation");
+            Assert.IsTrue(revalueOk, "Problem running the revaluation");
 
-            blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
+            Boolean Err = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true, out verificationResult);
 
-            if (blnHasErrors)
+            if (Err)
             {
                 TLogging.Log("\n\n\nTPeriodMonthEnd returned true, VerificationResult follows:");
                 TLogging.Log(verificationResult.BuildVerificationResultString());
             }
 
-            Assert.IsFalse(blnHasErrors, "should now be able to close the month now that the revaluation has been run");
+            Assert.IsFalse(Err, "Should be able to close the month after revaluation has been run.");
         }
 
         /// <summary>
@@ -337,8 +328,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 Assert.Greater(20, Counter, "Too many loops");
 
                 // Set revaluation flag ...
-                new TLedgerInitFlagHandler(FLedgerNumber,
-                    TLedgerInitFlagEnum.Revaluation).Flag = true;
+                new TLedgerInitFlag(FLedgerNumber,
+                    "Reval").IsSet = true;
 
                 // Run MonthEnd ...
                 TVerificationResultCollection verificationResult;
@@ -364,6 +355,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             TPetraServerConnector.Connect();
             FLedgerNumber = CommonNUnitFunctions.CreateNewLedger();
+            FledgerInfo = new TLedgerInfo(FLedgerNumber);
 
             // add costcentre 7300 for gift batch
             ACostCentreTable CostCentres = new ACostCentreTable();

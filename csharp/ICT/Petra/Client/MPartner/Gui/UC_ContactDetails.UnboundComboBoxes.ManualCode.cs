@@ -39,6 +39,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MCommon.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -128,16 +129,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 var ThePhoneRow = ((PPartnerAttributeRow)EligiblePhoneNrsDV[Counter].Row);
 
-                EligiblePhoneNumbers[Counter + 1] = ThePhoneRow.Value;
+                EligiblePhoneNumbers[Counter + 1] = ThePhoneRow.IsValueCountryNull() ? ThePhoneRow.Value :
+                                                    Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(ThePhoneRow);
 
                 if (ThePhoneRow.Primary)
                 {
-                    ThePrimaryPhoneNumber = ThePhoneRow.Value;
+                    ThePrimaryPhoneNumber = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(ThePhoneRow);
                 }
 
                 if (ThePhoneRow.WithinOrganisation)
                 {
-                    TheWithinOrganisationPhoneNumber = ThePhoneRow.Value;
+                    TheWithinOrganisationPhoneNumber = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(ThePhoneRow);
                 }
             }
 
@@ -238,6 +240,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerAttributeRow ThePartnerAttributeRow;
             string ComboBoxSelectedString;
             DataView EligibleValuesDV = GetDataViewForContactCombo(AContactComboType, false);
+            string ValueToCompare;
 
             GetDataAccordingToContactComboType(AContactComboType, out ComboBoxForContactComboType, out UpdateDataColumn);
 
@@ -249,17 +252,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     ThePartnerAttributeRow = ((PPartnerAttributeRow)EligibleValuesDV[Counter].Row);
 
+                    if ((AContactComboType == TOverallContactComboType.occtPrimaryPhone)
+                        || (AContactComboType == TOverallContactComboType.occtPhoneWithinOrganisation))
+                    {
+                        ValueToCompare = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(ThePartnerAttributeRow);
+                    }
+                    else
+                    {
+                        ValueToCompare = ThePartnerAttributeRow.Value;
+                    }
+
                     // Modify Rows only as necessary
                     if ((bool)ThePartnerAttributeRow[UpdateDataColumn.Ordinal])
                     {
-                        if (ThePartnerAttributeRow.Value != ComboBoxSelectedString)
+                        if (ValueToCompare != ComboBoxSelectedString)
                         {
                             ThePartnerAttributeRow[UpdateDataColumn.Ordinal] = (object)false;
                         }
                     }
                     else
                     {
-                        if (ThePartnerAttributeRow.Value == ComboBoxSelectedString)
+                        if (ValueToCompare == ComboBoxSelectedString)
                         {
                             ThePartnerAttributeRow[UpdateDataColumn.Ordinal] = (object)true;
                         }
@@ -295,6 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             DataView CurrentValuesDV;
             PPartnerAttributeRow ThePartnerAttributeRow;
             bool ChoiceFoundAmongEligibleValues = false;
+            string ValueToCompare;
 
             CurrentValuesDV = GetDataViewForContactCombo(AContactComboType, true);
 
@@ -321,7 +335,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             ThePartnerAttributeRow = ((PPartnerAttributeRow)AEligibleValuesDV[Counter3].Row);
 
-                            if (ThePartnerAttributeRow.Value == AComboBoxSelectedString)
+                            if ((AContactComboType == TOverallContactComboType.occtPrimaryPhone)
+                                || (AContactComboType == TOverallContactComboType.occtPhoneWithinOrganisation))
+                            {
+                                ValueToCompare = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(ThePartnerAttributeRow);
+                            }
+                            else
+                            {
+                                ValueToCompare = ThePartnerAttributeRow.Value;
+                            }
+
+                            if (ValueToCompare == AComboBoxSelectedString)
                             {
                                 ChoiceFoundAmongEligibleValues = true;
 
@@ -783,10 +807,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     if (ASetAsPrimary)
                     {
-                        if (RowHasPhoneAttributeType(SelectedDetailDR))
+                        if (Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, SelectedDetailDR))
                         {
                             // Select current Value in the ComboBox
-                            cmbPrimaryPhoneForContacting.SetSelectedString(txtValue.Text);
+                            cmbPrimaryPhoneForContacting.SetSelectedString(Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(txtValue.
+                                    Text,
+                                    cmbIntlPhonePrefix.GetSelectedString(PCountryTable.ColumnInternatTelephoneCodeId)));
 
                             // Reflect the new Primary record in the underlying data
                             UpdateDataRowsPertainingToOvrlContSettgsCombo(TOverallContactComboType.occtPrimaryPhone, false);
@@ -795,7 +821,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     else
                     {
                         // Select current Value in the ComboBox
-                        cmbPhoneWithinTheOrganisation.SetSelectedString(txtValue.Text);
+                        cmbPhoneWithinTheOrganisation.SetSelectedString(Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(txtValue.Text,
+                                cmbIntlPhonePrefix.GetSelectedString(PCountryTable.ColumnInternatTelephoneCodeId)));
 
                         // Reflect the new Primary record in the underlying data
                         UpdateDataRowsPertainingToOvrlContSettgsCombo(TOverallContactComboType.occtPhoneWithinOrganisation, false);
@@ -1003,11 +1030,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AContactComboType == TOverallContactComboType.occtPrimaryPhone)
             {
-                ErrorCode = PetraErrorCodes.ERR_PRIMARY_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_PRIMARY_PHONE_NR_SET_DESPITE_NO_PHONE_NR_AVAIL;
             }
             else if (AContactComboType == TOverallContactComboType.occtPhoneWithinOrganisation)
             {
-                ErrorCode = PetraErrorCodes.ERR_OFFICE_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_OFFICE_PHONE_NR_SET_DESPITE_NO_PHONE_NR_AVAIL;
             }
             else
             {
@@ -1127,7 +1154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             VerificationResult = new TScreenVerificationResult(
                 new TVerificationResult((object)ResCont,
-                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL),
+                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESPITE_EMAIL_ADDR_AVAIL),
                     FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID),
                 null, cmbPrimaryEMail, FPetraUtilsObject.VerificationResultCollection.CurrentDataValidationRunID);
 
@@ -1180,15 +1207,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (AContactComboType == TOverallContactComboType.occtPrimaryEmail)
             {
-                ErrorCode = PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_PRIMARY_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL;
             }
             else if (AContactComboType == TOverallContactComboType.occtSecondaryEmail)
             {
-                ErrorCode = PetraErrorCodes.ERR_SECONDARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_SECONDARY_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL;
             }
             else if (AContactComboType == TOverallContactComboType.occtEmailWithinOrganisation)
             {
-                ErrorCode = PetraErrorCodes.ERR_OFFICE_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL;
+                ErrorCode = PetraErrorCodes.ERR_OFFICE_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL;
             }
             else
             {

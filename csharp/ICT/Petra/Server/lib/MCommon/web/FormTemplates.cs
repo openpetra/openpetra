@@ -24,6 +24,7 @@
 using System;
 using System.Collections.Specialized;
 using System.Data;
+using System.IO;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -292,6 +293,83 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
             }
 
             return ResultTable;
+        }
+
+        #endregion
+
+        #region Swiss Office Mail Sorting
+
+        /// <summary>
+        /// Reads the two definition files used by the CH sort algorithm
+        /// </summary>
+        /// <param name="APostalCodeDefinition">The content of the Post code definition file</param>
+        /// <param name="ACountryDefinition">The content of the country definition file</param>
+        /// <param name="AFailMessage">A message for the client in case of failure.</param>
+        /// <returns>True if successful, otherwise false and a message is contained in AFailMessage</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool GetCHDefinitionFiles(out String APostalCodeDefinition, out String ACountryDefinition, out String AFailMessage)
+        {
+            APostalCodeDefinition = string.Empty;
+            ACountryDefinition = string.Empty;
+
+            // Load the table data - there is no static call for the 'demodata' folder but we work it out from the bin(30) folder
+            string[] binDirItems = TAppSettingsManager.ApplicationDirectory.Split(new char[] { Path.DirectorySeparatorChar },
+                StringSplitOptions.RemoveEmptyEntries);
+            string binDir = binDirItems[binDirItems.Length - 1];
+            string suffix = String.Empty;
+
+            if (binDir.StartsWith("bin") && (binDir != "bin"))
+            {
+                // Looks like a real install so like bin30.  The folder we will be interested in will be custom30.
+                suffix = binDir.Substring(3);
+            }
+
+            string pathToCSVFile = Path.Combine(TAppSettingsManager.ApplicationBaseDirectory,
+                (suffix.Length == 0) ? "demodata" : "custom" + suffix,
+                "formletters",
+                "CountryDefinitions.CH.csv");
+
+            if (File.Exists(pathToCSVFile))
+            {
+                using (StreamReader sr = new StreamReader(pathToCSVFile))
+                {
+                    ACountryDefinition = sr.ReadToEnd();
+                    sr.Close();
+                }
+            }
+            else
+            {
+                AFailMessage = String.Format(
+                    Catalog.GetString(
+                        "Could not find the special custom definition file '{0}' on the server.  This is required for sorting the labels."),
+                    pathToCSVFile);
+                return false;
+            }
+
+            pathToCSVFile = Path.Combine(TAppSettingsManager.ApplicationBaseDirectory,
+                (suffix.Length == 0) ? "demodata" : "custom" + suffix,
+                "formletters",
+                "PostalGroupDefinitions.CH.csv");
+
+            if (File.Exists(pathToCSVFile))
+            {
+                using (StreamReader sr = new StreamReader(pathToCSVFile))
+                {
+                    APostalCodeDefinition = sr.ReadToEnd();
+                    sr.Close();
+                }
+            }
+            else
+            {
+                AFailMessage = String.Format(
+                    Catalog.GetString(
+                        "Could not find the special custom definition file '{0}' on the server.  This is required for grouping the labels."),
+                    pathToCSVFile);
+                return false;
+            }
+
+            AFailMessage = string.Empty;
+            return true;
         }
 
         #endregion

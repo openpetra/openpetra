@@ -1214,8 +1214,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             TLogging.Log("After submtting returned Server DataSet: " + SubmitDS.GetXml());
                             MessageBox.Show("Before CleanupAddressesBeforeMerge");
 #endif
-                            // Get rid of any new Addresses; they are returned back with different LocationKeys (based on a Sequence)
-                            ucoLowerPart.CleanupAddressesBeforeMerge();
+                            // Get rid of any new records whose keys are based on Sequences (e.g. Addresses, Contact Details); such records
+                            // are returned back with the 'real values' that the RDBMS assigned through the Sequence (formerly the values were
+                            // made-up negative numbers)
+                            ucoLowerPart.CleanupRecordsBeforeMerge();
 #if DATASETDEBUGGING
                             MessageBox.Show("After CleanupAddressesBeforeMerge");
 
@@ -2365,12 +2367,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileExportPartner(System.Object sender, System.EventArgs e)
         {
-            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0, false);
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, this.FPartnerClass, 0, 0, false);
         }
 
         private void FileExportPartnerToPetra(System.Object sender, System.EventArgs e)
         {
-            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, 0, 0, true);
+            TPartnerExportLogic.ExportSinglePartner(this.PartnerKey, this.FPartnerClass, 0, 0, true);
         }
 
         /// <summary>

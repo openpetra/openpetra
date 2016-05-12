@@ -97,5 +97,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             return result;
         }
+
+        /// <summary>
+        /// Return all partners that match the given criteria. This is used for the partner import screen.
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerFindTDS FindPartners(Int64 APartnerKey)
+        {
+            TPartnerFind PartnerFind = new TPartnerFind();
+
+            PartnerFindTDSSearchCriteriaTable CriteriaData = new PartnerFindTDSSearchCriteriaTable();
+            PartnerFindTDSSearchCriteriaRow CriteriaRow = CriteriaData.NewRowTyped();
+
+            CriteriaData.Rows.Add(CriteriaRow);
+            CriteriaRow.PartnerKey = APartnerKey;
+            CriteriaRow.PartnerClass = "*";
+
+            PartnerFind.PerformSearch(CriteriaData, true);
+
+            Int32 TotalRecords;
+            short TotalPages;
+            const short MaxRecords = 50;
+
+            PartnerFindTDS result = new PartnerFindTDS();
+
+            DataTable typedResult = PartnerFind.GetDataPagedResult(0, MaxRecords, out TotalRecords, out TotalPages);
+
+            if (typedResult != null)
+            {
+                result.SearchResult.Merge(typedResult);
+
+                if (TotalRecords > MaxRecords)
+                {
+                    // TODO load all data into the datatable. the webconnector does not have paging yet?
+                }
+            }
+
+            return result;
+        }
     }
 }

@@ -298,14 +298,22 @@
                            THEN p_partner_attribute.p_attribute_type_c 
                            ELSE p_partner_attribute_type.p_special_label_c 
                        END AS CONTACTTYPE,
-                       CASE WHEN p_confidential_l = false THEN p_value_c
-                          ELSE 
+                       CASE WHEN p_confidential_l = false THEN 
+                           CASE WHEN (p_value_country_c &lt;&gt; '') 
+                               THEN '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = p_value_country_c) || ' ' || p_value_c
+                               ELSE p_value_c 
+                           END
+                           ELSE 
                               CASE WHEN (SELECT COUNT(*) 
                                              FROM s_user_group
                                              WHERE s_user_id_c = {Username}
                                                AND s_group_id_c = 'ADDRESSCAN') = 0 
                                    THEN '** restricted **' 
-                                   ELSE p_value_c 
+                                   ELSE 
+                                       CASE WHEN (p_value_country_c &lt;&gt; '') 
+                                           THEN '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = p_value_country_c) || ' ' || p_value_c
+                                           ELSE p_value_c 
+                                       END                                   
                               END
                        END AS VALUE,
                        p_comment_c AS COMMENT, 

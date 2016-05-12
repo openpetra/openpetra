@@ -4,8 +4,8 @@
     Template: reportwindow
     FormType: report
     FormTitle: Top Donor Report
-    WindowWidth: 650
-    WindowHeight: 500
+    WindowWidth: 700
+    WindowHeight: 645
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\topdonorreport.xml, common.xml]
@@ -23,7 +23,8 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, grpLevel, grpDateSelection]
+            Controls: [lblLedger, grpLevel, grpDateSelection, ucoMotivationCriteria]
+            Stretch: horizontally
       
         grpLevel:
             Label: Select Level
@@ -32,7 +33,15 @@
                 Row2: [txtPercentage, lblPercent1, txtToPercentage, lblPercent2, cmbCurrency]
         grpDateSelection:
             Label: Selection
-            Controls: [dtpStartDate, dtpEndDate, txtMotivationGroup, txtMotivationDetail, txtRecipient, rbtAllPartners, rbtExtract]
+            Controls: 
+                Row0: [dtpStartDate]
+                Row1: [dtpEndDate]
+                Row2: [rgrRecipientSelection]
+                Row3: [rgrDonorSelection]
+        ucoMotivationCriteria:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
+            Stretch: horizontally
+            Height: 280
 
         lblLedger:
             Label: Ledger
@@ -43,15 +52,20 @@
         dtpEndDate:
             Label: End date
             ParameterName: param_end_date
-        txtMotivationGroup:
-            Label: Motivation Group
-            ParameterName: param_motivation_group
-        txtMotivationDetail:
-            Label: MotivationDetail
-            ParameterName: param_motivation_detail
+        rgrRecipientSelection:
+            Controls: [rbtAllRecipients, rbtRecipient]
+            ControlsOrientation: horizontal
+        rbtAllRecipients:
+            Label: All Recipients
+        rbtRecipient:
+            Label: One Recipient
+            Controls: [txtRecipient]
         txtRecipient:
-            NoLabel: true
             Type: PartnerKey
+            NoLabel: true
+        rgrDonorSelection:
+            Controls: [rbtAllPartners, rbtExtract]
+            ControlsOrientation: horizontal
         rbtAllPartners:
             Label: All Partners
         rbtExtract:

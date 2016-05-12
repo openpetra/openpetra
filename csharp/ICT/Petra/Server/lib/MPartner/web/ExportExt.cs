@@ -528,7 +528,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     Write(GeneralApplicationRow.IsApplicationKeyNull() ? 0 : GeneralApplicationRow.ApplicationKey);
                     Write(GeneralApplicationRow.IsRegistrationOfficeNull() ? 0 : GeneralApplicationRow.RegistrationOffice);
-                    WriteMultiLine(GeneralApplicationRow.IsCommentNull() ? "" : GeneralApplicationRow.Comment);
+                    Write(GeneralApplicationRow.IsCommentNull() ? "" : GeneralApplicationRow.Comment);
                     WriteLine();
 
                     if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
@@ -642,6 +642,31 @@ namespace Ict.Petra.Server.MPartner.ImportExport
              *  WriteLine();
              * }
              */
+
+            // do not export Skills for export to Petra (only to OpenPetra)
+            if (!AOldPetraFormat)
+            {
+                foreach (PmPersonSkillRow Row in AMainDS.PmPersonSkill.Rows)
+                {
+                    Write("SKILL");
+                    WriteLine();
+                    Write(Row.IsSkillCategoryCodeNull() ? "" : Row.SkillCategoryCode);
+                    Write(Row.IsDescriptionEnglishNull() ? "" : Row.DescriptionEnglish);
+                    Write(Row.IsDescriptionLocalNull() ? "" : Row.DescriptionLocal);
+                    Write(Row.IsDescriptionLanguageNull() ? "" : Row.DescriptionLanguage);
+                    WriteLine();
+                    Write(Row.IsSkillLevelNull() ? 99 : Row.SkillLevel);
+                    Write(Row.IsYearsOfExperienceNull() ? 0 : Row.YearsOfExperience);
+                    Write(Row.IsYearsOfExperienceAsOfNull() ? "?" : Row.YearsOfExperienceAsOf.Value.ToString(DATEFORMAT));
+                    Write(Row.IsProfessionalSkillNull() ? false : Row.ProfessionalSkill);
+                    Write(Row.IsCurrentOccupationNull() ? false : Row.CurrentOccupation);
+                    Write(Row.IsDegreeNull() ? "" : Row.Degree);
+                    Write(Row.IsYearOfDegreeNull() ? 0 : Row.YearOfDegree);
+                    WriteLine();
+                    Write(Row.IsCommentNull() ? "" : Row.Comment);
+                    WriteLine();
+                }
+            }
 
             foreach (PmSpecialNeedRow SpecialNeedRow in AMainDS.PmSpecialNeed.Rows)
             {

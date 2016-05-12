@@ -119,70 +119,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
-            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-
-            // are all motivation groups selected?
-            if (ucoMotivationCriteria.ClbMotivationGroup.GetAllStringList() == ucoMotivationCriteria.ClbMotivationGroup.GetCheckedStringList())
-            {
-                pm.Add("param_all_motivation_groups", true);
-            }
-            else
-            {
-                pm.Add("param_all_motivation_groups", false);
-
-                // we need these list items enclosed with single quotes for SQL
-                string MotivationGroups = ucoMotivationCriteria.ClbMotivationGroup.GetCheckedStringList(true);
-                MotivationGroups = MotivationGroups.Replace("\"", "'");
-                pm.Add("param_motivation_group_quotes", MotivationGroups);
-            }
-
-            // are all motivation details selected?
-            if (ucoMotivationCriteria.ClbMotivationDetail.GetAllStringList() == ucoMotivationCriteria.ClbMotivationDetail.GetCheckedStringList())
-            {
-                pm.Add("param_all_motivation_details", true);
-            }
-            else
-            {
-                pm.Add("param_all_motivation_details", false);
-
-                // Motivation Group and Detail Code in Pairs. First value is group code, second is detail code.
-                List <String>param_motivation_detail = new List <String>(pm.Get("param_motivation_detail").ToString().Split(','));
-
-                int Index = 0;
-                String Group_Detail_Pairs = "";
-                string Group_Detail_Individual = "";
-
-                foreach (String KeyPart in param_motivation_detail)
-                {
-                    if (Index % 2 == 0)
-                    {
-                        if (Group_Detail_Pairs.Length > 0)
-                        {
-                            Group_Detail_Pairs += ",";
-                            Group_Detail_Individual += ",";
-                        }
-
-                        // even Index: Group Code
-                        Group_Detail_Pairs += "('" + KeyPart + "','";
-                    }
-                    else
-                    {
-                        // odd Index: Detail Code
-                        Group_Detail_Pairs += KeyPart + "')";
-                        Group_Detail_Individual += KeyPart;
-                    }
-
-                    // increase Index for next element
-                    Index += 1;
-                }
-
-                pm.Add("param_motivation_group_detail_pairs", Group_Detail_Pairs);
-                pm.Add("param_motivation_details_only", Group_Detail_Individual);
-            }
-
-            pm.Add("param_number_of_mot_details", ucoMotivationCriteria.ClbMotivationDetail.CheckedItemsCount);
-
             ArrayList reportParam = ACalc.GetParameters().Elems;
+
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
@@ -194,6 +132,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("MotivationResponse", paramsDictionary);
+
+            if (this.IsDisposed) // There's no cancel function as such - if the user has pressed Esc the form is closed!
+            {
+                return false;
+            }
 
             if (ReportTable == null)
             {

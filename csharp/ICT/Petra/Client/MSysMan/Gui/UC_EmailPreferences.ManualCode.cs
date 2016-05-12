@@ -55,12 +55,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// </summary>
         public static void LoadEmailDefaults()
         {
-            if (!TUserDefaults.HasDefault("SmtpHost"))
+            if (!TUserDefaults.HasDefault("SmtpHost") || (TUserDefaults.GetStringDefault("SmtpHost") == ""))
             {
                 TUserDefaults.SetDefault("SmtpHost", TAppSettingsManager.GetValue("SmtpHost", ""));
             }
 
-            if (!TUserDefaults.HasDefault("SmtpPort"))
+            if (!TUserDefaults.HasDefault("SmtpPort") || (TUserDefaults.GetInt16Default("SmtpPort") == -1))
             {
                 TUserDefaults.SetDefault("SmtpPort", TAppSettingsManager.GetInt16("SmtpPort", -1));
             }
@@ -85,12 +85,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 TUserDefaults.SetDefault("SmtpEnableSsl", TAppSettingsManager.GetBoolean("SmtpEnableSsl", false));
             }
 
-            if (!TUserDefaults.HasDefault("SmtpFromAccount"))
+            if (!TUserDefaults.HasDefault("SmtpFromAccount") || (TUserDefaults.GetStringDefault("SmtpFromAccount") == ""))
             {
                 TUserDefaults.SetDefault("SmtpFromAccount", TAppSettingsManager.GetValue("SmtpFromAccount", ""));
             }
 
-            if (!TUserDefaults.HasDefault("SmtpDisplayName"))
+            if (!TUserDefaults.HasDefault("SmtpDisplayName") || (TUserDefaults.GetStringDefault("SmtpDisplayName") == ""))
             {
                 TUserDefaults.SetDefault("SmtpDisplayName", TAppSettingsManager.GetValue("SmtpDisplayName", ""));
             }

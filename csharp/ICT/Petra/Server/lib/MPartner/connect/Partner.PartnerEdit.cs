@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2498,6 +2498,18 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     }
                 }
 
+                if (FPartnerClass == TPartnerClass.PERSON)
+                {
+                    if ((AInspectDS.Tables.Contains(PartnerEditTDSPPersonTable.GetTableName()))
+                        && (AInspectDS.PPerson != null)
+                        && (AInspectDS.PPerson.Rows.Count > 0)
+                        && (AInspectDS.PPerson[0] != null)
+                        && (AInspectDS.PPerson[0].RowState == DataRowState.Added))
+                    {
+                        SpecialSubmitProcessingNewPerson(AInspectDS.PPerson[0], ASubmitChangesTransaction);
+                    }
+                }
+
                 if (FPartnerClass == TPartnerClass.BANK)
                 {
                     if (AInspectDS.Tables.Contains(PBankTable.GetTableName()))
@@ -3281,6 +3293,37 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
             // Save the changes
             PPersonAccess.SubmitChanges(FamilyPersonsDT, ASubmitChangesTransaction);
+        }
+
+        /// <summary>
+        /// Ensures that the FamilyId of a new PERSON is not yet taken by other Family Members
+        /// (needed in case more than one PERSON get added by a user at once but the user doesn't save the
+        /// first PERSON before (s)he creates the second/third/... PERSON of the same Family).
+        /// </summary>
+        /// <param name="ACurrentPersonDR">DataRow that holds the PERSON that is about to get added to the DB.</param>
+        /// <param name="ASubmitChangesTransaction">DB Transaction instance of the overall data saving operation.</param>
+        private void SpecialSubmitProcessingNewPerson(PPersonRow ACurrentPersonDR, TDBTransaction ASubmitChangesTransaction)
+        {
+            int FamilyID;
+            string ProblemMessage;
+
+            var FamilyDT = PFamilyAccess.LoadByPrimaryKey(ACurrentPersonDR.FamilyKey, ASubmitChangesTransaction);
+
+            // Make sure the Family of the PERSON exists - of course it always should, but there are
+            // currently some Partner Module Unit Tests in place that are using a wrong approach and where
+            // this is not the case due to that (which ought to be fixed - Bug #3787) - for the time being
+            // ensure that those NUnit Tests don't trip over here...
+            if (FamilyDT.Rows.Count != 0)
+            {
+                if (new TPartnerFamilyIDHandling().GetNewFamilyID(ACurrentPersonDR.FamilyKey, out FamilyID,
+                        out ProblemMessage) == TFamilyIDSuccessEnum.fiError)
+                {
+                    // this should not really happen  but we cannot continue if it does
+                    throw new EPartnerFamilyIDException(ProblemMessage);
+                }
+
+                ACurrentPersonDR.FamilyId = FamilyID;
+            }
         }
 
         /// <summary>

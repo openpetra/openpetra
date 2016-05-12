@@ -76,37 +76,8 @@ namespace Ict.Petra.Shared.MFinance
         private static void CalculateTaxDeductibilityAmounts(
             out decimal ATaxDeductAmount, out decimal ANonDeductAmount, decimal AGiftAmount, decimal ADeductiblePercentage)
         {
-            ATaxDeductAmount =
-                AGiftAmount * (ADeductiblePercentage / 100);
-            ANonDeductAmount =
-                AGiftAmount * (1 - (ADeductiblePercentage / 100));
-
-            // correct rounding errors
-            while (ATaxDeductAmount + ANonDeductAmount
-                   < AGiftAmount)
-            {
-                if (ADeductiblePercentage >= 50)
-                {
-                    ATaxDeductAmount += (decimal)0.01;
-                }
-                else
-                {
-                    ANonDeductAmount += (decimal)0.01;
-                }
-            }
-
-            while (ATaxDeductAmount + ANonDeductAmount
-                   > AGiftAmount)
-            {
-                if (ADeductiblePercentage >= 50)
-                {
-                    ATaxDeductAmount -= (decimal)0.01;
-                }
-                else
-                {
-                    ANonDeductAmount -= (decimal)0.01;
-                }
-            }
+            ATaxDeductAmount = GLRoutines.Divide(AGiftAmount * ADeductiblePercentage, 100);
+            ANonDeductAmount = AGiftAmount - ATaxDeductAmount;
         }
     }
 }

@@ -86,8 +86,9 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             string budgetTestFile = TAppSettingsManager.GetValue("GiftBatch.file",
                 CommonNUnitFunctions.rootPath + "/csharp/ICT/Testing/lib/MFinance/SampleData/BudgetImport-All.csv");
 
-            int NumBudgetsUpdated;
-            int NumFailedRows;
+            int BudgetsAdded;
+            int BudgetsUpdated;
+            int BudgetsFailed;
             TVerificationResultCollection VerificationResult;
 
             BudgetTDS ImportDS = new BudgetTDS();
@@ -97,13 +98,13 @@ namespace Ict.Testing.Petra.Server.MFinance.Budget
             // import budget from CSV
             decimal RowsImported = TBudgetMaintainWebConnector.ImportBudgets(
                 FLedgerNumber,
-                0,
                 ImportString,
                 budgetTestFile,
                 new string[] { ",", "dmy", "American" },
-                ImportDS,
-                out NumBudgetsUpdated,
-                out NumFailedRows,
+                ref ImportDS,
+                out BudgetsAdded,
+                out BudgetsUpdated,
+                out BudgetsFailed,
                 out VerificationResult);
 
             Assert.AreNotEqual(0, RowsImported, "expect to import several rows");

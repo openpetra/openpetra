@@ -36,7 +36,7 @@ namespace Ict.Petra.Shared.MFinance
     /// </summary>
     public class GLRoutines
     {
-        private const int DECIMALS = 10;
+        private const int DECIMALS = 2;
 
         /// <summary>
         /// Update the specified Batch's LastJournal number. Assumes all necessary data is loaded for Batch
@@ -766,7 +766,7 @@ namespace Ict.Petra.Shared.MFinance
         /// use this method to calculate the new amount, using an exchange rate.
         /// This will round the result to the defined limit of decimal places
         /// </summary>
-        public static decimal Multiply(decimal AAmount, decimal AExchangeRate, int ADecimals = DECIMALS)
+        public static decimal CurrencyMultiply(decimal AAmount, decimal AExchangeRate, int ADecimals = DECIMALS)
         {
             decimal Result = AAmount * AExchangeRate;
 

@@ -4,7 +4,7 @@
     FormTitle: Partner By Relationship
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     WindowWidth: 750
-    WindowHeight: 500
+    WindowHeight: 630
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPartner.queries.QueryPartnerByRelationship.CalculateExtract  
         ISOLATIONLEVEL: serializable
@@ -25,7 +25,8 @@
             Controls: 
                 Row0: [ucoPartnerSelection]
                 Row1: [grpSelectRelationship]
-                Row2: [pnlRelationshipOptionsBottom]
+                Row2: [pnlSelbtns]
+                Row3: [pnlRelationshipOptionsBottom]
             Order: AlwaysFirst
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerOrExtractSelection
@@ -39,7 +40,7 @@
                 Row2: [rbtDirectRelationship, rbtReciprocalRelationship]
                 Row3: [lblSelectDirectRelationship, lblSelectReciprocalRelationship]
                 Row4: [grdDirectRelationship, grdReciprocalRelationship]
-		
+
         pnlRelationshipOptionsBottom:
             Controls: 
                 Row0: [ucoChkFilter]
@@ -62,22 +63,26 @@
         grdDirectRelationship:
             AutoFindColumn: 1
             Width: 350
-            Height: 200
+            Height: 160
         grdReciprocalRelationship:
             AutoFindColumn: 1
             Width: 350
-            Height: 200
-			
+            Height: 160
+
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
             Width: 300
-            Height: 100
+            Height: 120
         tpgReportSorting:
             Label: Sorting
             Controls: [ucoReportSorting]
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
+        pnlSelbtns: {ControlsOrientation=horizontal}
+            Controls: [btnSelectAll, btnUnselectAll]
+        btnSelectAll:
+        btnUnselectAll:
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
             Name: Partner 1 Partner Class

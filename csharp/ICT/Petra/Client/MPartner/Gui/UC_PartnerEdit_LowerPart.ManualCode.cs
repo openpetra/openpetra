@@ -429,16 +429,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>
         /// todoComment
         /// </summary>
-        public void CleanupAddressesBeforeMerge()
+        public void CleanupRecordsBeforeMerge()
         {
             if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
-                {
-                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddressTab();
-                }
-
                 ucoPartnerTabSet.CleanupRecordsBeforeMerge();
             }
         }
@@ -450,12 +444,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
             {
-                if (!ucoPartnerTabSet.IsDynamicallyLoadableTabSetUp(TUC_PartnerEdit_PartnerTabSet.TDynamicLoadableUserControls.dlucAddresses))
-                {
-                    // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
-                    ucoPartnerTabSet.SetUpPartnerAddressTab();
-                }
-
                 ucoPartnerTabSet.RefreshRecordsAfterMerge();
             }
         }

@@ -7,12 +7,12 @@
   <Parameter id="param_percentage" value="eInteger:20" />
   <Parameter id="param_to_percentage" value="eInteger:0" />
   <Parameter id="param_currency" value="eString:Base" />
-  <Parameter id="param_motivation_group" value="eString:%" />
-  <Parameter id="param_motivation_detail" value="eString:%" />
   <Parameter id="param_all_partners" value="eString:true" />
   <Parameter id="param_extract" value="eString:false" />
   <Parameter id="param_recipientkey" value="eInteger:0" />
   <Parameter id="param_donor_type" value="eString:top" />
+  <Parameter id="param_motivation_group" value="eString:All" />
+  <Parameter id="param_motivation_detail" value="eString:All" />
   <Parameter id="param_calculation" column="0" value="eString:Donor Key" />
   <Parameter id="ColumnWidth" column="0" value="eString:2,2" />
   <Parameter id="param_calculation" column="1" value="eString:Partner Class" />

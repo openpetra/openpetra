@@ -362,10 +362,9 @@
                 </queryDetail>
             </query>
         </calculation>
-      
     </calculations>
-    
-    <levels>    
+
+    <levels>
         <level name="main">
             <detail>
                 <lowerLevelReport calculation="Select Partners" level="Partner Details"></lowerLevelReport>
@@ -378,7 +377,7 @@
             </header>
             <detail>
                 <field whichfield="Columns" calculation="GetBestAddressDetails"></field>
-				<field calculation="CleanUp"  whichfield="Columns"></field>
+                <field calculation="CleanUp"  whichfield="Columns"></field>
             </detail>
         </level><!-- Partner Details -->
     </levels>

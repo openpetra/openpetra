@@ -28,6 +28,10 @@
 				<value text="Sort by: "/>
 				<value variable="param_rgrSorting"/>
 			</field>
+            <field whichfield="descr3">
+                <value text="Motivation (Group,Detail): "/>
+                <value variable="param_group_detail_desc"></value>
+            </field>
 			<field whichfield="period1">
 				<fielddetail>
 					<value text="Period:  "/>
@@ -92,6 +96,20 @@
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_receipt_l = 1
+						</value>
+					</queryDetail>
+                    <queryDetail condition="eq({param_all_motivation_groups}, false)">
+                        <value>
+                            AND detail.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
+                        </value>
+                    </queryDetail>
+                    <queryDetail condition="eq({param_all_motivation_details}, false)">
+                        <value>
+                            AND (detail.a_motivation_group_code_c,detail.a_motivation_detail_code_c) IN ({{param_motivation_group_detail_pairs}})
+                        </value>
+                    </queryDetail>
+					<queryDetail>
+						<value>
 						GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
 						HAVING 
 						</value>
@@ -175,6 +193,16 @@
 							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n
 						</value>
 					</queryDetail>
+                    <queryDetail condition="eq({param_all_motivation_groups}, false)">
+                        <value>
+                            AND detail.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
+                        </value>
+                    </queryDetail>
+                    <queryDetail condition="eq({param_all_motivation_details}, false)">
+                        <value>
+                            AND (detail.a_motivation_group_code_c,detail.a_motivation_detail_code_c) IN ({{param_motivation_group_detail_pairs}})
+                        </value>
+                    </queryDetail>
 				</query>
 			</calculation>
 			

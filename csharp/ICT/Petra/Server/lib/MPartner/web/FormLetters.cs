@@ -94,7 +94,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     foreach (MExtractRow ExtractRow in ExtractTable.Rows)
                     {
                         RowCounter++;
-                        dataList.Add(FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey, ExtractRow.LocationKey));
+                        AFormLetterInfo.NextEmailInstance = 0;
+
+                        do
+                        {
+                            TFormDataPartner formData;
+                            AFormLetterInfo.CurrentEmailInstance = AFormLetterInfo.NextEmailInstance;
+                            formData =
+                                (TFormDataPartner)FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey,
+                                    ExtractRow.LocationKey);
+
+                            // at the moment we include all partners, also the ones that had outdated addresses which have been updated during FillFormDataFromPartner
+                            //if (formData.AddressIsOriginal)
+                            //{
+                            dataList.Add(formData);
+                            //}
+                        } while (AFormLetterInfo.NextEmailInstance > AFormLetterInfo.CurrentEmailInstance);
 
                         if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
                         {
@@ -247,42 +262,75 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 formData.Notes = PartnerRow.Comment;
                                 formData.ReceiptLetterFrequency = PartnerRow.ReceiptLetterFrequency;
 
-                                if (PartnerRow.PartnerShortName.Contains(","))
+                                // initialize
+                                formData.Title = "";
+                                formData.TitleAndSpace = "";
+
+                                if (PartnerClass == TPartnerClass.PERSON)
                                 {
-                                    formData.Title = Calculations.FormatShortName(PartnerRow.PartnerShortName, eShortNameFormat.eOnlyTitle);
+                                    PPersonTable PersonTable;
+                                    PPersonRow PersonRow;
+                                    PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
+                                    if (PersonTable.Count > 0)
+                                    {
+                                        PersonRow = (PPersonRow)PersonTable.Rows[0];
+
+                                        formData.FirstName = PersonRow.FirstName;
+                                        formData.LastName = PersonRow.FamilyName;
+                                        formData.Title = PersonRow.Title;
+                                    }
+                                }
+                                else if (PartnerClass == TPartnerClass.FAMILY)
+                                {
+                                    PFamilyTable FamilyTable;
+                                    PFamilyRow FamilyRow;
+                                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+
+                                    if (FamilyTable.Count > 0)
+                                    {
+                                        FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
+
+                                        formData.FirstName = FamilyRow.FirstName;
+                                        formData.LastName = FamilyRow.FamilyName;
+                                        formData.Title = FamilyRow.Title;
+                                    }
                                 }
                                 else
                                 {
-                                    formData.Title = "";
+                                    // last name is Partner Short Name
+                                    // except: if UNIT then don't print partner name (it should be contained in next address line)
+                                    if (PartnerClass != TPartnerClass.UNIT)
+                                    {
+                                        formData.LastName = PartnerRow.PartnerShortName;
+                                    }
                                 }
-                            }
 
-                            if (PartnerClass == TPartnerClass.PERSON)
-                            {
-                                PPersonTable PersonTable;
-                                PPersonRow PersonRow;
-                                PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                                // add space only if first name is not empty
+                                formData.FirstNameAndSpace = formData.FirstName;
 
-                                if (PersonTable.Count > 0)
+                                if ((formData.FirstNameAndSpace != null)
+                                    && (formData.FirstNameAndSpace.Length > 0))
                                 {
-                                    PersonRow = (PPersonRow)PersonTable.Rows[0];
-
-                                    formData.FirstName = PersonRow.FirstName;
-                                    formData.LastName = PersonRow.FamilyName;
+                                    formData.FirstNameAndSpace += " ";
                                 }
-                            }
-                            else if (PartnerClass == TPartnerClass.FAMILY)
-                            {
-                                PFamilyTable FamilyTable;
-                                PFamilyRow FamilyRow;
-                                FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
 
-                                if (FamilyTable.Count > 0)
+                                // add space only if last name is not empty
+                                formData.LastNameAndSpace = formData.LastName;
+
+                                if ((formData.LastNameAndSpace != null)
+                                    && (formData.LastNameAndSpace.Length > 0))
                                 {
-                                    FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
+                                    formData.LastNameAndSpace += " ";
+                                }
 
-                                    formData.FirstName = FamilyRow.FirstName;
-                                    formData.LastName = FamilyRow.FamilyName;
+                                // add space only if title is not empty
+                                formData.TitleAndSpace = formData.Title;
+
+                                if ((formData.TitleAndSpace != null)
+                                    && (formData.TitleAndSpace.Length > 0))
+                                {
+                                    formData.TitleAndSpace += " ";
                                 }
                             }
 
@@ -290,6 +338,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 && (formData.FirstName.Length > 0))
                             {
                                 formData.FirstInitial = ConvertIfUpperCase(formData.FirstName.Substring(0, 1), true);
+                                formData.FirstInitialAndSpace = formData.FirstInitial;
+
+                                // only add space if first initial is not empty
+                                if (formData.FirstInitialAndSpace.Length > 0)
+                                {
+                                    formData.FirstInitialAndSpace += " ";
+                                }
                             }
                         }
 
@@ -314,6 +369,23 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PersonFormData.DateOfBirth = PersonRow.DateOfBirth;
                                 PersonFormData.Gender = PersonRow.Gender;
                                 PersonFormData.MaritalStatus = PersonRow.MaritalStatus;
+
+                                if (!PersonRow.IsMaritalStatusNull()
+                                    && (PersonRow.MaritalStatus != ""))
+                                {
+                                    // retrieve marital status description from marital status table
+                                    TPartnerCacheable CachePopulator = new TPartnerCacheable();
+                                    PtMaritalStatusTable MaritalStatusTable =
+                                        (PtMaritalStatusTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.MaritalStatusList);
+                                    PtMaritalStatusRow MaritalStatusRow =
+                                        (PtMaritalStatusRow)MaritalStatusTable.Rows.Find(new object[] { PersonRow.MaritalStatus });
+
+                                    if (MaritalStatusRow != null)
+                                    {
+                                        PersonFormData.MaritalStatusDesc = MaritalStatusRow.Description;
+                                    }
+                                }
+
                                 PersonFormData.OccupationCode = PersonRow.OccupationCode;
 
                                 if (!PersonRow.IsOccupationCodeNull()
@@ -471,6 +543,28 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             formData.PrimaryPhone = Phone;
                             formData.PrimaryEmail = Email;
 
+                            if (AFormLetterInfo.SplitEmailAddresses && (Email != null) && (Email.Length > 0))
+                            {
+                                // We have been instructed to split multiple email addresses
+                                string[] addresses = StringHelper.SplitEmailAddresses(Email);
+
+                                if (AFormLetterInfo.CurrentEmailInstance < addresses.Length)
+                                {
+                                    // Extract the correct one and use it for this partner instance
+                                    formData.PrimaryEmail = addresses[AFormLetterInfo.CurrentEmailInstance];
+                                }
+
+                                if ((AFormLetterInfo.CurrentEmailInstance + 1) < addresses.Length)
+                                {
+                                    // There is another one available so return the next instance in our FormLetterInfo
+                                    AFormLetterInfo.NextEmailInstance = AFormLetterInfo.CurrentEmailInstance + 1;
+                                }
+                                else
+                                {
+                                    AFormLetterInfo.NextEmailInstance = -1;
+                                }
+                            }
+
                             // check for skype as it may not often be used
                             // if there is more than one skype id then at the moment the first one found is used
                             if (AFormLetterInfo.ContainsTag("Skype"))
@@ -485,6 +579,29 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                         break;
                                     }
                                 }
+                            }
+                        }
+
+                        // retrieve Subscription information
+                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription)
+                            || ((AFormLetterInfo.FormLetterPrintOptions != null)
+                                && (AFormLetterInfo.FormLetterPrintOptions.PublicationCodes.Length > 0)))
+                        {
+                            PSubscriptionTable SubscriptionTable;
+                            TFormDataSubscription SubscriptionRecord;
+
+                            SubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ReadTransaction);
+
+                            foreach (PSubscriptionRow SubscriptionRow in SubscriptionTable.Rows)
+                            {
+                                SubscriptionRecord = new TFormDataSubscription();
+
+                                SubscriptionRecord.PublicationCode = SubscriptionRow.PublicationCode;
+                                SubscriptionRecord.Status = SubscriptionRow.SubscriptionStatus;
+                                SubscriptionRecord.PublicationCopies =
+                                    SubscriptionRow.IsPublicationCopiesNull() ? 1 : SubscriptionRow.PublicationCopies;
+
+                                formData.AddSubscription(SubscriptionRecord);
                             }
                         }
 
@@ -504,7 +621,19 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                             else
                             {
-                                LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
+                                if (PPartnerLocationAccess.Exists(APartnerKey, ASiteKey, ALocationKey, ReadTransaction))
+                                {
+                                    // given location key is found for this partner
+                                    LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
+                                    formData.AddressIsOriginal = true;
+                                }
+                                else
+                                {
+                                    // given location key not found for this partner
+                                    // -> update with best address and set flag "AddressIsOriginal" to false
+                                    TAddressTools.GetBestAddress(APartnerKey, out LocationTable, out CountryName, ReadTransaction);
+                                    formData.AddressIsOriginal = false;
+                                }
                             }
 
                             if (LocationTable.Count > 0)
@@ -529,6 +658,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 {
                                     formData.CountryName = CountryRow.CountryName;
                                     formData.CountryInLocalLanguage = CountryRow.CountryNameLocal;
+                                }
+
+                                if (AFormLetterInfo.FormLetterPrintOptions != null)
+                                {
+                                    formData.MailingCode = AFormLetterInfo.FormLetterPrintOptions.MailingCode;
+                                    formData.PublicationCodes = AFormLetterInfo.FormLetterPrintOptions.PublicationCodes;
+                                    formData.Enclosures = BuildEnclosuresList(formData, AFormLetterInfo);
                                 }
                             }
 
@@ -569,25 +705,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 ContactLogRecord.Notes = ContactLogRow.ContactComment;
 
                                 formData.AddContactLog(ContactLogRecord);
-                            }
-                        }
-
-                        // retrieve Subscription information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription))
-                        {
-                            PSubscriptionTable SubscriptionTable;
-                            TFormDataSubscription SubscriptionRecord;
-
-                            SubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ReadTransaction);
-
-                            foreach (PSubscriptionRow SubscriptionRow in SubscriptionTable.Rows)
-                            {
-                                SubscriptionRecord = new TFormDataSubscription();
-
-                                SubscriptionRecord.PublicationCode = SubscriptionRow.PublicationCode;
-                                SubscriptionRecord.Status = SubscriptionRow.SubscriptionStatus;
-
-                                formData.AddSubscription(SubscriptionRecord);
                             }
                         }
 
@@ -1103,15 +1220,18 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             List <String>AddressTokenList = new List <String>();
             String AddressLineText = "";
+            String AddressLineTokenText = "";
             Boolean PrintAnyway = false;
             Boolean CapsOn = false;
             Boolean UseContact = false;
+            String SpacePlaceholder = "";
 
             PPersonTable PersonTable;
             PPersonRow PersonRow = null;
             PFamilyTable FamilyTable;
             PFamilyRow FamilyRow = null;
             Int64 ContactPartnerKey = 0;
+            string workingText = string.Empty;
 
 
             AddressTokenList = BuildTokenListFromAddressLayoutBlock(AAddressLayoutBlock);
@@ -1122,6 +1242,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             foreach (String AddressLineToken in AddressTokenList)
             {
+                switch (AddressLineToken)
+                {
+                    case "[[TitleAndSpace]]":
+                    case "[[FirstNameAndSpace]]":
+                    case "[[FirstInitialAndSpace]]":
+                    case "[[LastNameAndSpace]]":
+
+                        SpacePlaceholder = " ";
+                        break;
+
+                    default:
+
+                        SpacePlaceholder = "";
+                        break;
+                }
+
                 switch (AddressLineToken)
                 {
                     case "[[AcademicTitle]]":
@@ -1266,26 +1402,38 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         break;
 
                     case "[[FirstName]]":
+                    case "[[FirstNameAndSpace]]":
+
+                        AddressLineTokenText = "";
 
                         if (UseContact)
                         {
                             if (PersonRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(PersonRow.FirstName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(PersonRow.FirstName, CapsOn);
                             }
                             else if (FamilyRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(FamilyRow.FirstName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(FamilyRow.FirstName, CapsOn);
                             }
                         }
                         else
                         {
-                            AddressLineText += ConvertIfUpperCase(AFormData.FirstName, CapsOn);
+                            AddressLineTokenText = ConvertIfUpperCase(AFormData.FirstName, CapsOn);
+                        }
+
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
 
                         break;
 
                     case "[[FirstInitial]]":
+                    case "[[FirstInitialAndSpace]]":
+
+                        AddressLineTokenText = "";
 
                         if (UseContact)
                         {
@@ -1293,14 +1441,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 if (PersonRow.FirstName.Length > 0)
                                 {
-                                    AddressLineText += ConvertIfUpperCase(PersonRow.FirstName.Substring(0, 1), CapsOn);
+                                    AddressLineTokenText = ConvertIfUpperCase(PersonRow.FirstName.Substring(0, 1), CapsOn);
                                 }
                             }
                             else if (FamilyRow != null)
                             {
                                 if (PersonRow.FirstName.Length > 0)
                                 {
-                                    AddressLineText += ConvertIfUpperCase(FamilyRow.FirstName.Substring(0, 1), CapsOn);
+                                    AddressLineTokenText = ConvertIfUpperCase(FamilyRow.FirstName.Substring(0, 1), CapsOn);
                                 }
                             }
                         }
@@ -1308,28 +1456,43 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         {
                             if (AFormData.FirstName.Length > 0)
                             {
-                                AddressLineText += ConvertIfUpperCase(AFormData.FirstName.Substring(0, 1), CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(AFormData.FirstName.Substring(0, 1), CapsOn);
                             }
+                        }
+
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
 
                         break;
 
                     case "[[LastName]]":
+                    case "[[LastNameAndSpace]]":
+
+                        AddressLineTokenText = "";
 
                         if (UseContact)
                         {
                             if (PersonRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(PersonRow.FamilyName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(PersonRow.FamilyName, CapsOn);
                             }
                             else if (FamilyRow != null)
                             {
-                                AddressLineText += ConvertIfUpperCase(FamilyRow.FamilyName, CapsOn);
+                                AddressLineTokenText = ConvertIfUpperCase(FamilyRow.FamilyName, CapsOn);
                             }
                         }
                         else
                         {
-                            AddressLineText += ConvertIfUpperCase(AFormData.LastName, CapsOn);
+                            AddressLineTokenText = ConvertIfUpperCase(AFormData.LastName, CapsOn);
+                        }
+
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
                         }
 
                         break;
@@ -1394,6 +1557,14 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         AddressLineText += ConvertIfUpperCase(AFormData.PostalCode, CapsOn);
                         break;
 
+                    case "[[Enclosures]]":
+                        AddressLineText += AFormData.Enclosures;
+                        break;
+
+                    case "[[MailingCode]]":
+                        AddressLineText += AFormData.MailingCode;
+                        break;
+
                     case "[[Tab]]":
                         AddressLineText += "\t";
                         break;
@@ -1407,7 +1578,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                         break;
 
                     case "[[Title]]":
-                        AddressLineText += ConvertIfUpperCase(AFormData.Title, CapsOn);
+                    case "[[TitleAndSpace]]":
+                        AddressLineTokenText = ConvertIfUpperCase(AFormData.Title, CapsOn);
+
+                        if ((AddressLineTokenText != null)
+                            && (AddressLineTokenText.Length > 0))
+                        {
+                            AddressLineText += AddressLineTokenText + SpacePlaceholder;
+                        }
+
                         break;
 
                     case "[[NoSuppress]]":
@@ -1454,6 +1633,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Builds the list of enclosures string
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        private static string BuildEnclosuresList(TFormDataPartner AFormData, TFormLetterInfo ALetterInfo)
+        {
+            string publicationsInMailing = "," + AFormData.PublicationCodes + ",";
+            string publicationsForThisPartner = string.Empty;
+            string ReturnValue = string.Empty;
+
+            foreach (TFormDataSubscription item in AFormData.Subscription)
+            {
+                if (publicationsInMailing.Contains("," + item.PublicationCode + ","))
+                {
+                    if (publicationsForThisPartner.Length > 0)
+                    {
+                        publicationsForThisPartner += ",  ";
+                    }
+
+                    publicationsForThisPartner += (item.PublicationCode + ": " + item.PublicationCopies.ToString());
+                }
+            }
+
+            if (publicationsForThisPartner.Length > 0)
+            {
+                ReturnValue = "( " + publicationsForThisPartner + " )";
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// build and return the address according to country and address layout code
         /// </summary>
         /// <param name="AAddressLayoutBlock"></param>
@@ -1494,6 +1704,110 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             } while (AddressBlock.Length > 0);
 
             return TokenList;
+        }
+
+        /// <summary>
+        /// Update the partner subscriptions for specifed publications.  Partner keys come from an extract
+        /// </summary>
+        /// <param name="AExtractId">Extract ID</param>
+        /// <param name="APublicationsCSVList">CSV list of publications</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool UpdateSubscriptionsReceivedFromExtract(Int32 AExtractId, String APublicationsCSVList)
+        {
+            MExtractTable ExtractTable;
+            Int32 RowCounter = 0;
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"));
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOk = false;
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+                delegate
+                {
+                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
+
+                    RowCounter = 0;
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"), 0.0m);
+
+                    // query all rows of given extract
+                    foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                    {
+                        RowCounter++;
+                        UpdateSubscriptionsReceived(ExtractRow.PartnerKey, APublicationsCSVList, Transaction);
+
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        {
+                            TLogging.Log("UpdateSubscriptionsReceivedFromExtract - Job cancelled");
+                            break;
+                        }
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
+                            (RowCounter * 100) / ExtractTable.Rows.Count);
+                    }
+
+                    SubmissionOk = true;
+                });
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
+            return SubmissionOk;
+        }
+
+        /// <summary>
+        /// Update the partner subscriptions for specifed publications.  An individual Partner keys is supplied
+        /// </summary>
+        /// <param name="APartnerKey">The specific partner key</param>
+        /// <param name="APublicationsCSVList">CSV list of publications</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool UpdateSubscriptionsReceivedForPartner(long APartnerKey, String APublicationsCSVList)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOk = false;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+                delegate
+                {
+                    UpdateSubscriptionsReceived(APartnerKey, APublicationsCSVList, Transaction);
+                    SubmissionOk = true;
+                });
+
+            return SubmissionOk;
+        }
+
+        private static void UpdateSubscriptionsReceived(long APartnerKey, String APublicationsCSVList, TDBTransaction ATransaction)
+        {
+            bool dataChanged = false;
+            string publicationCSVList = "," + APublicationsCSVList + ",";
+            PSubscriptionTable subsTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ATransaction);
+
+            foreach (PSubscriptionRow row in subsTable.Rows)
+            {
+                string pubCode = "," + row.PublicationCode + ",";
+
+                if (publicationCSVList.Contains(pubCode))
+                {
+                    // Here is a publication to update
+                    dataChanged = true;
+                    row.NumberIssuesReceived++;
+                    row.LastIssue = DateTime.Today;
+
+                    if (!row.FirstIssue.HasValue)
+                    {
+                        row.FirstIssue = DateTime.Today;
+                    }
+
+                    TLogging.LogAtLevel(1,
+                        "Updated subscription info for partner " + APartnerKey.ToString() + "   " + row.PublicationCode + "   Issues are now " +
+                        row.NumberIssuesReceived.ToString());
+                }
+            }
+
+            if (dataChanged)
+            {
+                PSubscriptionAccess.SubmitChanges(subsTable, ATransaction);
+            }
         }
 
         /// <summary>

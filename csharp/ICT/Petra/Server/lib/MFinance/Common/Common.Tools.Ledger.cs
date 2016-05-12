@@ -590,25 +590,6 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <summary>
         ///
         /// </summary>
-        public int YearEndProcessStatus
-        {
-            get
-            {
-                GetDataRow();
-                return FLedgerRow.YearEndProcessStatus;
-            }
-            set
-            {
-                GetDataRow();
-                FLedgerRow.YearEndProcessStatus = value;
-                CommitLedgerChange();
-            }
-        }
-
-
-        /// <summary>
-        ///
-        /// </summary>
         public bool IltAccountFlag
         {
             get
@@ -770,182 +751,226 @@ namespace Ict.Petra.Server.MFinance.Common
 
 
     /// <summary>
-    /// This is the list of valid Ledger-Init-Flags
-    /// (the TLedgerInitFlagHandler has an internal information of the flag)
+    /// LedgerInitFlag is a table wich holds properties for each Ledger.
     /// </summary>
-    public enum TLedgerInitFlagEnum
-    {
-        /// <summary>
-        /// Revaluation is a process that has to be done once each month. So the value
-        /// a) is set to true if a revaluation is done,
-        /// b) is checked before the month end process to remind the user that revaluation is required.
-        /// </summary>
-        Revaluation
-    }
-
-    /// <summary>
-    /// LedgerInitFlag is a table wich holds a small set of "boolean" properties for each
-    /// Ledger related to the actual month.
-    /// One example is the value that a Revaluation has been done in the actual month.
-    /// </summary>
-    public class TLedgerInitFlagHandler
+    public class TLedgerInitFlag
     {
         private int FLedgerNumber;
         private string FFlagName;
-        private string FFlagNameHelp;
 
         /// <summary>
         /// This Constructor only takes and stores the initial parameters.
         /// No Database request is done by this routine.
         /// </summary>
         /// <param name="ALedgerNumber">A valid ledger number</param>
-        /// <param name="AFlagEnum">A valid LegerInitFlag entry</param>
-        public TLedgerInitFlagHandler(int ALedgerNumber, TLedgerInitFlagEnum AFlagEnum)
+        /// <param name="AFlag">Name of the flag</param>
+        public TLedgerInitFlag(int ALedgerNumber, String AFlag)
         {
             FLedgerNumber = ALedgerNumber;
-            FFlagName = String.Empty;
-
-            if (AFlagEnum.Equals(TLedgerInitFlagEnum.Revaluation))
-            {
-                FFlagName = "REVALUATION-RUN";
-            }
-            else
-            {
-                FFlagName = AFlagEnum.ToString();
-            }
-
-            FFlagNameHelp = FFlagName;
+            FFlagName = AFlag;
         }
 
         /// <summary>
-        ///
+        /// The IsSet property controls database requests.
         /// </summary>
-        public void AddMarker(string AMarker)
-        {
-            FFlagName = FFlagNameHelp + ":" + AMarker;
-        }
-
-        /// <summary>
-        /// The Flag property controls all database requests.
-        /// </summary>
-        public bool Flag
+        public bool IsSet
         {
             get
             {
-                return FindRecord();
+                return FindRecord(FLedgerNumber, FFlagName) != null;
             }
             set
             {
-                if (FindRecord())
+                if (FindRecord(FLedgerNumber, FFlagName) != null)
                 {
                     if (!value)
                     {
-                        DeleteRecord();
+                        DeleteFlag(FLedgerNumber, FFlagName);
                     }
                 }
                 else
                 {
                     if (value)
                     {
-                        CreateRecord();
+                        SetFlagValue(FLedgerNumber, FFlagName, "IsSet");
                     }
                 }
             }
         }
 
-
-        private bool FindRecord(TDataBase ADataBase = null)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFlag"></param>
+        /// <param name="AddIt"></param>
+        /// <param name="ADataBase"></param>
+        public static void SetOrRemoveFlag(int ALedgerNumber, String AFlag, Boolean AddIt, TDataBase ADataBase = null)
         {
-            bool RecordFound = false;
-
-            TDBTransaction ReadTransaction = null;
-            ALedgerInitFlagTable LedgerInitFlagTable = null;
-
-            try
+            if (FindRecord(ALedgerNumber, AFlag) != null)
             {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
-                    delegate
-                    {
-                        LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(FLedgerNumber, FFlagName, ReadTransaction);
-
-                        RecordFound = (LedgerInitFlagTable != null && LedgerInitFlagTable.Rows.Count == 1);
-                    });
+                if (!AddIt)
+                {
+                    DeleteFlag(ALedgerNumber, AFlag);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-                throw;
+                if (AddIt)
+                {
+                    SetFlagValue(ALedgerNumber, AFlag, "IsSet");
+                }
             }
-
-            return RecordFound;
         }
 
-        private void CreateRecord(TDataBase ADataBase = null)
+        /// <summary>
+        /// This more conventional string-based ValueStore is intended to replace the limited and over-complicated binary flag approach
+        /// (which is preserved above, but no longer used for Reval, or anything else.)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFlag"></param>
+        /// <param name="ADataBase"></param>
+        /// <returns></returns>
+        public static String GetFlagValue(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
+        {
+            ALedgerInitFlagRow Row = FindRecord(ALedgerNumber, AFlag, ADataBase);
+
+            return Row == null ? "" : Row.Value;
+        }
+
+        /// <summary>
+        /// The named AFlag is a composite value (internally stored as CSV)
+        /// This method adds the component, if it's not already present.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFlag"></param>
+        /// <param name="AComponent"></param>
+        /// <param name="ADataBase"></param>
+        public static void SetFlagComponent(int ALedgerNumber, String AFlag, String AComponent, TDataBase ADataBase = null)
+        {
+            ALedgerInitFlagRow Row = FindRecord(ALedgerNumber, AFlag, ADataBase);
+            String Val = (Row == null ? "" : Row.Value);
+
+            if ((Val + ",").IndexOf(AComponent + ",") < 0) // I need to add this?
+            {
+                if (Val != "")
+                {
+                    Val += ",";
+                }
+
+                Val += AComponent;
+                SetFlagValue(ALedgerNumber, AFlag, Val, ADataBase);
+            }
+        }
+
+        /// <summary>
+        /// The named AFlag is a composite value (internally stored as CSV)
+        /// This method removes the component, if it's present in AFlag.
+        /// (If AFlag was not found, it's not created.)
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFlag"></param>
+        /// <param name="AComponent"></param>
+        /// <param name="ADataBase"></param>
+        public static void RemoveFlagComponent(int ALedgerNumber, String AFlag, String AComponent, TDataBase ADataBase = null)
+        {
+            ALedgerInitFlagRow Row = FindRecord(ALedgerNumber, AFlag, ADataBase);
+            String Val = (Row == null ? "" : Row.Value);
+            String NewVal = (Val + ",").Replace(AComponent + ",", "");
+
+            if (NewVal != Val) // I need to remove this?
+            {
+                if (NewVal.Length > 0)
+                {
+                    NewVal = NewVal.Substring(0, NewVal.Length - 1); // the test above appended a comma to the string
+                }
+
+                SetFlagValue(ALedgerNumber, AFlag, NewVal, ADataBase);
+            }
+        }
+
+        private static ALedgerInitFlagRow FindRecord(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
+        {
+            TDBTransaction ReadTransaction = null;
+            ALedgerInitFlagTable LedgerInitFlagTable = null;
+            ALedgerInitFlagRow Ret = null;
+
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum, ref ReadTransaction,
+                delegate
+                {
+                    LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(ALedgerNumber, AFlag, ReadTransaction);
+
+                    if ((LedgerInitFlagTable != null) && (LedgerInitFlagTable.Rows.Count == 1))
+                    {
+                        Ret = LedgerInitFlagTable[0];
+                    }
+                });
+
+            return Ret;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AFlag"></param>
+        /// <param name="AValue"></param>
+        /// <param name="ADataBase"></param>
+        public static void SetFlagValue(int ALedgerNumber, String AFlag, String AValue, TDataBase ADataBase = null)
         {
             TDBTransaction ReadWriteTransaction = null;
             Boolean SubmissionOK = false;
 
-            try
-            {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref ReadWriteTransaction,
-                    ref SubmissionOK,
-                    delegate
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadWriteTransaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                        ALedgerNumber, AFlag, ReadWriteTransaction);
+
+                    ALedgerInitFlagRow ledgerInitFlagRow =
+                        ledgerInitFlagTable.Rows.Count == 0 ?
+                        ledgerInitFlagTable.NewRowTyped()
+                        : ledgerInitFlagTable[0];
+                    ledgerInitFlagRow.LedgerNumber = ALedgerNumber;
+                    ledgerInitFlagRow.InitOptionName = AFlag;
+                    ledgerInitFlagRow.Value = AValue;
+
+                    if (ledgerInitFlagTable.Rows.Count == 0)
                     {
-                        ALedgerInitFlagTable ledgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                            FLedgerNumber, FFlagName, ReadWriteTransaction);
-
-                        ALedgerInitFlagRow ledgerInitFlagRow = (ALedgerInitFlagRow)ledgerInitFlagTable.NewRow();
-                        ledgerInitFlagRow.LedgerNumber = FLedgerNumber;
-                        ledgerInitFlagRow.InitOptionName = FFlagName;
                         ledgerInitFlagTable.Rows.Add(ledgerInitFlagRow);
+                    }
 
-                        ALedgerInitFlagAccess.SubmitChanges(ledgerInitFlagTable, ReadWriteTransaction);
+                    ALedgerInitFlagAccess.SubmitChanges(ledgerInitFlagTable, ReadWriteTransaction);
 
-                        SubmissionOK = true;
-                    });
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
+                    SubmissionOK = true;
+                });
         }
 
-        private void DeleteRecord(TDataBase ADataBase = null)
+        private static void DeleteFlag(int ALedgerNumber, String AFlag, TDataBase ADataBase = null)
         {
             TDBTransaction Transaction = null;
             Boolean SubmissionOK = true;
 
-            try
-            {
-                DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    ref SubmissionOK,
-                    delegate
+            DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                ref SubmissionOK,
+                delegate
+                {
+                    ALedgerInitFlagTable LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
+                        ALedgerNumber, AFlag, Transaction);
+
+                    if (LedgerInitFlagTable.Rows.Count == 1)
                     {
-                        ALedgerInitFlagTable LedgerInitFlagTable = ALedgerInitFlagAccess.LoadByPrimaryKey(
-                            FLedgerNumber, FFlagName, Transaction);
+                        LedgerInitFlagTable[0].Delete();
 
-                        if (LedgerInitFlagTable.Rows.Count == 1)
-                        {
-                            ((ALedgerInitFlagRow)LedgerInitFlagTable.Rows[0]).Delete();
-
-                            ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
-                        }
-                    });
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
+                        ALedgerInitFlagAccess.SubmitChanges(LedgerInitFlagTable, Transaction);
+                    }
+                });
         }
     }
 }

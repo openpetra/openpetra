@@ -73,14 +73,8 @@
 				</fielddetail>
 			</field>
 			<field whichfield="period2">
-				<fielddetail condition="not(eq({param_motivation_group}, %))">
-					<value text="Motivation Group: "/>
-					<value variable="param_motivation_group"/>
-				</fielddetail>
-				<fielddetail condition="not(eq({param_motivation_detail}, %))">
-					<value text="  Motivation Detail: "/>
-					<value variable="param_motivation_detail"/>
-				</fielddetail>
+				<value text="Motivation (Group,Detail): "/>
+                <value variable="param_group_detail_desc"></value>
 			</field>
 			<field whichfield="period3">
 				<value text="Currency: "/>
@@ -150,16 +144,16 @@
 							AND detail.p_recipient_key_n = {{param_recipientkey}}
 						</value>
 					</queryDetail>
-					<queryDetail condition="not(eq({param_motivation_group}, %))">
-						<value>
-							AND detail.a_motivation_group_code_c LIKE {param_motivation_group}
-						</value>
-					</queryDetail>
-					<queryDetail condition="not(eq({param_motivation_detail}, %))">
-						<value>
-							AND detail.a_motivation_detail_code_c LIKE {param_motivation_detail}
-						</value>
-					</queryDetail>
+					<queryDetail condition="eq({param_all_motivation_groups}, false)">
+                        <value>
+                            AND detail.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
+                        </value>
+                    </queryDetail>
+                    <queryDetail condition="eq({param_all_motivation_details}, false)">
+                        <value>
+                            AND (detail.a_motivation_group_code_c,detail.a_motivation_detail_code_c) IN ({{param_motivation_group_detail_pairs}})
+                        </value>
+                    </queryDetail>
 				</query>
 			</calculation>
 			
@@ -169,7 +163,7 @@
 						<value text="NO-SQL"/>
 						<value function="MakeTopDonor({TotalAmount}, {param_percentage}, {param_to_percentage}, 
 							{param_extract}, {param_extract_name}, {param_start_date}, {param_end_date},
-							{param_recipientkey}, {param_motivation_group}, {param_motivation_detail})"/>
+							{param_recipientkey}, {param_motivation_group_quotes}, {param_motivation_group_detail_pairs})"/>
 					</queryDetail>
 				</query>
 			</calculation>

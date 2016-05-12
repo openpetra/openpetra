@@ -195,6 +195,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         #endregion
 
         #region Public Methods
+
         /// <summary>
         ///
         /// </summary>
@@ -208,6 +209,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             return FUcoAddresses.PartnerLocationDataRowOfCurrentlySelectedAddress;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        public string Get_CountryCodeOfBestAddress()
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlAddresses();
+            }
+
+            return FUcoAddresses.GetBestAddressesCountryCode();
         }
 
         /// <summary>
@@ -731,13 +747,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FUcoAddresses.CleanupRecordsBeforeMerge();
 
-            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucContactDetails))
+            if (FUcoContactDetails != null)
             {
-                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucContactDetails);'
-                SetupUserControlContactDetails();
+                FUcoContactDetails.CleanupRecordsBeforeMerge();
             }
-
-            FUcoContactDetails.CleanupRecordsBeforeMerge();
         }
 
         /// <summary>
@@ -753,7 +766,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FUcoAddresses.RefreshRecordsAfterMerge();
 
-            FUcoContactDetails.RefreshRecordsAfterMerge();
+            if (FUcoContactDetails != null)
+            {
+                FUcoContactDetails.RefreshRecordsAfterMerge();
+            }
 
             if (FUcoFinanceDetails != null)
             {
@@ -904,6 +920,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 else if (ATabPageEventArgs.Tab == tpgContactDetails)
                 {
                     FUcoContactDetails.SpecialInitUserControl();
+                    FUcoContactDetails.InitialiseDelegateForDeterminationOfBestAddressesCountryCode(
+                        Get_CountryCodeOfBestAddress);
                 }
                 else if (ATabPageEventArgs.Tab == tpgPartnerDetails)
                 {

@@ -15,7 +15,7 @@ RootNode:
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
-        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllGifts}
+        actDeleteAll: {Label=Delete All, ActionClick=DeleteAllGifts}
         actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
         actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
@@ -126,17 +126,22 @@ RootNode:
                 Row9: [txtDetailRecipientKeyMinistry]
                 Row10: [txtNonDeductAmount, txtDeductiblePercentage]
                 Row11: [txtTaxDeductAmount, txtDeductibleAccount]
-        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
-        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
-        txtDetailDonorKey: {Label=&Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
-        txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
-        txtDetailReference: {Label=Reference, Width=170}
-        cmbDetailReceiptLetterCode:
-            Label: Letter Code
-            OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Re&cipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
+        
+		#GIFT-Level Controls
+        # Bound
+        txtDetailDonorKey: {Label=D&onor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
+        txtDetailReference: {Label=Re&ference, Width=170}
+        cmbDetailReceiptLetterCode: {Label=Letter Code, OptionalValues=[NO*RECET]}
+        # Unbound
+        txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
+        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
+        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
+        
+		#GIFT DETAIL-Level Controls
+        # Bound
+        txtDetailRecipientKey: {Label=Reci&pient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMotivationGroupCode: {Label=Moti&vation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
@@ -144,19 +149,13 @@ RootNode:
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
-        cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
-        txtDetailRecipientKeyMinistry: {Label=Key Ministry}
+        txtDetailRecipientKeyMinistry: {Label=&Key Ministry}
         txtDetailGiftTransactionAmount: {Label=&Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?, ActionClick=ToggleTaxDeductible}
-        chkNoReceiptOnAdjustment: {Label=Do not print on periodic receipt, CheckBoxAttachedLabel=right, Tooltip=Tick this if you want to exclude this adjusting gift from periodic receipts}
-        txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
-        txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
-        txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
-        txtDeductibleAccount: {Visible=false, Label=Account, ReadOnly=true}
-        txtDetailGiftCommentOne: {Label=Co&mment 1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Co&mment 2, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Co&mment 3, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment &1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment &2, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment &3, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]
@@ -169,9 +168,16 @@ RootNode:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]
             OnLeave: DetailCommentTypeChanged
+        # Unbound
+        cmbKeyMinistries: {Label=&Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+        chkNoReceiptOnAdjustment: {Label=Do not print on periodic receipt, CheckBoxAttachedLabel=right, Tooltip=Tick this if you want to exclude this adjusting gift from periodic receipts}
+        txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
+        txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
+        txtNonDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
+        txtDeductibleAccount: {Visible=false, Label=Deductible Account, ReadOnly=true}
+        
         tbrTabPage:
         mnuTabPage:
-
 
     Menu:
         mniTransactions:

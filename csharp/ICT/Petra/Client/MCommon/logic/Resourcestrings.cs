@@ -101,7 +101,7 @@ namespace Ict.Petra.Client.MCommon
         public static readonly string StrFormHasUnsavedChangesQuestion = Catalog.GetString("Save changes before closing?");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrFormSaveDataAnywayQuestion = Catalog.GetString("Save changes before closing?");
+        public static readonly string StrFormSaveDataAnywayQuestion = Catalog.GetString("Would you still like to go ahead and save your changes?");
 
         /// <summary>todoComment</summary>
         public static readonly string StrSaveChangesBeforeContinuing = Catalog.GetString("Save changes before continuing?");

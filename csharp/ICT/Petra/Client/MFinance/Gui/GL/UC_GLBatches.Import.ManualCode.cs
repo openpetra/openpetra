@@ -589,7 +589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (!NewTransaction.IsTransactionDateNull())
                 {
-                    NewTransaction.AmountInBaseCurrency = GLRoutines.Multiply(NewTransaction.TransactionAmount,
+                    NewTransaction.AmountInBaseCurrency = GLRoutines.CurrencyMultiply(NewTransaction.TransactionAmount,
                         TExchangeRateCache.GetDailyExchangeRate(
                             ARefJournalRow.TransactionCurrency,
                             FMainDS.ALedger[0].BaseCurrency,
@@ -599,7 +599,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // The International currency calculation is changed to "Base -> International", because it's likely
                     // we won't have a "Transaction -> International" conversion rate defined.
                     //
-                    NewTransaction.AmountInIntlCurrency = GLRoutines.Multiply(NewTransaction.AmountInBaseCurrency,
+                    NewTransaction.AmountInIntlCurrency = GLRoutines.CurrencyMultiply(NewTransaction.AmountInBaseCurrency,
                         TExchangeRateCache.GetDailyExchangeRate(
                             FMainDS.ALedger[0].BaseCurrency,
                             FMainDS.ALedger[0].IntlCurrency,
@@ -634,13 +634,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     sumCredits += BalancingTransaction.TransactionAmount;
                 }
 
-                BalancingTransaction.AmountInIntlCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
+                BalancingTransaction.AmountInIntlCurrency = GLRoutines.CurrencyMultiply(BalancingTransaction.TransactionAmount,
                     TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].IntlCurrency,
                         BalancingTransaction.TransactionDate,
                         false));
-                BalancingTransaction.AmountInBaseCurrency = GLRoutines.Multiply(BalancingTransaction.TransactionAmount,
+                BalancingTransaction.AmountInBaseCurrency = GLRoutines.CurrencyMultiply(BalancingTransaction.TransactionAmount,
                     TExchangeRateCache.GetDailyExchangeRate(
                         ARefJournalRow.TransactionCurrency,
                         FMainDS.ALedger[0].BaseCurrency,

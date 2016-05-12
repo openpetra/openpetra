@@ -150,9 +150,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // test that we cannot post to period 12 anymore, all periods are closed?
             LedgerInfo = new TLedgerInfo(intLedgerNumber);
             Assert.AreEqual(true, LedgerInfo.ProvisionalYearEndFlag, "Provisional YearEnd flag should be set");
-            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
-                (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
-                "YearEnd process status should be still on RESET");
 
             //
             // Reallocation is never called explicitly like this - it's not really appropriate
@@ -211,9 +208,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual(1, LedgerInfo.CurrentFinancialYear, "After YearEnd, we are in a new financial year");
             Assert.AreEqual(1, LedgerInfo.CurrentPeriod, "After YearEnd, we are in Period 1");
             Assert.AreEqual(false, LedgerInfo.ProvisionalYearEndFlag, "After YearEnd, ProvisionalYearEnd flag should not be set");
-            Assert.AreEqual(TYearEndProcessStatus.RESET_STATUS,
-                (TYearEndProcessStatus)LedgerInfo.YearEndProcessStatus,
-                "after year end, year end process status should be RESET");
 
             periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);
             Assert.AreEqual(new DateTime(DateTime.Now.Year + 1,
@@ -282,6 +276,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 glmNewYearInit.IsInInfoMode = false;
 //              Assert.Greater(glmNewYearInit.GetJobSize(), 0, "Check that NewYearInit has work to do"); // in this version, GetJobSize returns 0
                 glmNewYearInit.RunOperation();
+                YearEndOperator.SetNextPeriod();
             }
 
             Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "After YearEnd, Ledger is in year 2");

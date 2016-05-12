@@ -32,11 +32,11 @@
 				<value text="Minimum Amount: "/>
 				<value variable="param_minimum_amount"/>
 			</field>
-			<field whichfield="period3">
+			<!--<field whichfield="period3">
 				<fielddetail condition="eq({param_exclude_support_gifts}, true)">
 					<value text="SUPPORT and PERSONAL Gifts excluded"/>
 				</fielddetail>
-			</field>
+			</field>-->
 			<field whichfield="descr1">
 				<value text="Sorted by: "></value>
 				<value variable="param_sort_by"></value>
@@ -44,6 +44,10 @@
 			<field whichfield="descr2">
 				<value text="Currency: "/>
 				<value function="getCurrency({{param_ledger_number_i}}, {GLOBAL:param_currency})"/>
+			</field>
+			<field whichfield="descr3">
+				<value text="Motivation (Group,Detail): "/>
+				<value variable="param_group_detail_desc"></value>
 			</field>
 		</pageheader>
 
@@ -110,11 +114,21 @@
 								AND gd.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 						</value>
 					</queryDetail>
-					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+					<!--<queryDetail condition="eq({param_exclude_support_gifts}, true)">
 						<value>
 								AND ((UPPER(gd.a_motivation_group_code_c) = 'GIFT'
 								AND UPPER(gd.a_motivation_detail_code_c) != 'SUPPORT')
 								OR UPPER(gd.a_motivation_group_code_c) != 'GIFT')
+						 </value>
+					</queryDetail>-->
+					<queryDetail condition="eq({param_all_motivation_groups}, false)">
+						<value>
+								AND gd.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_all_motivation_details}, false)">
+						<value>
+								AND (gd.a_motivation_group_code_c,gd.a_motivation_detail_code_c) IN ({{param_motivation_group_detail_pairs}})
 						 </value>
 					</queryDetail>
 					<queryDetail>
@@ -148,6 +162,7 @@
 						<value>
 						SELECT 
 							PUB_p_partner.p_partner_short_name_c AS RecipientName,
+							<!--'abc' AS RecipientName,-->
 							PUB_a_gift.a_date_entered_d AS GiftDate,
 							PUB_a_gift_detail.p_recipient_key_n AS RecipientKey,
 							PUB_a_gift_detail.a_confidential_gift_flag_l,
@@ -170,19 +185,17 @@
 					<queryDetail>
 						<value>
 						FROM
-							PUB_p_partner,
 							PUB_a_motivation_detail,
 							PUB_a_gift,
-							PUB_a_gift_detail,
-							PUB_a_motivation_group
+							PUB_a_motivation_group,
+							PUB_a_gift_detail
+							LEFT JOIN PUB_p_partner
+							ON PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
 						WHERE
-							PUB_p_partner.p_partner_key_n = PUB_a_gift_detail.p_recipient_key_n
-							
-							AND PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
+							PUB_a_motivation_detail.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = PUB_a_gift_detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_group.a_motivation_group_code_c = PUB_a_gift_detail.a_motivation_group_code_c
 							
-							AND PUB_a_motivation_detail.a_receipt_l = 1
 							AND PUB_a_gift.p_donor_key_n = {DonorKey}
 							
 							AND PUB_a_gift_detail.a_batch_number_i = PUB_a_gift.a_batch_number_i
@@ -193,11 +206,21 @@
 							AND PUB_a_motivation_group.a_ledger_number_i = {{param_ledger_number_i}}
 						 </value>
 					</queryDetail>
-					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+					<!--<queryDetail condition="eq({param_exclude_support_gifts}, true)">
 						<value>
 							AND ((UPPER(PUB_a_gift_detail.a_motivation_group_code_c) = 'GIFT'
 							AND UPPER(PUB_a_gift_detail.a_motivation_detail_code_c) != 'SUPPORT')
 							OR UPPER(PUB_a_gift_detail.a_motivation_group_code_c) != 'GIFT')
+						 </value>
+					</queryDetail>-->
+					<queryDetail condition="eq({param_all_motivation_groups}, false)">
+						<value>
+								AND PUB_a_gift_detail.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_all_motivation_details}, false)">
+						<value>
+								AND (PUB_a_gift_detail.a_motivation_group_code_c,PUB_a_gift_detail.a_motivation_detail_code_c) IN ({{param_motivation_group_detail_pairs}})
 						 </value>
 					</queryDetail>
 					<queryDetail>
@@ -226,11 +249,21 @@
 								AND gd.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i
 						 </value>
 					</queryDetail>
-					<queryDetail condition="eq({param_exclude_support_gifts}, true)">
+					<!--<queryDetail condition="eq({param_exclude_support_gifts}, true)">
 						<value>
 								AND ((UPPER(gd.a_motivation_group_code_c) = 'GIFT'
 								AND UPPER(gd.a_motivation_detail_code_c) != 'SUPPORT')
 								OR UPPER(gd.a_motivation_group_code_c) != 'GIFT')
+						 </value>
+					</queryDetail>-->
+					<queryDetail condition="eq({param_all_motivation_groups}, false)">
+						<value>
+								AND gd.a_motivation_group_code_c IN ({{param_motivation_group_quotes}})
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_all_motivation_details}, false)">
+						<value>
+								AND (gd.a_motivation_group_code_c,gd.a_motivation_detail_code_c) IN ({{param_motivation_group_detail_pairs}})
 						 </value>
 					</queryDetail>
 					<queryDetail>

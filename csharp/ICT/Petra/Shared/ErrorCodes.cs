@@ -276,6 +276,12 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "Invalid Partner entered: PartnerKey 0 is not a valid value.")]
         public const String ERR_PARTNERKEY_INVALID_NOZERO = "PARTN.00002V";
 
+        /// <summary>An active Partner Key is required here.</summary>
+        ///
+        [ErrCodeAttribute("Invalid Partner.",
+             ErrorMessageText = "Invalid Partner entered: Partner {0} is not active.")]
+        public const String ERR_PARTNER_NOT_ACTIVE = "PARTN.00058V";
+
         /// <summary>Recipient Field/Motivation Group combination is invalid (must be non-gift for field=0).</summary>
         [ErrCodeAttribute("Invalid Motivation Group for Recipient's Field.",
              ErrorMessageText = "The Recipient's Field is 0 and so cannot have the Motivation Group Code 'Gift.'")]
@@ -367,19 +373,19 @@ namespace Ict.Petra.Shared
         ]
         public const String ERR_INVALID_HYPERLINK_WITH_VALUE_JUST_CONTAINING_PLACEHOLDER = "PARTN.00034V";
 
-        /// <summary>No Primary E-mail Address has been set desipite current E-Mail Addresses are available.</summary>
-        [ErrCodeAttribute("Primary E-mail Address Not Set Desipite E-Mail Addresses on File",
+        /// <summary>No Primary E-mail Address has been set despite current E-Mail Addresses are available.</summary>
+        [ErrCodeAttribute("Primary E-mail Address Not Set Despite E-Mail Addresses on File",
              ErrorMessageText =
                  "No Primary E-mail Address has been set although current E-Mail Addresses are available.  IMPORTANT: OpenPetra can't send e-mails to this Partner in automated situations unless a Primary E-mail Address has been chosen!")
         ]
-        public const String ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESIPITE_EMAIL_ADDR_AVAIL = "PARTN.00035N";
+        public const String ERR_PRIMARY_EMAIL_ADDR_NOT_SET_DESPITE_EMAIL_ADDR_AVAIL = "PARTN.00035N";
 
         /// <summary>A Primary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Primary E-mail Address Set But No E-Mail Addresses on File",
              ErrorMessageText =
                  "A Primary E-mail Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Primary E-Mail' choices and no 'Primary E-Mail' is set any longer!")
         ]
-        public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036V";
+        public const String ERR_PRIMARY_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00036V";
 
         /// <summary>A Primary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Primary E-mail Address Set But the E-Mail Addresses' record is not current",
@@ -407,7 +413,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText =
                  "A Secondary E-mail Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Secondary E-Mail' choices and no 'Secondary E-Mail' is set any longer!")
         ]
-        public const String ERR_SECONDARY_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00040V";
+        public const String ERR_SECONDARY_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00040V";
 
         /// <summary>A Secondary E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Secondary E-mail Address Set But the E-Mail Addresses' record is not current",
@@ -428,7 +434,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText =
                  "A Primary Phone Number was set, but there are no current Phone Numbers available. It has therefore been removed from the 'Primary Phone' choices and no 'Primary Phone' is set any longer!")
         ]
-        public const String ERR_PRIMARY_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL = "PARTN.00043V";
+        public const String ERR_PRIMARY_PHONE_NR_SET_DESPITE_NO_PHONE_NR_AVAIL = "PARTN.00043V";
 
         /// <summary>A Primary Phone Number has been set but there are no current Phone Numbers available.</summary>
         [ErrCodeAttribute("Primary Phone Number Set But the Phone Numbers' record is not current",
@@ -456,7 +462,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText =
                  "An Office E-Mail Address was set, but there are no current E-Mail Addresses available. It has therefore been removed from the 'Office E-Mail' choices and no 'Office E-Mail' is set any longer!")
         ]
-        public const String ERR_OFFICE_EMAIL_ADDR_SET_DESIPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00047V";
+        public const String ERR_OFFICE_EMAIL_ADDR_SET_DESPITE_NO_EMAIL_ADDR_AVAIL = "PARTN.00047V";
 
         /// <summary>An Office E-mail Address has been set but there are no current E-Mail Addresses available.</summary>
         [ErrCodeAttribute("Office E-mail Address Set But the E-Mail Addresses' record is not current",
@@ -470,7 +476,7 @@ namespace Ict.Petra.Shared
              ErrorMessageText =
                  "An Office Phone Number was set, but there are no current Phone Numbers available. It has therefore been removed from the 'Office Phone' choices and no 'Office Phone' is set any longer!")
         ]
-        public const String ERR_OFFICE_PHONE_NR_SET_DESIPITE_NO_PHONE_NR_AVAIL = "PARTN.00049V";
+        public const String ERR_OFFICE_PHONE_NR_SET_DESPITE_NO_PHONE_NR_AVAIL = "PARTN.00049V";
 
         /// <summary>An Office Phone Number has been set but there are no current Phone Numbers available.</summary>
         [ErrCodeAttribute("Office Phone Number Set But the Phone Numbers' record is not current",
@@ -485,6 +491,25 @@ namespace Ict.Petra.Shared
                  "An Office Phone Number was set, but it did not match any of the Phone Numbers that are on file. It has therefore been removed from the 'Office Phone' choices. Change the 'Office Phone' setting to a current Phone Number!")
         ]
         public const String ERR_OFFICE_PHONE_NR_SET_BUT_NOT_AMONG_PHONE_NRS = "PARTN.00051V";
+
+        /// <summary>Contact Details - Phone/Fax Number: Phone Number must not start with + when a International Telephone Country Code is chosen.</summary>
+        [ErrCodeAttribute(
+             "Phone Number / Fax Number must not start with the + sign (the chosen International Telephone Country Code already adds that).",
+             ErrorMessageText =
+                 "A Phone Number / Fax Number must not start with the + sign (the chosen International Telephone Country Code already adds that).")]
+        public const String ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS1 = "PARTN.00059V";
+
+        /// <summary>Contact Details - Phone/Fax Number: Phone Number must not start with +.</summary>
+        [ErrCodeAttribute("Phone Number / Fax Number must not start with the + sign. Please choose an International Telephone Country Code instead.",
+             ErrorMessageText =
+                 "A Phone Number / Fax Number must not start with the + sign. Please choose an International Telephone Country Code instead.")]
+        public const String ERR_PHONE_NUMBER_MUST_NOT_START_WITH_PLUS2 = "PARTN.00060V";
+
+        /// <summary>Contact Details - Phone/Fax Number: International Telephone Country Code ought to be set.</summary>
+        [ErrCodeAttribute("International Telephone Country Code ought to be set",
+             ErrorMessageText = "An International Telephone Country Code ought to be set - unless the Phone Number / Fax Number is a special " +
+                                "in-country number (e.g. a toll-free number or local-rate number).")]
+        public const String ERR_INTL_PHONE_PREFIX_OUGHT_TO_BE_SET = "PARTN.00061N";
 
         /// <summary>The Address Block text has mis-matched tags.</summary>
         [ErrCodeAttribute("Address Block text contains an unknown data placeholder",

@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Logic
@@ -41,10 +42,11 @@ namespace Ict.Petra.Client.MPartner.Logic
         /// Exports a single Partner.
         /// </summary>
         /// <param name="APartnerKey">Partner Key of the Partner.</param>
+        /// <param name="APartnerClass">Class of partner for the specified key</param>
         /// <param name="ASiteKey">SiteKey of the Location.</param>
         /// <param name="ALocationKey">LocationKey of the Location.</param>
         /// <param name="AOldPetraFormat">Set to true if old format should be used.</param>
-        public static void ExportSinglePartner(Int64 APartnerKey, Int64 ASiteKey, int ALocationKey, Boolean AOldPetraFormat)
+        public static void ExportSinglePartner(Int64 APartnerKey, String APartnerClass, Int64 ASiteKey, int ALocationKey, Boolean AOldPetraFormat)
         {
             bool Result = false;
             StringCollection ASpecificBuildingInfo = null;
@@ -56,10 +58,22 @@ namespace Ict.Petra.Client.MPartner.Logic
             {
                 if (FileName.EndsWith("ext"))
                 {
+                    bool ExportFamiliesPersons = false;
+
+                    if (string.Compare(APartnerClass, TPartnerClass.FAMILY.ToString(), true) == 0)
+                    {
+                        if (MessageBox.Show(
+                                Catalog.GetString("Do you want to also export all PERSON records associated with this FAMILY?"),
+                                Catalog.GetString("Export Partner"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            ExportFamiliesPersons = true;
+                        }
+                    }
+
                     ExtFormattedDocument = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader(AOldPetraFormat);
 
                     ExtFormattedDocument += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
-                        APartnerKey, ASiteKey, ALocationKey, false, ASpecificBuildingInfo, AOldPetraFormat);
+                        APartnerKey, ASiteKey, ALocationKey, true, ExportFamiliesPersons, ASpecificBuildingInfo, AOldPetraFormat);
 
                     ExtFormattedDocument += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
 

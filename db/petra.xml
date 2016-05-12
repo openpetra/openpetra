@@ -7569,7 +7569,14 @@
                 descr=""
                 format="X(32)"
                 notnull="yes"/>
-    <!-- Constraints on table a_ledger_init_flag -->
+    <tablefield name="a_value_c"
+                type="varchar"
+                descr=""
+                format="X(64)"
+                initial="IsSet"
+                notnull="yes"/>
+
+      <!-- Constraints on table a_ledger_init_flag -->
     <primarykey name="a_ledger_init_flag_pk"
                 descr=""
                 thisFields="a_ledger_number_i, a_init_option_name_c"/>
@@ -9594,7 +9601,14 @@
                 help="Enter the ledger number"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="a_period_number_i"
+      <tablefield name="a_year_i"
+                  type="integer"
+                  descr="Accounting Year"
+                  format="&gt;9"
+                  label="Year"
+                  notnull="yes"
+                  initial="0"/>
+      <tablefield name="a_period_number_i"
                 type="integer"
                 descr="This defines which accounting period is being used"
                 format="&gt;9"
@@ -24152,7 +24166,7 @@
             area=""/>
   <sequence name="seq_report_template"
             descr="Template Unique ID"
-            initial="100"
+            initial="1000"
             increment="1"
             cycleonlimit="no"
             minval="0"

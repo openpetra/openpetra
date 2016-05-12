@@ -161,14 +161,54 @@ namespace Ict.Petra.Client.App.Gui
             // Send to Templater to print!
             try
             {
-                TTemplaterAccess.PrintTemplaterDocument(TModule.mPartner,
+                bool allDocumentsOpened;
+                bool printOnCompletion;
+                string outputPath = TTemplaterAccess.PrintTemplaterDocument(TModule.mPartner,
                     formDataList,
                     templatePath,
                     false,
                     APreviewOnly,
                     !APreviewOnly,
+                    out allDocumentsOpened,
+                    out printOnCompletion,
                     targetDir,
                     ATitleText);
+
+                if (printOnCompletion)
+                {
+                    string[] files = null;
+
+                    if (Directory.Exists(outputPath))
+                    {
+                        files = Directory.GetFiles(outputPath);
+                    }
+
+                    if ((files == null) || (files.Length != 1))
+                    {
+                        // Where has it gone??
+                        string msg = string.Format(Catalog.GetString(
+                                "Unexpectedly failed to find the document to print in the folder{0}'{1}'"),
+                            Environment.NewLine, outputPath);
+                        MessageBox.Show(msg, Catalog.GetString("Print Error"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                        return;
+                    }
+
+                    string printerName;
+
+                    // request print information from user
+                    using (PrintDialog pd = new PrintDialog())
+                    {
+                        if (pd.ShowDialog() != DialogResult.OK)
+                        {
+                            return;
+                        }
+
+                        // Remember this for use lower down
+                        printerName = String.Format("\"{0}\"", pd.PrinterSettings.PrinterName);
+                    }
+
+                    TTemplaterAccess.RunPrintJob(printerName, files[0]);
+                }
             }
             catch (Exception ex)
             {

@@ -301,7 +301,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if the Export succeeded and a file was created, false otherwise</returns>
         public bool ExportBatches(bool AWithInteractionOnSuccess = true)
         {
-            if (txtFilename.Text == String.Empty)
+            string ExportFileName = txtFilename.Text;
+
+            if (ExportFileName == String.Empty)
             {
                 MessageBox.Show(Catalog.GetString("Please choose a location for the Export File."),
                     Catalog.GetString("Error"),
@@ -309,8 +311,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Error);
                 return false;
             }
+            else if (!ExportFileName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
+            {
+                ExportFileName += ".csv";
+            }
 
-            if (!Directory.Exists(Path.GetDirectoryName(txtFilename.Text)))
+            if (!Directory.Exists(Path.GetDirectoryName(ExportFileName)))
             {
                 MessageBox.Show(Catalog.GetString("Please select an existing directory for this file!"),
                     Catalog.GetString("Error"),
@@ -321,7 +327,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
-            if (File.Exists(txtFilename.Text))
+            if (File.Exists(ExportFileName))
             {
                 if (MessageBox.Show(Catalog.GetString("The file already exists. Is it OK to overwrite it?"),
                         Catalog.GetString("Export Gifts"),
@@ -334,7 +340,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 try
                 {
-                    File.Delete(txtFilename.Text);
+                    File.Delete(ExportFileName);
                 }
                 catch (Exception ex)
                 {
@@ -363,7 +369,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                if ((dtpDateFrom.Text == "") || (dtpDateTo.Text == ""))
+                if ((dtpDateFrom.Text == string.Empty) || (dtpDateTo.Text == string.Empty))
                 {
                     MessageBox.Show(Catalog.GetString("Start and end dates must be provided."),
                         Catalog.GetString("Error"),
@@ -478,7 +484,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return false;
                 }
 
-                StreamWriter sw1 = new StreamWriter(txtFilename.Text,
+                StreamWriter sw1 = new StreamWriter(ExportFileName,
                     false,
                     Encoding.GetEncoding(TAppSettingsManager.GetInt32("ExportGiftBatchEncoding", 1252)));
                 sw1.Write(exportString);
@@ -486,14 +492,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
-                TLogging.Log("GiftBatchExport.ManualCode: " + ex.ToString());
-                MessageBox.Show(ex.Message,
-                    Catalog.GetString("Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return false;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
+
+            bool ShowExportedFileInExplorer = false;
 
             if (AWithInteractionOnSuccess)
             {
@@ -504,13 +507,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         MessageBoxIcon.Information,
                         MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
                 {
-                    ProcessStartInfo si = new ProcessStartInfo(txtFilename.Text);
-                    si.UseShellExecute = true;
-                    si.Verb = "open";
+                    try
+                    {
+                        ProcessStartInfo si = new ProcessStartInfo(ExportFileName);
+                        si.UseShellExecute = true;
+                        si.Verb = "open";
 
-                    Process p = new Process();
-                    p.StartInfo = si;
-                    p.Start();
+                        Process p = new Process();
+                        p.StartInfo = si;
+                        p.Start();
+                    }
+                    catch
+                    {
+                        MessageBox.Show(Catalog.GetString(
+                                "Unable to launch the default application to open: '") + ExportFileName + "'!", Catalog.GetString(
+                                "Gift Export"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                        ShowExportedFileInExplorer = true;
+                    }
+                }
+            }
+            else
+            {
+                ShowExportedFileInExplorer = true;
+            }
+
+            if (ShowExportedFileInExplorer)
+            {
+                //If windows start Windows File Explorer
+                TExecutingOSEnum osVersion = Utilities.DetermineExecutingOS();
+
+                if ((osVersion >= TExecutingOSEnum.eosWinXP)
+                    && (osVersion < TExecutingOSEnum.oesUnsupportedPlatform))
+                {
+                    try
+                    {
+                        Process.Start("explorer.exe", string.Format("/select,\"{0}\"", ExportFileName));
+                    }
+                    catch
+                    {
+                        MessageBox.Show(Catalog.GetString(
+                                "Unable to launch Windows File Explorer to open: '") + ExportFileName + "'!", Catalog.GetString(
+                                "Gift Export"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    }
                 }
             }
 

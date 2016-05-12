@@ -2,8 +2,8 @@
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
     FormTitle: Donor Gift Statement
-    WindowWidth: 680
-    WindowHeight: 480
+    WindowWidth: 700
+    WindowHeight: 625
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\donorgiftstatement.xml,Finance\\\\finance.xml,common.xml]
@@ -21,7 +21,13 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [lblLedger, grpReportType, grpDateSelection, rgrDonorSelection, grpCurrencySelection]
+            Controls:
+                Row0: [lblLedger]
+                Row1: [grpReportType, grpCurrencySelection]
+                Row2: [grpDateSelection]
+                Row3: [rgrDonorSelection]
+                Row4: [ucoMotivationCriteria]
+            Stretch: horizontally
             
         tpgReportSorting:
             Label: Sorting
@@ -46,25 +52,33 @@
             Label: Ledger
         grpReportType:
             Label: Report Type
-            Stretch: horizontally
             Controls: [cmbReportType]
+            Width:300
         grpDateSelection:
             Label: Select Date
-            Stretch: horizontally
             Controls: [dtpFromDate, dtpToDate]
+            Width:300
         rgrDonorSelection:
             Label: Select Donors
             Stretch: horizontally
             Controls: [rbtAllDonors, rbtExtract, rbtPartner]
             ParameterName: param_donor
+            ColSpan:2
         grpCurrencySelection:
             Label: Gift Limit
             Stretch: horizontally
             Controls: [txtMinAmount, txtMaxAmount, cmbCurrency]
+            RowSpan:2
         cmbReportType:
             ParameterName: param_report_type
             OptionalValues: [Complete, Totals]
             OnChange: ReportTypeChanged
+        ucoMotivationCriteria:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
+            Stretch: horizontally
+            Height: 280
+            ColSpan: 2
+
         dtpFromDate:
             Label: From
             ParameterName: param_from_date

@@ -128,6 +128,12 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetAddressString"))
+            {
+                value = new TVariant(GetAddressString(ops[1].ToInt64(), ops[2].ToInt32(), ops[3].ToInt32()));
+                return true;
+            }
+
             if (StringHelper.IsSame(f, "AddressMeetsPostCodeCriteriaOrEmpty"))
             {
                 value =
@@ -989,6 +995,29 @@ namespace Ict.Petra.Server.MReporting.MPartner
             return FoundBestAddress;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ASiteKey"></param>
+        /// <param name="ALocationKey"></param>
+        /// <param name="AAddressOrder"></param>
+        /// <returns></returns>
+        public String GetAddressString(long ASiteKey, Int32 ALocationKey, Int32 AAddressOrder)
+        {
+            String Ret = "";
+            PLocationTable LocTbl = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey,
+                situation.GetDatabaseConnection().Transaction);
+
+            if (LocTbl.Rows.Count > 0)
+            {
+                PLocationRow LocRow = LocTbl[0];
+                Ret = Calculations.DetermineLocationString(LocRow, Calculations.TPartnerLocationFormatEnum.plfCommaSeparated,
+                    AAddressOrder);
+            }
+
+            return Ret;
+        }
+
         #region calculation for publication statistical report
 
         /// <summary>
@@ -1209,7 +1238,8 @@ namespace Ict.Petra.Server.MReporting.MPartner
             // codes should be surrounded by single quotes
             APublicationCodes = APublicationCodes.Replace("\"", "'");
 
-            // load all active partners who have subscriptions for publications in the list, are a donor, are a church, are an applicant or are an ex-worker
+            // load all active partners who have subscriptions for publications in the list,
+            // are a donor, are a church, are an applicant or are an ex-worker
             string Query = "SELECT DISTINCT p_partner.*," +
 
                            // is partner a donor?
@@ -1284,16 +1314,15 @@ namespace Ict.Petra.Server.MReporting.MPartner
                     }
 
                     if ((!PartnerLocationRow.IsDateGoodUntilNull())
-                        && (PartnerLocationRow.DateGoodUntil < System.DateTime.Today))
+                        && (PartnerLocationRow.DateGoodUntil < System.DateTime.Today)) // Address is old - don't use this.
                     {
-                        // Best address is no longer valid - don't use it
                         continue;
                     }
 
                     LocationTable = PLocationAccess.LoadByPrimaryKey(PartnerLocationRow.SiteKey,
                         PartnerLocationRow.LocationKey, situation.GetDatabaseConnection().Transaction);
 
-                    if (LocationTable.Rows.Count < 1)
+                    if (LocationTable.Rows.Count < 1) // This is a fault - there should be a single row returned.
                     {
                         continue;
                     }

@@ -1048,7 +1048,7 @@ namespace Ict.Petra.Server.MCommon
                 }
             }
 
-//            Console.WriteLine("WhereString: " + outcome);
+//            TLogging.LogAtLevel(6, "WhereString: " + outcome);
 
             return outcome;
         }

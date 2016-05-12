@@ -115,7 +115,10 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     (retVal ? Catalog.GetString("Stewardship Calculation Completed Successfully")
                      : Catalog.GetString("UNSUCCESSFUL Stewardship Calculation!"));
 
-                MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult));
+                MessageBox.Show(Messages.BuildMessageFromVerificationResult(ResultMsg, VerificationResult),
+                    Catalog.GetString("Stewardship Calculation"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
                 if (retVal)
                 {
@@ -126,9 +129,16 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                     btnCancel.Text = "Close";
                 }
             }
-            finally
+            catch (Exception ex)
             {
                 Cursor = Cursors.Default;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "An unexpected error occurred when trying to perform the Stewardship Calculation!{0}{0}Error: {1}"),
+                        Environment.NewLine, ex.Message),
+                    Catalog.GetString("Stewardship Calculation"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Error);
             }
         }
 

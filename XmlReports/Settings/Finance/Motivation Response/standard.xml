@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <Parameters>
   <Parameter id="param_report_type" value="Detailed" />
+  <Parameter id="param_motivation_group" value="eString:All" />
+  <Parameter id="param_motivation_detail" value="eString:All" />
 </Parameters>

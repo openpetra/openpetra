@@ -134,8 +134,8 @@ namespace Ict.Petra.Client.MPartner.Verification
             DataColumn NilDataColumn;
             String mVerifiedString;
             bool mPartnerExists;
-            bool mPartnerIsMerged;
             TPartnerClass mPartnerClass;
+            TStdPartnerStatusCode partnerStatus;
 
             TPartnerClass[] mPartnerClassSet;
             Completed = false;
@@ -258,7 +258,7 @@ namespace Ict.Petra.Client.MPartner.Verification
                         out mPartnerExists,
                         out mVerifiedString,
                         out mPartnerClass,
-                        out mPartnerIsMerged);
+                        out partnerStatus);
                 }
 
                 if ((Row.SubscriptionStatus == "GIFT") && ((!FtmpPartnerKeyValid) || (Row.GiftFromKey == 00000000)))

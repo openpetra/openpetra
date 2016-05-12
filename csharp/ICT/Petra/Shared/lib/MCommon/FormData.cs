@@ -177,6 +177,28 @@ namespace Ict.Petra.Shared.MCommon
         }
 
         /// <summary>
+        /// Class to keep information about Form Letter printing options
+        /// </summary>
+        [Serializable()]
+        public class TFormLetterPrintOptions
+        {
+            /// The selected mailing code
+            public string MailingCode
+            {
+                get; set;
+            }
+
+            /// The selected publication codes as a delimited string
+            public string PublicationCodes
+            {
+                get; set;
+            }
+        }
+
+        /// <summary>A single instance of the options that apply for this Form Letter print run</summary>
+        public TFormLetterPrintOptions FormLetterPrintOptions = null;
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TFormLetterInfo(List <String>ATagList, String AFileName, Int32 AFormalityLevel = 1)
@@ -422,6 +444,34 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        #region Splitting Email addresses
+
+        /// <summary>
+        /// If this is true multiple email addresses are split and applied one by one to the same partner on multiple rows
+        /// </summary>
+        public bool SplitEmailAddresses
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Value used internally to specify a pointer into one of multiple email addresses
+        /// </summary>
+        public int CurrentEmailInstance
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Value used internally to specify the next pointer to use where there are multiple email addresses
+        /// </summary>
+        public int NextEmailInstance
+        {
+            get; set;
+        }
+
+        #endregion
+
         /// <summary>
         /// Add retrieval section flag if not there yet
         /// </summary>
@@ -596,6 +646,18 @@ namespace Ict.Petra.Shared.MCommon
         public Boolean ContainsTag(String ATag)
         {
             return TagList.Contains(ATag);
+        }
+
+        /// <summary>
+        /// This constructor sets all the Form Letter print options and is set by the GUI
+        /// </summary>
+        /// <param name="AMailingCode"></param>
+        /// <param name="APublicationCodes"></param>
+        public void AddFormLetterPrintOptions(string AMailingCode, string APublicationCodes)
+        {
+            FormLetterPrintOptions = new TFormLetterPrintOptions();
+            FormLetterPrintOptions.MailingCode = AMailingCode;
+            FormLetterPrintOptions.PublicationCodes = APublicationCodes;
         }
     }
 
@@ -784,6 +846,8 @@ namespace Ict.Petra.Shared.MCommon
             Partner = new List <TFormDataPartner>();
             FUsedForLabelPrinting = false;
             FColumnIndex = 1;
+
+            P = Partner;
         }
 
         /// <summary>
@@ -836,8 +900,12 @@ namespace Ict.Petra.Shared.MCommon
             }
         }
 
-        /// list of partner records (make provision for up to 8 columns)
+        /// list of partner records (no columns)
         public List <TFormDataPartner>Partner;
+        /// short accessor for Partner (points to the same data)
+        public List <TFormDataPartner>P;
+
+        /// list of partner records (make provision for up to 8 columns)
         /// list of partner records for column 1
         public List <TFormDataPartner>C1;
         /// list of partner records for column 2 (optional)
@@ -977,6 +1045,7 @@ namespace Ict.Petra.Shared.MCommon
             Gift = new List <TFormDataGift>();
             FamilyMember = new List <TFormDataFamilyMember>();
             Custom1 = Custom2 = Custom3 = Custom4 = Custom5 = Custom6 = Custom7 = Custom8 = String.Empty;
+            AddressIsOriginal = true;
         }
 
         // General Info
@@ -1016,6 +1085,10 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String TitleAndSpace {
+            get; set;
+        }
+        ///
         public String AddresseeType {
             get; set;
         }
@@ -1024,11 +1097,23 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String FirstNameAndSpace {
+            get; set;
+        }
+        ///
         public String FirstInitial {
             get; set;
         }
         ///
+        public String FirstInitialAndSpace {
+            get; set;
+        }
+        ///
         public String LastName {
+            get; set;
+        }
+        ///
+        public String LastNameAndSpace {
             get; set;
         }
         ///
@@ -1045,6 +1130,10 @@ namespace Ict.Petra.Shared.MCommon
         }
         ///
         public Int32 LocationKey {
+            get; set;
+        }
+        /// set to true if address was retrieved from original LocationKey, otherwise false if updated (for example to BestAddress)
+        public bool AddressIsOriginal {
             get; set;
         }
         ///
@@ -1085,6 +1174,20 @@ namespace Ict.Petra.Shared.MCommon
         }
         /// assembled address block
         public String AddressBlock {
+            get; set;
+        }
+
+        // Enclosures related
+        ///
+        public string PublicationCodes {
+            get; set;
+        }
+        ///
+        public string MailingCode {
+            get; set;
+        }
+        ///
+        public string Enclosures {
             get; set;
         }
 
@@ -1181,6 +1284,16 @@ namespace Ict.Petra.Shared.MCommon
         }
         ///
         public DateTime ? GiftDate {
+            get; set;
+        }
+
+        /// Is any entry in list "Gift" the first donation of a new donor?
+        public Boolean IsFirstDon {
+            get; set;
+        }
+
+        /// If any entry in list "Gift" is first donation or a new donor: Will be set to "N", otherwise empty
+        public String FirstDon {
             get; set;
         }
 
@@ -1311,6 +1424,10 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
+        public String MaritalStatusDesc {
+            get; set;
+        }
+        ///
         public String OccupationCode {
             get; set;
         }
@@ -1324,6 +1441,11 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Nationality code taken from main passport
+        public String PassportNationalityCode {
+            get; set;
+        }
+
         /// Number taken from main passport
         public String PassportNumber {
             get; set;
@@ -1331,6 +1453,26 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Name taken from main passport
         public String PassportName {
+            get; set;
+        }
+
+        ///
+        public DateTime ? PassportDateOfIssue {
+            get; set;
+        }
+
+        /// Place of issue taken from main passport
+        public String PassportPlaceOfIssue {
+            get; set;
+        }
+
+        /// Date of expiry taken from main passport
+        public DateTime ? PassportDateOfExpiry {
+            get; set;
+        }
+
+        /// Place of birth taken from main passport
+        public String PassportPlaceOfBirth {
             get; set;
         }
 
@@ -1564,6 +1706,16 @@ namespace Ict.Petra.Shared.MCommon
         public String MailingCode {
             get; set;
         }
+
+        /// Is First Donation of a new donor?
+        public Boolean IsFirstDon {
+            get; set;
+        }
+
+        /// Will be set to "N" if First Donation of a new donor, otherwise empty
+        public String FirstDon {
+            get; set;
+        }
     }
 
     /// <summary>
@@ -1598,6 +1750,11 @@ namespace Ict.Petra.Shared.MCommon
         public String Status {
             get; set;
         }
+
+        /// Number of copies to send
+        public int PublicationCopies {
+            get; set;
+        }
     }
 
     /// <summary>
@@ -1606,6 +1763,11 @@ namespace Ict.Petra.Shared.MCommon
     [Serializable()]
     public class TFormDataPassport : TFormData
     {
+        /// Is Main Passport?
+        public Boolean IsMainPassport {
+            get; set;
+        }
+
         /// Passport Number
         public String Number {
             get; set;

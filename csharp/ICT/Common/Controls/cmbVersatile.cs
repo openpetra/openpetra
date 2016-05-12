@@ -79,6 +79,10 @@ namespace Ict.Common.Controls
             string.Empty, string.Empty, string.Empty, string.Empty
         };
 
+        // Variables used to handle the case where there is a non-unique display member
+        private int FSelectedIndexOnCloseUp;
+        private Timer FDropDownCloseUpResetTimer = new Timer();
+
         /// <summary>
         /// this combobox will never accept new values
         /// </summary>
@@ -252,6 +256,35 @@ namespace Ict.Common.Controls
             }
         }
 
+        private bool SuppressChangeDetection
+        {
+            get
+            {
+                if (Tag == null)
+                {
+                    return false;
+                }
+
+                return ((string)Tag).Contains(CommonTagString.SUPPRESS_CHANGE_DETECTION);
+            }
+            set
+            {
+                if (value == true)
+                {
+                    if (!SuppressChangeDetection)
+                    {
+                        Tag = Tag + CommonTagString.SUPPRESS_CHANGE_DETECTION;
+                    }
+                }
+                else
+                {
+                    if (SuppressChangeDetection)
+                    {
+                        Tag = ((string)Tag).Replace(CommonTagString.SUPPRESS_CHANGE_DETECTION, "");
+                    }
+                }
+            }
+        }
         #region Creation and Disposal
 
         /// <summary>
@@ -271,11 +304,18 @@ namespace Ict.Common.Controls
             this.GridLineColor = System.Drawing.SystemColors.ControlLight;
             this.GridLineVertical = true;
             this.GridLineHorizontal = true;
+            FSelectedIndexOnCloseUp = -1;
+            FDropDownCloseUpResetTimer.Interval = 200;
 
             if ((this.FColumnsToSearch == null) || (this.FColumnsToSearch.Count < 1))
             {
                 this.ColumnsToSearch = "";
             }
+
+            this.DropDownClosed += TCmbVersatile_DropDownClosed;
+            this.DropDown += TCmbVersatile_DropDown;
+            this.SelectedValueChanged += TCmbVersatile_SelectedValueChanged;
+            FDropDownCloseUpResetTimer.Tick += FDropDownCloseUpResetTimer_Tick;
         }
 
         /// <summary>
@@ -310,13 +350,81 @@ namespace Ict.Common.Controls
 
         #endregion
 
-        private void TcmbVersatile_Leave(System.Object sender, System.EventArgs e)
+        #region Non-unique display member event responses
+
+        private void TCmbVersatile_DropDown(object sender, EventArgs e)
         {
-            if (this.Text == "")
+            if (HasNonUniqueDisplayMember)
             {
-                this.SelectedIndex = -1;
+                // When the list is dropped down we do know the correct selected index.
+                // But when the OS makes the call for us to draw the items it sets the SelectedIndex to the first
+                //  occurrence of the display member.  So we need to check that the actual SelectedIndex is sorted
+                //  so that it comes first in the data source default view
+                string valueString = GetSelectedString();
+                string displayString = GetSelectedDisplayString();
+                int actualSelectedIndex = FindStringInComboBox(valueString);
+                int systemSelectedIndex = FindStringInComboBox(displayString);
+                DataView dv = ((DataView)DataSource);
+
+                if ((systemSelectedIndex < actualSelectedIndex)
+                    && (dv[systemSelectedIndex][DisplayMember].ToString() == dv[actualSelectedIndex][DisplayMember].ToString()))
+                {
+                    // We need to do a swap of the two non-unique rows with the same display member value
+                    // If the next line causes an exception, did you remember to add an integer column to the table called NonUniqueSortMember?
+                    // This column contains arbitrary numbers that can be initialised to the row index of the initial table view.
+                    dv[actualSelectedIndex]["NonUniqueSortMember"] = Convert.ToInt32(dv[systemSelectedIndex]["NonUniqueSortMember"]) - 1;
+
+                    // The OS has its own copy of the DataSource which we will not have changed, so we need to reapply the new source and initialise it.
+
+                    SuppressChangeDetection = true;
+                    this.DataSource = dv;
+                    SelectedIndex = -1;
+                    SelectedIndex = systemSelectedIndex;
+                    SuppressChangeDetection = false;
+                }
             }
         }
+
+        private void TCmbVersatile_DropDownClosed(object sender, EventArgs e)
+        {
+            if (HasNonUniqueDisplayMember)
+            {
+                // Remember the selected index when the drop down closes.
+                // We may need to use it when the OS calls SelectedValueChanged and it get sthe index wrong!
+                FSelectedIndexOnCloseUp = SelectedIndex;
+
+                // Start our reset timer in case we don't actually get any SelectedValueChanged call (eg because the selected value is actually unique)
+                FDropDownCloseUpResetTimer.Start();
+            }
+        }
+
+        private void TCmbVersatile_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (HasNonUniqueDisplayMember && (FSelectedIndexOnCloseUp > -1))
+            {
+                // We need to set the selected item that was set when the combo list was closed
+                // Typically this is the first call after the closeup, but if there was no change (according to the OS)
+                //   we won't get called - but our timer will reset FSelectedIndexOnCloseUp instead.
+                DataRowView drv = ((DataView) this.DataSource)[FSelectedIndexOnCloseUp];
+                FSelectedIndexOnCloseUp = -1;
+                SuppressChangeDetection = true;
+                SetSelectedString(drv.Row[ValueMember].ToString());
+                SuppressChangeDetection = false;
+            }
+        }
+
+        private void FDropDownCloseUpResetTimer_Tick(object sender, EventArgs e)
+        {
+            FDropDownCloseUpResetTimer.Stop();
+
+            if (FSelectedIndexOnCloseUp > -1)
+            {
+                // We never got the call that would have reset this
+                FSelectedIndexOnCloseUp = -1;
+            }
+        }
+
+        #endregion
 
         #region Routines dealing with the Drop Down
 
@@ -603,6 +711,14 @@ namespace Ict.Common.Controls
             }
 
             base.OnCreateControl();
+        }
+
+        private void TcmbVersatile_Leave(System.Object sender, System.EventArgs e)
+        {
+            if (this.Text == "")
+            {
+                this.SelectedIndex = -1;
+            }
         }
 
         #endregion

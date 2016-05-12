@@ -35,6 +35,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Server.MPersonnel.Person.Cacheable;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MHospitality.Data;
@@ -762,27 +763,128 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportAbility(TDBTransaction ATransaction)
+        private void ImportAbility(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
-            PmPersonAbilityRow PersonAbilityRow = FMainDS.PmPersonAbility.NewRowTyped();
-
-            PersonAbilityRow.PartnerKey = FPartnerKey;
-
-            PersonAbilityRow.AbilityAreaName = ReadString();
-            PersonAbilityRow.AbilityLevel = ReadInt32();
-            PersonAbilityRow.YearsOfExperience = ReadInt32();
-            PersonAbilityRow.BringingInstrument = ReadBoolean();
-            PersonAbilityRow.YearsOfExperienceAsOf = ReadNullableDate();
-            PersonAbilityRow.Comment = ReadString();
-
-            if (!FIgnorePartner)
+            if (APetraVersion.FileMajorPart < 3)
             {
-                PmPersonAbilityAccess.AddOrModifyRecord(PersonAbilityRow.PartnerKey,
-                    PersonAbilityRow.AbilityAreaName,
-                    FMainDS.PmPersonAbility,
-                    PersonAbilityRow,
-                    FDoNotOverwrite,
-                    ATransaction);
+                // map "Ability" to "Skill" (Ability not supported any more in OpenPetra)
+                String AbilityArea = "";
+                Int32 SkillKey = 0;
+                Int32 AbilityLevel;
+                Int32 SkillLevel = 99;
+                PmPersonSkillRow PersonSkillRow = FMainDS.PmPersonSkill.NewRowTyped();
+
+                PersonSkillRow.PartnerKey = FPartnerKey;
+
+                // map ability area to skill category
+                AbilityArea = ReadString();
+
+                TPersonnelCacheable CachePopulator = new TPersonnelCacheable();
+                PtSkillCategoryTable SkillCategoryTable =
+                    (PtSkillCategoryTable)CachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.SkillCategoryList);
+                SkillCategoryTable.DefaultView.RowFilter = String.Format("{0} LIKE '" + AbilityArea.Substring(0, 3) + "%'",
+                    PtSkillCategoryTable.GetCodeDBName());
+
+                // set to default in case code can't be found
+                PersonSkillRow.SkillCategoryCode = "OTHER";
+
+                foreach (DataRowView rv in SkillCategoryTable.DefaultView)
+                {
+                    PtSkillCategoryRow SkillCategoryRow = (PtSkillCategoryRow)rv.Row;
+                    PersonSkillRow.SkillCategoryCode = SkillCategoryRow.Code;
+                }
+
+                // set skill description by retrieving information from ability table (if it still exists)
+                PtAbilityAreaTable AbilityAreaTable =
+                    (PtAbilityAreaTable)CachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.AbilityAreaList);
+                PtAbilityAreaRow AbilityAreaRow =
+                    (PtAbilityAreaRow)AbilityAreaTable.Rows.Find(new object[] { AbilityArea });
+
+                if (AbilityAreaRow != null)
+                {
+                    // use the description of the ability area if we can find it
+                    PersonSkillRow.DescriptionEnglish = AbilityAreaRow.AbilityAreaDescr;
+                }
+                else
+                {
+                    // if no ability area found then we have no other option than putting the "cryptic" description in
+                    PersonSkillRow.DescriptionEnglish = AbilityArea;
+                }
+
+                PersonSkillRow.DescriptionLocal = "";
+                PersonSkillRow.DescriptionLanguage = "";
+
+                // map ability level to skill level
+                AbilityLevel = ReadInt32();
+
+                if ((AbilityLevel >= 0) && (AbilityLevel <= 3))
+                {
+                    SkillLevel = 1;
+                }
+                else if ((AbilityLevel >= 4) && (AbilityLevel <= 5))
+                {
+                    SkillLevel = 2;
+                }
+                else if ((AbilityLevel >= 6) && (AbilityLevel <= 7))
+                {
+                    SkillLevel = 3;
+                }
+                else if ((AbilityLevel >= 8) && (AbilityLevel <= 10))
+                {
+                    SkillLevel = 4;
+                }
+
+                PersonSkillRow.SkillLevel = SkillLevel;
+
+                PersonSkillRow.YearsOfExperience = ReadInt32();
+                ReadBoolean(); // used to be PersonAbilityRow.BringingInstrument
+                PersonSkillRow.YearsOfExperienceAsOf = ReadNullableDate();
+                PersonSkillRow.ProfessionalSkill = false;
+                PersonSkillRow.CurrentOccupation = false;
+                PersonSkillRow.Degree = "";
+                PersonSkillRow.SetYearOfDegreeNull();
+                PersonSkillRow.Comment = ReadString();
+
+                if (!FIgnorePartner)
+                {
+                    // find job assignment (ignoring job key and job assignment key)
+                    PmPersonSkillRow TmpSkillRow = FMainDS.PmPersonSkill.NewRowTyped(false);
+                    TmpSkillRow.PartnerKey = FPartnerKey;
+                    TmpSkillRow.SkillCategoryCode = PersonSkillRow.SkillCategoryCode;
+                    TmpSkillRow.DescriptionEnglish = PersonSkillRow.DescriptionEnglish;
+
+                    PmPersonSkillTable ExistingSkillTable = PmPersonSkillAccess.LoadUsingTemplate(TmpSkillRow, null, ATransaction);
+
+                    if (ExistingSkillTable.Count > 0)
+                    {
+                        // if skill record does exist: use skill key to update it
+                        SkillKey = ExistingSkillTable[0].PersonSkillKey;
+                    }
+                    else
+                    {
+                        // if skill record does not exist: get new skill key from sequence
+                        SkillKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_person_skill);
+                    }
+
+                    // now set the skill key
+                    PersonSkillRow.PersonSkillKey = SkillKey;
+
+                    PmPersonSkillAccess.AddOrModifyRecord(SkillKey,
+                        FMainDS.PmPersonSkill,
+                        PersonSkillRow,
+                        FDoNotOverwrite,
+                        ATransaction);
+                }
+            }
+            else
+            {
+                // read but ignore data that is coming from OpenPetra (no abilities should be recorded there)
+                ReadString(); // AbilityAreaName
+                ReadInt32(); // AbilityLevel
+                ReadInt32(); // YearsOfExperience
+                ReadBoolean(); // BringingInstrument
+                ReadNullableDate(); // YearsOfExperienceAsOf
+                ReadString(); // Comment
             }
         }
 
@@ -1162,7 +1264,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 //        AddRequiredOffice(GeneralApplicationRow.RegistrationOffice);            }
             }
 
-            GeneralApplicationRow.Comment = ReadMultiLine();
+            GeneralApplicationRow.Comment = ReadString();
 
             if (ApplicationTypeRow.AppFormType == MPersonnelConstants.APPLICATIONFORMTYPE_SHORTFORM)
             {
@@ -1428,6 +1530,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             DocumentRow.DateOfExpiration = ReadNullableDate();
             DocumentRow.AssocDocId = ReadString();
             DocumentRow.ContactPartnerKey = ReadInt64();
+
+            if (!PPartnerAccess.Exists(DocumentRow.ContactPartnerKey, ATransaction))
+            {
+                // make sure that contact partner key exists in the database already, otherwise reset to take
+                // care of referential integrity
+                AddVerificationResult("Contact Partner for Document (Partner: " + FPartnerKey.ToString(
+                        "0000000000") + "/Type: " + DocumentRow.DocCode + "/Id: " + DocumentRow.DocumentId + ") not set" +
+                    " as Partner Key " + DocumentRow.ContactPartnerKey.ToString("0000000000") + " does not exist in database.");
+                DocumentRow.SetContactPartnerKeyNull();
+            }
+
             DocumentRow.DocComment = ReadString();
 
             if (!FIgnorePartner)
@@ -1482,29 +1595,132 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private void ImportProfessionalData(TDBTransaction ATransaction)
+        private void ImportProfessionalData(TFileVersionInfo APetraVersion, TDBTransaction ATransaction)
         {
-            PmPersonQualificationRow PersonQualificationRow = FMainDS.PmPersonQualification.NewRowTyped();
-
-            PersonQualificationRow.PartnerKey = FPartnerKey;
-
-            PersonQualificationRow.QualificationAreaName = ReadString();
-            PersonQualificationRow.QualificationLevel = ReadInt32();
-            PersonQualificationRow.InformalFlag = ReadBoolean();
-            PersonQualificationRow.YearsOfExperience = ReadInt32();
-            PersonQualificationRow.YearsOfExperienceAsOf = ReadNullableDate();
-            PersonQualificationRow.Comment = ReadString();
-            PersonQualificationRow.QualificationDate = ReadNullableDate();
-            PersonQualificationRow.QualificationExpiry = ReadNullableDate();
-
-            if (!FIgnorePartner)
+            if (APetraVersion.FileMajorPart < 3)
             {
-                PmPersonQualificationAccess.AddOrModifyRecord(PersonQualificationRow.PartnerKey,
-                    PersonQualificationRow.QualificationAreaName,
-                    FMainDS.PmPersonQualification,
-                    PersonQualificationRow,
-                    FDoNotOverwrite,
-                    ATransaction);
+                // map "Ability" to "Skill" (Ability not supported any more in OpenPetra)
+                String QualificationArea = "";
+                Int32 SkillKey = 0;
+                Int32 QualificationLevel;
+                Int32 SkillLevel = 99;
+                PmPersonSkillRow PersonSkillRow = FMainDS.PmPersonSkill.NewRowTyped();
+
+                PersonSkillRow.PartnerKey = FPartnerKey;
+
+                // map qualification area to skill category
+                QualificationArea = ReadString();
+
+                TPersonnelCacheable CachePopulator = new TPersonnelCacheable();
+                PtSkillCategoryTable SkillCategoryTable =
+                    (PtSkillCategoryTable)CachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.SkillCategoryList);
+                SkillCategoryTable.DefaultView.RowFilter = String.Format("{0} LIKE '" + QualificationArea.Substring(0, 3) + "%'",
+                    PtSkillCategoryTable.GetCodeDBName());
+
+                // set to default in case code can't be found
+                PersonSkillRow.SkillCategoryCode = "OTHER";
+
+                foreach (DataRowView rv in SkillCategoryTable.DefaultView)
+                {
+                    PtSkillCategoryRow SkillCategoryRow = (PtSkillCategoryRow)rv.Row;
+                    PersonSkillRow.SkillCategoryCode = SkillCategoryRow.Code;
+                }
+
+                // set skill description by retrieving information from qualification table (if it still exists)
+                PtQualificationAreaTable QualificationAreaTable =
+                    (PtQualificationAreaTable)CachePopulator.GetCacheableTable(TCacheablePersonTablesEnum.QualificationAreaList);
+                PtQualificationAreaRow QualificationAreaRow =
+                    (PtQualificationAreaRow)QualificationAreaTable.Rows.Find(new object[] { QualificationArea });
+
+                if (QualificationAreaRow != null)
+                {
+                    // use the description of the qualification area if we can find it
+                    PersonSkillRow.DescriptionEnglish = QualificationAreaRow.QualificationAreaDescr;
+                }
+                else
+                {
+                    // if no qualification area found then we have no other option than putting the "cryptic" description in
+                    PersonSkillRow.DescriptionEnglish = QualificationArea;
+                }
+
+                PersonSkillRow.DescriptionLocal = "";
+                PersonSkillRow.DescriptionLanguage = "";
+
+                // map ability level to skill level
+                QualificationLevel = ReadInt32();
+
+                if ((QualificationLevel >= 0) && (QualificationLevel <= 3))
+                {
+                    SkillLevel = 1;
+                }
+                else if ((QualificationLevel >= 4) && (QualificationLevel <= 5))
+                {
+                    SkillLevel = 2;
+                }
+                else if ((QualificationLevel >= 6) && (QualificationLevel <= 7))
+                {
+                    SkillLevel = 3;
+                }
+                else if ((QualificationLevel >= 8) && (QualificationLevel <= 10))
+                {
+                    SkillLevel = 4;
+                }
+
+                PersonSkillRow.SkillLevel = SkillLevel;
+
+                ReadBoolean(); // used to be PersonQualificationRow.InformalFlag
+                PersonSkillRow.YearsOfExperience = ReadInt32();
+                PersonSkillRow.YearsOfExperienceAsOf = ReadNullableDate();
+                PersonSkillRow.ProfessionalSkill = true;
+                PersonSkillRow.CurrentOccupation = false;
+                PersonSkillRow.Degree = "";
+                PersonSkillRow.SetYearOfDegreeNull();
+                PersonSkillRow.Comment = ReadString();
+                ReadNullableDate(); // used to be PersonQualificationRow.QualificationDate
+                ReadNullableDate(); // used to be PersonQualificationRow.QualificationExpiry
+
+                if (!FIgnorePartner)
+                {
+                    // find job assignment (ignoring job key and job assignment key)
+                    PmPersonSkillRow TmpSkillRow = FMainDS.PmPersonSkill.NewRowTyped(false);
+                    TmpSkillRow.PartnerKey = FPartnerKey;
+                    TmpSkillRow.SkillCategoryCode = PersonSkillRow.SkillCategoryCode;
+                    TmpSkillRow.DescriptionEnglish = PersonSkillRow.DescriptionEnglish;
+
+                    PmPersonSkillTable ExistingSkillTable = PmPersonSkillAccess.LoadUsingTemplate(TmpSkillRow, null, ATransaction);
+
+                    if (ExistingSkillTable.Count > 0)
+                    {
+                        // if skill record does exist: use skill key to update it
+                        SkillKey = ExistingSkillTable[0].PersonSkillKey;
+                    }
+                    else
+                    {
+                        // if skill record does not exist: get new skill key from sequence
+                        SkillKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_person_skill);
+                    }
+
+                    // now set the skill key
+                    PersonSkillRow.PersonSkillKey = SkillKey;
+
+                    PmPersonSkillAccess.AddOrModifyRecord(SkillKey,
+                        FMainDS.PmPersonSkill,
+                        PersonSkillRow,
+                        FDoNotOverwrite,
+                        ATransaction);
+                }
+            }
+            else
+            {
+                // read but ignore data that is coming from OpenPetra (no qualifications should be recorded there)
+                ReadString(); // QualificationAreaName
+                ReadInt32(); // QualificationLevel
+                ReadBoolean(); // InformalFlag
+                ReadInt32(); // YearsOfExperience
+                ReadNullableDate(); // YearsOfExperienceAsOf
+                ReadString(); // Comment
+                ReadNullableDate(); // QualificationDate
+                ReadNullableDate(); // QualificationExpiry
             }
         }
 
@@ -1528,6 +1744,60 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     PersonEvaluationRow.Evaluator,
                     FMainDS.PmPersonEvaluation,
                     PersonEvaluationRow,
+                    FDoNotOverwrite,
+                    ATransaction);
+            }
+        }
+
+        private void ImportSkill(TDBTransaction ATransaction)
+        {
+            Int32 SkillKey = 0;
+            PmPersonSkillRow PersonSkillRow = FMainDS.PmPersonSkill.NewRowTyped();
+
+            PersonSkillRow.PartnerKey = FPartnerKey;
+
+            PersonSkillRow.SkillCategoryCode = ReadString();
+            PersonSkillRow.DescriptionEnglish = ReadString();
+            PersonSkillRow.DescriptionLocal = ReadString();
+            PersonSkillRow.DescriptionLanguage = ReadString();
+
+            PersonSkillRow.SkillLevel = ReadInt32();
+            PersonSkillRow.YearsOfExperience = ReadInt32();
+            PersonSkillRow.YearsOfExperienceAsOf = ReadNullableDate();
+            PersonSkillRow.ProfessionalSkill = ReadBoolean();
+            PersonSkillRow.CurrentOccupation = ReadBoolean();
+            PersonSkillRow.Degree = ReadString();
+            PersonSkillRow.YearOfDegree = ReadInt32();
+
+            PersonSkillRow.Comment = ReadString();
+
+            if (!FIgnorePartner)
+            {
+                // find job assignment (ignoring job key and job assignment key)
+                PmPersonSkillRow TmpSkillRow = FMainDS.PmPersonSkill.NewRowTyped(false);
+                TmpSkillRow.PartnerKey = FPartnerKey;
+                TmpSkillRow.SkillCategoryCode = PersonSkillRow.SkillCategoryCode;
+                TmpSkillRow.DescriptionEnglish = PersonSkillRow.DescriptionEnglish;
+
+                PmPersonSkillTable ExistingSkillTable = PmPersonSkillAccess.LoadUsingTemplate(TmpSkillRow, null, ATransaction);
+
+                if (ExistingSkillTable.Count > 0)
+                {
+                    // if skill record does exist: use skill key to update it
+                    SkillKey = ExistingSkillTable[0].PersonSkillKey;
+                }
+                else
+                {
+                    // if skill record does not exist: get new skill key from sequence
+                    SkillKey = (Int32)MCommon.WebConnectors.TSequenceWebConnector.GetNextSequence(TSequenceNames.seq_person_skill);
+                }
+
+                // now set the skill key
+                PersonSkillRow.PersonSkillKey = SkillKey;
+
+                PmPersonSkillAccess.AddOrModifyRecord(SkillKey,
+                    FMainDS.PmPersonSkill,
+                    PersonSkillRow,
                     FDoNotOverwrite,
                     ATransaction);
             }
@@ -1702,7 +1972,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
                     }
 
-                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination());
+                    GiftDestinationRow.Key = Math.Max(Max, TPartnerDataReaderWebConnector.GetNewKeyForPartnerGiftDestination(ATransaction));
                 }
                 else
                 {
@@ -2026,7 +2296,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 if (KeyWord == "ABILITY")
                 {
-                    ImportAbility(ATransaction);
+                    ImportAbility(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "ADDRESS")
                 {
@@ -2074,11 +2344,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 else if (KeyWord == "PROFESN")
                 {
-                    ImportProfessionalData(ATransaction);
+                    ImportProfessionalData(APetraVersion, ATransaction);
                 }
                 else if (KeyWord == "PROGREP")
                 {
                     ImportPersonEvaluation(ATransaction);
+                }
+                else if (KeyWord == "SKILL")
+                {
+                    ImportSkill(ATransaction);
                 }
                 else if (KeyWord == "SPECNEED")
                 {

@@ -292,46 +292,45 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static void GetForeignCurrencyAccountActuals(ref DataTable AForeignCurrencyAccounts, Int32 ALedgerNumber, Int32 AYear)
         {
-            //string ReturnValue = "";
-            DataTable ForeignCurrencyAccounts = AForeignCurrencyAccounts.Clone();
+            DataTable ForeignCurrencyAccounts = AForeignCurrencyAccounts;
 
-            ForeignCurrencyAccounts.Merge(AForeignCurrencyAccounts);
-            string CostCentreCode = "[" + ALedgerNumber + "]";
             TDBTransaction Transaction = null;
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
                 delegate
                 {
+                    AGeneralLedgerMasterTable glmTbl = new AGeneralLedgerMasterTable();
+                    AGeneralLedgerMasterRow GLMTemplateRow = glmTbl.NewRowTyped(false);
+
                     foreach (DataRow ForeignCurrencyAccountRow in ForeignCurrencyAccounts.Rows)
                     {
-                        AGeneralLedgerMasterTable Table = AGeneralLedgerMasterAccess.LoadByUniqueKey(
-                            ALedgerNumber, AYear, ForeignCurrencyAccountRow[AAccountTable.GetAccountCodeDBName()].ToString(), CostCentreCode,
-                            Transaction);
+                        GLMTemplateRow.LedgerNumber = ALedgerNumber;
+                        GLMTemplateRow.Year = AYear;
+                        GLMTemplateRow.AccountCode = ForeignCurrencyAccountRow[AAccountTable.GetAccountCodeDBName()].ToString();
 
-                        if ((Table != null) && (Table.Rows.Count > 0))
+                        glmTbl = AGeneralLedgerMasterAccess.LoadUsingTemplate(GLMTemplateRow, Transaction);
+                        Decimal YtdActual = 0;
+                        Decimal YtdActualForeign = 0;
+
+                        if (glmTbl != null)
                         {
-                            AGeneralLedgerMasterRow Row = Table[0];
-
-                            if (Row.IsYtdActualForeignNull())
+                            //
+                            // I need to sum up all the GLM entries for this account:
+                            foreach (AGeneralLedgerMasterRow glmRow in glmTbl.Rows)
                             {
-                                ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = 0;
-                            }
-                            else
-                            {
-                                ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = Row.YtdActualForeign;
-                            }
+                                if (!glmRow.IsYtdActualForeignNull())
+                                {
+                                    YtdActualForeign += glmRow.YtdActualForeign;
+                                }
 
-                            ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()] = Row.YtdActualBase;
+                                YtdActual += glmRow.YtdActualBase;
+                            }
                         }
-                        else
-                        {
-                            ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = 0;
-                            ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()] = 0;
-                        }
+
+                        ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualBaseDBName()] = YtdActual;
+                        ForeignCurrencyAccountRow[AGeneralLedgerMasterTable.GetYtdActualForeignDBName()] = YtdActualForeign;
                     }
                 });
-
-            AForeignCurrencyAccounts = ForeignCurrencyAccounts;
         }
 
         /// <summary>

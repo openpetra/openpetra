@@ -89,9 +89,12 @@ namespace Ict.Petra.Server.MReporting.Calculator
         /// </summary>
         /// <returns>true if the report was successfully generated
         /// </returns>
-        public Boolean GenerateResult(ref TParameterList parameterlist, ref TResultList resultlist, ref String AErrorMessage)
+        public Boolean GenerateResult(ref TParameterList parameterlist,
+            ref TResultList resultlist,
+            ref String AErrorMessage,
+            ref Exception AException)
         {
-            Boolean ReturnValue;
+            Boolean ReturnValue = false;
 
             if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
             {
@@ -99,8 +102,9 @@ namespace Ict.Petra.Server.MReporting.Calculator
                 TLogging.Log("start calculating", TLoggingType.ToLogfile);
             }
 
-            ReturnValue = false;
             AErrorMessage = "";
+            AException = null;
+
             try
             {
                 this.Parameters = parameterlist;
@@ -157,18 +161,20 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     ReturnValue = true;
                 }
             }
-            catch (Exception E)
+            catch (Exception Exc)
             {
-                TLogging.Log(E.StackTrace);
-                TLogging.Log(E.Message);
+                TLogging.Log(Exc.ToString());
+                TLogging.Log(Exc.StackTrace);
 
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)
                 {
                     Parameters.Save(Path.GetDirectoryName(TSrvSetting.ServerLogFile) + Path.DirectorySeparatorChar + "LogAfterException.xml", true);
                 }
 
-                System.Console.WriteLine(E.StackTrace);
-                AErrorMessage = E.Message;
+                Console.WriteLine(Exc.StackTrace);
+
+                AErrorMessage = Exc.Message;
+                AException = Exc;
             }
 
             if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_REPORTING)

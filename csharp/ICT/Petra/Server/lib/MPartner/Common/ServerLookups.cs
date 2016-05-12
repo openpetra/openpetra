@@ -125,8 +125,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// doesn't exist or PartnerKey is 0).</param>
         /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
         /// doesn't exist or PartnerKey is 0).</param>
-        /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
-        /// otherwise false.</param>
+        /// <param name="APartnerStatus">Partner Status</param>
         /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
         /// an empty array and the found Partner isn't of a PartnerClass that is in the
         /// Set) or PartnerKey is 0, otherwise false.</returns>
@@ -136,17 +135,18 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             out bool APartnerExists,
             out String APartnerShortName,
             out TPartnerClass APartnerClass,
-            out Boolean AIsMergedPartner)
+            out TStdPartnerStatusCode APartnerStatus)
         {
             bool ReturnValue = false;
             bool PartnerExists = false;
-            TDBTransaction ReadTransaction = null;
             string PartnerShortName = null;
             TPartnerClass PartnerClass = TPartnerClass.BANK;
             TStdPartnerStatusCode PartnerStatus = TStdPartnerStatusCode.spscACTIVE;
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
+            TDBTransaction ReadTransaction = null;
+
             DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.VerifyPartner", out ReadTransaction,
                 delegate
                 {
@@ -157,27 +157,57 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             APartnerShortName = PartnerShortName;
             APartnerClass = PartnerClass;
             APartnerExists = PartnerExists;
+            APartnerStatus = PartnerStatus;
 
 //          TLogging.LogAtLevel(7, "TPartnerServerLookups.VerifyPartner: " + Convert.ToInt32(AValidPartnerClasses.Length));
 
             if (AValidPartnerClasses.Length != 0)
             {
-                if (Array.BinarySearch(AValidPartnerClasses, APartnerClass) < 0)
+                Boolean classIsGood = false;
+
+                foreach (TPartnerClass goodClass in AValidPartnerClasses)
                 {
-                    ReturnValue = false;
+                    if (APartnerClass == goodClass)
+                    {
+                        classIsGood = true;
+                        break;
+                    }
                 }
+
+                ReturnValue &= classIsGood;
             }
 
-            if (PartnerStatus == TStdPartnerStatusCode.spscMERGED)
-            {
-                AIsMergedPartner = true;
-            }
-            else
-            {
-                AIsMergedPartner = false;
-            }
+//            AIsMergedPartner = (PartnerStatus == TStdPartnerStatusCode.spscMERGED);
 
             return ReturnValue;
+        }
+
+        /// <summary></summary>
+        /// <returns>True if this Status is listed as being active</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean PartnerHasActiveStatus(Int64 APartnerKey)
+        {
+            Boolean IsActive = false;
+            // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
+            // Connection where a DB Transaction can be exectued (only if that should be needed).
+            TDBTransaction readTransaction = null;
+
+            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.PartnerHasActiveStatus", out readTransaction,
+                delegate
+                {
+                    PPartnerTable partnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+
+                    if (partnerTbl.Rows.Count > 0)
+                    {
+                        PPartnerStatusTable statusTbl = PPartnerStatusAccess.LoadByPrimaryKey(partnerTbl[0].StatusCode, readTransaction);
+
+                        if (statusTbl.Rows.Count > 0)
+                        {
+                            IsActive = statusTbl[0].PartnerIsActive;
+                        }
+                    }
+                });
+            return IsActive;
         }
 
         /// <summary>Is this the key of a valid Gift Recipient?</summary>
@@ -360,13 +390,15 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of Partner to be verified</param>
         /// <param name="ALocationKey">Location Key of Partner to be verified</param>
-        /// <param name="AAddressNeitherCurrentNorMailing"></param>
+        /// <param name="AAddressIsCurrent"></param>
+        /// <param name="AAddressIsMailing"></param>
         /// <returns>true if Partner was found in DB at given location, otherwise false</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean VerifyPartnerAtLocation(Int64 APartnerKey,
-            TLocationPK ALocationKey, out bool AAddressNeitherCurrentNorMailing)
+            TLocationPK ALocationKey, out bool AAddressIsCurrent, out bool AAddressIsMailing)
         {
-            AAddressNeitherCurrentNorMailing = true;
+            AAddressIsCurrent = false;
+            AAddressIsMailing = false;
 
             TDBTransaction ReadTransaction;
             Boolean NewTransaction;
@@ -399,18 +431,18 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             {
                 PPartnerLocationRow Row = (PPartnerLocationRow)PartnerLocationTable.Rows[0];
 
-                // check if the partner location is either current or if it is a mailing address
+                // check if the partner location is either current
+                AAddressIsCurrent = true;
+
                 if ((Row.DateEffective > DateTime.Today)
-                    || (!Row.SendMail)
                     || ((Row.DateGoodUntil != null)
                         && (Row.DateGoodUntil < DateTime.Today)))
                 {
-                    AAddressNeitherCurrentNorMailing = true;
+                    AAddressIsCurrent = false;
                 }
-                else
-                {
-                    AAddressNeitherCurrentNorMailing = false;
-                }
+
+                // check if the partner location is a mailing address
+                AAddressIsMailing = Row.SendMail;
 
                 ReturnValue = true;
             }
@@ -617,10 +649,14 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             APartnerInfoDS = new PartnerInfoTDS(DATASET_NAME);
             Boolean newTransaction = false;
 
-            TDataBase DBConnectionObj = (ASeparateDBConnection) ?
-                                        DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo")
-                                        :
-                                        DBAccess.GDBAccessObj;
+            // In case ASeparateDBConnection is true:
+            // Always open a separate DB Connection as it can otherwise conflict with the opening of
+            // a Partner Edit screen when the Partner Info Panel is shown on the Partner Find screen
+            // and a user double-clicks on a partner line in the Grid that is not the one for which the
+            // Partner Info is currently displayed.
+            TDataBase DBConnectionObj =
+                (ASeparateDBConnection) ? DBAccess.SimpleEstablishDBConnection("TPartnerServerLookups.PartnerInfo")
+                : DBAccess.GDBAccessObj;
             try
             {
                 ReadTransaction = DBConnectionObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted, out newTransaction);
@@ -635,36 +671,42 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisPartnerLocationOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerLocationOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisLocationPartnerLocationAndRestOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationAndRestOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisLocationPartnerLocationOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.LocationPartnerLocationOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisPartnerAttributesOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerAttributesOnly(APartnerKey,
                         ref APartnerInfoDS, ReadTransaction);
+
                         break;
 
                     case TPartnerInfoScopeEnum.pisFull:
 
                         ReturnValue = TServerLookups_PartnerInfo.AllPartnerInfoData(APartnerKey,
                         ref APartnerInfoDS, ReadTransaction);
+
                         break;
                 } // switch
 

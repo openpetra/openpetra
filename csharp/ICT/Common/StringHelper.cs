@@ -915,6 +915,11 @@ namespace Ict.Common
             string listcsv = list;
             StringCollection Result = new StringCollection();
 
+            if (delimiter.Length < 1)
+            {
+                return Result;
+            }
+
             string value = GetNextCSV(ref listcsv, delimiter);
 
             if (trimmedValues)

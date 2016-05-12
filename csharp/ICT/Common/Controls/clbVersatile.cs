@@ -125,6 +125,21 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Get or set whether the list supports multi-selection.  Default is false.
+        /// </summary>
+        public Boolean EnableMultiSelection
+        {
+            set
+            {
+                base.Selection.EnableMultiSelection = value;
+            }
+            get
+            {
+                return base.Selection.EnableMultiSelection;
+            }
+        }
+
+        /// <summary>
         /// allows popping up a question whether to check the CheckBox
         ///
         /// </summary>

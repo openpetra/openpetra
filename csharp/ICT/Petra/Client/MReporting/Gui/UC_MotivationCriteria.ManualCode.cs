@@ -60,28 +60,6 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// MoivationGroup control
-        /// </summary>
-        public Ict.Common.Controls.TClbVersatile ClbMotivationGroup
-        {
-            get
-            {
-                return clbMotivationGroup;
-            }
-        }
-
-        /// <summary>
-        /// MotivationDetail control
-        /// </summary>
-        public Ict.Common.Controls.TClbVersatile ClbMotivationDetail
-        {
-            get
-            {
-                return clbMotivationDetail;
-            }
-        }
-
-        /// <summary>
         /// only run this code once during activation
         /// </summary>
         private void RunOnceOnActivationManual()
@@ -239,12 +217,29 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             // first initialize motivation group list (depending on ledger) and then set values
             InitializeMotivationGroupList();
-            clbMotivationGroup.SetCheckedStringList(AParameters.Get("param_motivation_group").ToString());
+
+            if (AParameters.Get("param_motivation_group").ToString() == "All")
+            {
+                clbMotivationGroup.SetCheckedStringList(clbMotivationGroup.GetAllStringList());
+            }
+            else
+            {
+                clbMotivationGroup.SetCheckedStringList(AParameters.Get("param_motivation_group").ToString());
+            }
+
             FCheckedMotGroupStringList = clbMotivationGroup.GetCheckedStringList();
 
             // then initialize motivation detail list (depending on selected motivation groups) and then set values
             InitializeMotivationDetailList();
-            clbMotivationDetail.SetCheckedStringList(AParameters.Get("param_motivation_detail").ToString());
+
+            if (AParameters.Get("param_motivation_detail").ToString() == "All")
+            {
+                clbMotivationDetail.SetCheckedStringList(clbMotivationDetail.GetAllStringList());
+            }
+            else
+            {
+                clbMotivationDetail.SetCheckedStringList(AParameters.Get("param_motivation_detail").ToString());
+            }
 
             // restart normal user interface processing when user ticks/unticks motivation group
             clbMotivationGroup.ValueChanged += new EventHandler(MotivationGroupColumnChanged);
@@ -259,6 +254,94 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             ACalc.AddStringParameter("param_motivation_group", this.clbMotivationGroup.GetCheckedStringList());
             ACalc.AddStringParameter("param_motivation_detail", this.clbMotivationDetail.GetCheckedStringList());
+
+            string MotivationGroups = string.Empty;
+
+            // are all motivation groups selected?
+            if (clbMotivationGroup.GetAllStringList() == clbMotivationGroup.GetCheckedStringList())
+            {
+                ACalc.AddParameter("param_all_motivation_groups", true);
+
+                MotivationGroups = "All";
+            }
+            else
+            {
+                ACalc.AddParameter("param_all_motivation_groups", false);
+
+                // we need these list items enclosed with single quotes for SQL
+                MotivationGroups = clbMotivationGroup.GetCheckedStringList(true);
+                MotivationGroups = MotivationGroups.Replace("\"", "'");
+            }
+
+            ACalc.AddParameter("param_motivation_group_quotes", MotivationGroups);
+
+            string Group_Detail_Pairs = string.Empty;
+            string Group_Detail_Individual = string.Empty;
+
+            // are all motivation details selected?
+            if (clbMotivationDetail.GetAllStringList() == clbMotivationDetail.GetCheckedStringList())
+            {
+                ACalc.AddParameter("param_all_motivation_details", true);
+
+                Group_Detail_Pairs = "All";
+                Group_Detail_Individual = "All";
+            }
+            else
+            {
+                ACalc.AddParameter("param_all_motivation_details", false);
+
+                // Motivation Group and Detail Code in Pairs. First value is group code, second is detail code.
+                List <String>param_motivation_detail = new List <String>(ACalc.GetParameters().Get("param_motivation_detail").ToString().Split(','));
+
+                int Index = 0;
+
+                foreach (String KeyPart in param_motivation_detail)
+                {
+                    if (Index % 2 == 0)
+                    {
+                        if (Group_Detail_Pairs.Length > 0)
+                        {
+                            Group_Detail_Pairs += ",";
+                            Group_Detail_Individual += ",";
+                        }
+
+                        // even Index: Group Code
+                        Group_Detail_Pairs += "('" + KeyPart + "','";
+                    }
+                    else
+                    {
+                        // odd Index: Detail Code
+                        Group_Detail_Pairs += KeyPart + "')";
+                        Group_Detail_Individual += KeyPart;
+                    }
+
+                    // increase Index for next element
+                    Index += 1;
+                }
+            }
+
+            ACalc.AddParameter("param_motivation_group_detail_pairs", Group_Detail_Pairs);
+            ACalc.AddParameter("param_motivation_details_only", Group_Detail_Individual);
+
+            ACalc.AddParameter("param_number_of_mot_details", clbMotivationDetail.CheckedItemsCount);
+
+            // create a header description for the motivation groups and details used
+            if (ACalc.GetParameters().Get("param_all_motivation_groups").ToBool()
+                && ACalc.GetParameters().Get("param_all_motivation_details").ToBool())
+            {
+                ACalc.AddParameter("param_group_detail_desc", "All");
+            }
+            else
+            {
+                string GroupsAndDetails = ACalc.GetParameters().Get("param_motivation_group_detail_pairs").ToString().Replace("\'", "");
+
+                if (GroupsAndDetails.Length > 750)
+                {
+                    GroupsAndDetails = GroupsAndDetails.Substring(0, 67) + "...";
+                }
+
+                ACalc.AddParameter("param_group_detail_desc", GroupsAndDetails);
+            }
         }
 
         /// <summary>

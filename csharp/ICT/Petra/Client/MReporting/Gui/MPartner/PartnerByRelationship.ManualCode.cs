@@ -71,7 +71,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private void RunOnceOnActivationManual()
         {
             InitRelationshipList();
-            this.cmbRelationCategory.SelectedIndexChanged += new System.EventHandler(this.CmbRelationCategorySelectedIndexChanged);
+            cmbRelationCategory.SelectedIndexChanged += new System.EventHandler(this.CmbRelationCategorySelectedIndexChanged);
+            btnSelectAll.Click += btnSelectAll_Click;
+            btnUnselectAll.Click += btnUnselectAll_Click;
             grdReciprocalRelationship.Visible = false;
             lblSelectReciprocalRelationship.Visible = false;
 
@@ -105,6 +107,32 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             //TODO: Unfortunately can't allow sorting at the moment as the xml report is a multi level report and
             //      they don't allow sorting but raise an exception --> hide sorting tab for now
             tpgReportSorting.Hide();
+        }
+
+        void btnSelectAll_Click(object sender, EventArgs e)
+        {
+            foreach (DataRow Row in FDirectRelationshipTable.Rows)
+            {
+                Row["Selection"] = true;
+            }
+
+            foreach (DataRow Row in FReciprocalRelationshipTable.Rows)
+            {
+                Row["Selection"] = true;
+            }
+        }
+
+        void btnUnselectAll_Click(object sender, EventArgs e)
+        {
+            foreach (DataRow Row in FDirectRelationshipTable.Rows)
+            {
+                Row["Selection"] = false;
+            }
+
+            foreach (DataRow Row in FReciprocalRelationshipTable.Rows)
+            {
+                Row["Selection"] = false;
+            }
         }
 
         private void grdDirectRelationship_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
@@ -332,7 +360,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// <param name="ARelationshipTypeList">A comma separated list with the relationship types which will be selected</param>
         private void SelectRelationshipTypes(String ARelationshipTypeList)
         {
-            if (!((FDirectRelationshipTable == null) && (FReciprocalRelationshipTable == null)))
+            if ((FDirectRelationshipTable != null) && (FReciprocalRelationshipTable != null))
             {
                 DataTable UsedTable;
 
@@ -345,7 +373,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                     UsedTable = FReciprocalRelationshipTable;
                 }
 
-                ARelationshipTypeList = ARelationshipTypeList + ",";
+                ARelationshipTypeList += ",";
                 ARelationshipTypeList = ARelationshipTypeList.Replace("''", "'");
 
                 foreach (DataRow Row in UsedTable.Rows)

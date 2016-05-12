@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -340,6 +342,98 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             frm.CalledFromExtracts = true;
             frm.Show();
+        }
+
+        /// <summary>
+        /// Creates a new extract from a list of partner keys
+        /// </summary>
+        /// <param name="AExtractName">Name for the extract (required)</param>
+        /// <param name="AExtractDescription">Description for the extract</param>
+        /// <param name="APartnerKeysTable">A table containing partner keys</param>
+        /// <param name="ATableColumnId">The column index for the partner key data</param>
+        /// <param name="AIgnoreInactivePartners">true if inactive partners should be ignored</param>
+        /// <param name="AIgnoreNonMailingLocations">true to ignore if the partner's best address is a non-mailing location</param>
+        /// <param name="AIgnoreNoSolicitations">true to ignore partners where the No Solicitations flag is set</param>
+        /// <param name="AParentForm">The caller form for passing to message boxes</param>
+        /// <returns>True if the server created the extract successfully</returns>
+        public static bool CreateNewExtractFromPartnerKeys(String AExtractName, String AExtractDescription, DataTable APartnerKeysTable,
+            int ATableColumnId, bool AIgnoreInactivePartners, bool AIgnoreNonMailingLocations, bool AIgnoreNoSolicitations, Form AParentForm)
+        {
+            string msgTitle = Catalog.GetString("Generate Extract from Partner Keys");
+            int extractID = -1;
+            int keyCountInExtract = -1;
+            int proposedRowCount = APartnerKeysTable.Rows.Count;
+
+            List <long>ignoredKeysList = null;
+
+            // Call the server with the list of keys
+            if (TRemote.MPartner.Partner.WebConnectors.CreateNewExtractFromPartnerKeys(ref extractID, AExtractName, AExtractDescription,
+                    APartnerKeysTable, ATableColumnId, AIgnoreInactivePartners, AIgnoreNonMailingLocations, AIgnoreNoSolicitations,
+                    out keyCountInExtract, out ignoredKeysList))
+            {
+                // Report the number of rows in the extract
+                string msg;
+
+                if (keyCountInExtract == 0)
+                {
+                    msg = Catalog.GetString("An extract was successfully created but it is empty.");
+                }
+                else if (keyCountInExtract == 1)
+                {
+                    msg = Catalog.GetString("An extract containing one key was successfully created.");
+                }
+                else
+                {
+                    msg = String.Format(Catalog.GetString("An extract containing {0} keys was successfully created."), keyCountInExtract);
+                }
+
+                if (keyCountInExtract < proposedRowCount)
+                {
+                    msg += Catalog.GetString(
+                        "  If there are fewer rows than you expected it is usually because the import contained invalid keys, duplicate keys or keys that did not match your selected criteria.");
+
+                    if (ignoredKeysList.Count > 0)
+                    {
+                        msg += Environment.NewLine + Environment.NewLine;
+                        msg += Catalog.GetPluralString("The following key was ignored: ", "The following keys were ignored: ", ignoredKeysList.Count);
+
+                        bool doneFirst = false;
+                        int count = 0;
+
+                        foreach (long partnerKey in ignoredKeysList)
+                        {
+                            if ((count >= 19) && (ignoredKeysList.Count > 20))
+                            {
+                                msg += string.Format(Catalog.GetString(" and a further {0} keys."), ignoredKeysList.Count - count);
+                                break;
+                            }
+
+                            if (doneFirst)
+                            {
+                                msg += ", ";
+                            }
+
+                            msg += partnerKey.ToString();
+                            doneFirst = true;
+                            count++;
+                        }
+                    }
+                }
+
+                MessageBox.Show(msg, msgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Clean up
+                NewExtractCreated(AExtractName, extractID, AParentForm);
+                return true;
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "The server failed to create the extract.  Please check that you have used a name that has not been used before."),
+                    msgTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+
+            return false;
         }
 
         // once an extract has been created, this will refresh extract master screen and open maintainance screen for extract

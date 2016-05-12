@@ -107,7 +107,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private TSubmitChangesResult StoreManualCode(ref MaintainUsersTDS ASubmitDS, out TVerificationResultCollection AVerificationResult)
         {
-            AVerificationResult = null;
+            AVerificationResult = new TVerificationResultCollection();
 
             TSubmitChangesResult Result = TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
 
@@ -117,7 +117,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     Catalog.GetString("Maintain Users"));
 
                 // Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
+                Int32 rowIdx = GetSelectedRowIndex();
+                FPreviouslySelectedDetailRow = null;
                 LoadUsers();
+                grdDetails.SelectRowWithoutFocus(rowIdx);
 
                 ASubmitDS = FMainDS;
 
@@ -240,6 +243,21 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void SetPassword(Object Sender, EventArgs e)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                MessageBox.Show(
+                    Catalog.GetString("Please save changes before changing password."),
+                    Catalog.GetString("Change password."),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Stop);
+                return;
+            }
+
             string username = GetSelectedDetailRow().UserId;
 
             string MessageTitle = Catalog.GetString("Set Password");
@@ -265,8 +283,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
                         MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}."), username),
                             MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        // this has already been saved on during the server call to change the password
-                        GetSelectedDetailRow().Retired = false;
+                        // This has been saved on the server so my data is dirty - I need to re-load:
+                        FPreviouslySelectedDetailRow = null;
+                        Int32 rowIdx = GetSelectedRowIndex();
+                        LoadUsers();
+                        grdDetails.SelectRowInGrid(rowIdx);
                     }
                     else
                     {

@@ -167,8 +167,7 @@ namespace Ict.Petra.Client.App.Core
             ///  doesn't exist or PartnerKey is 0)</param>
             /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
             ///  doesn't exist or PartnerKey is 0)</param>
-            /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
-            ///  otherwise false</param>
+            /// <param name="APartnerStatus">Partner Status</param>
             /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
             ///  an empty Set and the found Partner isn't of a PartnerClass that is in the
             ///  Set) or PartnerKey is 0, otherwise false</returns>
@@ -177,14 +176,22 @@ namespace Ict.Petra.Client.App.Core
                 out bool APartnerExists,
                 out String APartnerShortName,
                 out TPartnerClass APartnerClass,
-                out Boolean AIsMergedPartner)
+                out TStdPartnerStatusCode APartnerStatus)
             {
                 return TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(APartnerKey,
                     AValidPartnerClasses,
                     out APartnerExists,
                     out APartnerShortName,
                     out APartnerClass,
-                    out AIsMergedPartner);
+                    out APartnerStatus);
+            }
+
+            /// <summary></summary>
+            /// <param name="APartnerKey"></param>
+            /// <returns></returns>
+            public static Boolean PartnerHasActiveStatus(Int64 APartnerKey)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerHasActiveStatus(APartnerKey);
             }
 
             /// <summary>Is this the key of a valid Gift Recipient?</summary>

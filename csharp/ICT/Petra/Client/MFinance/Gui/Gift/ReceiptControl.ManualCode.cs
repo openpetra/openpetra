@@ -67,7 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (AFirstTime)
             {
                 grdDetails.Columns.Clear();
-                grdDetails.AddCheckBoxColumn("Sel", FGiftTbl.Columns["Selected"], 30, false);
+                grdDetails.AddCheckBoxColumn("Tag", FGiftTbl.Columns["Selected"], 30, false);
                 grdDetails.AddTextColumn("Recpt#", FGiftTbl.Columns["ReceiptNumber"]);
                 grdDetails.AddDateColumn("Date", FGiftTbl.Columns["DateEntered"]);
                 grdDetails.AddTextColumn("Donor", FGiftTbl.Columns["Donor"]);

@@ -54,6 +54,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             ExtractTDSMExtractTable ExtractTable;
             bool ChangesMade;
+            bool ChangesNeeded;
 
             AForm.Cursor = Cursors.WaitCursor;
 
@@ -62,7 +63,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 // retrieve contents of extract from server
                 ExtractTable = TRemote.MPartner.Partner.WebConnectors.GetExtractRowsWithPartnerData(AExtractId);
 
-                VerifyAndUpdateExtract(AForm, ref ExtractTable, out ChangesMade);
+                VerifyAndUpdateExtract(AForm, ref ExtractTable, out ChangesMade, out ChangesNeeded);
 
                 foreach (DataRow InspectDR in ExtractTable.Rows)
                 {
@@ -81,12 +82,23 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 if ((SubmitDT.Rows.Count == 0)
                     || !ChangesMade)
                 {
-                    MessageBox.Show(Catalog.GetString("Extract was already up to date"),
-                        Catalog.GetString("Verify and Update Extract"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    if (ChangesNeeded)
+                    {
+                        MessageBox.Show(Catalog.GetString("Verification and Update of Extract completed"),
+                            Catalog.GetString("Verify and Update Extract"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
+                    else if (!ChangesNeeded)
+                    {
+                        MessageBox.Show(Catalog.GetString("Verification and Update of Extract completed.") + "\r\n\r\n" +
+                            Catalog.GetString("Extract was already up to date."),
+                            Catalog.GetString("Verify and Update Extract"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
 
-                    // return if no changes were made
+                    // return since no changes were made
                     return;
                 }
 
@@ -120,37 +132,39 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </summary>
         public static void VerifyAndUpdateExtract(System.Windows.Forms.Form AForm,
             ref ExtractTDSMExtractTable AExtractTable,
-            out bool AChangesMade)
+            out bool AChangesMade, out bool AChangesNeeded)
         {
             bool AddressExists;
-            bool AddressNeitherCurrentNorMailing;
-            bool ReplaceAddressYesToAll = false;
-            bool ReplaceAddressNoToAll = false;
+            bool OtherAddressExists;
+            bool AddressIsBestOne;
+            bool AddressIsCurrent;
+            bool OtherAddressIsCurrent;
+            bool AddressIsMailing;
+            bool OtherAddressIsMailing;
+            bool ReplaceAddress;
+            bool ReplaceAddressCurrentAndMailingYesToAll = false;
+            bool ReplaceAddressCurrentAndMailingNoToAll = false;
+            bool ReplaceAddressCurrentYesToAll = false;
+            bool ReplaceAddressCurrentNoToAll = false;
+            bool ReplaceAddressMailingYesToAll = false;
+            bool ReplaceAddressMailingNoToAll = false;
             string CountryName;
-            PLocationTable LocationTable;
+            PLocationTable LocationTable = new PLocationTable();
             PLocationRow LocationRow;
-            TFrmExtendedMessageBox MsgBox;
+            TFrmExtendedMessageBox MsgBox = new TFrmExtendedMessageBox(AForm);;
 
             TFrmExtendedMessageBox.TResult MsgBoxResult;
             bool DontShowPartnerRemovePartnerKeyNonExistent = false;
-            bool DontShowReplaceAddress = false;
+            bool DontShowReplaceMissingAddress = false;
             bool DontShowPartnerRemoveNoAddress = false;
+            bool DontShowAddressWillNotBeReplaced = false;
 
-
-            // initialize output parameter
+            // initialize output parameters
             AChangesMade = false;
-
-            // build a collection of objects to be deleted before actually deleting them (as otherwise indexes may not be valid any longer)
-            List <ExtractTDSMExtractRow>ReplaceAddressList = new List <ExtractTDSMExtractRow>();
+            AChangesNeeded = false;
 
             // collection of partners that need their address updated
             List <ExtractTDSMExtractRow>RowsToDelete = new List <ExtractTDSMExtractRow>();
-
-            // collection of partners who's addresses no longer exist
-            List <ExtractTDSMExtractRow>AddressNotExistsList = new List <ExtractTDSMExtractRow>();
-
-            // collection of partners who's addresses are not current or mailing
-            List <ExtractTDSMExtractRow>AddressNeitherCurrentNorMailingList = new List <ExtractTDSMExtractRow>();
 
             // prepare mouse cursor so user knows something is happening
             AForm.Cursor = Cursors.WaitCursor;
@@ -158,204 +172,322 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // look at every single extract row
             foreach (ExtractTDSMExtractRow Row in AExtractTable.Rows)
             {
+                ReplaceAddress = false;
+
                 // check if the partner record still exists, otherwise remove from extract
                 if (!TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartner(Row.PartnerKey))
                 {
+                    AChangesNeeded = true;
+
+                    if (!DontShowPartnerRemovePartnerKeyNonExistent) // if user has not requested to not see these messages
+                    {
+                        // warn the user what is happening
+                        // (this message really never come up as constraints with this extracts should have prevented the partner to be deleted
+                        MsgBox.ShowDialog(String.Format(Catalog.GetString("The following partner record does not exist any longer and " +
+                                    "will therefore be removed from this extract: \r\n\r\n" +
+                                    "{0} ({1})"), Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                            Catalog.GetString("Verify and Update Extract"),
+                            "",
+                            TFrmExtendedMessageBox.TButtons.embbOK,
+                            TFrmExtendedMessageBox.TIcon.embiInformation);
+
+                        MsgBoxResult = MsgBox.GetResult(out DontShowPartnerRemovePartnerKeyNonExistent);
+                    }
+
                     RowsToDelete.Add(Row);
                 }
                 else
                 {
                     AddressExists = TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation
-                                        (Row.PartnerKey, new TLocationPK(Row.SiteKey, Row.LocationKey), out AddressNeitherCurrentNorMailing);
+                                        (Row.PartnerKey, new TLocationPK(Row.SiteKey, Row.LocationKey), out AddressIsCurrent, out AddressIsMailing);
 
                     if (!AddressExists) // if address no longer exists
                     {
-                        AddressNotExistsList.Add(Row);
+                        AChangesNeeded = true;
+
+                        // prepare: get best address for later use
+                        if (TRemote.MPartner.Mailing.WebConnectors.GetBestAddress(Row.PartnerKey,
+                                out LocationTable, out CountryName))
+                        {
+                            if (!DontShowReplaceMissingAddress) // if user has not requested to not see these messages
+                            {
+                                // warn the user what is happening
+                                MsgBox = new TFrmExtendedMessageBox(AForm);
+                                MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract no longer exists. \r\n\r\n"
+                                            +
+                                            "It will therefore be replaced with a current address."),
+                                        Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                    Catalog.GetString("Verify and Update Extract"),
+                                    Catalog.GetString("Don't show this message again"),
+                                    TFrmExtendedMessageBox.TButtons.embbOK,
+                                    TFrmExtendedMessageBox.TIcon.embiInformation);
+
+                                MsgBoxResult = MsgBox.GetResult(out DontShowReplaceMissingAddress);
+                            }
+
+                            ReplaceAddress = true;
+                        }
+                        else
+                        {
+                            // in this case there is no address at all for this partner (should not really happen)
+                            if (!DontShowPartnerRemoveNoAddress)
+                            {
+                                MsgBox = new TFrmExtendedMessageBox(AForm);
+                                MsgBox.ShowDialog(String.Format(Catalog.GetString("No address could be found for {0} ({1}). \r\n\r\n" +
+                                            "Therefore the partner record will be removed from this extract"),
+                                        Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                    Catalog.GetString("Verify and Update Extract"),
+                                    Catalog.GetString("Don't show this message again"),
+                                    TFrmExtendedMessageBox.TButtons.embbOK,
+                                    TFrmExtendedMessageBox.TIcon.embiInformation);
+                                MsgBoxResult = MsgBox.GetResult(out DontShowPartnerRemoveNoAddress);
+                            }
+
+                            RowsToDelete.Add(Row);
+                        }
                     }
-                    else if (AddressNeitherCurrentNorMailing) // address still exists but is not longer current or mailing
+                    else if (!AddressIsCurrent
+                             || !AddressIsMailing) // handle addresses that still exist but are no longer current or mailing
                     {
-                        AddressNeitherCurrentNorMailingList.Add(Row);
+                        AddressIsBestOne = false;
+                        ReplaceAddress = false;
+
+                        // first check if any other address is better than the existing one
+
+                        /* it could be that GetBestAddress still returns a non-current address if
+                         * there is no better one */
+                        OtherAddressExists = TRemote.MPartner.Mailing.WebConnectors.GetBestAddress(Row.PartnerKey,
+                            out LocationTable, out CountryName);
+
+                        if (OtherAddressExists)
+                        {
+                            if (LocationTable.Rows.Count > 0)
+                            {
+                                LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                                TRemote.MPartner.Partner.ServerLookups.WebConnectors.VerifyPartnerAtLocation
+                                    (Row.PartnerKey, new TLocationPK(LocationRow.SiteKey, LocationRow.LocationKey),
+                                    out OtherAddressIsCurrent, out OtherAddressIsMailing);
+
+                                /* check if existing address is best one */
+                                if ((Row.SiteKey == LocationRow.SiteKey)
+                                    && (Row.LocationKey == LocationRow.LocationKey))
+                                {
+                                    AddressIsBestOne = true;
+                                }
+                            }
+                        }
+
+                        if (!AddressIsCurrent
+                            && !AddressIsMailing) // address still exists but is not longer current and also not mailing
+                        {
+                            if (AddressIsBestOne)
+                            {
+                                if (!DontShowAddressWillNotBeReplaced)
+                                {
+                                    // warn the user what is happening
+                                    MsgBox = new TFrmExtendedMessageBox(AForm);
+                                    MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                "Address for {0} ({1}) in this extract is not current and not a mailing address. \r\n\r\n" +
+                                                "But it will not be changed as it is still the best one."),
+                                            Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                        Catalog.GetString("Verify and Update Extract"),
+                                        Catalog.GetString("Don't show this message again"),
+                                        TFrmExtendedMessageBox.TButtons.embbOK,
+                                        TFrmExtendedMessageBox.TIcon.embiInformation);
+                                    MsgBoxResult = MsgBox.GetResult(out DontShowAddressWillNotBeReplaced);
+                                }
+                            }
+                            else
+                            {
+                                AChangesNeeded = true;
+
+                                if (!ReplaceAddressCurrentAndMailingYesToAll && !ReplaceAddressCurrentAndMailingNoToAll) // if user has not requested to not see these messages
+                                {
+                                    // ask the user if the address should be updates
+                                    MsgBox = new TFrmExtendedMessageBox(AForm);
+                                    MsgBoxResult =
+                                        MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                    "Address for {0} ({1}) in this extract is not current and not a mailing address. \r\n\r\n" +
+                                                    "Do you want to update it with a better one?"),
+                                                Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                            Catalog.GetString("Verify and Update Extract"),
+                                            "",
+                                            TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoNoToAll,
+                                            TFrmExtendedMessageBox.TIcon.embiQuestion);
+
+                                    if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYesToAll)
+                                    {
+                                        ReplaceAddress = true;
+                                        ReplaceAddressCurrentAndMailingYesToAll = true;
+                                    }
+                                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYes)
+                                    {
+                                        ReplaceAddress = true;
+                                    }
+                                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrNoToAll)
+                                    {
+                                        ReplaceAddressCurrentAndMailingNoToAll = true;
+                                    }
+                                }
+                                else if (ReplaceAddressCurrentAndMailingYesToAll)
+                                {
+                                    ReplaceAddress = true;
+                                }
+                                else if (ReplaceAddressCurrentAndMailingNoToAll)
+                                {
+                                    ReplaceAddress = false;
+                                }
+                            }
+                        }
+                        else if (!AddressIsCurrent)
+                        {
+                            if (AddressIsBestOne)
+                            {
+                                if (!DontShowAddressWillNotBeReplaced)
+                                {
+                                    // warn the user what is happening
+                                    MsgBox = new TFrmExtendedMessageBox(AForm);
+                                    MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                "Address for {0} ({1}) in this extract is not current. \r\n\r\n" +
+                                                "But it will not be changed as it is still the best one."),
+                                            Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                        Catalog.GetString("Verify and Update Extract"),
+                                        Catalog.GetString("Don't show this message again"),
+                                        TFrmExtendedMessageBox.TButtons.embbOK,
+                                        TFrmExtendedMessageBox.TIcon.embiInformation);
+                                    MsgBoxResult = MsgBox.GetResult(out DontShowAddressWillNotBeReplaced);
+                                }
+                            }
+                            else
+                            {
+                                AChangesNeeded = true;
+
+                                if (!ReplaceAddressCurrentYesToAll && !ReplaceAddressCurrentNoToAll) // if user has not requested to not see these messages
+                                {
+                                    // ask the user if the address should be updated
+                                    MsgBox = new TFrmExtendedMessageBox(AForm);
+                                    MsgBoxResult =
+                                        MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                    "Address for {0} ({1}) in this extract is not current. \r\n\r\n" +
+                                                    "Do you want to update it with a better one?"),
+                                                Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                            Catalog.GetString("Verify and Update Extract"),
+                                            "",
+                                            TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoNoToAll,
+                                            TFrmExtendedMessageBox.TIcon.embiQuestion);
+
+                                    if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYesToAll)
+                                    {
+                                        ReplaceAddress = true;
+                                        ReplaceAddressCurrentYesToAll = true;
+                                    }
+                                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYes)
+                                    {
+                                        ReplaceAddress = true;
+                                    }
+                                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrNoToAll)
+                                    {
+                                        ReplaceAddressCurrentNoToAll = true;
+                                    }
+                                }
+                                else if (ReplaceAddressCurrentYesToAll)
+                                {
+                                    ReplaceAddress = true;
+                                }
+                                else if (ReplaceAddressCurrentNoToAll)
+                                {
+                                    ReplaceAddress = false;
+                                }
+                            }
+                        }
+                        else if (!AddressIsMailing)
+                        {
+                            if (AddressIsBestOne)
+                            {
+                                if (!DontShowAddressWillNotBeReplaced)
+                                {
+                                    // warn the user what is happening
+                                    MsgBox = new TFrmExtendedMessageBox(AForm);
+                                    MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                "Address for {0} ({1}) in this extract is not a mailing address. \r\n\r\n" +
+                                                "But it will not be changed as it is still the best one."),
+                                            Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                        Catalog.GetString("Verify and Update Extract"),
+                                        Catalog.GetString("Don't show this message again"),
+                                        TFrmExtendedMessageBox.TButtons.embbOK,
+                                        TFrmExtendedMessageBox.TIcon.embiInformation);
+                                    MsgBoxResult = MsgBox.GetResult(out DontShowAddressWillNotBeReplaced);
+                                }
+                            }
+                            else
+                            {
+                                AChangesNeeded = true;
+
+                                if (!ReplaceAddressMailingYesToAll && !ReplaceAddressMailingNoToAll) // if user has not requested to not see these messages
+                                {
+                                    // ask the user if the address should be updates
+                                    MsgBox = new TFrmExtendedMessageBox(AForm);
+                                    MsgBoxResult =
+                                        MsgBox.ShowDialog(String.Format(Catalog.GetString(
+                                                    "Address for {0} ({1}) in this extract is not a mailing address. \r\n\r\n" +
+                                                    "Do you want to update it with a better one?"),
+                                                Row.PartnerShortName, String.Format("{0:0000000000}", Row.PartnerKey)),
+                                            Catalog.GetString("Verify and Update Extract"),
+                                            "",
+                                            TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoNoToAll,
+                                            TFrmExtendedMessageBox.TIcon.embiQuestion);
+
+                                    if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYesToAll)
+                                    {
+                                        ReplaceAddress = true;
+                                        ReplaceAddressMailingYesToAll = true;
+                                    }
+                                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYes)
+                                    {
+                                        ReplaceAddress = true;
+                                    }
+                                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrNoToAll)
+                                    {
+                                        ReplaceAddressMailingNoToAll = true;
+                                    }
+                                }
+                                else if (ReplaceAddressMailingYesToAll)
+                                {
+                                    ReplaceAddress = true;
+                                }
+                                else if (ReplaceAddressMailingNoToAll)
+                                {
+                                    ReplaceAddress = false;
+                                }
+                            }
+                        }
+                    }
+
+                    if (ReplaceAddress)
+                    {
+                        if (LocationTable.Rows.Count > 0)
+                        {
+                            LocationRow = (PLocationRow)LocationTable.Rows[0];
+
+                            if ((Row.SiteKey != LocationRow.SiteKey)
+                                || (Row.LocationKey != LocationRow.LocationKey))
+                            {
+                                AChangesMade = true;
+
+                                Row.SiteKey = LocationRow.SiteKey;
+                                Row.LocationKey = LocationRow.LocationKey;
+                            }
+                        }
                     }
                 }
             }
-
-            int i = 1;
 
             // for each partner that needs removed from the extract
             foreach (ExtractTDSMExtractRow Row in RowsToDelete)
             {
-                MsgBox = new TFrmExtendedMessageBox(AForm);
-
-                if (!DontShowPartnerRemovePartnerKeyNonExistent) // if user has not requested to not see these messages
-                {
-                    // warn the user what is happening
-                    if (RowsToDelete.Count != i) // multiple left to delete
-                    {
-                        MsgBox.ShowDialog(String.Format(Catalog.GetString("The following partner record does not exist any longer and " +
-                                    "will therefore be removed from this extract: \n\r\n\r" +
-                                    "{0} ({1})"), Row.PartnerShortName, Row.PartnerKey),
-                            Catalog.GetString("Verify and Update Extract"),
-                            String.Format(Catalog.GetString("Don't show this message again ({0} more)"), RowsToDelete.Count - i),
-                            TFrmExtendedMessageBox.TButtons.embbOK,
-                            TFrmExtendedMessageBox.TIcon.embiInformation);
-                    }
-                    else // only one left to delete
-                    {
-                        MsgBox.ShowDialog(String.Format(Catalog.GetString("The following partner record does not exist any longer and " +
-                                    "will therefore be removed from this extract: \n\r\n\r" +
-                                    "{0} ({1})"), Row.PartnerShortName, Row.PartnerKey),
-                            Catalog.GetString("Verify and Update Extract"),
-                            "",
-                            TFrmExtendedMessageBox.TButtons.embbOK,
-                            TFrmExtendedMessageBox.TIcon.embiInformation);
-                    }
-
-                    MsgBoxResult = MsgBox.GetResult(out DontShowPartnerRemovePartnerKeyNonExistent);
-                }
-
                 AChangesMade = true;
                 Row.Delete();  // now delete the actual row
-
-                i++;
-            }
-
-            i = 1;
-
-            // for each partner that has an address that no longer exists
-            foreach (ExtractTDSMExtractRow Row in AddressNotExistsList)
-            {
-                MsgBox = new TFrmExtendedMessageBox(AForm);
-
-                if (!DontShowReplaceAddress) // if user has not requested to not see these messages
-                {
-                    // warn the user what is happening
-                    if (AddressNotExistsList.Count != i) // multiple rows left
-                    {
-                        MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract no longer exists and " +
-                                    "will therefore be replaced with a current address."),
-                                Row.PartnerShortName, Row.PartnerKey),
-                            Catalog.GetString("Verify and Update Extract"),
-                            String.Format(Catalog.GetString("Don't show this message again ({0} more)"), AddressNotExistsList.Count - i),
-                            TFrmExtendedMessageBox.TButtons.embbOK,
-                            TFrmExtendedMessageBox.TIcon.embiInformation);
-                    }
-                    else // only one row left
-                    {
-                        MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract no longer exists and " +
-                                    "will therefore be replaced with a current address."),
-                                Row.PartnerShortName, Row.PartnerKey),
-                            Catalog.GetString("Verify and Update Extract"),
-                            "",
-                            TFrmExtendedMessageBox.TButtons.embbOK,
-                            TFrmExtendedMessageBox.TIcon.embiInformation);
-                    }
-
-                    MsgBoxResult = MsgBox.GetResult(out DontShowReplaceAddress);
-                }
-
-                ReplaceAddressList.Add(Row);
-
-                i++;
-            }
-
-            i = 1;
-
-            // for each partner that has an address that is no longer current or mailing
-            foreach (ExtractTDSMExtractRow Row in AddressNeitherCurrentNorMailingList)
-            {
-                MsgBox = new TFrmExtendedMessageBox(AForm);
-
-                if (!ReplaceAddressYesToAll && !ReplaceAddressNoToAll) // if user has not requested to not see these messages
-                {
-                    // ask the user if the address should be updates
-                    if (AddressNeitherCurrentNorMailingList.Count != i) // multiple rows left
-                    {
-                        MsgBoxResult =
-                            MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not current. " +
-                                        "Do you want to update it with a current address if there is one?{2}{2}" +
-                                        "({3} more like this.)"),
-                                    Row.PartnerShortName, Row.PartnerKey, Environment.NewLine, AddressNeitherCurrentNorMailingList.Count - i),
-                                Catalog.GetString("Verify and Update Extract"),
-                                "",
-                                TFrmExtendedMessageBox.TButtons.embbYesYesToAllNoNoToAll,
-                                TFrmExtendedMessageBox.TIcon.embiQuestion);
-                    }
-                    else // only one row left
-                    {
-                        MsgBoxResult =
-                            MsgBox.ShowDialog(String.Format(Catalog.GetString("Address for {0} ({1}) in this extract is not current. " +
-                                        "Do you want to update it with a current address if there is one?"),
-                                    Row.PartnerShortName, Row.PartnerKey),
-                                Catalog.GetString("Verify and Update Extract"),
-                                "",
-                                TFrmExtendedMessageBox.TButtons.embbYesNo,
-                                TFrmExtendedMessageBox.TIcon.embiQuestion);
-                    }
-
-                    if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYesToAll)
-                    {
-                        ReplaceAddressYesToAll = true;
-                    }
-                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrYes)
-                    {
-                        ReplaceAddressList.Add(Row);
-                    }
-                    else if (MsgBoxResult == TFrmExtendedMessageBox.TResult.embrNoToAll)
-                    {
-                        ReplaceAddressNoToAll = true;
-                    }
-                }
-
-                // need to set the flag each time we come through here.
-                if (ReplaceAddressYesToAll)
-                {
-                    ReplaceAddressList.Add(Row);
-                }
-
-                i++;
-            }
-
-            // for each partner that needs their address updated
-            foreach (ExtractTDSMExtractRow Row in ReplaceAddressList)
-            {
-                MsgBox = new TFrmExtendedMessageBox(AForm);
-
-                if (!TRemote.MPartner.Mailing.WebConnectors.GetBestAddress(Row.PartnerKey,
-                        out LocationTable, out CountryName))
-                {
-                    // in this case there is no address at all for this partner (should not really happen)
-                    if (!DontShowPartnerRemoveNoAddress)
-                    {
-                        MsgBox.ShowDialog(String.Format(Catalog.GetString("No address could be found for {0} ({1}). " +
-                                    "Therefore the partner record will be removed from this extract"),
-                                Row.PartnerShortName, Row.PartnerKey),
-                            Catalog.GetString("Verify and Update Extract"),
-                            Catalog.GetString("Don't show this message again"),
-                            TFrmExtendedMessageBox.TButtons.embbOK,
-                            TFrmExtendedMessageBox.TIcon.embiInformation);
-                        MsgBoxResult = MsgBox.GetResult(out DontShowPartnerRemoveNoAddress);
-                    }
-
-                    RowsToDelete.Add(Row);
-                }
-                else
-                {
-                    if (LocationTable.Rows.Count > 0)
-                    {
-                        LocationRow = (PLocationRow)LocationTable.Rows[0];
-
-                        /* it could be that GetBestAddress still returns a non-current address if
-                         * there is no better one */
-                        if ((Row.SiteKey != LocationRow.SiteKey)
-                            || (Row.LocationKey != LocationRow.LocationKey))
-                        {
-                            AChangesMade = true;
-
-                            Row.SiteKey = LocationRow.SiteKey;
-                            Row.LocationKey = LocationRow.LocationKey;
-                        }
-                    }
-                }
             }
 
             // prepare mouse cursor so user knows something is happening

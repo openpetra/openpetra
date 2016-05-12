@@ -2,7 +2,7 @@
     BaseYaml: FinancialDevelopmentReportingForm.yaml
     FormType: report
     FormTitle: SYBUNT
-    WindowWidth: 650
+    WindowWidth: 600
     WindowHeight: 500
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
@@ -20,7 +20,7 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, grpDateSelection, cmbCurrency]
+            Controls: [lblLedger, ucoGiftsInRange, ucoNoGiftsInRange, grpSelection]
         tpgColumns:
             Label: Columns
             Controls: [ucoReportColumns]
@@ -28,30 +28,26 @@
             Label: Sorting
             Controls: [ucoSorting]
           
+        ucoGiftsInRange:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinDev.TFrmUC_GiftsInRange
+            Width: 550
+            Height: 110
+        ucoNoGiftsInRange:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinDev.TFrmUC_GiftsInRange
+            Width: 550
+            Height: 110
+        grpSelection:
+            Controls: [txtMinimumAmount, rbtAllPartners, rbtExtract, cmbCurrency]
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
             ParameterName: param_partner_source
-        grpDateSelection:
-            Label: Selection
-            Controls: [txtLastYear, txtThisYear, txtMinimumAmount, rbtAllPartners, rbtExtract]
         ucoSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
         lblLedger:
             Label: Ledger
            
-        txtLastYear:
-            Label: Gifts given in year
-            ParameterName: param_last_year
-            Format: Integer
-            Width: 124
-        txtThisYear:
-            Label: No gifts in year
-            ParameterName: param_this_year
-            Format: Integer
-            Width: 124
-        
         txtMinimumAmount:
             Label: Minimum Amount
             ParameterName: param_minimum_amount

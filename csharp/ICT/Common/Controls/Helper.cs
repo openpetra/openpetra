@@ -73,16 +73,16 @@ namespace Ict.Common.Controls
             if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime)
             {
                 returnFlag = true;
-//                MessageBox.Show("Design Mode #1");
+                //                MessageBox.Show("Design Mode #1");
             }
             else if (Application.ExecutablePath.IndexOf("devenv.exe", StringComparison.OrdinalIgnoreCase) > -1)
             {
                 returnFlag = true;
-//                MessageBox.Show("Design Mode #2");
+                //                MessageBox.Show("Design Mode #2");
             }
             else
             {
-//                MessageBox.Show("Runtime Mode");
+                //                MessageBox.Show("Runtime Mode");
             }
 #endif
 
@@ -109,6 +109,80 @@ namespace Ict.Common.Controls
             {
                 APartnerKeyTextBox.BackColor = AOriginalPartnerClassColour ?? System.Drawing.Color.White;
             }
+        }
+    }
+
+    #endregion
+
+    #region TWireUpSelectAllTextOnFocus
+
+    /// <summary>
+    /// Create an instance of this Class to make a TextBox automatically select all its text when
+    /// the user enters the TextBox - no matter how the user enters the TextBox (by mouse click,
+    /// by keyboard [TAB, SHIFT-TAB, keyboard shortcut]) - sounds trivial but isn't!
+    /// </summary>
+    public class TWireUpSelectAllTextOnFocus
+    {
+        static bool FSelectedState = false;
+        static Func <bool>FEvaluationAction;
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="ATextBox">TextBox to which the bevhaviour that this Class adds should be added.</param>
+        /// <param name="AEvaluationFunction">Optional Delegate. If specified it must return a bool value that
+        /// instructs this Class to perform the 'Select All' action that this Class adds to a TextBox
+        /// <em>only if true is returned by the Delegate</em>. (Default=null).
+        /// </param>
+        public TWireUpSelectAllTextOnFocus(TextBox ATextBox, Func <bool>AEvaluationFunction = null)
+        {
+            FEvaluationAction = AEvaluationFunction;
+
+            ATextBox.GotFocus += new EventHandler((sender, e) =>
+                {
+                    if (Control.MouseButtons == MouseButtons.None)
+                    {
+                        if (ShouldSelectAll(AEvaluationFunction))
+                        {
+                            ATextBox.SelectAll();
+
+                            FSelectedState = true;
+                        }
+                    }
+                });
+
+            ATextBox.Leave += new EventHandler((sender, e) => {
+                    FSelectedState = false;
+                });
+
+            ATextBox.MouseUp += new MouseEventHandler((sender, e) => {
+                    if (!FSelectedState)
+                    {
+                        if (ShouldSelectAll(AEvaluationFunction))
+                        {
+                            FSelectedState = true;
+
+                            // Only select all TextBox text if the user didn't click-and-drag into the TextBox
+                            // to select a specific text portion!
+                            if (ATextBox.SelectionLength == 0)
+                            {
+                                ATextBox.SelectAll();
+                            }
+                        }
+                    }
+                });
+        }
+
+        private bool ShouldSelectAll(Func <bool>AEvaluationAction)
+        {
+            bool ReturnValue = true;
+
+            if (FEvaluationAction != null)
+            {
+                ReturnValue = FEvaluationAction();
+            }
+
+            return ReturnValue;
         }
     }
 

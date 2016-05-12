@@ -1863,6 +1863,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         gLMRow.YtdActualForeign += postingLevelElement.TransAmount;
                     }
+
+                    TLedgerInitFlag.SetFlagComponent(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, accountRow.AccountCode);
                 }
 
                 if (APostingDS.ALedger[0].ProvisionalYearEndFlag)
@@ -2108,8 +2110,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                                                        ATransactionTable.GetJournalNumberDBName();
                                 DataRowView[] TransactionsRowView =
                                     MainDS.ATransaction.DefaultView.FindRows(new object[] { ALedgerNumber, ABatchNumberToReverse,
-                                                                                            originalJournalRow.
-                                                                                            JournalNumber });
+                                                                                            originalJournalRow.JournalNumber });
 
                                 foreach (DataRowView rvTransaction in TransactionsRowView)
                                 {
@@ -2486,8 +2487,8 @@ namespace Ict.Petra.Server.MFinance.Common
             DateTime StartOfCalendarMonth = new DateTime(EffectiveDate.Year, EffectiveDate.Month, 1);
 
             // used for setting AmountInIntlCurrency
-            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(LedgerBaseCurrency,
-                LedgerIntlCurrency,
+            decimal IntlToBaseExchRate = TExchangeRateTools.GetCorporateExchangeRate(
+                LedgerIntlCurrency, LedgerBaseCurrency,
                 StartOfCalendarMonth,
                 EffectiveDate);
 
@@ -2518,7 +2519,7 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         if (batchTransactionCurrency != LedgerIntlCurrency)
                         {
-                            transRow.AmountInIntlCurrency = transRow.AmountInBaseCurrency / IntlToBaseExchRate;
+                            transRow.AmountInIntlCurrency = GLRoutines.CurrencyMultiply(transRow.AmountInBaseCurrency, IntlToBaseExchRate);
                         }
                         else
                         {
@@ -2853,6 +2854,87 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         SubmissionOK = true;
                     });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
+        /// create a new batch.
+        /// it is already stored to the database, to avoid problems with LastBatchNumber
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchDescription"></param>
+        /// <param name="ABatchControlTotal"></param>
+        /// <param name="ADateEffective"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        public static GLBatchTDS CreateABatch(
+            Int32 ALedgerNumber,
+            string ABatchDescription,
+            decimal ABatchControlTotal,
+            DateTime ADateEffective,
+            TDBTransaction ATransaction)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            try
+            {
+                ALedgerAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ATransaction);
+
+                #region Validate Data
+
+                if ((MainDS.ALedger == null) || (MainDS.ALedger.Count == 0))
+                {
+                    throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                            Utilities.GetMethodName(true),
+                            ALedgerNumber));
+                }
+
+                #endregion Validate Data
+
+                ABatchRow NewRow = MainDS.ABatch.NewRowTyped(true);
+                NewRow.LedgerNumber = ALedgerNumber;
+                MainDS.ALedger[0].LastBatchNumber++;
+                NewRow.BatchNumber = MainDS.ALedger[0].LastBatchNumber;
+                NewRow.BatchPeriod = MainDS.ALedger[0].CurrentPeriod;
+                NewRow.BatchYear = MainDS.ALedger[0].CurrentFinancialYear;
+
+                int FinancialYear, FinancialPeriod;
+
+                if (ADateEffective != default(DateTime))
+                {
+                    TFinancialYear.GetLedgerDatePostingPeriod(ALedgerNumber, ref ADateEffective, out FinancialYear, out FinancialPeriod,
+                        ATransaction, false);
+                    NewRow.DateEffective = ADateEffective;
+                    NewRow.BatchPeriod = FinancialPeriod;
+                    NewRow.BatchYear = FinancialYear;
+                }
+
+                NewRow.BatchDescription = ABatchDescription;
+                NewRow.BatchControlTotal = ABatchControlTotal;
+                MainDS.ABatch.Rows.Add(NewRow);
+
+                GLBatchTDSAccess.SubmitChanges(MainDS);
 
                 MainDS.AcceptChanges();
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,12 +34,14 @@ using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Common.Controls.Formatting;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -328,6 +330,14 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>todoComment</summary>
         public event FindCriteriaSelectionChangedHandler FindCriteriaSelectionChanged;
 
+        /// <summary>
+        /// Event that fires when the user has selected a Location in the Location Find screen.
+        /// </summary>
+        /// <description>
+        /// The Partner Find screen subscribes to this Event and performs a Search operation.
+        /// </description>
+        public event System.EventHandler PerformSearch;
+
         #endregion
 
         private void AddPartnerClassesToDataTable(string[] ARestrictedPartnerClasses,
@@ -461,10 +471,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.rbtStatusActive.Text = Catalog.GetString("Acti&ve");
             this.rbtStatusAll.Text = Catalog.GetString("All");
             this.lblPartnerStatus.Text = Catalog.GetString("Status") + ":";
-            this.lblPhoneNumber.Text = Catalog.GetString("Phone Number") + ":";
+            this.lblPhoneNumber.Text = Catalog.GetString("Phone / Fa&x Number") + ":";
             this.lblAddress3.Text = Catalog.GetString("Address &3") + ":";
             this.lblAddress2.Text = Catalog.GetString("Address &2") + ":";
-            this.lblEmail.Text = Catalog.GetString("&Email") + ":";
+            this.lblEmail.Text = Catalog.GetString("&Email Address") + ":";
             this.lblPartnerName.Text = Catalog.GetString("&Partner Name") + ":";
             this.lblPersonalName.Text = Catalog.GetString("Personal (First) &Name") + ":";
             this.lblPreviousName.Text = Catalog.GetString("Previous Name") + ":";
@@ -901,26 +911,35 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void BtnLocationKey_Click(System.Object sender, System.EventArgs e)
         {
-// TODO BtnLocationKey_Click
-#if TODO
-            TLocationFindDialogWinForm frmPartnerLS;
+            TLocationFindDialogWinForm PartnerLSForm;
             bool Cancelled = false;
 
-            /* hourglass cursor */
-            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.WaitCursor;
-            Application.DoEvents();
+            // Hourglass Cursor */
+            System.Windows.Forms.Cursor.Current = Cursors.WaitCursor;
+            Application.DoEvents();   // Give Windows half a chance to show cursor
 
-            /* give windows half a chance to show cursor */
-            using (frmPartnerLS = new TLocationFindDialogWinForm())
+
+            using (PartnerLSForm = new TLocationFindDialogWinForm(this.ParentForm))
             {
-                if (frmPartnerLS.ShowDialog() == DialogResult.OK)
-                {
-                    /* fill in the location key */
-                    txtLocationKey.Text = frmPartnerLS.SelectedLocation.LocationKey.ToString();
+                TLocationPK SelectedLoc;
 
-                    /* disable all other controls */
-                    this.DisableAllPanel(pnlLocationKey);
-                    txtLocationKey.Focus();
+                if (PartnerLSForm.ShowDialog() == DialogResult.OK)
+                {
+                    SelectedLoc = PartnerLSForm.SelectedLocation;
+
+                    if (SelectedLoc != null)
+                    {
+                        /* fill in the location key */
+                        txtLocationKey.Text = PartnerLSForm.SelectedLocation.LocationKey.ToString();
+
+                        /* disable all other controls */
+                        this.DisableAllPanel(pnlLocationKey);
+                        txtLocationKey.Focus();
+                    }
+                    else
+                    {
+                        Cancelled = true;
+                    }
                 }
                 else
                 {
@@ -928,17 +947,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            /* normal mouse cursor */
+            // Back to normal mouse cursor
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-
-            /* give windows half a chance to show cursor */
-            Application.DoEvents();
+            Application.DoEvents();  // Give Windows half a chance to show cursor
 
             if ((!Cancelled) && (PerformSearch != null))
             {
                 PerformSearch(this, new System.EventArgs());
             }
-#endif
         }
 
         private void LblAddress2_Click(System.Object sender, System.EventArgs e)
@@ -1155,134 +1171,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="ATextBox"></param>
-        /// <param name="ACriteriaControl"></param>
-        public void GeneralLeaveHandler(TextBox ATextBox, SplitButton ACriteriaControl)
-        {
-            TMatches NewMatchValue = TMatches.BEGINS;
-            string TextBoxText = ATextBox.Text;
-            string CriteriaValue;
-
-            //            TLogging.Log("GeneralLeaveHandler for " + ATextBox.Name + ". SplitButton: " + ACriteriaControl.Name);
-
-            if (TextBoxText.Contains("*")
-                || (TextBoxText.Contains("%"))
-                || (TextBoxText.EndsWith("||")))
-            {
-                if (TextBoxText.EndsWith("||")
-                    && !(TextBoxText.StartsWith("||")))
-                {
-//                    TLogging.Log(ATextBox.Name + " ends with ||  = ENDS");
-                    NewMatchValue = TMatches.ENDS;
-                }
-                else if (TextBoxText.EndsWith("||")
-                         && (TextBoxText.StartsWith("||")))
-                {
-//                        TLogging.Log(ATextBox.Name + " begins with || and ends with ||  = EXACT");
-                    NewMatchValue = TMatches.EXACT;
-                }
-                else if (TextBoxText.EndsWith("*")
-                         && !(TextBoxText.StartsWith("*")))
-                {
-//                    TLogging.Log(ATextBox.Name + " ends with *  = BEGINS");
-                    NewMatchValue = TMatches.BEGINS;
-                }
-                else if ((TextBoxText.EndsWith("*")
-                          && (TextBoxText.StartsWith("*")))
-                         || (TextBoxText.StartsWith("*")))
-                {
-//                    TLogging.Log(ATextBox.Name + " begins and ends with *, or begins with *  = CONTAINS");
-                    NewMatchValue = TMatches.CONTAINS;
-                }
-
-                /*
-                 * See what the Criteria Value would be without any 'joker' characters
-                 * ( * and % ).
-                 */
-                CriteriaValue = TextBoxText.Replace("*", String.Empty);
-                CriteriaValue = CriteriaValue.Replace("%", String.Empty);
-
-                if (CriteriaValue != String.Empty)
-                {
-                    // There is still a valid CriteriaValue
-                    PutNewMatchValueIntoFindCriteriaDT(ACriteriaControl, NewMatchValue, ATextBox, TextBoxText);
-                }
-                else
-                {
-                    // No valid Criteria Value, therefore empty the TextBox's Text.
-                    ATextBox.Text = String.Empty;
-                }
-            }
-            else
-            {
-                // Ensure that 'BEGINS' is restored in case the user used the '*' joker before but
-                // has cleared it now!
-                PutNewMatchValueIntoFindCriteriaDT(ACriteriaControl, NewMatchValue, ATextBox, TextBoxText);
-            }
-        }
-
-        private void PutNewMatchValueIntoFindCriteriaDT(SplitButton ACriteriaControl, TMatches NewMatchValue,
-            TextBox ATextBox, string ATextBoxText)
-        {
-            FFindCriteriaDataTable.Rows[0].BeginEdit();
-            ACriteriaControl.SelectedValue = Enum.GetName(typeof(TMatches), NewMatchValue);
-            FFindCriteriaDataTable.Rows[0].EndEdit();
-
-            //TODO: It seems databinding is broken on this control
-            // this needs to happen in the SplitButton control really
-            string fieldname = ((SplitButton)ACriteriaControl).DataBindings[0].BindingMemberInfo.BindingMember;
-            FFindCriteriaDataTable.Rows[0][fieldname] = Enum.GetName(typeof(TMatches), NewMatchValue);
-
-            //TODO: DataBinding is really doing strange things here; we have to
-            //assign the just entered Text again, otherwise it is lost!!!
-            ATextBox.Text = ATextBoxText;
-        }
-
-        private void RemoveJokersFromTextBox(SplitButton ASplitButton,
-            TextBox AAssociatedTextBox,
-            TMatches ALastSelection)
-        {
-            string NewText;
-
-            try
-            {
-                if (AAssociatedTextBox != null)
-                {
-                    // Remove * Joker character(s)
-                    NewText = AAssociatedTextBox.Text.Replace("*", String.Empty);
-
-                    // If an EXACT search is wanted, we need to remove the % Joker character(s) as well
-                    if (ALastSelection == TMatches.EXACT)
-                    {
-                        NewText = NewText.Replace("%", String.Empty);
-                    }
-
-//                    TLogging.Log(
-//                        "RemoveJokersFromTextBox:  Associated TextBox's (" + AAssociatedTextBox.Name + ") Text (1): " + AAssociatedTextBox.Text);
-//                    FFindCriteriaDataTable.Rows[0].BeginEdit();
-//                    AAssociatedTextBox.Text = AAssociatedTextBox.Text.Replace("*", String.Empty);
-//                    FFindCriteriaDataTable.Rows[0].EndEdit();
-                    string fieldname = ((TextBox)AAssociatedTextBox).DataBindings[0].BindingMemberInfo.BindingMember;
-                    FFindCriteriaDataTable.Rows[0][fieldname] = NewText;
-                    fieldname = ((SplitButton)ASplitButton).DataBindings[0].BindingMemberInfo.BindingMember;
-                    FFindCriteriaDataTable.Rows[0][fieldname] = Enum.GetName(typeof(TMatches), ALastSelection);
-
-//
-//                    AAssociatedTextBox.Text = NewText;
-//
-//                    TLogging.Log(
-//                        "RemoveJokersFromTextBox:  Associated TextBox's (" + AAssociatedTextBox.Name + ") Text (2): " + AAssociatedTextBox.Text);
-                }
-            }
-            catch (Exception exp)
-            {
-                MessageBox.Show("Exception in RemoveJokersFromTextBox: " + exp.ToString());
-            }
-        }
-
         private void TxtCounty_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
         {
             GeneralKeyHandler(txtCounty, critCounty, e);
@@ -1290,27 +1178,43 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtCounty_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtCounty, critCounty);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtCounty, critCounty);
         }
 
         private void TxtEmail_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            GeneralKeyHandler(txtEmail, critEmail, e);
+            if (txtEmail.Text.Length == 0)
+            {
+                this.EnableAllPanel();
+            }
+
+            if (txtEmail.Text.Length > 0)
+            {
+                this.DisableAllPanel(pnlEmail);
+            }
         }
 
         private void TxtEmail_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtEmail, critEmail);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtEmail, critEmail);
         }
 
         private void TxtPhoneNumber_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            GeneralKeyHandler(txtPhoneNumber, critPhoneNumber, e);
+            if (txtPhoneNumber.Text.Length == 0)
+            {
+                this.EnableAllPanel();
+            }
+
+            if (txtPhoneNumber.Text.Length > 0)
+            {
+                this.DisableAllPanel(pnlPhoneNumber);
+            }
         }
 
         private void TxtPhoneNumber_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtPhoneNumber, critPhoneNumber);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtPhoneNumber, critPhoneNumber);
         }
 
         private void TxtPostCode_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1323,7 +1227,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // capitalise when leaving control
             txtPostCode.Text = txtPostCode.Text.ToUpper();
 
-            GeneralLeaveHandler(txtPostCode, critPostCode);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtPostCode, critPostCode);
         }
 
         private void TxtCity_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1333,7 +1237,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtCity_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtCity, critCity);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtCity, critCity);
         }
 
         private void TxtAddress1_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1343,7 +1247,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtAddress1_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtAddress1, critAddress1);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtAddress1, critAddress1);
         }
 
         private void TxtAddress2_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1353,7 +1257,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtAddress2_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtAddress2, critAddress2);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtAddress2, critAddress2);
         }
 
         private void TxtAddress3_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1363,7 +1267,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtAddress3_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtAddress3, critAddress3);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtAddress3, critAddress3);
         }
 
         private void TxtPreviousName_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1373,12 +1277,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtPreviousName_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtPreviousName, critPreviousName);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtPreviousName, critPreviousName);
         }
 
         private void TxtPersonalName_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtPersonalName, critPersonalName);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtPersonalName, critPersonalName);
         }
 
         private void TxtPersonalName_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1539,7 +1443,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtPartnerName_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtPartnerName, critPartnerName);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtPartnerName, critPartnerName);
         }
 
         private void TxtBic_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1552,7 +1456,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // capitalise when leaving control
             txtBic.Text = txtBic.Text.ToUpper();
 
-            GeneralLeaveHandler(txtBic, critBic);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtBic, critBic);
         }
 
         private void TxtIban_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1562,7 +1466,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtIban_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtIban, critIban);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtIban, critIban);
         }
 
         private void TxtAccountNumber_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1572,12 +1476,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void TxtAccountNumber_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtAccountNumber, critAccountNumber);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtAccountNumber, critAccountNumber);
         }
 
         private void TxtAccountName_Leave(System.Object sender, EventArgs e)
         {
-            GeneralLeaveHandler(txtAccountName, critAccountName);
+            TFindscreensHelper.CriteriaTextBoxLeaveHandler(FFindCriteriaDataTable, txtAccountName, critAccountName);
         }
 
         private void TxtAccountName_KeyUp(System.Object sender, System.Windows.Forms.KeyEventArgs e)
@@ -1900,12 +1804,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ShowOrHidePartnerKeyMatchInfoText();
 
-            // Due to the Contact Details implementation the previous ways in which
-            // Email and Phone Number were found are no longer working -> disable
-            // those Criteria until they work again... (Bug #4048)!
-            txtEmail.Enabled = false;
-            txtPhoneNumber.Enabled = false;
-
             // put focus on txtPartnerName on screen load
             this.ActiveControl = txtPartnerName;
         }
@@ -1958,21 +1856,21 @@ namespace Ict.Petra.Client.MPartner.Gui
             critIban.AssociatedTextBox = txtIban;
             critBic.AssociatedTextBox = txtBic;
 
-            critPartnerName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critPersonalName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critPreviousName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critAddress1.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critAddress2.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critAddress3.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critPostCode.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critCity.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critCounty.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critEmail.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critPhoneNumber.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critAccountName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critAccountNumber.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critIban.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
-            critBic.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(this.@RemoveJokersFromTextBox);
+            critPartnerName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critPersonalName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critPreviousName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critAddress1.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critAddress2.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critAddress3.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critPostCode.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critCity.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critCounty.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critEmail.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critPhoneNumber.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critAccountName.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critAccountNumber.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critIban.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
+            critBic.RemoveJokersFromTextBox += new TRemoveJokersFromTextBox(@TFindscreensHelper.RemoveJokersFromTextBox);
         }
 
         /// <summary>

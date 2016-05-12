@@ -616,16 +616,29 @@ namespace Ict.Petra.Client.MPartner.Gui
                 bool FoundPartnerInDatabase = false;
                 bool FoundPossiblePartnersInDatabase = false;
 
-                // Try to find an existing partner and set the partner key
+                PartnerFindTDS result = new PartnerFindTDS();
+
+                // Try to find an existing partner (either with partner key or location data) and set the partner key
                 // Or if the address is found, the location record can be shared.
-                if (BestLocation != null)
+                if ((FCurrentPartner.PartnerKey > 0)
+                    || (BestLocation != null))
                 {
-                    PartnerFindTDS result =
-                        TRemote.MPartner.Partner.WebConnectors.FindPartners(
-                            "",
-                            Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName, eShortNameFormat.eOnlySurname),
-                            BestLocation.City,
-                            string.Empty);
+                    if (FCurrentPartner.PartnerKey > 0)
+                    {
+                        // if partner key is given then search for exactly that Partner
+                        result = TRemote.MPartner.Partner.WebConnectors.FindPartners(FCurrentPartner.PartnerKey);
+                    }
+                    else if (BestLocation != null)
+                    {
+                        // in this case look for matching location data
+                        result =
+                            TRemote.MPartner.Partner.WebConnectors.FindPartners(
+                                "",
+                                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName,
+                                    eShortNameFormat.eOnlySurname),
+                                BestLocation.City,
+                                String.Empty);
+                    }
 
                     if (result.SearchResult.DefaultView.Count > 0)
                     {
@@ -670,11 +683,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Check if the partner to import matches completely one of the search results
                     foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
                     {
+                        // first check if address and name match (in case there may not be a partner key in import file)
                         if ((row.StreetName == BestLocation.StreetName)
                             && (row.City == BestLocation.City)
                             && (row.PostalCode == BestLocation.PostalCode)
                             && (row.PartnerClass == FCurrentPartner.PartnerClass)
                             && (row.PartnerShortName == FCurrentPartner.PartnerShortName))
+                        {
+                            FoundPartnerInDatabase = true;
+                            FoundPartnerMatchingKey = row.PartnerKey;
+                            break;
+                        }
+
+                        // now check if key (and class) of partner to import exists in db
+                        if ((row.PartnerClass == FCurrentPartner.PartnerClass)
+                            && (row.PartnerKey == FCurrentPartner.PartnerKey))
                         {
                             FoundPartnerInDatabase = true;
                             FoundPartnerMatchingKey = row.PartnerKey;
@@ -1168,6 +1191,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PcRoomTable.GetVenueKeyDBName(), AOrigPartnerKey, ANewPartnerKey);
         }
 
+        private void AddSkill(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS, bool AUpdateExistingRecord)
+        {
+            ImportRecordsByPartnerKey(ANewPartnerDS.PmPersonSkill, FMainDS.PmPersonSkill,
+                PmPersonSkillTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey, AUpdateExistingRecord);
+        }
+
         private void AddSubscriptions(Int64 AOrigPartnerKey,
             Int64 ANewPartnerKey,
             ref PartnerImportExportTDS ANewPartnerDS,
@@ -1251,7 +1280,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 NewPartnerDS.PPartner[0].CreatedBy = UserSelectedRow.CreatedBy;
                 NewPartnerDS.PPartner[0].ModificationId = UserSelectedRow.ModificationId;
 
-                NewPartnerDS.PPartner[0].AcceptChanges(); // This should reset the RowState, allowing me to Update rather than Add
+// if I leave in the following line then any data for PPartner records does not get into db
+//TODOWB                NewPartnerDS.PPartner[0].AcceptChanges(); // This should reset the RowState, allowing me to Update rather than Add
             }
             else
             {
@@ -1262,6 +1292,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PChurch, FMainDS.PChurch,
                     PChurchTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+                NewPartnerDS.PChurch[0].ChurchName = APartnerRow.PartnerShortName;
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
             {
@@ -1299,11 +1330,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.POrganisation, FMainDS.POrganisation,
                     POrganisationTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+                NewPartnerDS.POrganisation[0].OrganisationName = APartnerRow.PartnerShortName;
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_UNIT)
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PUnit, FMainDS.PUnit,
                     PUnitTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+                NewPartnerDS.PUnit[0].UnitName = APartnerRow.PartnerShortName;
 
 /*
  *  // I'm doing this later, in AddUnitstructure
@@ -1324,11 +1357,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PVenue, FMainDS.PVenue,
                     PVenueTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+                NewPartnerDS.PVenue[0].VenueName = APartnerRow.PartnerShortName;
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_BANK)
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PBank, FMainDS.PBank,
                     PBankTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+                NewPartnerDS.PBank[0].BranchName = APartnerRow.PartnerShortName;
             }
 
             // Add special types etc
@@ -1345,6 +1380,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddPersonalData(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddProfessionalData(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddPersonalEvaluation(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
+            AddSkill(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddSpecialNeeds(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddPartnerType(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
 
@@ -1365,7 +1401,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddContacts(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
 
             AddBankingDetails(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
-
 
             TVerificationResultCollection VerificationResult;
             bool CommitRes = TRemote.MPartner.ImportExport.WebConnectors.CommitChanges(NewPartnerDS, out VerificationResult);

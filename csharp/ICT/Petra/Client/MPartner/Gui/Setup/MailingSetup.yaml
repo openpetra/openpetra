@@ -12,13 +12,22 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
+        actAccept: {Label=&Accept, ActionClick=btnAccept_Click}
+        actCancel: {Label=&Cancel, ActionClick=btnCancel_Click}
     Controls:
         pnlContent:
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlGridAndModal, pnlDetails]
             Dock: Fill
+        pnlGridAndModal:
+            Dock: Fill
+            Controls: [pnlGrid, pnlModalButtons]
         pnlGrid:
             Dock: Fill
             Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlModalButtons:
+            Dock: Right
+            Controls: [btnAccept, btnCancel]
+            ControlsOrientation: vertical
         pnlFilterAndFind:
             ExpandedWidth: 175
             FilterControls: [txtDetailMailingCode, txtDetailMailingDescription, dtpDetailMailingDate-1, dtpDetailMailingDate-2]
@@ -35,6 +44,12 @@ RootNode:
             Width: 80
         btnDelete:
             Action: actDelete
+            Width: 80
+        btnAccept:
+            Action: actAccept
+            Width: 80
+        btnCancel:
+            Action: actCancel
             Width: 80
         grdDetails:
             Dock: Fill

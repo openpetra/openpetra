@@ -455,10 +455,16 @@ namespace Ict.Petra.Shared.MFinance.Validation
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientKeyId];
 
             VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
-                ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
-                isImporting ? Catalog.GetString("Recipient key") :
+                ARow.RecipientKey,
+                new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
+                true, // Must Be Active
+                true,
+                isImporting ?
+                Catalog.GetString("Recipient key") :
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
-                AContext, ValidationColumn, null);
+                AContext,
+                ValidationColumn,
+                null);
 
             if (VerificationResult != null)
             {
@@ -1030,7 +1036,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber);
 
             VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
-                ARow.DonorKey, new TPartnerClass[] { }, true,
+                ARow.DonorKey,
+                new TPartnerClass[] { },
+                true, // Must Be Active
+                true,
                 (isImporting) ? String.Empty : "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext, ValidationColumn, null);
 
@@ -1269,7 +1278,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.GiftTransactionNumber);
 
             VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
-                ARow.DonorKey, new TPartnerClass[] { }, true,
+                ARow.DonorKey,
+                new TPartnerClass[] { },
+                true, // Must Be Active
+                true,
                 "Donor of " + THelper.NiceValueDescription(ValidationContext), AContext, ValidationColumn, null);
 
             if (VerificationResult != null)
@@ -1325,7 +1337,10 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.DetailNumber);
 
             VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
-                ARow.RecipientKey, new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT }, true,
+                ARow.RecipientKey,
+                new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
+                true,
+                true,
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext), AContext, ValidationColumn, null);
 
             if (VerificationResult != null)

@@ -382,6 +382,87 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
+        /// Returns the PLocationRow of the 'Best Address'.
+        /// </summary>
+        /// <remarks>One of the 'DetermineBestAddress' Methods must have been run before on the PartnerLocation
+        /// Table that gets passed in in the <paramref name="APartnerLocationDT" /> Argument!!!</remarks>
+        /// <param name="APartnerLocationDT">Typed PartnerLocation Table that was already processed by one of the
+        /// 'DetermineBestAddress' Methods.</param>
+        /// <param name="ALocationDT">Location Table that contains all Location records that are referenced in
+        /// <paramref name="APartnerLocationDT" />.</param>
+        /// <returns>Location Row of the 'Best Address'.</returns>
+        public static PLocationRow FindBestAddressLocation(PartnerEditTDSPPartnerLocationTable APartnerLocationDT,
+            PLocationTable ALocationDT)
+        {
+            PartnerEditTDSPPartnerLocationRow CheckDR;
+            string NameOfBestAddrColumn = PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName();
+            var BestLocationPK = new TLocationPK(-1, -1);
+            PLocationRow BestLocationDR;
+
+            for (int Counter = 0; Counter < APartnerLocationDT.Count; Counter++)
+            {
+                CheckDR = APartnerLocationDT[Counter];
+
+                if (CheckDR[NameOfBestAddrColumn] == ((object)1))
+                {
+                    BestLocationPK = new TLocationPK(CheckDR.SiteKey, CheckDR.LocationKey);
+                }
+            }
+
+            if ((BestLocationPK.SiteKey == -1)
+                && (BestLocationPK.LocationKey == -1))
+            {
+                throw new EOPAppException(
+                    "FindBestAddressLocation Method was unable to determine the 'Best Address' (PPartnerLocation error)! (Was 'DetermineBestAddress' run before?)");
+            }
+
+            BestLocationDR = (PLocationRow)ALocationDT.Rows.Find(
+                new object[] { BestLocationPK.SiteKey, BestLocationPK.LocationKey });
+
+            if (BestLocationDR == null)
+            {
+                throw new EOPAppException(
+                    "FindBestAddressLocation Method was unable to determine the 'Best Address' (PLocation error)! (Was 'DetermineBestAddress' run before?)");
+            }
+
+            return BestLocationDR;
+        }
+
+        /// <summary>
+        /// Returns the PLocationRow of the 'Best Address'.
+        /// </summary>
+        /// <remarks>The 'DetermineBestAddress' Method overload that returns a <see cref="TLocationPK" /> must
+        /// have been run before and that return value must be passed into the present Method with the
+        /// <paramref name="ABestLocationPK" /> Argument!!!</remarks>
+        /// <param name="ABestLocationPK">Primary Key of the 'Best Location' (as determined by the
+        /// 'DetermineBestAddress' Method overload that returns a <see cref="TLocationPK" />).</param>
+        /// <param name="ALocationDT">Location Table that contains the Location record that is referenced with
+        /// <paramref name="ABestLocationPK" />.</param>
+        /// <returns>Location Row of the 'Best Address'.</returns>
+        public static PLocationRow FindBestAddressLocation(TLocationPK ABestLocationPK, PLocationTable ALocationDT)
+        {
+            PLocationRow BestLocationDR;
+
+            if ((ABestLocationPK.SiteKey == -1)
+                && (ABestLocationPK.LocationKey == -1))
+            {
+                throw new EOPAppException(
+                    "FindBestAddressLocation Method was unable to determine the 'Best Address' (PPartnerLocation error)! (Was 'DetermineBestAddress' run before?)");
+            }
+
+            BestLocationDR = (PLocationRow)ALocationDT.Rows.Find(
+                new object[] { ABestLocationPK.SiteKey, ABestLocationPK.LocationKey });
+
+            if (BestLocationDR == null)
+            {
+                throw new EOPAppException(
+                    "FindBestAddressLocation Method was unable to determine the 'Best Address' (PLocation error)! (Was 'DetermineBestAddress' run before?)");
+            }
+
+            return BestLocationDR;
+        }
+
+        /// <summary>
         /// Builds a formatted String out of the data that is contained in a Location.
         /// </summary>
         /// <param name="ALocationDR">DataRow containing the Location data.</param>
@@ -466,6 +547,17 @@ namespace Ict.Petra.Shared.MPartner
             }
 
             SBuilder = new StringBuilder(200);
+
+            ABuilding1 = ABuilding1.Trim();
+            ABuilding2 = ABuilding2.Trim();
+            ALocality = ALocality.Trim();
+            AStreetName = AStreetName.Trim();
+            AAddress3 = AAddress3.Trim();
+            ASuburb = ASuburb.Trim();
+            ACity = ACity.Trim();
+            ACounty = ACounty.Trim();
+            APostalCode = APostalCode.Trim();
+            ACountryName = ACountryName.Trim();
 
             if ((ABuilding1 != null) && (ABuilding1 != ""))
             {

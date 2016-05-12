@@ -3648,13 +3648,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                     #endregion Validate Data 1
 
-                    GiftPercentageAmount = feeReceivableRow.ChargePercentage * AGiftAmount / 100;
+                    GiftPercentageAmount = GLRoutines.Divide(feeReceivableRow.ChargePercentage * AGiftAmount, 100);
                     ChargeOption = feeReceivableRow.ChargeOption.ToUpper();
                     ChargeAmount = feeReceivableRow.ChargeAmount;
                 }
                 else
                 {
-                    GiftPercentageAmount = feePayableRow.ChargePercentage * AGiftAmount / 100;
+                    GiftPercentageAmount = GLRoutines.Divide(feePayableRow.ChargePercentage * AGiftAmount, 100);
                     ChargeOption = feePayableRow.ChargeOption.ToUpper();
                     ChargeAmount = feePayableRow.ChargeAmount;
                 }
@@ -4080,11 +4080,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 //Calculate GiftAmount
-                giftDetail.GiftAmount = giftDetail.GiftTransactionAmount / GiftBatchRow.ExchangeRateToBase;
+
+                giftDetail.GiftAmount = GLRoutines.Divide(giftDetail.GiftTransactionAmount, GiftBatchRow.ExchangeRateToBase);
 
                 if (BatchTransactionCurrency != LedgerIntlCurrency)
                 {
-                    giftDetail.GiftAmountIntl = giftDetail.GiftAmount / IntlToBaseExchRate;
+                    giftDetail.GiftAmountIntl = GLRoutines.Divide(giftDetail.GiftAmount, IntlToBaseExchRate);
                 }
                 else
                 {
@@ -4616,6 +4617,64 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Load Partner Data
+        /// </summary>
+        /// <param name="ALedgerNumber">Ledger number</param>
+        /// <param name="ABatchNumber">Batch number</param>
+        /// <returns>Partnertable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PPartnerTable LoadAllPartnerDataForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodSignature()), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            PPartnerTable PartnerTbl = new PPartnerTable();
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    // load all partners for specified batch
+                    string sQL =
+                        String.Format("SELECT DISTINCT p.*" +
+                            " FROM public.p_partner p, public.a_gift g" +
+                            " WHERE p.p_partner_key_n = g.p_donor_key_n" +
+                            "   And g.a_ledger_number_i = {0}" +
+                            "   And g.a_batch_number_i = {1};",
+                            ALedgerNumber,
+                            ABatchNumber);
+
+                    DataTable pTbl = (DataTable)DBAccess.GDBAccessObj.SelectDT(sQL, "PartnerTable", Transaction);
+
+                    if (pTbl.Rows.Count > 0)
+                    {
+                        DataUtilities.ChangeDataTableToTypedDataTable(ref pTbl, typeof(PPartnerTable), "");
+                        PartnerTbl = (PPartnerTable)pTbl;
+                        PartnerTbl.AcceptChanges();
+                    }
+                });
+
+            return PartnerTbl;
+        }
+
+        /// <summary>
         /// Load Donor Banking Details
         /// </summary>
         /// <param name="APartnerKey">Partner Key </param>
@@ -4780,45 +4839,35 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            try
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    delegate
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
+                    MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                    MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                    MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                    MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+
+                    #region Validate Data
+
+                    if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
                     {
-                        MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
-                        MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                        MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                        throw new EFinanceSystemDataTableReturnedNoDataException(Catalog.GetString(
+                                "GetRecipientFundNumber: Ledger Partner Types data does not exist or could not be accessed."));
+                    }
+                    else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "GetRecipientFundNumber: Recipient data for Partner Key {0} does not exist or could not be accessed."),
+                                APartnerKey));
+                    }
 
-                        #region Validate Data
+                    #endregion Validate Data
 
-                        if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Ledger Partner Types data does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true)));
-                        }
-                        else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
-                        {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Recipient data for Partner Key {1} does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true),
-                                    APartnerKey));
-                        }
-
-                        #endregion Validate Data
-
-                        DataLoaded = true;
-                    });
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
+                    DataLoaded = true;
+                });
 
             if (DataLoaded)
             {

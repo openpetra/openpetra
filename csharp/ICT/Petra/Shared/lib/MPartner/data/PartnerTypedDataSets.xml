@@ -481,6 +481,8 @@
     <Table sqltable="pm_person_language"/>
     <Table sqltable="pt_ability_area"/>
     <Table sqltable="pm_person_ability"/>
+    <Table sqltable="pt_skill_category"/>
+    <Table sqltable="pm_person_skill"/>
     <Table sqltable="pm_commitment_status"/>
     <Table sqltable="pm_staff_data"/>
     <Table sqltable="pm_job_assignment"/>

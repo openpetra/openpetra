@@ -46,21 +46,28 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         [Test]
         public void Test_01_TLedgerInitFlagHandler()
         {
-            bool blnOld = new TLedgerInitFlagHandler(43, TLedgerInitFlagEnum.Revaluation).Flag;
+            bool blnOld = new TLedgerInitFlag(43, "RevalTest").IsSet;
 
-            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
-            Assert.IsTrue(new TLedgerInitFlagHandler(
-                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = true;
-            Assert.IsTrue(new TLedgerInitFlagHandler(
-                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was set a line before");
-            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
-            Assert.IsFalse(new TLedgerInitFlagHandler(
-                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = false;
-            Assert.IsFalse(new TLedgerInitFlagHandler(
-                    FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag, "Flag was reset a line before");
-            new TLedgerInitFlagHandler(FLedgerNumber, TLedgerInitFlagEnum.Revaluation).Flag = blnOld;
+            new TLedgerInitFlag(FLedgerNumber, "RevalTest").IsSet = true;
+            Assert.IsTrue(new TLedgerInitFlag(
+                    FLedgerNumber, "RevalTest").IsSet, "Flag was set a line before");
+            TLedgerInitFlag.SetOrRemoveFlag(FLedgerNumber, "RevalTest", true);
+            Assert.IsTrue(new TLedgerInitFlag(
+                    FLedgerNumber, "RevalTest").IsSet, "Flag was set a line before");
+            new TLedgerInitFlag(FLedgerNumber, "RevalTest").IsSet = false;
+            Assert.IsFalse(new TLedgerInitFlag(
+                    FLedgerNumber, "RevalTest").IsSet, "Flag was reset a line before");
+            TLedgerInitFlag.SetOrRemoveFlag(FLedgerNumber, "RevalTest", false);
+            Assert.IsFalse(new TLedgerInitFlag(
+                    FLedgerNumber, "RevalTest").IsSet, "Flag was reset a line before");
+
+            TLedgerInitFlag.SetFlagComponent(FLedgerNumber, "RevalTest", "A");
+            TLedgerInitFlag.SetFlagComponent(FLedgerNumber, "RevalTest", "B");
+            TLedgerInitFlag.SetFlagComponent(FLedgerNumber, "RevalTest", "C");
+            TLedgerInitFlag.RemoveFlagComponent(FLedgerNumber, "RevalTest", "B");
+            String NewVal = TLedgerInitFlag.GetFlagValue(FLedgerNumber, "RevalTest");
+            Assert.IsTrue(NewVal == "A,C", "Flag Value of 'RevalTest' should be 'A,C' but is '" + NewVal + "'");
+            new TLedgerInitFlag(FLedgerNumber, "RevalTest").IsSet = blnOld;
         }
 
         /// <summary>
@@ -171,22 +178,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 "Conversion from 100 GBP to 113.62 EUR");
             Assert.AreEqual(88.01m, getCurrencyInfo.ToForeignValue(100.00m, exchangeRate),
                 "Conversion from 100 EUR to 88.01 GBP");
-        }
-
-        /// <summary>
-        /// Test_07_ProcessStatus
-        /// </summary>
-        [Test]
-        public void Test_07_ProcessStatus()
-        {
-            TLedgerInfo LedgerInfo = new TLedgerInfo(FLedgerNumber);
-
-            LedgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT;
-            Assert.AreEqual((int)TYearEndProcessStatus.ACCOUNT_CLOSED_OUT, LedgerInfo.YearEndProcessStatus,
-                "OK");
-            LedgerInfo.YearEndProcessStatus = (int)TYearEndProcessStatus.GIFT_CLOSED_OUT;
-            Assert.AreEqual((int)TYearEndProcessStatus.GIFT_CLOSED_OUT, LedgerInfo.YearEndProcessStatus,
-                "OK");
         }
 
         /// <summary>

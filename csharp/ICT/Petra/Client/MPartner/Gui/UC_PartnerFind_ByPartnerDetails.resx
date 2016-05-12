@@ -117,4 +117,23 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="btnClearCriteria.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAgklEQVQ4T62QwQ2AIAxFGY3RHKUn5+jZ
+        GRyCuwfsNyURAy0GXvJjTPmvSljGfqT8DTM/IQne9WgbHOhBxDnGzZZgUw8IMDclngDlEq3U4D8tICki
+        rdR4gnylCYGUfYEMu0wJtIzbnxLw6V1iS/Da/v8LtFy2DwvwtGIKMByJVlYQwg1WTv3jg/pSGQAAAABJ
+        RU5ErkJggg==
+</value>
+  </data>
+  <data name="btnSearch.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6
+        JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAvUlEQVQ4T81SsQ3DMAzzKTnFp/gUn+Kp
+        d2juDT0iewdXZCwjiaWtQEvACCLRJKUkfRWtSa9Vei61jxLRxK8vAAnY8pUY1S+giyYo5XAyN6Zy6gtA
+        Ah7PnRfMLaovoItGPTvhoIYR8Mx62RWgy3ufTiCDCAFLAJx742pKMjZsBMxsJNuLvMTtUcA+3YyuTRDs
+        RD28U2BG1BGiRcGVIxpH3yHGpgncI7I58D8CLodLgiKWNI4nUOrxT0ScXyGlD1qtk9DD4XVCAAAAAElF
+        TkSuQmCC
+</value>  
+  </data>
 </root>

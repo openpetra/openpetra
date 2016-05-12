@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MFinance.Gui.GL;

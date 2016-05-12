@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 using System.Threading;
@@ -36,6 +37,7 @@ using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
@@ -444,6 +446,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             DataRow CriteriaRow;
             ArrayList InternalParameters;
             bool ExactPartnerKeyMatch;
+            bool EmailAddressIsSearchedFor;
+            bool PhoneNumberIsSearchedFor;
             Int32 pk_order;
             Int32 pk_power;
             Int64 pk_maxkey;
@@ -733,6 +737,15 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 }
             }
 
+            EmailAddressIsSearchedFor = CriteriaRow["Email"].ToString().Length > 0;
+            PhoneNumberIsSearchedFor = CriteriaRow["PhoneNumber"].ToString().Length > 0;
+
+            if (EmailAddressIsSearchedFor || PhoneNumberIsSearchedFor)
+            {
+                BuildContactDetailsExtraCriteria(PhoneNumberIsSearchedFor, ref CriteriaRow, ref CustomWhereCriteria,
+                    ref InternalParameters);
+            }
+
             #region Partner Status
 
             if ((String)(CriteriaRow["PartnerStatus"]) == "ACTIVE")
@@ -806,6 +819,142 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             InternalParameters = null;             // ensure this is GC'd
 
             return CustomWhereCriteria;
+        }
+
+        private static void BuildContactDetailsExtraCriteria(bool APhoneNumberIsSearchedFor, ref DataRow ACriteriaRow,
+            ref string ACustomWhereCriteria, ref ArrayList AInternalParameters)
+        {
+            string CustomSubQueryStr = String.Empty;
+            string AttributeTypeListStr = String.Empty;
+            string CountryCodeListStr = String.Empty;
+            string CountryCodeWhereArgument = String.Empty;
+            string PhoneNumber;
+            string IntlPhonePrefix = String.Empty;
+            int IndexOfIntlPhonePrefixSeparator;
+
+            DataRow[] CountriesForIntlPhonePrefixDR;
+            List <string>CountriesForIntlPhonePrefix = new List <string>(0);
+            PCountryTable CountryDT;
+            DataView PhoneAttributesDV;
+            DataView EmailAttributesDV;
+
+            // Searched DB Fields: None directly in the 'usual' query - custom 'Partner Contact Details' sub-queries are utilised!
+            // --> DISREGARD ALL OTHER SEARCH CRITERIA!!!
+            ACustomWhereCriteria = String.Empty;
+            AInternalParameters.Clear();
+
+            if (APhoneNumberIsSearchedFor)
+            {
+                // Build list of Partner Contact Attributes Types that constitute Phone Numbers and Fax Numbers
+                PhoneAttributesDV = Calculations.DeterminePhoneAttributes((PPartnerAttributeTypeTable)
+                    TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList));
+
+                for (int Counter = 0; Counter < PhoneAttributesDV.Count; Counter++)
+                {
+                    AttributeTypeListStr += "'" + ((PPartnerAttributeTypeRow)PhoneAttributesDV[Counter].Row).AttributeType + "', ";
+                }
+
+                // Strip off remaining Attribute Type separation concatenation characters
+                AttributeTypeListStr = AttributeTypeListStr.Substring(0, AttributeTypeListStr.Length - 2);
+
+                PhoneNumber = ACriteriaRow["PhoneNumber"].ToString();
+
+                // Special processing is required if a Phone Number starts with an Int'l Phone Prefix
+                if (PhoneNumber.StartsWith("+", StringComparison.InvariantCulture))
+                {
+                    // If we are to process an Int'l Phone Prefix then it must be separated with a space character from the
+                    // rest of the Phone Number!
+
+                    IndexOfIntlPhonePrefixSeparator = PhoneNumber.IndexOf(' ', 1);
+
+                    if (IndexOfIntlPhonePrefixSeparator != -1)
+                    {
+                        IntlPhonePrefix = PhoneNumber.Substring(1, IndexOfIntlPhonePrefixSeparator);
+
+                        // Get p_country DB Table from cache
+                        CountryDT = (PCountryTable)TSharedDataCache.TMCommon.GetCacheableCommonTable(
+                            TCacheableCommonTablesEnum.CountryList);
+
+                        // Find any countries that have the specified Int'l Phone Prefix (there can be more than one Country
+                        // with the same Int'l Phone Prefix! (Examples: +1, +7, +44, ...).
+                        CountriesForIntlPhonePrefixDR = CountryDT.Select(PCountryTable.GetInternatTelephoneCodeDBName() +
+                            " = " + IntlPhonePrefix);
+
+                        for (int Counter2 = 0; Counter2 < CountriesForIntlPhonePrefixDR.Length; Counter2++)
+                        {
+                            CountriesForIntlPhonePrefix.Add(
+                                CountriesForIntlPhonePrefixDR[Counter2][PCountryTable.GetCountryCodeDBName()].ToString());
+                        }
+
+                        // Check if matching countries were found
+                        if (CountriesForIntlPhonePrefix.Count > 0)
+                        {
+                            for (int Counter3 = 0; Counter3 < CountriesForIntlPhonePrefix.Count; Counter3++)
+                            {
+                                CountryCodeListStr += "'" + CountriesForIntlPhonePrefix[Counter3] + "', ";
+                            }
+
+                            // Strip off remaining Attribute Type separation concatenation characters
+                            CountryCodeListStr = CountryCodeListStr.Substring(0, CountryCodeListStr.Length - 2);
+
+                            if (CountryCodeListStr != String.Empty)
+                            {
+                                CountryCodeWhereArgument = " AND " + PPartnerAttributeTable.GetValueCountryDBName() +
+                                                           " IN (" + CountryCodeListStr + ")";
+
+                                // Change the criteria that the user entered so it doesn't contain the Int'l Phone Prefix!
+                                ACriteriaRow["PhoneNumber"] = ((string)ACriteriaRow["PhoneNumber"]).Substring(IndexOfIntlPhonePrefixSeparator + 1);
+                            }
+                        }
+                    }
+                }
+
+                new TDynamicSearchHelper(PPartnerAttributeTable.TableId,
+                    PPartnerAttributeTable.ColumnValueId, ACriteriaRow, "PhoneNumber", "PhoneNumberMatch",
+                    ref ACustomWhereCriteria, ref AInternalParameters);
+
+                CustomSubQueryStr =
+                    String.Format(
+                        "EXISTS (SELECT * FROM PUB.p_partner_attribute " +
+                        "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_attribute.p_partner_key_n " +
+                        "{0} AND p_attribute_type_c IN ({1}){2})", ACustomWhereCriteria, AttributeTypeListStr, CountryCodeWhereArgument);
+            }
+            else
+            {
+                // Build list of Partner Contact Attributes Types that constitute Email Addresses
+                EmailAttributesDV = Calculations.DetermineEmailAttributes((PPartnerAttributeTypeTable)
+                    TSharedDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList));
+
+                for (int Counter = 0; Counter < EmailAttributesDV.Count; Counter++)
+                {
+                    AttributeTypeListStr += "'" + ((PPartnerAttributeTypeRow)EmailAttributesDV[Counter].Row).AttributeType + "', ";
+                }
+
+                // Strip off remaining Attribute Type separation concatenation characters
+                AttributeTypeListStr = AttributeTypeListStr.Substring(0, AttributeTypeListStr.Length - 2);
+
+                new TDynamicSearchHelper(PPartnerAttributeTable.TableId,
+                    PPartnerAttributeTable.ColumnValueId, ACriteriaRow, "Email", "EmailMatch",
+                    ref ACustomWhereCriteria, ref AInternalParameters);
+
+                CustomSubQueryStr =
+                    String.Format(
+                        "EXISTS (SELECT * FROM PUB.p_partner_attribute " +
+                        "WHERE PUB.p_partner.p_partner_key_n = PUB.p_partner_attribute.p_partner_key_n " +
+                        "{0} AND p_attribute_type_c IN ({1}))", ACustomWhereCriteria, AttributeTypeListStr);
+            }
+
+            // Utilising the 'TDynamicSearchHelper' alters the main SQL query; we don't want that and hence
+            // need to re-set it to empty!
+            ACustomWhereCriteria = String.Empty;
+
+            // Need to creata a custom sub-query
+            ACustomWhereCriteria = String.Format(
+                "{0} AND " + CustomSubQueryStr,
+                ACustomWhereCriteria);
+
+            // if search is restricted then add this to the search criteria
+            AddRestrictedClassesToCriteria(ACriteriaRow, ref AInternalParameters, ref ACustomWhereCriteria);
         }
 
         private static void AddRestrictedClassesToCriteria(DataRow ACriteriaRow, ref ArrayList AInternalParameters, ref string ACustomWhereCriteria)
@@ -1146,6 +1295,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
 
                 try
                 {
+                    int keyCount;
+                    List <long>ignoredPartnerKeys = null;
                     TExtractsHandling.CreateExtractFromListOfPartnerKeys(
                         AExtractName,
                         AExtractDescription,
@@ -1153,6 +1304,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                         PartnerKeysTable,
                         1,
                         LocationInfoProvided,
+                        out keyCount,
+                        out ignoredPartnerKeys,
                         false);
 
 //                  TLogging.LogAtLevel(8, "TPartnerFind.AddAllFoundPartnersToExtract: Added " + AddedPartners.ToString() + " Partners to the desired Extract!");

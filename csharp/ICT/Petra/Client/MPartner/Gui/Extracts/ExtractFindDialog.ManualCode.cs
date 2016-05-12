@@ -324,10 +324,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             dtpModifiedFrom.Text = "";
             dtpModifiedTo.Text = "";
 
-            FExtractMasterTable.Clear();
-            DataView myDataView = FExtractMasterTable.DefaultView;
-            myDataView.AllowNew = false;
-            clbDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            if (FExtractMasterTable != null)
+            {
+                FExtractMasterTable.Clear();
+                DataView myDataView = FExtractMasterTable.DefaultView;
+                myDataView.AllowNew = false;
+                clbDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+            }
 
             PrepareButtons();
         }

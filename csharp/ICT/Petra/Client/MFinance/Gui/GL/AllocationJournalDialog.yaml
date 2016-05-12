@@ -15,7 +15,7 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
-        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllAllocations}
+        actDeleteAll: {Label=Delete All, ActionClick=DeleteAllAllocations}
     Controls:
         pnlDialogContent:
             Controls: [pnlInfo, grpAllocateFrom, grpAllocateTo]

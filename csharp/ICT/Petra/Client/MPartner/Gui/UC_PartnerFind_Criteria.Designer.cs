@@ -514,7 +514,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblPhoneNumber.Name = "lblPhoneNumber";
             this.lblPhoneNumber.Size = new System.Drawing.Size(142, 23);
             this.lblPhoneNumber.TabIndex = 0;
-            this.lblPhoneNumber.Text = "Phone Number:";
+            this.lblPhoneNumber.Text = "Phone / Fa&x Number:";
             this.lblPhoneNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //
@@ -688,7 +688,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.lblEmail.Name = "lblEmail";
             this.lblEmail.Size = new System.Drawing.Size(142, 22);
             this.lblEmail.TabIndex = 0;
-            this.lblEmail.Text = "&Email:";
+            this.lblEmail.Text = "&Email Address:";
             this.lblEmail.TextAlign = System.Drawing.ContentAlignment.TopRight;
 
             //

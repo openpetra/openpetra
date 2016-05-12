@@ -122,6 +122,15 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>Form Design Type Code</summary>
         public const string FORM_TYPE_CODE_STANDARD = "STANDARD";
 
+        /// <summary>Form Design Type Code</summary>
+        public const string FORM_TYPE_CODE_STANDARD_DESCRIPTION = "Standard Form or Letter";
+
+        /// <summary>Form Design Type Code</summary>
+        public const string FORM_TYPE_CODE_LABEL = "LABEL";
+
+        /// <summary>Form Design Type Code</summary>
+        public const string FORM_TYPE_CODE_LABEL_DESCRIPTION = "Special Form for Label Printing";
+
         /// <summary>Form Design Gift Options</summary>
         public const string FORM_OPTION_ALL = "All";
 
@@ -140,6 +149,25 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>Form Design Adjustment Options</summary>
         public const string FORM_OPTION_EXCLUDE_ADJUSTMENTS = "Exclude Adjustments";
 
+        /// <summary>Form Design Email Options</summary>
+        public const string FORM_OPTION_BEST_EMAIL = "Best";
+
+        /// <summary>Form Design Email Options</summary>
+        public const string FORM_OPTION_SPLIT_EMAIL = "Split";
+
+
+        #endregion
+
+        #region Form Letter Contexts
+
+        /// <summary>Form Letter Contexts</summary>
+        public const string FORM_LETTER_CONTEXT_PARTNER_LETTER = "PARTNERLETTER";
+
+        /// <summary>Form Letter Contexts</summary>
+        public const string FORM_LETTER_CONTEXT_PARTNER_LABEL = "PARTNERLABEL";
+
+        /// <summary>Form Letter Contexts</summary>
+        public const string FORM_LETTER_CONTEXT_PERSONNEL = "PERSONNEL";
 
         #endregion
     }

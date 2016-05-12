@@ -64,7 +64,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
     public interface IMaintainBudget
     {
         /// <summary></summary>
-        void SetBudgetDefaultView();
+        void SetBudgetDefaultView(BudgetTDS AMainDS);
 
         /// <summary></summary>
         /// <param name="ARowIndex"></param>
@@ -160,7 +160,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     FMainDS.Merge(TRemote.MFinance.Budget.WebConnectors.LoadBudgetsForYear(FLedgerNumber, FSelectedBudgetYear));
                 }
 
-                SetBudgetDefaultView();
+                SetBudgetDefaultView(FMainDS);
             }
             finally
             {
@@ -191,9 +191,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// <summary>
         ///
         /// </summary>
-        public void SetBudgetDefaultView()
+        public void SetBudgetDefaultView(BudgetTDS AMainDS)
         {
-            DataView MyDataView = FMainDS.ABudget.DefaultView;
+            DataView MyDataView = AMainDS.ABudget.DefaultView;
 
             MyDataView.AllowNew = false;
 
@@ -527,7 +527,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
         private void ImportBudget(System.Object sender, System.EventArgs e)
         {
-            FImportLogicObject.ImportBudget(FSelectedBudgetYear, FMainDS);
+            if (FSelectedBudgetYear < FCurrentFinancialYear)
+            {
+                MessageBox.Show(Catalog.GetString("You can only import budget data when the current or next financial year is selected."),
+                    "Budget Import", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            //Import and refresh grid
+            FImportLogicObject.ImportBudget(FCurrentFinancialYear, ref FMainDS);
+
+            grdDetails.DataSource = null;
+            SetBudgetDefaultView(FMainDS);
+            SelectRowInGrid(1);
         }
 
         // This is not used (and imcomplete...)

@@ -28,7 +28,10 @@ using System.Data;
 
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Petra.Server.MCommon.Data.Access;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -87,6 +90,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             foreach (PPartnerLocationRow PartnerLocationDR in AMainDS.PPartnerLocation.Rows)
             {
                 PartnerLocationsDT = PartnerLocationsTables[Math.Abs(PartnerLocationDR.PartnerKey) % TPartnerContactDetails.NumberOfTables];
+                DataRow LocationDR = AMainDS.PLocation.Rows.Find(new object[] { PartnerLocationDR.SiteKey, PartnerLocationDR.LocationKey });
 
                 // Phone Extension: Ignore if value in the dumped data is either null or 0
                 if (PartnerLocationDR.IsExtensionNull())
@@ -158,13 +162,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 NewPartnerLocationDR["p_alternate_telephone_c"] = PartnerLocationDR.AlternateTelephone;
                 NewPartnerLocationDR["p_email_address_c"] = PartnerLocationDR.EmailAddress;
                 NewPartnerLocationDR["p_url_c"] = PartnerLocationDR.Url;
+                NewPartnerLocationDR["p_value_country_c"] = LocationDR["p_country_code_c"];
 
                 PartnerLocationsDT.Rows.Add(NewPartnerLocationDR);
+            }
+
+            // get data for entire country table
+            PCountryTable CountryTable = PCountryAccess.LoadAll(ATransaction);
+
+            string InternatAccessCode = null;
+            string SiteCountryCode = TAddressTools.GetCountryCodeFromSiteLedger(ATransaction);
+            DataRow SiteCountryRow = CountryTable.Rows.Find(SiteCountryCode);
+
+            // get InternatAccessCode for site country
+            if (SiteCountryRow != null)
+            {
+                InternatAccessCode = SiteCountryRow[PCountryTable.GetInternatAccessCodeDBName()].ToString();
             }
 
             TPartnerContactDetails.CreateContactDetailsRow = CreatePartnerContactDetailRecord;
             TPartnerContactDetails.EmptyStringIndicator = String.Empty;
             TPartnerContactDetails.PartnerAttributeHoldingDataSet = AMainDS;
+            TPartnerContactDetails.CountryTable = CountryTable;
+            TPartnerContactDetails.SiteCountryCode = SiteCountryCode;
+            TPartnerContactDetails.SiteInternatAccessCode = InternatAccessCode;
             TPartnerContactDetails.PopulatePPartnerAttribute();
 
             Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);

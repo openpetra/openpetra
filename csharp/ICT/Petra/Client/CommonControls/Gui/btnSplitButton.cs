@@ -64,9 +64,8 @@ namespace Ict.Petra.Client.CommonControls
     /// <summary>
     /// todoComment
     /// </summary>
-    public delegate void TRemoveJokersFromTextBox(SplitButton ASplitButton,
-        TextBox AAssociatedTextBox,
-        TMatches ALastSelection);
+    public delegate void TRemoveJokersFromTextBox(DataTable AFindCriteriaDataTable, SplitButton ASplitButton,
+        TextBox AAssociatedTextBox, TMatches ALastSelection);
 
     /// <summary>
     /// A UserControl that is based on the C# Control 'SplitButtonBase'.
@@ -267,7 +266,7 @@ namespace Ict.Petra.Client.CommonControls
         {
             if (RemoveJokersFromTextBox != null)
             {
-                RemoveJokersFromTextBox(this, FAssociatedTextBox, (TMatches)FLastSelection);
+                RemoveJokersFromTextBox((DataTable) this.DataBindings[0].DataSource, this, FAssociatedTextBox, (TMatches)FLastSelection);
             }
         }
 

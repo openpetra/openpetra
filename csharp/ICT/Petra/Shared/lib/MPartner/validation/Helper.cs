@@ -37,11 +37,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
     /// </summary>
     public static class TSharedPartnerValidationHelper
     {
-        /// <summary>
-        /// Delegate for invoking the verification of the existence of a Partner.
-        /// </summary>
+        /// <summary>Delegate for invoking the verification of the existence of a Partner.</summary>
         public delegate bool TVerifyPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses, out bool APartnerExists,
-            out String APartnerShortName, out TPartnerClass APartnerClass, out Boolean AIsMergedPartner);
+            out String APartnerShortName, out TPartnerClass APartnerClass, out TStdPartnerStatusCode APartnerStatus);
+
+        /// <summary>Delegate for confirming that a Partner is active.</summary>
+        public delegate Boolean TPartnerHasActiveStatus(Int64 APartner);
 
         /// <summary>Delegate to determine Partner is linked to CC</summary>
         /// <param name="APartnerKey"></param>
@@ -52,6 +53,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
         private static TVerifyPartner FDelegateVerifyPartner;
+
+        private static TPartnerHasActiveStatus FDelegatePartnerHasActiveStatus;
 
         private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC;
 
@@ -69,6 +72,19 @@ namespace Ict.Petra.Shared.MPartner.Validation
             set
             {
                 FDelegateVerifyPartner = value;
+            }
+        }
+
+        /// <summary></summary>
+        public static TPartnerHasActiveStatus PartnerHasActiveStatusDelegate
+        {
+            get
+            {
+                return FDelegatePartnerHasActiveStatus;
+            }
+            set
+            {
+                FDelegatePartnerHasActiveStatus = value;
             }
         }
 
@@ -98,22 +114,36 @@ namespace Ict.Petra.Shared.MPartner.Validation
         ///  doesn't exist or PartnerKey is 0)</param>
         /// <param name="APartnerClass">Partner Class of the found Partner (FAMILY if Partner
         ///  doesn't exist or PartnerKey is 0)</param>
-        /// <param name="AIsMergedPartner">true if the Partner' Partner Status is MERGED,
-        ///  otherwise false</param>
+        /// <param name="APartnerStatus">Partner Status</param>
         /// <returns>true if Partner was found in DB (except if AValidPartnerClasses isn't
         ///  an empty Set and the found Partner isn't of a PartnerClass that is in the
         ///  Set) or PartnerKey is 0, otherwise false</returns>
         public static bool VerifyPartner(Int64 APartnerKey, TPartnerClass[] AValidPartnerClasses, out bool APartnerExists,
-            out String APartnerShortName, out TPartnerClass APartnerClass, out Boolean AIsMergedPartner)
+            out String APartnerShortName, out TPartnerClass APartnerClass, out TStdPartnerStatusCode APartnerStatus)
         {
             if (FDelegateVerifyPartner != null)
             {
                 return FDelegateVerifyPartner(APartnerKey, AValidPartnerClasses, out APartnerExists, out APartnerShortName,
-                    out APartnerClass, out AIsMergedPartner);
+                    out APartnerClass, out APartnerStatus);
             }
             else
             {
                 throw new InvalidOperationException("Delegate 'TVerifyPartner' must be initialised before calling this Method");
+            }
+        }
+
+        /// <summary></summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns>True if the status of this partner is listed as Active (Bypasses the status enum.)</returns>
+        public static Boolean PartnerHasActiveStatus(Int64 APartnerKey)
+        {
+            if (FDelegatePartnerHasActiveStatus != null)
+            {
+                return FDelegatePartnerHasActiveStatus(APartnerKey);
+            }
+            else
+            {
+                throw new InvalidOperationException("Delegate 'PartnerHasActiveStatus' must be initialised before calling this Method");
             }
         }
 

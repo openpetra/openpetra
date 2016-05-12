@@ -182,7 +182,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "MotivationResponse":
-                    FDbAdapter = new TReportingDbAdapter(false);
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.MotivationResponse(AParameters, FDbAdapter);
                     break;
@@ -192,13 +192,35 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.DonorGiftsToField(AParameters, FDbAdapter);
                     break;
 
+                case "GiftDestination":
+                    FDbAdapter = new TReportingDbAdapter(false);
+                    ResultTbl = TFinanceReportingWebConnector.GiftDestination(AParameters, FDbAdapter);
+                    break;
+
+                /* Financial Development */
+
+                case "SYBUNT":
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+                    ResultTbl = TFinanceReportingWebConnector.SYBUNTTable(AParameters, FDbAdapter);
+
+                    break;
+
                 default:
                     TLogging.Log("GetDatatableThread unknown ReportType: " + AReportType);
                     break;
             }
 
-            FDbAdapter.CloseConnection();
-            return (FDbAdapter.IsCancelled) ? null : ResultTbl;
+            if (FDbAdapter != null)
+            {
+                FDbAdapter.CloseConnection();
+
+                if (FDbAdapter.IsCancelled)
+                {
+                    ResultTbl = null;
+                }
+            }
+
+            return ResultTbl;
         }
 
         /// <summary>

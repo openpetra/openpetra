@@ -170,7 +170,16 @@ namespace Ict.Petra.Server.MPartner.Processing
                                 ": Sending email for Reminder ID {0} for Partner {1}.", PartnerReminderDR.ReminderId, PartnerReminderDR.PartnerKey));
                     }
 
-                    if (SendReminderEmail(PartnerReminderDR, ReadWriteTransaction, Sender))
+                    Boolean emailSentOk = false;
+                    try
+                    {
+                        emailSentOk = SendReminderEmail(PartnerReminderDR, ReadWriteTransaction, Sender);
+                    }
+                    catch // if an exception was thrown, assume the email didn't go.
+                    {
+                    }
+
+                    if (emailSentOk)
                     {
                         // Accept the edit
                         if (TLogging.DebugLevel >= 4)

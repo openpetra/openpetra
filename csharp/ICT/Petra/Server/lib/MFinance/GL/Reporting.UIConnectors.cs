@@ -3255,6 +3255,66 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             return resultTable;
         }
 
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable GiftDestination(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DateTime GiftDate = AParameters["param_giftdate"].ToDate();
+            string strGiftDate = "'" + GiftDate.ToString("yyyy-MM-dd") + "'";
+
+            DataTable resultTable = new DataTable();
+            String Query = "SELECT q.*, " +
+                           " GiftDest.p_partner_short_name_c AS GiftDestnName FROM ( " +
+                           " SELECT p_person.p_partner_key_n AS StaffKey, " +
+                           " p_person.p_family_key_n AS FamilyKey, " +
+                           " Staff.p_partner_short_name_c AS StaffName, " +
+                           " pm_staff_data.pm_receiving_field_n AS FieldKey, " +
+                           " RecvField.p_partner_short_name_c AS FieldName, " +
+                           " p_partner_gift_destination.p_field_key_n AS GiftDestn " +
+
+                           " FROM " +
+                           " pm_staff_data, p_partner Staff, p_partner RecvField, p_person " +
+                           " LEFT JOIN p_partner_gift_destination ON (" +
+                           "   p_partner_gift_destination.p_partner_key_n=p_person.p_family_key_n " +
+                           "   AND p_partner_gift_destination.p_date_effective_d<=" + strGiftDate +
+                           "   AND (p_partner_gift_destination.p_date_expires_d IS NULL OR p_partner_gift_destination.p_date_expires_d>=" +
+                           strGiftDate + ") " +
+                           " ) " +
+
+                           " WHERE " +
+                           " p_person.p_partner_key_n=pm_staff_data.p_partner_key_n " +
+                           " AND pm_staff_data.pm_receiving_field_n=RecvField.p_partner_key_n " +
+                           " AND p_person.p_partner_key_n=Staff.p_partner_key_n " +
+                           " AND pm_staff_data.pm_start_of_commitment_d<=" + strGiftDate +
+                           " AND (pm_staff_data.pm_end_of_commitment_d IS NULL OR pm_staff_data.pm_end_of_commitment_d>=" + strGiftDate + ") " +
+                           " ) q " +
+                           " LEFT JOIN p_partner GiftDest " +
+                           " ON GiftDest.p_partner_key_n=GiftDestn " +
+                           " ORDER BY StaffKey ";
+            TDBTransaction Transaction = null;
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    resultTable = DbAdapter.RunQuery(Query, "GiftDestination", Transaction);
+
+                    if (resultTable != null)
+                    {
+                        foreach (DataRow Row in resultTable.Rows)
+                        {
+                            if (Row["GiftDestnName"] is DBNull)
+                            {
+                                Row["GiftDestnName"] = "NONE";
+                            }
+                        }
+                    }
+                });
+            return resultTable;
+        }
+
         // get Actuals for this month, YTD and Prior YTD and Budget YTD
         private static Decimal[] GetActualsAndBudget(TReportingDbAdapter DbAdapter,
             ALedgerRow ALedger, string AAccountCode, string ACostCentreCode, int APeriodNumber, int AYear)

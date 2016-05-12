@@ -143,9 +143,10 @@ namespace Ict.Petra.Server.MFinance.Cacheable
             StringCollection FieldList = new StringCollection();
 
             FieldList.Add(AIchStewardshipTable.GetLedgerNumberDBName());
-            FieldList.Add(AIchStewardshipTable.GetCostCentreCodeDBName());
+            FieldList.Add(AIchStewardshipTable.GetYearDBName());
             FieldList.Add(AIchStewardshipTable.GetPeriodNumberDBName());
             FieldList.Add(AIchStewardshipTable.GetIchNumberDBName());
+            FieldList.Add(AIchStewardshipTable.GetCostCentreCodeDBName());
             FieldList.Add(AIchStewardshipTable.GetDateProcessedDBName());
             return AIchStewardshipAccess.LoadViaALedger(ALedgerNumber, FieldList, AReadTransaction);
         }

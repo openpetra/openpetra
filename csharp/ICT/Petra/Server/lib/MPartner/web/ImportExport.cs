@@ -317,6 +317,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.LocationType;
                         Row.Description = FNewRowDescription;
                         MainDS.PLocationType.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePartnerTablesEnum.LocationTypeList.ToString());
                     }
                 }
             }
@@ -336,6 +338,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.BusinessCode = rv.BusinessCode;
                     Row.BusinessDescription = FNewRowDescription;
                     MainDS.PBusiness.Rows.Add(Row);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.BusinessCodeList.ToString());
                 }
             }
         }
@@ -382,6 +386,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.LanguageCode = NewLanguage;
                         Row.LanguageDescription = FNewRowDescription;
                         MainDS.PLanguage.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableCommonTablesEnum.LanguageCodeList.ToString());
                     }
                 }
             }
@@ -400,6 +406,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 Row.AcquisitionCode = PartnerRow.AcquisitionCode;
                 Row.AcquisitionDescription = FNewRowDescription;
                 MainDS.PAcquisition.Rows.Add(Row);
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                    TCacheablePartnerTablesEnum.AcquisitionCodeList.ToString());
             }
         }
 
@@ -476,6 +484,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 Row.AddresseeTypeCode = PartnerRow.AddresseeTypeCode;
                 Row.Description = FNewRowDescription;
                 MainDS.PAddresseeType.Rows.Add(Row);
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.AddresseeTypeList.ToString());
             }
         }
 
@@ -499,6 +508,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.AbilityAreaName = rv.AbilityAreaName;
                         Row.AbilityAreaDescr = FNewRowDescription;
                         MainDS.PtAbilityArea.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.AbilityAreaList.ToString());
                     }
                 }
 
@@ -506,6 +517,39 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     AddVerificationResult(ref ReferenceResults, "Removing unknown Ability level " + rv.AbilityLevel);
                     rv.AbilityLevel = 99; // If I don't know what this AbilityLevel means, I can only say, "unknown".
+                }
+            }
+        }
+
+        private static void CheckSkillCategoryAndLevel(PartnerImportExportTDS MainDS,
+            ref TVerificationResultCollection ReferenceResults,
+            TDBTransaction Transaction)
+        {
+            // Skill Category: if there's any skill, they must only be in known categories!
+            // Skill Level: only import known level identifiers
+            foreach (PmPersonSkillRow rv in MainDS.PmPersonSkill.Rows)
+            {
+                if ((rv.SkillCategoryCode != "") && (!PtSkillCategoryAccess.Exists(rv.SkillCategoryCode, Transaction)))
+                {
+                    MainDS.PtSkillCategory.DefaultView.RowFilter = String.Format("{0}='{1}'",
+                        PtSkillCategoryTable.GetCodeDBName(), rv.SkillCategoryCode);
+
+                    if (MainDS.PtSkillCategory.DefaultView.Count == 0) // Check I've not just added this a moment ago..
+                    {
+                        AddVerificationResult(ref ReferenceResults, "Adding new Skill Category " + rv.SkillCategoryCode);
+                        PtSkillCategoryRow Row = MainDS.PtSkillCategory.NewRowTyped();
+                        Row.Code = rv.SkillCategoryCode;
+                        Row.Description = FNewRowDescription;
+                        MainDS.PtSkillCategory.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.SkillCategoryList.ToString());
+                    }
+                }
+
+                if (!PtSkillLevelAccess.Exists(rv.SkillLevel, Transaction))
+                {
+                    AddVerificationResult(ref ReferenceResults, "Removing unknown Skill level " + rv.SkillLevel);
+                    rv.SkillLevel = 99; // If I don't know what this Skill Level means, I can only say, "unknown".
                 }
             }
         }
@@ -528,6 +572,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.Description = FNewRowDescription;
 
                     MainDS.PInterest.Rows.Add(Row);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.InterestList.ToString());
                 }
 
                 if ((rv.Category != "") && (!PInterestCategoryAccess.Exists(rv.Category, Transaction)))
@@ -542,6 +587,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Category = rv.Category;
                         Row.Description = FNewRowDescription;
                         MainDS.PInterestCategory.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePartnerTablesEnum.InterestCategoryList.ToString());
                     }
                 }
             }
@@ -561,6 +608,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.TypeCode = rv.TypeCode;
                     Row.TypeDescription = FNewRowDescription;
                     MainDS.PType.Rows.Add(Row);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.PartnerTypeList.ToString());
                 }
             }
         }
@@ -800,6 +849,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.DenominationCode = rv.DenominationCode;
                     Row.DenominationName = FNewRowDescription;
                     MainDS.PDenomination.Rows.Add(Row);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.DenominationList.ToString());
                 }
             }
         }
@@ -916,6 +967,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = GenAppRow.GenApplicationStatus;
                         Row.Description = FNewRowDescription;
                         MainDS.PtApplicantStatus.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ApplicantStatusList.ToString());
                     }
                 }
 
@@ -941,6 +994,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.AppTypeName = GenAppRow.AppTypeName;
                         Row.AppTypeDescr = FNewRowDescription;
                         MainDS.PtApplicationType.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ApplicationTypeList.ToString());
                     }
                 }
 
@@ -955,6 +1010,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.ContactName = GenAppRow.GenContact1;
                         Row.ContactDescr = FNewRowDescription;
                         MainDS.PtContact.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ContactList.ToString());
                     }
                 }
 
@@ -969,6 +1026,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.ContactName = GenAppRow.GenContact2;
                         Row.ContactDescr = FNewRowDescription;
                         MainDS.PtContact.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ContactList.ToString());
                     }
                 }
             }
@@ -1036,6 +1095,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.ArrivalPointCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtArrivalPoint.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ArrivalDeparturePointList.ToString());
                     }
                 }
 
@@ -1051,6 +1112,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.DeparturePointCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtArrivalPoint.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.ArrivalDeparturePointList.ToString());
                     }
                 }
 
@@ -1065,6 +1128,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.TravelTypeToCongCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtTravelType.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.TransportTypeList.ToString());
                     }
                 }
 
@@ -1080,6 +1145,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.TravelTypeFromCongCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtTravelType.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.TransportTypeList.ToString());
                     }
                 }
 
@@ -1094,6 +1161,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.OutreachRole;
                         Row.Description = FNewRowDescription;
                         MainDS.PtCongressCode.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.EventRoleList.ToString());
                     }
                 }
             }
@@ -1149,6 +1218,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.PositionScope = rv.PositionScope;
                         Row.PositionDescr = FNewRowDescription;
                         MainDS.PtPosition.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableUnitTablesEnum.PositionList.ToString());
                     }
                 }
             }
@@ -1173,6 +1243,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.QualificationAreaName = rv.QualificationAreaName;
                         Row.QualificationAreaDescr = FNewRowDescription;
                         MainDS.PtQualificationArea.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.QualificationAreaList.ToString());
                     }
                 }
 
@@ -1188,6 +1260,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.QualificationLevel = rv.QualificationLevel;
                         Row.QualificationLevelDescr = FNewRowDescription;
                         MainDS.PtQualificationLevel.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.QualificationLevelList.ToString());
                     }
                 }
             }
@@ -1218,6 +1292,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 Row.Code = RequiredMaritalStatus;
                 Row.Description = FNewRowDescription;
                 MainDS.PtMaritalStatus.Rows.Add(Row);
+                TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.MaritalStatusList.ToString());
             }
         }
 
@@ -1237,6 +1312,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.OccupationCode = RequiredOccupation;
                     Row.OccupationDescription = FNewRowDescription;
                     MainDS.POccupation.Rows.Add(Row);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheablePartnerTablesEnum.OccupationList.ToString());
                 }
             }
         }
@@ -1257,6 +1334,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     Row.UnitTypeCode = RequiredUnitType;
                     Row.UnitTypeName = FNewRowDescription;
                     AMainDS.UUnitType.Rows.Add(Row);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheablePartnerTablesEnum.UnitTypeList.ToString());
                 }
             }
         }
@@ -1357,6 +1435,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.PassportDetailsType;
                         Row.Description = FNewRowDescription;
                         MainDS.PtPassportType.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.PassportTypeList.ToString());
                     }
                 }
             }
@@ -1385,6 +1465,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.Code = rv.DocCategory;
                         Row.Description = FNewRowDescription;
                         MainDS.PmDocumentCategory.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.DocumentTypeCategoryList.ToString());
                     }
                 }
 
@@ -1400,6 +1482,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.DocCategory = rv.DocCategory;
                         Row.Description = FNewRowDescription;
                         MainDS.PmDocumentType.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheablePersonTablesEnum.DocumentTypeList.ToString());
                     }
                 }
             }
@@ -1436,6 +1520,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.Code = SubsRow.ReasonSubsGivenCode;
                     NewRow.Description = FNewRowDescription;
                     MainDS.PReasonSubscriptionGiven.Rows.Add(NewRow);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableSubscriptionsTablesEnum.ReasonSubscriptionGivenList.ToString());
                 }
 
                 if ((SubsRow.ReasonSubsCancelledCode != "")
@@ -1446,6 +1532,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.Code = SubsRow.ReasonSubsCancelledCode;
                     NewRow.Description = FNewRowDescription;
                     MainDS.PReasonSubscriptionCancelled.Rows.Add(NewRow);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableSubscriptionsTablesEnum.ReasonSubscriptionCancelledList.ToString());
                 }
 
                 if ((SubsRow.PublicationCode.Length > 0) && !PPublicationAccess.Exists(SubsRow.PublicationCode, Transaction))
@@ -1456,6 +1544,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     NewRow.PublicationDescription = FNewRowDescription;
                     NewRow.FrequencyCode = "Daily"; // I can't leave this blank, so I need to make something up...
                     MainDS.PPublication.Rows.Add(NewRow);
+                    TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                        TCacheableSubscriptionsTablesEnum.PublicationList.ToString());
                 }
             }
         }
@@ -1479,6 +1569,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         Row.PositionScope = rv.PositionScope;
                         Row.PositionDescr = FNewRowDescription;
                         MainDS.PtPosition.Rows.Add(Row);
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(TCacheableUnitTablesEnum.PositionList.ToString());
                     }
                 }
             }
@@ -1571,6 +1662,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckPassport(MainDS, ref ReferenceResults, Transaction);
             CheckPassportType(MainDS, ref ReferenceResults, Transaction);
             CheckDocumentRefs(MainDS, ref ReferenceResults, Transaction);
+            CheckSkillCategoryAndLevel(MainDS, ref ReferenceResults, Transaction);
             CheckSubscriptions(MainDS, ref ReferenceResults, Transaction);
             CheckJobRefs(MainDS, ref ReferenceResults, Transaction);
             return true;
@@ -1678,7 +1770,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="APartnerKey">Partner key</param>
         /// <param name="ASiteKey">Partner's site key</param>
         /// <param name="ALocationKey">Partner's primary location key</param>
-        /// <param name="ANoFamily">Set this flag for a PERSON, to prevent the FAMILY being exported too.</param>
+        /// <param name="AIncludeFamilyWithPerson">Set this flag to false for a PERSON, to prevent the FAMILY being exported too.</param>
+        /// <param name="AIncludePersonWithFamily">Set this flag to false for a FAMILY, to prevent the PERSONs being exported too.</param>
         /// <param name="ASpecificBuildingInfo">Only include these buildings (null for all)</param>
         /// <param name="AOldPetraFormat">Set this flag if export to be done in old format</param>
         /// <returns>One partner in EXT format</returns>
@@ -1686,7 +1779,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static string ExportPartnerExt(Int64 APartnerKey,
             Int64 ASiteKey,
             Int32 ALocationKey,
-            Boolean ANoFamily,
+            Boolean AIncludeFamilyWithPerson,
+            Boolean AIncludePersonWithFamily,
             StringCollection ASpecificBuildingInfo,
             Boolean AOldPetraFormat)
         {
@@ -1714,11 +1808,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TPartnerFileExport Exporter = new TPartnerFileExport();
             PartnerImportExportTDS AMainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
 
-            if (!ANoFamily)  // I'll check whether there's a FAMILY to go with this Partner.
+            if (AMainDS.PPartner.Rows.Count == 0)
             {
-                PPartnerRow PartnerRow = AMainDS.PPartner[0];
+                return extRecord;  // This is empty - TODO: I'm not returning any error code here.
+            }
 
-                if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            PPartnerRow PartnerRow = AMainDS.PPartner[0];
+
+            if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                if (AIncludeFamilyWithPerson)  // I'll check whether there's a FAMILY to go with this Partner.
                 {
                     PPersonRow PersonRow = AMainDS.PPerson[0];
                     long FamilyKey = PersonRow.FamilyKey;
@@ -1737,6 +1836,57 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             }
 
             extRecord += Exporter.ExportPartnerExt(AMainDS, ASiteKey, ALocationKey, ASpecificBuildingInfo, AOldPetraFormat);
+
+            if (PartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                if (AIncludePersonWithFamily)
+                {
+                    // We need to export the Persons in this Family as well
+                    TDBTransaction ReadTransaction = null;
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                        ref ReadTransaction,
+                        delegate
+                        {
+                            PPersonTable Persons = PPersonAccess.LoadViaPFamily(APartnerKey, ReadTransaction);
+
+                            foreach (PPersonRow Row in Persons.Rows)
+                            {
+                                long personKey = Row.PartnerKey;
+                                PartnerAccessOk = TPartnerServerLookups.VerifyPartner(personKey,
+                                    out ShortName, out PartnerClass,
+                                    out IsMergedPartner, out UserCanAccessPartner);
+
+                                if ((personKey > 0) && PartnerAccessOk && UserCanAccessPartner)
+                                {
+                                    PartnerImportExportTDS PersonDS = TExportAllPartnerData.ExportPartner(personKey, TPartnerClass.PERSON);
+
+                                    // if member has same address as family
+                                    if (PPartnerLocationAccess.Exists(personKey, ASiteKey, ALocationKey, ReadTransaction))
+                                    {
+                                        // export the person member with the same address as family partner
+                                        extRecord += Exporter.ExportPartnerExt(PersonDS, ASiteKey, ALocationKey, null, AOldPetraFormat);
+                                    }
+                                    else
+                                    {
+                                        PLocationTable LocationTable;
+                                        string CountryName;
+
+                                        TAddressTools.GetBestAddress(personKey, out LocationTable, out CountryName, ReadTransaction);
+
+                                        if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
+                                        {
+                                            // export the person member with the person partner's best address
+                                            //LocationKey = LocationTable[0].LocationKey;
+                                            extRecord +=
+                                                Exporter.ExportPartnerExt(PersonDS, ASiteKey, LocationTable[0].LocationKey, null, AOldPetraFormat);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                }
+            }
+
             return extRecord;
         }
 
@@ -1868,8 +2018,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                         if ((LocationTable != null) && (LocationTable.Rows.Count > 0))
                                         {
                                             // export the person member with the person partner's best address
-                                            LocationKey = LocationTable[0].LocationKey;
-                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationKey, null, AOldPetraFormat);
+                                            //LocationKey = LocationTable[0].LocationKey;
+                                            ExtText += Exporter.ExportPartnerExt(MainDS, SiteKey, LocationTable[0].LocationKey, null, AOldPetraFormat);
                                         }
                                     }
                                 }

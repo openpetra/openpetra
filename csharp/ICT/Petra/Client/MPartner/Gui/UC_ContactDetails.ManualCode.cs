@@ -33,11 +33,13 @@ using Ict.Common.Controls;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -64,6 +66,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private readonly string StrSecondaryEmail = Catalog.GetString("Secondary E-Mail");
 
         private readonly string StrEmailWithinOrgansiation = Catalog.GetString("Office E-Mail");
+
+        private readonly string StrIntlTelephoneCode = Catalog.GetString("International Telephone Country Code " +
+            "(only available for Phone Numbers and Fax Numbers)");
 
         private readonly string StrFunctionKeysTip = Catalog.GetString(
             " (Press <F5>-<F8> to change Contact Type; <SHIFT>+any of those for alternative.)");
@@ -125,6 +130,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
+        /// <summary>
+        /// Label that shows a Country Name of a given Country Code under the International Phone Prefix ComboBox.
+        /// Note: this Control is actually a TextBox disguised as a Label. This makes it possible to select and copy
+        /// this Control's text
+        /// </summary>
+        public System.Windows.Forms.TextBox lblIntlPhonePrefixCountryInfo;
+
         private string FDefaultContactType = String.Empty;
 
         /// <summary>Holds a reference to an ImageList containing Icons that can be shown in Grid Rows</summary>
@@ -166,6 +178,11 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private string FDeletedRowsValue = String.Empty;
 
+        /// <summary>
+        /// Delegate function to determine the Country Code of the Best Address of the Partner.
+        /// </summary>
+        private TDelegateForDeterminationOfBestAddressesCountryCode FDelegateForDeterminationOfBestAddressesCountryCode;
+
         TPartnerClass FPartnersPartnerClass;
 
         /// <summary>
@@ -184,8 +201,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         #endregion
 
-        /// <summary>todoComment</summary>
+        /// <summary>Delegate declaration</summary>
+        public delegate string TDelegateForDeterminationOfBestAddressesCountryCode();
 
+        /// <summary>
+        /// Initialises the Delegate function for the determination of the Country Code of the
+        /// 'Best Address' of the Partner.
+        /// </summary>
+        /// <param name="ADelegateFunction">Function that should get called.</param>
+        public void InitialiseDelegateForDeterminationOfBestAddressesCountryCode(
+            TDelegateForDeterminationOfBestAddressesCountryCode ADelegateFunction)
+        {
+            FDelegateForDeterminationOfBestAddressesCountryCode = ADelegateFunction;
+        }
+
+        /// <summary>todoComment</summary>
         private void OnRecalculateScreenParts(TRecalculateScreenPartsEventArgs e)
         {
             if (RecalculateScreenParts != null)
@@ -218,10 +248,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
-                    if (RowHasPhoneAttributeType(CurrentDetailDR))
+                    if (Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, CurrentDetailDR))
                     {
                         FValueWithSpecialMeaningChangedButUserDidntLeaveControl =
-                            String.Compare(txtValue.Text, CurrentDetailDR.Value, StringComparison.InvariantCulture) != 0;
+                            String.Compare(txtValue.Text,
+                                Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(CurrentDetailDR),
+                                StringComparison.InvariantCulture) != 0;
                     }
                 }
 
@@ -249,6 +281,23 @@ namespace Ict.Petra.Client.MPartner.Gui
         void HandleDataSaved(object Sender, TDataSavedEventArgs e)
         {
             FRunningInsideDataSaving = false;
+        }
+
+        private void EnsureOnlyPhoneAndFaxRowsHaveCountryCodeSet()
+        {
+            PPartnerAttributeRow PPartnerAttributeDR;
+
+            for (int Counter = 0; Counter < FMainDS.PPartnerAttribute.Rows.Count; Counter++)
+            {
+                PPartnerAttributeDR = FMainDS.PPartnerAttribute[Counter];
+
+                if (((PPartnerAttributeDR.RowState == DataRowState.Added)
+                     || (PPartnerAttributeDR.RowState == DataRowState.Modified))
+                    && (!Calculations.RowHasPhoneOrFaxAttributeType(FPhoneAttributesDV, PPartnerAttributeDR, false)))
+                {
+                    PPartnerAttributeDR.ValueCountry = String.Empty;
+                }
+            }
         }
 
         #region Public Methods
@@ -307,9 +356,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbContactCategory.SelectedValueChanged += new System.EventHandler(this.FilterContactTypeCombo);
             cmbContactType.SelectedValueChanged += new System.EventHandler(this.OnContactTypeChanged);
 
+            cmbIntlPhonePrefix.SelectedValueChanged += CmbIntlPhonePrefix_UpdateIntlPhoneTips;
+            cmbIntlPhonePrefix.TextChanged += CmbIntlPhonePrefix_UpdateIntlPhoneTips;
+
+            // Make the Value TextBox automatically select all its text if the record holds the 'NEWVALUE'
+            // and the user enters the Value TextBox (see Bug #4548)
+            new TWireUpSelectAllTextOnFocus(txtValue,
+                delegate
+                {
+                    var DetailDR = GetSelectedDetailRow();
+
+                    if ((DetailDR != null)
+                        && (txtValue.Text.StartsWith(Catalog.GetString("NEWVALUE") + "-")))
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+                );
+
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
-//            rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
+            //            rtbValue.LinkClicked += new Ict.Common.Controls.TRtbHyperlinks.THyperLinkClickedArgs(rtbValue.Helper.LaunchHyperLink);
 
             // TODO ApplySecurity();
         }
@@ -452,6 +521,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.InitVars();
             }
 
+            FPetraUtilsObject.DataSavingValidated += FPetraUtilsObject_DataSavingValidated;
+
             if (FMainDS.PPartnerAttributeCategory.Count == 0)
             {
                 // Note: If FMainDS contains an instance of the PPartnerAttributeCategoryTable, but it hasn't got any rows
@@ -511,7 +582,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             pnlFamilyExtraControls.Top = 50;
 
             // Move the Panel that groups the 'Current' Controls for layout purposes a bit up from it's automatically assigned position
-            pnlCurrentGrouping.Top = 58;
+            pnlCurrentGrouping.Top = 60;
             chkCurrent.Top = 7;
             dtpNoLongerCurrentFrom.Top = 8;
             lblNoLongerCurrentFrom.Top = 12;
@@ -521,9 +592,22 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtValue.Top = 3;
             lblValue.Top = 9;
             btnLaunchHyperlinkFromValue.Top = 3;
+            cmbIntlPhonePrefix.Top = txtValue.Top;
+            cmbIntlPhonePrefix.TabIndex = lblValue.TabIndex + 1;
+            pnlValueGrouping.Width = 350;
 
-            chkConfidential.Top = 88;
-            lblConfidential.Top = 93;
+            chkConfidential.Top = 90;
+            lblConfidential.Top = 95;
+
+            CreateIntlPhonePrefixCountryLabel();
+
+            // Make all ComboBoxes in the 'Overall' GroupBox read-only
+            cmbPrimaryWayOfContacting.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbPrimaryPhoneForContacting.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbPrimaryEMail.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbSecondaryEMail.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbPhoneWithinTheOrganisation.DropDownStyle = ComboBoxStyle.DropDownList;
+            cmbEMailWithinTheOrganisation.DropDownStyle = ComboBoxStyle.DropDownList;
 
             // Set up status bar texts for unbound controls and for bound controls whose auto-assigned texts don't match the use here on this screen (these talk about 'Partner Attributes')
             FPetraUtilsObject.SetStatusBarText(cmbPrimaryWayOfContacting,
@@ -578,13 +662,125 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetToolTip(btnLaunchHyperlinkEMailWithinOrg, StrSendEmailFromOfficeEmailButtonHelptext);
             FPetraUtilsObject.SetToolTip(btnLaunchHyperlinkSecondaryEMail, StrSendEmailFromSecondaryEmailButtonHelptext);
 
+            FPetraUtilsObject.SetStatusBarText(cmbIntlPhonePrefix.cmbCombobox, StrIntlTelephoneCode);
+
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // rtbValue will replace txtValue, but for the time being we have just a plain Textbox instead of the Hyperlink-enabled Rich Text Box!
-//            rtbValue.BuildLinkWithValue = BuildLinkWithValue;
+            //            rtbValue.BuildLinkWithValue = BuildLinkWithValue;
 
             // TODO SHORTCUTS: Listed here are 'Shortcuts' for finishing the core of the functionality earlier. They will need to be addressed later for full functionality!
             // Hide all not-yet-implemented Controls in the 'Overall Contact Settings' GroupBox for the time being - their implementation will follow
             pnlPromoteDemote.Visible = false;
+        }
+
+        private void CreateIntlPhonePrefixCountryLabel()
+        {
+            this.lblIntlPhonePrefixCountryInfo = new System.Windows.Forms.TextBox();
+            this.lblIntlPhonePrefixCountryInfo.BackColor = System.Drawing.SystemColors.Control; // System.Drawing.Color.Red - for debugging
+            this.lblIntlPhonePrefixCountryInfo.Name = "lblIntlPhonePrefixCountryInfo";
+            this.lblIntlPhonePrefixCountryInfo.Size = new System.Drawing.Size(288, 30);
+            this.lblIntlPhonePrefixCountryInfo.TabIndex = 1;
+            this.lblIntlPhonePrefixCountryInfo.TextAlign = HorizontalAlignment.Left;
+            //this.lblIntlPhonePrefixCountryInfo.Paint += new PaintEventHandler(this.lblIntlPhonePrefixCountryInfo);
+
+            lblIntlPhonePrefixCountryInfo.Font = new System.Drawing.Font(cmbIntlPhonePrefix.Font.FontFamily, 6);
+            this.lblIntlPhonePrefixCountryInfo.Multiline = false;
+            this.lblIntlPhonePrefixCountryInfo.WordWrap = false;
+            this.lblIntlPhonePrefixCountryInfo.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lblIntlPhonePrefixCountryInfo.ReadOnly = true;
+            this.lblIntlPhonePrefixCountryInfo.Location = new System.Drawing.Point(lblValue.Right + 6, cmbIntlPhonePrefix.Bottom + 1);
+            this.lblIntlPhonePrefixCountryInfo.TabStop = false;
+            this.lblIntlPhonePrefixCountryInfo.Tag = MCommonResourcestrings.StrCtrlSuppressChangeDetection;
+
+            pnlValueGrouping.Controls.Add(lblIntlPhonePrefixCountryInfo);
+        }
+
+        private void CmbIntlPhonePrefix_UpdateIntlPhoneTips(object sender, EventArgs e)
+        {
+            string CountryName;
+            string IntlPhoneTipStr;
+
+            if (Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, GetSelectedDetailRow()))
+            {
+                CountryName = cmbIntlPhonePrefix.GetSelectedString(1);
+
+                if (CountryName != String.Empty)
+                {
+                    IntlPhoneTipStr = String.Format(Catalog.GetString("International Telephone Code '{0}' is for country '{1}'"),
+                        cmbIntlPhonePrefix.Text, CountryName);
+
+                    lblIntlPhonePrefixCountryInfo.Text = "[" + CountryName + "]";
+                    FPetraUtilsObject.SetToolTip(lblIntlPhonePrefixCountryInfo, IntlPhoneTipStr);
+                    FPetraUtilsObject.SetToolTip(cmbIntlPhonePrefix.cmbCombobox, IntlPhoneTipStr);
+                }
+                else
+                {
+                    ClearIntlPhoneTips();
+                }
+            }
+            else
+            {
+                ClearIntlPhoneTips();
+            }
+        }
+
+        private void ClearIntlPhoneTips()
+        {
+            lblIntlPhonePrefixCountryInfo.Text = String.Empty;
+            FPetraUtilsObject.SetToolTip(lblIntlPhonePrefixCountryInfo, String.Empty);
+            FPetraUtilsObject.SetToolTip(cmbIntlPhonePrefix.cmbCombobox, String.Empty);
+        }
+
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, System.ComponentModel.CancelEventArgs e)
+        {
+            EnsureOnlyPhoneAndFaxRowsHaveCountryCodeSet();
+        }
+
+        /// <summary>
+        /// Update an invisible Column on which a calculated Column is based which is then shown as the 'Value' Column in the Grid
+        /// </summary>
+        /// <remarks>We need to do this as the p_partner_attribute Table holds Country Codes (e.g. 'GB') and not International Phone
+        /// Prefixes (eg. +44), but we need to show Phone / Fax Numbers in the Grid prefixed with the International Phone Prefix.</remarks>
+        private void UpdateIntlPhonePrefixColumn()
+        {
+            PartnerEditTDSPPartnerAttributeRow PartnerAttributeDR;
+            PCountryRow CountryDR;
+            bool RowWasUnchangedBefore;
+
+            for (int Counter = 0; Counter < FMainDS.PPartnerAttribute.Rows.Count; Counter++)
+            {
+                PartnerAttributeDR = FMainDS.PPartnerAttribute[Counter];
+
+                if ((PartnerAttributeDR.RowState == DataRowState.Unchanged)
+                    || (PartnerAttributeDR.RowState == DataRowState.Added)
+                    || (PartnerAttributeDR.RowState == DataRowState.Modified))
+                {
+                    RowWasUnchangedBefore = PartnerAttributeDR.RowState == DataRowState.Unchanged;
+
+                    if (PartnerAttributeDR.ValueCountry != String.Empty)
+                    {
+                        CountryDR = (PCountryRow)Calculations.FindCountryRowInCachedCountryList(PartnerAttributeDR.ValueCountry);
+
+                        if (CountryDR != null)
+                        {
+                            PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = "+" + CountryDR.InternatTelephoneCode + " ";
+                        }
+                        else
+                        {
+                            PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = String.Empty;
+                        }
+                    }
+                    else
+                    {
+                        PartnerAttributeDR[Calculations.CALCCOLUMNNAME_INTLPHONEPREFIX] = String.Empty;
+                    }
+
+                    if (RowWasUnchangedBefore)
+                    {
+                        PartnerAttributeDR.AcceptChanges();
+                    }
+                }
+            }
         }
 
         private void ShowDataManual()
@@ -657,6 +853,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // Create custom data columns on-the-fly
             Calculations.CreateCustomDataColumnsForAttributeTable(FMainDS.PPartnerAttribute, FMainDS.PPartnerAttributeType);
+
+            // Update invisible Column on which a calculated Column is based which is then shown as the 'Value' Column in the Grid
+            UpdateIntlPhonePrefixColumn();
 
             /* Create SourceDataGrid columns */
             CreateGridColumns();
@@ -732,6 +931,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
             ARow.AttributeType = FDefaultContactType;
 
+            if (Calculations.RowHasPhoneOrFaxAttributeType(FPhoneAttributesDV, ARow, false))
+            {
+                if (FDelegateForDeterminationOfBestAddressesCountryCode != null)
+                {
+                    ARow.ValueCountry = FDelegateForDeterminationOfBestAddressesCountryCode();
+                }
+                else
+                {
+                    throw new EOPAppException("Delegate FDelegateForDeterminationOfBestAddressesCountryCode is not set up");
+                }
+            }
+
             for (int Counter = 0; Counter < ThisDT.Rows.Count; Counter++)
             {
                 if (ThisDT.Rows[Counter].RowState == DataRowState.Deleted)
@@ -774,7 +985,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ARow.Index = HighestIndex + 1;
 
-            ARow.Value = "NEWVALUE" + ARow.Sequence.ToString();
+            ARow.Value = Catalog.GetString("NEWVALUE") + ARow.Sequence.ToString();
             ARow.Primary = false;
             ARow.WithinOrganisation = false;
             ARow.Specialised = false;
@@ -821,17 +1032,87 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>true if user is permitted and able to delete the current row</returns>
         private bool PreDeleteManual(PPartnerAttributeRow ARowToDelete, ref string ADeletionQuestion)
         {
+            const string SPECIALMEANINGFORMATSTRING = "  [{0}]";
+            string SpecialMeaning = String.Empty;
+            bool RowToDeleteHasPhoneAttributeType = Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, ARowToDelete);
+            PPartnerAttributeTypeRow ContactTypeDR;
+            TPartnerAttributeTypeValueKind ValueKind;
+            string SecondaryEmailAddress;
+            string PrimaryContactMethod;
+
             // Those values are getting safed for use in the PostDeleteManual Method
             // Trying to establish those values there doesn't work in case the Partner was new,
             // the Row was newly added, and then gets removed (DataRow has DataRowVersion.Detached in
             // this case, and no Original data that can be accessed!)
             FDeletedRowsAttributeType = ARowToDelete.AttributeType;
-            FDeletedRowsValue = ARowToDelete.Value;
+
+            if (RowToDeleteHasPhoneAttributeType)
+            {
+                FDeletedRowsValue = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(ARowToDelete);
+
+                if (ARowToDelete.Primary)
+                {
+                    if (!ARowToDelete.WithinOrganisation)
+                    {
+                        SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrPrimaryPhone);
+                    }
+                    else
+                    {
+                        SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrPrimaryPhone + Catalog.GetString(" AND ") +
+                            StrPhoneWithinOrgansiation);
+                    }
+                }
+                else if (ARowToDelete.WithinOrganisation)
+                {
+                    SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrPhoneWithinOrgansiation);
+                }
+            }
+            else
+            {
+                FDeletedRowsValue = ARowToDelete.Value;
+
+                // Ensure Secondary E-mail setting is written to underlying data
+                UpdateSystemCategoryOvrlContSettgsCombosRecords();
+
+                Calculations.DetermineValueKindOfPartnerAttributeRecord(ARowToDelete, FMainDS.PPartnerAttributeType, out ContactTypeDR, out ValueKind);
+
+                if (ValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS)
+                {
+                    GetSystemCategoryOvrlContSettgsValues(out PrimaryContactMethod, out SecondaryEmailAddress);
+
+                    if (ARowToDelete.Primary)
+                    {
+                        if (!ARowToDelete.WithinOrganisation)
+                        {
+                            SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrPrimaryEmail);
+
+                            if (SecondaryEmailAddress == ARowToDelete.Value)
+                            {
+                                SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrPrimaryEmail + Catalog.GetString(" AND ") +
+                                    StrSecondaryEmail);
+                            }
+                        }
+                        else
+                        {
+                            SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrPrimaryEmail + Catalog.GetString(" AND ") +
+                                StrEmailWithinOrgansiation);
+                        }
+                    }
+                    else if (ARowToDelete.WithinOrganisation)
+                    {
+                        SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrEmailWithinOrgansiation);
+                    }
+                    else if (ARowToDelete.Value == SecondaryEmailAddress)
+                    {
+                        SpecialMeaning = String.Format(SPECIALMEANINGFORMATSTRING, StrSecondaryEmail);
+                    }
+                }
+            }
 
             ADeletionQuestion =
                 String.Format(Catalog.GetString(
-                        "Are you sure you want to delete the following Contact Detail record?\r\n\r\n    Type: '{0}'\r\n    Value: '{1}'"),
-                    ARowToDelete.AttributeType, ARowToDelete.Value);
+                        "Are you sure you want to delete the following Contact Detail record?\r\n\r\n    Type: '{0}'{1}\r\n    Value: '{2}'"),
+                    ARowToDelete.AttributeType, SpecialMeaning, FDeletedRowsValue);
 
             return true;
         }
@@ -1018,6 +1299,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.Columns.Clear();
 
             grdDetails.AddImageColumn(@GetPrimaryIconForGridRow);
+            grdDetails.Columns[0].Width = 20;
+            grdDetails.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
 
             //
             // Contact Type
@@ -1031,7 +1314,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Comment", FMainDS.PPartnerAttribute.ColumnComment);
 
             // Value
-            grdDetails.AddTextColumn("Value", FMainDS.PPartnerAttribute.ColumnValue);
+            grdDetails.AddTextColumn("Value", FMainDS.PPartnerAttribute.Columns[Calculations.CALCCOLUMNNAME_VALUE]);
 
             // Current
             grdDetails.AddCheckBoxColumn("Current", FMainDS.PPartnerAttribute.ColumnCurrent);
@@ -1041,22 +1324,24 @@ namespace Ict.Petra.Client.MPartner.Gui
 
 //            // Sequence (for testing purposes only...)
 //            grdDetails.AddTextColumn("Sequence", FMainDS.PPartnerAttribute.ColumnSequence);
-//
+
 //            // Index (for testing purposes only...)
 //            grdDetails.AddTextColumn("Index", FMainDS.PPartnerAttribute.ColumnIndex);
-//
+
 //            // Primary (for testing purposes only...)
 //            grdDetails.AddCheckBoxColumn("Primary", FMainDS.PPartnerAttribute.ColumnPrimary);
-//
+
 //            // Within Organsiation (for testing purposes only...)
 //            if (FPartnersPartnerClass == TPartnerClass.PERSON)
 //            {
-//
+
 //                grdDetails.AddCheckBoxColumn("Within Org.", FMainDS.PPartnerAttribute.ColumnWithinOrganisation);
 //            }
 
             // Modification TimeStamp (for testing purposes only...)
 //             grdDetails.AddTextColumn("Modification TimeStamp", FMainDS.PPartnerAttribute.ColumnModificationId);
+
+            grdDetails.AutoResizeGrid();
         }
 
         private void ValidateDataDetailsManual(PPartnerAttributeRow ARow)
@@ -1208,14 +1493,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
-                    if (RowHasPhoneAttributeType(GetSelectedDetailRow()))
+                    if (Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, GetSelectedDetailRow()))
                     {
-                        if (cmbPrimaryPhoneForContacting.GetSelectedString() == txtValue.Text)
+                        if (cmbPrimaryPhoneForContacting.GetSelectedString() ==
+                            Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(txtValue.Text,
+                                cmbIntlPhonePrefix.GetSelectedString(PCountryTable.ColumnInternatTelephoneCodeId)))
                         {
                             PrimaryPhoneNumberIsThisRecord = true;
                         }
 
-                        if (cmbPhoneWithinTheOrganisation.GetSelectedString() == txtValue.Text)
+                        if (cmbPhoneWithinTheOrganisation.GetSelectedString() ==
+                            Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(txtValue.Text,
+                                cmbIntlPhonePrefix.GetSelectedString(PCountryTable.ColumnInternatTelephoneCodeId)))
                         {
                             PhoneNumberWithinOrganisationIsThisRecord = true;
                         }
@@ -1249,7 +1538,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                     {
-                        if (RowHasPhoneAttributeType(GetSelectedDetailRow()))
+                        if (Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, GetSelectedDetailRow()))
                         {
                             CheckThatNonCurrentPhoneNrIsntSpecificPhoneNr(TOverallContactComboType.occtPhoneWithinOrganisation,
                                 PhoneNumberWithinOrganisationIsThisRecord);
@@ -1328,10 +1617,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
                 else if (FValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
                 {
-                    if (RowHasPhoneAttributeType(SelectedDetailDR))
+                    if (Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, SelectedDetailDR))
                     {
                         // Ensure current Phone Number is reflected in the DataRow
                         SelectedDetailDR.Value = txtValue.Text;
+                        SelectedDetailDR.ValueCountry = cmbIntlPhonePrefix.GetSelectedString();
+
+                        // Update invisible Column on which a calculated Column is based which is then shown as the 'Value' Column in the Grid
+                        UpdateIntlPhonePrefixColumn();
 
                         // Refresh the ComboBoxes so they reflect any change in the Phone Number!
                         FPrimaryPhoneAutoChosen = (SelectedDetailDR.RowState == DataRowState.Added)
@@ -1340,7 +1633,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                           || !FRunningInsideDataSaving));
 
                         UpdatePhoneComboItems(cmbPrimaryPhoneForContacting,
-                            FPrimaryPhoneAutoChosen ? txtValue.Text : null);
+                            FPrimaryPhoneAutoChosen ?
+                            Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(txtValue.Text,
+                                cmbIntlPhonePrefix.GetSelectedString(PCountryTable.ColumnInternatTelephoneCodeId)) : null);
+
                         UpdatePhoneComboItems(cmbPhoneWithinTheOrganisation);
 
                         UpdateEmailComboItemsOfAllEmailCombos(true);
@@ -1356,23 +1652,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void HandleValueChanged(Object sender, EventArgs e)
         {
             btnLaunchHyperlinkFromValue.Enabled = (txtValue.Text != String.Empty);
-        }
-
-        private bool RowHasPhoneAttributeType(PPartnerAttributeRow ADetailRow)
-        {
-            bool ReturnValue = false;
-
-            for (int Counter = 0; Counter < FPhoneAttributesDV.Count; Counter++)
-            {
-                if ((ADetailRow.AttributeType == ((PPartnerAttributeTypeRow)FPhoneAttributesDV[Counter].Row).AttributeType)
-                    && (ADetailRow.AttributeType != "Fax"))
-                {
-                    ReturnValue = true;
-                    break;
-                }
-            }
-
-            return ReturnValue;
         }
 
         private void FilterContactTypeCombo(Object sender, EventArgs e)
@@ -1437,7 +1716,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
 
                             btnLaunchHyperlinkFromValue.Visible = false;
-                            txtValue.Width = 290;
+
+                            if (Calculations.RowHasPhoneOrFaxAttributeType(FPhoneAttributesDV, SelectedDetailDR, false))
+                            {
+                                ShowHideIntlPhonePrefix(true, -1);
+                            }
+                            else
+                            {
+                                ShowHideIntlPhonePrefix(false, 290);
+                            }
 
                             break;
 
@@ -1446,13 +1733,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_EMAILADDRESS:
                         case TPartnerAttributeTypeValueKind.CONTACTDETAIL_SKYPEID:
                             btnLaunchHyperlinkFromValue.Visible = true;
-                            txtValue.Width = 256;
+
+                            ShowHideIntlPhonePrefix(false, 256);
 
                             break;
 
                         default:
                             btnLaunchHyperlinkFromValue.Visible = false;
-                            txtValue.Width = 290;
+
+                            ShowHideIntlPhonePrefix(false, 290);
+
 
                             throw new Exception("Invalid value for TPartnerAttributeTypeValueKind");
                     }
@@ -1464,6 +1754,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
 
                 UpdateValueManual();
+
+                EnsureOnlyPhoneAndFaxRowsHaveCountryCodeSet();
+                UpdateIntlPhonePrefixColumn();
 
                 if (!FRunningInsideShowDetails)
                 {
@@ -1523,7 +1816,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // but then changes his/her mind to make it a 'Fax' record: remove the Primary flag!
                         if (((GetSelectedDetailRow().Primary))
                             && (PreviousValueKind == TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL)
-                            && (!RowHasPhoneAttributeType(SelectedDetailDR)))
+                            && (!Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, SelectedDetailDR)))
                         {
                             SelectedDetailDR.Primary = false;
 
@@ -1532,6 +1825,37 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Shows or hides the 'International Phone Prefix' ComboBox. If shown it appears to the left of the 'Value'
+        /// TextBox.
+        /// </summary>
+        /// <param name="AShow">Set to true to show the 'International Phone Prefix' ComboBox, set to false to hide it.</param>
+        /// <param name="ValueWidthWithoutIntlPhonePrefix">Widht of the 'Value' TextBox when shown without the
+        /// 'International Phone Prefix' ComboBox. (Ignored when <paramref name="AShow" /> is true.)</param>
+        private void ShowHideIntlPhonePrefix(bool AShow, int ValueWidthWithoutIntlPhonePrefix)
+        {
+            int ControlLeft = lblValue.Left + lblValue.Width + 5;
+
+            if (AShow)
+            {
+                cmbIntlPhonePrefix.Visible = true;
+                cmbIntlPhonePrefix.Left = ControlLeft;
+                txtValue.Left = 129;
+                txtValue.Width = 220;
+
+                CmbIntlPhonePrefix_UpdateIntlPhoneTips(null, null);
+            }
+            else
+            {
+                cmbIntlPhonePrefix.Visible = false;
+                txtValue.Left = ControlLeft;
+                txtValue.Width = ValueWidthWithoutIntlPhonePrefix;
+                btnLaunchHyperlinkFromValue.Left = txtValue.Left + txtValue.Width + 5;
+
+                ClearIntlPhoneTips();
             }
         }
 
@@ -1566,7 +1890,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
                     StatusBarText = Catalog.GetString("Enter whatever the Contact Type is about.");
-                    CurrentRowHasPhoneAttributeType = RowHasPhoneAttributeType(SelectedDetailDR);
+                    CurrentRowHasPhoneAttributeType = Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, SelectedDetailDR);
 
                     if (cmbContactCategory.Enabled)
                     {

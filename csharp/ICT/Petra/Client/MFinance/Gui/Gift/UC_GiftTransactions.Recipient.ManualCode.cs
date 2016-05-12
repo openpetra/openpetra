@@ -434,6 +434,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     UpdateRecipientKeyText(APartnerKey, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
+
                     RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
                 }
 

@@ -707,13 +707,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             bool SurpressDetailForGifts = AParameters["param_suppress_detail"].ToBool();
             string MailingCode = AParameters["param_mailing_code"].ToString();
 
-            const string ANONYMOUS = "ANONYMOUS";
+            const string ANONYMOUS = "Anonymous";
 
             string Query = string.Empty;
 
             if (ReportType == "Detailed") // Detailed report only
             {
-                Query = "SELECT a_gift.a_receipt_number_i AS ReceiptNumber, a_gift.a_date_entered_d AS DateEntered," +
+                Query = "SELECT a_gift.a_date_entered_d AS DateEntered," +
                         " a_gift_detail.a_gift_amount_n AS Amount," +
                         " a_gift_detail.a_gift_comment_one_c, a_gift_detail.a_gift_comment_two_c, a_gift_detail.a_gift_comment_three_c,";
             }
@@ -732,7 +732,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Query += " CASE WHEN a_gift_detail.a_confidential_gift_flag_l = 'false' THEN to_char(a_gift.p_donor_key_n, 'FM0000000000')" +
                      " ELSE '" + ANONYMOUS + "' END AS DonorKey," +
                      " CASE WHEN a_gift_detail.a_confidential_gift_flag_l = 'false' THEN p_partner.p_partner_short_name_c" +
-                     " ELSE '' END AS DonorName" +
+                     " ELSE '' END AS DonorName," +
+                     " CASE WHEN a_gift_detail.a_confidential_gift_flag_l = 'false' THEN CAST (a_gift.a_receipt_number_i AS TEXT)" +
+                     " ELSE '' END AS ReceiptNumber" +
 
                      " FROM a_gift, a_gift_batch, a_gift_detail, a_motivation_detail, p_partner" +
 
@@ -776,17 +778,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 Query += " GROUP BY a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, DonorKey," +
                          " a_gift.a_first_time_gift_l, a_gift_detail.a_confidential_gift_flag_l, a_motivation_detail.a_motivation_detail_desc_c," +
-                         " DonorName" +
+                         " DonorName, ReceiptNumber" +
 
                          " ORDER BY a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c, DonorKey";
             }
 
             TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
                     ReturnTable = DbAdapter.RunQuery(Query, "MotivationResponse", Transaction);
+
+                    if (DbAdapter.IsCancelled)
+                    {
+                        ReturnTable = null;
+                        return;
+                    }
 
                     if (ReturnTable != null)
                     {
@@ -830,6 +839,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             // get best address for the partner
                             foreach (DataRow Row in ReturnTable.Rows)
                             {
+                                if (DbAdapter.IsCancelled)
+                                {
+                                    ReturnTable = null;
+                                    return;
+                                }
+
                                 if ((Row["DonorKey"].ToString() != ANONYMOUS)
                                     && !(SurpressDetailForGifts
                                          && (Row["a_motivation_group_code_c"].ToString() == MFinanceConstants.MOTIVATION_GROUP_GIFT)))
@@ -849,7 +864,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                         TAddressTools.GetBestAddress(Convert.ToInt64(Row["DonorKey"]), out DonorLocation, out CountryName,
                                             Transaction);
 
-                                        if (DonorLocation.Rows.Count > 0)
+                                        if ((DonorLocation != null) && (DonorLocation.Rows.Count > 0))
                                         {
                                             Row["DonorAddress"] = Calculations.DetermineLocationString(DonorLocation[0],
                                                 Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);

@@ -304,6 +304,46 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Creates a new extract containing the partners whose keys are specified in the table
+        /// </summary>
+        /// <param name="AExtractId">The resulting extract ID</param>
+        /// <param name="AExtractName">A name for the extract</param>
+        /// <param name="AExtractDescription">A description for the extract</param>
+        /// <param name="APartnerKeysTable">A table of partner keys</param>
+        /// <param name="APartnerKeysColumnId">The column ID for the partner keys</param>
+        /// <param name="AIgnoreInactive">true if inactive partners should be ignored</param>
+        /// <param name="AIgnoreNonMailingLocations">true to ignore if the partner's best address is a non-mailing location</param>
+        /// <param name="AIgnoreNoSolicitations">true to ignore partners where the No Solicitations flag is set</param>
+        /// <param name="ANumberOfRowsCreated">Returns the number of partner keys in the final extract (any duplicates are excluded)</param>
+        /// <param name="AIgnoredKeyList">A reference to a List of long.  If not null the server will fill it with the partner keys that were ignored.  Does not include duplicates.</param>
+        /// <returns>True if the extract was successfully created</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean CreateNewExtractFromPartnerKeys(ref int AExtractId,
+            String AExtractName,
+            String AExtractDescription,
+            DataTable APartnerKeysTable,
+            int APartnerKeysColumnId,
+            bool AIgnoreInactive,
+            bool AIgnoreNonMailingLocations,
+            bool AIgnoreNoSolicitations,
+            out int ANumberOfRowsCreated,
+            out List <long>AIgnoredKeyList)
+        {
+            return Server.MPartner.Extracts.TExtractsHandling.CreateExtractFromListOfPartnerKeys(AExtractName,
+                AExtractDescription,
+                out AExtractId,
+                APartnerKeysTable,
+                APartnerKeysColumnId,
+                false,
+                out ANumberOfRowsCreated,
+                out AIgnoredKeyList,
+                true,
+                AIgnoreInactive,
+                AIgnoreNonMailingLocations,
+                AIgnoreNoSolicitations);
+        }
+
+        /// <summary>
         /// create an extract of all family members (persons) existing in a base extract
         /// </summary>
         /// <param name="ABaseExtractId"></param>

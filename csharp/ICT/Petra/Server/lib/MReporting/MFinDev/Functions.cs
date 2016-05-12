@@ -655,12 +655,12 @@ namespace Ict.Petra.Server.MReporting.MFinDev
         /// <param name="AStartDate">Start date of the gifts given</param>
         /// <param name="AEndDate">End date of the gifts given</param>
         /// <param name="ARecipientKey">Partner key of a specific recipient. If 0 then use all recipients</param>
-        /// <param name="AMotivationGroup">Limit gifts to this motivation group. If % use all motivation groups</param>
-        /// <param name="AMotivationDetail">Limit gifts to this motivation detail. If % use all motivation details</param>
+        /// <param name="AMotivationGroupQuotes">Limit gifts to this motivation group. If 'All' use all motivation groups</param>
+        /// <param name="AMotivationGroupDetailPairs">Limit gifts to this motivation detail. If 'All' use all motivation details</param>
         /// <returns></returns>
         private bool MakeTopDonor(decimal ATotalAmount, decimal ATopXPercent, decimal ABottomXPercent,
             bool AExtract, String AExtractName, DateTime AStartDate, DateTime AEndDate,
-            Int64 ARecipientKey, String AMotivationGroup, String AMotivationDetail)
+            Int64 ARecipientKey, string AMotivationGroupQuotes, string AMotivationGroupDetailPairs)
         {
             Int64 LedgerNumber = situation.GetParameters().Get("param_ledger_number_i").ToInt64();
             String CurrencyType = situation.GetParameters().Get("param_currency").ToString();
@@ -730,18 +730,19 @@ namespace Ict.Petra.Server.MReporting.MFinDev
                 SqlString.Append(ARecipientKey.ToString());
             }
 
-            if (AMotivationGroup != "%")
+            if (AMotivationGroupQuotes != "All")
             {
-                SqlString.Append(" AND  detail." + AGiftDetailTable.GetMotivationGroupCodeDBName() + " LIKE '");
-                SqlString.Append(AMotivationGroup);
-                SqlString.Append("' ");
+                SqlString.Append(" AND  detail." + AGiftDetailTable.GetMotivationGroupCodeDBName() + " IN (");
+                SqlString.Append(AMotivationGroupQuotes);
+                SqlString.Append(") ");
             }
 
-            if (AMotivationDetail != "%")
+            if (AMotivationGroupDetailPairs != "All")
             {
-                SqlString.Append(" AND  detail." + AGiftDetailTable.GetMotivationDetailCodeDBName() + " LIKE '");
-                SqlString.Append(AMotivationDetail);
-                SqlString.Append("' ");
+                SqlString.Append(" AND  (detail." + AGiftDetailTable.GetMotivationGroupCodeDBName() + ", " +
+                    "detail." + AGiftDetailTable.GetMotivationDetailCodeDBName() + ") IN (");
+                SqlString.Append(AMotivationGroupDetailPairs);
+                SqlString.Append(") ");
             }
 
             SqlString.Append(" GROUP BY gift." + AGiftTable.GetDonorKeyDBName() + ", ");

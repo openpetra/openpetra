@@ -1154,7 +1154,7 @@ namespace Ict.Petra.Client.CommonControls
 
             System.Int64 mPartnerKey;
             TPartnerClass mPartnerClass;
-            bool mPartnerIsMerged;
+            TStdPartnerStatusCode partnerStatus;
 
             String mExtractName;
 
@@ -1321,7 +1321,7 @@ namespace Ict.Petra.Client.CommonControls
                             out mPartnerExists,
                             out mVerifiedString,
                             out mPartnerClass,
-                            out mPartnerIsMerged);
+                            out partnerStatus);
                     }
 
                     // end delegate IS NOT defined
@@ -1423,7 +1423,7 @@ namespace Ict.Petra.Client.CommonControls
                             out mPartnerExists,
                             out mVerifiedString,
                             out mPartnerClass,
-                            out mPartnerIsMerged);
+                            out partnerStatus);
                     }
 
                     /* end delegate IS NOT defined */
@@ -1522,7 +1522,7 @@ namespace Ict.Petra.Client.CommonControls
                             out mPartnerExists,
                             out mVerifiedString,
                             out mPartnerClass,
-                            out mPartnerIsMerged);
+                            out partnerStatus);
                     }
 
                     // end delegate IS NOT defined
@@ -2089,6 +2089,14 @@ namespace Ict.Petra.Client.CommonControls
         public void SetTextboxFocus()
         {
             this.txtAutoPopulated.txtTextBox.Focus();
+        }
+
+        /// <summary>
+        /// Simulate a click on the controls button
+        /// </summary>
+        public void PerformButtonClick()
+        {
+            this.txtAutoPopulated.btnFindScreen.PerformClick();
         }
 
         /// <summary>

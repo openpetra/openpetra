@@ -12,8 +12,11 @@ County,County name,false,?,?,?,?,?
 CountryCode,Country code,false,?,?,?,?,?
 Decorations,Decorations,false,?,?,?,?,?
 FirstInitial,Initial of first name,false,?,?,?,?,?
+FirstInitialAndSpace,Initial of first name (add space if not empty),false,?,?,?,?,?
 FirstName,First name,false,?,?,?,?,?
-LastName,Family or last name,false,?,?,?,?,?
+FirstNameAndSpace,First name (add space if not empty),false,?,?,?,?,?
+LastName,Last name (Family/Person) or name (other Partner Classes),false,?,?,?,?,?
+LastNameAndSpace,Last name (Family/Person) or name (add space if not empty),false,?,?,?,?,?
 LocalName,Name in local language,false,?,?,?,?,?
 LocationKey,Location Key,false,?,?,?,?,?
 MiddleName,Middle name,false,?,?,?,?,?
@@ -23,4 +26,5 @@ PartnerKey,Partner Key,false,?,?,?,?,?
 PostalCode,Postal code,false,?,?,?,?,?
 ShortName,Short name,false,?,?,?,?,?
 Title,Title,false,?,?,?,?,?
+TitleAndSpace,Title (add space if not empty),false,?,?,?,?,?
 UseContact,Use contact Person/Family for name (if Org/Church),true,?,?,?,?,?

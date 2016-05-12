@@ -186,7 +186,7 @@ namespace Ict.Common.IO
         /// Create a mail message and send it
         /// </summary>
         /// <returns></returns>
-        public bool SendEmail(string fromemail, string fromDisplayName, string receipients, string subject, string body,
+        public bool SendEmail(string fromemail, string fromDisplayName, string recipients, string subject, string body,
             string[] attachfiles = null)
         {
             try
@@ -196,7 +196,7 @@ namespace Ict.Common.IO
                     //From and To
                     email.Sender = new MailAddress(fromemail, fromDisplayName);
                     email.From = new MailAddress(fromemail, fromDisplayName);
-                    email.To.Add(receipients);
+                    email.To.Add(recipients);
 
                     if (CcEverythingTo != "")
                     {
@@ -279,10 +279,18 @@ namespace Ict.Common.IO
 
             FailedRecipients.Clear();
 
-            if (FSmtpClient.Host.EndsWith("example.org"))
+            if (FSmtpClient.Host == TAppSettingsManager.UNDEFINEDVALUE)
+            {
+                TLogging.Log("Not sending the email, since the SMTP server wasn't configured.");
+                TLogging.Log("You can configure the mail settings in the config file (SmtpHost, etc.).");
+
+                return false;
+            }
+            else if (FSmtpClient.Host.EndsWith("example.org", StringComparison.InvariantCulture))
             {
                 TLogging.Log("Not sending the email, since the configuration is just with an example server: " + FSmtpClient.Host);
-                TLogging.Log("You can configure the mail settings in the config file.");
+                TLogging.Log("You can configure the mail settings in the config file (SmtpHost, etc.).");
+
                 return false;
             }
 

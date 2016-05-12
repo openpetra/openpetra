@@ -10,7 +10,7 @@ RootNode:
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
-        actDeleteAll: {Label=Dele&te All, ActionClick=DeleteAllTrans}
+        actDeleteAll: {Label=Delete All, ActionClick=DeleteAllTrans}
         actImportTransactions: {Label=&Import Transactions From File, ActionClick=ImportTransactionsFromFile}
         actImportFromClipboard: {Label=I&mport Transactions From Clipboard, ActionClick=ImportTransactionsFromClipboard}
     Controls:

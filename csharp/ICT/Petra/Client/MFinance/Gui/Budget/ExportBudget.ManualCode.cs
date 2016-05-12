@@ -298,13 +298,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             }
             catch (Exception ex)
             {
-                TLogging.Log("ExportBudget.ManualCode: " + ex.ToString());
-                MessageBox.Show(ex.Message,
-                    Catalog.GetString("Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                return;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {

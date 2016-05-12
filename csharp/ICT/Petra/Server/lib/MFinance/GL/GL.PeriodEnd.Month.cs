@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       wolfgangu, timop
+//       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2015 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -178,6 +179,44 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// <summary>
+        /// Any foreign account that has a non-zero opening balance should be marked
+        /// for revaluation.
+        /// </summary>
+        private void NoteForexRevalRequired(Int32 ALedgerNumber, Int32 AYear, Int32 ABatchPeriod)
+        {
+            TDBTransaction transaction = null;
+            Boolean submissionOK = true;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
+                ref transaction,
+                ref submissionOK,
+                delegate
+                {
+                    string strSQL = "SELECT Account.a_account_code_c," +
+                                    "SUM (GLMP.a_actual_foreign_n) AS Balance" +
+                                    " FROM PUB_a_account Account, PUB_a_general_ledger_master GLM, PUB_a_general_ledger_master_period GLMP" +
+                                    " WHERE Account.a_ledger_number_i=" + ALedgerNumber +
+                                    " AND Account.a_foreign_currency_flag_l=true" +
+                                    " AND GLM.a_ledger_number_i=" + ALedgerNumber +
+                                    " AND GLM.a_account_code_c=Account.a_account_code_c" +
+                                    " AND GLM.a_year_i= " + AYear +
+                                    " AND GLMP.a_glm_sequence_i=GLM.a_glm_sequence_i" +
+                                    " AND GLMP.a_period_number_i=" + ABatchPeriod +
+                                    " GROUP BY Account.a_account_code_c, GLMP.a_actual_foreign_n";
+                    DataTable Balance = DBAccess.GDBAccessObj.SelectDT(strSQL, "Balance", transaction);
+
+                    foreach (DataRow Row in Balance.Rows)
+                    {
+                        if (Convert.ToDecimal(Row["Balance"]) != 0)
+                        {
+                            TLedgerInitFlag.SetFlagComponent(ALedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL,
+                                Row["a_account_code_c"].ToString());
+                        }
+                    }
+                });
+        }
+
+        /// <summary>
         /// Main Entry point. The parameters are the same as in
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
@@ -261,6 +300,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 if (!FHasCriticalErrors)
                 {
                     SetNextPeriod();
+                    NoteForexRevalRequired(FledgerInfo.LedgerNumber, FledgerInfo.CurrentFinancialYear, FledgerInfo.CurrentPeriod);
                     // refresh cached ledger table, so that the client will know the current period
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                         TCacheableFinanceTablesEnum.LedgerDetails.ToString());
@@ -287,7 +327,7 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo FledgerInfo;
 
-        GetSuspenseAccountInfo getSuspenseAccountInfo = null;
+        GetSuspenseAccountInfo suspenseAccountInfo = null;
 
         public RunMonthEndChecks(TLedgerInfo ALedgerInfo)
         {
@@ -326,44 +366,39 @@ namespace Ict.Petra.Server.MFinance.GL
                 return;
             }
 
-            /*
-             * I'm no longer looking at this flag,
-             * since it can be set even though some accounts are left requiring revaluation.
-             * See Mantis 0004059
-             *
-             * if ((new TLedgerInitFlagHandler(FledgerInfo.LedgerNumber,
-             *       TLedgerInitFlagEnum.Revaluation).Flag))
-             * {
-             *  return; // Revaluation has been performed for the current period.
-             * }
-             */
+            String RevalAccounts = TLedgerInitFlag.GetFlagValue(FledgerInfo.LedgerNumber, MFinanceConstants.LEDGER_INIT_FLAG_REVAL);
 
-            TDBTransaction Transaction = null;
+            if (RevalAccounts == "")
+            {
+                return; // Revaluation has been performed.
+            }
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                ref Transaction,
-                delegate
-                {
-                    // TODO: could also check for the balance in this month of the foreign currency account. if all balances are zero, no revaluation is needed.
-                    string testForForeignKeyAccount =
-                        String.Format("SELECT COUNT(*) FROM PUB_a_account WHERE {0} = {1} and {2} = true",
-                            AAccountTable.GetLedgerNumberDBName(),
-                            FledgerInfo.LedgerNumber,
-                            AAccountTable.GetForeignCurrencyFlagDBName());
+            TVerificationResult tvr;
 
-                    Int32 ForeignAccountCount = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(testForForeignKeyAccount, Transaction));
+            if (FledgerInfo.CurrentPeriod < FledgerInfo.NumberOfAccountingPeriods)
+            {
+                tvr = new TVerificationResult(
+                    Catalog.GetString("Currency revaluation"),
+                    String.Format(
+                        Catalog.GetString("Before proceeding you may want to revalue foreign currency accounts {0}."),
+                        RevalAccounts),
+                    "",
+                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Status);
+                // Error is non-critical - the user can choose to continue.
+            }
+            else
+            {
+                tvr = new TVerificationResult(
+                    Catalog.GetString("Currency revaluation"),
+                    String.Format(
+                        Catalog.GetString("The foreign currency accounts {0} need to be revalued."),
+                        RevalAccounts),
+                    "",
+                    TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Critical);
+                // Error is critical - the user nust do a reval.
+            }
 
-                    if (ForeignAccountCount > 0)
-                    {
-                        TVerificationResult tvr = new TVerificationResult(
-                            Catalog.GetString("Currency revaluation"),
-                            Catalog.GetString(
-                                "Before proceeding you may want to revalue the foreign currency accounts."), "",
-                            TPeriodEndErrorAndStatusCodes.PEEC_05.ToString(), TResultSeverity.Resv_Noncritical);
-                        // Error is non-critical - the user can choose to continue.
-                        FverificationResults.Add(tvr);
-                    }
-                }); // Get NewOrExisting AutoReadTransaction
+            FverificationResults.Add(tvr);
         }
 
         private void CheckForUnpostedBatches()
@@ -386,28 +421,31 @@ namespace Ict.Petra.Server.MFinance.GL
 
         private void CheckForSuspenseAccounts()
         {
-            if (getSuspenseAccountInfo == null)
+            if (suspenseAccountInfo == null)
             {
-                getSuspenseAccountInfo =
+                suspenseAccountInfo =
                     new GetSuspenseAccountInfo(FledgerInfo.LedgerNumber);
             }
 
-            if (getSuspenseAccountInfo.RowCount != 0)
+            if (suspenseAccountInfo.RowCount != 0)
             {
-                TLogging.LogAtLevel(1, String.Format("MonthEnd: {0} suspense accounts in use.", getSuspenseAccountInfo.RowCount));
+                TLogging.LogAtLevel(1, String.Format("MonthEnd: {0} suspense accounts in use.", suspenseAccountInfo.RowCount));
                 TVerificationResult tvr = new TVerificationResult(
                     Catalog.GetString("Suspense Accounts found"),
                     String.Format(
                         Catalog.GetString(
                             "Have you checked the details of suspense account {0}?"),
-                        getSuspenseAccountInfo.ToString()),
+                        suspenseAccountInfo.ToString()),
                     "", TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Status);
                 FverificationResults.Add(tvr);
             }
-            else
-            {
-                TLogging.LogAtLevel(1, "MonthEnd: No suspense accounts used.");
-            }
+
+/*
+ *          else
+ *          {
+ *              TLogging.LogAtLevel(1, "MonthEnd: No suspense accounts used.");
+ *          }
+ */
         }
 
         private void CheckForUnpostedGiftBatches()
@@ -436,19 +474,19 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 // This means: The last accounting period of the year is running!
 
-                if (getSuspenseAccountInfo == null)
+                if (suspenseAccountInfo == null)
                 {
-                    getSuspenseAccountInfo =
+                    suspenseAccountInfo =
                         new GetSuspenseAccountInfo(FledgerInfo.LedgerNumber);
                 }
 
-                if (getSuspenseAccountInfo.RowCount > 0)
+                if (suspenseAccountInfo.RowCount > 0)
                 {
                     ASuspenseAccountRow aSuspenseAccountRow;
 
-                    for (int i = 0; i < getSuspenseAccountInfo.RowCount; ++i)
+                    for (int i = 0; i < suspenseAccountInfo.RowCount; ++i)
                     {
-                        aSuspenseAccountRow = getSuspenseAccountInfo.Row(i);
+                        aSuspenseAccountRow = suspenseAccountInfo.Row(i);
                         TGet_GLM_Info get_GLM_Info = new TGet_GLM_Info(FledgerInfo.LedgerNumber,
                             aSuspenseAccountRow.SuspenseAccountCode,
                             FledgerInfo.CurrentFinancialYear);
@@ -462,11 +500,10 @@ namespace Ict.Petra.Server.MFinance.GL
                             {
                                 TVerificationResult tvr = new TVerificationResult(
                                     Catalog.GetString("Non Zero Suspense Account found"),
-                                    String.Format(Catalog.GetString("Suspense account {0} has the balance value {1}. It is required to be zero."),
-                                        getSuspenseAccountInfo.ToString(),
+                                    String.Format(Catalog.GetString("Suspense account {0} has the balance value {1:F2}. It is required to be zero."),
+                                        suspenseAccountInfo.ToString(),
                                         get_GLMp_Info.ActualBase), "",
                                     TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
-                                FverificationResults.Add(tvr);
 
                                 FHasCriticalErrors = true;
                                 FverificationResults.Add(tvr);
