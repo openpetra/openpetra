@@ -338,6 +338,12 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
 
+        /// <summary>Whether or not the Gift Batch screen warns of inactive values ALSO on posting</summary>
+        public const String FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING = "InactiveValuesWarningOnGiftPosting";
+
+        /// <summary>Whether or not the GL Batch screen warns of inactive values ALSO on posting</summary>
+        public const String FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING = "InactiveValuesWarningOnGLPosting";
+
         /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
         public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
 

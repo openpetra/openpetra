@@ -86,13 +86,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AEffectiveDate">The effective date for the batch</param>
         /// <param name="AStartDateCurrentPeriod">The earliest postable date</param>
         /// <param name="AEndDateLastForwardingPeriod">The latest postable date</param>
+        /// <param name="AInactiveValuesWarningOnGLPosting">Warn of inactive values</param>
         /// <returns>
         /// True if the batch was successfully posted
         /// </returns>
         public bool PostBatch(ABatchRow ACurrentBatchRow,
             DateTime AEffectiveDate,
             DateTime AStartDateCurrentPeriod,
-            DateTime AEndDateLastForwardingPeriod)
+            DateTime AEndDateLastForwardingPeriod,
+            bool AInactiveValuesWarningOnGLPosting = true)
         {
             bool RetVal = false;
 
@@ -117,7 +119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Check for inactive values
             int NumInactiveValues = 0;
 
-            if (!AllowInactiveFieldValues(ACurrentBatchRow.BatchNumber, out NumInactiveValues))
+            if (AInactiveValuesWarningOnGLPosting && !AllowInactiveFieldValues(ACurrentBatchRow.BatchNumber, out NumInactiveValues))
             {
                 return RetVal;
             }

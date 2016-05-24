@@ -43,7 +43,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             AGiftRow CurrentGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
-            bool HasChanges = FPetraUtilsObject.HasChanges && FMainDS.GetChangesTyped(true) != null;
+            bool HasChanges = FPetraUtilsObject.HasChanges;
+            bool SelectEndRow = false;
 
             bool AutoSaveSuccessful = FAutoSave && HasChanges && ((TFrmGiftBatch)ParentForm).SaveChangesManual();
 
@@ -61,6 +62,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (ACompletelyNewGift)
                     {
                         //Run this if a new gift is requested or required.
+                        SelectEndRow = true;
 
                         // we create the table locally, no dataset
                         AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
@@ -82,6 +84,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         CurrentGiftRow = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
                         CurrentGiftRow.LastDetailNumber++;
+
+                        //If adding detail to current last gift, then new detail will be bottom row in grid
+                        if (FBatchRow.LastGiftNumber == FPreviouslySelectedDetailRow.GiftTransactionNumber)
+                        {
+                            SelectEndRow = true;
+                        }
                     }
 
                     //New gifts will require a new detail anyway, so this code always runs
@@ -98,6 +106,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
                     {
                         newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
+                        newRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
                         newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
                         newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
                         newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
@@ -110,6 +119,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
 
+                    newRow.ReceiptPrinted = false;
+                    newRow.ReceiptNumber = 0;
                     newRow.DateEntered = CurrentGiftRow.DateEntered;
 
                     if (FTaxDeductiblePercentageEnabled)
@@ -121,7 +132,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     FPetraUtilsObject.SetChangedFlag();
 
-                    if (!SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                    if (!SelectEndRow && !SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
                     {
                         if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                         {
@@ -143,6 +154,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     btnDeleteAll.Enabled = btnDelete.Enabled;
                     UpdateRecordNumberDisplay();
                     FLastDonor = -1;
+
+                    //Select end row
+                    if (SelectEndRow)
+                    {
+                        grdDetails.SelectRowInGrid(grdDetails.Rows.Count - 1);
+                    }
 
                     //Focus accordingly
                     if (ACompletelyNewGift)

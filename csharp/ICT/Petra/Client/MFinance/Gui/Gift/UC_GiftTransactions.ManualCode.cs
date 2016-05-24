@@ -36,9 +36,11 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 
@@ -839,9 +841,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                             giftDetail.DonorKey = APartnerKey;
                             giftDetail.DonorName = APartnerShortName;
+                            giftDetail.DonorClass = pr.PartnerClass;
                         }
 
-                        AutoPopulateGiftDetail(APartnerKey, giftTransactionNo);
+                        if (giftDetailDV.Count == 1)
+                        {
+                            //If only 1 gift detail updated, then offer to auto populate
+                            AutoPopulateGiftDetail(APartnerKey, giftTransactionNo);
+                        }
 
                         mniDonorHistory.Enabled = true;
                     }
@@ -1673,6 +1680,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // get donor's banking details
                 AGiftRow GiftRow = (AGiftRow)FMainDS.AGift.Rows.Find(new object[] { FLedgerNumber, FBatchNumber,
                                                                                     FPreviouslySelectedDetailRow.GiftTransactionNumber });
+
                 PBankingDetailsTable BankingDetailsTable = TRemote.MFinance.Gift.WebConnectors.GetDonorBankingDetails(APartnerKey,
                     GiftRow.BankingDetailsKey);
                 PBankingDetailsRow BankingDetailsRow = null;
@@ -2729,9 +2737,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FAutoPopulatingGift = true;
 
-            bool RepeatDonor = false;
+            FGift = GetGiftRow(AGiftTransactionNumber);
+
             bool IsSplitGift = false;
-            bool SplitGiftOnCopying = false;
+            bool CopySplitGift = false;
 
             DateTime LatestUnpostedGiftDateEntered = new DateTime(1900, 1, 1);
 
@@ -2774,14 +2783,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (((GiftDetailTable != null) && (GiftDetailTable.Count > 0)))
                 {
                     //UnLoaded/Saved gift from donor is more recent
-                    RepeatDonor = true;
                     IsSplitGift = (GiftDetailTable.Count > 1);
                 }
                 else if (MostRecentLoadedGiftForDonorRow != null)
                 {
                     //Loaded/unsaved gift from donor is more recent
-                    RepeatDonor = true;
-
                     DataView giftDetailDV = new DataView(FMainDS.AGiftDetail);
 
                     giftDetailDV.RowStateFilter = DataViewRowState.CurrentRows;
@@ -2794,8 +2800,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     foreach (DataRowView drv in giftDetailDV)
                     {
-                        GiftBatchTDSAGiftDetailRow giftDetailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
-                        GiftDetailTable.Rows.Add((object[])giftDetailRow.ItemArray.Clone());
+                        GiftBatchTDSAGiftDetailRow gDR = (GiftBatchTDSAGiftDetailRow)drv.Row;
+                        GiftDetailTable.Rows.Add((object[])gDR.ItemArray.Clone());
                     }
 
                     IsSplitGift = (GiftDetailTable.Count > 1);
@@ -2813,6 +2819,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         FNewDonorsList.Add(ADonorKey);
                     }
+
+                    return;
                 }
 
                 // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
@@ -2845,71 +2853,146 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     Message += "\n" + Catalog.GetString("Do you want to create the same split gift again?");
 
-                    SplitGiftOnCopying = MessageBox.Show(Message, Catalog.GetString(
-                            "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                                         == DialogResult.Yes;
+                    CopySplitGift = (MessageBox.Show(Message, Catalog.GetString(
+                                             "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                     == DialogResult.Yes);
                 }
 
-                if (RepeatDonor)
+                this.Cursor = Cursors.WaitCursor;
+
+                GiftBatchTDSAGiftDetailRow giftDetailRow = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[0].Row;
+
+                // Handle first row, which is FPreviouslySelectedDetailRow
+                txtDetailDonorKey.Text = String.Format("{0:0000000000}", ADonorKey);
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", giftDetailRow.RecipientKey);
+                cmbDetailMotivationGroupCode.SetSelectedString(giftDetailRow.MotivationGroupCode);
+                cmbDetailMotivationDetailCode.SetSelectedString(giftDetailRow.MotivationDetailCode);
+                chkDetailConfidentialGiftFlag.Checked = giftDetailRow.ConfidentialGiftFlag;
+                chkDetailChargeFlag.Checked = giftDetailRow.ChargeFlag;
+                chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
+                cmbDetailMethodOfPaymentCode.SetSelectedString(giftDetailRow.MethodOfPaymentCode);
+                cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode);
+
+                ToggleTaxDeductible(this, null);
+
+                cmbDetailMailingCode.SetSelectedString(giftDetailRow.MailingCode, -1);
+                txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
+
+                //Set underlying row values
+                FPreviouslySelectedDetailRow.ReceiptPrinted = false;
+                FPreviouslySelectedDetailRow.ReceiptNumber = 0;
+
+                if (CopySplitGift)
                 {
-                    int CurrentTransaction = 0;
-
-                    while (true)
+                    //Copy the comments and comment types for split gifts
+                    if (FIncludeCommentsSplitGiftCopy)
                     {
-                        GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[CurrentTransaction].Row;
+                        txtDetailGiftCommentOne.Text = giftDetailRow.GiftCommentOne;
+                        cmbDetailCommentOneType.SetSelectedString(giftDetailRow.CommentOneType);
+                        txtDetailGiftCommentTwo.Text = giftDetailRow.GiftCommentTwo;
+                        cmbDetailCommentTwoType.SetSelectedString(giftDetailRow.CommentTwoType);
+                        txtDetailGiftCommentThree.Text = giftDetailRow.GiftCommentThree;
+                        cmbDetailCommentThreeType.SetSelectedString(giftDetailRow.CommentThreeType);
+                        FPreviouslySelectedDetailRow.GiftCommentOne = giftDetailRow.GiftCommentOne;
+                        FPreviouslySelectedDetailRow.CommentOneType = giftDetailRow.CommentOneType;
+                        FPreviouslySelectedDetailRow.GiftCommentTwo = giftDetailRow.GiftCommentTwo;
+                        FPreviouslySelectedDetailRow.CommentTwoType = giftDetailRow.CommentTwoType;
+                        FPreviouslySelectedDetailRow.GiftCommentThree = giftDetailRow.GiftCommentThree;
+                        FPreviouslySelectedDetailRow.CommentThreeType = giftDetailRow.CommentThreeType;
+                    }
 
-                        // populate gift detail
-                        txtDetailDonorKey.Text = String.Format("{0:0000000000}", ADonorKey);
-                        txtDetailRecipientKey.Text = String.Format("{0:0000000000}", Row.RecipientKey);
-                        cmbDetailMotivationGroupCode.SetSelectedString(Row.MotivationGroupCode);
-                        cmbDetailMotivationDetailCode.SetSelectedString(Row.MotivationDetailCode);
-                        chkDetailConfidentialGiftFlag.Checked = Row.ConfidentialGiftFlag;
-                        chkDetailChargeFlag.Checked = Row.ChargeFlag;
-                        chkDetailTaxDeductible.Checked = Row.TaxDeductible;
-                        ToggleTaxDeductible(this, null);
-                        cmbDetailMailingCode.SetSelectedString(Row.MailingCode, -1);
+                    // only populate amount if a split gift
+                    txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
+                    FPreviouslySelectedDetailRow.GiftTransactionAmount = giftDetailRow.GiftTransactionAmount;
 
-                        if (SplitGiftOnCopying)
+                    // clear previous validation errors.
+                    // otherwise we get an error if the user has changed the control immediately after changing the donor key.
+                    FPetraUtilsObject.VerificationResultCollection.Clear();
+
+                    bool SelectEndRow = (FBatchRow.LastGiftNumber == FPreviouslySelectedDetailRow.GiftTransactionNumber);
+
+                    //Just retain other details to add
+                    giftDetailRow.Delete();
+                    GiftDetailTable.AcceptChanges();
+
+                    foreach (DataRowView drv in GiftDetailTable.DefaultView)
+                    {
+                        GiftBatchTDSAGiftDetailRow detailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
+
+                        detailRow.LedgerNumber = FLedgerNumber;
+                        detailRow.BatchNumber = FBatchNumber;
+                        detailRow.GiftTransactionNumber = AGiftTransactionNumber;
+                        detailRow.DetailNumber = ++FGift.LastDetailNumber;
+                        detailRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
+                        detailRow.ReceiptPrinted = false;
+                        detailRow.ReceiptNumber = 0;
+
+                        //TODO: Only add this code if it is determined that
+                        // a partner's class may actually change
+                        //string partnerShortName = string.Empty;
+                        //TPartnerClass partnerClass;
+
+                        //TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(detailRow.RecipientKey,
+                        //    out partnerShortName,
+                        //    out partnerClass);
+                        //detailRow.RecipientClass = partnerClass.ToString();
+
+                        detailRow.DateEntered = FGift.DateEntered;
+
+                        if (FTaxDeductiblePercentageEnabled)
                         {
-                            //Copy the comments and comment types for split gifts
-                            if (FIncludeCommentsSplitGiftCopy)
-                            {
-                                txtDetailGiftCommentOne.Text = Row.GiftCommentOne;
-                                cmbDetailCommentOneType.SetSelectedString(Row.CommentOneType);
-                                txtDetailGiftCommentTwo.Text = Row.GiftCommentTwo;
-                                cmbDetailCommentTwoType.SetSelectedString(Row.CommentTwoType);
-                                txtDetailGiftCommentThree.Text = Row.GiftCommentThree;
-                                cmbDetailCommentThreeType.SetSelectedString(Row.CommentThreeType);
-                            }
-
-                            // only populate amount if a split gift
-                            txtDetailGiftTransactionAmount.NumberValueDecimal = Row.GiftTransactionAmount;
-                            CurrentTransaction++;
-
-                            // if there are more details that are part of this gift
-                            if (CurrentTransaction < GiftDetailTable.Rows.Count)
-                            {
-                                // clear previous validation errors.
-                                // otherwise we get an error if the user has changed the control immediately after changing the donor key.
-                                FPetraUtilsObject.VerificationResultCollection.Clear();
-
-                                // create a new gift detail
-                                CreateANewGift(false);
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            detailRow.TaxDeductiblePct = 100;
                         }
-                        else
+
+                        detailRow.AcceptChanges();
+                        detailRow.SetAdded();
+                    }
+
+                    //Add in the new records
+                    FMainDS.AGiftDetail.Merge(GiftDetailTable);
+
+                    int indexOfLatestRow = FMainDS.AGiftDetail.Rows.Count - 1;
+
+                    //Select last row added
+                    if (SelectEndRow)
+                    {
+                        grdDetails.SelectRowInGrid(grdDetails.Rows.Count - 1);
+                    }
+                    else if (!SelectDetailRowByDataTableIndex(indexOfLatestRow))
+                    {
+                        if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                         {
-                            break;
+                            MessageBox.Show(
+                                MCommonResourcestrings.StrNewRecordIsFiltered,
+                                MCommonResourcestrings.StrAddNewRecordTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
+
+                            if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                            {
+                                FFilterAndFindObject.ApplyFilter();
+                            }
+
+                            SelectDetailRowByDataTableIndex(indexOfLatestRow);
                         }
                     }
+
+                    cmbKeyMinistries.Clear();
+                    mniRecipientHistory.Enabled = false;
+                    btnDeleteAll.Enabled = btnDelete.Enabled;
+                    UpdateRecordNumberDisplay();
+                    FLastDonor = -1;
                 }
+                else
+                {
+                    txtDetailGiftTransactionAmount.Focus();
+                }
+
+                FPetraUtilsObject.SetChangedFlag();
             }
             finally
             {
+                this.Cursor = Cursors.Default;
                 FAutoPopulatingGift = false;
             }
         }

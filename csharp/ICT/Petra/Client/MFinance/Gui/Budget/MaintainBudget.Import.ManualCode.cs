@@ -100,8 +100,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ExportPath + Path.DirectorySeparatorChar + "import.csv");
             TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFDialog, FullPath, ExportPath);
 
-            OFDialog.Title = Catalog.GetString("Import budget(s) from csv file");
-            OFDialog.Filter = Catalog.GetString("Budget files (*.csv)|*.csv");
+            OFDialog.Title = Catalog.GetString("Import budget(s) from CSV file");
+            OFDialog.Filter = Catalog.GetString("Text Files(*.txt) | *.txt | Delimited Files(*.csv) | *.csv");
             String ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
             // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
@@ -120,7 +120,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                     if (!fileCanOpen)
                     {
-                        throw new Exception(String.Format(Catalog.GetString("File {0} cannot be opened."), OFDialog.FileName));
+                        MessageBox.Show(Catalog.GetString("Unable to open file."),
+                            Catalog.GetString("Budget Import"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Stop);
+                        return;
                     }
 
                     FdlgSeparator.DateFormat = DateFormatString;
@@ -171,7 +175,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 }
                 catch (Exception ex)
                 {
-                    dlgStatus.Close();
                     TLogging.LogException(ex, Utilities.GetMethodSignature());
                     throw;
                 }

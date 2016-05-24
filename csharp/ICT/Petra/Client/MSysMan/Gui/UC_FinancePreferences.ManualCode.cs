@@ -35,6 +35,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         //private int FCurrentLedger;
         private int FInitiallySelectedLedger;
+        private bool FInactiveValuesWarningOnGiftPosting = false;
+        private bool FInactiveValuesWarningOnGLPosting = false;
         private bool FNewDonorWarning = true;
         private bool FAutoSave = false;
         private bool FIncludeCommentsSplitGiftCopy = false;
@@ -47,6 +49,13 @@ namespace Ict.Petra.Client.MSysMan.Gui
             FInitiallySelectedLedger = TLstTasks.InitiallySelectedLedger;
 
             cmbDefaultLedger.SetSelectedInt32(FInitiallySelectedLedger);
+
+            FInactiveValuesWarningOnGiftPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING,
+                true);
+            chkInactiveValuesWarningOnGiftPosting.Checked = FInactiveValuesWarningOnGiftPosting;
+
+            FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING, true);
+            chkInactiveValuesWarningOnGLPosting.Checked = FInactiveValuesWarningOnGLPosting;
 
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
             chkNewDonorWarning.Checked = FNewDonorWarning;
@@ -109,6 +118,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FNewDonorWarning = chkNewDonorWarning.Checked;
                 TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+            }
+
+            if (FInactiveValuesWarningOnGiftPosting != chkInactiveValuesWarningOnGiftPosting.Checked)
+            {
+                FInactiveValuesWarningOnGiftPosting = chkInactiveValuesWarningOnGiftPosting.Checked;
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING, FInactiveValuesWarningOnGiftPosting);
+            }
+
+            if (FInactiveValuesWarningOnGLPosting != chkInactiveValuesWarningOnGLPosting.Checked)
+            {
+                FInactiveValuesWarningOnGLPosting = chkInactiveValuesWarningOnGLPosting.Checked;
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING, FInactiveValuesWarningOnGLPosting);
             }
 
             if (FAutoSave != chkAutoSave.Checked)

@@ -91,8 +91,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ACurrentBatchRow">The batch row to post</param>
         /// <param name="APostingAlreadyConfirmed">True means ask user if they want to post</param>
+        /// <param name="AWarnOfInactiveValues">True means user is warned if inactive values exist</param>
         /// <returns>True if the batch was successfully posted</returns>
-        public bool PostBatch(AGiftBatchRow ACurrentBatchRow, bool APostingAlreadyConfirmed = false)
+        public bool PostBatch(AGiftBatchRow ACurrentBatchRow, bool APostingAlreadyConfirmed = false, bool AWarnOfInactiveValues = true)
         {
             //This assumes that all gift data etc is loaded into the batch before arriving here
 
@@ -108,7 +109,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
+                //Make sure that all control data is in dataset
+                FMyForm.GetControlDataForPosting();
+
+                GiftBatchTDSAGiftDetailTable batchGiftDetails = new GiftBatchTDSAGiftDetailTable();
                 DataView batchGiftDetailsDV = new DataView(FMainDS.AGiftDetail);
 
                 batchGiftDetailsDV.RowFilter = string.Format("{0}={1}",
@@ -124,13 +128,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     GiftBatchTDSAGiftDetailRow gBRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
 
-                    BatchGiftDetails.Rows.Add((object[])gBRow.ItemArray.Clone());
+                    batchGiftDetails.Rows.Add((object[])gBRow.ItemArray.Clone());
                 }
 
                 bool CancelledDueToExWorkerOrAnonDonor;
 
                 // save first, then post
-                if (!FMyForm.SaveChangesForPosting(BatchGiftDetails, out CancelledDueToExWorkerOrAnonDonor))
+                if (!FMyForm.SaveChangesForPosting(batchGiftDetails, out CancelledDueToExWorkerOrAnonDonor))
                 {
                     FMyForm.Cursor = Cursors.Default;
 
@@ -162,7 +166,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataTable GiftsWithInactiveKeyMinistries;
             bool ModifiedDetails = false;
 
-            if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, FSelectedBatchNumber,
+            if (AWarnOfInactiveValues && TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, FSelectedBatchNumber,
                     out GiftsWithInactiveKeyMinistries, false))
             {
                 int numInactiveValues = GiftsWithInactiveKeyMinistries.Rows.Count;
