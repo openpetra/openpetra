@@ -294,11 +294,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FFilterAndFindObject.ApplyFilter();
 
                 // Now we can select the gift batch we had before (if it still exists on the grid)
-                if (!SelectBatchNumber(nCurrentBatchNumber))
+                for (int i = 0; (i < FMainDS.AGiftBatch.Rows.Count); i++)
                 {
-                    // If batch is no longer in the grid then select the batch that is in the same position
-                    SelectRowInGrid(nCurrentRowIndex);
+                    if (FMainDS.AGiftBatch[i].BatchNumber == nCurrentBatchNumber)
+                    {
+                        DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+                        Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.AGiftBatch, i) + 1;
+
+                        nCurrentRowIndex = RowNumberGrid;
+                        break;
+                    }
                 }
+
+                ShowDetails(nCurrentRowIndex);
 
                 UpdateRecordNumberDisplay();
 
@@ -693,6 +701,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void CancelRecord(System.Object sender, EventArgs e)
         {
             int CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
+
+            // load all data for batch
+            LoadAllBatchData(FSelectedBatchNumber);
 
             FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow);
 

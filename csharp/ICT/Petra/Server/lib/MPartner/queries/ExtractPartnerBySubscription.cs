@@ -144,6 +144,46 @@ namespace Ict.Petra.Server.MPartner.queries
                         Value = 999999
                     });
             }
+
+            ASQLParameterList.Add(new OdbcParameter("param_start_date_from_notnull", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_start_date_from_notnull").ToBool()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_start_date_from", OdbcType.Date)
+                {
+                    Value = AParameters.Get("param_start_date_from").ToDate()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_start_date_to_notnull", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_start_date_to_notnull").ToBool()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_start_date_to", OdbcType.Date)
+                {
+                    Value = AParameters.Get("param_start_date_to").ToDate()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_expiry_date_from_notnull", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_expiry_date_from_notnull").ToBool()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_expiry_date_from", OdbcType.Date)
+                {
+                    Value = AParameters.Get("param_expiry_date_from").ToDate()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_expiry_date_to_notnull", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_expiry_date_to_notnull").ToBool()
+                });
+
+            ASQLParameterList.Add(new OdbcParameter("param_expiry_date_to", OdbcType.Date)
+                {
+                    Value = AParameters.Get("param_expiry_date_to").ToDate()
+                });
         }
     }
 }

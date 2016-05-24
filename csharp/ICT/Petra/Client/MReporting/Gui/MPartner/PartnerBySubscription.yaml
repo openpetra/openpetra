@@ -35,9 +35,9 @@ RootNode:
         pnlSettingsCriteria:
             Controls: 
                 Row0: [cmbSubscriptionStatus]
-                Row1: [ucoAddress, ucoChkFilter]
-#                Row2: [dtpStartDateFrom, dtpStartDateTo]
-#                Row3: [dtpExpiryDateFrom, dtpExpiryDateTo]
+                Row1: [dtpStartDateFrom, dtpStartDateTo, Empty]
+                Row2: [dtpExpiryDateFrom, dtpExpiryDateTo, Empty]
+                Row3: [ucoAddress, ucoChkFilter]
             Dock: Bottom
         lblIncludePublication:
             Label: Report on all partners that have one of these subscriptions
@@ -75,18 +75,27 @@ RootNode:
             Label: Subscription Status
             OptionalValues: [=PERMANENT, PROVISIONAL, GIFT, CANCELLED, EXPIRED]
             ParameterName: param_subscription_status
-#        dtpStartDateFrom:
-#            Label:  Start Date From
-#        dtpStartDateTo:
-#            Label:  To
-#        dtpExpiryDateFrom:
-#            Label:  Expiry Date From
-#        dtpExpiryDateTo:
-#            Label:  To
+        dtpStartDateFrom:
+            Label:  Start Date:   From
+            ClearIfSettingEmpty: true
+            ParameterName: param_start_date_from
+        dtpStartDateTo:
+            Label:  To
+            ClearIfSettingEmpty: true
+            ParameterName: param_start_date_to
+        dtpExpiryDateFrom:
+            Label:  Expiry Date:   From
+            ClearIfSettingEmpty: true
+            ParameterName: param_expiry_date_from
+        dtpExpiryDateTo:
+            Label:  To
+            ClearIfSettingEmpty: true
+            ParameterName: param_expiry_date_to
         ucoAddress:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_AddressFilter
             Height: 170
             Width: 480
+            ColSpan: 2
         ucoChkFilter:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_ExtractChkFilter
             Width: 230
@@ -94,6 +103,9 @@ RootNode:
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
+
+        Empty:
+
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
             Name: Address Type
