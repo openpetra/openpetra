@@ -161,6 +161,58 @@ namespace Ict.Petra.Client.App.PetraClient
                 e.Handled = true;
                 RunTestAction();
             }
+            else if (e.KeyCode == Keys.Home)
+            {
+                // first task
+                dsbContent.SelectFirstTaskWithFocus();
+            }
+            else if (e.KeyCode == Keys.End)
+            {
+                // last task
+                dsbContent.SelectLastTaskWithFocus();
+            }
+            else if ((e.KeyCode == Keys.Subtract) || (e.KeyCode == Keys.OemMinus))
+            {
+                // previous group
+                dsbContent.SelectPreviousGroupWithFocus();
+            }
+            else if ((e.KeyCode == Keys.Add) || (e.KeyCode == Keys.Oemplus))
+            {
+                // next group
+                dsbContent.SelectNextGroupWithFocus();
+            }
+            else if ((e.KeyCode == Keys.PageUp) && (e.Modifiers == Keys.Control))
+            {
+                // previous module
+                bool foundPrevious = false;
+                int curIndex = lstFolders.GetSelectedFolderIndex();
+
+                while ((--curIndex >= 0) && !foundPrevious)
+                {
+                    foundPrevious = lstFolders.SelectFolder(curIndex);
+                }
+            }
+            else if ((e.KeyCode == Keys.PageDown) && (e.Modifiers == Keys.Control))
+            {
+                // next module
+                bool foundNext = false;
+                int curIndex = lstFolders.GetSelectedFolderIndex();
+
+                while ((++curIndex < lstFolders.FolderCount) && !foundNext)
+                {
+                    foundNext = lstFolders.SelectFolder(curIndex);
+                }
+            }
+            else if (e.KeyCode == Keys.PageUp)
+            {
+                // previous sub-module
+                lstFolders.SelectPreviousSubModule();
+            }
+            else if (e.KeyCode == Keys.PageDown)
+            {
+                // next submodule
+                lstFolders.SelectNextSubModule();
+            }
         }
 
         private void RunOnceOnActivationManual()

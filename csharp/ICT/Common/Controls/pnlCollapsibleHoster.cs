@@ -473,6 +473,84 @@ namespace Ict.Common.Controls
             }
         }
 
-        #endregion
+        /// <summary>
+        /// This selects the next sub-module in a situation where the hoster is hosting multiple collapsible panels
+        /// </summary>
+        public void SelectNextSubModule()
+        {
+            TPnlCollapsible CollPanel;
+            bool foundInitialPanel = false;
+            XmlNode tryNode = null;
+
+            // Go round all the panels...  Start by finding the 'current' one.
+            // Then try and select the next sub-module in that panel, but if we fail keep going through the remaining panels until we find something to select.
+            for (int Counter = 0; Counter < FCollPanelCount; Counter++)
+            {
+                CollPanel = GetCollapsiblePanelInstance(Counter);
+
+                if (CollPanel == FCollPanelWhereLastItemActivationHappened)
+                {
+                    foundInitialPanel = true;
+                    tryNode = CollPanel.ActiveTaskItem.NextSibling;
+
+                    if ((tryNode != null) && !CollPanel.IsCollapsed)
+                    {
+                        // This is the next node to use
+                        if (CollPanel.TaskListInstance.SelectNextSubModule(tryNode))
+                        {
+                            return;
+                        }
+                    }
+                }
+                else if (foundInitialPanel && !CollPanel.IsCollapsed)
+                {
+                    if (CollPanel.TaskListInstance.SelectFirstTaskItem())
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// This selects the previous sub-module in a situation where the hoster is hosting multiple collapsible panels
+        /// </summary>
+        public void SelectPreviousSubModule()
+        {
+            TPnlCollapsible CollPanel;
+            bool foundInitialPanel = false;
+            XmlNode tryNode = null;
+
+            // Go round all the panels...  Start by finding the 'current' one.
+            // Then try and select the previous sub-module in that panel, but if we fail keep going through the remaining panels until we find something to select.
+            for (int Counter = FCollPanelCount - 1; Counter >= 0; Counter--)
+            {
+                CollPanel = GetCollapsiblePanelInstance(Counter);
+
+                if (CollPanel == FCollPanelWhereLastItemActivationHappened)
+                {
+                    foundInitialPanel = true;
+                    tryNode = CollPanel.ActiveTaskItem.PreviousSibling;
+
+                    if ((tryNode != null) && !CollPanel.IsCollapsed)
+                    {
+                        // This is the next node to use
+                        if (CollPanel.TaskListInstance.SelectPreviousSubModule(tryNode))
+                        {
+                            return;
+                        }
+                    }
+                }
+                else if (foundInitialPanel && !CollPanel.IsCollapsed)
+                {
+                    if (CollPanel.TaskListInstance.SelectLastTaskItem())
+                    {
+                        return;
+                    }
+                }
+            }
+
+            #endregion
+        }
     }
 }

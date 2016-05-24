@@ -825,7 +825,8 @@ namespace Ict.Common.Controls
         /// Selects the first TaskItem (=LinkLabel). Beside selecting it, this also fires the
         /// 'ItemActivation' Event for that TaskItem.
         /// </summary>
-        public void SelectFirstTaskItem()
+        /// <returns>True if an item was selected</returns>
+        public bool SelectFirstTaskItem()
         {
             int CurrentIndex = 0;
             LinkLabel FirstLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
@@ -852,7 +853,112 @@ namespace Ict.Common.Controls
             {
                 lblTaskItem_LinkClicked(FirstLinkLabel, new LinkLabelLinkClickedEventArgs
                         (FirstLinkLabel.Links[0]));
+                return true;
             }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Selects the last TaskItem (=LinkLabel). Beside selecting it, this also fires the
+        /// 'ItemActivation' Event for that TaskItem.
+        /// </summary>
+        /// <returns>True if an item was selected</returns>
+        public bool SelectLastTaskItem()
+        {
+            int CurrentIndex = this.tPnlGradient1.Controls.Count - 1;
+            LinkLabel LastLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+
+            // not an ideal solution: this call triggers initialization (enable/disable) of xml nodes that later in this
+            // method is needed to react to disabled items
+            if (LastLinkLabel != null)
+            {
+                lblTaskItem_LinkClicked(LastLinkLabel, new LinkLabelLinkClickedEventArgs
+                        (LastLinkLabel.Links[0]));
+            }
+
+            // retrieve last item again as LinkClicked event may have triggered recreation of link labels
+            LastLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+
+            while (CurrentIndex >= 0
+                   && IsDisabled((XmlNode)LastLinkLabel.Links[0].LinkData))
+            {
+                CurrentIndex--;
+                LastLinkLabel = (LinkLabel) this.tPnlGradient1.Controls[CurrentIndex];
+            }
+
+            if (LastLinkLabel != null)
+            {
+                lblTaskItem_LinkClicked(LastLinkLabel, new LinkLabelLinkClickedEventArgs
+                        (LastLinkLabel.Links[0]));
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Select the next sub-module in the current task list.
+        /// </summary>
+        /// <returns>True if an item was selected</returns>
+        public bool SelectNextSubModule()
+        {
+            return SelectNextSubModule(FActiveTaskItem.NextSibling);
+        }
+
+        /// <summary>
+        /// Select the sub-module specified by ANodeToTry - or, if that is disabled, select the next available sub-module.
+        /// </summary>
+        /// <param name="ANodeToTry">The node to try first</param>
+        /// <returns>True if an item was selected</returns>
+        public bool SelectNextSubModule(XmlNode ANodeToTry)
+        {
+            while (ANodeToTry != null)
+            {
+                LinkLabel MatchingLabel = GetLinkLabelForXmlNode(ANodeToTry);
+
+                if ((MatchingLabel != null) && MatchingLabel.Enabled)
+                {
+                    lblTaskItem_LinkClicked(MatchingLabel, new LinkLabelLinkClickedEventArgs(MatchingLabel.Links[0]));
+                    return true;
+                }
+
+                ANodeToTry = ANodeToTry.NextSibling;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Select the previous sub-module in the current task list.
+        /// </summary>
+        /// <returns>True if an item was selected</returns>
+        public bool SelectPreviousSubModule()
+        {
+            return SelectPreviousSubModule(FActiveTaskItem.PreviousSibling);
+        }
+
+        /// <summary>
+        /// Select the sub-module specified by ANodeToTry - or, if that is disabled, select the previous available sub-module.
+        /// </summary>
+        /// <param name="ANodeToTry">The node to try first</param>
+        /// <returns>True if an item was selected</returns>
+        public bool SelectPreviousSubModule(XmlNode ANodeToTry)
+        {
+            while (ANodeToTry != null)
+            {
+                LinkLabel MatchingLabel = GetLinkLabelForXmlNode(ANodeToTry);
+
+                if ((MatchingLabel != null) && MatchingLabel.Enabled)
+                {
+                    lblTaskItem_LinkClicked(MatchingLabel, new LinkLabelLinkClickedEventArgs(MatchingLabel.Links[0]));
+                    return true;
+                }
+
+                ANodeToTry = ANodeToTry.PreviousSibling;
+            }
+
+            return false;
         }
 
         /// <summary>

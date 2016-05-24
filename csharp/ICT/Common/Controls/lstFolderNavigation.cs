@@ -53,6 +53,8 @@ namespace Ict.Common.Controls
         private int FInitiallySelectedLedger = -1;
         private bool FConferenceSelected = false;
 
+        private TPnlModuleNavigation FCurrentHoster = null;
+
         #region Public Static
 
         /// <summary>
@@ -213,6 +215,17 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Gets the number of accessible main menu folders (items) from Partner, Finance and so on
+        /// </summary>
+        public int FolderCount
+        {
+            get
+            {
+                return sptNavigation.Panel2.Controls.Count;
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -267,16 +280,19 @@ namespace Ict.Common.Controls
         /// <param name="AIndex"></param>
         public bool SelectFolder(Int32 AIndex)
         {
-            TRbtNavigationButton btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[AIndex];
-
-            if (btn.Enabled)
+            if (AIndex < sptNavigation.Panel2.Controls.Count)
             {
-                btn.Checked = true;
+                TRbtNavigationButton btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[AIndex];
 
-                // just make sure the splitter is positioned correctly
-                SptNavigationSplitterMoved(null, null);
+                if (btn.Enabled)
+                {
+                    btn.Checked = true;
 
-                return true;
+                    // just make sure the splitter is positioned correctly
+                    SptNavigationSplitterMoved(null, null);
+
+                    return true;
+                }
             }
 
             return false;
@@ -350,6 +366,46 @@ namespace Ict.Common.Controls
             while (Index < this.sptNavigation.Panel2.Controls.Count && !SelectFolder(Index))
             {
                 Index++;
+            }
+        }
+
+        /// <summary>
+        /// Gets the index of the selected main menu item
+        /// </summary>
+        public int GetSelectedFolderIndex()
+        {
+            for (int i = 0; i < sptNavigation.Panel2.Controls.Count; i++)
+            {
+                TRbtNavigationButton btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[i];
+
+                if (btn.Checked)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Select the next enabled sub-module.  Works for simple task list and for a hoster that hosts multiple collapsible panels.
+        /// </summary>
+        public void SelectNextSubModule()
+        {
+            if (FCurrentHoster != null)
+            {
+                FCurrentHoster.SelectNextSubModule();
+            }
+        }
+
+        /// <summary>
+        /// Select the previous enabled sub-module.  Works for simple task list and for a hoster that hosts multiple collapsible panels.
+        /// </summary>
+        public void SelectPreviousSubModule()
+        {
+            if (FCurrentHoster != null)
+            {
+                FCurrentHoster.SelectPreviousSubModule();
             }
         }
 
@@ -448,6 +504,7 @@ namespace Ict.Common.Controls
             {
                 CollPanelHoster.Text = rbtFolder.Text;
                 CollPanelHoster.Show();
+                FCurrentHoster = CollPanelHoster;
 
                 if (PanelCreated)
                 {

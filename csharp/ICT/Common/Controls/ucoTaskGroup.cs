@@ -43,7 +43,8 @@ namespace Ict.Common.Controls
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
         private int FMaxTaskWidth;
-        private TUcoSingleTask FirstTaskInGroup = null;
+        private TUcoSingleTask FFirstTaskInGroup = null;
+        private TUcoSingleTask FLastTaskInGroup = null;
 
         /// <summary>
         /// Constructor.
@@ -196,8 +197,10 @@ namespace Ict.Common.Controls
 
             if (FTasks.Count == 1)
             {
-                FirstTaskInGroup = ATask;
+                FFirstTaskInGroup = ATask;
             }
+
+            FLastTaskInGroup = ATask;
         }
 
         /// <summary>
@@ -208,18 +211,48 @@ namespace Ict.Common.Controls
             FTasks.Clear();
 
             flpTaskGroup.Controls.Clear();
-            FirstTaskInGroup = null;
+            FFirstTaskInGroup = null;
+            FLastTaskInGroup = null;
         }
 
         /// <summary>
-        /// Selects (highlights) the task that was first added to a TaskGroup.
+        /// Selects (highlights) the task that was first added to a TaskGroup and sets the focus.
         /// </summary>
-        public void SelectFirstTask()
+        public void SelectFirstTaskWithFocus()
         {
             if (FTasks.Count > 0)
             {
-                FirstTaskInGroup.SelectTask();
+                FFirstTaskInGroup.FocusTask();
             }
+        }
+
+        /// <summary>
+        /// Selects (highlights) the task that was added last to a TaskGroup and sets the focus.
+        /// </summary>
+        public void SelectLastTaskWithFocus()
+        {
+            if (FTasks.Count > 0)
+            {
+                FLastTaskInGroup.FocusTask();
+            }
+        }
+
+        /// <summary>
+        /// Sets the focus to the selected task
+        /// </summary>
+        /// <returns></returns>
+        public bool FocusSelectedTask()
+        {
+            foreach (KeyValuePair <string, TUcoSingleTask>kvp in FTasks)
+            {
+                if (kvp.Value.IsSelected)
+                {
+                    kvp.Value.FocusTask();
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         #endregion

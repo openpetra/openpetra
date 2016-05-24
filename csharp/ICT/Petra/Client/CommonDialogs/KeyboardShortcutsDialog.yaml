@@ -5,7 +5,7 @@ RootNode:
     Template: window
     FormTitle: Help with Keyboard Shortcuts
     WindowWidth: 810
-    WindowHeight: 400
+    WindowHeight: 410
 
     Actions:
 
@@ -26,6 +26,10 @@ RootNode:
             Controls: [ucoShortcutsNavigation]
         tpgFilter:
             Controls: [ucoShortcutsFilterFind]
+        tpgDates:
+            Controls: [ucoShortcutsDates]
+        tpgMainMenu:
+            Controls: [ucoShortcutsMainMenu]
         tpgPartnerEditContactDetailsTab:
             Controls: [ucoShortcutsPartnerEditContactDetailsTab]
 
@@ -39,6 +43,12 @@ RootNode:
             Dock: Fill
             Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
         ucoShortcutsFilterFind:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+        ucoShortcutsDates:
+            Dock: Fill
+            Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
+        ucoShortcutsMainMenu:
             Dock: Fill
             Type: Ict.Petra.Client.CommonDialogs.TUC_Shortcuts
         ucoShortcutsPartnerEditContactDetailsTab:

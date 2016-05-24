@@ -53,6 +53,9 @@ namespace Ict.Common.Controls
         private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
         private string FResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
+        private string FFirstGroupName = null;
+        private string FLastGroupName = null;
+        private string FCurrentGroupName = null;
 
 
         static private SortedList <string, Assembly>FGUIAssemblies = new SortedList <string, Assembly>();
@@ -192,8 +195,10 @@ namespace Ict.Common.Controls
                     // Select (highlight) first Task in the first Group
                     if (Groups.Count == 1)
                     {
-                        TaskGroup.SelectFirstTask();
+                        FFirstGroupName = TaskGroup.Name;
                     }
+
+                    FLastGroupName = TaskGroup.Name;
                 }
 
                 TaskGroupNode = TaskGroupNode.NextSibling;
@@ -394,6 +399,81 @@ namespace Ict.Common.Controls
             set
             {
                 FInitiallySelectedLedger = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the first group in the list
+        /// </summary>
+        public string FirstGroupName
+        {
+            get
+            {
+                return FFirstGroupName;
+            }
+        }
+
+        /// <summary>
+        /// Get the last group name on the tasks panel
+        /// </summary>
+        public string LastGroupName
+        {
+            get
+            {
+                return FLastGroupName;
+            }
+        }
+
+        /// <summary>
+        /// Get the group name for the currently selected task item
+        /// </summary>
+        public string CurrentGroupName
+        {
+            get
+            {
+                return FCurrentGroupName;
+            }
+        }
+
+        /// <summary>
+        /// Get the group name for the group after the currently selected task item group.  Returns null if no such group exists.
+        /// </summary>
+        public string NextGroupName
+        {
+            get
+            {
+                for (int i = 0; i < this.Controls.Count; i++)
+                {
+                    Control TaskGroup = this.Controls[i];
+
+                    if ((TaskGroup.Name == FCurrentGroupName) && (i > 0))
+                    {
+                        return this.Controls[i - 1].Name;
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Get the group name for the group before the currently selected task item group.  Returns null if no such group exists.
+        /// </summary>
+        public string PreviousGroupName
+        {
+            get
+            {
+                for (int i = 0; i < this.Controls.Count; i++)
+                {
+                    Control TaskGroup = this.Controls[i];
+
+                    if ((TaskGroup.Name == FCurrentGroupName) && (i < this.Controls.Count - 1))
+                    {
+                        return this.Controls[i + 1].Name;
+                    }
+                }
+
+                return null;
             }
         }
 
@@ -780,19 +860,27 @@ namespace Ict.Common.Controls
 
         void SingleTask_TaskSelected(object sender, EventArgs e)
         {
+            this.SuspendLayout();
+
             foreach (Control TaskGroups in this.Controls)
             {
                 foreach (Control TaskGroup in TaskGroups.Controls)
                 {
                     foreach (TUcoSingleTask Task in TaskGroup.Controls)
                     {
-                        if (Task != sender)
+                        if (Task == sender)
+                        {
+                            FCurrentGroupName = TaskGroups.Name;
+                        }
+                        else
                         {
                             Task.DeselectTask();
                         }
                     }
                 }
             }
+
+            this.ResumeLayout();
         }
 
         void FireTaskClicked()

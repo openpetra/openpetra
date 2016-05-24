@@ -659,6 +659,17 @@ namespace Ict.Petra.Client.CommonForms
                             }
                         }
 
+                        if (ActiveFormType.FullName == "Ict.Petra.Client.App.PetraClient.TFrmMainWindowNew")
+                        {
+                            PropertyInfo InitiallySelectedTabProperty = shortcutsDialog.GetType().GetProperty("InitiallySelectedTab",
+                                BindingFlags.Public | BindingFlags.Instance);
+
+                            if ((null != InitiallySelectedTabProperty) && InitiallySelectedTabProperty.CanWrite)
+                            {
+                                InitiallySelectedTabProperty.SetValue(shortcutsDialog, "tpgMainMenu", null);
+                            }
+                        }
+
                         shortcutsDialog.ShowDialog();
                     }
                     break;

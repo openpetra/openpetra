@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.Xml;
 using System.Windows.Forms;
 
 namespace Ict.Common.Controls
@@ -42,6 +43,7 @@ namespace Ict.Common.Controls
         private TaskAppearance FTaskAppearance = TaskAppearance.staLargeTile;
         private bool FSingleClickExecution = false;
         private List <TLstTasks>FTaskLists = new List <TLstTasks>();
+        private TLstTasks FCurrentTaskList = null;
 
         /// <summary>
         /// Constructor.
@@ -127,39 +129,144 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Get the current Task List
+        /// </summary>
+        public TLstTasks CurrentTaskList
+        {
+            get
+            {
+                return FCurrentTaskList;
+            }
+        }
+
         #endregion
 
         #region Public Methods
 
         /// <summary>
+        /// Gets a task list that corresponds to a node in the navigation document.  If a list exists already it returns that list.
+        /// If there is no list for that node yet it creates a new one, which will be available next time.
+        /// </summary>
+        /// <param name="ATaskListNode">The node</param>
+        /// <returns></returns>
+        public TLstTasks GetTaskList(XmlNode ATaskListNode)
+        {
+            for (int i = 0; i < FTaskLists.Count; i++)
+            {
+                if (FTaskLists[i].Name.EndsWith(ATaskListNode.Name))
+                {
+                    return FTaskLists[i];
+                }
+            }
+
+            TLstTasks newList = new TLstTasks(ATaskListNode, FTaskAppearance);
+            FTaskLists.Add(newList);
+            return newList;
+        }
+
+        /// <summary>
         /// Shows a <see cref="TLstTasks" /> Control.
         /// </summary>
-        /// <param name="ATaskList">The <see cref="TLstTasks" /> Control that should be shown.
-        /// If that Control was alreay shown it is not instantiated again but just brought to the foreground,
-        /// if it wasn't shown before then an instance of it is created automatically.</param>
+        /// <param name="ATaskList">The <see cref="TLstTasks" /> Control that should be shown.  All other controls are hidden.
+        /// This ensures that the TAB key can be used to navigate tasks using the keyboard.</param>
         public void ShowTaskList(TLstTasks ATaskList)
         {
             if (ATaskList != null)
             {
-                if (FTaskLists.Contains(ATaskList))
+                for (int i = 0; i < FTaskLists.Count; i++)
                 {
-//TLogging.Log("Found TaskList '" + ATaskList.Name + "' - bringing it to front.");
-                    ATaskList.MaxTaskWidth = FMaxTaskWidth;
-                    ATaskList.TaskAppearance = FTaskAppearance;
-                    ATaskList.SingleClickExecution = FSingleClickExecution;
-                    ATaskList.BringToFront();
+                    if (FTaskLists[i].Name != ATaskList.Name)
+                    {
+                        FTaskLists[i].Hide();
+                    }
+                }
+
+                if (this.Controls.Contains(ATaskList))
+                {
+                    ATaskList.Show();
+
+                    foreach (TUcoTaskGroup group in ATaskList.Groups.Values)
+                    {
+                        if (group.FocusSelectedTask())
+                        {
+                            break;
+                        }
+                    }
                 }
                 else
                 {
-//TLogging.Log("Couldn't find TaskList '" + ATaskList.Name + "' - adding it.");
+                    ATaskList.SuspendLayout();
                     this.Controls.Add(ATaskList);
                     ATaskList.MaxTaskWidth = FMaxTaskWidth;
                     ATaskList.TaskAppearance = FTaskAppearance;
                     ATaskList.SingleClickExecution = FSingleClickExecution;
-                    ATaskList.BringToFront();
+                    ATaskList.ResumeLayout();
 
-                    FTaskLists.Add(ATaskList);
+                    SelectFirstTaskWithFocus(ATaskList);
                 }
+
+                FCurrentTaskList = ATaskList;
+            }
+        }
+
+        /// <summary>
+        /// Select the first task in the current task list and set focus to the control
+        /// </summary>
+        public void SelectFirstTaskWithFocus()
+        {
+            SelectFirstTaskWithFocus(FCurrentTaskList);
+        }
+
+        /// <summary>
+        /// Select the first task in the specified task list and set focus to the control
+        /// </summary>
+        private void SelectFirstTaskWithFocus(TLstTasks ATaskList)
+        {
+            if (ATaskList.Groups.Count > 0)
+            {
+                ATaskList.Groups[ATaskList.FirstGroupName].SelectFirstTaskWithFocus();
+            }
+        }
+
+        /// <summary>
+        /// Select the last task in the current task list and set focus to the control
+        /// </summary>
+        public void SelectLastTaskWithFocus()
+        {
+            SelectLastTaskWithFocus(FCurrentTaskList);
+        }
+
+        /// <summary>
+        /// Select the last task in the specified task list and set focus to the control
+        /// </summary>
+        private void SelectLastTaskWithFocus(TLstTasks ATaskList)
+        {
+            if (ATaskList.Groups.Count > 0)
+            {
+                ATaskList.Groups[ATaskList.LastGroupName].SelectLastTaskWithFocus();
+            }
+        }
+
+        /// <summary>
+        /// Select the first task in the group after the current group and focus the control
+        /// </summary>
+        public void SelectNextGroupWithFocus()
+        {
+            if (FCurrentTaskList.NextGroupName != null)
+            {
+                FCurrentTaskList.Groups[FCurrentTaskList.NextGroupName].SelectFirstTaskWithFocus();
+            }
+        }
+
+        /// <summary>
+        /// Select the first task in the group before the current group and focus the control
+        /// </summary>
+        public void SelectPreviousGroupWithFocus()
+        {
+            if (FCurrentTaskList.PreviousGroupName != null)
+            {
+                FCurrentTaskList.Groups[FCurrentTaskList.PreviousGroupName].SelectFirstTaskWithFocus();
             }
         }
 

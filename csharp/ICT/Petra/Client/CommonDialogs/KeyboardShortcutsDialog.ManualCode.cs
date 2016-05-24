@@ -52,6 +52,12 @@ namespace Ict.Petra.Client.CommonDialogs
             /// FilterFind table
             FilterFind,
 
+            /// Dates table
+            Dates,
+
+            /// Main Menu screen table
+            MainMenu,
+
             /// PartnerEditContactDetailsTab table
             PartnerEditContactDetailsTab
         };
@@ -134,6 +140,46 @@ namespace Ict.Petra.Client.CommonDialogs
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutF3, ApplWideResourcestrings.StrKeyShortcutF3Help);
             AddShortcutInfoToTable(filterFindTable, ApplWideResourcestrings.StrKeyShortcutShiftF3, ApplWideResourcestrings.StrKeyShortcutShiftF3Help);
 
+            string datesTable = KeyboardShortcutTableNames.Dates.ToString();
+            AddTableToDataSet(datesTable);
+
+            AddShortcutInfoToTable(datesTable, Catalog.GetString("= + today"), Catalog.GetString(
+                    "Enters today's date into the text area when you leave the control"));
+            AddShortcutInfoToTable(datesTable, Catalog.GetString("+NN"), Catalog.GetString(
+                    "Enters the date NN days after today when you leave the control.  NN is an integer number."));
+            AddShortcutInfoToTable(datesTable, Catalog.GetString("-NN"), Catalog.GetString(
+                    "Enters the date NN days before today when you leave the control.  NN is an integer number."));
+            AddShortcutInfoToTable(datesTable, Catalog.GetString("201115 or 20112015"), Catalog.GetString(
+                    "Enters 20-NOV-2015 when you leave the control if the short date format in Control Panel is like Day-Month-Year"));
+            AddShortcutInfoToTable(datesTable, Catalog.GetString("151120 or 20151120"), Catalog.GetString(
+                    "Enters 20-NOV-2015 when you leave the control if the short date format in Control Panel is like Year-Month-Day"));
+            AddShortcutInfoToTable(datesTable, Catalog.GetString("112015 or 11202015"), Catalog.GetString(
+                    "Enters 20-NOV-2015 when you leave the control if the short date format in Control Panel is like Month-Day-Year"));
+
+            string mainMenuTable = KeyboardShortcutTableNames.MainMenu.ToString();
+            AddTableToDataSet(mainMenuTable);
+
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("TAB / Shift+TAB"), Catalog.GetString(
+                    "Move forwards/backwards through the Task Items on the right side of the screen and Sub-Modules on the upper left."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("Home"), Catalog.GetString(
+                    "Move to the first Task Item."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("End"), Catalog.GetString(
+                    "Move to the last Task Item."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("+"), Catalog.GetString(
+                    "Move to the first Task Item in the next Task Group."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("-"), Catalog.GetString(
+                    "Move to the first Task Item in the previous Task Group."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("PgUp"), Catalog.GetString(
+                    "Show the Task List for the previous Sub-Module listed at the upper left of the screen."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("PgDn"), Catalog.GetString(
+                    "Show the Task List for the next Sub-Module listed at the upper left of the screen."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("Ctrl+PgUp"), Catalog.GetString(
+                    "Select the previous Main Module listed at the lower left of the screen and show the most recent Sub-Module Task List."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("Ctrl+PgDn"), Catalog.GetString(
+                    "Select the next Main Module listed at the lower left of the screen and show the most recent Sub-Module Task List."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("ENTER"), Catalog.GetString(
+                    "Launch the screen for the focused Task Item or show the Task List for the focused Sub-Module."));
+
             string partnerEditContactDetailsTabTable = KeyboardShortcutTableNames.PartnerEditContactDetailsTab.ToString();
             AddTableToDataSet(partnerEditContactDetailsTabTable);
 
@@ -184,6 +230,11 @@ namespace Ict.Petra.Client.CommonDialogs
                 {
                     tabAllShortcuts.SelectedTab = tpgPartnerEditContactDetailsTab;
                 }
+                else if (FInitiallySelectedTab == "tpgMainMenu")
+                {
+                    tabAllShortcuts.SelectedTab = tpgMainMenu;
+                    TabsToHide.Add("tpgPartnerEditContactDetailsTab");
+                }
             }
             else
             {
@@ -214,6 +265,14 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 InitialiseTab(KeyboardShortcutTableNames.FilterFind, ucoShortcutsFilterFind.HelpGrid, ucoShortcutsFilterFind.DescriptionLabel);
             }
+            else if (tabAllShortcuts.SelectedTab == tpgDates)
+            {
+                InitialiseTab(KeyboardShortcutTableNames.Dates, ucoShortcutsDates.HelpGrid, ucoShortcutsDates.DescriptionLabel);
+            }
+            else if (tabAllShortcuts.SelectedTab == tpgMainMenu)
+            {
+                InitialiseTab(KeyboardShortcutTableNames.MainMenu, ucoShortcutsMainMenu.HelpGrid, ucoShortcutsMainMenu.DescriptionLabel);
+            }
             else if (tabAllShortcuts.SelectedTab == tpgPartnerEditContactDetailsTab)
             {
                 InitialiseTab(KeyboardShortcutTableNames.PartnerEditContactDetailsTab,
@@ -241,10 +300,6 @@ namespace Ict.Petra.Client.CommonDialogs
                 return;
             }
 
-            ADescriptionLabel.AutoSize = false;
-            ADescriptionLabel.Width = this.Width - 40;
-            ADescriptionLabel.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-
             switch (ATableName)
             {
                 case KeyboardShortcutTableNames.General:
@@ -263,6 +318,19 @@ namespace Ict.Petra.Client.CommonDialogs
                     ADescriptionLabel.Text = ApplWideResourcestrings.StrKeysHelpCategoryFilterFind;
                     break;
 
+                case KeyboardShortcutTableNames.Dates:
+                    ADescriptionLabel.Text = Catalog.GetString(
+                    "These keyboard shortcuts apply anywhere where a date is required.  Dates can be entered as displayed " +
+                    "or can be typed in one of the following ways, for example as digits only or as a number of days from today.");
+                    break;
+
+                case KeyboardShortcutTableNames.MainMenu:
+                    ADescriptionLabel.Text = Catalog.GetString(
+                    "The Main Menu screen lists Modules at the lower left, Sub-Modules at the upper left and " +
+                    "Task Items divided into Task Groups on the right side of the screen.  The shortcuts listed here allow you to quickly change " +
+                    "Module, Sub-Module or Task and to launch the selected Task.");
+                    break;
+
                 case KeyboardShortcutTableNames.PartnerEditContactDetailsTab:
                     ADescriptionLabel.Text = Catalog.GetString(
                     "These keyboard shortcuts are specific to the Partner Edit screens' Contact Details Tab. Use them to " +
@@ -272,7 +340,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
             DataTable table = FMainDS.Tables[ATableName.ToString()];
 
-            AGrid.AddTextColumn(FColumnNames[0], table.Columns[0], 100);
+            AGrid.AddTextColumn(FColumnNames[0], table.Columns[0], 130);
             AGrid.AddTextColumn(FColumnNames[1], table.Columns[1], 250);
             AGrid.AutoStretchColumnsToFitWidth = true;
             AGrid.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
