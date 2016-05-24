@@ -25,8 +25,23 @@
 				<value function="getLedgerName({{param_ledger_number_i}})"/>
 			</field>
 			<field whichfield="descr2">
-				<value text="Sort by: "/>
-				<value variable="param_rgrSorting"/>
+				<!--<value text="Sort by: "/>
+				<value variable="param_rgrSorting"/>-->
+				<fielddetail condition="eq({param_recipientkey}, 0)">
+					<value text="All recipients;   "/>
+				</fielddetail>
+				<fielddetail condition="not(eq({param_recipientkey}, 0))">
+					<value text="Recipient: "/>
+					<value function="getPartnerShortName({param_recipientkey})"/>
+					<value text=";   "/>
+				</fielddetail>
+				<fielddetail condition="eq({param_all_partners}, true)">
+					<value text="All Donors"/>
+				</fielddetail>
+				<fielddetail condition="eq({param_extract}, true)">
+					<value text="Donors from extract: "/>
+					<value variable="param_extract_name"/>
+				</fielddetail>
 			</field>
             <field whichfield="descr3">
                 <value text="Motivation (Group,Detail): "/>
@@ -82,9 +97,29 @@
 						FROM
 							 PUB_a_gift as gift, 
 							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch,
 							 PUB_p_partner,
 							 PUB_a_motivation_detail
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_extract}, true)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_all_partners}, true)">
+						<value>
 						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
 								detail.a_ledger_number_i = gift.a_ledger_number_i
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
@@ -96,6 +131,15 @@
 							AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
 							AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							AND PUB_a_motivation_detail.a_receipt_l = 1
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND ( PUB_a_gift_batch.a_batch_status_c = 'Posted' OR
+								  PUB_a_gift_batch.a_batch_status_c = 'posted')
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_recipientkey}, 0))">
+						<value>
+							AND detail.p_recipient_key_n = {{param_recipientkey}}
 						</value>
 					</queryDetail>
                     <queryDetail condition="eq({param_all_motivation_groups}, false)">
@@ -173,10 +217,30 @@
 						FROM
 							 PUB_a_gift as gift, 
 							 PUB_a_gift_detail as detail,
+							 PUB_a_gift_batch,
 							 PUB_a_motivation_detail,
 							 PUB_a_motivation_group,
 							 PUB_p_partner
+						 </value>
+					</queryDetail>
+					<queryDetail condition="eq({param_extract}, true)">
+						<value>
+							, PUB_m_extract,
+							PUB_m_extract_master
+						WHERE 
+							gift.p_donor_key_n = PUB_m_extract.p_partner_key_n
+							AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+							AND PUB_m_extract_master.m_extract_name_c = {param_extract_name}
+							AND
+						</value>
+					</queryDetail>
+					<queryDetail condition="eq({param_all_partners}, true)">
+						<value>
 						WHERE
+						</value>
+					</queryDetail>
+					<queryDetail>
+						<value>
 								detail.a_ledger_number_i = gift.a_ledger_number_i
 							AND detail.a_batch_number_i = gift.a_batch_number_i
 							AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
@@ -191,6 +255,15 @@
 							AND PUB_a_motivation_group.a_motivation_group_code_c = PUB_a_motivation_detail.a_motivation_group_code_c
 							AND gift.p_donor_key_n = {{DonorKey}}
 							AND PUB_p_partner.p_partner_key_n = detail.p_recipient_key_n
+							AND PUB_a_gift_batch.a_ledger_number_i = {{param_ledger_number_i}}
+							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+							AND ( PUB_a_gift_batch.a_batch_status_c = 'Posted' OR
+								  PUB_a_gift_batch.a_batch_status_c = 'posted')
+						</value>
+					</queryDetail>
+					<queryDetail condition="not(eq({param_recipientkey}, 0))">
+						<value>
+							AND detail.p_recipient_key_n = {{param_recipientkey}}
 						</value>
 					</queryDetail>
                     <queryDetail condition="eq({param_all_motivation_groups}, false)">

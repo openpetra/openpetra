@@ -10,47 +10,37 @@ RootNode:
     Actions:
         actAccept: {ActionClick=AcceptExtract}
         actClose: {ActionClick=CloseScreen}
-        actSearch: {ActionClick=RefreshExtractList}
         actClear: {ActionClick=ClearSearchCriteria}
     Controls:
         pnlDialogContent:
-            Controls: [pnlFilter, pnlExtractMasterList]
-        pnlFilter:
-            Controls: [pnlFilterCriteria, pnlFilterButtons]
+            Controls: [grpFilter, pnlExtractMasterList]
+        grpFilter:
             Dock: Top
-        pnlFilterCriteria:
-            NoLabel: true
             Controls: 
                 Row0: [txtExtractName]
                 Row1: [txtExtractDesc]
                 Row2: [cmbUserCreated]
                 Row3: [dtpCreatedFrom, dtpCreatedTo]
                 Row4: [cmbUserModified]
-                Row5: [dtpModifiedFrom, dtpModifiedTo]
-        pnlFilterButtons: {ControlsOrientation=horizontal}
-            AutoButtonMaxWidths: true
-            AutoButtonMaxWidthsAutoSizesContainerWidth: true
-            NoLabel: true
-            Controls: [btnSearch, btnClear]
+                Row5: [dtpModifiedFrom, dtpModifiedTo, btnClear]
         pnlExtractMasterList:
             Padding: 4,0,8,0
             Dock: Fill
-            Controls: [clbDetails]
-        txtExtractName: {Label=Extract Name, ColSpan=2, Width=200}
-        txtExtractDesc: {Label=Description, ColSpan=2, Width=350}
-        cmbUserCreated: {Label=Created by, List=UserList, AllowDbNull=true, ColSpan=2}
-        dtpCreatedFrom: {Label=Created between}
-        dtpCreatedTo: {Label=and}
-        cmbUserModified: {Label=Modified/Verified by, List=UserList, AllowDbNull=true, ColSpan=2}
-        dtpModifiedFrom: {Label=Modified between}
-        dtpModifiedTo: {Label=and}
+            Controls: [clbDetails, lblRecordCount]
+        txtExtractName: {Label=Extract Name, ColSpan=2, Width=200, OnChange=RefreshFilter}
+        txtExtractDesc: {Label=Description, ColSpan=2, Width=350, OnChange=RefreshFilter}
+        cmbUserCreated: {Label=Created by, List=UserList, AllowDbNull=true, ColSpan=2, OnChange=RefreshFilter}
+        dtpCreatedFrom: {Label=Created between, OnChange=RefreshFilter}
+        dtpCreatedTo: {Label=and, OnChange=RefreshFilter}
+        cmbUserModified: {Label=Modified/Verified by, List=UserList, AllowDbNull=true, ColSpan=2, OnChange=RefreshFilter}
+        dtpModifiedFrom: {Label=Modified between, OnChange=RefreshFilter}
+        dtpModifiedTo: {Label=and, OnChange=RefreshFilter}
+        lblRecordCount: {Dock: Bottom}
 
-        btnSearch:
-            Label: Search
-            Action: actSearch
         btnClear:
             Label: Clear
             Action: actClear
+            Align: right
 
         clbDetails:
             Dock: Fill

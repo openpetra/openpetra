@@ -52,6 +52,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
         }
 
+        private void InitializeManualCode()
+        {
+            txtRecipient.PartnerClass = "WORKER,UNIT,FAMILY";
+        }
+
         private void DonorTypeChanged(object Sender, EventArgs e)
         {
             if ((rbtTopDonor.Checked)

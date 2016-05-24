@@ -51,6 +51,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
         }
 
+        private void InitializeManualCode()
+        {
+            txtRecipient.PartnerClass = "WORKER,UNIT,FAMILY";
+        }
+
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             if (!dtpEndDate.ValidDate(false)
@@ -79,6 +84,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
+            ACalc.AddParameter("param_all_partners", rbtAllPartners.Checked);
+            ACalc.AddParameter("param_extract", rbtExtract.Checked);
+
+            if (rbtExtract.Checked)
+            {
+                ACalc.AddParameter("param_extract_name", txtExtract.Text);
+            }
+
+            if (rbtAllRecipients.Checked)
+            {
+                ACalc.AddParameter("param_recipientkey", "0");
+            }
+            else
+            {
+                ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
+            }
+
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
 
             for (int Counter = 0; Counter <= MaxColumns; ++Counter)
@@ -89,6 +111,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 {
                     ACalc.AddParameter("param_gift_amount_column", Counter);
                 }
+            }
+        }
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
+            rbtExtract.Checked = AParameters.Get("param_extract").ToBool();
+            rbtAllPartners.Checked = AParameters.Get("param_all_partners").ToBool();
+            txtExtract.Text = AParameters.Get("param_extract_name").ToString();
+            txtRecipient.Text = AParameters.Get("param_recipientkey").ToString();
+
+            if (Convert.ToInt64(txtRecipient.Text) == 0)
+            {
+                rbtAllRecipients.Checked = true;
+            }
+            else
+            {
+                rbtRecipient.Checked = true;
             }
         }
     }
