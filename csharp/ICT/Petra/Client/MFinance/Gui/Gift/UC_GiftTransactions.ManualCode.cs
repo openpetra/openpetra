@@ -2716,66 +2716,78 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FAutoPopulatingGift = true;
 
+            bool RepeatDonor = false;
+            bool IsSplitGift = false;
+            bool SplitGiftOnCopying = false;
+
+            DateTime LatestUnpostedGiftDateEntered = new DateTime(1900, 1, 1);
+
             try
             {
-                AGiftTable GiftTable = new AGiftTable();
+                //Check for Donor in loaded gift batches
+                // and record most recent date entered
+                AGiftTable DonorRecentGiftsTable = new AGiftTable();
                 GiftBatchTDSAGiftDetailTable GiftDetailTable = new GiftBatchTDSAGiftDetailTable();
+
+                AGiftRow MostRecentLoadedGiftForDonorRow = null;
 
                 DataView giftDV = new DataView(FMainDS.AGift);
 
                 giftDV.RowStateFilter = DataViewRowState.CurrentRows;
 
-                giftDV.RowFilter = string.Format("{0}={1} And {2}={3} And {4}<>{5}",
-                    AGiftTable.GetBatchNumberDBName(),
-                    FBatchNumber,
+                giftDV.RowFilter = string.Format("{0}={1} And Not ({2}={3} And {4}={5})",
                     AGiftTable.GetDonorKeyDBName(),
                     ADonorKey,
+                    AGiftTable.GetBatchNumberDBName(),
+                    FBatchNumber,
                     AGiftTable.GetGiftTransactionNumberDBName(),
                     AGiftTransactionNumber);
 
-                foreach (DataRowView drv in giftDV)
+                giftDV.Sort = String.Format("{0} DESC, {1} DESC",
+                    AGiftTable.GetDateEnteredDBName(),
+                    AGiftTable.GetGiftTransactionNumberDBName());
+
+                if (giftDV.Count > 0)
                 {
-                    AGiftRow giftRow = (AGiftRow)drv.Row;
-                    GiftTable.Rows.Add((object[])giftRow.ItemArray.Clone());
+                    //Take first row = most recent date entered value
+                    MostRecentLoadedGiftForDonorRow = (AGiftRow)giftDV[0].Row;
+                    LatestUnpostedGiftDateEntered = MostRecentLoadedGiftForDonorRow.DateEntered;
+                    DonorRecentGiftsTable.Rows.Add((object[])MostRecentLoadedGiftForDonorRow.ItemArray.Clone());
                 }
 
-                // if the donor does have another gift then get the AGiftDetail records for the most recent gift
-                if (GiftTable.Rows.Count > 0)
-                {
-                    // find the most recent gift (probably the last gift in the table)
-                    AGiftRow LatestGiftRow = (AGiftRow)GiftTable.Rows[GiftTable.Rows.Count - 1];
+                //Check for even more recent saved gifts on server (i.e. not necessarily loaded)
+                GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastPostedGift(ADonorKey, FLedgerNumber, LatestUnpostedGiftDateEntered);
 
-                    for (int i = GiftTable.Rows.Count - 2; i >= 0; i--)
-                    {
-                        if (LatestGiftRow.DateEntered < ((AGiftRow)GiftTable.Rows[i]).DateEntered)
-                        {
-                            LatestGiftRow = (AGiftRow)GiftTable.Rows[i];
-                        }
-                    }
+                if (((GiftDetailTable != null) && (GiftDetailTable.Count > 0)))
+                {
+                    //UnLoaded/Saved gift from donor is more recent
+                    RepeatDonor = true;
+                    IsSplitGift = (GiftDetailTable.Count > 1);
+                }
+                else if (MostRecentLoadedGiftForDonorRow != null)
+                {
+                    //Loaded/unsaved gift from donor is more recent
+                    RepeatDonor = true;
 
                     DataView giftDetailDV = new DataView(FMainDS.AGiftDetail);
 
                     giftDetailDV.RowStateFilter = DataViewRowState.CurrentRows;
 
-                    giftDetailDV.RowFilter = string.Format("{0}={1}",
+                    giftDetailDV.RowFilter = string.Format("{0}={1} And {2}={3}",
+                        AGiftDetailTable.GetBatchNumberDBName(),
+                        MostRecentLoadedGiftForDonorRow.BatchNumber,
                         AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                        LatestGiftRow.GiftTransactionNumber);
+                        MostRecentLoadedGiftForDonorRow.GiftTransactionNumber);
 
-                    foreach (DataRowView drv in FMainDS.AGiftDetail.Rows)
+                    foreach (DataRowView drv in giftDetailDV)
                     {
-                        GiftBatchTDSAGiftDetailRow GiftDetailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
-                        GiftDetailTable.Rows.Add((object[])GiftDetailRow.ItemArray.Clone());
+                        GiftBatchTDSAGiftDetailRow giftDetailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
+                        GiftDetailTable.Rows.Add((object[])giftDetailRow.ItemArray.Clone());
                     }
+
+                    IsSplitGift = (GiftDetailTable.Count > 1);
                 }
                 else
-                {
-                    // if the donor does not have another gift in this gift batch then search the database for
-                    // the last gift from this donor
-                    GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastGift(ADonorKey, FLedgerNumber);
-                }
-
-                // if this is the donor's first ever gift
-                if ((GiftDetailTable == null) || (GiftDetailTable.Rows.Count == 0))
                 {
                     // set FirstTimeGift field in AGift to true
                     GiftBatchTDSAGiftDetailRow CurrentDetail = GetSelectedDetailRow();
@@ -2790,10 +2802,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                bool SplitGift = false;
-
                 // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
-                if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 1))
+                if (IsSplitGift)
                 {
                     GiftDetailTable.DefaultView.Sort = GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName() + " ASC";
 
@@ -2822,11 +2832,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     Message += "\n" + Catalog.GetString("Do you want to create the same split gift again?");
 
-                    SplitGift = MessageBox.Show(Message, Catalog.GetString("Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                                == DialogResult.Yes;
+                    SplitGiftOnCopying = MessageBox.Show(Message, Catalog.GetString(
+                            "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                         == DialogResult.Yes;
                 }
 
-                if ((GiftDetailTable != null) && (GiftDetailTable.Rows.Count > 0))
+                if (RepeatDonor)
                 {
                     int CurrentTransaction = 0;
 
@@ -2845,7 +2856,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ToggleTaxDeductible(this, null);
                         cmbDetailMailingCode.SetSelectedString(Row.MailingCode, -1);
 
-                        if (SplitGift)
+                        if (SplitGiftOnCopying)
                         {
                             //Copy the comments and comment types for split gifts
                             if (FIncludeCommentsSplitGiftCopy)
