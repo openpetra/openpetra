@@ -10,7 +10,11 @@ WHERE pub_p_subscription.p_publication_code_c IN (?)
                AND pub_p_subscription.p_subscription_status_c <> 'CANCELLED'
                AND (pub_p_subscription.p_date_cancelled_d IS NULL
                     OR pub_p_subscription.p_date_cancelled_d >= DATE(NOW())))
-         OR (NOT ? AND pub_p_subscription.p_subscription_status_c = ?))
+         OR (NOT ? AND pub_p_subscription.p_subscription_status_c = ?
+                   AND ((pub_p_subscription.p_subscription_status_c = 'EXPIRED'
+                         OR pub_p_subscription.p_subscription_status_c = 'CANCELLED')
+                        OR (pub_p_subscription.p_date_cancelled_d IS NULL
+                            OR pub_p_subscription.p_date_cancelled_d >= DATE(NOW())))))
     AND (NOT ? OR pub_p_partner.p_status_code_c = 'ACTIVE')
     AND (NOT ? OR pub_p_partner.p_partner_class_c LIKE 'FAMILY%')
     AND (NOT ? OR NOT pub_p_partner.p_no_solicitations_l)

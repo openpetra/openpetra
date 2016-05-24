@@ -71,8 +71,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             dtpDateOfSendingCopy.Date = DateTime.Now;
 
-            int offset = chkFreeSubscriptionsOnly.Top - (pnlDetails.Height - chkFreeSubscriptionsOnly.Height - 6);
-            chkFreeSubscriptionsOnly.Top -= offset;
+            int offset = chkIncludeActiveSubscriptionsOnly.Top - (pnlDetails.Height - chkIncludeActiveSubscriptionsOnly.Height - 6);
+            chkIncludeActiveSubscriptionsOnly.Top -= offset;
             lblDateOfSendingCopy.Top -= offset;
             dtpDateOfSendingCopy.Top -= offset;
 
@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
 
             rbtSingle.Checked = true;
+            chkIncludeActiveSubscriptionsOnly.Checked = true;
 
             // enable autofind in list for first character (so the user can press character to find list entry)
             // from Sep 2015 this is handled automatically by the code generator

@@ -49,14 +49,14 @@ RootNode:
             Dock: Fill
         pnlDetails:
             Controls: 
-                Row0: [chkIncludeActiveSubscriptionsOnly, rgrCopies]
-                Row1: [chkFreeSubscriptionsOnly, dtpDateOfSendingCopy]
+                Row0: [chkFreeSubscriptionsOnly, rgrCopies]
+                Row1: [chkIncludeActiveSubscriptionsOnly, dtpDateOfSendingCopy]
             Dock: Bottom
             Height: 65
         dtpDateOfSendingCopy:
             ParameterName: param_date_effective
         chkIncludeActiveSubscriptionsOnly: {OnChange=ActiveSubscriptionsBoxChanged}
-            Label: Active Subscriptions only
+            Label: All active Subscriptions
             CheckBoxAttachedLabel: right
             ParameterName: param_include_active_subscriptions_only
         chkFreeSubscriptionsOnly:
