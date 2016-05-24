@@ -426,7 +426,7 @@ namespace Ict.Petra.Server.MPartner.Extracts
             bool AIgnoreDuplicates = true,
             bool AIgnoreInactive = false,
             bool AIgnoreNonMailingLocations = false,
-            bool AIgnoreNoSolicitations = true)
+            bool AIgnoreNoSolicitations = false)
         {
             if (AAddressFilterAdded)
             {

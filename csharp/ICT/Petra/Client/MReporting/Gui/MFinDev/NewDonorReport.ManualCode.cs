@@ -78,6 +78,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
             }
+
+            if (!ucoMotivationCriteria.IsAnyMotivationDetailSelected())
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No Motivation Detail selected"),
+                    Catalog.GetString("Please select at least one Motivation Detail."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

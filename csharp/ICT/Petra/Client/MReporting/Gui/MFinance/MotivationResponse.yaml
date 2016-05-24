@@ -48,7 +48,6 @@
             ParameterName: param_suppress_detail
 
         cmbMailingCode: {List=MailingList, ClearIfSettingEmpty=true}
-            ParameterName: param_mailing_code
 
         dtpFromDate:
             Label: From

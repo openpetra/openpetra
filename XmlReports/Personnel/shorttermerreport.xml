@@ -94,11 +94,11 @@
             
             <!-- this event only -->
             <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, this))"><value>
-                , PUB_p_unit
-                    LEFT JOIN PUB_pt_arrival_point
-                        ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
+                LEFT JOIN PUB_pt_arrival_point
+                    ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
                 LEFT JOIN PUB_pt_arrival_point AS DEPARTUREPOINT
                     ON DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c
+                , PUB_p_unit
                 WHERE
                     PUB_p_unit.p_partner_key_n = {param_unit_key}
                     AND PUB_pm_short_term_application.pm_confirmed_option_code_c  = PUB_p_unit.p_outreach_code_c
@@ -106,8 +106,8 @@
             
             <!-- all events -->
             <queryDetail condition="and(eq({param_source}, Event), eq({param_event_selection}, all))"><value>
-                    LEFT JOIN PUB_pt_arrival_point
-                        ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
+                LEFT JOIN PUB_pt_arrival_point
+                    ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
                 LEFT JOIN PUB_pt_arrival_point AS DEPARTUREPOINT
                     ON DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c
                 WHERE
@@ -116,11 +116,11 @@
             
             <!-- extract and this event only -->
             <queryDetail condition="and(eq({param_event_selection}, this), eq({param_source}, Extract))"><value>
-                , PUB_m_extract, PUB_m_extract_master, PUB_p_unit
-                    LEFT JOIN PUB_pt_arrival_point
-                        ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
+                LEFT JOIN PUB_pt_arrival_point
+                    ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
                 LEFT JOIN PUB_pt_arrival_point AS DEPARTUREPOINT
                     ON DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c
+                , PUB_m_extract, PUB_m_extract_master, PUB_p_unit
                 WHERE
                      PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
                     AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
@@ -131,11 +131,11 @@
             
             <!-- extract and event related options -->
             <queryDetail condition="and(eq({param_event_selection}, related), eq({param_source}, Extract))"><value>
-                , PUB_m_extract, PUB_m_extract_master
-                    LEFT JOIN PUB_pt_arrival_point
-                        ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
+                LEFT JOIN PUB_pt_arrival_point
+                    ON PUB_pt_arrival_point.pt_code_c = PUB_pm_short_term_application.pt_arrival_point_code_c 
                 LEFT JOIN PUB_pt_arrival_point AS DEPARTUREPOINT
                     ON DEPARTUREPOINT.pt_code_c = PUB_pm_short_term_application.pt_departure_point_code_c
+                , PUB_m_extract, PUB_m_extract_master
                 WHERE
                      PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
                     AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i

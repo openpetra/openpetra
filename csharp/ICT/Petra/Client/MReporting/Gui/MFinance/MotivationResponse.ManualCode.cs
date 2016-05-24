@@ -80,6 +80,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
+            // add this manually as string parameter as automated code would add mailing codes that are numbers wrongly as integers
+            ACalc.AddStringParameter("param_mailing_code", this.cmbMailingCode.GetSelectedString());
+
             if (dtpToDate.Date.HasValue)
             {
                 Int32 ToDateYear = dtpToDate.Date.Value.Year;
@@ -109,6 +112,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void SetControlsManual(TParameterList AParameters)
         {
             DateTime dtpFromDateDate = AParameters.Get("param_from_date").ToDate();
+
+            cmbMailingCode.SetSelectedString(AParameters.Get("param_mailing_code").ToString(), -1);
 
             if ((dtpFromDateDate <= DateTime.MinValue)
                 || (dtpFromDateDate >= DateTime.MaxValue))
