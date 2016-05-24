@@ -406,6 +406,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     DeleteCurrentBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
 
                     FBatchRow.BatchTotal = 0;
+                    txtBatchTotal.NumberValueDecimal = 0;
 
                     // Be sure to set the last gift number in the parent table before saving all the changes
                     SetBatchLastGiftNumber();

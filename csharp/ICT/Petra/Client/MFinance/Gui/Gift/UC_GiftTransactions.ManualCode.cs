@@ -82,6 +82,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private string FBatchCurrencyCode = string.Empty;
         private decimal FBatchExchangeRateToBase = 1.0m;
         private bool FGLEffectivePeriodChanged = false;
+        private bool FGiftAmountChanged = false;
 
         private List <Int64>FNewDonorsList = new List <long>();
 
@@ -405,7 +406,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ref FMotivationDetail,
                 ShowGiftDetail,
                 FInEditMode,
-                FBatchUnposted);
+                FBatchUnposted,
+                FPetraUtilsObject);
         }
 
         /// <summary>
@@ -1121,21 +1123,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            TTxtNumericTextBox txn = (TTxtNumericTextBox)sender;
-            decimal NewAmount = 0;
-
-            if (txn.NumberValueDecimal == null)
+            if (txtDetailGiftTransactionAmount.NumberValueDecimal == null)
             {
                 return;
             }
-            else
+            else if (txtDetailGiftTransactionAmount.NumberValueDecimal.HasValue)
             {
-                NewAmount = (decimal)txn.NumberValueDecimal;
+                FGiftAmountChanged = true;
+            }
+        }
+
+        private void ProcessGiftAmountChange()
+        {
+            FGiftAmountChanged = false;
+
+            if (txtDetailGiftTransactionAmount.NumberValueDecimal == null)
+            {
+                return;
             }
 
+            decimal NewAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal;
+
             if ((FPreviouslySelectedDetailRow != null)
-                && (FPreviouslySelectedDetailRow.GiftTransactionAmount != NewAmount)
-                && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
+                && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                && (FPreviouslySelectedDetailRow.GiftTransactionAmount != NewAmount))
             {
                 FPreviouslySelectedDetailRow.GiftTransactionAmount = NewAmount;
                 UpdateBaseAmount(true);
@@ -2115,6 +2126,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 || (FBatchRow.BatchNumber != ARow.BatchNumber))
             {
                 return;
+            }
+
+            if (FGiftAmountChanged)
+            {
+                ProcessGiftAmountChange();
             }
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
