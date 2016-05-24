@@ -2870,8 +2870,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 chkDetailConfidentialGiftFlag.Checked = giftDetailRow.ConfidentialGiftFlag;
                 chkDetailChargeFlag.Checked = giftDetailRow.ChargeFlag;
                 chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
-                cmbDetailMethodOfPaymentCode.SetSelectedString(giftDetailRow.MethodOfPaymentCode);
-                cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode);
+                cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment, -1);
+                cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode, -1);
 
                 ToggleTaxDeductible(this, null);
 
@@ -2893,17 +2893,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         cmbDetailCommentTwoType.SetSelectedString(giftDetailRow.CommentTwoType);
                         txtDetailGiftCommentThree.Text = giftDetailRow.GiftCommentThree;
                         cmbDetailCommentThreeType.SetSelectedString(giftDetailRow.CommentThreeType);
-                        FPreviouslySelectedDetailRow.GiftCommentOne = giftDetailRow.GiftCommentOne;
-                        FPreviouslySelectedDetailRow.CommentOneType = giftDetailRow.CommentOneType;
-                        FPreviouslySelectedDetailRow.GiftCommentTwo = giftDetailRow.GiftCommentTwo;
-                        FPreviouslySelectedDetailRow.CommentTwoType = giftDetailRow.CommentTwoType;
-                        FPreviouslySelectedDetailRow.GiftCommentThree = giftDetailRow.GiftCommentThree;
-                        FPreviouslySelectedDetailRow.CommentThreeType = giftDetailRow.CommentThreeType;
                     }
 
                     // only populate amount if a split gift
                     txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
-                    FPreviouslySelectedDetailRow.GiftTransactionAmount = giftDetailRow.GiftTransactionAmount;
 
                     // clear previous validation errors.
                     // otherwise we get an error if the user has changed the control immediately after changing the donor key.
@@ -2924,6 +2917,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         detailRow.GiftTransactionNumber = AGiftTransactionNumber;
                         detailRow.DetailNumber = ++FGift.LastDetailNumber;
                         detailRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
+                        detailRow.MethodOfPaymentCode = FPreviouslySelectedDetailRow.MethodOfPaymentCode;
                         detailRow.ReceiptPrinted = false;
                         detailRow.ReceiptNumber = 0;
 
