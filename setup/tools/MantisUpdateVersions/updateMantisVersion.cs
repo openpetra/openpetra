@@ -177,9 +177,9 @@ namespace Ict.Tools.Mantis.UpdateVersion
                         Console.WriteLine("project " + projectIDs[id]);
                         UpdateVersionsOfProject(session,
                             id,
-                            "Alpha " + releaseVersion.ToString(3),
-                            "Alpha " + devVersion.ToString(3) + " Dev",
-                            "Alpha " + nextVersion.ToString(3));
+                            "Beta1 " + releaseVersion.ToString(3),
+                            "Beta1 " + devVersion.ToString(3) + " Dev",
+                            "Beta1 " + nextVersion.ToString(3));
                     }
                 }
             }
