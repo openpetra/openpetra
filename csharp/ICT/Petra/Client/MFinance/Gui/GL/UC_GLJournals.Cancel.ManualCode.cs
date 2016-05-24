@@ -174,6 +174,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 AJournalRowToCancel.EndEdit();
 
+                FPetraUtilsObject.SetChangedFlag();
+
                 //Need to call save
                 if (FMyForm.SaveChanges())
                 {

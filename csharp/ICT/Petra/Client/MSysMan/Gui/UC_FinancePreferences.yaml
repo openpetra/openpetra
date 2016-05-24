@@ -16,7 +16,7 @@ RootNode:
         grpGiftProcessing:
             Controls: [pnlGiftProcessing]
             Width: 430
-            Height: 80
+            Height: 110
         grpNumberFormatting:
             Controls: [pnlNumberFormatting]
             Label: Number Formatting On Finance Screens
@@ -30,9 +30,9 @@ RootNode:
             List: LedgerNameCurrentUserPermissionList
             Width: 390
         pnlGiftProcessing:
-            Controls: [chkNewDonorWarning, chkAutoSave]
+            Controls: [chkNewDonorWarning, chkAutoSave, chkSplitGiftCopyIncludeComments]
             Width: 410
-            Height: 60
+            Height: 90
         chkNewDonorWarning:
             CheckBoxAttachedLabel: right
             Label: Warning displayed when a gift is entered for a new donor
@@ -40,6 +40,11 @@ RootNode:
         chkAutoSave:
             CheckBoxAttachedLabel: right
             Label: Auto save Gift Batch screen when creating a new gift or gift detail
+            Width: 390
+            Multiline: true
+        chkSplitGiftCopyIncludeComments:
+            CheckBoxAttachedLabel: right
+            Label: Include comment fields when copying the Donor's latest split gift
             Width: 390
             Multiline: true
         pnlNumberFormatting:

@@ -68,6 +68,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         FastReportsWrapper MyFastReportsPlugin;
         String FStatusMsg;
 
+        const string STEWARDSHIP_EMAIL_ADDRESS = "ICHEMAIL";
+
         /// <summary>
         /// Write-only Ledger number property
         /// </summary>
@@ -413,12 +415,21 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         );
                 }
 
+                // Andrea wants this systemj default to be manually added to database when we are ready for a system to send ICH emails
+                if (!TSystemDefaults.IsSystemDefaultDefined(STEWARDSHIP_EMAIL_ADDRESS))
+                {
+                    FStatusMsg += Catalog.GetString("\r\n Stewardship email address not configured in System Defaults.");
+                    return false;
+                }
+
+                String EmailRecipient = TSystemDefaults.GetStringDefault(STEWARDSHIP_EMAIL_ADDRESS);
+
                 String EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
                 EmailSender.AttachFromStream(new MemoryStream(Encoding.ASCII.GetBytes(CsvAttachment)), "Stewardship_" + MyCostCentreCode + ".csv");
                 Boolean SentOk = EmailSender.SendEmail(
                     TUserDefaults.GetStringDefault("SmtpFromAccount"),
                     TUserDefaults.GetStringDefault("SmtpDisplayName"),
-                    "tim.ingham@om.org", //ich@om.org
+                    EmailRecipient, //ich@om.org
                     "Stewardship Report [" + MyCostCentreCode + "] Period end: " + PeriodEnd + " Run#: " + RunNumber,
                     EmailBody);
 

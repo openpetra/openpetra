@@ -662,7 +662,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     Boolean SentOk = EmailSender.SendEmail(
                         TUserDefaults.GetStringDefault("SmtpFromAccount"),
                         TUserDefaults.GetStringDefault("SmtpDisplayName"),
-                        "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
+                        LinkedPartner["EmailAddress"].ToString(),
                         ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
                         EmailBody);
 

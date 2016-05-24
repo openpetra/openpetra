@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FInEditMode = false;
         private bool FTaxDeductiblePercentageEnabled = false;
         private bool FAutoSave = false;
+        private bool FIncludeCommentsSplitGiftCopy = false;
         private ToolTip FDonorInfoToolTip = new ToolTip();
 
         private AGiftRow FGift = null;
@@ -229,6 +230,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // user default to determine if screen should be auto saved when creating a new gift or adding a gift detail
             // (default false)
             FAutoSave = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, false);
+            FIncludeCommentsSplitGiftCopy = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_FILL_COMMENTS_FOR_SPLIT_GIFT, false);
         }
 
         private void InitialiseControls()
@@ -2845,6 +2847,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         if (SplitGift)
                         {
+                            //Copy the comments and comment types for split gifts
+                            if (FIncludeCommentsSplitGiftCopy)
+                            {
+                                txtDetailGiftCommentOne.Text = Row.GiftCommentOne;
+                                cmbDetailCommentOneType.SetSelectedString(Row.CommentOneType);
+                                txtDetailGiftCommentTwo.Text = Row.GiftCommentTwo;
+                                cmbDetailCommentTwoType.SetSelectedString(Row.CommentTwoType);
+                                txtDetailGiftCommentThree.Text = Row.GiftCommentThree;
+                                cmbDetailCommentThreeType.SetSelectedString(Row.CommentThreeType);
+                            }
+
                             // only populate amount if a split gift
                             txtDetailGiftTransactionAmount.NumberValueDecimal = Row.GiftTransactionAmount;
                             CurrentTransaction++;

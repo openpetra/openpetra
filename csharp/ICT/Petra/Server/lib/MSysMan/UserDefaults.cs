@@ -420,12 +420,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
 
             if (ADestinationDT == null)
             {
-                throw new System.ArgumentException("ADestinationDT must not be nil");
+                throw new System.ArgumentException("ADestinationDT must not be null");
             }
 
             if (ASourceDT == null)
             {
-                throw new System.ArgumentException("ASourceDT must not be nil");
+                throw new System.ArgumentException("ASourceDT must not be null");
             }
 
             // DataColumn[] PrimaryKeyColumns = ASourceDT.PrimaryKey;
