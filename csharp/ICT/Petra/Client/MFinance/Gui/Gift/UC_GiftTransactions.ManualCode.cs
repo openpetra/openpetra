@@ -1145,8 +1145,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             decimal NewAmount = (decimal)txtDetailGiftTransactionAmount.NumberValueDecimal;
 
             if ((FPreviouslySelectedDetailRow != null)
-                && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-                && (FPreviouslySelectedDetailRow.GiftTransactionAmount != NewAmount))
+                && (GetBatchRow().BatchStatus == MFinanceConstants.BATCH_UNPOSTED))
             {
                 FPreviouslySelectedDetailRow.GiftTransactionAmount = NewAmount;
                 UpdateBaseAmount(true);
@@ -1875,11 +1874,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DataView giftView = new DataView(FMainDS.AGift);
 
             giftView.RowStateFilter = DataViewRowState.CurrentRows;
-            giftView.RowFilter = String.Format("{0}={1} And {2}<>{3}",
+            giftView.RowFilter = String.Format("{0}={1}",
                 AGiftTable.GetBatchNumberDBName(),
-                FBatchNumber,
-                AGiftTable.GetMethodOfPaymentCodeDBName(),
-                FBatchMethodOfPayment);
+                BatchNumber);
 
             foreach (DataRowView drv in giftView)
             {
