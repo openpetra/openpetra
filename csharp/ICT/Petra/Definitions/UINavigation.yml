@@ -288,7 +288,7 @@ OpenPetra:
                         APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
         CrossLedgerSetup: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance Setup", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
-                CLSetup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true, Label=Setup}
+                CLSetup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
                     ExchangeRates:
                         CorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
                         DailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
@@ -304,7 +304,7 @@ OpenPetra:
                         MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                         MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
                         EmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
-                Ledger: {DontShowNestedTasksAsLinks=true}
+                CLLedger: {DontShowNestedTasksAsLinks=true, Label=Ledger}
                     LedgerSetup:
                         #LedgerSetupShepherd:
                         CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedgerDialog, PermissionsRequired="FINANCE-3", Singleton=true}
