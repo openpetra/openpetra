@@ -254,6 +254,8 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
                                 formData.PartnerKey = PartnerRow.PartnerKey.ToString("0000000000");
+                                formData.PartnerClass = PartnerRow.PartnerClass;
+                                formData.StatusCode = PartnerRow.StatusCode;
                                 formData.Name = Calculations.FormatShortName(PartnerRow.PartnerShortName, eShortNameFormat.eReverseWithoutTitle);
                                 formData.ShortName = PartnerRow.PartnerShortName;
                                 formData.LocalName = PartnerRow.PartnerShortNameLoc;

@@ -212,3 +212,6 @@
         Para26:
             Name: Confidential
             Parameter: 2.0
+        Para27:
+            Name: Receipt Frequency
+            Parameter: 3.0

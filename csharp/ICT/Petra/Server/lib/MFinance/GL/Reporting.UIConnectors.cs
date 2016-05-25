@@ -2087,9 +2087,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    "Recipient.p_partner_short_name_c AS RecipientShortname, " +
                                    "Donor.p_partner_key_n AS DonorKey, " +
                                    "Donor.p_partner_short_name_c AS DonorShortname, " +
-                                   "CASE WHEN GiftDetail.a_comment_one_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_one_c END AS Comment1, " +
-                                   "CASE WHEN GiftDetail.a_comment_two_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_two_c END AS Comment2, " +
-                                   "CASE WHEN GiftDetail.a_comment_three_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_three_c END AS Comment3 " + 
+                                   "CASE WHEN GiftDetail.a_comment_one_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_one_c END AS Comment1, "
+                                   +
+                                   "CASE WHEN GiftDetail.a_comment_two_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_two_c END AS Comment2, "
+                                   +
+                                   "CASE WHEN GiftDetail.a_comment_three_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_three_c END AS Comment3 "
+                                   +
 
                                    "FROM a_gift_detail AS GiftDetail, a_gift AS Gift, a_gift_batch AS GiftBatch, ";
 

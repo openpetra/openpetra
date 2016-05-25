@@ -99,6 +99,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
+            ACalc.AddParameter("ControlSource", "", ReportingConsts.HEADERCOLUMN);
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_donorkey", txtDonor.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);

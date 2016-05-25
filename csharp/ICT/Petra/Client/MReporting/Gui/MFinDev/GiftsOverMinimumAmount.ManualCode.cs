@@ -89,6 +89,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            ACalc.AddParameter("ControlSource", "", ReportingConsts.HEADERCOLUMN);
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();

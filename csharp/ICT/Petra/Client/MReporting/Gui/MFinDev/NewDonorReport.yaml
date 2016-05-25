@@ -129,6 +129,9 @@
         Para8:
             Name: Recipient Key
             Parameter: 2.0
+        Para9:
+            Name: Receipt Frequency
+            Parameter: 3.0
         
         
       

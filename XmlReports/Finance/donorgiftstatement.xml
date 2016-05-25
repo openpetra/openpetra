@@ -75,14 +75,15 @@
 		<calculations>
 		
 			<!-- Select Donors in a given period of time -->
-			<calculation id="SelectDonors" returns="DonorKey, DonorName, DonorClass" returnsFormat="row">
+			<calculation id="SelectDonors" returns="DonorKey, DonorName, DonorClass, ReceiptFrequency" returnsFormat="row">
 				<query>
 					<queryDetail>
 						<value>
 						SELECT DISTINCT
 							gift.p_donor_key_n AS DonorKey,
 							partner.p_partner_short_name_c AS DonorName,
-							partner.p_partner_class_c AS DonorClass
+							partner.p_partner_class_c AS DonorClass,
+                            partner.p_receipt_letter_frequency_c AS ReceiptFrequency
 
 <!--  Inclusion of this recipient_ledger field will cause this donor to be duplicated as many times as they've made
       gifts to different fields. In each case the numbers are duplicated, so it can't be what we want.
@@ -177,14 +178,15 @@
 				</query>
 			</calculation>
 			
-			<calculation id="SelectDonorsTotal" returns="DonorKey, DonorName, DonorClass" returnsFormat="row">
+			<calculation id="SelectDonorsTotal" returns="DonorKey, DonorName, DonorClass, ReceiptFrequency" returnsFormat="row">
 				<query>
 					<queryDetail>
 						<value>
 						SELECT DISTINCT
 							gift.p_donor_key_n AS DonorKey,
 							PUB_p_partner.p_partner_short_name_c AS DonorName,
-							PUB_p_partner.p_partner_class_c AS DonorClass
+							PUB_p_partner.p_partner_class_c AS DonorClass,
+							PUB_p_partner.p_receipt_letter_frequency_c AS ReceiptFrequency
 						FROM
 							PUB_a_gift as gift, 
 							PUB_a_gift_detail as detail,
@@ -788,6 +790,13 @@
 					</queryDetail>                                          
 				</query>
 			</calculation>
+			<calculation id="Receipt Frequency" returnsFormat="text" returns="text">
+				<caption><value text="Receipt Frequency"/></caption>
+				<query>
+					<queryDetail><value variable="ReceiptFrequency"/>
+					</queryDetail>                                          
+				</query>
+			</calculation>
 			<calculation id="Recipient Key" returnsFormat="partnerkey" returns="text">
 				<caption><value text="Recipient Key"/></caption>
 				<query>
@@ -1077,7 +1086,7 @@
 			
 			<level name="DonorLevel">
 				<header>
-					<field whichfield="header 0" pos="0cm" width="19.0cm" calculation="MakeDonorAddress">
+					<field whichfield="header 0" pos="0cm" width="19cm" calculation="MakeDonorAddress">
 						<value text="Donor: "/>
 						<value variable="DonorName"/>
 						<value text="  Partner Key: "/>

@@ -72,7 +72,7 @@
 		<calculations>
 		
 			<!-- Select Donors and Totals in a given period of time -->
-			<calculation id="SelectDonors" returns="DonorKey, ShortName, PartnerClass, Amount" returnsFormat="row">
+			<calculation id="SelectDonors" returns="DonorKey, ShortName, PartnerClass, ReceiptFrequency, Amount" returnsFormat="row">
 				<query>
 					<queryDetail>
 						<value>
@@ -80,6 +80,7 @@
 							gift.p_donor_key_n AS DonorKey,
 							PUB_p_partner.p_partner_short_name_c AS ShortName,
 							PUB_p_partner.p_partner_class_c AS PartnerClass,
+                            PUB_p_partner.p_receipt_letter_frequency_c AS ReceiptFrequency,
 						</value>
 					</queryDetail>
 					<queryDetail condition="eq({param_currency}, Base)">
@@ -154,7 +155,7 @@
                     </queryDetail>
 					<queryDetail>
 						<value>
-						GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
+						GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c, PUB_p_partner.p_receipt_letter_frequency_c
 						HAVING 
 						</value>
 					</queryDetail>
@@ -303,6 +304,14 @@
 					</queryDetail>                                          
 				</query>
 			</calculation>
+			<calculation id="Receipt Frequency" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Receipt Frequency"/></caption>
+				<query>
+					<queryDetail><value variable="ReceiptFrequency"/>
+					</queryDetail>
+				</query>
+			</calculation>
 			<calculation id="Donor Name" 
 					returnsFormat="text" returns="text">
 				<caption><value text="Donor Name"/></caption>
@@ -413,10 +422,10 @@
 			
 			<level name="DonorLevel" identification="DonorKey">
 				<header>
-					<field whichfield="header 0" pos="0cm" width="2.5cm">
+					<field whichfield="header 0" pos="0cm" width="2cm">
 						<value variable="DonorKey" format="partnerkey"/>
 					</field>
-					<field whichfield="header 1" pos="2.5cm" width="15cm" calculation="GetPartnerBestAddress">
+					<field whichfield="header 1" pos="2cm" width="15cm" calculation="GetPartnerBestAddress">
 						<value variable="PartnerClass"/>
 						<value text="     "/>
 						<value variable="ShortName"/>
