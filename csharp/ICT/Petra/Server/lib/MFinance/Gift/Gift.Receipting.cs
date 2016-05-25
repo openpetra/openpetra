@@ -208,7 +208,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (donations.Rows.Count > 0)
                             {
                                 string letter =
-                                    FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
+                                    FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
 
                                 if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
                                 {
@@ -252,6 +252,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ABaseCurrency,
             string AHTMLTemplate,
             string ALedgerCountryCode,
+            Decimal AMinimumAmount,
+            bool AAlwaysPrintNewDonor,
             TDBTransaction ATransaction)
         {
             // get details of the donor, and best address
@@ -325,8 +327,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // Find out which rows should not be included (if they are below minimum amount).
             // Attention: for split gifts check if sum of split gift is below minimum amount (not individual split gift).
             // this check does not need to be done if no minimum amount is requested.
-            if ((AFormLetterFinanceInfo.MinimumAmount > 0)
-                && !AFormLetterFinanceInfo.AlwaysPrintNewDonor)
+            if ((AMinimumAmount > 0)
+                && !AAlwaysPrintNewDonor)
             {
                 decimal TotalGiftBaseAmount = 0;
                 List <DataRow>deletedRows = new List <DataRow>();
@@ -349,8 +351,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         tempDeletedRows.Add(rowGifts);
 
                         // do not print if less than minimum amount
-                        if ((TotalGiftBaseAmount < AFormLetterFinanceInfo.MinimumAmount)
-                            && (TotalGiftBaseAmount > (AFormLetterFinanceInfo.MinimumAmount * (-1))))
+                        if ((TotalGiftBaseAmount < AMinimumAmount)
+                            && (TotalGiftBaseAmount > (AMinimumAmount * (-1))))
                         {
                             // if total of gift (can be split gift) is less than minimum amount then mark all gift details to be removed
                             foreach (DataRow tempDataRow in tempDeletedRows)

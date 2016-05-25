@@ -641,10 +641,11 @@ namespace Ict.Petra.Client.MReporting.Gui
                     FormUtils.WriteToStatusBar("Generate " + ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
                     MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
 
-                    if (ReportEngine.FfastReportInstance.ReportInfo.Description == "Empty")
-                    {
-                        continue; // Don't send an empty report
-                    }
+                    // in OpenSource OpenPetra, we do not have and use the FastReport dlls
+                    // if (ReportEngine.FfastReportInstance.ReportInfo.Description == "Empty")
+                    // {
+                    //    continue; // Don't send an empty report
+                    // }
 
                     ReportStream.Position = 0;
 
