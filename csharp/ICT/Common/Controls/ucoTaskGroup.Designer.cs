@@ -70,6 +70,7 @@ namespace Ict.Common.Controls
             this.nlnGroupTitle.Name = "nlnGroupTitle";
             this.nlnGroupTitle.Size = new System.Drawing.Size(805, 22);
             this.nlnGroupTitle.TabIndex = 2;
+            this.nlnGroupTitle.TabStop = false;
             //
             // flpTaskGroup
             //

@@ -234,7 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         if (AdjustForm.IsDisposed || (AdjustForm.ShowDialog() != DialogResult.OK))
                         {
-                            return;
+                            continue;
                         }
                     }
                     finally

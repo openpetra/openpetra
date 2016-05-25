@@ -345,6 +345,14 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// Return true if any motivation detail code is selected
+        /// </summary>
+        public bool IsAnyMotivationDetailSelected()
+        {
+            return clbMotivationDetail.CheckedItemsCount > 0;
+        }
+
+        /// <summary>
         /// Sets the selected values in the controls, using the parameters loaded from a file
         /// </summary>
         /// <param name="AParameters"></param>

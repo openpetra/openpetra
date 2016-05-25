@@ -60,6 +60,21 @@
 					  AND pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
 					  AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
                 </value></queryDetail>
+                <queryDetail condition="eq({param_start_date_from_notnull},true)"><value>
+						AND psub.p_start_date_d &gt;= {#param_start_date_from#}
+                </value></queryDetail>
+                <queryDetail condition="eq({param_start_date_to_notnull},true)"><value>
+						AND psub.p_start_date_d &lt;= {#param_start_date_to#}
+                </value></queryDetail>
+                <queryDetail condition="eq({param_start_date_to_notnull},false)"><value>
+						AND psub.p_start_date_d &lt;= {#param_today#}
+                </value></queryDetail>
+                <queryDetail condition="eq({param_expiry_date_from_notnull},true)"><value>
+						AND psub.p_expiry_date_d &gt;= {#param_expiry_date_from#}
+                </value></queryDetail>
+                <queryDetail condition="eq({param_expiry_date_to_notnull},true)"><value>
+						AND psub.p_expiry_date_d &lt;= {#param_expiry_date_to#}
+                </value></queryDetail>
                 <queryDetail condition="gt(length({param_exclude_publication}), 1)">
                     <value> AND NOT </value>
                     <value function="csv" text="psub.p_publication_code_c" variable="param_exclude_publication"/>

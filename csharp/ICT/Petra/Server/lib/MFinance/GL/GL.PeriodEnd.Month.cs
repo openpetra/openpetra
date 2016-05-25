@@ -501,7 +501,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 TVerificationResult tvr = new TVerificationResult(
                                     Catalog.GetString("Non Zero Suspense Account found"),
                                     String.Format(Catalog.GetString("Suspense account {0} has the balance value {1:F2}. It is required to be zero."),
-                                        suspenseAccountInfo.ToString(),
+                                        aSuspenseAccountRow.SuspenseAccountCode,
                                         get_GLMp_Info.ActualBase), "",
                                     TPeriodEndErrorAndStatusCodes.PEEC_07.ToString(), TResultSeverity.Resv_Critical);
 

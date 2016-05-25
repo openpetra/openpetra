@@ -169,8 +169,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 // otherwise the report generator complains about the missing parameter
                 // *NOTUSED* is used as an invalid value, there is no account with this name
                 ACalculator.AddParameter("param_account_list_title", SelectedAccountCodes);
-                ACalculator.AddParameter("param_account_code_start", "*NOTUSED*");
-                ACalculator.AddParameter("param_account_code_end", "*NOTUSED*");
+                ACalculator.AddStringParameter("param_account_code_start", "*NOTUSED*");
+                ACalculator.AddStringParameter("param_account_code_end", "*NOTUSED*");
                 ACalculator.AddParameter("param_rgrAccounts", "AccountList");
             }
             else
@@ -178,8 +178,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_account_list_title",
                     cmbFromAccountCode.GetSelectedString() + " To " + cmbToAccountCode.GetSelectedString());
                 ACalculator.AddParameter("param_account_codes", "*NOTUSED*");
-                ACalculator.AddParameter("param_account_code_start", cmbFromAccountCode.GetSelectedString());
-                ACalculator.AddParameter("param_account_code_end", cmbToAccountCode.GetSelectedString());
+                ACalculator.AddStringParameter("param_account_code_start", cmbFromAccountCode.GetSelectedString());
+                ACalculator.AddStringParameter("param_account_code_end", cmbToAccountCode.GetSelectedString());
                 ACalculator.AddParameter("param_rgrAccounts", "AccountRange");
 
                 VerificationResult = TStringChecks.FirstLesserOrEqualThanSecondString(
@@ -224,8 +224,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 // otherwise the report generator complains about the missing parameter
                 // NOTUSED is used as an invalid value, there is no Cost Centre with this name
                 ACalculator.AddParameter("param_cost_centre_list_title", CostCentreListTitle);
-                ACalculator.AddParameter("param_cost_centre_code_start", "*NOTUSED*");
-                ACalculator.AddParameter("param_cost_centre_code_end", "*NOTUSED*");
+                ACalculator.AddStringParameter("param_cost_centre_code_start", "*NOTUSED*");
+                ACalculator.AddStringParameter("param_cost_centre_code_end", "*NOTUSED*");
                 ACalculator.AddParameter("param_rgrCostCentres", "CostCentreList");
             }
             else
@@ -233,8 +233,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_cost_centre_list_title",
                     cmbFromCostCentre.GetSelectedString() + " To " + cmbToCostCentre.GetSelectedString());
                 ACalculator.AddParameter("param_cost_centre_codes", "*NOTUSED*");
-                ACalculator.AddParameter("param_cost_centre_code_start", cmbFromCostCentre.GetSelectedString());
-                ACalculator.AddParameter("param_cost_centre_code_end", cmbToCostCentre.GetSelectedString());
+                ACalculator.AddStringParameter("param_cost_centre_code_start", cmbFromCostCentre.GetSelectedString());
+                ACalculator.AddStringParameter("param_cost_centre_code_end", cmbToCostCentre.GetSelectedString());
 
                 VerificationResult = TStringChecks.FirstLesserOrEqualThanSecondString(
                     cmbFromCostCentre.GetSelectedString(),

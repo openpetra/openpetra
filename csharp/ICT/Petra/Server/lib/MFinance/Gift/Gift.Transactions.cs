@@ -990,9 +990,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="ADonorPartnerKey"></param>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="ALatestUnpostedGiftDateEntered"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GiftBatchTDSAGiftDetailTable LoadDonorLastGift(Int64 ADonorPartnerKey, Int32 ALedgerNumber)
+        public static GiftBatchTDSAGiftDetailTable LoadDonorLastPostedGift(Int64 ADonorPartnerKey,
+            Int32 ALedgerNumber,
+            DateTime ALatestUnpostedGiftDateEntered)
         {
             #region Validate Arguments
 
@@ -1018,8 +1021,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                    " FROM a_gift AS Gift" +
                                    " WHERE Gift.a_ledger_number_i = " + ALedgerNumber +
                                    "  AND Gift.p_donor_key_n = " + ADonorPartnerKey +
-                                   " ORDER BY Gift.a_date_entered_d DESC" +
-                                   " LIMIT 1;";
+                                   "  AND Gift.a_date_entered_d > '" + ALatestUnpostedGiftDateEntered.ToString("yyyy/MM/dd") + "'" +
+                                   " ORDER BY Gift.a_date_entered_d DESC, Gift.a_gift_transaction_number_i DESC" +
+                                   " LIMIT 1";
 
                     DataTable GiftTable = DBAccess.GDBAccessObj.SelectDT(Query, AGiftTable.GetTableDBName(), Transaction);
 

@@ -599,9 +599,30 @@ namespace Ict.Petra.Client.MReporting.Gui
             // I need to ensure that the CurrectDirectory is somewhere writable:
             String prevCurrentDir = Directory.GetCurrentDirectory();
 
-            Directory.SetCurrentDirectory(
-                Path.Combine(Environment.GetFolderPath(
-                        Environment.SpecialFolder.CommonDocuments), "OpenPetraOrg"));
+
+            //Get a path in the Public Documents folder
+            String newDir = Path.Combine(Environment.GetFolderPath(
+                    Environment.SpecialFolder.CommonDocuments), "OpenPetraOrg");
+
+            //Check it exists, and if not create it
+            if (!Directory.Exists(newDir))
+            {
+                try
+                {
+                    Directory.CreateDirectory(newDir);
+                }
+                catch (Exception ex)
+                {
+                    //could not create the path so return useful debugging information:
+                    SendReport += Catalog.GetString("\r\nError - could not create directory: " + newDir);
+                    SendReport += Catalog.GetString("\r\n" + newDir);
+                    SendReport += ex.Message;
+
+                    return SendReport;
+                }
+            }
+
+            Directory.SetCurrentDirectory(newDir);
 
             //
             // I need to find the email addresses for the linked partners I'm sending to.
@@ -620,10 +641,11 @@ namespace Ict.Petra.Client.MReporting.Gui
                     FormUtils.WriteToStatusBar("Generate " + ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
                     MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
 
-                    if (ReportStream.Position < 1000)
-                    {
-                        continue; // Don't send an empty report
-                    }
+                    // in OpenSource OpenPetra, we do not have and use the FastReport dlls
+                    // if (ReportEngine.FfastReportInstance.ReportInfo.Description == "Empty")
+                    // {
+                    //    continue; // Don't send an empty report
+                    // }
 
                     ReportStream.Position = 0;
 
@@ -662,7 +684,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     Boolean SentOk = EmailSender.SendEmail(
                         TUserDefaults.GetStringDefault("SmtpFromAccount"),
                         TUserDefaults.GetStringDefault("SmtpDisplayName"),
-                        "tim.ingham@om.org", //LinkedPartner["EmailAddress"]
+                        LinkedPartner["EmailAddress"].ToString(),
                         ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
                         EmailBody);
 

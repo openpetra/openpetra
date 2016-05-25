@@ -71,8 +71,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             dtpDateOfSendingCopy.Date = DateTime.Now;
 
-            int offset = chkFreeSubscriptionsOnly.Top - (pnlDetails.Height - chkFreeSubscriptionsOnly.Height - 6);
-            chkFreeSubscriptionsOnly.Top -= offset;
+            int offset = chkIncludeActiveSubscriptionsOnly.Top - (pnlDetails.Height - chkIncludeActiveSubscriptionsOnly.Height - 6);
+            chkIncludeActiveSubscriptionsOnly.Top -= offset;
             lblDateOfSendingCopy.Top -= offset;
             dtpDateOfSendingCopy.Top -= offset;
 
@@ -102,6 +102,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
 
             rbtSingle.Checked = true;
+            chkIncludeActiveSubscriptionsOnly.Checked = true;
 
             // enable autofind in list for first character (so the user can press character to find list entry)
             // from Sep 2015 this is handled automatically by the code generator
@@ -116,6 +117,51 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                     Catalog.GetString("Please select at least one subscription, to avoid listing the whole database!"),
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
+            if ((dtpDateOfSendingCopy.Date == null) && (AReportAction == TReportActionEnum.raGenerate))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("Enter a valid date"),
+                    Catalog.GetString("Please enter a valid date for 'Date Of Sending Copy'."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+
+            if (dtpStartDateFrom.Date != null)
+            {
+                ACalc.AddParameter("param_start_date_from_notnull", true);
+            }
+            else
+            {
+                ACalc.AddParameter("param_start_date_from_notnull", false);
+            }
+
+            if (dtpStartDateTo.Date != null)
+            {
+                ACalc.AddParameter("param_start_date_to_notnull", true);
+            }
+            else
+            {
+                ACalc.AddParameter("param_start_date_to_notnull", false);
+            }
+
+            if (dtpExpiryDateFrom.Date != null)
+            {
+                ACalc.AddParameter("param_expiry_date_from_notnull", true);
+            }
+            else
+            {
+                ACalc.AddParameter("param_expiry_date_from_notnull", false);
+            }
+
+            if (dtpExpiryDateTo.Date != null)
+            {
+                ACalc.AddParameter("param_expiry_date_to_notnull", true);
+            }
+            else
+            {
+                ACalc.AddParameter("param_expiry_date_to_notnull", false);
             }
         }
 

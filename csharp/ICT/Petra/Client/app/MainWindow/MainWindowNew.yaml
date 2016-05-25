@@ -21,6 +21,7 @@ RootNode:
         actClose: {Label=&Close, ActionId=eClose, Tooltip=Closes this window, Image=Close.ico}
         actAbout: {Label=&About OpenPetra, ActionId=eHelpAbout, Image: PetraInformation.ico}
         actHelpImproveTranslations: {ActionClick=HelpImproveTranslations}
+        actKeyboardShortcuts: {Label=&Keyboard Shortcuts, ActionId=eKeyboardShortcuts}
     Controls:
         pnlContent:
             Controls: [pnlTaskArea, lstFolders]
@@ -67,7 +68,8 @@ RootNode:
         mniHelp: 
             Label: &Help
             Order: AlwaysLast
-            mniHelpPetraHelp: {Label=&Petra Help, ActionId=eHelp}
+            mniHelpPetraHelp: {Label=&OpenPetra Help, ActionId=eHelp, Image: Help2.ico}
+            mniHelpKeyboardShortcuts: {Label=&Keyboard Shortcuts, Action=actKeyboardShortcuts}
             mniSeparator: {Label=-}
             mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport}
             mniSeparator: {Label=-}

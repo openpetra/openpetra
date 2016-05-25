@@ -50,11 +50,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Manage the overlay
         /// </summary>
-        public static void SetTextBoxOverlayOnKeyMinistryCombo(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, bool AShowGiftDetail,
-            TCmbAutoPopulated ACmbKeyMinistries, TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationDetail, bool AInEditModeFlag, bool ABatchUnpostedFlag, bool AReadComboValue = false)
+        public static void SetTextBoxOverlayOnKeyMinistryCombo(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            bool AShowGiftDetail,
+            TCmbAutoPopulated ACmbKeyMinistries,
+            TCmbAutoPopulated ACmbMotivationDetailCode,
+            TextBox ATxtDetailRecipientKeyMinistry,
+            ref string AMotivationDetail,
+            bool AInEditModeFlag,
+            bool ABatchUnpostedFlag,
+            bool AReadComboValue = false,
+            TFrmPetraEditUtils APetraUtilsObject = null)
         {
-            ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AShowGiftDetail);
+            ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AShowGiftDetail, APetraUtilsObject);
 
             // Always enabled initially. Combobox may be diabled later once populated.
             ACmbKeyMinistries.Enabled = true;
@@ -739,9 +746,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// OnEndEditMode
         /// </summary>
-        public static void OnEndEditMode(GiftBatchTDSAGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationGroupCode, TCmbAutoPopulated ACmbMotivationDetailCode, TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationGroup, ref string AMotivationDetail, bool AShowGiftDetail, bool AInEditModeFlag, bool ABatchUnpostedFlag)
+        public static void OnEndEditMode(GiftBatchTDSAGiftDetailRow ACurrentDetailRow,
+            TCmbAutoPopulated ACmbKeyMinistries,
+            TCmbAutoPopulated ACmbMotivationGroupCode,
+            TCmbAutoPopulated ACmbMotivationDetailCode,
+            TextBox ATxtDetailRecipientKeyMinistry,
+            ref string AMotivationGroup,
+            ref string AMotivationDetail,
+            bool AShowGiftDetail,
+            bool AInEditModeFlag,
+            bool ABatchUnpostedFlag,
+            TFrmPetraEditUtils APetraUtilsObject)
         {
             if (!ATxtDetailRecipientKeyMinistry.Visible)
             {
@@ -752,7 +767,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     ATxtDetailRecipientKeyMinistry,
                     ref AMotivationDetail,
                     AInEditModeFlag,
-                    ABatchUnpostedFlag);
+                    ABatchUnpostedFlag,
+                    false,
+                    APetraUtilsObject);
             }
         }
 
@@ -998,7 +1015,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private static void ResetMotivationDetailCodeFilter(TCmbAutoPopulated ACmbMotivationDetailCode,
             ref string AMotivationDetail,
-            bool AShowGiftDetail)
+            bool AShowGiftDetail,
+            TFrmPetraEditUtils APetraUtilsObject = null)
         {
             if ((ACmbMotivationDetailCode.Count == 0) && (ACmbMotivationDetailCode.Filter != null)
                 && (!ACmbMotivationDetailCode.Filter.Contains("1 = 2")))
@@ -1033,7 +1051,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ACmbMotivationDetailCode.Filter = string.Empty;
             }
 
-            ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+            //Update the combo
+            try
+            {
+                if (APetraUtilsObject != null)
+                {
+                    APetraUtilsObject.SuppressChangeDetection = true;
+                }
+
+                ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+            }
+            finally
+            {
+                if (APetraUtilsObject != null)
+                {
+                    APetraUtilsObject.SuppressChangeDetection = false;
+                }
+            }
+
             ACmbMotivationDetailCode.RefreshLabel();
         }
 

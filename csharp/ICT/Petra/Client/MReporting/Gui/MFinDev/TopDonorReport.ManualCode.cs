@@ -52,6 +52,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
         }
 
+        private void InitializeManualCode()
+        {
+            txtRecipient.PartnerClass = "WORKER,UNIT,FAMILY";
+        }
+
         private void DonorTypeChanged(object Sender, EventArgs e)
         {
             if ((rbtTopDonor.Checked)
@@ -101,6 +106,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     txtPercentage.NumberValueInt = Convert.ToInt32(txtToPercentage.Text);
                     txtToPercentage.NumberValueInt = TmpNumber;
                 }
+            }
+
+            if (!ucoMotivationCriteria.IsAnyMotivationDetailSelected())
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No Motivation Detail selected"),
+                    Catalog.GetString("Please select at least one Motivation Detail."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }
         }
 

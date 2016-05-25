@@ -626,7 +626,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (FCurrentPartner.PartnerKey > 0)
                     {
                         // if partner key is given then search for exactly that Partner
-                        result = TRemote.MPartner.Partner.WebConnectors.FindPartners(FCurrentPartner.PartnerKey);
+                        result = TRemote.MPartner.Partner.WebConnectors.FindPartners(FCurrentPartner.PartnerKey, true);
                     }
                     else if (BestLocation != null)
                     {

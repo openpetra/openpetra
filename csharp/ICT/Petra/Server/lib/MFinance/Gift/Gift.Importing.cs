@@ -1729,9 +1729,15 @@ namespace Ict.Petra.Server.MFinance.Gift
             Field = AImportLine.Substring(22, 10);
             isNumeric &= Int64.TryParse(Field, out RecipientKey);
 
-            Int64 MailCode;
-            Field = AImportLine.Substring(32, 6);
-            isNumeric &= Int64.TryParse(Field, out MailCode);
+            String MailCode = AImportLine.Substring(32, 6);
+
+            //
+            // "888888" Is not to be seen as a "real" mailing code.
+            // If I see this, I'll use blank instead.
+            if (MailCode == "888888")
+            {
+                MailCode = "";
+            }
 
             Int64 intAmount;
             Field = AImportLine.Substring(39, 10);
@@ -1773,7 +1779,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             AgiftDetails.DetailNumber = 1;
             AgiftDetails.GiftTransactionAmount = Amount;
             AgiftDetails.GiftAmount = GLRoutines.Divide(Amount, AgiftBatch.ExchangeRateToBase);      // amount in ledger currency
-            AgiftDetails.MailingCode = MailCode.ToString();
+            AgiftDetails.MailingCode = MailCode;
 
             if (AIntlRateToBase > 0.0m)
             {

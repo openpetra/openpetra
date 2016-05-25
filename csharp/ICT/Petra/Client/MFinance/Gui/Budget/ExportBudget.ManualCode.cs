@@ -192,9 +192,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     MessageBoxIcon.Error);
                 return;
             }
-            else if (!FExportFileName.EndsWith(".csv", StringComparison.CurrentCultureIgnoreCase))
+            else if (!FExportFileName.EndsWith(".csv",
+                         StringComparison.CurrentCultureIgnoreCase) && !FExportFileName.EndsWith(".txt", StringComparison.CurrentCultureIgnoreCase))
             {
                 FExportFileName += ".csv";
+                txtFilename.Text = FExportFileName;
             }
 
             if (!Directory.Exists(Path.GetDirectoryName(FExportFileName)))
@@ -369,8 +371,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.Filter = "txt files (*.txt)|*.txt|All files (*.*)|*.*";
-            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.Filter = "Text Files (*.txt)|*.txt|Delimited Files (*.csv)|*.csv";
+            saveFileDialog1.FilterIndex = 3;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)

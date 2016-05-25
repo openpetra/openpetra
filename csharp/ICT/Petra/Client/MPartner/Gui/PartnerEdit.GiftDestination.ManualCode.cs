@@ -160,8 +160,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                         new object[] { AEligibleCommitmentRow.SiteKey, AEligibleCommitmentRow.Key });
                 }
 
-                CompareCommitmentToGiftDestinations(RowState, AEligibleCommitmentRow, OriginalCommitmentRow,
-                    ref GiftDestinationWhichCanBeModified, ref GiftDestinationWhichCanBeDeactivated, ref ActiveGiftDestinationsWhichCanBeEnded);
+                // for a modified row... only changes to recieving field, start data and end date can update the Gift Destination
+                if ((RowState == DataRowState.Modified)
+                    && (OriginalCommitmentRow.ReceivingField == AEligibleCommitmentRow.ReceivingField)
+                    && (OriginalCommitmentRow.StartOfCommitment == AEligibleCommitmentRow.StartOfCommitment)
+                    && (OriginalCommitmentRow.EndOfCommitment == AEligibleCommitmentRow.EndOfCommitment))
+                {
+                    return;
+                }
+                else
+                {
+                    CompareCommitmentToGiftDestinations(RowState, AEligibleCommitmentRow, OriginalCommitmentRow,
+                        ref GiftDestinationWhichCanBeModified, ref GiftDestinationWhichCanBeDeactivated, ref ActiveGiftDestinationsWhichCanBeEnded);
+                }
             }
 
             DealWithPotentialGiftDestinationUpdates(RowState, AEligibleCommitmentRow, GiftDestinationWhichCanBeModified,
@@ -177,15 +188,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             ref PPartnerGiftDestinationRow AGiftDestinationWhichCanBeDeactivated,
             ref List <PPartnerGiftDestinationRow>AActiveGiftDestinationsWhichCanBeEnded)
         {
-            // only changes to recieving field, start data and end date can update the Gift Destination
-            if ((ARowState == DataRowState.Modified)
-                && (AOriginalCommitmentRow.ReceivingField == AEligibleCommitmentRow.ReceivingField)
-                && (AOriginalCommitmentRow.StartOfCommitment == AEligibleCommitmentRow.StartOfCommitment)
-                && (AOriginalCommitmentRow.EndOfCommitment == AEligibleCommitmentRow.EndOfCommitment))
-            {
-                return;
-            }
-
             bool Repeat = true;
 
             while (Repeat)

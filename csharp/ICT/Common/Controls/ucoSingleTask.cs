@@ -359,6 +359,17 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// return true if the task is selected
+        /// </summary>
+        public bool IsSelected
+        {
+            get
+            {
+                return FTaskSelected;
+            }
+        }
+
         #endregion
 
         #region Event Handlers
@@ -378,16 +389,28 @@ namespace Ict.Common.Controls
         #region Public Methods
 
         /// <summary>
+        /// Sets the focus to this task.  This results in the task being selelcted and other tasks being de-selected.
+        /// </summary>
+        public void FocusTask()
+        {
+            // This will fire the GotFocus event
+            this.llbTaskTitle.Focus();
+        }
+
+        /// <summary>
         /// Selects (highlights) the Task.
         /// </summary>
         public void SelectTask()
         {
-            pnlBackground.BorderColor = System.Drawing.Color.FromArgb(125, 162, 206);
+            if (!FTaskSelected)
+            {
+                pnlBackground.BorderColor = System.Drawing.Color.FromArgb(125, 162, 206);
 
-            pnlBackground.GradientStartColor = System.Drawing.Color.FromArgb(220, 235, 252);
-            pnlBackground.GradientEndColor = System.Drawing.Color.FromArgb(193, 219, 252);
+                pnlBackground.GradientStartColor = System.Drawing.Color.FromArgb(220, 235, 252);
+                pnlBackground.GradientEndColor = System.Drawing.Color.FromArgb(193, 219, 252);
+            }
 
-            FTaskSelected = false;
+            FTaskSelected = true;
         }
 
         /// <summary>
@@ -395,10 +418,13 @@ namespace Ict.Common.Controls
         /// </summary>
         public void DeselectTask()
         {
-            pnlBackground.BorderColor = System.Drawing.Color.Transparent;
+            if (FTaskSelected)
+            {
+                pnlBackground.BorderColor = System.Drawing.Color.Transparent;
 
-            pnlBackground.GradientStartColor = System.Drawing.Color.Transparent;
-            pnlBackground.GradientEndColor = System.Drawing.Color.Transparent;
+                pnlBackground.GradientStartColor = System.Drawing.Color.Transparent;
+                pnlBackground.GradientEndColor = System.Drawing.Color.Transparent;
+            }
 
             FTaskSelected = false;
         }
@@ -422,14 +448,7 @@ namespace Ict.Common.Controls
 
         void TaskClick(object sender, EventArgs e)
         {
-            SelectTask();
-
-            FTaskSelected = true;
-
-            if (TaskSelected != null)
-            {
-                TaskSelected(this, null);
-            }
+            this.llbTaskTitle.Focus();
 
             if (FSingleClickAnywhereMeansTaskClicked)
             {
@@ -466,6 +485,16 @@ namespace Ict.Common.Controls
             if (!FTaskSelected)
             {
                 pnlBackground.BorderColor = System.Drawing.Color.Transparent;
+            }
+        }
+
+        void TaskTitleGotFocus(object sender, EventArgs e)
+        {
+            SelectTask();
+
+            if (TaskSelected != null)
+            {
+                TaskSelected(this, e);
             }
         }
 

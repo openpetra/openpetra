@@ -95,13 +95,19 @@
         Para1:
             Name: Gift Date
             Parameter: 2.0
-        Para3:
+        Para2:
             Name: Gift Recipient
             Parameter: 8.0
-        Para4:
+        Para3:
             Name: Total Gifts
             Parameter: 2.5
-        Para6:
+        Para4:
             Name: Motivation Detail
             Parameter: 2.0
+        Para5:
+            Name: Gift Recipient Key
+            Parameter: 2.0
+        Para6:
+            Name: Receipt Frequency
+            Parameter: 3.0
       

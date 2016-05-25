@@ -662,7 +662,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 ABatchRow newBatchRow = mainDS.ABatch[0];
                 int gLBatchNumber = newBatchRow.BatchNumber;
 
-                ALedgerRow ledgerRow = (ALedgerRow)postingDS.ALedger.Rows[0];
+                ALedgerRow ledgerRow = (ALedgerRow)mainDS.ALedger.Rows[0];
 
                 //Create a new journal in the Batch
                 //Run gl1120o.p
@@ -1128,7 +1128,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                             mainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
                             GLBatchTDSAccess.SubmitChanges(mainDS);
-                            ALedgerAccess.SubmitChanges(postingDS.ALedger, ADBTransaction);
 
                             // refresh cached ICHStewardship table
                             TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(

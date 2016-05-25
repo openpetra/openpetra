@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: New Donor Report
     WindowWidth: 700
-    WindowHeight: 530
+    WindowHeight: 625
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\newdonorreport.xml, common.xml]
@@ -22,8 +22,9 @@
             Label: GeneralSettings
             Controls:
                 Row0: [lblLedger]
-                Row1: [grpDateSelection, rgrSorting]
-                Row2: [ucoMotivationCriteria]
+                Row1: [grpSelection]
+                Row2: [rgrSorting]
+                Row3: [ucoMotivationCriteria]
             Stretch: horizontally
         tpgColumns:
             Label: Columns
@@ -33,17 +34,22 @@
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
             Stretch: horizontally
             Height: 280
-            ColSpan: 2
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill
             ParameterName: param_partner_source
-        grpDateSelection:
+        grpSelection:
             Label: Selection
-            Controls: [dtpStartDate, dtpEndDate, txtMinimumAmount, cmbCurrency]
+            Controls: 
+                Row0: [dtpStartDate, dtpEndDate]
+                Row1: [txtMinimumAmount, cmbCurrency]
+                Row2: [rgrRecipientSelection]
+                Row3: [rgrDonorSelection]
         rgrSorting:
             Label: Sort by
             Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
+            ControlsOrientation: horizontal
+
 
         lblLedger:
             Label: Ledger
@@ -70,6 +76,33 @@
         rbtAmount:
             Label: Gift Amount
             ParameterValue: Amount
+
+        rgrRecipientSelection:
+            Controls: [rbtAllRecipients, rbtRecipient]
+            ControlsOrientation: horizontal
+            ColSpan: 2
+            Stretch: horizontally
+        rbtAllRecipients:
+            Label: All Recipients
+        rbtRecipient:
+            Label: One Recipient
+            Controls: [txtRecipient]
+        txtRecipient:
+            Type: PartnerKey
+            NoLabel: true
+        rgrDonorSelection:
+            Controls: [rbtAllPartners, rbtExtract]
+            ControlsOrientation: horizontal
+            ColSpan: 2
+            Stretch: horizontally
+        rbtAllPartners:
+            Label: All Partners
+        rbtExtract:
+            Label: From Extract
+            Controls: [txtExtract]
+        txtExtract:
+            NoLabel: true
+            Type: Extract
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
@@ -96,6 +129,9 @@
         Para8:
             Name: Recipient Key
             Parameter: 2.0
+        Para9:
+            Name: Receipt Frequency
+            Parameter: 3.0
         
         
       

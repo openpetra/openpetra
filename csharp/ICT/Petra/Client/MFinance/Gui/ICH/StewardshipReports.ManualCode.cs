@@ -68,6 +68,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         FastReportsWrapper MyFastReportsPlugin;
         String FStatusMsg;
 
+        const string STEWARDSHIP_EMAIL_ADDRESS = "ICHEMAIL";
+
         /// <summary>
         /// Write-only Ledger number property
         /// </summary>
@@ -76,6 +78,13 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             set
             {
                 FLedgerNumber = value;
+
+                //
+                // I've been getting some grief from cached tables, so I'll mark them as being "dirty" before I do anything else:
+
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, FLedgerNumber);
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber);
+
 
                 FLedgerRow =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
@@ -122,24 +131,11 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             if ((cmbReportPeriod.SelectedIndex > -1) && (cmbYearEnding.SelectedIndex > -1))
             {
-                DateTime YearEnding;
-
-                if (DateTime.TryParse(cmbYearEnding.GetSelectedDescription(), out YearEnding))
-                {
-                    DateTime YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
-
-                    TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-                        cmbReportPeriod.GetSelectedInt32(),
-                        YearStart.ToShortDateString(),
-                        YearEnding.ToShortDateString());
-                }
-                else
-                {
-                    TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-                        cmbReportPeriod.GetSelectedInt32(),
-                        null,
-                        null);
-                }
+                Int32 accountingYear = cmbYearEnding.GetSelectedInt32();
+                TFinanceControls.InitialiseICHStewardshipList(
+                    cmbICHNumber, FLedgerNumber,
+                    cmbYearEnding.GetSelectedInt32(),
+                    cmbReportPeriod.GetSelectedInt32());
 
                 cmbICHNumber.SelectedIndex = 0;
             }
@@ -413,12 +409,21 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         );
                 }
 
+                // Andrea wants this systemj default to be manually added to database when we are ready for a system to send ICH emails
+                if (!TSystemDefaults.IsSystemDefaultDefined(STEWARDSHIP_EMAIL_ADDRESS))
+                {
+                    FStatusMsg += Catalog.GetString("\r\n Stewardship email address not configured in System Defaults.");
+                    return false;
+                }
+
+                String EmailRecipient = TSystemDefaults.GetStringDefault(STEWARDSHIP_EMAIL_ADDRESS);
+
                 String EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
                 EmailSender.AttachFromStream(new MemoryStream(Encoding.ASCII.GetBytes(CsvAttachment)), "Stewardship_" + MyCostCentreCode + ".csv");
                 Boolean SentOk = EmailSender.SendEmail(
                     TUserDefaults.GetStringDefault("SmtpFromAccount"),
                     TUserDefaults.GetStringDefault("SmtpDisplayName"),
-                    "tim.ingham@om.org", //ich@om.org
+                    EmailRecipient, //ich@om.org
                     "Stewardship Report [" + MyCostCentreCode + "] Period end: " + PeriodEnd + " Run#: " + RunNumber,
                     EmailBody);
 

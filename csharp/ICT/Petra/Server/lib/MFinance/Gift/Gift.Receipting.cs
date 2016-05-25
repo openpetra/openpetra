@@ -135,17 +135,28 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             // first get all donors in the given date range
                             SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
 
-                            OdbcParameter[] parameters = new OdbcParameter[5];
+                            OdbcParameter[] parameters = new OdbcParameter[6];
                             parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
                             parameters[0].Value = ALedgerNumber;
                             parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
                             parameters[1].Value = AStartDate;
                             parameters[2] = new OdbcParameter("EndDate", OdbcType.Date);
                             parameters[2].Value = AEndDate;
-                            parameters[3] = new OdbcParameter("Frequency", OdbcType.VarChar);
-                            parameters[3].Value = AFrequency;
-                            parameters[4] = new OdbcParameter("Extract", OdbcType.VarChar);
-                            parameters[4].Value = AExtract;
+                            parameters[3] = new OdbcParameter("IgnoreFrequency", OdbcType.Bit);
+
+                            if (AFrequency == "")
+                            {
+                                parameters[3].Value = true;
+                            }
+                            else
+                            {
+                                parameters[3].Value = false;
+                            }
+
+                            parameters[4] = new OdbcParameter("Frequency", OdbcType.VarChar);
+                            parameters[4].Value = AFrequency;
+                            parameters[5] = new OdbcParameter("Extract", OdbcType.VarChar);
+                            parameters[5].Value = AExtract;
 
                             donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
 
@@ -197,7 +208,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (donations.Rows.Count > 0)
                             {
                                 string letter =
-                                    FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, Transaction);
+                                    FormatLetter(donorKey, donorName, donations, BaseCurrency, AHTMLTemplate, LocalCountryCode, -1, true, Transaction);
 
                                 if (TFormLettersTools.AttachNextPage(ref ResultDocument, letter))
                                 {
@@ -241,6 +252,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string ABaseCurrency,
             string AHTMLTemplate,
             string ALedgerCountryCode,
+            Decimal AMinimumAmount,
+            bool AAlwaysPrintNewDonor,
             TDBTransaction ATransaction)
         {
             // get details of the donor, and best address
@@ -310,6 +323,56 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             string prevCurrency = String.Empty;
             string prevgifttype = string.Empty;
             DateTime prevDateEntered = DateTime.MaxValue;
+
+            // Find out which rows should not be included (if they are below minimum amount).
+            // Attention: for split gifts check if sum of split gift is below minimum amount (not individual split gift).
+            // this check does not need to be done if no minimum amount is requested.
+            if ((AMinimumAmount > 0)
+                && !AAlwaysPrintNewDonor)
+            {
+                decimal TotalGiftBaseAmount = 0;
+                List <DataRow>deletedRows = new List <DataRow>();
+                List <DataRow>tempDeletedRows = new List <DataRow>();
+
+                foreach (DataRow rowGifts in ADonations.Rows)
+                {
+                    decimal BaseAmount = Convert.ToDecimal(rowGifts["AmountInBaseCurrency"]);
+                    Int32 DetailNumber = Convert.ToInt32(rowGifts["DetailNumber"]);
+
+                    if (DetailNumber > 1)
+                    {
+                        // part of split gift
+                        TotalGiftBaseAmount += BaseAmount;
+                        tempDeletedRows.Add(rowGifts);
+                    }
+                    else if (DetailNumber == 1)
+                    {
+                        TotalGiftBaseAmount += BaseAmount;
+                        tempDeletedRows.Add(rowGifts);
+
+                        // do not print if less than minimum amount
+                        if ((TotalGiftBaseAmount < AMinimumAmount)
+                            && (TotalGiftBaseAmount > (AMinimumAmount * (-1))))
+                        {
+                            // if total of gift (can be split gift) is less than minimum amount then mark all gift details to be removed
+                            foreach (DataRow tempDataRow in tempDeletedRows)
+                            {
+                                deletedRows.Add(tempDataRow);
+                            }
+                        }
+
+                        // now reset total amount and empty temporary table
+                        TotalGiftBaseAmount = 0;
+                        tempDeletedRows.Clear();
+                    }
+                }
+
+                // now remove those rows from the original list
+                foreach (DataRow dataRow in deletedRows)
+                {
+                    ADonations.Rows.Remove(dataRow);
+                }
+            }
 
             foreach (DataRow rowGifts in ADonations.Rows)
             {

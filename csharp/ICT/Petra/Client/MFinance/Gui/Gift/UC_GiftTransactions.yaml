@@ -150,7 +150,7 @@ RootNode:
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         txtDetailRecipientKeyMinistry: {Label=&Key Ministry}
-        txtDetailGiftTransactionAmount: {Label=&Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
+        txtDetailGiftTransactionAmount: {Label=&Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged, Validation=true}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if the gift is to remain confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?, ActionClick=ToggleTaxDeductible}
         txtDetailGiftCommentOne: {Label=Comment &1, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}

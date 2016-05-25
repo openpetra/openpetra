@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime FCurrentEffectiveDate;
         private int FCurrentLedgerYear;
         private int FCurrentLedgerPeriod;
+        private bool FInactiveValuesWarningOnGLPosting = false;
 
         /// <summary>
         /// load the batches into the grid
@@ -523,21 +524,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void RunOnceOnParentActivationManual()
         {
-            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
-            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
-
-            LoadBatchesForCurrentYear();
-
-            txtDetailBatchControlTotal.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
-
-            SetInitialFocus();
-
-            // Select the Journal tab if the screen opener specified a Journal Number
-            TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
-
-            if (myParentForm.InitialBatchFound && (myParentForm.InitialJournalNumber != -1))
+            try
             {
-                myParentForm.SelectTab(TFrmGLBatch.eGLTabs.Journals);
+                ParentForm.Cursor = Cursors.WaitCursor;
+
+                grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowJournalTab);
+                grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+                LoadBatchesForCurrentYear();
+
+                txtDetailBatchControlTotal.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
+
+                SetInitialFocus();
+
+                // Select the Journal tab if the screen opener specified a Journal Number
+                TFrmGLBatch myParentForm = (TFrmGLBatch)ParentForm;
+
+                if (myParentForm.InitialBatchFound && (myParentForm.InitialJournalNumber != -1))
+                {
+                    myParentForm.SelectTab(TFrmGLBatch.eGLTabs.Journals);
+                }
+
+                FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING,
+                    true);
+            }
+            finally
+            {
+                ParentForm.Cursor = Cursors.Default;
             }
         }
 
@@ -949,7 +962,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int newCurrentRowPos = GetSelectedRowIndex();
 
             if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
-                    FEndDateLastForwardingPeriod))
+                    FEndDateLastForwardingPeriod, FInactiveValuesWarningOnGLPosting))
             {
                 // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
                 ////Select unposted batch row in same index position as batch just posted

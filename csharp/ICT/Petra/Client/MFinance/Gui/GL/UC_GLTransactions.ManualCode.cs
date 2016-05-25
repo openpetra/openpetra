@@ -363,9 +363,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // Then initialise our combo boxes for the correct account codes and cost centres
                     bool prevSuppressChangeDetection = FPetraUtilsObject.SuppressChangeDetection;
                     FPetraUtilsObject.SuppressChangeDetection = true;
-                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
-                        true, false, ActiveOnly, false, ACurrencyCode, true);
-                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false);
+                    TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, ActiveOnly, false,
+                        ACurrencyCode, true);
+                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, ActiveOnly, false, true);
                     FPetraUtilsObject.SuppressChangeDetection = prevSuppressChangeDetection;
 
                     cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;

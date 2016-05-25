@@ -31,6 +31,7 @@ RootNode:
             Width: 540
             Height: 125
             RowSpan:3
+            Stretch: horizontally
         lblMotivationDetail: {Label=Motivation Detail}
         btnSelectAllMotDetail: {Label=Select all, Action=actSelectAllMotDetail}
         btnDeselectAllMotDetail: {Label=Deselect all, Action=actDeselectAllMotDetail}
@@ -40,3 +41,4 @@ RootNode:
             Width: 540
             Height: 125
             RowSpan:3
+            Stretch: horizontally

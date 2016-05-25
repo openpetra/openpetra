@@ -331,6 +331,54 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Select the next enabled sub-module.  Does nothing if there is no such sub-module.
+        /// </summary>
+        public void SelectNextSubModule()
+        {
+            if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckCollapsiblePanelHoster)
+            {
+                // The collapsible panel hosts other collapsible panels
+                if (FIsLedgerBasedModule)
+                {
+                    // AlanP - not sure what to do here!
+                }
+                else
+                {
+                    FCollapsibleNavigation.CollapsiblePanelHosterInstance.SelectNextSubModule();
+                }
+            }
+            else if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckTaskList)
+            {
+                // The collapsible panel contains a single simple task list
+                FCollapsibleNavigation.TaskListInstance.SelectNextSubModule();
+            }
+        }
+
+        /// <summary>
+        /// Select the previous enabled sub-module.  Does nothing if there is no such sub-module.
+        /// </summary>
+        public void SelectPreviousSubModule()
+        {
+            if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckCollapsiblePanelHoster)
+            {
+                // The collapsible panel hosts other collapsible panels
+                if (FIsLedgerBasedModule)
+                {
+                    // AlanP - not sure what to do here!
+                }
+                else
+                {
+                    FCollapsibleNavigation.CollapsiblePanelHosterInstance.SelectPreviousSubModule();
+                }
+            }
+            else if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckTaskList)
+            {
+                // The collapsible panel contains a single simple task list
+                FCollapsibleNavigation.TaskListInstance.SelectPreviousSubModule();
+            }
+        }
+
         #endregion
 
         #region Private Methods
@@ -354,19 +402,7 @@ namespace Ict.Common.Controls
 
         private void LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
-            Object tag = ((Control)sender).Tag;
-
-            if (tag.GetType() == typeof(TLstTasks))
-            {
-                FCurrentTaskList = (TLstTasks)tag;
-//TLogging.Log("LinkClicked for existing " + FCurrentTaskList.Name);
-            }
-            else
-            {
-                FCurrentTaskList = new TLstTasks((XmlNode)tag, FDashboard.TaskAppearance);
-//TLogging.Log("LinkClicked for NEW " + FCurrentTaskList.Name);
-                ((Control)sender).Tag = FCurrentTaskList;
-            }
+            FCurrentTaskList = FDashboard.GetTaskList((XmlNode)((Control)sender).Tag);
 
             FCurrentTaskList.Statusbar = FStatusbar;
             FCurrentTaskList.Dock = DockStyle.Fill;
@@ -374,7 +410,6 @@ namespace Ict.Common.Controls
             TLstTasks.InitiallySelectedLedger = FInitiallySelectedLedger;
 
             FDashboard.ShowTaskList(FCurrentTaskList);
-//            Invalidate();
         }
 
         /// <summary>

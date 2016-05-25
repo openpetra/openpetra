@@ -599,15 +599,35 @@ namespace Ict.Common
         }
     }
 
+    #region TPerformanceTester
+
     /// <summary>
-    /// For timing the length of methods/processes
+    /// For timing the length of methods/processes.  A convenient syntax is to use a using clause such as
+    ///   using (TPerformanceTester.Start("A descriptive message"))
+    ///   {
+    ///   }
+    /// This will log the time of each of the braces and the elapsed time between them.
+    ///
+    /// If you want to have a different closing message containing additional information you can do it with...
+    ///   using (TPerformanceTester tester = TPerformanceTester.Start("A descriptive message"))
+    ///   {
+    ///      tester.CompletionMessage = "More information about variable values...";
+    ///   }
     /// </summary>
     public class TPerformanceTester : IDisposable
     {
         private Stopwatch FStopwatch = new Stopwatch();
-        private Action <TimeSpan>FCallback;
+        private Action <TimeSpan>FCallback = null;
         private String FLog = string.Empty;
         private Guid FGUID = Guid.Empty;
+        private int FMyTicketNum = -1;
+        private int FDebugLevel = 0;
+        private bool FWriteClosingLog = false;
+
+        // static variable for class
+        private static int TicketNum = 0;
+
+        #region Class constructors
 
         /// <summary>
         /// Instantiator
@@ -621,25 +641,32 @@ namespace Ict.Common
         /// <summary>
         /// Start the stopwatch and specify a string to enter in the log on completion
         /// </summary>
-        /// <param name="ALog"></param>
-        public TPerformanceTester(String ALog) : this()
+        /// <param name="ALog">A message identifier</param>
+        /// <param name="ADebugLevel">Log level</param>
+        public TPerformanceTester(String ALog, int ADebugLevel = 0) : this()
         {
-            FLog = ALog;
+            if (ADebugLevel >= TLogging.DebugLevel)
+            {
+                FLog = ALog;
+                FDebugLevel = ADebugLevel;
+                FMyTicketNum = TPerformanceTester.TicketNum++;
+                TLogging.LogAtLevel(FDebugLevel, string.Format("Tkt {0} S - {1}", FMyTicketNum, FLog));
+                FWriteClosingLog = true;
+            }
         }
 
         /// <summary>
-        /// Start the stopwatch and specify action delegate to run after stopping the stopwatch
+        /// Start the stopwatch and specify a GUID and a string to enter in the log on completion
         /// </summary>
         /// <param name="AGUID"></param>
-        /// <param name="ALog"></param>
-        public TPerformanceTester(Guid AGUID, String ALog) : this()
+        /// <param name="ALog">A message identifier</param>
+        /// <param name="ADebugLevel">Log level</param>
+        public TPerformanceTester(Guid AGUID, String ALog, int ADebugLevel = 0) : this(ALog, ADebugLevel)
         {
             if (AGUID != Guid.Empty)
             {
                 FGUID = AGUID;
             }
-
-            FLog = ALog;
         }
 
         /// <summary>
@@ -650,6 +677,10 @@ namespace Ict.Common
         {
             FCallback = ACallback;
         }
+
+        #endregion
+
+        #region Static methods to create a class instance
 
         /// <summary>
         /// Start the stopwatch and specify a string to enter in the log on completion
@@ -664,12 +695,40 @@ namespace Ict.Common
         /// <summary>
         /// Start the stopwatch and specify a string to enter in the log on completion
         /// </summary>
+        /// <param name="ALog"></param>
+        /// <param name="ALogAtLevel"></param>
+        /// <returns></returns>
+        public static TPerformanceTester Start(String ALog, int ALogAtLevel)
+        {
+            if (ALogAtLevel >= TLogging.DebugLevel)
+            {
+                return new TPerformanceTester(ALog, ALogAtLevel);
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify a string to enter in the log on completion
+        /// </summary>
         /// <param name="AGUID"></param>
         /// <param name="ALog"></param>
         /// <returns></returns>
         public static TPerformanceTester Start(Guid AGUID, String ALog)
         {
             return new TPerformanceTester(AGUID, ALog);
+        }
+
+        /// <summary>
+        /// Start the stopwatch and specify a string to enter in the log on completion
+        /// </summary>
+        /// <param name="AGUID"></param>
+        /// <param name="ALog"></param>
+        /// <param name="ALogAtLevel"></param>
+        /// <returns></returns>
+        public static TPerformanceTester Start(Guid AGUID, String ALog, int ALogAtLevel)
+        {
+            return new TPerformanceTester(AGUID, ALog, ALogAtLevel);
         }
 
         /// <summary>
@@ -682,16 +741,28 @@ namespace Ict.Common
             return new TPerformanceTester(ACallback);
         }
 
+        #endregion
+
         /// <summary>
-        /// Dispose
+        /// Reset the ticket number to 0
+        /// </summary>
+        public static void ResetTicket()
+        {
+            TLogging.Log("Resetting ticket number ...");
+            TicketNum = 0;
+        }
+
+        /// <summary>
+        /// Dispose.  This will be called automatically if the class instance is created in a 'using' clause.
         /// </summary>
         public void Dispose()
         {
             FStopwatch.Stop();
 
-            if (FLog.Length > 0)
+            if (FWriteClosingLog)
             {
-                TLogging.Log(FLog + " - Elapsed time:" + FStopwatch.Elapsed.TotalSeconds.ToString());
+                TLogging.LogAtLevel(FDebugLevel,
+                    string.Format("Tkt {0} E - {1} - {2}", FMyTicketNum, FLog, "Elapsed time:" + FStopwatch.Elapsed.TotalSeconds.ToString()));
             }
             else if (FCallback != null)
             {
@@ -709,5 +780,22 @@ namespace Ict.Common
                 return FStopwatch.Elapsed;
             }
         }
+
+        /// <summary>
+        /// By default the completion message is the same as the start message, but you can set a different message using this property.
+        /// For example the completion message may contain additional state information or the values of important variables.
+        /// </summary>
+        public string CompletionMessage
+        {
+            set
+            {
+                if (FWriteClosingLog)
+                {
+                    FLog = value;
+                }
+            }
+        }
     }
+
+    #endregion
 }

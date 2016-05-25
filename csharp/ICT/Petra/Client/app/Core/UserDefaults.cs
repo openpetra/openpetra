@@ -338,11 +338,20 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
 
+        /// <summary>Whether or not the Gift Batch screen warns of inactive values ALSO on posting</summary>
+        public const String FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING = "InactiveValuesWarningOnGiftPosting";
+
+        /// <summary>Whether or not the GL Batch screen warns of inactive values ALSO on posting</summary>
+        public const String FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING = "InactiveValuesWarningOnGLPosting";
+
         /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
         public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
 
         /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
         public const String FINANCE_AUTO_SAVE_GIFT_SCREEN = "AutoSaveGiftScreen";
+
+        /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
+        public const String FINANCE_AUTO_FILL_COMMENTS_FOR_SPLIT_GIFT = "SplitGiftCopyIncludeComments";
 
         /* Other Finance User Defaults are in StringHelper because they are used in Ict.Common */
 

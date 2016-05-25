@@ -85,6 +85,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = false;
         private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
+        private bool FInactiveValuesWarningOnGiftPosting = false;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -202,19 +203,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RunOnceOnParentActivationManual()
         {
-            ParentForm.Cursor = Cursors.WaitCursor;
-            grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
-            grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+            try
+            {
+                ParentForm.Cursor = Cursors.WaitCursor;
+                grdDetails.DoubleClickCell += new TDoubleClickCellEventHandler(this.ShowTransactionTab);
+                grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
-            // Load the ledger table so we know the base currency
-            FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
-            FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+                // Load the ledger table so we know the base currency
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadALedgerTable(FLedgerNumber));
+                FLedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
 
-            FLoadAndFilterLogicObject.ActivateFilter();
-            LoadBatchesForCurrentYear();
-            ParentForm.Cursor = Cursors.Default;
+                FLoadAndFilterLogicObject.ActivateFilter();
+                LoadBatchesForCurrentYear();
 
-            SetInitialFocus();
+                FInactiveValuesWarningOnGiftPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING,
+                    true);
+
+                SetInitialFocus();
+            }
+            finally
+            {
+                ParentForm.Cursor = Cursors.Default;
+            }
         }
 
         /// <summary>
@@ -284,11 +294,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FFilterAndFindObject.ApplyFilter();
 
                 // Now we can select the gift batch we had before (if it still exists on the grid)
-                if (!SelectBatchNumber(nCurrentBatchNumber))
+                for (int i = 0; (i < FMainDS.AGiftBatch.Rows.Count); i++)
                 {
-                    // If batch is no longer in the grid then select the batch that is in the same position
-                    SelectRowInGrid(nCurrentRowIndex);
+                    if (FMainDS.AGiftBatch[i].BatchNumber == nCurrentBatchNumber)
+                    {
+                        DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
+                        Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.AGiftBatch, i) + 1;
+
+                        nCurrentRowIndex = RowNumberGrid;
+                        break;
+                    }
                 }
+
+                ShowDetails(nCurrentRowIndex);
 
                 UpdateRecordNumberDisplay();
 
@@ -684,6 +702,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             int CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
 
+            // load all data for batch
+            LoadAllBatchData(FSelectedBatchNumber);
+
             FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow);
 
             SelectRowInGrid(CurrentlySelectedRow);
@@ -1061,7 +1082,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dlgStatus.Close();
                 LoadDialogVisible = false;
 
-                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, postingAlreadyConfirmed);
+                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, postingAlreadyConfirmed, FInactiveValuesWarningOnGiftPosting);
 
                 if (Success)
                 {
@@ -1123,8 +1144,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string bankCostCentre = FPreviouslySelectedDetailRow.BankCostCentre;
             string bankAccount = FPreviouslySelectedDetailRow.BankAccountCode;
 
-            if (!FAccountAndCostCentreLogicObject.AccountIsActive(bankAccount)
-                || !FAccountAndCostCentreLogicObject.CostCentreIsActive(bankCostCentre))
+            if (FInactiveValuesWarningOnGiftPosting
+                && (!FAccountAndCostCentreLogicObject.AccountIsActive(bankAccount)
+                    || !FAccountAndCostCentreLogicObject.CostCentreIsActive(bankCostCentre)))
             {
                 string msg =
                     string.Format(Catalog.GetString(

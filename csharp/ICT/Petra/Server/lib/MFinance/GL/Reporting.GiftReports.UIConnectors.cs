@@ -88,8 +88,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         // true if donor has a valid Ex-Worker special type
                         "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
-                        " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
-                        " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
                         " AND p_partner_type.p_type_code_c LIKE '" +
                         TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +
@@ -135,14 +133,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             string RecipientSelection = AParameters["param_recipient"].ToString();
             string OrderBy = AParameters["param_order_by_name"].ToString();
 
-/*
- *          string ReportType = string.Empty;
- *
- *          if (AParameters.ContainsKey("param_report_type"))
- *          {
- *              ReportType = AParameters["param_report_type"].ToString();
- *          }
- */
+            /*
+             *          string ReportType = string.Empty;
+             *
+             *          if (AParameters.ContainsKey("param_report_type"))
+             *          {
+             *              ReportType = AParameters["param_report_type"].ToString();
+             *          }
+             */
             DateTime CurrentDate = DateTime.Today;
 
             // create new datatable
@@ -152,7 +150,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    string Query = "SELECT DISTINCT" +
+                    // Note from AlanP Jan 2016:  This query was taking longer than 20s and so was timing out.  I made these changes...
+                    //  1. removed DISTINCT from next line and added code in c# below to remove duplicate rows.  The DISTINCT clause in SQL
+                    //     was adding way too much time but the c# route is quick.
+                    //  2. I changed the SQL when the RecipientSelection is 'Extract'.  Previously the extract tables were JOINed.  This created
+                    //     a table in memory with a huge number of rows because the query already JOINs some very large tables and it couldn't handle
+                    //     joining the extract ones as well.  So now the extract partners are a separate nested SELECT which get JOINed specifically
+                    //     through the IN clause.
+                    // I have tested this form of the quey with SwissDev4 and some pretty random date ranges and an extract with 7000 partners
+                    // and it is always quick - of the order of about 1 second or less.
+                    string Query = "SELECT" +
                                    " Recipient.p_partner_key_n AS RecipientKey," +
                                    " Recipient.p_partner_short_name_c AS RecipientName," +
                                    " Recipient.p_partner_class_c AS RecipientClass," +
@@ -197,31 +204,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " OR (PUB_p_partner.p_partner_key_n = um_unit_structure.um_parent_unit_key_n" +
                                    " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))";
 
-                    if (RecipientSelection == "Extract")
-                    {
-                        Query += ", PUB_m_extract," +
-                                 " PUB_m_extract_master";
-                    }
-
                     Query += " WHERE";
-
-                    if (RecipientSelection == "Extract")
-                    {
-                        Query += " detail.p_recipient_key_n =  PUB_m_extract.p_partner_key_n" +
-                                 " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                                 " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
-                                 " AND";
-                    }
 
                     Query += " detail.a_ledger_number_i = gift.a_ledger_number_i" +
                              " AND detail.a_batch_number_i = gift.a_batch_number_i" +
                              " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                             " AND PUB_a_gift_batch.a_ledger_number_i = gift.a_ledger_number_i" +
+                             " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
                              " AND gift.a_date_entered_d BETWEEN '" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") +
                              "' AND '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'" +
-                             " AND gift.a_ledger_number_i = " + LedgerNumber +
-
                              " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
-                             " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
                              " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
 
                              " AND Recipient.p_partner_key_n = detail.p_recipient_key_n";
@@ -229,6 +221,22 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (RecipientSelection == "One Recipient")
                     {
                         Query += " AND detail.p_recipient_key_n = " + AParameters["param_recipientkey"].ToInt64();
+                    }
+                    else if (RecipientSelection == "Extract")
+                    {
+                        Query += " AND detail.p_recipient_key_n IN " +
+                                 "(SELECT DISTINCT detail.p_recipient_key_n FROM PUB_a_gift_detail AS detail" +
+                                 " LEFT JOIN PUB_m_extract AS extract ON detail.p_recipient_key_n = extract.p_partner_key_n" +
+                                 " LEFT JOIN PUB_m_extract_master AS master ON extract.m_extract_id_i = master.m_extract_id_i" +
+                                 " LEFT JOIN PUB_a_gift AS gift ON gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i AND gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i"
+                                 +
+                                 " LEFT JOIN PUB_a_gift_batch batch ON batch.a_batch_number_i = detail.a_batch_number_i AND batch.a_ledger_number_i = detail.a_ledger_number_i"
+                                 +
+                                 " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                                 " AND gift.a_date_entered_d BETWEEN '" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") +
+                                 "' AND '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'" +
+                                 " AND batch.a_batch_status_c = 'Posted'" +
+                                 " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
                     }
 
                     if (OrderBy == "RecipientField")
@@ -246,6 +254,19 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     Results = DbAdapter.RunQuery(Query, "Recipients", Transaction);
                 });
+
+            // Now we need to get just the DISTINCT rows from the Results table
+            if ((Results.Columns.Count > 0) && (Results.DefaultView.Count > 0))
+            {
+                string[] columnNames = new string[Results.Columns.Count];
+
+                for (int i = 0; i < Results.Columns.Count; i++)
+                {
+                    columnNames[i] = Results.Columns[i].ColumnName;
+                }
+
+                Results = Results.DefaultView.ToTable(true, columnNames);       // true parameter gets distinct rows
+            }
 
             return Results;
         }

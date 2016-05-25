@@ -125,6 +125,7 @@ namespace Ict.Common.Controls
             this.llbTaskTitle.DoubleClick += new System.EventHandler(this.DoubleClickAnywhere);
             this.llbTaskTitle.MouseEnter += new System.EventHandler(this.TaskTitleMouseEnter);
             this.llbTaskTitle.MouseLeave += new System.EventHandler(this.TaskTitleMouseLeave);
+            this.llbTaskTitle.GotFocus += new System.EventHandler(this.TaskTitleGotFocus);
             //
             // pnlIconSpacer
             //

@@ -101,8 +101,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Return all partners that match the given criteria. This is used for the partner import screen.
         /// </summary>
+        /// <param name="APartnerKey">The key to find</param>
+        /// <param name="AExactMatch">If true a search is made for an exact match.  If false the search may return multiple partners with a near match
+        /// if APartnerKey ends in one or more zero's.</param>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerFindTDS FindPartners(Int64 APartnerKey)
+        public static PartnerFindTDS FindPartners(Int64 APartnerKey, Boolean AExactMatch)
         {
             TPartnerFind PartnerFind = new TPartnerFind();
 
@@ -112,9 +115,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             CriteriaData.Rows.Add(CriteriaRow);
             CriteriaRow.PartnerKey = APartnerKey;
             CriteriaRow.PartnerClass = "*";
+            CriteriaRow.ExactPartnerKeyMatch = AExactMatch;
 
             PartnerFind.PerformSearch(CriteriaData, true);
 
+            // NOTE from AlanP - Dec 2015:
+            // If CriteriaRow.ExactPartnerKeyMatch is false and the value of APartnerKey is, say, 0012345600 the search will return all partners between
+            //  001234500 and 001234599.  This means that if we request 50 records we may not actually get the partnerkey record we asked for.
             Int32 TotalRecords;
             short TotalPages;
             const short MaxRecords = 50;
@@ -130,6 +137,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 if (TotalRecords > MaxRecords)
                 {
                     // TODO load all data into the datatable. the webconnector does not have paging yet?
+                    // See above NOTE if ExactPartnerMatch is false!
                 }
             }
 

@@ -730,7 +730,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             TSubmitChangesResult Result = TRemote.MFinance.Setup.WebConnectors.SaveCorporateExchangeSetupTDS(
                 ref ASubmitChanges, out TransactionsChanged, out AVerificationResult);
 
-            if ((Result == TSubmitChangesResult.scrOK) && (TransactionsChanged > 0))
+            if ((Result == TSubmitChangesResult.scrOK) && (TransactionsChanged > 0) && (FPetraUtilsObject.GetCallerForm() != null))
             {
                 MessageBox.Show(string.Format(Catalog.GetPluralString(
                             "{0} GL Transaction was automatically updated with the new corporate exchange rate.",

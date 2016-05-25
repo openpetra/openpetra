@@ -54,7 +54,7 @@
 		<calculations>
 			<!-- Select Donors and Totals in a given period of time -->
 			<calculation id="Select Donors"
-					returns="DonorKey, ShortName, PartnerClass"
+					returns="DonorKey, ShortName, PartnerClass, ReceiptFrequency"
 					returnsFormat="row">
 				<query>
 					<queryDetail>
@@ -62,7 +62,8 @@
 						SELECT 
 							gift.p_donor_key_n AS DonorKey,
 							PUB_p_partner.p_partner_short_name_c AS ShortName,
-							PUB_p_partner.p_partner_class_c AS PartnerClass
+							PUB_p_partner.p_partner_class_c AS PartnerClass,
+                            PUB_p_partner.p_receipt_letter_frequency_c AS ReceiptFrequency
 						FROM
 							 PUB_a_gift as gift, 
 							 PUB_p_partner
@@ -135,7 +136,7 @@
 						<value>
 								GROUP BY gd.a_gift_transaction_number_i)) &gt;= {{param_minimum_amount}}
 
-							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c
+							GROUP BY gift.p_donor_key_n, PUB_p_partner.p_partner_short_name_c, PUB_p_partner.p_partner_class_c, PUB_p_partner.p_receipt_letter_frequency_c
 						</value>
 					</queryDetail>
 					<queryDetail condition="eq({param_sort_by},Donor Key)">
@@ -321,6 +322,14 @@
 				</query>
 			</calculation>
 
+			<calculation id="Receipt Frequency" 
+					returnsFormat="text" returns="text">
+				<caption><value text="Receipt Frequency"/></caption>
+				<query>
+					<queryDetail><value variable="ReceiptFrequency"/>
+					</queryDetail>
+				</query>
+			</calculation>
 			<calculation id="Gift Recipient Key" 
 					returnsFormat="partnerkey" returns="text">
 				<caption><value text="Recipient Key"/></caption>
@@ -407,10 +416,10 @@
 
 			<level name="DonorLevel">
 				<header>
-					<field whichfield="header 0" pos="0cm" width="2.5cm">
+					<field whichfield="header 0" pos="0cm" width="2cm">
 						<value variable="DonorKey" format="partnerkey"/>
 					</field>
-					<field whichfield="header 1" pos="2.5cm" width="15cm" calculation="GetPartnerBestAddress">
+					<field whichfield="header 1" pos="2cm" width="15cm" calculation="GetPartnerBestAddress">
 						<value variable="PartnerClass"/>
 						<value text="     "/>
 						<value variable="ShortName"/>

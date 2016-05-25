@@ -82,6 +82,7 @@ namespace Ict.Common.Controls
             this.sptNavigation.Location = new System.Drawing.Point(0, 42);
             this.sptNavigation.Name = "sptNavigation";
             this.sptNavigation.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.sptNavigation.TabStop = false;
 
             //
             // sptNavigation.Panel1

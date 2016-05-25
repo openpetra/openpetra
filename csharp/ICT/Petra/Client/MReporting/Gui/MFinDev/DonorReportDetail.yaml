@@ -95,4 +95,7 @@
         Para4:
             Name: Gift Amount
             Parameter: 2.0
+        Para5:
+            Name: Receipt Frequency
+            Parameter: 3.0
       

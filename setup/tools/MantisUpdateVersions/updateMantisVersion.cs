@@ -127,7 +127,18 @@ namespace Ict.Tools.Mantis.UpdateVersion
             }
 
             issue.FixedInVersion = AVersionFixedIn;
-            ASession.Request.IssueUpdate(issue);
+
+            try
+            {
+                ASession.Request.IssueUpdate(issue);
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("Exception occured when trying to update Bug with BugId " + bugid.ToString());
+                TLogging.Log(Exc.ToString());
+
+                throw;
+            }
         }
 
         static void Main(string[] args)
@@ -177,9 +188,9 @@ namespace Ict.Tools.Mantis.UpdateVersion
                         Console.WriteLine("project " + projectIDs[id]);
                         UpdateVersionsOfProject(session,
                             id,
-                            "Alpha " + releaseVersion.ToString(3),
-                            "Alpha " + devVersion.ToString(3) + " Dev",
-                            "Alpha " + nextVersion.ToString(3));
+                            "Beta1 " + releaseVersion.ToString(3),
+                            "Beta1 " + devVersion.ToString(3) + " Dev",
+                            "Beta1 " + nextVersion.ToString(3));
                     }
                 }
             }

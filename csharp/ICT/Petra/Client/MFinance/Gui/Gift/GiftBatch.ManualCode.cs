@@ -225,6 +225,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Needs to be called prior to posting current batch to ensure all data is up-to-date
+        /// </summary>
+        public void GetControlDataForPosting()
+        {
+            GetDataFromControls();
+        }
+
+        /// <summary>
         /// Checks to be made before saving and posting
         /// </summary>
         /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
@@ -233,8 +241,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorkerOrAnonDonor)
         {
-            GetDataFromControls();
-
             // first alert the user to any recipients who are Ex-Workers
             ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.POSTING,
                 FMainDS,

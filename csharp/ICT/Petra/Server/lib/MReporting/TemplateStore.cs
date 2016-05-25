@@ -93,30 +93,28 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// For the backup to work, the XmlReports\FastReportsBackup.sql file must be present,
         /// but it doesn't need to contain anything specifically.
         /// </summary>
-        private static void SaveTemplatesToBackupFile(SReportTemplateRow Row)
+        private static void SaveTemplateToBackupFile(SReportTemplateRow Row)
         {
-            String BackupFilename = TemplateBackupFilename(Row.ReportType, Row.TemplateId.ToString("D2"));
-
-            if (File.Exists(Path.GetDirectoryName(BackupFilename) + "\\FastReportsBackup.sql"))
+            if (File.Exists(TAppSettingsManager.GetValue("Reporting.PathStandardReports") + "\\FastReportsBackup.sql")
+                && (Row.RowState != DataRowState.Deleted))
             {
-                String FinalQuery = "DELETE FROM s_report_template WHERE s_template_id_i=" + Row.TemplateId + ";\r\n";
+                String BackupFilename = TemplateBackupFilename(Row.ReportType, Row.TemplateId.ToString("D2"));
 
-                FinalQuery +=
-                    (
-                        "INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)\r\nVALUES("
-                        +
-                        Convert.ToInt32(Row["s_template_id_i"]) + ",'" +
-                        escape(Row["s_report_type_c"]) + "','" +
-                        escape(Row["s_report_variant_c"]) + "','" +
-                        escape(Row["s_author_c"]) + "'," +
-                        Row["s_default_l"] + "," +
-                        Row["s_readonly_l"] + "," +
-                        Row["s_private_l"] + "," +
-                        Row["s_private_default_l"] + ",\r\n'" +
-                        escape(Row["s_xml_text_c"]) + "');\r\n");
+                String sqlQuery = "DELETE FROM s_report_template WHERE s_template_id_i=" + Row.TemplateId + ";\r\n" +
+                                  "INSERT INTO s_report_template (s_template_id_i,s_report_type_c,s_report_variant_c,s_author_c,s_default_l,s_readonly_l,s_private_l,s_private_default_l,s_xml_text_c)\r\nVALUES("
+                                  +
+                                  Convert.ToInt32(Row["s_template_id_i"]) + ",'" +
+                                  escape(Row["s_report_type_c"]) + "','" +
+                                  escape(Row["s_report_variant_c"]) + "','" +
+                                  escape(Row["s_author_c"]) + "'," +
+                                  Row["s_default_l"] + "," +
+                                  Row["s_readonly_l"] + "," +
+                                  Row["s_private_l"] + "," +
+                                  Row["s_private_default_l"] + ",\r\n'" +
+                                  escape(Row["s_xml_text_c"]) + "');\r\n";
 
-                FinalQuery += "\r\nSELECT TRUE;";
-                File.WriteAllText(BackupFilename, FinalQuery);
+                sqlQuery += "\r\nSELECT TRUE;";
+                File.WriteAllText(BackupFilename, sqlQuery);
             }
         }
 
@@ -196,7 +194,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 foreach (SReportTemplateRow Row in ChangedTemplates.Rows)
                 {
-                    SaveTemplatesToBackupFile(Row);
+                    if (Row.RowState != DataRowState.Deleted)
+                    {
+                        SaveTemplateToBackupFile(Row);
+                    }
                 }
             }
             else

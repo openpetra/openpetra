@@ -1067,6 +1067,16 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        ///
+        public string PartnerClass {
+            get; set;
+        }
+
+        ///
+        public string StatusCode {
+            get; set;
+        }
+
         // what about #DONORKEY??? (is actually partner key but not everybody is donor)
 
         /// assembled formal salutation (rules taken from p_formality)

@@ -76,10 +76,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     FPetraUtilsObject.AddVerificationResult(VerificationResult);
                 }
             }
+
+            if (!ucoMotivationCriteria.IsAnyMotivationDetailSelected())
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No Motivation Detail selected"),
+                    Catalog.GetString("Please select at least one Motivation Detail."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            ACalc.AddParameter("ControlSource", "", ReportingConsts.HEADERCOLUMN);
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();

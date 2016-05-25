@@ -78,6 +78,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // now show the actual dialog
             this.StartPosition = FormStartPosition.CenterScreen;
 
+            CreateGrid();
+
             cmbUserCreated.SetSelectedString(UserInfo.GUserInfo.UserID, -1);
 
             clbDetails.ValueChanged += new System.EventHandler(this.GridValueChanged);
@@ -89,8 +91,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 this.clbDetails.DoubleClick += new System.EventHandler(this.AcceptExtract);
             }
 
-            // make sure search button is initially default button so user can press enter to search after entering search criteria
-            AcceptButton = btnSearch;
             txtExtractName.Select();
 
             this.ShowDialog();
@@ -101,7 +101,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void InitializeManualCode()
         {
             // manually configure tab index
-            pnlExtractMasterList.TabIndex = pnlFilterButtons.TabIndex + 1;
             pnlLeftButtons.TabIndex = pnlRightButtons.TabIndex + 1;
         }
 
@@ -216,20 +215,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         #region Private Methods
 
         /// <summary>
-        /// reload extract list when search button is clicked
+        /// Create grid and populate
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RefreshExtractList(System.Object sender, EventArgs e)
+        private void CreateGrid()
         {
-            bool AllUsers = true;
-            String CreatedByUser = "";
-            String ModifiedByUser = "";
-            DateTime? DateCreatedFrom = null;
-            DateTime? DateCreatedTo = null;
-            DateTime? DateModifiedFrom = null;
-            DateTime? DateModifiedTo = null;
-
             string CheckedMember = FCheckedColumnName;
             string IdMember = MExtractMasterTable.GetExtractIdDBName();
             string NameMember = MExtractMasterTable.GetExtractNameDBName();
@@ -238,49 +227,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             string KeyCountMember = MExtractMasterTable.GetKeyCountDBName();
             string CreatedByMember = MExtractMasterTable.GetCreatedByDBName();
             string DateCreatedMember = MExtractMasterTable.GetDateCreatedDBName();
+            string ModifiedByMember = MExtractMasterTable.GetModifiedByDBName();
+            string DateModifiedMember = MExtractMasterTable.GetDateModifiedDBName();
 
-            if (cmbUserCreated.GetSelectedString().Length > 0)
-            {
-                AllUsers = false;
-                CreatedByUser = cmbUserCreated.GetSelectedString();
-            }
-
-            if (cmbUserModified.GetSelectedString().Length > 0)
-            {
-                AllUsers = false;
-                ModifiedByUser = cmbUserModified.GetSelectedString();
-            }
-
-            if (dtpCreatedFrom.Text.Length > 0)
-            {
-                DateCreatedFrom = dtpCreatedFrom.Date;
-            }
-
-            if (dtpCreatedTo.Text.Length > 0)
-            {
-                DateCreatedTo = dtpCreatedTo.Date;
-            }
-
-            if (dtpModifiedFrom.Text.Length > 0)
-            {
-                DateModifiedFrom = dtpModifiedFrom.Date;
-            }
-
-            if (dtpModifiedTo.Text.Length > 0)
-            {
-                DateModifiedTo = dtpModifiedTo.Date;
-            }
-
-            FExtractMasterTable = TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders(txtExtractName.Text,
-                txtExtractDesc.Text, AllUsers, CreatedByUser, ModifiedByUser, DateCreatedFrom, DateCreatedTo,
-                DateModifiedFrom, DateModifiedTo);
+            FExtractMasterTable = TRemote.MPartner.Partner.WebConnectors.GetAllExtractHeaders();
 
             if (FExtractMasterTable != null)
             {
                 DataView view = new DataView(FExtractMasterTable);
 
                 FDataTable = view.ToTable(true,
-                    new string[] { IdMember, NameMember, DescriptionMember, DeletableMember, KeyCountMember, CreatedByMember, DateCreatedMember });
+                    new string[] { IdMember, NameMember, DescriptionMember, DeletableMember, KeyCountMember, CreatedByMember, DateCreatedMember,
+                                   ModifiedByMember, DateModifiedMember });
                 FDataTable.Columns.Add(new DataColumn(CheckedMember, typeof(bool)));
                 clbDetails.Columns.Clear();
 
@@ -302,10 +260,105 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 clbDetails.SetCheckedStringList("");
             }
 
-            PrepareButtons();
+            this.clbDetails.ValueChanged += new System.EventHandler(this.UpdateRecordCount);
 
+            PrepareButtons();
+            UpdateRecordCount();
+        }
+
+        private void RefreshFilter(System.Object sender, EventArgs e)
+        {
+            if (FDataTable == null)
+            {
+                return;
+            }
+
+            DataView dv = FDataTable.DefaultView;
+            string FilterString = string.Empty;
+
+            if (!string.IsNullOrEmpty(txtExtractName.Text))
+            {
+                FilterString = MExtractMasterTable.GetExtractNameDBName() + " LIKE '%" + txtExtractName.Text + "%' AND ";
+            }
+
+            if (!string.IsNullOrEmpty(txtExtractDesc.Text))
+            {
+                FilterString += MExtractMasterTable.GetExtractDescDBName() + " LIKE '%" + txtExtractDesc.Text + "%' AND ";
+            }
+
+            if (!string.IsNullOrEmpty(cmbUserCreated.GetSelectedString()))
+            {
+                FilterString += MExtractMasterTable.GetCreatedByDBName() + " = '" + cmbUserCreated.GetSelectedString() + "' AND ";
+            }
+
+            if ((dtpCreatedFrom.Date != null) && dtpCreatedFrom.ValidDate())
+            {
+                FilterString += MExtractMasterTable.GetDateCreatedDBName() + " >= '" +
+                                ((DateTime)dtpCreatedFrom.Date).ToShortDateString() + "' AND ";
+            }
+
+            if ((dtpCreatedTo.Date != null) && dtpCreatedTo.ValidDate())
+            {
+                FilterString += MExtractMasterTable.GetDateCreatedDBName() + " <= '" +
+                                ((DateTime)dtpCreatedTo.Date).ToShortDateString() + "' AND ";
+            }
+
+            if (!string.IsNullOrEmpty(cmbUserModified.GetSelectedString()))
+            {
+                FilterString += MExtractMasterTable.GetModifiedByDBName() + " = '" + cmbUserModified.GetSelectedString() + "' AND ";
+            }
+
+            if ((dtpModifiedFrom.Date != null) && dtpModifiedFrom.ValidDate())
+            {
+                FilterString += MExtractMasterTable.GetDateModifiedDBName() + " >= '" +
+                                ((DateTime)dtpModifiedFrom.Date).ToShortDateString() + "' AND ";
+            }
+
+            if ((dtpModifiedTo.Date != null) && dtpModifiedTo.ValidDate())
+            {
+                FilterString += MExtractMasterTable.GetDateModifiedDBName() + " <= '" +
+                                ((DateTime)dtpModifiedTo.Date).ToShortDateString() + "'";
+            }
+
+            if (FilterString.EndsWith(" AND "))
+            {
+                FilterString = FilterString.Remove(FilterString.Length - 5);
+            }
+
+            dv.RowFilter = FilterString;
+
+            // temp remove event so UpdateRecordCount doesn't get called for every row
+            this.clbDetails.ValueChanged -= new System.EventHandler(this.UpdateRecordCount);
+
+            clbDetails.SetCheckedStringList("");
+            clbDetails.DataSource = new DevAge.ComponentModel.BoundDataView(dv);
             clbDetails.AutoResizeGrid();
-            clbDetails.Select();
+
+            this.clbDetails.ValueChanged += new System.EventHandler(this.UpdateRecordCount);
+
+            UpdateRecordCount();
+        }
+
+        private void UpdateRecordCount(System.Object sender, EventArgs e)
+        {
+            UpdateRecordCount();
+        }
+
+        private void UpdateRecordCount()
+        {
+            if (FDataTable == null)
+            {
+                return;
+            }
+
+            int RecordCount = clbDetails.Rows.Count - 1;
+
+            lblRecordCount.Text = RecordCount + " " + Catalog.GetPluralString("extract", "extracts", RecordCount, true);
+
+            if (AllowMultipleSelect)
+            {
+                lblRecordCount.Text += " (" + clbDetails.CheckedItemsCount + " " + Catalog.GetString("selected") + ")";
+            }
         }
 
         /// <summary>
@@ -323,14 +376,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             cmbUserModified.SetSelectedString("", -1);
             dtpModifiedFrom.Text = "";
             dtpModifiedTo.Text = "";
-
-            if (FExtractMasterTable != null)
-            {
-                FExtractMasterTable.Clear();
-                DataView myDataView = FExtractMasterTable.DefaultView;
-                myDataView.AllowNew = false;
-                clbDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
-            }
 
             PrepareButtons();
         }

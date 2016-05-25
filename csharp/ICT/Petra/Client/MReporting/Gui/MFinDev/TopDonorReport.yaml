@@ -23,7 +23,7 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [lblLedger, grpLevel, grpDateSelection, ucoMotivationCriteria]
+            Controls: [lblLedger, grpLevel, grpSelection, ucoMotivationCriteria]
             Stretch: horizontally
       
         grpLevel:
@@ -31,7 +31,7 @@
             Controls:
                 Row1: [rbtTopDonor, rbtMiddleDonor, rbtBottomDonor]
                 Row2: [txtPercentage, lblPercent1, txtToPercentage, lblPercent2, cmbCurrency]
-        grpDateSelection:
+        grpSelection:
             Label: Selection
             Controls: 
                 Row0: [dtpStartDate]
@@ -55,6 +55,7 @@
         rgrRecipientSelection:
             Controls: [rbtAllRecipients, rbtRecipient]
             ControlsOrientation: horizontal
+            Stretch: horizontally
         rbtAllRecipients:
             Label: All Recipients
         rbtRecipient:
@@ -66,6 +67,7 @@
         rgrDonorSelection:
             Controls: [rbtAllPartners, rbtExtract]
             ControlsOrientation: horizontal
+            Stretch: horizontally
         rbtAllPartners:
             Label: All Partners
         rbtExtract:
