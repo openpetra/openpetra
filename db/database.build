@@ -526,5 +526,29 @@
         <property name="DBMS.Type" value="${DBMS.Type.Orig}"/>
         <property name="DBMS.Password" value="${DBMS.Password.Orig}"/>
     </target>
+	
+	
+	
+	<target name="processFastReports" depends="init" >
+	
+	<psql exe="${PostgreSQL.exe}" sqlcommand="TRUNCATE s_report_template" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+	
+	<foreach item="File" property="filename">
+    <in>
+        <items>
+            <include name="${OpenPetraRoot.dir}/XMLReports/*.sql" />
+			<exclude name="${OpenPetraRoot.dir}/XMLReports/FastReportsBackup.sql" />
+        </items>
+    </in>
+    <do>
+        <echo message="${filename}" />
+		<psql exe="${PostgreSQL.exe}" sqlfile="${filename}" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+    </do>
+	
+	<psql exe="${PostgreSQL.exe}" sqlcommand="COPY (SELECT s_template_id_i,s_report_type_c,s_xml_text_c FROM  s_report_template where s_template_id_i &lt; 1000) TO '${dir.delivery}\reportdump.pg' " host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+</foreach>
+	
+	
+	</target>
 
 </project>
