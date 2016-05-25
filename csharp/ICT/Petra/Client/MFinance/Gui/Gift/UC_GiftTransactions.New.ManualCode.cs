@@ -112,6 +112,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
                         newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
                         newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+
+                        // set the auto-populate comment if needed
+                        AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                            new object[] { FLedgerNumber, newRow.MotivationGroupCode, newRow.MotivationDetailCode });
+
+                        if ((motivationDetail != null) && motivationDetail.Autopopdesc)
+                        {
+                            newRow.GiftCommentOne = motivationDetail.MotivationDetailDesc;
+                        }
                     }
                     else
                     {
