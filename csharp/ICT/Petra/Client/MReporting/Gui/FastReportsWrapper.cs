@@ -641,7 +641,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     FormUtils.WriteToStatusBar("Generate " + ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
                     MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
 
-                    if (ReportStream.Position < 1000)
+                    if (ReportEngine.FfastReportInstance.ReportInfo.Description == "Empty")
                     {
                         continue; // Don't send an empty report
                     }

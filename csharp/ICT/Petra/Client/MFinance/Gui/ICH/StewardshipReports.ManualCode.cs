@@ -79,6 +79,13 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             {
                 FLedgerNumber = value;
 
+                //
+                // I've been getting some grief from cached tables, so I'll mark them as being "dirty" before I do anything else:
+
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, FLedgerNumber);
+                TDataCache.TMFinance.RefreshCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber);
+
+
                 FLedgerRow =
                     ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
 
@@ -124,24 +131,11 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             if ((cmbReportPeriod.SelectedIndex > -1) && (cmbYearEnding.SelectedIndex > -1))
             {
-                DateTime YearEnding;
-
-                if (DateTime.TryParse(cmbYearEnding.GetSelectedDescription(), out YearEnding))
-                {
-                    DateTime YearStart = TRemote.MFinance.GL.WebConnectors.DecrementYear(YearEnding).AddDays(1);
-
-                    TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-                        cmbReportPeriod.GetSelectedInt32(),
-                        YearStart.ToShortDateString(),
-                        YearEnding.ToShortDateString());
-                }
-                else
-                {
-                    TFinanceControls.InitialiseICHStewardshipList(ref cmbICHNumber, FLedgerNumber,
-                        cmbReportPeriod.GetSelectedInt32(),
-                        null,
-                        null);
-                }
+                Int32 accountingYear = cmbYearEnding.GetSelectedInt32();
+                TFinanceControls.InitialiseICHStewardshipList(
+                    cmbICHNumber, FLedgerNumber,
+                    cmbYearEnding.GetSelectedInt32(),
+                    cmbReportPeriod.GetSelectedInt32());
 
                 cmbICHNumber.SelectedIndex = 0;
             }

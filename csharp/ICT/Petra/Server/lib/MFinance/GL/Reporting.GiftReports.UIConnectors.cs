@@ -88,8 +88,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         // true if donor has a valid Ex-Worker special type
                         "CASE WHEN EXISTS (SELECT p_partner_type.* FROM p_partner_type WHERE " +
                         "p_partner_type.p_partner_key_n = a_gift.p_donor_key_n" +
-                        " AND (p_partner_type.p_valid_from_d IS null OR p_partner_type.p_valid_from_d <= '" + CurrentDate + "')" +
-                        " AND (p_partner_type.p_valid_until_d IS null OR p_partner_type.p_valid_until_d >= '" + CurrentDate + "')" +
                         " AND p_partner_type.p_type_code_c LIKE '" +
                         TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_EXWORKERSPECIALTYPE, "EX-WORKER") + "%'" +
                         ") THEN True ELSE False END AS EXWORKER, " +

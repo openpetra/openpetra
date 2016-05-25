@@ -1399,35 +1399,20 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="ALedgerNumber"></param>
+        /// <param name="AYearNumber"></param>
         /// <param name="APeriodNumber"></param>
-        /// <param name="AYearStart"></param>
-        /// <param name="AYearEnding"></param>
         public static void InitialiseICHStewardshipList(
-            ref TCmbAutoPopulated AControl,
+            TCmbAutoPopulated AControl,
             Int32 ALedgerNumber,
-            Int32 APeriodNumber,
-            String AYearStart,
-            String AYearEnding)
+            Int32 AYearNumber,
+            Int32 APeriodNumber)
         {
             DataTable ICHNumbers = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.ICHStewardshipList, ALedgerNumber);
 
-            if (AYearStart != null)
-            {
-                //Filter for current period and date range
-                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1} And {2}>'{3}' And {2}<='{4}'",
-                    AIchStewardshipTable.GetPeriodNumberDBName(),
-                    APeriodNumber,
-                    AIchStewardshipTable.GetDateProcessedDBName(),
-                    AYearStart,
-                    AYearEnding);
-            }
-            else
-            {
-                //Filter for current period
-                ICHNumbers.DefaultView.RowFilter = String.Format("{0}={1}",
-                    AIchStewardshipTable.GetPeriodNumberDBName(),
-                    APeriodNumber);
-            }
+            //Filter for current period and date range
+            ICHNumbers.DefaultView.RowFilter =
+                "a_year_i = " + AYearNumber +
+                " AND a_period_number_i= " + APeriodNumber;
 
             ICHNumbers.DefaultView.Sort = AIchStewardshipTable.GetIchNumberDBName();
 
