@@ -201,6 +201,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             EnableOrDiasbleTaxDeductibilityPct(ARow.TaxDeductible);
+
+            UpdateTaxDeductibilityAmounts(this, null);
         }
 
         // get tax deductible percentage data from controls
