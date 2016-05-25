@@ -2931,6 +2931,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         //    out partnerClass);
                         //detailRow.RecipientClass = partnerClass.ToString();
 
+                        if (!FIncludeCommentsSplitGiftCopy)
+                        {
+                            detailRow.CommentOneType = "Both";
+                            detailRow.CommentTwoType = "Both";
+                            detailRow.CommentThreeType = "Both";
+                            detailRow.SetGiftCommentOneNull();
+                            detailRow.SetGiftCommentTwoNull();
+                            detailRow.SetGiftCommentThreeNull();
+                        }
+
                         detailRow.DateEntered = FGift.DateEntered;
 
                         if (FTaxDeductiblePercentageEnabled)
