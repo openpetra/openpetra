@@ -384,7 +384,9 @@
 				</query>
 			</calculation>
 			
-			<calculation id="MakePartnerAddress" returns="automatic" returnsFormat="internal">
+			<calculation id="GetPartnerBestAddress"
+					returns="automatic"
+					returnsFormat="internal">
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
