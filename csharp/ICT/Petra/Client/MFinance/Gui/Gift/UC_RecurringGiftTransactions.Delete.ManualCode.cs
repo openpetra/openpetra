@@ -35,41 +35,43 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
-    public partial class TUC_GiftTransactions
+    public partial class TUC_RecurringGiftTransactions
     {
-        private bool OnPreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
+        private bool OnPreDeleteManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
             bool allowDeletion = true;
 
-            FGift = GetGiftRow(ARowToDelete.GiftTransactionNumber);
+            FGift = GetRecurringGiftRow(ARowToDelete.GiftTransactionNumber);
             FFilterAllDetailsOfGift = String.Format("{0}={1} and {2}={3}",
-                AGiftDetailTable.GetBatchNumberDBName(),
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
                 FPreviouslySelectedDetailRow.BatchNumber,
-                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                 FPreviouslySelectedDetailRow.GiftTransactionNumber);
 
-            FGiftDetailView = new DataView(FMainDS.AGiftDetail);
+            FGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
             FGiftDetailView.RowFilter = FFilterAllDetailsOfGift;
-            FGiftDetailView.Sort = AGiftDetailTable.GetDetailNumberDBName() + " ASC";
-            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftTransactionAmount, GetBatchRow().CurrencyCode);
+            FGiftDetailView.Sort = ARecurringGiftDetailTable.GetDetailNumberDBName() + " ASC";
+            String formattedDetailAmount = StringHelper.FormatUsingCurrencyCode(ARowToDelete.GiftAmount, GetRecurringBatchRow().CurrencyCode);
 
             if (FGiftDetailView.Count == 1)
             {
-                ADeletionQuestion = String.Format(Catalog.GetString("Are you sure you want to delete gift no. {1} from Gift Batch no. {2}?" +
-                        "\n\r\n\r" + "     From:  {3}" +
-                        "\n\r" + "         To:  {4}" +
-                        "\n\r" + "Amount:  {5}"),
-                    ARowToDelete.DetailNumber,
-                    ARowToDelete.GiftTransactionNumber,
-                    ARowToDelete.BatchNumber,
-                    ARowToDelete.DonorName,
-                    ARowToDelete.RecipientDescription,
-                    formattedDetailAmount);
+                ADeletionQuestion =
+                    String.Format(Catalog.GetString("Are you sure you want to delete Gift no. {1} from Recurring Gift Batch no. {2}?" +
+                            "\n\r\n\r" + "     From:  {3}" +
+                            "\n\r" + "         To:  {4}" +
+                            "\n\r" + "Amount:  {5}"),
+                        ARowToDelete.DetailNumber,
+                        ARowToDelete.GiftTransactionNumber,
+                        ARowToDelete.BatchNumber,
+                        ARowToDelete.DonorName,
+                        ARowToDelete.RecipientDescription,
+                        formattedDetailAmount);
             }
             else if (FGiftDetailView.Count > 1)
             {
                 ADeletionQuestion =
-                    String.Format(Catalog.GetString("Are you sure you want to delete detail line: {0} from gift no. {1} in Gift Batch no. {2}?" +
+                    String.Format(Catalog.GetString(
+                            "Are you sure you want to delete detail line: {0} from Gift no. {1} in Recurring Gift Batch no. {2}?" +
                             "\n\r\n\r" + "     From:  {3}" +
                             "\n\r" + "         To:  {4}" +
                             "\n\r" + "Amount:  {5}"),
@@ -83,7 +85,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else //this should never happen
             {
                 ADeletionQuestion =
-                    String.Format(Catalog.GetString("Gift no. {0} in Batch no. {1} has no detail rows in the Gift Detail table!"),
+                    String.Format(Catalog.GetString(
+                            "Gift no. {0} in Recurring Gift Batch no. {1} has no detail rows in the Recurring Gift Detail table!"),
                         ARowToDelete.GiftTransactionNumber,
                         ARowToDelete.BatchNumber);
                 allowDeletion = false;
@@ -92,11 +95,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return allowDeletion;
         }
 
-        private bool OnDeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
+        private bool OnDeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
             bool DeletionSuccessful = false;
-
-            List <string>OriginatingDetailRef = new List <string>();
 
             ACompletionMessage = string.Empty;
 
@@ -112,15 +113,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 try
                 {
                     // temporarily disable  New Donor Warning
-                    ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
+                    ((TFrmRecurringGiftBatch) this.ParentForm).NewDonorWarning = false;
 
                     //Return modified row to last saved state to avoid validation failures
                     ARowToDelete.RejectChanges();
                     ShowDetails(ARowToDelete);
 
-                    if (!((TFrmGiftBatch) this.ParentForm).SaveChanges())
+                    if (!((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
                     {
-                        MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current gift detail!"),
+                        MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current Gift detail!"),
                             Catalog.GetString("Deletion Error"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error);
@@ -130,7 +131,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 finally
                 {
-                    ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
+                    ((TFrmRecurringGiftBatch) this.ParentForm).NewDonorWarning = true;
                 }
             }
 
@@ -139,13 +140,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             BackupMainDS.Merge(FMainDS);
 
             //To be used later....Pass copy to delete method.
-            //GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+            //RecurringGiftBatchTDS TempDS = (RecurringGiftBatchTDS)FMainDS.Copy();
             //TempDS.Merge(FMainDS);
 
             int SelectedDetailNumber = ARowToDelete.DetailNumber;
-            int GiftToDeleteTransNo = 0;
-            string FilterAllGiftsOfBatch = String.Empty;
-            string FilterAllGiftDetailsOfBatch = String.Empty;
+            int RecurringGiftToDeleteTransNo = 0;
+            string FilterAllRecurringGiftsOfBatch = String.Empty;
+            string FilterAllRecurringGiftDetailsOfBatch = String.Empty;
 
             int DetailRowCount = FGiftDetailView.Count;
 
@@ -153,27 +154,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                //Speeds up deletion of larger gift sets
+                //Speeds up deletion of larger Recurring Gift sets
                 FMainDS.EnforceConstraints = false;
-
-                if ((ARowToDelete.ModifiedDetailKey != null) && (ARowToDelete.ModifiedDetailKey.Length > 0))
-                {
-                    OriginatingDetailRef.Add(ARowToDelete.ModifiedDetailKey);
-                }
 
                 //Delete current detail row
                 ARowToDelete.Delete();
 
-                //If there existed (before the delete row above) more than one detail row, then no need to delete gift header row
+                //If there existed (before the delete row above) more than one detail row, then no need to delete Recurring Gift header row
                 if (DetailRowCount > 1)
                 {
-                    ACompletionMessage = Catalog.GetString("Gift Detail row deleted successfully!");
+                    ACompletionMessage = Catalog.GetString("Recurring Gift Detail row deleted successfully!");
 
                     FGiftSelectedForDeletion = false;
 
                     foreach (DataRowView rv in FGiftDetailView)
                     {
-                        GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
+                        GiftBatchTDSARecurringGiftDetailRow row = (GiftBatchTDSARecurringGiftDetailRow)rv.Row;
 
                         if (row.DetailNumber > SelectedDetailNumber)
                         {
@@ -187,76 +183,76 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    ACompletionMessage = Catalog.GetString("Gift deleted successfully!");
+                    ACompletionMessage = Catalog.GetString("Recurring Gift deleted successfully!");
 
-                    GiftToDeleteTransNo = FGift.GiftTransactionNumber;
+                    RecurringGiftToDeleteTransNo = FGift.GiftTransactionNumber;
 
-                    // Reduce all Gift Detail row Transaction numbers by 1 if they are greater then gift to be deleted
-                    FilterAllGiftDetailsOfBatch = String.Format("{0}={1} And {2}>{3}",
-                        AGiftDetailTable.GetBatchNumberDBName(),
+                    // Reduce all Recurring Gift Detail row Transaction numbers by 1 if they are greater then Recurring Gift to be deleted
+                    FilterAllRecurringGiftDetailsOfBatch = String.Format("{0}={1} And {2}>{3}",
+                        ARecurringGiftDetailTable.GetBatchNumberDBName(),
                         FBatchNumber,
-                        AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                        GiftToDeleteTransNo);
+                        ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                        RecurringGiftToDeleteTransNo);
 
-                    DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
-                    giftDetailView.RowFilter = FilterAllGiftDetailsOfBatch;
-                    giftDetailView.Sort = String.Format("{0} ASC", AGiftDetailTable.GetGiftTransactionNumberDBName());
+                    DataView RecurringGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
+                    RecurringGiftDetailView.RowFilter = FilterAllRecurringGiftDetailsOfBatch;
+                    RecurringGiftDetailView.Sort = String.Format("{0} ASC", ARecurringGiftDetailTable.GetGiftTransactionNumberDBName());
 
-                    foreach (DataRowView rv in giftDetailView)
+                    foreach (DataRowView rv in RecurringGiftDetailView)
                     {
-                        GiftBatchTDSAGiftDetailRow row = (GiftBatchTDSAGiftDetailRow)rv.Row;
+                        GiftBatchTDSARecurringGiftDetailRow row = (GiftBatchTDSARecurringGiftDetailRow)rv.Row;
 
                         row.GiftTransactionNumber--;
                     }
 
-                    //Cannot delete the gift row, just copy the data of rows above down by 1 row
+                    //Cannot delete the Recurring Gift row, just copy the data of rows above down by 1 row
                     // and then mark the top row for deletion
-                    //In other words, bubble the gift row to be deleted to the top
-                    FilterAllGiftsOfBatch = String.Format("{0}={1} And {2}>={3}",
-                        AGiftTable.GetBatchNumberDBName(),
+                    //In other words, bubble the Recurring Gift row to be deleted to the top
+                    FilterAllRecurringGiftsOfBatch = String.Format("{0}={1} And {2}>={3}",
+                        ARecurringGiftTable.GetBatchNumberDBName(),
                         FBatchNumber,
-                        AGiftTable.GetGiftTransactionNumberDBName(),
-                        GiftToDeleteTransNo);
+                        ARecurringGiftTable.GetGiftTransactionNumberDBName(),
+                        RecurringGiftToDeleteTransNo);
 
-                    DataView giftView = new DataView(FMainDS.AGift);
-                    giftView.RowFilter = FilterAllGiftsOfBatch;
-                    giftView.Sort = String.Format("{0} ASC", AGiftTable.GetGiftTransactionNumberDBName());
+                    DataView RecurringGiftView = new DataView(FMainDS.ARecurringGift);
+                    RecurringGiftView.RowFilter = FilterAllRecurringGiftsOfBatch;
+                    RecurringGiftView.Sort = String.Format("{0} ASC", ARecurringGiftTable.GetGiftTransactionNumberDBName());
 
-                    AGiftRow giftRowToReceive = null;
-                    AGiftRow giftRowToCopyDown = null;
-                    AGiftRow giftRowCurrent = null;
+                    ARecurringGiftRow RecurringGiftRowToReceive = null;
+                    ARecurringGiftRow RecurringGiftRowToCopyDown = null;
+                    ARecurringGiftRow RecurringGiftRowCurrent = null;
 
-                    int currentGiftTransNo = 0;
+                    int currentRecurringGiftTransNo = 0;
 
-                    foreach (DataRowView gv in giftView)
+                    foreach (DataRowView gv in RecurringGiftView)
                     {
-                        giftRowCurrent = (AGiftRow)gv.Row;
+                        RecurringGiftRowCurrent = (ARecurringGiftRow)gv.Row;
 
-                        currentGiftTransNo = giftRowCurrent.GiftTransactionNumber;
+                        currentRecurringGiftTransNo = RecurringGiftRowCurrent.GiftTransactionNumber;
 
-                        if (currentGiftTransNo > GiftToDeleteTransNo)
+                        if (currentRecurringGiftTransNo > RecurringGiftToDeleteTransNo)
                         {
-                            giftRowToCopyDown = giftRowCurrent;
+                            RecurringGiftRowToCopyDown = RecurringGiftRowCurrent;
 
                             //Copy column values down
-                            for (int j = 3; j < giftRowToCopyDown.Table.Columns.Count; j++)
+                            for (int j = 3; j < RecurringGiftRowToCopyDown.Table.Columns.Count; j++)
                             {
                                 //Update all columns except the pk fields that remain the same
-                                if (!giftRowToCopyDown.Table.Columns[j].ColumnName.EndsWith("_text"))
+                                if (!RecurringGiftRowToCopyDown.Table.Columns[j].ColumnName.EndsWith("_text"))
                                 {
-                                    giftRowToReceive[j] = giftRowToCopyDown[j];
+                                    RecurringGiftRowToReceive[j] = RecurringGiftRowToCopyDown[j];
                                 }
                             }
                         }
 
-                        if (currentGiftTransNo == FBatchRow.LastGiftNumber)
+                        if (currentRecurringGiftTransNo == FBatchRow.LastGiftNumber)
                         {
                             //Mark last record for deletion
-                            giftRowCurrent.GiftStatus = MFinanceConstants.MARKED_FOR_DELETION;
+                            RecurringGiftRowCurrent.ChargeStatus = MFinanceConstants.MARKED_FOR_DELETION;
                         }
 
                         //Will always be previous row
-                        giftRowToReceive = giftRowCurrent;
+                        RecurringGiftRowToReceive = RecurringGiftRowCurrent;
                     }
 
                     FPreviouslySelectedDetailRow = null;
@@ -269,20 +265,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 //Try to save changes
-                if (((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
+                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
                 {
-                    //Check if have deleted a reversing gift detail
-                    if (OriginatingDetailRef.Count > 0)
-                    {
-                        TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
-                    }
-
-                    //Clear current batch's gift data and reload from server
-                    RefreshCurrentBatchGiftData(FBatchNumber, true);
+                    //Clear current batch's Recurring Gift data and reload from server
+                    RefreshCurrentRecurringBatchGiftData(FBatchNumber, true);
                 }
                 else
                 {
-                    throw new Exception("Unable to save after deleting a gift!");
+                    throw new Exception("Unable to save after deleting a Recurring Gift!");
                 }
 
                 DeletionSuccessful = true;
@@ -318,7 +308,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AMainDS.Merge(ABackupDS);
         }
 
-        private void OnPostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
+        private void OnPostDeleteManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)
@@ -336,7 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 UpdateTotals();
 
-                ((TFrmGiftBatch) this.ParentForm).SaveChangesManual();
+                ((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual();
 
                 //message to user
                 MessageBox.Show(ACompletionMessage,
@@ -367,16 +357,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string CompletionMessage = string.Empty;
             int BatchNumberToClear = FBatchNumber;
 
-            List <string>OriginatingDetailRef = new List <string>();
-
-            if ((FPreviouslySelectedDetailRow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            if ((FPreviouslySelectedDetailRow == null))
             {
                 return;
             }
             else if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
             {
-                MessageBox.Show(Catalog.GetString("Please remove the filter before attempting to delete all gifts in this batch."),
-                    Catalog.GetString("Delete All Gifts"));
+                MessageBox.Show(Catalog.GetString("Please remove the filter before attempting to delete all Recurring Gifts in this batch."),
+                    Catalog.GetString("Delete All Recurring Gifts"));
 
                 return;
             }
@@ -386,7 +374,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             BackupMainDS.Merge(FMainDS);
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have chosen to delete all gifts from Gift Batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                            "You have chosen to delete all Gifts from Recurring Batch ({0}).{1}{1}Are you sure you want to delete all?"),
                         BatchNumberToClear,
                         Environment.NewLine),
                     Catalog.GetString("Confirm Delete All"),
@@ -399,40 +387,34 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.WaitCursor;
 
                     //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                    CompletionMessage = String.Format(Catalog.GetString("All gifts and details deleted successfully."),
+                    CompletionMessage = String.Format(Catalog.GetString("All Recurring Gifts and details deleted successfully."),
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
                     ClearCurrentSelection(false);
 
-                    //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
+                    //Now delete all Recurring Gift data for current batch
+                    DeleteCurrentRecurringBatchGiftData(BatchNumberToClear);
 
                     FBatchRow.BatchTotal = 0;
                     txtBatchTotal.NumberValueDecimal = 0;
 
-                    // Be sure to set the last gift number in the parent table before saving all the changes
+                    // Be sure to set the last Recurring Gift number in the parent table before saving all the changes
                     FBatchRow.LastGiftNumber = 0;
 
                     FPetraUtilsObject.SetChangedFlag();
 
                     // save first, then post
-                    if (((TFrmGiftBatch)ParentForm).SaveChangesManual())
+                    if (((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual())
                     {
-                        //Check if have deleted a reversing gift detail
-                        if (OriginatingDetailRef.Count > 0)
-                        {
-                            TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
-                        }
-
                         MessageBox.Show(CompletionMessage,
-                            "All Gifts Deleted.",
+                            "All Recurring Gifts Deleted.",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
                     }
                     else
                     {
-                        throw new Exception("Unable to save after deleting all gifts!");
+                        throw new Exception("Unable to save after deleting all Recurring Gifts!");
                     }
                 }
                 catch (Exception ex)
@@ -460,40 +442,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateRecordNumberDisplay();
         }
 
-        private void DeleteCurrentBatchGiftData(Int32 ABatchNumber, ref List <string>AModifiedDetailKeyRows)
+        /// <summary>
+        /// DeleteCurrentRecurringBatchGiftData
+        /// </summary>
+        /// <param name="ABatchNumber"></param>
+        public void DeleteCurrentRecurringBatchGiftData(Int32 ABatchNumber)
         {
-            DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
+            DataView RecurringGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
 
-            giftDetailView.RowFilter = String.Format("{0}={1}",
-                AGiftDetailTable.GetBatchNumberDBName(),
+            RecurringGiftDetailView.RowFilter = String.Format("{0}={1}",
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
                 ABatchNumber);
 
-            giftDetailView.Sort = String.Format("{0} DESC, {1} DESC",
-                AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                AGiftDetailTable.GetDetailNumberDBName());
+            RecurringGiftDetailView.Sort = String.Format("{0} DESC, {1} DESC",
+                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                ARecurringGiftDetailTable.GetDetailNumberDBName());
 
-            foreach (DataRowView dr in giftDetailView)
+            foreach (DataRowView dr in RecurringGiftDetailView)
             {
-                AGiftDetailRow gdr = (AGiftDetailRow)dr.Row;
-
-                if ((gdr.ModifiedDetailKey != null) && (gdr.ModifiedDetailKey.Length > 0))
-                {
-                    AModifiedDetailKeyRows.Add(gdr.ModifiedDetailKey);
-                }
-
+                ARecurringGiftDetailRow gdr = (ARecurringGiftDetailRow)dr.Row;
                 dr.Delete();
             }
 
-            DataView giftView = new DataView(FMainDS.AGift);
+            DataView RecurringGiftView = new DataView(FMainDS.ARecurringGift);
 
-            giftView.RowFilter = String.Format("{0}={1}",
-                AGiftTable.GetBatchNumberDBName(),
+            RecurringGiftView.RowFilter = String.Format("{0}={1}",
+                ARecurringGiftTable.GetBatchNumberDBName(),
                 ABatchNumber);
 
-            giftView.Sort = String.Format("{0} DESC",
-                AGiftTable.GetGiftTransactionNumberDBName());
+            RecurringGiftView.Sort = String.Format("{0} DESC",
+                ARecurringGiftTable.GetGiftTransactionNumberDBName());
 
-            foreach (DataRowView dr in giftView)
+            foreach (DataRowView dr in RecurringGiftView)
             {
                 dr.Delete();
             }

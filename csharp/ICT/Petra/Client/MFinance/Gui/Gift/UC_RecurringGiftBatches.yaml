@@ -20,20 +20,19 @@ RootNode:
             Controls: [pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
             Dock: Left
-            ExpandedWidth: 175
-            ShowApplyFilterButton: FilterContext.StandardFilterOnly
+            ExpandedWidth: 180
+            InitiallyExpanded: true     
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
             FilterControls: [txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
-            FindControls: [Column:BatchNumber, txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
+            FindControls: [txtDetailBatchDescription, cmbDetailBankCostCentre, cmbDetailBankAccountCode, cmbDetailCurrencyCode, rgrDetailGiftType]
             ControlAttributes:
-                txtBatchNumber: {Label=Batch Number, FindComparison=StartsWith}
-                rgrDetailGiftType: {CloneToComboBox=true, Label=Gift Type}
+                rgrDetailGiftType: {Label=Gift Type, CloneToComboBox=true}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNew, btnDelete, btnSubmit]
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
-        btnDelete: {Action=actDelete, Width=120}
+        btnDelete: {Action=actDelete, Width=120, Tooltip=Click to Delete the highlighted recurring batch}
         btnSubmit: {Action=actSubmit, Width=120, StartNewButtonGroup=true, Tooltip=Click to Submit the highlighted recurring batch}
         grdDetails:
             Dock: Fill
@@ -57,8 +56,8 @@ RootNode:
                 Row4: [cmbDetailMethodOfPaymentCode]
                 Row5: [rgrDetailGiftType]
         txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
-        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, ColSpan=2, Validation=true}
-        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, ColSpan=2, Validation=true}
+        cmbDetailBankCostCentre: {Label=Cost Centre, List=UserDefinedList, Validation=true}
+        cmbDetailBankAccountCode: {Label=Bank Account, List=UserDefinedList, Validation=true}
         txtDetailHashTotal: {Label=Hash Total, Format=Currency, NullValueAllowed=false, OnChange=HashTotalChanged, Validation=true}
         cmbDetailCurrencyCode: {List=CurrencyCodeList, OnChange=CurrencyChanged}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList, OnChange=MethodOfPaymentChanged}

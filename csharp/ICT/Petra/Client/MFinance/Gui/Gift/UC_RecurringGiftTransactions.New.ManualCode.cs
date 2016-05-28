@@ -33,15 +33,15 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
-    public partial class TUC_GiftTransactions
+    public partial class TUC_RecurringGiftTransactions
     {
         /// <summary>
-        /// Creates a new gift or gift detail depending upon the parameter
+        /// Creates a new Recurring Gift or Recurring Gift detail depending upon the parameter
         /// </summary>
-        /// <param name="ACompletelyNewGift"></param>
-        private void CreateANewGift(bool ACompletelyNewGift)
+        /// <param name="ACompletelyNewRecurringGift"></param>
+        private void CreateANewRecurringGift(bool ACompletelyNewRecurringGift)
         {
-            AGiftRow CurrentGiftRow = null;
+            ARecurringGiftRow CurrentRecurringGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
             bool HasChanges = FPetraUtilsObject.HasChanges;
             bool SelectEndRow = false;
@@ -49,17 +49,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool FPrevRowIsNull = (FPreviouslySelectedDetailRow == null);
             bool CopyDetails = false;
 
-            bool AutoSaveSuccessful = FAutoSave && HasChanges && ((TFrmGiftBatch)ParentForm).SaveChangesManual();
+            bool AutoSaveSuccessful = FAutoSave && HasChanges && ((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual();
 
             FCreatingNewGift = true;
 
             try
             {
-                //May need to copy values down if a new detail row inside current gift
-                int giftTransactionNumber = 0;
+                //May need to copy values down if a new detail row inside current Recurring Gift
+                int RecurringGiftTransactionNumber = 0;
                 string donorName = string.Empty;
                 string donorClass = string.Empty;
-                bool confidentialGiftFlag = false;
+                bool confidentialRecurringGiftFlag = false;
                 bool chargeFlag = false;
                 bool taxDeductible = false;
                 string motivationGroupCode = string.Empty;
@@ -67,20 +67,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (AutoSaveSuccessful || ((!FAutoSave || !HasChanges) && ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical)))
                 {
-                    if (!ACompletelyNewGift)      //i.e. a gift detail
+                    if (!ACompletelyNewRecurringGift)      //i.e. a RecurringGift detail
                     {
-                        ACompletelyNewGift = IsEmptyGrid;
+                        ACompletelyNewRecurringGift = IsEmptyGrid;
                     }
 
-                    CopyDetails = (!ACompletelyNewGift && !FPrevRowIsNull);
+                    CopyDetails = (!ACompletelyNewRecurringGift && !FPrevRowIsNull);
 
                     if (CopyDetails)
                     {
                         //Allow for possibility that FPrev... may have some null column values
-                        giftTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+                        RecurringGiftTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
                         donorName = FPreviouslySelectedDetailRow.IsDonorNameNull() ? string.Empty : FPreviouslySelectedDetailRow.DonorName;
                         donorClass = FPreviouslySelectedDetailRow.IsDonorClassNull() ? string.Empty : FPreviouslySelectedDetailRow.DonorClass;
-                        confidentialGiftFlag =
+                        confidentialRecurringGiftFlag =
                             FPreviouslySelectedDetailRow.IsConfidentialGiftFlagNull() ? false : FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
                         chargeFlag = FPreviouslySelectedDetailRow.IsChargeFlagNull() ? true : FPreviouslySelectedDetailRow.ChargeFlag;
                         taxDeductible = FPreviouslySelectedDetailRow.IsTaxDeductibleNull() ? true : FPreviouslySelectedDetailRow.TaxDeductible;
@@ -95,24 +95,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Set previous row to Null.
                     FPreviouslySelectedDetailRow = null;
 
-                    if (ACompletelyNewGift)
+                    if (ACompletelyNewRecurringGift)
                     {
-                        //Run this if a new gift is requested or required.
+                        //Run this if a new Recurring Gift is requested or required.
                         SelectEndRow = true;
 
                         // we create the row locally, no dataset
-                        AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
+                        ARecurringGiftRow recurringGiftRow = FMainDS.ARecurringGift.NewRowTyped(true);
 
-                        giftRow.LedgerNumber = FBatchRow.LedgerNumber;
-                        giftRow.BatchNumber = FBatchRow.BatchNumber;
-                        giftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
-                        giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
-                        giftRow.LastDetailNumber = 1;
-                        giftRow.DateEntered = FBatchRow.GlEffectiveDate;
+                        recurringGiftRow.LedgerNumber = FBatchRow.LedgerNumber;
+                        recurringGiftRow.BatchNumber = FBatchRow.BatchNumber;
+                        recurringGiftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
+                        recurringGiftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
+                        recurringGiftRow.LastDetailNumber = 1;
 
-                        FMainDS.AGift.Rows.Add(giftRow);
+                        FMainDS.ARecurringGift.Rows.Add(recurringGiftRow);
 
-                        CurrentGiftRow = giftRow;
+                        CurrentRecurringGiftRow = recurringGiftRow;
 
                         mniDonorHistory.Enabled = false;
 
@@ -121,32 +120,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        CurrentGiftRow = GetGiftRow(giftTransactionNumber);
-                        CurrentGiftRow.LastDetailNumber++;
+                        CurrentRecurringGiftRow = GetRecurringGiftRow(RecurringGiftTransactionNumber);
+                        CurrentRecurringGiftRow.LastDetailNumber++;
 
-                        //If adding detail to current last gift, then new detail will be bottom row in grid
-                        if (FBatchRow.LastGiftNumber == giftTransactionNumber)
+                        //If adding detail to current last Recurring Gift, then new detail will be bottom row in grid
+                        if (FBatchRow.LastGiftNumber == RecurringGiftTransactionNumber)
                         {
                             SelectEndRow = true;
                         }
                     }
 
-                    //New gifts will require a new detail anyway, so this code always runs
-                    GiftBatchTDSAGiftDetailRow newRow = FMainDS.AGiftDetail.NewRowTyped(true);
+                    //New Recurring Gifts will require a new detail anyway, so this code always runs
+                    GiftBatchTDSARecurringGiftDetailRow newRow = FMainDS.ARecurringGiftDetail.NewRowTyped(true);
 
                     newRow.LedgerNumber = FBatchRow.LedgerNumber;
                     newRow.BatchNumber = FBatchRow.BatchNumber;
-                    newRow.GiftTransactionNumber = CurrentGiftRow.GiftTransactionNumber;
-                    newRow.DetailNumber = CurrentGiftRow.LastDetailNumber;
-                    newRow.MethodOfPaymentCode = CurrentGiftRow.MethodOfPaymentCode;
-                    newRow.MethodOfGivingCode = CurrentGiftRow.MethodOfGivingCode;
-                    newRow.DonorKey = CurrentGiftRow.DonorKey;
+                    newRow.GiftTransactionNumber = CurrentRecurringGiftRow.GiftTransactionNumber;
+                    newRow.DetailNumber = CurrentRecurringGiftRow.LastDetailNumber;
+                    newRow.MethodOfPaymentCode = CurrentRecurringGiftRow.MethodOfPaymentCode;
+                    newRow.MethodOfGivingCode = CurrentRecurringGiftRow.MethodOfGivingCode;
+                    newRow.DonorKey = CurrentRecurringGiftRow.DonorKey;
 
                     if (CopyDetails)
                     {
                         newRow.DonorName = donorName;
                         newRow.DonorClass = donorClass;
-                        newRow.ConfidentialGiftFlag = confidentialGiftFlag;
+                        newRow.ConfidentialGiftFlag = confidentialRecurringGiftFlag;
                         newRow.ChargeFlag = chargeFlag;
                         newRow.TaxDeductible = taxDeductible;
                         newRow.MotivationGroupCode = motivationGroupCode;
@@ -167,24 +166,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
 
-                    newRow.DateEntered = CurrentGiftRow.DateEntered;
-                    newRow.ReceiptPrinted = false;
-                    newRow.ReceiptNumber = 0;
-
-                    if (FTaxDeductiblePercentageEnabled)
-                    {
-                        newRow.TaxDeductiblePct = newRow.TaxDeductible ? 100.0m : 0.0m;
-
-                        //Set unbound textboxes to 0
-                        txtTaxDeductAmount.NumberValueDecimal = 0.0m;
-                        txtNonDeductAmount.NumberValueDecimal = 0.0m;
-                    }
-
-                    FMainDS.AGiftDetail.Rows.Add(newRow);
+                    FMainDS.ARecurringGiftDetail.Rows.Add(newRow);
 
                     FPetraUtilsObject.SetChangedFlag();
 
-                    if (!SelectEndRow && !SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1))
+                    if (!SelectEndRow && !SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1))
                     {
                         if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
                         {
@@ -199,7 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 FFilterAndFindObject.ApplyFilter();
                             }
 
-                            SelectDetailRowByDataTableIndex(FMainDS.AGiftDetail.Rows.Count - 1);
+                            SelectDetailRowByDataTableIndex(FMainDS.ARecurringGiftDetail.Rows.Count - 1);
                         }
                     }
 
@@ -214,7 +200,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     //Focus accordingly
-                    if (ACompletelyNewGift)
+                    if (ACompletelyNewRecurringGift)
                     {
                         txtDetailDonorKey.Focus();
                     }
@@ -224,7 +210,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     //FPreviouslySelectedDetailRow should now be pointing to the newly added row
-                    TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0,
+                    TUC_RecurringGiftTransactions_Recipient.UpdateRecipientKeyText(0,
                         FPreviouslySelectedDetailRow,
                         cmbDetailMotivationGroupCode.GetSelectedString(),
                         cmbDetailMotivationDetailCode.GetSelectedString());
@@ -244,23 +230,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// add a new gift
+        /// add a new Recurring Gift
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void NewGift(System.Object sender, EventArgs e)
         {
-            CreateANewGift(true);
+            CreateANewRecurringGift(true);
         }
 
         /// <summary>
-        /// add a new gift detail
+        /// add a new Recurring Gift detail
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void NewGiftDetail(System.Object sender, EventArgs e)
         {
-            CreateANewGift(false);
+            CreateANewRecurringGift(false);
         }
     }
 }

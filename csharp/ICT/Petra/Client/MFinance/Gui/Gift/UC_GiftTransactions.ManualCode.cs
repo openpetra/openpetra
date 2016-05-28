@@ -54,35 +54,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftTransactions
     {
+        private bool FShowStatusDialogOnLoad = true;
+        private string FBatchCurrencyCode = string.Empty;
         private string FBatchMethodOfPayment = string.Empty;
+
+        private AGiftRow FGift = null;
         private Int64 FLastDonor = -1;
         private bool FActiveOnly = true;
         private bool FGiftSelectedForDeletion = false;
         private bool FSuppressListChanged = false;
         private bool FInRecipientKeyChanging = false;
         private bool FInKeyMinistryChanging = false;
-        private bool FMotivationDetailChanged = false;
         private bool FCreatingNewGift = false;
         private bool FAutoPopulatingGift = false;
         private bool FInEditMode = false;
         private ToolTip FDonorInfoToolTip = new ToolTip();
 
-        private AGiftRow FGift = null;
         private string FMotivationGroup = string.Empty;
         private string FMotivationDetail = string.Empty;
+        private bool FMotivationDetailChanged = false;
+
         private string FAutoPopComment = string.Empty;
         string FFilterAllDetailsOfGift = string.Empty;
         private DataView FGiftDetailView = null;
         private Int64 FRecipientKey = 0;
-
-        private string FBatchStatus = string.Empty;
-        private bool FBatchUnposted = false;
-        private bool FShowStatusDialogOnLoad = true;
-        private string FBatchCurrencyCode = string.Empty;
-        private decimal FBatchExchangeRateToBase = 1.0m;
-        private bool FGLEffectivePeriodChanged = false;
         private bool FGiftAmountChanged = false;
         private Int32 FCurrentGiftInBatch = 0;
+
+        private decimal FBatchExchangeRateToBase = 1.0m;
+        private bool FGLEffectivePeriodChanged = false;
+        private string FBatchStatus = string.Empty;
+        private bool FBatchUnposted = false;
 
         //System Defaults
         private bool FTaxDeductiblePercentageEnabled = false;
@@ -343,6 +345,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMotivationDetailCode, txtDetailRecipientKeyMinistry, ref FMotivationDetail, FInEditMode, FBatchUnposted);
         }
 
+        private bool EditableGiftDetail(GiftBatchTDSAGiftDetailRow ARow)
+        {
+            if (ARow != null)
+            {
+                if (!FActiveOnly || ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)))
+                {
+                    return false;
+                }
+
+                return true;
+            }
+
+            return FActiveOnly;
+        }
+
         private void SetFocusToKeyMinistryCombo(object sender, EventArgs e)
         {
             cmbKeyMinistries.Focus();
@@ -365,6 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FInEditMode = true;
 
             bool DoTaxUpdate;
+
             TUC_GiftTransactions_Recipient.SetKeyMinistryTextBoxInvisible(FPreviouslySelectedDetailRow,
                 FMainDS,
                 FLedgerNumber,
@@ -408,6 +426,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void EndEditMode(object sender, EventArgs e)
         {
             FInEditMode = false;
+
             bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
 
             TUC_GiftTransactions_Recipient.OnEndEditMode(FPreviouslySelectedDetailRow,
@@ -450,7 +469,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool SameCurrentBatch =
                 ((FLedgerNumber == ALedgerNumber) && (FBatchNumber == ABatchNumber) && (FBatchStatus == ABatchStatus) && !AForceLoadFromServer);
 
-            //Read key fields
             FBatchRow = GetBatchRow();
 
             if ((FBatchRow == null) && (GetAnyBatchRow(ABatchNumber) == null))
@@ -459,6 +477,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
+            //Set key values from Batch
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
             FBatchStatus = ABatchStatus;
@@ -471,7 +490,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 InitialiseControls();
             }
 
-            UpdateCurrencySymbols(FBatchRow.CurrencyCode);
+            UpdateCurrencySymbols(FBatchCurrencyCode);
 
             //Check if the same batch is selected, so no need to apply filter
             if (SameCurrentBatch)
@@ -487,11 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         dtpDateEntered.Date = FBatchRow.GlEffectiveDate;
                     }
 
-                    //Same as previously selected
-                    if (GetSelectedRowIndex() > 0)
-                    {
-                        GetDetailsFromControls(GetSelectedDetailRow());
-                    }
+                    GetDetailsFromControls(GetSelectedDetailRow());
                 }
 
                 UpdateControlsProtection();
@@ -681,6 +696,37 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 giftDetail.DonorKey = donorKey;
                 giftDetail.DonorName = DonorsDict[donorKey];
             }
+        }
+
+        private PPartnerRow RetrieveDonorRow(long APartnerKey)
+        {
+            if (APartnerKey == 0)
+            {
+                return null;
+            }
+
+            // find PPartnerRow from dataset
+            PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
+
+            // if PPartnerRow cannot be found, load it from db
+            if ((DonorRow == null) || (DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value))
+            {
+                PPartnerTable PartnerTable = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
+
+                if ((PartnerTable == null) || (PartnerTable.Rows.Count == 0))
+                {
+                    // invalid partner
+                    return null;
+                }
+                else
+                {
+                    FMainDS.DonorPartners.Merge(PartnerTable);
+                }
+
+                DonorRow = PartnerTable[0];
+            }
+
+            return DonorRow;
         }
 
         private void RecipientKeyChanged(Int64 APartnerKey,
@@ -886,7 +932,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                  && (Convert.ToInt64(txtDetailRecipientKey.Text) == 0)
                                  && (txtDetailGiftTransactionAmount.NumberValueDecimal.Value == 0))
                         {
-                            AutoPopulateGiftDetail(APartnerKey, giftTransactionNo);
+                            AutoPopulateGiftDetail(APartnerKey, APartnerShortName, giftTransactionNo);
                         }
 
                         mniDonorHistory.Enabled = true;
@@ -917,6 +963,471 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftNumber);
 
             return giftDV != null && giftDV.Count > 0;
+        }
+
+        // auto populate recipient info using the donor's last gift
+        private void AutoPopulateGiftDetail(Int64 ADonorKey, String APartnerShortName, Int32 AGiftTransactionNumber)
+        {
+            FAutoPopulatingGift = true;
+
+            bool IsSplitGift = false;
+
+            DateTime LatestUnpostedGiftDateEntered = new DateTime(1900, 1, 1);
+
+            try
+            {
+                //Check for Donor in loaded gift batches
+                // and record most recent date entered
+                AGiftTable DonorRecentGiftsTable = new AGiftTable();
+                GiftBatchTDSAGiftDetailTable GiftDetailTable = new GiftBatchTDSAGiftDetailTable();
+
+                AGiftRow MostRecentLoadedGiftForDonorRow = null;
+
+                DataView giftDV = new DataView(FMainDS.AGift);
+
+                giftDV.RowStateFilter = DataViewRowState.CurrentRows;
+
+                giftDV.RowFilter = string.Format("{0}={1} And Not ({2}={3} And {4}={5})",
+                    AGiftTable.GetDonorKeyDBName(),
+                    ADonorKey,
+                    AGiftTable.GetBatchNumberDBName(),
+                    FBatchNumber,
+                    AGiftTable.GetGiftTransactionNumberDBName(),
+                    AGiftTransactionNumber);
+
+                giftDV.Sort = String.Format("{0} DESC, {1} DESC",
+                    AGiftTable.GetDateEnteredDBName(),
+                    AGiftTable.GetGiftTransactionNumberDBName());
+
+                if (giftDV.Count > 0)
+                {
+                    //Take first row = most recent date entered value
+                    MostRecentLoadedGiftForDonorRow = (AGiftRow)giftDV[0].Row;
+                    LatestUnpostedGiftDateEntered = MostRecentLoadedGiftForDonorRow.DateEntered;
+                    DonorRecentGiftsTable.Rows.Add((object[])MostRecentLoadedGiftForDonorRow.ItemArray.Clone());
+                }
+
+                //Check for even more recent saved gifts on server (i.e. not necessarily loaded)
+                GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastPostedGift(ADonorKey, FLedgerNumber, LatestUnpostedGiftDateEntered);
+
+                if (((GiftDetailTable != null) && (GiftDetailTable.Count > 0)))
+                {
+                    //UnLoaded/Saved gift from donor is more recent
+                    IsSplitGift = (GiftDetailTable.Count > 1);
+                }
+                else if (MostRecentLoadedGiftForDonorRow != null)
+                {
+                    //Loaded/unsaved gift from donor is more recent
+                    DataView giftDetailDV = new DataView(FMainDS.AGiftDetail);
+
+                    giftDetailDV.RowStateFilter = DataViewRowState.CurrentRows;
+
+                    giftDetailDV.RowFilter = string.Format("{0}={1} And {2}={3}",
+                        AGiftDetailTable.GetBatchNumberDBName(),
+                        MostRecentLoadedGiftForDonorRow.BatchNumber,
+                        AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                        MostRecentLoadedGiftForDonorRow.GiftTransactionNumber);
+
+                    foreach (DataRowView drv in giftDetailDV)
+                    {
+                        GiftBatchTDSAGiftDetailRow gDR = (GiftBatchTDSAGiftDetailRow)drv.Row;
+                        GiftDetailTable.Rows.Add((object[])gDR.ItemArray.Clone());
+                    }
+
+                    IsSplitGift = (GiftDetailTable.Count > 1);
+                }
+                else
+                {
+                    //nothing to autocopy
+                    return;
+                }
+
+                // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
+                if (IsSplitGift)
+                {
+                    GiftDetailTable.DefaultView.Sort = GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName() + " ASC";
+
+                    string Message = string.Format(Catalog.GetString(
+                            "The last gift from this donor was a split gift.{0}{0}Here are the details:{0}"), "\n");
+                    int DetailNumber = 1;
+
+                    foreach (DataRowView dvr in GiftDetailTable.DefaultView)
+                    {
+                        GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)dvr.Row;
+
+                        Message += DetailNumber + ")  ";
+
+                        if (Row.RecipientKey > 0)
+                        {
+                            Message +=
+                                string.Format(Catalog.GetString("Recipient: {0} ({1});  Motivation Group: {2};  Motivation Detail: {3};  Amount: {4}"),
+                                    Row.RecipientDescription, Row.RecipientKey, Row.MotivationGroupCode, Row.MotivationDetailCode,
+                                    StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetBatchRow().CurrencyCode) +
+                                    " " + FBatchRow.CurrencyCode) +
+                                "\n";
+                        }
+
+                        DetailNumber++;
+                    }
+
+                    Message += "\n" + Catalog.GetString("Do you want to create the same split gift again?");
+
+                    if (!(MessageBox.Show(Message, Catalog.GetString(
+                                  "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                          == DialogResult.Yes))
+                    {
+                        if (cmbDetailMethodOfGivingCode.CanFocus)
+                        {
+                            cmbDetailMethodOfGivingCode.Focus();
+                        }
+                        else if (txtDetailReference.CanFocus)
+                        {
+                            txtDetailReference.Focus();
+                        }
+
+                        return;
+                    }
+                }
+
+                this.Cursor = Cursors.WaitCursor;
+
+                GiftBatchTDSAGiftDetailRow giftDetailRow = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[0].Row;
+
+                // Handle first row, which is FPreviouslySelectedDetailRow
+                txtDetailDonorKey.Text = String.Format("{0:0000000000}", ADonorKey);
+                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", giftDetailRow.RecipientKey);
+                cmbDetailMotivationGroupCode.SetSelectedString(giftDetailRow.MotivationGroupCode);
+                cmbDetailMotivationDetailCode.SetSelectedString(giftDetailRow.MotivationDetailCode);
+                chkDetailConfidentialGiftFlag.Checked = giftDetailRow.ConfidentialGiftFlag;
+                chkDetailChargeFlag.Checked = giftDetailRow.ChargeFlag;
+                cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment, -1);
+                cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode, -1);
+
+                //Handle mailing code
+                if (FAutoCopyIncludeMailingCode)
+                {
+                    cmbDetailMailingCode.SetSelectedString(giftDetailRow.MailingCode, -1);
+                }
+                else
+                {
+                    cmbDetailMailingCode.SelectedIndex = -1;
+                }
+
+                //Copy the comments and comment types if required
+                if (FAutoCopyIncludeComments)
+                {
+                    txtDetailGiftCommentOne.Text = giftDetailRow.GiftCommentOne;
+                    cmbDetailCommentOneType.SetSelectedString(giftDetailRow.CommentOneType);
+                    txtDetailGiftCommentTwo.Text = giftDetailRow.GiftCommentTwo;
+                    cmbDetailCommentTwoType.SetSelectedString(giftDetailRow.CommentTwoType);
+                    txtDetailGiftCommentThree.Text = giftDetailRow.GiftCommentThree;
+                    cmbDetailCommentThreeType.SetSelectedString(giftDetailRow.CommentThreeType);
+                }
+
+                //Handle tax fields on current row
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    bool taxDeductible = (giftDetailRow.IsTaxDeductibleNull() ? true : giftDetailRow.TaxDeductible);
+                    giftDetailRow.TaxDeductible = taxDeductible;
+
+                    try
+                    {
+                        FPetraUtilsObject.SuppressChangeDetection = true;
+                        chkDetailTaxDeductible.Checked = taxDeductible;
+                        EnableTaxDeductibilityPct(taxDeductible);
+                    }
+                    finally
+                    {
+                        FPetraUtilsObject.SuppressChangeDetection = false;
+                    }
+
+                    if (!IsSplitGift)
+                    {
+                        //Most commonly not a split gift (?)
+                        if (!taxDeductible)
+                        {
+                            txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                        }
+
+                        txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                        txtNonDeductAmount.NumberValueDecimal = 0.0m;
+                    }
+                    else
+                    {
+                        if (taxDeductible)
+                        {
+                            //In case the tax percentage has changed or null values in amount fields
+                            AGiftDetailRow giftDetails = (AGiftDetailRow)giftDetailRow;
+                            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+
+                            txtTaxDeductAmount.NumberValueDecimal = giftDetailRow.TaxDeductibleAmount;
+                            txtNonDeductAmount.NumberValueDecimal = giftDetailRow.NonDeductibleAmount;
+                        }
+                        else
+                        {
+                            //Changing this will update the unbound amount textboxes
+                            txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                        }
+                    }
+                }
+
+                //Process values that are not bound to a control
+                giftDetailRow.ReceiptPrinted = false;
+                giftDetailRow.ReceiptNumber = 0;
+
+                //Now process other gift details if they exist
+                if (IsSplitGift)
+                {
+                    //Only copy amount to first row if copying split gifts
+                    txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
+
+                    // clear previous validation errors.
+                    // otherwise we get an error if the user has changed the control immediately after changing the donor key.
+                    FPetraUtilsObject.VerificationResultCollection.Clear();
+
+                    bool SelectEndRow = (FBatchRow.LastGiftNumber == FPreviouslySelectedDetailRow.GiftTransactionNumber);
+
+                    //Just retain other details to add
+                    giftDetailRow.Delete();
+                    GiftDetailTable.AcceptChanges();
+
+                    foreach (DataRowView drv in GiftDetailTable.DefaultView)
+                    {
+                        GiftBatchTDSAGiftDetailRow detailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
+
+                        //______________________
+                        //Update basic field values
+                        detailRow.LedgerNumber = FLedgerNumber;
+                        detailRow.BatchNumber = FBatchNumber;
+                        detailRow.GiftTransactionNumber = AGiftTransactionNumber;
+                        detailRow.DetailNumber = ++FGift.LastDetailNumber;
+                        detailRow.DonorName = APartnerShortName;
+                        detailRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
+                        detailRow.DateEntered = FGift.DateEntered;
+                        detailRow.MethodOfPaymentCode = FPreviouslySelectedDetailRow.MethodOfPaymentCode;
+                        detailRow.ReceiptPrinted = false;
+                        detailRow.ReceiptNumber = 0;
+
+                        if (!FAutoCopyIncludeMailingCode)
+                        {
+                            detailRow.MailingCode = string.Empty;
+                        }
+
+                        //______________________
+                        //process recipient details to get most recent data
+                        Int64 partnerKey = detailRow.RecipientKey;
+                        string partnerShortName = string.Empty;
+                        TPartnerClass partnerClass;
+                        bool recipientIsValid = true;
+
+                        if (TServerLookup.TMPartner.GetPartnerShortName(partnerKey, out partnerShortName, out partnerClass))
+                        {
+                            detailRow.RecipientDescription = partnerShortName;
+                            detailRow.RecipientClass = partnerClass.ToString();
+
+                            if (partnerClass == TPartnerClass.FAMILY)
+                            {
+                                detailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(partnerKey,
+                                    FGift.DateEntered);
+                                detailRow.RecipientField = detailRow.RecipientLedgerNumber;
+                                detailRow.RecipientKeyMinistry = string.Empty;
+                            }
+                            else
+                            {
+                                //Class - UNIT
+                                Int64 field;
+                                string keyMinName;
+
+                                recipientIsValid = TFinanceControls.GetRecipientKeyMinData(partnerKey, out field, out keyMinName);
+
+                                detailRow.RecipientLedgerNumber = field;
+                                detailRow.RecipientField = field;
+                                detailRow.RecipientKeyMinistry = keyMinName;
+
+                                if (!recipientIsValid)
+                                {
+                                    string msg =
+                                        String.Format(Catalog.GetString(
+                                                "Gift: {0}, Detail: {1} has a recipient: '{2}-{3}' that is an inactive Key Ministry!"),
+                                            AGiftTransactionNumber,
+                                            detailRow.DetailNumber,
+                                            partnerKey,
+                                            keyMinName);
+                                    MessageBox.Show(msg, Catalog.GetString(
+                                            "Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            recipientIsValid = false;
+                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has an invalid Recipient key: '{2}'!"),
+                                AGiftTransactionNumber,
+                                detailRow.DetailNumber,
+                                partnerKey);
+                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+
+                        //______________________
+                        //Process motivation
+                        if (string.IsNullOrEmpty(detailRow.MotivationGroupCode))
+                        {
+                            detailRow.MotivationGroupCode = string.Empty;
+                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has no Motivation Group!"),
+                                AGiftTransactionNumber,
+                                detailRow.DetailNumber);
+                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else if (string.IsNullOrEmpty(detailRow.MotivationDetailCode))
+                        {
+                            detailRow.MotivationDetailCode = string.Empty;
+                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has no Motivation Detail!"),
+                                AGiftTransactionNumber,
+                                detailRow.DetailNumber);
+                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else
+                        {
+                            AMotivationDetailRow motivationDetailRow = null;
+                            string motivationGroup = detailRow.MotivationGroupCode;
+                            string motivationDetail = detailRow.MotivationDetailCode;
+
+                            motivationDetailRow = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                                new object[] { FLedgerNumber, motivationGroup, motivationDetail });
+
+                            if (motivationDetailRow != null)
+                            {
+                                if (partnerKey > 0)
+                                {
+                                    detailRow.CostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                                        partnerKey,
+                                        detailRow.RecipientLedgerNumber,
+                                        detailRow.DateEntered,
+                                        motivationGroup,
+                                        motivationDetail);
+                                }
+                                else
+                                {
+                                    if (motivationGroup != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                                    {
+                                        detailRow.RecipientDescription = motivationGroup;
+                                    }
+                                    else
+                                    {
+                                        detailRow.RecipientDescription = string.Empty;
+                                    }
+
+                                    detailRow.CostCentreCode = motivationDetailRow.CostCentreCode;
+                                }
+
+                                detailRow.AccountCode = motivationDetailRow.AccountCode;
+
+                                if (FTaxDeductiblePercentageEnabled && string.IsNullOrEmpty(motivationDetailRow.TaxDeductibleAccountCode))
+                                {
+                                    detailRow.TaxDeductibleAccountCode = string.Empty;
+
+                                    string msg = String.Format(Catalog.GetString(
+                                            "Gift: {0}, Detail: {1} has  Motivation Detail: {2} which has no Tax Deductible Account!" +
+                                            "This can be added in Finance / Setup / Motivation Details.{3}{3}" +
+                                            "Unless this is changed it will be impossible to assign a Tax Deductible Percentage to this gift."),
+                                        AGiftTransactionNumber,
+                                        detailRow.DetailNumber,
+                                        motivationDetail,
+                                        Environment.NewLine);
+                                    MessageBox.Show(msg, Catalog.GetString(
+                                            "Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }
+                                else
+                                {
+                                    detailRow.TaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccountCode;
+                                }
+                            }
+                            else
+                            {
+                                string msg =
+                                    String.Format(Catalog.GetString(
+                                            "Gift: {0}, Detail: {1} has Motivation Group and Detail codes ('{2} : {3}') not found in the database!"),
+                                        AGiftTransactionNumber,
+                                        detailRow.DetailNumber,
+                                        motivationGroup,
+                                        motivationDetail);
+                                MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                detailRow.TaxDeductible = false;
+                            }
+                        }
+
+                        //______________________
+                        //Handle tax fields
+                        detailRow.TaxDeductiblePct = RetrieveTaxDeductiblePct((recipientIsValid ? detailRow.RecipientKey : 0),
+                            detailRow.TaxDeductible);
+
+                        AGiftDetailRow giftDetails = (AGiftDetailRow)detailRow;
+                        TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+
+                        //______________________
+                        //Process comments
+                        if (!FAutoCopyIncludeComments)
+                        {
+                            detailRow.CommentOneType = "Both";
+                            detailRow.CommentTwoType = "Both";
+                            detailRow.CommentThreeType = "Both";
+                            detailRow.SetGiftCommentOneNull();
+                            detailRow.SetGiftCommentTwoNull();
+                            detailRow.SetGiftCommentThreeNull();
+                        }
+
+                        detailRow.AcceptChanges();
+                        detailRow.SetAdded();
+                    }
+
+                    //Add in the new records
+                    FMainDS.AGiftDetail.Merge(GiftDetailTable);
+
+                    int indexOfLatestRow = FMainDS.AGiftDetail.Rows.Count - 1;
+
+                    //Select last row added
+                    if (SelectEndRow)
+                    {
+                        grdDetails.SelectRowInGrid(grdDetails.Rows.Count - 1);
+                    }
+                    else if (!SelectDetailRowByDataTableIndex(indexOfLatestRow))
+                    {
+                        if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
+                        {
+                            MessageBox.Show(
+                                MCommonResourcestrings.StrNewRecordIsFiltered,
+                                MCommonResourcestrings.StrAddNewRecordTitle,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
+
+                            if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
+                            {
+                                FFilterAndFindObject.ApplyFilter();
+                            }
+
+                            SelectDetailRowByDataTableIndex(indexOfLatestRow);
+                        }
+                    }
+
+                    cmbKeyMinistries.Clear();
+                    mniRecipientHistory.Enabled = false;
+                    btnDeleteAll.Enabled = btnDelete.Enabled;
+                    UpdateRecordNumberDisplay();
+                    FLastDonor = -1;
+                }
+                else
+                {
+                    txtDetailGiftTransactionAmount.Focus();
+                }
+
+                FPetraUtilsObject.SetChangedFlag();
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
+                FAutoPopulatingGift = false;
+            }
         }
 
         private void DetailCommentChanged(object sender, EventArgs e)
@@ -1329,11 +1840,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// This Method is needed for UserControls who get dynamically loaded on TabPages.
         /// </summary>
         public void AdjustAfterResizing()
         {
-            // TODO Adjustment of SourceGrid's column widhts needs to be done like in Petra 2.3 ('SetupDataGridVisualAppearance' Methods)
+            // TODO Adjustment of SourceGrid's column widths needs to be done like in Petra 2.3 ('SetupDataGridVisualAppearance' Methods)
         }
 
         /// <summary>
@@ -1376,17 +1887,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Clear the gift data of the current batch without marking records for delete
         /// </summary>
-        private bool RefreshCurrentBatchGiftData(Int32 ABatchNumber)
+        private bool RefreshCurrentBatchGiftData(Int32 ABatchNumber,
+            bool AAcceptChanges = false,
+            bool AHandleDataSetBackup = false)
         {
             bool RetVal = false;
 
             //Copy and backup the current dataset
+            GiftBatchTDS BackupDS = null;
             GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
 
             TempDS.Merge(FMainDS);
 
-            GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupDS.Merge(FMainDS);
+            if (AHandleDataSetBackup)
+            {
+                BackupDS = (GiftBatchTDS)FMainDS.Copy();
+                BackupDS.Merge(FMainDS);
+            }
 
             try
             {
@@ -1435,17 +1952,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FMainDS.AGiftDetail.Merge(TempDS.AGiftDetail);
                 }
 
+                //TODO: Confirm I need to AcceptChanges
                 FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, ABatchNumber));
-                FMainDS.AcceptChanges();
+
+                if (AAcceptChanges)
+                {
+                    FMainDS.AcceptChanges();
+                }
 
                 RetVal = true;
             }
             catch (Exception ex)
             {
-                FMainDS.Merge(BackupDS);
+                //If not revert on error then calling method will
+                if (AHandleDataSetBackup)
+                {
+                    RevertDataSet(FMainDS, BackupDS);
+                }
 
-                string errMsg = Catalog.GetString("Error trying to clear current batch data: /n/r/n/r" + ex.Message);
-                MessageBox.Show(errMsg, "Data Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
@@ -1572,13 +2098,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ShowDetailsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            //Remove later
+            //TODO: Remove?
             if (ARow == null)
             {
                 return;
             }
-
-            if ((ARow != null) && FActiveOnly)
+            else if (FActiveOnly)
             {
                 bool isReversal = ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0));
                 bool noFilterSet = string.IsNullOrEmpty(cmbDetailMotivationGroupCode.Filter);
@@ -1596,9 +2121,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool ShowGiftDetail = EditableGiftDetail(FPreviouslySelectedDetailRow);
 
-            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow, cmbKeyMinistries, cmbDetailMotivationGroupCode,
+            if (TUC_GiftTransactions_Recipient.OnStartShowDetailsManual(ARow,
+                    cmbKeyMinistries,
+                    cmbDetailMotivationGroupCode,
                     cmbDetailMotivationDetailCode,
-                    txtDetailRecipientKeyMinistry, ref FMotivationGroup, ref FMotivationDetail, ShowGiftDetail, FGiftTransactionsLoaded, FInEditMode,
+                    txtDetailRecipientKeyMinistry,
+                    ref FMotivationGroup,
+                    ref FMotivationDetail,
+                    ShowGiftDetail,
+                    FGiftTransactionsLoaded,
+                    FInEditMode,
                     FBatchUnposted))
             {
                 try
@@ -1659,52 +2191,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     this.Cursor = Cursors.Default;
                 }
             }
-        }
-
-        private bool EditableGiftDetail(GiftBatchTDSAGiftDetailRow ARow)
-        {
-            if (ARow != null)
-            {
-                if (!FActiveOnly || ((ARow.GiftTransactionAmount < 0) && (GetGiftRow(ARow.GiftTransactionNumber).ReceiptNumber != 0)))
-                {
-                    return false;
-                }
-
-                return true;
-            }
-
-            return FActiveOnly;
-        }
-
-        private PPartnerRow RetrieveDonorRow(long APartnerKey)
-        {
-            if (APartnerKey == 0)
-            {
-                return null;
-            }
-
-            // find PPartnerRow from dataset
-            PPartnerRow DonorRow = (PPartnerRow)FMainDS.DonorPartners.Rows.Find(new object[] { APartnerKey });
-
-            // if PPartnerRow cannot be found, load it from db
-            if ((DonorRow == null) || (DonorRow[PPartnerTable.GetReceiptEachGiftDBName()] == DBNull.Value))
-            {
-                PPartnerTable PartnerTable = TRemote.MFinance.Gift.WebConnectors.LoadPartnerData(APartnerKey);
-
-                if ((PartnerTable == null) || (PartnerTable.Rows.Count == 0))
-                {
-                    // invalid partner
-                    return null;
-                }
-                else
-                {
-                    FMainDS.DonorPartners.Merge(PartnerTable);
-                }
-
-                DonorRow = PartnerTable[0];
-            }
-
-            return DonorRow;
         }
 
         /// <summary>
@@ -1853,7 +2339,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailReference.Text = ACurrentGiftRow.Reference;
             }
 
-            cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode, -1);
+            if (ACurrentGiftRow.IsReceiptLetterCodeNull())
+            {
+                cmbDetailReceiptLetterCode.SelectedIndex = -1;
+            }
+            else
+            {
+                cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode);
+            }
+
             chkNoReceiptOnAdjustment.Checked = !ACurrentGiftRow.PrintReceipt;
 
             if (FCurrentGiftInBatch != ACurrentGiftRow.GiftTransactionNumber)
@@ -2023,32 +2517,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             chkNoReceiptOnAdjustment.Enabled = firstIsEnabled;
         }
 
-        private Boolean IsUnpostedReversedDetailAdjustment(AGiftDetailRow ARow)
-        {
-            // This method returns true if the gift detail row is an unposted adjustement to a reversed gift detail
-            // We use the LinkToPreviousGift property to discover if this gift is associated with the previous gift row.
-            // Then we check if that row has a modifiedDetail flag sets for its first detail.
-            if ((ARow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                return false;
-            }
-
-            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
-
-            if ((giftRow != null) && (giftRow.LinkToPreviousGift == true))
-            {
-                if (ARow.GiftTransactionNumber > 1)
-                {
-                    AGiftDetailRow prevDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
-                        new object[] { ARow.LedgerNumber, ARow.BatchNumber, ARow.GiftTransactionNumber - 1, 1 });
-
-                    return prevDetailRow.ModifiedDetail == true;
-                }
-            }
-
-            return false;
-        }
-
         private Boolean BatchHasMethodOfPayment()
         {
             String BatchMop = GetMethodOfPaymentFromBatch();
@@ -2143,8 +2611,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else
             {
-                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey, ARow,
-                    cmbDetailMotivationGroupCode.GetSelectedString(), cmbDetailMotivationDetailCode.GetSelectedString());
+                TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(ARow.RecipientKey,
+                    ARow,
+                    cmbDetailMotivationGroupCode.GetSelectedString(),
+                    cmbDetailMotivationDetailCode.GetSelectedString());
             }
 
             if (txtDetailRecipientLedgerNumber.Text.Length == 0)
@@ -2189,7 +2659,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Ensure FBatchRow is correct, as this gets called from the batch tab validation
             FBatchRow = GetBatchRow();
 
-            if ((ARow == null) || (ARow.RowState == DataRowState.Deleted) || (FBatchRow == null)
+            if ((ARow == null)
+                || (ARow.RowState == DataRowState.Deleted)
+                || (FBatchRow == null)
                 || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
                 || (FBatchRow.BatchNumber != ARow.BatchNumber))
             {
@@ -2228,8 +2700,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FDonorZeroIsValid);
 
             //Validate gift detail level
-            TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this, ARow, ref VerificationResultCollection,
-                FValidationControlsDict, null, null, null, null, null, null, -1, FRecipientZeroIsValid);
+            TSharedFinanceValidation_Gift.ValidateGiftDetailManual(this,
+                ARow,
+                ref VerificationResultCollection,
+                FValidationControlsDict,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                -1,
+                FRecipientZeroIsValid);
 
             //Recipient field
             if ((ARow[GiftBatchTDSAGiftDetailTable.GetRecipientFieldDBName()] != DBNull.Value)
@@ -2350,28 +2832,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Refresh the dataset for this form
         /// </summary>
-        public void RefreshAllData()
+        public void RefreshData()
         {
-            Cursor prevCursor = ParentForm.Cursor;
+            Cursor PrevCursor = ParentForm.Cursor;
 
-            ParentForm.Cursor = Cursors.WaitCursor;
-
-            if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
+            try
             {
-                FMainDS.AGift.Rows.Clear();
-                FMainDS.AGiftDetail.Rows.Clear();
+                ParentForm.Cursor = Cursors.WaitCursor;
+
+                if ((FMainDS != null) && (FMainDS.AGiftDetail != null))
+                {
+                    FMainDS.AGift.Rows.Clear();
+                    FMainDS.AGiftDetail.Rows.Clear();
+                }
+
+                // Get the current batch row from the batch tab
+                FBatchRow = GetBatchRow();
+
+                if (FBatchRow != null)
+                {
+                    // Be sure to pass the true parameter because we definitely need to update FMainDS.AGiftDetail as it is now empty!
+                    LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus, true);
+                }
             }
-
-            // Get the current batch row from the batch tab
-            FBatchRow = GetBatchRow();
-
-            if (FBatchRow != null)
+            finally
             {
-                // Be sure to pass the true parameter because we definitely need to update FMainDS.AGiftDetail as it is now empty!
-                LoadGifts(FBatchRow.LedgerNumber, FBatchRow.BatchNumber, FBatchRow.BatchStatus, true);
+                ParentForm.Cursor = PrevCursor;
             }
-
-            ParentForm.Cursor = prevCursor;
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
@@ -2385,6 +2872,377 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             btnDeleteAll.Enabled = btnDelete.Enabled;
+        }
+
+        /// Select a special gift detail number from outside
+        public void SelectGiftDetailNumber(Int32 AGiftNumber, Int32 AGiftDetailNumber)
+        {
+            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
+
+            for (int counter = 0; (counter < myView.Count); counter++)
+            {
+                int myViewGiftNumber = (int)myView[counter][2];
+                int myViewGiftDetailNumber = (int)(int)myView[counter][3];
+
+                if ((myViewGiftNumber == AGiftNumber) && (myViewGiftDetailNumber == AGiftDetailNumber))
+                {
+                    SelectRowInGrid(counter + 1);
+                    break;
+                }
+            }
+        }
+
+        private void OpenDonorHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
+                Convert.ToInt64(txtDetailDonorKey.Text),
+                FPetraUtilsObject.GetForm());
+        }
+
+        private void OpenDonorFinanceDetails(System.Object sender, EventArgs e)
+        {
+            TFrmPartnerEdit frmPartner = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+            frmPartner.SetParameters(TScreenMode.smEdit,
+                FPreviouslySelectedDetailRow.DonorKey,
+                Shared.MPartner.TPartnerEditTabPageEnum.petpFinanceDetails);
+            frmPartner.Show();
+        }
+
+        private void OpenRecipientHistory(System.Object sender, EventArgs e)
+        {
+            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
+                Convert.ToInt64(txtDetailRecipientKey.Text),
+                FPetraUtilsObject.GetForm());
+        }
+
+        private void OpenGiftDestination(System.Object sender, EventArgs e)
+        {
+            if (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
+            {
+                TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
+                    FPetraUtilsObject.GetForm(), FPreviouslySelectedDetailRow.RecipientKey);
+                GiftDestinationForm.Show();
+            }
+        }
+
+        // modifies menu items depending on the Recipient's Partner class
+        private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
+        {
+            bool? DoEnableRecipientGiftDestination;
+
+            TUC_GiftTransactions_Recipient.OnRecipientPartnerClassChanged(APartnerClass,
+                txtDetailRecipientKey,
+                txtDetailRecipientLedgerNumber,
+                out DoEnableRecipientGiftDestination);
+
+            if (DoEnableRecipientGiftDestination.HasValue)
+            {
+                mniRecipientGiftDestination.Enabled = DoEnableRecipientGiftDestination.Value;
+            }
+        }
+
+        private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
+        {
+            return OnPreDeleteManual(ARowToDelete, ref ADeletionQuestion);
+        }
+
+        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
+        {
+            return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
+        }
+
+        private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            OnPostDeleteManual(ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
+        }
+
+        /// <summary>
+        /// Update Gift Destination based on a broadcast message
+        /// </summary>
+        /// <param name="AFormsMessage"></param>
+        public void ProcessGiftDestinationBroadcastMessage(TFormsMessage AFormsMessage)
+        {
+            // for some reason it is possible that this method can be called even if the parent form has been closed
+            if (((TFrmGiftBatch)ParentForm) == null)
+            {
+                return;
+            }
+
+            // update dataset from controls
+            GetDataFromControls();
+
+            // loop through every gift detail currently in the dataset
+            foreach (AGiftDetailRow DetailRow in FMainDS.AGiftDetail.Rows)
+            {
+                if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
+                {
+                    // only make changes if gift is unposted, not a reversal and doesn't have a fixed gift destination
+                    if ((!DetailRow.IsFixedGiftDestinationNull() && DetailRow.FixedGiftDestination)
+                        || (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
+                                 new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
+                        || (!DetailRow.IsModifiedDetailNull() && DetailRow.ModifiedDetail))
+                    {
+                        continue;
+                    }
+
+                    DetailRow.RecipientLedgerNumber = 0;
+                    DateTime GiftDate = ((AGiftRow)FMainDS.AGift.Rows.Find(
+                                             new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber,
+                                                            DetailRow.GiftTransactionNumber })).DateEntered;
+
+                    foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
+                             GiftDestinationTable.Rows)
+                    {
+                        // check if record is active for the Gift Date
+                        if ((Row.DateEffective <= GiftDate)
+                            && ((Row.DateExpires >= GiftDate) || Row.IsDateExpiresNull())
+                            && (Row.DateEffective != Row.DateExpires))
+                        {
+                            DetailRow.RecipientLedgerNumber = Row.FieldKey;
+                        }
+                    }
+
+                    // update control if updated gift is currently being displayed
+                    if (!string.IsNullOrEmpty(txtDetailRecipientKey.Text)
+                        && (Convert.ToInt64(txtDetailRecipientKey.Text) == DetailRow.RecipientKey)
+                        && (dtpDateEntered.Date == GiftDate))
+                    {
+                        txtDetailRecipientLedgerNumber.Text = DetailRow.RecipientLedgerNumber.ToString();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update Unit recipient based on a broadcast message
+        /// </summary>
+        /// <param name="AFormsMessage"></param>
+        public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
+        {
+            // for some reason it is possible that this method can be called even if the parent form has been closed
+            if (((TFrmGiftBatch)ParentForm) == null)
+            {
+                return;
+            }
+
+            if (txtDetailRecipientKey.CurrentPartnerClass != TPartnerClass.UNIT)
+            {
+                return;
+            }
+
+            List <Tuple <string, Int64,
+                         Int64>>UnitHierarchyChanges =
+                ((TFormsMessage.FormsMessageUnitHierarchy)AFormsMessage.MessageObject).UnitHierarchyChanges;
+
+            // loop backwards as the most recent (and accurate) change will be at the end
+            for (int i = UnitHierarchyChanges.Count - 1; i >= 0; i--)
+            {
+                if (UnitHierarchyChanges[i].Item2 == Convert.ToInt64(txtDetailRecipientKey.Text))
+                {
+                    TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow,
+                        Convert.ToInt64(txtDetailRecipientKey.Text),
+                        ref cmbKeyMinistries,
+                        txtDetailRecipientKey,
+                        ref txtDetailRecipientLedgerNumber,
+                        false);
+
+                    break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Update the transaction base amount calculation
+        /// </summary>
+        /// <param name="AUpdateCurrentRowOnly"></param>
+        public void UpdateBaseAmount(Boolean AUpdateCurrentRowOnly)
+        {
+            Int32 LedgerNumber;
+            Int32 CurrentBatchNumber;
+
+            DateTime BatchEffectiveDate;
+
+            decimal BatchExchangeRateToBase = 0;
+            string BatchCurrencyCode = string.Empty;
+            decimal IntlToBaseCurrencyExchRate = 0;
+            bool IsTransactionInIntlCurrency;
+
+            string LedgerBaseCurrency = string.Empty;
+            string LedgerIntlCurrency = string.Empty;
+
+            bool TransactionsFromCurrentBatch = false;
+
+            AGiftBatchRow CurrentBatchRow = GetBatchRow();
+
+            if (FShowDetailsInProcess
+                || !(((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
+                || (CurrentBatchRow == null)
+                || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return;
+            }
+
+            BatchCurrencyCode = CurrentBatchRow.CurrencyCode;
+            BatchExchangeRateToBase = CurrentBatchRow.ExchangeRateToBase;
+
+            if ((FBatchRow != null)
+                && (CurrentBatchRow.LedgerNumber == FBatchRow.LedgerNumber)
+                && (CurrentBatchRow.BatchNumber == FBatchRow.BatchNumber))
+            {
+                TransactionsFromCurrentBatch = true;
+                FBatchCurrencyCode = BatchCurrencyCode;
+                FBatchExchangeRateToBase = BatchExchangeRateToBase;
+            }
+
+            LedgerNumber = CurrentBatchRow.LedgerNumber;
+            CurrentBatchNumber = CurrentBatchRow.BatchNumber;
+
+            BatchEffectiveDate = CurrentBatchRow.GlEffectiveDate;
+            LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
+                out IsTransactionInIntlCurrency);
+
+            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber))
+            {
+                //No transactions exist to process or corporate exchange rate not found
+                return;
+            }
+
+            //If only updating the currency active row
+            if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
+            {
+                FPreviouslySelectedDetailRow.BeginEdit();
+
+                FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide((decimal)txtDetailGiftTransactionAmount.NumberValueDecimal,
+                    BatchExchangeRateToBase);
+
+                if (!IsTransactionInIntlCurrency)
+                {
+                    FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                        FPreviouslySelectedDetailRow.GiftAmount,
+                        IntlToBaseCurrencyExchRate);
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                }
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+                    UpdateTaxDeductibilityAmounts(this, null);
+                }
+
+                FPreviouslySelectedDetailRow.EndEdit();
+            }
+            else
+            {
+                if (TransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
+                {
+                    //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
+                    FPreviouslySelectedDetailRow.BeginEdit();
+
+                    FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftTransactionAmount,
+                        BatchExchangeRateToBase);
+
+                    if (!IsTransactionInIntlCurrency)
+                    {
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                            FPreviouslySelectedDetailRow.GiftAmount,
+                            IntlToBaseCurrencyExchRate);
+                    }
+                    else
+                    {
+                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                    }
+
+                    FPreviouslySelectedDetailRow.EndEdit();
+                }
+
+                //Update all transactions
+                RecalcTransactionsCurrencyAmounts(CurrentBatchRow, IntlToBaseCurrencyExchRate, IsTransactionInIntlCurrency);
+            }
+        }
+
+        private void ToggleTaxDeductible(Object sender, EventArgs e)
+        {
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                bool taxDeductible = chkDetailTaxDeductible.Checked;
+
+                EnableTaxDeductibilityPct(taxDeductible);
+
+                if (taxDeductible)
+                {
+                    UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
+
+                    AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
+                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+
+                    txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
+                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
+                }
+                else
+                {
+                    txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                    txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                }
+            }
+        }
+
+        private Boolean IsUnpostedReversedDetailAdjustment(AGiftDetailRow ARow)
+        {
+            // This method returns true if the gift detail row is an unposted adjustement to a reversed gift detail
+            // We use the LinkToPreviousGift property to discover if this gift is associated with the previous gift row.
+            // Then we check if that row has a modifiedDetail flag sets for its first detail.
+            if ((ARow == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return false;
+            }
+
+            AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
+
+            if ((giftRow != null) && (giftRow.LinkToPreviousGift == true))
+            {
+                if (ARow.GiftTransactionNumber > 1)
+                {
+                    AGiftDetailRow prevDetailRow = (AGiftDetailRow)FMainDS.AGiftDetail.Rows.Find(
+                        new object[] { ARow.LedgerNumber, ARow.BatchNumber, ARow.GiftTransactionNumber - 1, 1 });
+
+                    return prevDetailRow.ModifiedDetail == true;
+                }
+            }
+
+            return false;
+        }
+
+        private void ImportTransactionsFromFile(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
+            {
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile))
+                {
+                    RefreshData();
+                }
+            }
+        }
+
+        private void ImportTransactionsFromClipboard(object sender, EventArgs e)
+        {
+            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
+            {
+                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard))
+                {
+                    RefreshData();
+                }
+            }
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
@@ -2605,121 +3463,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// Update the transaction base amount calculation
-        /// </summary>
-        /// <param name="AUpdateCurrentRowOnly"></param>
-        public void UpdateBaseAmount(Boolean AUpdateCurrentRowOnly)
-        {
-            Int32 LedgerNumber;
-            Int32 CurrentBatchNumber;
-
-            DateTime BatchEffectiveDate;
-
-            decimal BatchExchangeRateToBase = 0;
-            string BatchCurrencyCode = string.Empty;
-            decimal IntlToBaseCurrencyExchRate = 0;
-            bool IsTransactionInIntlCurrency;
-
-            string LedgerBaseCurrency = string.Empty;
-            string LedgerIntlCurrency = string.Empty;
-
-            bool TransactionsFromCurrentBatch = false;
-
-            AGiftBatchRow CurrentBatchRow = GetBatchRow();
-
-            if (FShowDetailsInProcess
-                || !(((TFrmGiftBatch) this.ParentForm).GetBatchControl().FBatchLoaded)
-                || (CurrentBatchRow == null)
-                || (CurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
-            {
-                return;
-            }
-
-            BatchCurrencyCode = CurrentBatchRow.CurrencyCode;
-            BatchExchangeRateToBase = CurrentBatchRow.ExchangeRateToBase;
-
-            if ((FBatchRow != null)
-                && (CurrentBatchRow.LedgerNumber == FBatchRow.LedgerNumber)
-                && (CurrentBatchRow.BatchNumber == FBatchRow.BatchNumber))
-            {
-                TransactionsFromCurrentBatch = true;
-                FBatchCurrencyCode = BatchCurrencyCode;
-                FBatchExchangeRateToBase = BatchExchangeRateToBase;
-            }
-
-            LedgerNumber = CurrentBatchRow.LedgerNumber;
-            CurrentBatchNumber = CurrentBatchRow.BatchNumber;
-
-            BatchEffectiveDate = CurrentBatchRow.GlEffectiveDate;
-            LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
-            LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
-
-            IntlToBaseCurrencyExchRate = ((TFrmGiftBatch)ParentForm).InternationalCurrencyExchangeRate(CurrentBatchRow,
-                out IsTransactionInIntlCurrency);
-
-            if (!LoadGiftDataForBatch(LedgerNumber, CurrentBatchNumber))
-            {
-                //No transactions exist to process or corporate exchange rate not found
-                return;
-            }
-
-            //If only updating the currency active row
-            if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
-            {
-                FPreviouslySelectedDetailRow.BeginEdit();
-
-                FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide((decimal)txtDetailGiftTransactionAmount.NumberValueDecimal,
-                    BatchExchangeRateToBase);
-
-                if (!IsTransactionInIntlCurrency)
-                {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                        FPreviouslySelectedDetailRow.GiftAmount,
-                        IntlToBaseCurrencyExchRate);
-                }
-                else
-                {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
-                }
-
-                if (FTaxDeductiblePercentageEnabled)
-                {
-                    EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
-                    UpdateTaxDeductibilityAmounts(this, null);
-                }
-
-                FPreviouslySelectedDetailRow.EndEdit();
-            }
-            else
-            {
-                if (TransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
-                {
-                    //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
-                    FPreviouslySelectedDetailRow.BeginEdit();
-
-                    FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftTransactionAmount,
-                        BatchExchangeRateToBase);
-
-                    if (!IsTransactionInIntlCurrency)
-                    {
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                            FPreviouslySelectedDetailRow.GiftAmount,
-                            IntlToBaseCurrencyExchRate);
-                    }
-                    else
-                    {
-                        FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
-                    }
-
-                    FPreviouslySelectedDetailRow.EndEdit();
-                }
-
-                //Update all transactions
-                RecalcTransactionsCurrencyAmounts(CurrentBatchRow, IntlToBaseCurrencyExchRate, IsTransactionInIntlCurrency);
-            }
-        }
-
         // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
         {
@@ -2841,712 +3584,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 && (ARow.RecipientClass == TPartnerClass.FAMILY.ToString()))
             {
                 ARow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(ARow.RecipientKey, ADate);
-            }
-        }
-
-        /// Select a special gift detail number from outside
-        public void SelectGiftDetailNumber(Int32 AGiftNumber, Int32 AGiftDetailNumber)
-        {
-            DataView myView = (grdDetails.DataSource as DevAge.ComponentModel.BoundDataView).DataView;
-
-            for (int counter = 0; (counter < myView.Count); counter++)
-            {
-                int myViewGiftNumber = (int)myView[counter][2];
-                int myViewGiftDetailNumber = (int)(int)myView[counter][3];
-
-                if ((myViewGiftNumber == AGiftNumber) && (myViewGiftDetailNumber == AGiftDetailNumber))
-                {
-                    SelectRowInGrid(counter + 1);
-                    break;
-                }
-            }
-        }
-
-        // auto populate recipient info using the donor's last gift
-        private void AutoPopulateGiftDetail(Int64 ADonorKey, Int32 AGiftTransactionNumber)
-        {
-            FAutoPopulatingGift = true;
-
-            bool IsSplitGift = false;
-
-            DateTime LatestUnpostedGiftDateEntered = new DateTime(1900, 1, 1);
-
-            try
-            {
-                //Check for Donor in loaded gift batches
-                // and record most recent date entered
-                AGiftTable DonorRecentGiftsTable = new AGiftTable();
-                GiftBatchTDSAGiftDetailTable GiftDetailTable = new GiftBatchTDSAGiftDetailTable();
-
-                AGiftRow MostRecentLoadedGiftForDonorRow = null;
-
-                DataView giftDV = new DataView(FMainDS.AGift);
-
-                giftDV.RowStateFilter = DataViewRowState.CurrentRows;
-
-                giftDV.RowFilter = string.Format("{0}={1} And Not ({2}={3} And {4}={5})",
-                    AGiftTable.GetDonorKeyDBName(),
-                    ADonorKey,
-                    AGiftTable.GetBatchNumberDBName(),
-                    FBatchNumber,
-                    AGiftTable.GetGiftTransactionNumberDBName(),
-                    AGiftTransactionNumber);
-
-                giftDV.Sort = String.Format("{0} DESC, {1} DESC",
-                    AGiftTable.GetDateEnteredDBName(),
-                    AGiftTable.GetGiftTransactionNumberDBName());
-
-                if (giftDV.Count > 0)
-                {
-                    //Take first row = most recent date entered value
-                    MostRecentLoadedGiftForDonorRow = (AGiftRow)giftDV[0].Row;
-                    LatestUnpostedGiftDateEntered = MostRecentLoadedGiftForDonorRow.DateEntered;
-                    DonorRecentGiftsTable.Rows.Add((object[])MostRecentLoadedGiftForDonorRow.ItemArray.Clone());
-                }
-
-                //Check for even more recent saved gifts on server (i.e. not necessarily loaded)
-                GiftDetailTable = TRemote.MFinance.Gift.WebConnectors.LoadDonorLastPostedGift(ADonorKey, FLedgerNumber, LatestUnpostedGiftDateEntered);
-
-                if (((GiftDetailTable != null) && (GiftDetailTable.Count > 0)))
-                {
-                    //UnLoaded/Saved gift from donor is more recent
-                    IsSplitGift = (GiftDetailTable.Count > 1);
-                }
-                else if (MostRecentLoadedGiftForDonorRow != null)
-                {
-                    //Loaded/unsaved gift from donor is more recent
-                    DataView giftDetailDV = new DataView(FMainDS.AGiftDetail);
-
-                    giftDetailDV.RowStateFilter = DataViewRowState.CurrentRows;
-
-                    giftDetailDV.RowFilter = string.Format("{0}={1} And {2}={3}",
-                        AGiftDetailTable.GetBatchNumberDBName(),
-                        MostRecentLoadedGiftForDonorRow.BatchNumber,
-                        AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                        MostRecentLoadedGiftForDonorRow.GiftTransactionNumber);
-
-                    foreach (DataRowView drv in giftDetailDV)
-                    {
-                        GiftBatchTDSAGiftDetailRow gDR = (GiftBatchTDSAGiftDetailRow)drv.Row;
-                        GiftDetailTable.Rows.Add((object[])gDR.ItemArray.Clone());
-                    }
-
-                    IsSplitGift = (GiftDetailTable.Count > 1);
-                }
-                else
-                {
-                    //nothing to autocopy
-                    return;
-                }
-
-                // if the last gift was a split gift (multiple details) then ask the user if they would like this new gift to also be split
-                if (IsSplitGift)
-                {
-                    GiftDetailTable.DefaultView.Sort = GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName() + " ASC";
-
-                    string Message = string.Format(Catalog.GetString(
-                            "The last gift from this donor was a split gift.{0}{0}Here are the details:{0}"), "\n");
-                    int DetailNumber = 1;
-
-                    foreach (DataRowView dvr in GiftDetailTable.DefaultView)
-                    {
-                        GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)dvr.Row;
-
-                        Message += DetailNumber + ")  ";
-
-                        if (Row.RecipientKey > 0)
-                        {
-                            Message +=
-                                string.Format(Catalog.GetString("Recipient: {0} ({1});  Motivation Group: {2};  Motivation Detail: {3};  Amount: {4}"),
-                                    Row.RecipientDescription, Row.RecipientKey, Row.MotivationGroupCode, Row.MotivationDetailCode,
-                                    StringHelper.FormatUsingCurrencyCode(Row.GiftTransactionAmount, GetBatchRow().CurrencyCode) +
-                                    " " + FBatchRow.CurrencyCode) +
-                                "\n";
-                        }
-
-                        DetailNumber++;
-                    }
-
-                    Message += "\n" + Catalog.GetString("Do you want to create the same split gift again?");
-
-                    if (!(MessageBox.Show(Message, Catalog.GetString(
-                                  "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                          == DialogResult.Yes))
-                    {
-                        if (cmbDetailMethodOfGivingCode.CanFocus)
-                        {
-                            cmbDetailMethodOfGivingCode.Focus();
-                        }
-                        else if (txtDetailReference.CanFocus)
-                        {
-                            txtDetailReference.Focus();
-                        }
-
-                        return;
-                    }
-                }
-
-                this.Cursor = Cursors.WaitCursor;
-
-                GiftBatchTDSAGiftDetailRow giftDetailRow = (GiftBatchTDSAGiftDetailRow)GiftDetailTable.DefaultView[0].Row;
-
-                // Handle first row, which is FPreviouslySelectedDetailRow
-                txtDetailDonorKey.Text = String.Format("{0:0000000000}", ADonorKey);
-                txtDetailRecipientKey.Text = String.Format("{0:0000000000}", giftDetailRow.RecipientKey);
-                cmbDetailMotivationGroupCode.SetSelectedString(giftDetailRow.MotivationGroupCode);
-                cmbDetailMotivationDetailCode.SetSelectedString(giftDetailRow.MotivationDetailCode);
-                chkDetailConfidentialGiftFlag.Checked = giftDetailRow.ConfidentialGiftFlag;
-                chkDetailChargeFlag.Checked = giftDetailRow.ChargeFlag;
-                cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment, -1);
-                cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode, -1);
-
-                //Handle mailing code
-                if (FAutoCopyIncludeMailingCode)
-                {
-                    cmbDetailMailingCode.SetSelectedString(giftDetailRow.MailingCode, -1);
-                }
-                else
-                {
-                    cmbDetailMailingCode.SelectedIndex = -1;
-                }
-
-                //Copy the comments and comment types if required
-                if (FAutoCopyIncludeComments)
-                {
-                    txtDetailGiftCommentOne.Text = giftDetailRow.GiftCommentOne;
-                    cmbDetailCommentOneType.SetSelectedString(giftDetailRow.CommentOneType);
-                    txtDetailGiftCommentTwo.Text = giftDetailRow.GiftCommentTwo;
-                    cmbDetailCommentTwoType.SetSelectedString(giftDetailRow.CommentTwoType);
-                    txtDetailGiftCommentThree.Text = giftDetailRow.GiftCommentThree;
-                    cmbDetailCommentThreeType.SetSelectedString(giftDetailRow.CommentThreeType);
-                }
-
-                //Handle tax fields on current row
-                if (FTaxDeductiblePercentageEnabled)
-                {
-                    bool taxDeductible = (giftDetailRow.IsTaxDeductibleNull() ? true : giftDetailRow.TaxDeductible);
-                    giftDetailRow.TaxDeductible = taxDeductible;
-
-                    try
-                    {
-                        FPetraUtilsObject.SuppressChangeDetection = true;
-                        chkDetailTaxDeductible.Checked = taxDeductible;
-                        EnableTaxDeductibilityPct(taxDeductible);
-                    }
-                    finally
-                    {
-                        FPetraUtilsObject.SuppressChangeDetection = false;
-                    }
-
-                    if (!IsSplitGift)
-                    {
-                        //Most commonly not a split gift (?)
-                        if (!taxDeductible)
-                        {
-                            txtDeductiblePercentage.NumberValueDecimal = 0.0m;
-                        }
-
-                        txtTaxDeductAmount.NumberValueDecimal = 0.0m;
-                        txtNonDeductAmount.NumberValueDecimal = 0.0m;
-                    }
-                    else
-                    {
-                        if (taxDeductible)
-                        {
-                            //In case the tax percentage has changed or null values in amount fields
-                            AGiftDetailRow giftDetails = (AGiftDetailRow)giftDetailRow;
-                            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-
-                            txtTaxDeductAmount.NumberValueDecimal = giftDetailRow.TaxDeductibleAmount;
-                            txtNonDeductAmount.NumberValueDecimal = giftDetailRow.NonDeductibleAmount;
-                        }
-                        else
-                        {
-                            //Changing this will update the unbound amount textboxes
-                            txtDeductiblePercentage.NumberValueDecimal = 0.0m;
-                        }
-                    }
-                }
-
-                //Process values that are not bound to a control
-                giftDetailRow.ReceiptPrinted = false;
-                giftDetailRow.ReceiptNumber = 0;
-
-                //Now process other gift details if they exist
-                if (IsSplitGift)
-                {
-                    //Only copy amount to first row if copying split gifts
-                    txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
-
-                    // clear previous validation errors.
-                    // otherwise we get an error if the user has changed the control immediately after changing the donor key.
-                    FPetraUtilsObject.VerificationResultCollection.Clear();
-
-                    bool SelectEndRow = (FBatchRow.LastGiftNumber == FPreviouslySelectedDetailRow.GiftTransactionNumber);
-
-                    //Just retain other details to add
-                    giftDetailRow.Delete();
-                    GiftDetailTable.AcceptChanges();
-
-                    foreach (DataRowView drv in GiftDetailTable.DefaultView)
-                    {
-                        GiftBatchTDSAGiftDetailRow detailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
-
-                        //______________________
-                        //Update basic field values
-                        detailRow.LedgerNumber = FLedgerNumber;
-                        detailRow.BatchNumber = FBatchNumber;
-                        detailRow.GiftTransactionNumber = AGiftTransactionNumber;
-                        detailRow.DetailNumber = ++FGift.LastDetailNumber;
-                        detailRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
-                        detailRow.DateEntered = FGift.DateEntered;
-                        detailRow.MethodOfPaymentCode = FPreviouslySelectedDetailRow.MethodOfPaymentCode;
-                        detailRow.ReceiptPrinted = false;
-                        detailRow.ReceiptNumber = 0;
-
-                        if (!FAutoCopyIncludeMailingCode)
-                        {
-                            detailRow.MailingCode = string.Empty;
-                        }
-
-                        //______________________
-                        //process recipient details to get most recent data
-                        Int64 partnerKey = detailRow.RecipientKey;
-                        string partnerShortName = string.Empty;
-                        TPartnerClass partnerClass;
-                        bool recipientIsValid = true;
-
-                        if (TServerLookup.TMPartner.GetPartnerShortName(partnerKey, out partnerShortName, out partnerClass))
-                        {
-                            detailRow.RecipientDescription = partnerShortName;
-                            detailRow.RecipientClass = partnerClass.ToString();
-
-                            if (partnerClass == TPartnerClass.FAMILY)
-                            {
-                                detailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(partnerKey,
-                                    FGift.DateEntered);
-                                detailRow.RecipientField = detailRow.RecipientLedgerNumber;
-                                detailRow.RecipientKeyMinistry = string.Empty;
-                            }
-                            else
-                            {
-                                //Class - UNIT
-                                Int64 field;
-                                string keyMinName;
-
-                                recipientIsValid = TFinanceControls.GetRecipientKeyMinData(partnerKey, out field, out keyMinName);
-
-                                detailRow.RecipientLedgerNumber = field;
-                                detailRow.RecipientField = field;
-                                detailRow.RecipientKeyMinistry = keyMinName;
-
-                                if (!recipientIsValid)
-                                {
-                                    string msg =
-                                        String.Format(Catalog.GetString(
-                                                "Gift: {0}, Detail: {1} has a recipient: '{2}-{3}' that is an inactive Key Ministry!"),
-                                            AGiftTransactionNumber,
-                                            detailRow.DetailNumber,
-                                            partnerKey,
-                                            keyMinName);
-                                    MessageBox.Show(msg, Catalog.GetString(
-                                            "Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            recipientIsValid = false;
-                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has an invalid Recipient key: '{2}'!"),
-                                AGiftTransactionNumber,
-                                detailRow.DetailNumber,
-                                partnerKey);
-                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-
-                        //______________________
-                        //Process motivation
-                        if (string.IsNullOrEmpty(detailRow.MotivationGroupCode))
-                        {
-                            detailRow.MotivationGroupCode = string.Empty;
-                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has no Motivation Group!"),
-                                AGiftTransactionNumber,
-                                detailRow.DetailNumber);
-                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                        else if (string.IsNullOrEmpty(detailRow.MotivationDetailCode))
-                        {
-                            detailRow.MotivationDetailCode = string.Empty;
-                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has no Motivation Detail!"),
-                                AGiftTransactionNumber,
-                                detailRow.DetailNumber);
-                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                        else
-                        {
-                            AMotivationDetailRow motivationDetailRow = null;
-                            string motivationGroup = detailRow.MotivationGroupCode;
-                            string motivationDetail = detailRow.MotivationDetailCode;
-
-                            motivationDetailRow = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
-                                new object[] { FLedgerNumber, motivationGroup, motivationDetail });
-
-                            if (motivationDetailRow != null)
-                            {
-                                if (partnerKey > 0)
-                                {
-                                    detailRow.CostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
-                                        partnerKey,
-                                        detailRow.RecipientLedgerNumber,
-                                        detailRow.DateEntered,
-                                        motivationGroup,
-                                        motivationDetail);
-                                }
-                                else
-                                {
-                                    if (motivationGroup != MFinanceConstants.MOTIVATION_GROUP_GIFT)
-                                    {
-                                        detailRow.RecipientDescription = motivationGroup;
-                                    }
-                                    else
-                                    {
-                                        detailRow.RecipientDescription = string.Empty;
-                                    }
-
-                                    detailRow.CostCentreCode = motivationDetailRow.CostCentreCode;
-                                }
-
-                                detailRow.AccountCode = motivationDetailRow.AccountCode;
-
-                                if (FTaxDeductiblePercentageEnabled && string.IsNullOrEmpty(motivationDetailRow.TaxDeductibleAccountCode))
-                                {
-                                    detailRow.TaxDeductibleAccountCode = string.Empty;
-
-                                    string msg = String.Format(Catalog.GetString(
-                                            "Gift: {0}, Detail: {1} has  Motivation Detail: {2} which has no Tax Deductible Account!" +
-                                            "This can be added in Finance / Setup / Motivation Details.{3}{3}" +
-                                            "Unless this is changed it will be impossible to assign a Tax Deductible Percentage to this gift."),
-                                        AGiftTransactionNumber,
-                                        detailRow.DetailNumber,
-                                        motivationDetail,
-                                        Environment.NewLine);
-                                    MessageBox.Show(msg, Catalog.GetString(
-                                            "Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                }
-                                else
-                                {
-                                    detailRow.TaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccountCode;
-                                }
-                            }
-                            else
-                            {
-                                string msg =
-                                    String.Format(Catalog.GetString(
-                                            "Gift: {0}, Detail: {1} has Motivation Group and Detail codes ('{2} : {3}') not found in the database!"),
-                                        AGiftTransactionNumber,
-                                        detailRow.DetailNumber,
-                                        motivationGroup,
-                                        motivationDetail);
-                                MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                                detailRow.TaxDeductible = false;
-                            }
-                        }
-
-                        //______________________
-                        //Handle tax fields
-                        detailRow.TaxDeductiblePct = RetrieveTaxDeductiblePct((recipientIsValid ? detailRow.RecipientKey : 0),
-                            detailRow.TaxDeductible);
-
-                        AGiftDetailRow giftDetails = (AGiftDetailRow)detailRow;
-                        TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-
-                        //______________________
-                        //Process comments
-                        if (!FAutoCopyIncludeComments)
-                        {
-                            detailRow.CommentOneType = "Both";
-                            detailRow.CommentTwoType = "Both";
-                            detailRow.CommentThreeType = "Both";
-                            detailRow.SetGiftCommentOneNull();
-                            detailRow.SetGiftCommentTwoNull();
-                            detailRow.SetGiftCommentThreeNull();
-                        }
-
-                        detailRow.AcceptChanges();
-                        detailRow.SetAdded();
-                    }
-
-                    //Add in the new records
-                    FMainDS.AGiftDetail.Merge(GiftDetailTable);
-
-                    int indexOfLatestRow = FMainDS.AGiftDetail.Rows.Count - 1;
-
-                    //Select last row added
-                    if (SelectEndRow)
-                    {
-                        grdDetails.SelectRowInGrid(grdDetails.Rows.Count - 1);
-                    }
-                    else if (!SelectDetailRowByDataTableIndex(indexOfLatestRow))
-                    {
-                        if (!FFilterAndFindObject.IsActiveFilterEqualToBase)
-                        {
-                            MessageBox.Show(
-                                MCommonResourcestrings.StrNewRecordIsFiltered,
-                                MCommonResourcestrings.StrAddNewRecordTitle,
-                                MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            FFilterAndFindObject.FilterPanelControls.ClearAllDiscretionaryFilters();
-
-                            if (FFilterAndFindObject.FilterFindPanel.ShowApplyFilterButton != TUcoFilterAndFind.FilterContext.None)
-                            {
-                                FFilterAndFindObject.ApplyFilter();
-                            }
-
-                            SelectDetailRowByDataTableIndex(indexOfLatestRow);
-                        }
-                    }
-
-                    cmbKeyMinistries.Clear();
-                    mniRecipientHistory.Enabled = false;
-                    btnDeleteAll.Enabled = btnDelete.Enabled;
-                    UpdateRecordNumberDisplay();
-                    FLastDonor = -1;
-                }
-                else
-                {
-                    txtDetailGiftTransactionAmount.Focus();
-                }
-
-                FPetraUtilsObject.SetChangedFlag();
-            }
-            finally
-            {
-                this.Cursor = Cursors.Default;
-                FAutoPopulatingGift = false;
-            }
-        }
-
-        private void OpenDonorHistory(System.Object sender, EventArgs e)
-        {
-            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(true,
-                Convert.ToInt64(txtDetailDonorKey.Text),
-                FPetraUtilsObject.GetForm());
-        }
-
-        private void OpenDonorFinanceDetails(System.Object sender, EventArgs e)
-        {
-            TFrmPartnerEdit frmPartner = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
-
-            frmPartner.SetParameters(TScreenMode.smEdit,
-                FPreviouslySelectedDetailRow.DonorKey,
-                Shared.MPartner.TPartnerEditTabPageEnum.petpFinanceDetails);
-            frmPartner.Show();
-        }
-
-        private void OpenRecipientHistory(System.Object sender, EventArgs e)
-        {
-            TCommonScreensForwarding.OpenDonorRecipientHistoryScreen(false,
-                Convert.ToInt64(txtDetailRecipientKey.Text),
-                FPetraUtilsObject.GetForm());
-        }
-
-        private void OpenGiftDestination(System.Object sender, EventArgs e)
-        {
-            if (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY)
-            {
-                TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(
-                    FPetraUtilsObject.GetForm(), FPreviouslySelectedDetailRow.RecipientKey);
-                GiftDestinationForm.Show();
-            }
-        }
-
-        private void ToggleTaxDeductible(Object sender, EventArgs e)
-        {
-            if (FTaxDeductiblePercentageEnabled)
-            {
-                bool taxDeductible = chkDetailTaxDeductible.Checked;
-
-                EnableTaxDeductibilityPct(taxDeductible);
-
-                if (taxDeductible)
-                {
-                    UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
-
-                    AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
-                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-
-                    txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
-                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
-                }
-                else
-                {
-                    txtDeductiblePercentage.NumberValueDecimal = 0.0m;
-                    txtTaxDeductAmount.NumberValueDecimal = 0.0m;
-                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.GiftTransactionAmount;
-                }
-            }
-        }
-
-        // modifies menu items depending on the Recipient's Partner class
-        private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
-        {
-            bool? DoEnableRecipientGiftDestination;
-
-            TUC_GiftTransactions_Recipient.OnRecipientPartnerClassChanged(APartnerClass, txtDetailRecipientKey, txtDetailRecipientLedgerNumber,
-                out DoEnableRecipientGiftDestination);
-
-            if (DoEnableRecipientGiftDestination.HasValue)
-            {
-                mniRecipientGiftDestination.Enabled = DoEnableRecipientGiftDestination.Value;
-            }
-
-            //string ItemText = Catalog.GetString("Open Recipient Gift Destination");
-
-            //if ((APartnerClass == TPartnerClass.UNIT) || (APartnerClass == null))
-            //{
-            //    txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
-            //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, false);
-            //    mniRecipientGiftDestination.Enabled = false;
-            //}
-            //else if (APartnerClass == TPartnerClass.FAMILY)
-            //{
-            //    txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
-            //    txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
-            //    mniRecipientGiftDestination.Enabled = true;
-            //}
-        }
-
-        private bool PreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
-        {
-            return OnPreDeleteManual(ARowToDelete, ref ADeletionQuestion);
-        }
-
-        private bool DeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
-        {
-            return OnDeleteRowManual(ARowToDelete, ref ACompletionMessage);
-        }
-
-        private void PostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
-            bool AAllowDeletion,
-            bool ADeletionPerformed,
-            string ACompletionMessage)
-        {
-            OnPostDeleteManual(ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
-        }
-
-        /// <summary>
-        /// Update Gift Destination based on a broadcast message
-        /// </summary>
-        /// <param name="AFormsMessage"></param>
-        public void ProcessGiftDetainationBroadcastMessage(TFormsMessage AFormsMessage)
-        {
-            // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmGiftBatch)ParentForm) == null)
-            {
-                return;
-            }
-
-            // update dataset from controls
-            GetDataFromControls();
-
-            // loop through every gift detail currently in the dataset
-            foreach (AGiftDetailRow DetailRow in FMainDS.AGiftDetail.Rows)
-            {
-                if (DetailRow.RecipientKey == ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).PartnerKey)
-                {
-                    // only make changes if gift is unposted, not a reversal and doesn't have a fixed gift destination
-                    if ((!DetailRow.IsFixedGiftDestinationNull() && DetailRow.FixedGiftDestination)
-                        || (((AGiftBatchRow)FMainDS.AGiftBatch.Rows.Find(
-                                 new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber })).BatchStatus != MFinanceConstants.BATCH_UNPOSTED)
-                        || (!DetailRow.IsModifiedDetailNull() && DetailRow.ModifiedDetail))
-                    {
-                        continue;
-                    }
-
-                    DetailRow.RecipientLedgerNumber = 0;
-                    DateTime GiftDate = ((AGiftRow)FMainDS.AGift.Rows.Find(
-                                             new object[] { DetailRow.LedgerNumber, DetailRow.BatchNumber,
-                                                            DetailRow.GiftTransactionNumber })).DateEntered;
-
-                    foreach (PPartnerGiftDestinationRow Row in ((TFormsMessage.FormsMessageGiftDestination)AFormsMessage.MessageObject).
-                             GiftDestinationTable.Rows)
-                    {
-                        // check if record is active for the Gift Date
-                        if ((Row.DateEffective <= GiftDate)
-                            && ((Row.DateExpires >= GiftDate) || Row.IsDateExpiresNull())
-                            && (Row.DateEffective != Row.DateExpires))
-                        {
-                            DetailRow.RecipientLedgerNumber = Row.FieldKey;
-                        }
-                    }
-
-                    // update control if updated gift is currently being displayed
-                    if (!string.IsNullOrEmpty(txtDetailRecipientKey.Text) && (Convert.ToInt64(txtDetailRecipientKey.Text) == DetailRow.RecipientKey)
-                        && (dtpDateEntered.Date == GiftDate))
-                    {
-                        txtDetailRecipientLedgerNumber.Text = DetailRow.RecipientLedgerNumber.ToString();
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Update Unit recipient based on a broadcast message
-        /// </summary>
-        /// <param name="AFormsMessage"></param>
-        public void ProcessUnitHierarchyBroadcastMessage(TFormsMessage AFormsMessage)
-        {
-            // for some reason it is possible that this method can be called even if the parent form has been closed
-            if (((TFrmGiftBatch)ParentForm) == null)
-            {
-                return;
-            }
-
-            if (txtDetailRecipientKey.CurrentPartnerClass != TPartnerClass.UNIT)
-            {
-                return;
-            }
-
-            List <Tuple <string, Int64,
-                         Int64>>UnitHierarchyChanges =
-                ((TFormsMessage.FormsMessageUnitHierarchy)AFormsMessage.MessageObject).UnitHierarchyChanges;
-
-            // loop backwards as the most recent (and accurate) change will be at the end
-            for (int i = UnitHierarchyChanges.Count - 1; i >= 0; i--)
-            {
-                if (UnitHierarchyChanges[i].Item2 == Convert.ToInt64(txtDetailRecipientKey.Text))
-                {
-                    TUC_GiftTransactions_Recipient.GetRecipientData(FPreviouslySelectedDetailRow,
-                        Convert.ToInt64(txtDetailRecipientKey.Text),
-                        ref cmbKeyMinistries,
-                        txtDetailRecipientKey,
-                        ref txtDetailRecipientLedgerNumber,
-                        false);
-
-                    break;
-                }
-            }
-        }
-
-        private void ImportTransactionsFromFile(object sender, EventArgs e)
-        {
-            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
-            {
-                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile))
-                {
-                    RefreshAllData();
-                }
-            }
-        }
-
-        private void ImportTransactionsFromClipboard(object sender, EventArgs e)
-        {
-            if (ValidateAllData(true, TErrorProcessingMode.Epm_All))
-            {
-                if (((TFrmGiftBatch)ParentForm).GetBatchControl().ImportTransactions(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard))
-                {
-                    RefreshAllData();
-                }
             }
         }
     }

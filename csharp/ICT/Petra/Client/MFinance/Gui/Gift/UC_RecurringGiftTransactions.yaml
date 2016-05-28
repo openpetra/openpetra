@@ -9,6 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actDonorHistory: {ActionClick=OpenDonorHistory}
+        actDonorFinanceDetails: {ActionClick=OpenDonorFinanceDetails}
         actRecipientHistory: {ActionClick=OpenRecipientHistory}
         actRecipientGiftDestination: {ActionClick=OpenGiftDestination}
         actNewGift: {Label=&New Gift, ActionClick=NewGift}
@@ -37,10 +38,10 @@ RootNode:
                 Row0: [txtLedgerNumber, txtBatchTotal]
                 Row1: [txtBatchNumber, txtHashTotal]
             Dock: Top
-        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true}
-        txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true}
-        txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true}
-        txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true}
+        txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
+        txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true, SuppressChangeDetection=true}
+        txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
+        txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true, SuppressChangeDetection=true}
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]
@@ -62,7 +63,7 @@ RootNode:
             ControlsOrientation: horizontal
         btnNewGift: {Action=actNewGift, Width=120, Tooltip=Click to add a new gift}
         btnNewDetail: {Action=actNewDetail, Width=120, StartNewButtonGroup=true, Tooltip=Click to add a new gift detail}
-        btnDelete: {Action=actDelete, Width=120}
+        btnDelete: {Action=actDelete, Width=120, HandleEnableInManualCode=true}
         btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all gifts from the current batch}
         grdDetails:
             TableName: ARecurringGiftDetail
@@ -75,9 +76,9 @@ RootNode:
                 DonorKey: {Label=Donor Key, Type=PartnerKey}
                 DonorName: {Label=Donor Name, Type=String}
                 DonorClass: {Label=Class, Type=String}
+                GiftAmount: {Label=Amount, Type=Currency}
                 RecipientDescription: {Label=Recipient, Type=String}
                 RecipientField: {Label=Field, Type=Int64}
-                GiftAmount: {Label=Amount, Type=Currency}
                 MethodOfGivingCode: {Label=Method of Giving, Type=String}
                 MethodOfPaymentCode: {Label=Method of Payment, Type=String}
             ActionFocusRow: FocusedRowChanged
@@ -90,7 +91,7 @@ RootNode:
             Controls:
                 Row0: [grpDetailsForDonor]
                 Row1: [grpDetailsForEachGift]
-        grpDetailsForDonor: {Width:930, Height:125}
+        grpDetailsForDonor: {Width:930, Height:123}
             Controls:
                 Row0: [txtDetailDonorKey, txtDonorInfo]
                 Row1: [cmbDetailMethodOfGivingCode, cmbDetailMethodOfPaymentCode]
@@ -101,7 +102,7 @@ RootNode:
                 Row0: [txtDetailRecipientKey, chkDetailConfidentialGiftFlag]
                 Row1: [txtDetailRecipientLedgerNumber, chkDetailChargeFlag]
                 Row2: [cmbKeyMinistries, chkDetailTaxDeductible]
-                Row3: [dtpStartDonations, dtpEndDonations]
+                Row3: [dtpDetailStartDonations, dtpDetailEndDonations]
                 Row4: [txtDetailGiftAmount, cmbDetailMailingCode]
                 Row5: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
                 Row6: [txtDetailCostCentreCode, txtDetailAccountCode]
@@ -109,26 +110,31 @@ RootNode:
                 Row8: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row9: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
                 Row10: [txtDetailRecipientKeyMinistry]
-        dtpStartDonations: {Label=Don. Period From}
-        dtpEndDonations: {Label=To}
-        chkDetailActive: {Label=Active Gift, Tooltip=Check this box if this recurring gift is 'active'}
-        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
+
+		#GIFT-Level Controls
+        # Bound
         txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
-        txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
-        txtDetailReference: {Label=Reference, Width=170}
-        cmbDetailReceiptLetterCode:
-            Label: Letter Code
-            OptionalValues: [NO*RECET]
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
+        txtDetailReference: {Label=Reference, Width=170}
+        cmbDetailReceiptLetterCode: {Label=Letter Code, OptionalValues=[NO*RECET]}
+        chkDetailActive: {Label=Active Gift, Tooltip=Check this box if this recurring gift is 'active'}
+        # Unbound
+        txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
+        txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true}
+
+		#GIFT DETAIL-Level Controls
+        # Bound
+        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
+        dtpDetailStartDonations: {Label=Don. Period From}
+        dtpDetailEndDonations: {Label=To}
         cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
-        cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+        cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         txtDetailRecipientKeyMinistry: {Label=Key Ministry}
         txtDetailGiftAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if this gift is confidential}
@@ -136,7 +142,6 @@ RootNode:
         txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]
@@ -149,11 +154,16 @@ RootNode:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]   
             OnLeave: DetailCommentTypeChanged
+        # Unbound
+        cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+
         tbrTabPage:
         mnuTabPage:
     Menu:
         mniTransactions:
             Label: &Gift Transaction
-            mniDonorHistory: {Action: actDonorHistory, Enabled=false}
             mniRecipientHistory: {Action: actRecipientHistory, Enabled=false}
             mniRecipientGiftDestination: {Action: actRecipientGiftDestination, Enabled=false}
+            mniSeparator: {Label=-}
+            mniDonorHistory: {Action: actDonorHistory, Enabled=false}
+            mniDonorFinanceDetails: {Label=Donor &Finance Details, Action: actDonorFinanceDetails, Enabled=false}

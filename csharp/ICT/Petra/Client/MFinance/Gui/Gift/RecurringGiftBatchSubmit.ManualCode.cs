@@ -298,6 +298,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Warning);
 
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 

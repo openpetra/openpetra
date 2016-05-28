@@ -295,7 +295,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     FPetraUtilsObject.SuppressChangeDetection = true;
                     TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber,
                         true, false, FActiveOnly, false, ACurrencyCode, true);
-                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false);
+                    TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, FActiveOnly, false, true);
                     FPetraUtilsObject.SuppressChangeDetection = prevSuppressChangeDetection;
 
                     cmbDetailAccountCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_ACCOUNT;
@@ -1973,6 +1973,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber));
 
             dv.RowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+            dv.Sort = String.Format("{0}", AAccountTable.GetAccountCodeDBName());
             AFFInstance.DataSource = dv;
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
@@ -1986,6 +1987,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber));
 
             dv.RowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+            dv.Sort = String.Format("{0}", ACostCentreTable.GetCostCentreCodeDBName());
             AFFInstance.DataSource = dv;
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);

@@ -461,9 +461,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
                 true, // Must Be Active
                 ARecipientZeroIsValid,
-                isImporting ?
-                Catalog.GetString("Recipient key") :
-                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
+                isImporting ? Catalog.GetString("Recipient key") : "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
                 ValidationColumn,
                 null);
@@ -1045,7 +1043,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 true, // Must Be Active
                 ADonorZeroIsValid,
                 (isImporting) ? String.Empty : "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()),
-                AContext, ValidationColumn, null);
+                AContext,
+                ValidationColumn,
+                null);
 
             if (VerificationResult != null)
             {
@@ -1259,9 +1259,13 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="ARow"></param>
         /// <param name="AVerificationResultCollection"></param>
         /// <param name="AValidationControlsDict"></param>
+        /// <param name="ADonorZeroIsValid"></param>
         /// <returns></returns>
-        public static bool ValidateRecurringGiftManual(object AContext, ARecurringGiftRow ARow,
-            ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict)
+        public static bool ValidateRecurringGiftManual(object AContext,
+            ARecurringGiftRow ARow,
+            ref TVerificationResultCollection AVerificationResultCollection,
+            TValidationControlsDict AValidationControlsDict,
+            bool ADonorZeroIsValid = false)
         {
             DataColumn ValidationColumn;
             //TValidationControlsData ValidationControlsData;
@@ -1284,9 +1288,12 @@ namespace Ict.Petra.Shared.MFinance.Validation
             VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.DonorKey,
                 new TPartnerClass[] { },
-                true, // Must Be Active
-                true,
-                "Donor of " + THelper.NiceValueDescription(ValidationContext), AContext, ValidationColumn, null);
+                false, // Must Be Active
+                ADonorZeroIsValid,
+                "Donor of " + THelper.NiceValueDescription(ValidationContext),
+                AContext,
+                ValidationColumn,
+                null);
 
             if (VerificationResult != null)
             {
@@ -1313,12 +1320,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AValidationControlsDict">A <see cref="TValidationControlsDict" /> containing the Controls that
         /// display data that is about to be validated.</param>
         /// <param name="ARecipientField">Optional</param>
+        /// <param name="ARecipientZeroIsValid">Optional</param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateRecurringGiftDetailManual(object AContext,
             GiftBatchTDSARecurringGiftDetailRow ARow,
             ref TVerificationResultCollection AVerificationResultCollection,
             TValidationControlsDict AValidationControlsDict,
-            Int64 ARecipientField = -1)
+            Int64 ARecipientField = -1,
+            bool ARecipientZeroIsValid = true)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -1333,19 +1342,23 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            // Check if valid donor
-            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientKeyId];
-            ValidationContext = String.Format("Batch no. {0}, gift no. {1}, detail no. {2}",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
 
+            // Check if valid recipient
+            ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientKeyId];
+
             VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartner(
                 ARow.RecipientKey,
                 new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
-                true,
-                true,
-                "Recipient of " + THelper.NiceValueDescription(ValidationContext), AContext, ValidationColumn, null);
+                false, // Must Be Active
+                ARecipientZeroIsValid,
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
+                AContext,
+                ValidationColumn,
+                null);
 
             if (VerificationResult != null)
             {
