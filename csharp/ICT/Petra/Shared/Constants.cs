@@ -176,6 +176,15 @@ namespace Ict.Petra.Shared
         public const String SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE = "TaxDeduct%OnRecipient";
 
         /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_DONORZEROISVALID = "DonorZeroIsValid";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_RECIPIENTZEROISVALID = "RecipientZeroIsValid";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_DEVELOPERSONLY = "DevelopersOnly";
+
+        /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_EXWORKERSPECIALTYPE = "EXWORKERSPECIALTYPE";
 
         /// <summary>System Defaults</summary>

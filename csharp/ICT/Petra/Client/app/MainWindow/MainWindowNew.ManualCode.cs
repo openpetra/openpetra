@@ -80,6 +80,7 @@ namespace Ict.Petra.Client.App.PetraClient
 #endif
 
         private bool FTaxDeductiblePercentageEnabled = false;
+        private bool FDevelopersOnly = false;
 
         /// <summary>
         /// The currently selected Ledger
@@ -135,6 +136,10 @@ namespace Ict.Petra.Client.App.PetraClient
             // this is needed for one screen which should only be displayed if tax deductibility is enabled
             FTaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+
+            // this is needed for one screen which should only be displayed if this is a developers build of OpenPetra
+            FDevelopersOnly =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DEVELOPERSONLY, false);
 
             InitialiseTopPanel();
 
@@ -769,7 +774,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 UpdateFinanceSubsystemLinkStatus();
             };
 
-            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission, FTaxDeductiblePercentageEnabled);
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission, FTaxDeductiblePercentageEnabled, FDevelopersOnly);
 
             while (DepartmentNode != null)
             {

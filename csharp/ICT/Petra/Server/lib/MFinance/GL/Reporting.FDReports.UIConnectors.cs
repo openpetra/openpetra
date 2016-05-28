@@ -209,5 +209,32 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             return ReturnTable;
         }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable GiftsOverMinimum(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+            DataTable Results = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String Query = "SELECT * FROM a_gift_detail WHERE a_batch_number_i > 9800 AND a_gift_transaction_number_i = 1";
+
+                    Results = DbAdapter.RunQuery(Query, "GiftsOverMinimum", Transaction);
+
+                    if (DbAdapter.IsCancelled)
+                    {
+                        Results = null;
+                        return;
+                    }
+                }); // GetNewOrExistingAutoReadTransaction
+            return Results;
+        }
     }
 }

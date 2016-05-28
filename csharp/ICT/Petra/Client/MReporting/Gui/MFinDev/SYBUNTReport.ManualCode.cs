@@ -74,6 +74,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            // make sure that for each group one radio button is selected
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(grpSelection, FPetraUtilsObject);
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrFormatCurrency, FPetraUtilsObject);
+
             if ((ucoGiftsInRange.RangeTable == null) || (ucoGiftsInRange.RangeTable.Rows.Count == 0))
             {
                 TVerificationResult VerificationResult = new TVerificationResult(

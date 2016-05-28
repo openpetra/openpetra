@@ -38,32 +38,60 @@ namespace Ict.Petra.Shared.MFinance
         /// <param name="AGiftDetail"></param>
         public static void UpdateTaxDeductibiltyAmounts(ref AGiftDetailRow AGiftDetail)
         {
-            /* Update transaction amounts */
-
             decimal TaxDeductAmount;
             decimal NonDeductAmount;
 
+            if (AGiftDetail == null)
+            {
+                return;
+            }
+            else if (AGiftDetail.IsTaxDeductiblePctNull())
+            {
+                AGiftDetail.TaxDeductiblePct = 0.0m;
+            }
+
+            /* Update transaction amounts */
             CalculateTaxDeductibilityAmounts(
                 out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftTransactionAmount, AGiftDetail.TaxDeductiblePct);
 
-            AGiftDetail.TaxDeductibleAmount = TaxDeductAmount;
-            AGiftDetail.NonDeductibleAmount = NonDeductAmount;
+            if (AGiftDetail.IsTaxDeductibleAmountNull()
+                || AGiftDetail.IsNonDeductibleAmountNull()
+                || (AGiftDetail.TaxDeductibleAmount != TaxDeductAmount)
+                || (AGiftDetail.NonDeductibleAmount != NonDeductAmount))
+            {
+                AGiftDetail.TaxDeductibleAmount = TaxDeductAmount;
+                AGiftDetail.NonDeductibleAmount = NonDeductAmount;
+            }
 
             /* Update base amounts */
-
+            TaxDeductAmount = 0.0m;
+            NonDeductAmount = 0.0m;
             CalculateTaxDeductibilityAmounts(
                 out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmount, AGiftDetail.TaxDeductiblePct);
 
-            AGiftDetail.TaxDeductibleAmountBase = TaxDeductAmount;
-            AGiftDetail.NonDeductibleAmountBase = NonDeductAmount;
+            if (AGiftDetail.IsTaxDeductibleAmountBaseNull()
+                || AGiftDetail.IsNonDeductibleAmountBaseNull()
+                || (AGiftDetail.TaxDeductibleAmountBase != TaxDeductAmount)
+                || (AGiftDetail.NonDeductibleAmountBase != NonDeductAmount))
+            {
+                AGiftDetail.TaxDeductibleAmountBase = TaxDeductAmount;
+                AGiftDetail.NonDeductibleAmountBase = NonDeductAmount;
+            }
 
             /* Update intl amounts */
-
+            TaxDeductAmount = 0.0m;
+            NonDeductAmount = 0.0m;
             CalculateTaxDeductibilityAmounts(
                 out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftAmountIntl, AGiftDetail.TaxDeductiblePct);
 
-            AGiftDetail.TaxDeductibleAmountIntl = TaxDeductAmount;
-            AGiftDetail.NonDeductibleAmountIntl = NonDeductAmount;
+            if (AGiftDetail.IsTaxDeductibleAmountIntlNull()
+                || AGiftDetail.IsNonDeductibleAmountIntlNull()
+                || (AGiftDetail.TaxDeductibleAmountIntl != TaxDeductAmount)
+                || (AGiftDetail.NonDeductibleAmountIntl != NonDeductAmount))
+            {
+                AGiftDetail.TaxDeductibleAmountIntl = TaxDeductAmount;
+                AGiftDetail.NonDeductibleAmountIntl = NonDeductAmount;
+            }
         }
 
         /// <summary>
@@ -76,7 +104,7 @@ namespace Ict.Petra.Shared.MFinance
         private static void CalculateTaxDeductibilityAmounts(
             out decimal ATaxDeductAmount, out decimal ANonDeductAmount, decimal AGiftAmount, decimal ADeductiblePercentage)
         {
-            ATaxDeductAmount = GLRoutines.Divide(AGiftAmount * ADeductiblePercentage, 100);
+            ATaxDeductAmount = GLRoutines.Divide(AGiftAmount * ADeductiblePercentage, 100, 2);
             ANonDeductAmount = AGiftAmount - ATaxDeductAmount;
         }
     }

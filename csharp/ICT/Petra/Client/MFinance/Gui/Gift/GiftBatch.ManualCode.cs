@@ -53,9 +53,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
-        private bool FNewDonorWarning = true;
         private bool FWarnAboutMissingIntlExchangeRate = false;
         private eGiftTabs FPreviouslySelectedTab = eGiftTabs.None;
+
+        //System & User Defaults
+        /// <summary>
+        /// Setting that determines if user is notified of new donor
+        /// </summary>
+        private bool FNewDonorWarning = true;
+
+        /// <summary>
+        /// Specifies if Donor zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FDonorZeroIsValid = false;
+
+        /// <summary>
+        /// Specifies if Recipient zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FRecipientZeroIsValid = false;
+
+        /// <summary>
+        /// Specifies if Recipient zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FWarnOfInactiveValuesOnPosting = false;
 
         // changed gift records
         GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
@@ -359,8 +382,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
 
-            // get user default
-            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
+            // read system and user defaults
+            bool DonorZeroIsValid = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DONORZEROISVALID, false);
+            bool RecipientZeroIsValid = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_RECIPIENTZEROISVALID, false);
+            //If user is FINANCE-3 level then their user settings can override system level setting
+            FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, DonorZeroIsValid);
+            FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, RecipientZeroIsValid);
+
+            FWarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 
             // only add this event if the user want a new donor warning (this will still work without the condition)
@@ -559,8 +589,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AAllowRepeatEvent"></param>
         public void SelectTab(eGiftTabs ATab, bool AAllowRepeatEvent = false)
         {
-            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
-
             if (ATab == eGiftTabs.Batches)
             {
                 if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !AAllowRepeatEvent)
@@ -571,6 +599,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FPreviouslySelectedTab = eGiftTabs.Batches;
 
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.SetFocusToGrid();
@@ -940,7 +969,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FNewDonorWarning = mniNewDonorWarning.Checked;
 
             // change user default
-            TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+            TUserDefaults.SetDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, FNewDonorWarning);
         }
 
         // open screen to print the Gift Batch Detail report

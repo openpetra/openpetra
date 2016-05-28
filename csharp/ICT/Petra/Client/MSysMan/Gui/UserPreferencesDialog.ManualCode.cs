@@ -41,7 +41,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         private Boolean FViewMode = false;
         private Ict.Petra.Client.MSysMan.Gui.TUC_FinancePreferences ucoFinance;
+        private Ict.Petra.Client.MSysMan.Gui.TUC_GiftPreferences ucoGift;
         private Boolean tabPageFinanceWasSelected = false;
+        private Boolean tabPageGiftWasSelected = false;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
         public bool ViewMode {
@@ -63,7 +65,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 return;
             }
 
-            if (ucoAppearance.SaveAppearanceTab() | (tpgFinance.Enabled && tabPageFinanceWasSelected && ucoFinance.SaveFinanceTab()))
+            if (ucoAppearance.SaveAppearanceTab() |
+                ((tpgFinance.Enabled && tabPageFinanceWasSelected && ucoFinance.SaveFinanceTab())
+                 || (tpgGift.Enabled && tabPageGiftWasSelected && ucoGift.SaveGiftTab())))
             {
                 Form MainWindow = FPetraUtilsObject.GetCallerForm();
                 MethodInfo method = MainWindow.GetType().GetMethod("LoadNavigationUI");
@@ -96,6 +100,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void GetDataFromControlsManual()
         {
             ucoFinance.GetDataFromControls();
+            ucoGift.GetDataFromControls();
         }
 
         private void RunOnceOnActivationManual()
@@ -121,6 +126,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 
                 tpgFinance.Enabled = true;
+
+                //Same for gift
+                ucoGift = new Ict.Petra.Client.MSysMan.Gui.TUC_GiftPreferences();
+                ucoGift.Name = "ucoGift";
+                ucoGift.Dock = System.Windows.Forms.DockStyle.Fill;
+                tpgGift.Controls.Add(this.ucoGift);
+
+                ucoGift.PetraUtilsObject = FPetraUtilsObject;
+                ucoGift.InitUserControl();
+                FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
+
+                tpgGift.Enabled = true;
             }
         }
 
@@ -129,6 +146,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
             if (e.TabPage == tpgFinance)
             {
                 tabPageFinanceWasSelected = true;
+            }
+            else if (e.TabPage == tpgGift)
+            {
+                tabPageGiftWasSelected = true;
             }
         }
     }

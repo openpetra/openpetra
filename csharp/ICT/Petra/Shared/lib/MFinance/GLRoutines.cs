@@ -101,7 +101,9 @@ namespace Ict.Petra.Shared.MFinance
 
             if (ACurrentBatchRow.LastJournal != ActualLastJournalNumber)
             {
+                ACurrentBatchRow.BeginEdit();
                 ACurrentBatchRow.LastJournal = ActualLastJournalNumber;
+                ACurrentBatchRow.EndEdit();
                 RowUpdated = true;
             }
 
@@ -166,7 +168,9 @@ namespace Ict.Petra.Shared.MFinance
 
             if (ACurrentJournal.LastTransactionNumber != ActualLastTransNumber)
             {
+                ACurrentJournal.BeginEdit();
                 ACurrentJournal.LastTransactionNumber = ActualLastTransNumber;
+                ACurrentJournal.EndEdit();
                 RowUpdated = true;
             }
 
@@ -230,7 +234,9 @@ namespace Ict.Petra.Shared.MFinance
 
             if (ACurrentBatchRow.LastJournal != ActualLastJournalNumber)
             {
+                ACurrentBatchRow.BeginEdit();
                 ACurrentBatchRow.LastJournal = ActualLastJournalNumber;
+                ACurrentBatchRow.EndEdit();
                 RowUpdated = true;
             }
 
@@ -288,7 +294,9 @@ namespace Ict.Petra.Shared.MFinance
 
             if (ACurrentJournal.LastTransactionNumber != ActualLastTransNumber)
             {
+                ACurrentJournal.BeginEdit();
                 ACurrentJournal.LastTransactionNumber = ActualLastTransNumber;
+                ACurrentJournal.EndEdit();
                 RowUpdated = true;
             }
 
@@ -347,9 +355,16 @@ namespace Ict.Petra.Shared.MFinance
                 if (((ACurrentJournalNumber > 0) && (ACurrentJournalNumber == journalRow.JournalNumber))
                     || (ACurrentJournalNumber == 0))
                 {
+                    journalRow.BeginEdit();
+
                     if ((UpdateJournalTotals(ref AMainDS, ref journalRow)))
                     {
+                        journalRow.EndEdit();
                         AmountsUpdated = true;
+                    }
+                    else
+                    {
+                        journalRow.CancelEdit();
                     }
                 }
 
@@ -360,8 +375,10 @@ namespace Ict.Petra.Shared.MFinance
             if ((ACurrentBatchRow.BatchDebitTotal != BatchDebitTotal)
                 || (ACurrentBatchRow.BatchCreditTotal != BatchCreditTotal))
             {
+                ACurrentBatchRow.BeginEdit();
                 ACurrentBatchRow.BatchDebitTotal = BatchDebitTotal;
                 ACurrentBatchRow.BatchCreditTotal = BatchCreditTotal;
+                ACurrentBatchRow.EndEdit();
                 AmountsUpdated = true;
             }
 
@@ -504,9 +521,16 @@ namespace Ict.Petra.Shared.MFinance
                 if (((ACurrentJournalNumber > 0) && (ACurrentJournalNumber == journalRow.JournalNumber))
                     || (ACurrentJournalNumber == 0))
                 {
+                    journalRow.BeginEdit();
+
                     if ((UpdateRecurringJournalTotals(ref AMainDS, ref journalRow)))
                     {
+                        journalRow.EndEdit();
                         AmountsUpdated = true;
+                    }
+                    else
+                    {
+                        journalRow.CancelEdit();
                     }
                 }
 
@@ -517,8 +541,10 @@ namespace Ict.Petra.Shared.MFinance
             if ((ACurrentBatchRow.BatchDebitTotal != BatchDebitTotal)
                 || (ACurrentBatchRow.BatchCreditTotal != BatchCreditTotal))
             {
+                ACurrentBatchRow.BeginEdit();
                 ACurrentBatchRow.BatchDebitTotal = BatchDebitTotal;
                 ACurrentBatchRow.BatchCreditTotal = BatchCreditTotal;
+                ACurrentBatchRow.EndEdit();
                 AmountsUpdated = true;
             }
 

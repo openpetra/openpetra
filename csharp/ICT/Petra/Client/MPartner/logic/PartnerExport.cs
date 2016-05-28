@@ -49,7 +49,6 @@ namespace Ict.Petra.Client.MPartner.Logic
         public static void ExportSinglePartner(Int64 APartnerKey, String APartnerClass, Int64 ASiteKey, int ALocationKey, Boolean AOldPetraFormat)
         {
             bool Result = false;
-            StringCollection ASpecificBuildingInfo = null;
             String ExtFormattedDocument;
 
             string FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
@@ -70,12 +69,9 @@ namespace Ict.Petra.Client.MPartner.Logic
                         }
                     }
 
-                    ExtFormattedDocument = TRemote.MPartner.ImportExport.WebConnectors.GetExtFileHeader(AOldPetraFormat);
-
-                    ExtFormattedDocument += TRemote.MPartner.ImportExport.WebConnectors.ExportPartnerExt(
-                        APartnerKey, ASiteKey, ALocationKey, true, ExportFamiliesPersons, ASpecificBuildingInfo, AOldPetraFormat);
-
-                    ExtFormattedDocument += TRemote.MPartner.ImportExport.WebConnectors.GetExtFileFooter();
+                    ExtFormattedDocument = TRemote.MPartner.ImportExport.WebConnectors.ExportSinglePartnerExt(APartnerKey,
+                        ExportFamiliesPersons,
+                        AOldPetraFormat);
 
                     Result = TImportExportDialogs.ExportTofile(ExtFormattedDocument, FileName);
 

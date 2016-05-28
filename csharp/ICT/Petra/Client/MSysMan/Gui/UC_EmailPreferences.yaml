@@ -8,21 +8,12 @@ RootNode:
 
     Controls:
         pnlContent:
-            Controls: [lblMessage,grpEmailServer,grpSenderAddress,grpMessage]
+            Controls: [lblMessage,grpSenderAddress,grpMessage]
         lblMessage:
             Text: "These preferences will be used when emails are sent automatically from OpenPetra, for example when auto-emailing reports."
             Width: 410
             Height: 40
-        grpEmailServer:
-            Controls: [txtServerName,txtPort,txtAccountName,txtAccountPswd,chkUseSsl]
-            Width: 410
-        txtServerName:
-            LabelWidth: 150
-        txtPort:
-        txtAccountName:
-        txtAccountPswd:
-            PasswordEntry:True
-        chkUseSsl:
+
         grpSenderAddress:
             Controls: [txtSenderAddress,txtDisplayName,txtReplyTo]
             Width: 410

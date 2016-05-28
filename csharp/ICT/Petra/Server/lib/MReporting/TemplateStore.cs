@@ -126,7 +126,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         ///
         /// If DefaultOnly is given, the table contains
         ///   * a single row marked with PrivateDefault, if one is present, or
-        ///   * a single row marked Default - there will be only one Default for this ReportType.
+        ///   * a single row marked Default - there should be only one Default for this ReportType.
+        ///   * a single row with neither flag, since it's better to return something than nothing!
         /// </summary>
         /// <param name="AReportType"></param>
         /// <param name="AAuthor"></param>
@@ -163,8 +164,17 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 }
 
                 Tbl.DefaultView.RowFilter = filter;
-                Tbl.DefaultView.Sort =
-                    (ADefaultOnly) ? "s_private_default_l DESC, s_default_l DESC" : "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
+
+                if (Tbl.DefaultView.Count > 0)
+                {
+                    Tbl.DefaultView.Sort =
+                        (ADefaultOnly) ? "s_private_default_l DESC, s_default_l DESC" :
+                        "s_readonly_l DESC, s_default_l DESC, s_private_default_l DESC";
+                }
+                else // Something went wrong, but I'll try not to return empty-handed.
+                {
+                    Tbl.DefaultView.RowFilter = "";
+                }
 
                 Ret.Merge(Tbl.DefaultView.ToTable());
                 Ret.AcceptChanges();
@@ -194,7 +204,22 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 foreach (SReportTemplateRow Row in ChangedTemplates.Rows)
                 {
-                    if (Row.RowState != DataRowState.Deleted)
+                    if (Row.RowState == DataRowState.Deleted)
+                    {
+                        // The template was deleted - I'll attempt to delete the backup.
+                        Int32 templateId = Convert.ToInt32(Row["s_template_id_i", DataRowVersion.Original]);
+                        String reportType = Row["s_report_type_c", DataRowVersion.Original].ToString();
+                        String deletedBackupFilename = TemplateBackupFilename(reportType, templateId.ToString("D2"));
+
+                        try
+                        {
+                            File.Delete(deletedBackupFilename);
+                        }
+                        catch (Exception) // I'm not interested in knowing why this didn't work.
+                        {
+                        }
+                    }
+                    else
                     {
                         SaveTemplateToBackupFile(Row);
                     }

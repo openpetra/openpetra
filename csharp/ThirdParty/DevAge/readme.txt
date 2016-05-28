@@ -6,8 +6,9 @@ based on the source code of SourceGrid as of July 16, 2012
 File SourceGrid.dll:
 --------------------
 Built from the downloaded source code of SourceGrid, plus our changes described above. This is used with OpenPetra!
-The latest version is 4.40.5736.31861, dated 15 September 2015, size 500KB - this fixes all bugs and features below
+The latest version is 4.40.5865.25457, dated 15 September 2015, size 500KB - this fixes all bugs and features below
 
+(Version number 4.40.5736.31861, dated 15 September 2015, size 500KB - this fixes all bugs 1 to 13 below
 (Version number 4.40.5534.25678, dated 25 February 2015, size 536KB - this fixes all bugs 1 to 12 below
 (Version number 4.40.5336.16408, dated 11 August 2014, size 536KB - this fixes all bugs 1 to 11 below)
 (Version number 4.40.5283.24660, dated 19 June 2014, size 536KB - this fixes all bugs 1 to 10 below)
@@ -66,6 +67,8 @@ Made a small change to the grid that fixed an issue when we use this event.  Add
 
 ==== 13.  (September 2015)  An 'improvement' to the fix #5 above... where we need to ensure that the SelectionChanged event is fired even before the grid is visible.  This was achieved inside an 'if (canFocus)' clause, which is ok most of the time because it returns false before the screen is displayed.  However for screens like GL transactions that have a secondary editable grid we actually do NOT want to fire the SelectionChanged event when the main grid is visible but REALLY cannot be focused because that is what happens when there is an invalid edit in the attributes grid.  I fixed a bug in the IsEditing() method in CellContext (which I knew existed a long time ago).  By fixing it I can use it in the new grid wrapper method of the same name.
 
+==== 14.  (January 2016)  Last year we started getting a bug when an OP validation warning occurred (as opposed to an error).  For warnings we put up a message box during validation asking the user if they really want to accept this entry.  It appeared that putting up the message box altered the flow of events and we then got rows turning blue as the mouse was moved over them.  The simple fix for this was not to call base.OnMouseMove from the OP wrapper because I wrongly thought that OP does not use mouse move functionality.  That is true - except for resizing headers!  So the fix from last year broke header resizing.  This change is a change to the grid so that header resizing still works but we ignore OnMouseMove for grid Mouse Selection.
+
 
 All the changes made for this are commented with // AlanP:
 
@@ -80,6 +83,7 @@ Files affected:
 /Selection/SelectionBase.cs
 /Cells/Controllers/Resizable.cs
 /Cells/Controllers/SortableHeader.cs
+/Cells/Controllers/ControllerContainer.cs
 /Decorators/DecoratorSelection.cs
 /Common/Enums.cs
 

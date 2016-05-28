@@ -15,10 +15,19 @@
         cndChangePermissions:
     Controls:
         pnlContent:
-            Controls: [pnlDetailGrid, pnlDetails]
+            Controls: [sptContent]
             Dock: Fill
+        sptContent:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 400
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDetailGrid
+            Panel2: pnlDetails
         pnlDetailGrid:
             Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
@@ -37,7 +46,8 @@
             SortOrder: DetailUserId ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
-            Dock: Bottom
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
             Controls:
                 Row0: [txtDetailUserId, txtDetailPasswordHash]
                 Row1: [txtDetailFirstName, txtDetailLastName]
@@ -54,4 +64,5 @@
             ColSpan: 2
             Width: 500
             Height: 155
+            Stretch: fully
             #Enabled: cndChangePermissions

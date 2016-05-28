@@ -32,6 +32,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -61,6 +62,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_recipientkey", txtRecipient.Text);
             ACalc.AddParameter("param_extract_name", txtExtract.Text);
+
+            if (!dtpFromDate.Date.HasValue || !dtpToDate.Date.HasValue)
+            {
+                FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                        Catalog.GetString("Please check the entry of the Start and End dates."),
+                        Catalog.GetString("Invalid Date entered."),
+                        TResultSeverity.Resv_Critical));
+            }
+            else
+            {
+                if (dtpFromDate.Date.Value > dtpToDate.Date.Value)
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                            Catalog.GetString("Start Date must not be later than End Date"),
+                            Catalog.GetString("Invalid Date period."),
+                            TResultSeverity.Resv_Critical));
+                }
+            }
 
             if (dtpToDate.Date.HasValue)
             {

@@ -1276,7 +1276,7 @@ namespace Ict.Common.Controls
         {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
             CurrencyEditor.TypeConverter = new Ict.Common.TypeConverter.TCurrencyConverter(
-                ADataColumn.ColumnName, Thread.CurrentThread.CurrentCulture.NumberFormat, ADecimalDigits);
+                ADataColumn, Thread.CurrentThread.CurrentCulture.NumberFormat, ADecimalDigits);
 
             CurrencyEditor.EditableMode = EditableMode.None;
 
@@ -1583,18 +1583,6 @@ namespace Ict.Common.Controls
             this.Selection.ResetSelection(false, true);
             this.Selection.SelectRow(ARowNumberInGrid, true);
             this.ShowCell(ARowNumberInGrid);
-        }
-
-        /// <summary>
-        /// OnMouseMove - for Open Petra this does nothing
-        /// </summary>
-        protected override void OnMouseMove(MouseEventArgs e)
-        {
-            // We don't use OnMouseMove but the default grid implementation causes us problems because we can show a message box during validation.
-            // As a result the mouse events come in the wrong order and we highlight the cells we mouse over after closing the message.
-            // So we just don't call the base implementation.
-
-            //base.OnMouseMove(e);
         }
 
         #endregion

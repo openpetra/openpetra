@@ -1051,6 +1051,47 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Loads a donor's last gift (if it exists) and returns the associated gift details.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADonorPartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean DonorHasGiven(Int32 ALedgerNumber,
+            Int64 ADonorPartnerKey)
+        {
+            #region Validate Arguments
+
+            if (ADonorPartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Donor Partnerkey cannot be a negative number!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            DataTable GiftTable = null;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    // load latest gift from donor
+                    string Query = "SELECT a_ledger_number_i" +
+                                   " FROM a_gift" +
+                                   " WHERE a_ledger_number_i = " + ALedgerNumber +
+                                   "  AND p_donor_key_n = " + ADonorPartnerKey +
+                                   " LIMIT 1;";
+
+                    GiftTable = DBAccess.GDBAccessObj.SelectDT(Query, AGiftTable.GetTableDBName(), Transaction);
+                });
+
+            return (GiftTable != null) && (GiftTable.Rows.Count > 0);
+        }
+
+        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc
@@ -4003,16 +4044,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                                                                             giftDetail.MotivationGroupCode,
                                                                                             giftDetail.MotivationDetailCode });
 
-                //do not allow posting gifts with no donor
-                if (giftDetail.DonorKey == 0)
-                {
-                    AVerifications.Add(
-                        new TVerificationResult(
-                            "Posting Gift Batch",
-                            String.Format(Catalog.GetString("Donor Key needed in gift {0}"),
-                                giftDetail.GiftTransactionNumber),
-                            TResultSeverity.Resv_Critical));
-                }
+                /*TODO: put this back in if GiftBatches can get posted from elsewhere
+                 * //  i.e. bypassing the check for zero donor and or recipient from the Gift form
+                 * //  Will also then need to pass system default values that allow donor/recip zero
+                 * //  or user defaults if FINANCE-3 level user
+                 *
+                 * //do not allow posting gifts with no donor
+                 * if (giftDetail.DonorKey == 0)
+                 * {
+                 *  AVerifications.Add(
+                 *      new TVerificationResult(
+                 *          "Posting Gift Batch",
+                 *          String.Format(Catalog.GetString("Donor Key needed in gift {0}"),
+                 *              giftDetail.GiftTransactionNumber),
+                 *          TResultSeverity.Resv_Critical));
+                 * }
+                 *
+                 * //do not allow posting gifts with no recipient
+                 * if (giftDetail.RecipientKey == 0)
+                 * {
+                 *  AVerifications.Add(
+                 *      new TVerificationResult(
+                 *          "Posting Gift Batch",
+                 *          String.Format(Catalog.GetString("Recipient Key needed in gift {0} and detail {1}"),
+                 *              giftDetail.GiftTransactionNumber,
+                 *              giftDetail.DetailNumber),
+                 *          TResultSeverity.Resv_Critical));
+                 * }
+                 */
 
                 //check for valid motivation detail code
                 if (motivationRow == null)
@@ -4084,7 +4143,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 }
 
                 //Calculate GiftAmount
-
                 giftDetail.GiftAmount = GLRoutines.Divide(giftDetail.GiftTransactionAmount, GiftBatchRow.ExchangeRateToBase);
 
                 if (BatchTransactionCurrency != LedgerIntlCurrency)
@@ -4095,6 +4153,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 {
                     giftDetail.GiftAmountIntl = giftDetail.GiftTransactionAmount;
                 }
+
+                //Redo Tax calculations
+                AGiftDetailRow giftDetailRow = (AGiftDetailRow)giftDetail;
+                TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetailRow);
 
                 // for calculation of admin fees
                 LoadAdminFeeTablesForGiftDetail(MainDS, giftDetail, ATransaction);
@@ -4765,6 +4827,72 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 });
 
             PartnerTaxDeductiblePct.AcceptChanges();
+
+            return PartnerTaxDeductiblePct;
+        }
+
+        /// <summary>
+        /// Load the most recent Partner Tax Deductible Pct
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="ADateValidFrom">To match nearest date valid from</param>
+        /// <returns>PPartnerTaxDeductiblePctTable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long APartnerKey, DateTime ADateValidFrom)
+        {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePct = null;
+
+            PPartnerTaxDeductiblePctTable PartnerTaxPercentTable = new PPartnerTaxDeductiblePctTable();
+            PPartnerTaxDeductiblePctRow PartnerTaxPercentTemplateRow = (PPartnerTaxDeductiblePctRow)PartnerTaxPercentTable.NewRowTyped(false);
+
+            PartnerTaxPercentTemplateRow.PartnerKey = APartnerKey;
+            PartnerTaxPercentTemplateRow.DateValidFrom = ADateValidFrom;
+
+            StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "<=" });
+            StringCollection OrderList0 = new StringCollection();
+
+            OrderList0.Add("ORDER BY");
+            OrderList0.Add(PPartnerTaxDeductiblePctTable.GetDateValidFromDBName() + " DESC");
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    PartnerTaxDeductiblePct = PPartnerTaxDeductiblePctAccess.LoadUsingTemplate(PartnerTaxPercentTemplateRow,
+                        Operators0,
+                        null,
+                        Transaction,
+                        OrderList0,
+                        0,
+                        0);
+                });
+
+            if (PartnerTaxDeductiblePct != null)
+            {
+                //Only want the most recent row
+                int numRecs = PartnerTaxDeductiblePct.Count;
+
+                if (numRecs > 1)
+                {
+                    for (int i = numRecs - 1; i > 0; i--)
+                    {
+                        PartnerTaxDeductiblePct.Rows[i].Delete();
+                    }
+                }
+
+                PartnerTaxDeductiblePct.AcceptChanges();
+            }
 
             return PartnerTaxDeductiblePct;
         }

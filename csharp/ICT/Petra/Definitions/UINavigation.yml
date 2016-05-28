@@ -99,7 +99,6 @@ OpenPetra:
                         ImportPartners: {Label=Import Partners, Description=Import Partners from a file or satellite database, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerImport}
                     Export:
 #                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
-                        CalebExport: {Label=Caleb Export, Description=Export Partner/Personnel/Finance Data to Caleb, Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
                 PartnerSetup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true, Label=Setup}
                     General:           

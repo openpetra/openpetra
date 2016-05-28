@@ -53,6 +53,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
         }
 
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            // make sure that for each group one radio button is selected
+            uco_Selection.VerifyRadioButtonSelection(FPetraUtilsObject);
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrFormatCurrency, FPetraUtilsObject);
+        }
+
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);

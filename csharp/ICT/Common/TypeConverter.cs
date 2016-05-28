@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -617,7 +618,9 @@ namespace Ict.Common
 
                 if (FRetrieveUserDefaultBoolean != null)
                 {
-                    if (AContext.ToString().StartsWith("a_"))
+                    DataColumn contextAsColumn = AContext as DataColumn;
+
+                    if ((contextAsColumn != null) && (contextAsColumn.ColumnName.StartsWith("a_") || contextAsColumn.Table.TableName.StartsWith("A")))
                     {
                         // It is a Finance screen
                         FShowThousandsInCurrency = FRetrieveUserDefaultBoolean(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, true);

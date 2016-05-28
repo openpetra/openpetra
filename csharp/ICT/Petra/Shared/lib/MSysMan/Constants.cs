@@ -132,6 +132,13 @@ namespace Ict.Petra.Shared.MSysMan
         public const String FINANCE_REPORTING_SHOWDIFFFINANCIALYEARSELECTION = "ShowDiffFinancialYearSelection";
 
         /*------------------------------------------------------------------------------
+         *  EMail Constants
+         * -------------------------------------------------------------------------------*/
+
+        /// <summary>todoComment</summary>
+        public const String EMAIL_USER_LOGIN_NAME = "IUSROPEMAIL";
+
+        /*------------------------------------------------------------------------------
          *      Put other User Default Constants here as well.
          * -------------------------------------------------------------------------------*/
     }

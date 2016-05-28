@@ -1094,6 +1094,23 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// Add verification error if no radio button is selected in the group box
+        /// </summary>
+        /// <param name="ARadioGroupBox"></param>
+        /// <param name="AUtilsObject"></param>
+        public static void VerifyRadioButtonSelection(GroupBox ARadioGroupBox, TFrmPetraReportingUtils AUtilsObject)
+        {
+            if (!TCommonControlsHelper.IsAnyRadioButtonSelected(ARadioGroupBox))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No option selected"),
+                    Catalog.GetString("Please select an option from ''" + ARadioGroupBox.Text + "''"),
+                    TResultSeverity.Resv_Critical);
+                AUtilsObject.AddVerificationResult(VerificationResult);
+            }
+        }
+
+        /// <summary>
         /// This procedure loads the parameters of the given settings
         /// </summary>
         protected void LoadSettings(String ASettingsName)

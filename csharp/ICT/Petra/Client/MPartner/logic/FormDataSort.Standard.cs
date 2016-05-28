@@ -206,20 +206,28 @@ namespace Ict.Petra.Client.MPartner.Logic
             string code1 = P1.PostalCode;
             string code2 = P2.PostalCode;
 
-            // Remove any spaces in the code (eg GB codes can have a space)
-            code1 = code1.Replace(" ", "");
-            code2 = code2.Replace(" ", "");
-
-            // Special cases:
-            // Switzerland uses CH- prefix sometimes
-            if (code1.StartsWith("CH-"))
+            if (code1 != null)
             {
-                code1 = code1.Substring(3);
+                // Remove any spaces in the code (eg GB codes can have a space)
+                code1 = code1.Replace(" ", "");
+
+                // Special cases:
+                // Switzerland uses CH- prefix sometimes
+                if (code1.StartsWith("CH-"))
+                {
+                    code1 = code1.Substring(3);
+                }
             }
 
-            if (code2.StartsWith("CH-"))
+            if (code2 != null)
             {
-                code2 = code2.Substring(3);
+                // Same for code2
+                code2 = code2.Replace(" ", "");
+
+                if (code2.StartsWith("CH-"))
+                {
+                    code2 = code2.Substring(3);
+                }
             }
 
             return CompareInternal(code1, code2);

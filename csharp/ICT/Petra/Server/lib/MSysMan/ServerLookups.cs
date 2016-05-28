@@ -23,10 +23,12 @@
 //
 using System;
 using System.Data;
+using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
+using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
@@ -39,6 +41,17 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
     /// </summary>
     public class TSysManServerLookups
     {
+        // This is the password for the IUSROPEMAIL user.  If authentication is required by the EMail server so that clients can send emails from
+        // connections on the public internet, we can tell the client to authenticate using these credentials.
+        // That way they do not need to supply their own login credentials which we would have to store somewhere.
+        // The sysadmin for the servers needs to create this user with low privileges accessible by the mail server (locally or using Active Directory).
+        // The password must be set to 'never expires' and 'cannot be changed'.
+        // Note that the password is not stored in this file as text and it is never exposed to a client.
+        // Password is ....
+        private static byte[] EmailUserPassword = new byte[] {
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+        };
+
         /// <summary>
         /// Retrieves the current database version
         /// </summary>
@@ -128,6 +141,45 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Method to obtain the Smtp Configuration settings from the OP server that has been set up to act as an Email server
+        /// </summary>
+        /// <param name="ASMTPHost">The host address.  Default is empty string (not set).
+        /// If the name contains 'example.org' the parameter also returns an empty string</param>
+        /// <param name="ASMTPPort">Default return value is 25.</param>
+        /// <param name="AEnableSsl">Default return value id 'false'.</param>
+        /// <param name="ALoginUsername">Returns a user name to use for credentials for the server, or null if no credentials are required</param>
+        /// <param name="ALoginPassword">Returns a matching password for credentials on the server, or null if no credentials are required</param>
+        [RequireModulePermission("NONE")]
+        public static void GetServerSmtpSettings(out string ASMTPHost,
+            out int ASMTPPort,
+            out bool AEnableSsl,
+            out string ALoginUsername,
+            out string ALoginPassword)
+        {
+            ASMTPHost = TAppSettingsManager.GetValue("SmtpHost", "");
+            ASMTPPort = TAppSettingsManager.GetInt32("SmtpPort", 25);
+            AEnableSsl = TAppSettingsManager.GetBoolean("SmtpEnableSsl", false);
+            ALoginUsername = null;
+            ALoginPassword = null;
+
+            // Validate the host name.  It should not be the content of an unmodified config file.
+            if (ASMTPHost.Contains("example.org"))
+            {
+                ASMTPHost = string.Empty;
+                return;
+            }
+
+            if (TAppSettingsManager.GetBoolean("SmtpRequireCredentials", false) == true)
+            {
+                // We give the client the details of the OP Email user.
+                // The password is converted from a byte array (rather than being compiled into this DLL as plain text).
+                // The username and password are stored in different server DLL's.
+                ALoginUsername = MSysManConstants.EMAIL_USER_LOGIN_NAME;
+                ALoginPassword = Encoding.ASCII.GetString(EmailUserPassword);
+            }
         }
     }
 }

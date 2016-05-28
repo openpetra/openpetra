@@ -25,6 +25,7 @@ using System;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MFinance.Logic;
@@ -58,6 +59,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            // make sure that for each group one radio button is selected
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrRecipientSelection, FPetraUtilsObject);
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrDonorSelection, FPetraUtilsObject);
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrSorting, FPetraUtilsObject);
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrFormatCurrency, FPetraUtilsObject);
+
             if (!dtpEndDate.ValidDate(false)
                 || !dtpStartDate.ValidDate(false))
             {

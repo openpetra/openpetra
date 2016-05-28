@@ -81,6 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private string FJournalStatus = string.Empty;
         private bool FDoneComboInitialise = false;
         private bool FContainsSystemGenerated = false;
+        private bool FSuppressListChanged = false;
 
         /// <summary>
         /// Sets a flag to show the status dialog when transactions are loaded
@@ -279,6 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Empty grids before filling them
                 grdDetails.DataSource = null;
                 grdAnalAttributes.DataSource = null;
+                FSuppressListChanged = false;
 
                 // This sets the main part of the filter but excluding the additional items set by the user GUI
                 // It gets the right sort order
@@ -743,7 +745,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((OldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
                 || (OldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
-                UpdateTransactionTotals();
+                // Third parameter must be set to true because we are already inside BeginEdit/EndEdit
+                UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Transaction, false, true);
             }
         }
 
@@ -884,7 +887,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="AUpdateLevel"></param>
         /// <param name="AUpdateTransDates"></param>
-        public void UpdateTransactionTotals(TFrmGLBatch.eGLLevel AUpdateLevel = TFrmGLBatch.eGLLevel.Transaction, bool AUpdateTransDates = false)
+        /// <param name="AIsActionInsideRowEdit">Set this to true if the call is from within a BeginEdit/EndEdit clause</param>
+        public void UpdateTransactionTotals(TFrmGLBatch.eGLLevel AUpdateLevel = TFrmGLBatch.eGLLevel.Transaction,
+            bool AUpdateTransDates = false, bool AIsActionInsideRowEdit = false)
         {
             bool OriginalSaveButtonState = false;
             bool TransactionRowActive = false;
@@ -985,7 +990,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return;
             }
 
-            //Iterate through journals
+            //Iterate through journals - we will be updating the current row directly
+            if ((FPreviouslySelectedDetailRow != null) && !AIsActionInsideRowEdit)
+            {
+                FPreviouslySelectedDetailRow.BeginEdit();
+            }
+
+            bool currentRowEdited = false;
+
             foreach (DataRowView drv in JournalsToUpdateDV)
             {
                 GLBatchTDSAJournalRow jr = (GLBatchTDSAJournalRow)drv.Row;
@@ -1078,6 +1090,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     txtCreditAmountBase.NumberValueDecimal = 0;
                                     txtCreditAmount.NumberValueDecimal = 0;
                                     FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
+                                    currentRowEdited = true;
                                 }
                             }
                             else
@@ -1089,6 +1102,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                     txtDebitAmountBase.NumberValueDecimal = 0;
                                     txtDebitAmount.NumberValueDecimal = 0;
                                     FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
+                                    currentRowEdited = true;
                                 }
                             }
                         }
@@ -1157,6 +1171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                         Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
                                     txtDebitAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
                                     txtCreditAmountBase.NumberValueDecimal = 0;
+                                    currentRowEdited = true;
                                 }
                             }
                         }
@@ -1181,6 +1196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                         Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInIntlCurrencyId]);
                                     txtCreditAmountBase.NumberValueDecimal = Convert.ToDecimal(drWork[ATransactionTable.ColumnAmountInBaseCurrencyId]);
                                     txtDebitAmountBase.NumberValueDecimal = 0;
+                                    currentRowEdited = true;
                                 }
                             }
                         }
@@ -1231,6 +1247,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     txtDebitTotalAmountBase.NumberValueDecimal = AmtDebitTotalBase;
                 }
             }   // next journal
+
+            if (currentRowEdited)
+            {
+                FPreviouslySelectedDetailRow.EndEdit();
+            }
+            else if ((FPreviouslySelectedDetailRow != null) && !AIsActionInsideRowEdit)
+            {
+                FPreviouslySelectedDetailRow.CancelEdit();
+            }
 
             //Update totals of Batch
             if (UnpostedBatch)
@@ -2172,9 +2197,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
         {
-            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.AutoResizeGrid();
+
+                // Once we have auto-sized once and there are more than 8 rows we don't auto-size any more (unless we load data again)
+                FSuppressListChanged = (grdDetails.Rows.Count > 8);
             }
 
             // If the grid list changes we might need to disable the Delete All button
@@ -2262,14 +2290,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Also the data source for the combos will be wrong because they have been cloned from items that may not have shown inactive values
             if ((AFilterIsOff == false) && !FDoneComboInitialise)
             {
-                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailAccountCode"),
-                    TCacheableFinanceTablesEnum.AccountList);
-                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailCostCentreCode"),
-                    TCacheableFinanceTablesEnum.CostCentreList);
-                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailAccountCode"),
-                    TCacheableFinanceTablesEnum.AccountList);
-                InitFilterFindComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailCostCentreCode"),
-                    TCacheableFinanceTablesEnum.CostCentreList);
+                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailAccountCode"));
+                InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(
+                        "cmbDetailCostCentreCode"));
+                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailAccountCode"));
+                InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailCostCentreCode"));
 
                 FDoneComboInitialise = true;
             }
@@ -2278,9 +2303,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Helper method that we can call to initialise each of the filter/find comboBoxes
         /// </summary>
-        private void InitFilterFindComboBox(TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTable)
+        private void InitFilterFindAccountCodeComboBox(TCmbAutoComplete AFFInstance)
         {
-            AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber).DefaultView;
+            string rowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+            string sort = string.Format("{0}", AAccountTable.GetAccountCodeDBName());
+            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber),
+                rowFilter, sort, DataViewRowState.CurrentRows);
+
+            AFFInstance.DataSource = dv;
+            AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
+            AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
+        }
+
+        /// <summary>
+        /// Helper method that we can call to initialise each of the filter/find comboBoxes
+        /// </summary>
+        private void InitFilterFindCostCentreComboBox(TCmbAutoComplete AFFInstance)
+        {
+            string rowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+            string sort = string.Format("{0}", ACostCentreTable.GetCostCentreCodeDBName());
+            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber),
+                rowFilter, sort, DataViewRowState.CurrentRows);
+
+            AFFInstance.DataSource = dv;
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
         }

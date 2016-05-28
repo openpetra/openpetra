@@ -515,8 +515,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         return false;
                     }
 
-                    //End of Transaction block in 4GL
-
                     /* Print the Admin Fee Calculations report, if requested */
                     if (APrintReport && IsSuccessful)
                     {
@@ -606,7 +604,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 AAccountHierarchyAccess.LoadViaALedger(postingDS, ALedgerNumber, ADBTransaction);
 
                 ABatchTable batchTable = new ABatchTable();
-
                 ABatchRow batchTemplateRow = (ABatchRow)batchTable.NewRowTyped(false);
 
                 batchTemplateRow.LedgerNumber = ALedgerNumber;

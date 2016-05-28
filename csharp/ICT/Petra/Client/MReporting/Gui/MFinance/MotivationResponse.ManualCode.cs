@@ -80,8 +80,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
-            // add this manually as string parameter as automated code would add mailing codes that are numbers wrongly as integers
-            ACalc.AddStringParameter("param_mailing_code", this.cmbMailingCode.GetSelectedString());
+            // Add param_mailing_code manually as string parameter, as automated code would incorrectly add mailing codes that are numbers as integers.
+            ACalc.AddStringParameter("param_mailing_code", cmbMailingCode.GetSelectedString());
+            ACalc.AddStringParameter("param_mailing_code_descr", cmbMailingCode.GetSelectedDescription());
 
             if (dtpToDate.Date.HasValue)
             {

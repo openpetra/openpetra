@@ -462,14 +462,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (AClonedFromComboBox.Name.Contains("Account"))
             {
                 // This is quicker than getting the cached table again
-                AFFInstance.DataSource = FAccountTable.Copy().DefaultView;
-                //AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber).DefaultView;
+                DataView dv = new DataView(FAccountTable.Copy());
+                dv.RowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+                AFFInstance.DataSource = dv;
             }
             else if (AClonedFromComboBox.Name.Contains("CostCentre"))
             {
                 // This is quicker than getting the cached table again
-                AFFInstance.DataSource = FCostCentreTable.Copy().DefaultView;
-                //AFFInstance.DataSource = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber).DefaultView;
+                DataView dv = new DataView(FCostCentreTable.Copy());
+                dv.RowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+                AFFInstance.DataSource = dv;
             }
             else
             {

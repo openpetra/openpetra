@@ -399,7 +399,28 @@ namespace Ict.Petra.Client.CommonForms
                             // If it is not displayed yet we will have another go later
                             if ((splitterControl != null) && splitterControl.CanFocus)
                             {
-                                ((SplitContainer)splitterControl).SplitterDistance = int.Parse(extraItems[2]);
+                                SplitContainer splitter = (SplitContainer)splitterControl;
+                                int distance = int.Parse(extraItems[2]);
+
+                                // Just in case the numbers are screwed up we enforce the max/min splitter position
+                                if (splitter.Orientation == Orientation.Horizontal)
+                                {
+                                    distance = Math.Max(distance, splitter.Panel1MinSize);
+                                    distance = Math.Min(distance, splitter.Height - splitter.Panel2MinSize);
+                                }
+                                else
+                                {
+                                    distance = Math.Max(distance, splitter.Panel1MinSize);
+                                    distance = Math.Min(distance, splitter.Width - splitter.Panel2MinSize);
+                                }
+
+                                // the value of distance can end up as 0 if there are two splitters and one is 'underneath' the other
+                                // this happens on Motivation Details setup screen for example.  The second splitter is effectively hidden by the first.
+                                if (distance > 0)
+                                {
+                                    splitter.SplitterDistance = distance;
+                                }
+
                                 FSplittersDisplayed.Add(extraItems[0]);
                             }
                         }

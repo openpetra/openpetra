@@ -177,17 +177,38 @@ namespace Ict.Petra.Shared.MPersonnel.Validation
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
             }
 
-            // 'To Date' must be later than 'From Date'
+            // 'To Date' must be later than 'From Date', must not be null and must not be more than 2 years from now
             ValidationColumn = ARow.Table.Columns[PmJobAssignmentTable.ColumnToDateId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.ToDate, ARow.FromDate,
-                    ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                VerificationResult = TSharedValidationControlHelper.IsNotInvalidDate(ARow.ToDate,
+                    ValidationControlsData.ValidationControlLabel, AVerificationResultCollection, true,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition to/removal from TVerificationResultCollection
                 AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+                if (VerificationResult == null)
+                {
+                    VerificationResult = TDateChecks.FirstGreaterOrEqualThanSecondDate(ARow.ToDate, ARow.FromDate,
+                        ValidationControlsData.ValidationControlLabel, ValidationControlsData.SecondValidationControlLabel,
+                        AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                    // Handle addition to/removal from TVerificationResultCollection
+                    AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+
+                    if (VerificationResult == null)
+                    {
+                        VerificationResult = TDateChecks.IsDateBetweenDates(ARow.ToDate, ARow.FromDate, DateTime.Today.AddYears(2),
+                            ValidationControlsData.ValidationControlLabel,
+                            TDateBetweenDatesCheckType.dbdctUnspecific, TDateBetweenDatesCheckType.dbdctUnspecific,
+                            AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        // Handle addition to/removal from TVerificationResultCollection
+                        AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn);
+                    }
+                }
             }
 
             // 'Unit' must be a Partner of Class 'UNIT' and must not be 0

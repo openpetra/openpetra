@@ -37,6 +37,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.CommonControls;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -57,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
+        private bool FDoneComboInitialise = false;
 
         /// <summary>
         /// Flags whether all the gift batch rows for this form have finished loading
@@ -1097,6 +1099,105 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMainDS.ALedger[0].LastRecGiftBatchNumber = LedgerLastRecurringGiftBatchNumber;
             }
+        }
+
+        private void FilterToggledManual(bool AFilterIsOff)
+        {
+            // The first time the filter is toggled on we need to set up the cost centre and account comboBoxes
+            // This means showing inactive values in red
+            // We achieve this by using our own owner draw mode event
+            // Also the data source for the combos will be wrong because they have been cloned from items that may not have shown inactive values
+            if ((AFilterIsOff == false) && !FDoneComboInitialise)
+            {
+                InitFilterFindComboBox(cmbDetailBankCostCentre,
+                    (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankCostCentre.Name));
+                InitFilterFindComboBox(cmbDetailBankAccountCode,
+                    (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(cmbDetailBankAccountCode.Name));
+                InitFilterFindComboBox(cmbDetailBankCostCentre,
+                    (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankCostCentre.Name));
+                InitFilterFindComboBox(cmbDetailBankAccountCode,
+                    (TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName(cmbDetailBankAccountCode.Name));
+
+                FDoneComboInitialise = true;
+            }
+        }
+
+        /// <summary>
+        /// Helper method that we can call to initialise each of the filter/find comboBoxes
+        /// </summary>
+        private void InitFilterFindComboBox(TCmbAutoPopulated AClonedFromComboBox,
+            TCmbAutoComplete AFFInstance)
+        {
+            AFFInstance.DisplayMember = AClonedFromComboBox.DisplayMember;
+            AFFInstance.ValueMember = AClonedFromComboBox.ValueMember;
+
+            if (AClonedFromComboBox.Name.Contains("Account"))
+            {
+                // This is quicker than getting the cached table again
+                DataView dv = new DataView(FAccountTable.Copy());
+                dv.RowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+                AFFInstance.DataSource = dv;
+            }
+            else if (AClonedFromComboBox.Name.Contains("CostCentre"))
+            {
+                // This is quicker than getting the cached table again
+                DataView dv = new DataView(FCostCentreTable.Copy());
+                dv.RowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+                AFFInstance.DataSource = dv;
+            }
+            else
+            {
+                throw new Exception("Unexpected ComboBox name");
+            }
+
+            AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
+            AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
+        }
+
+        /// <summary>
+        /// This method is called when the system wants to draw a comboBox item in the list.
+        /// We choose the colour and weight for the font, showing inactive codes in bold red text
+        /// </summary>
+        private void DrawComboBoxItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+            DataRowView drv = (DataRowView)cmb.Items[e.Index];
+            string content = drv[1].ToString();
+            Brush brush = Brushes.Black;
+
+            if (cmb.Name.StartsWith("cmbDetailBankCostCentre"))
+            {
+                if (FCostCentreTable != null)
+                {
+                    ACostCentreRow row = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, content });
+
+                    if ((row != null) && !row.CostCentreActiveFlag)
+                    {
+                        brush = Brushes.Red;
+                    }
+                }
+            }
+            else if (cmb.Name.StartsWith("cmbDetailBankAccount"))
+            {
+                if (FAccountTable != null)
+                {
+                    AAccountRow row = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, content });
+
+                    if ((row != null) && !row.AccountActiveFlag)
+                    {
+                        brush = Brushes.Red;
+                    }
+                }
+            }
+            else
+            {
+                throw new ArgumentException("Unexpected caller of DrawComboBoxItem event");
+            }
+
+            Font font = new Font(((Control)sender).Font, (brush == Brushes.Red) ? FontStyle.Bold : FontStyle.Regular);
+            e.Graphics.DrawString(content, font, brush, new PointF(e.Bounds.X, e.Bounds.Y));
         }
     }
 }

@@ -1743,19 +1743,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         ///
         /// </summary>
-        /// <param name="AOldPetraFormat">Set to true if old Petra format should be used</param>
-        /// <returns>A string that will form the first two lines of a .ext file</returns>
-        [RequireModulePermission("PTNRUSER")]
-        public static string GetExtFileHeader(Boolean AOldPetraFormat)
-        {
-            TPartnerFileExport Exporter = new TPartnerFileExport();
-
-            return Exporter.ExtFileHeader(AOldPetraFormat);
-        }
-
-        /// <summary>
-        ///
-        /// </summary>
         /// <returns>A string that will form the final line of a .ext file</returns>
         [RequireModulePermission("PTNRUSER")]
         public static string GetExtFileFooter()
@@ -1923,13 +1910,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         /// Export all partners of an extract into an EXT file.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="AExtractId">Extract Id</param>
+        /// <param name="AIncludeFamilyMembers">True if also family members are to be exported</param>
+        /// <param name="AOldPetraFormat">True if to export in old format</param>
+        /// <returns>Exported Text</returns>
         [RequireModulePermission("PTNRUSER")]
         public static String ExportExtractPartnersExt(int AExtractId, Boolean AIncludeFamilyMembers, Boolean AOldPetraFormat)
         {
             TDBTransaction ReadTransaction = null;
-            String ExtText = GetExtFileHeader(AOldPetraFormat);
             TPartnerFileExport Exporter = new TPartnerFileExport();
+            String ExtText = Exporter.ExtFileHeader(AOldPetraFormat);
             PartnerImportExportTDS MainDS;
             DataTable ExtractPartners = new MExtractTable();
 
@@ -2083,6 +2073,78 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
         /// <summary>
+        /// Export a single partner into an EXT file.
+        /// </summary>
+        /// <param name="APartnerKey">Partner key</param>
+        /// <param name="AIncludeFamilyMembers">True if also family members are to be exported</param>
+        /// <param name="AOldPetraFormat">True if to export in old format</param>
+        /// <returns>Exported Text</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String ExportSinglePartnerExt(Int64 APartnerKey, Boolean AIncludeFamilyMembers, Boolean AOldPetraFormat)
+        {
+            TDBTransaction ReadTransaction = null;
+            TPartnerFileExport Exporter = new TPartnerFileExport();
+            String ExtText = Exporter.ExtFileHeader(AOldPetraFormat);
+            PartnerImportExportTDS MainDS;
+            TPartnerClass PartnerClass;
+            String PartnerShortName;
+
+            if (APartnerKey == 0)
+            {
+                return "";
+            }
+
+            if (!TPartnerServerLookups.GetPartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass))
+            {
+                // partner not found in db
+                return "";
+            }
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    // if row is a family partner and the user wants to also export the family's person members
+                    if (AIncludeFamilyMembers && (PartnerClass == TPartnerClass.FAMILY))
+                    {
+                        // export the family with the given key
+                        MainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
+                        ExtText += Exporter.ExportPartnerExt(MainDS, 0, 0, null, AOldPetraFormat);
+
+                        PPersonTable Persons = PPersonAccess.LoadViaPFamily(APartnerKey, ReadTransaction);
+
+                        foreach (PPersonRow Row in Persons.Rows)
+                        {
+                            MainDS = TExportAllPartnerData.ExportPartner(Row.PartnerKey, TPartnerClass.PERSON);
+                            ExtText += Exporter.ExportPartnerExt(MainDS, 0, 0, null, AOldPetraFormat);
+                        }
+                    }
+                    else if (PartnerClass == TPartnerClass.PERSON) // if person partner --> also export family
+                    {
+                        PPersonRow PersonRecord = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction)[0];
+
+                        // export the family record first.
+                        MainDS = TExportAllPartnerData.ExportPartner(PersonRecord.FamilyKey, TPartnerClass.FAMILY);
+                        ExtText += Exporter.ExportPartnerExt(MainDS, 0, 0, null, AOldPetraFormat);
+
+                        // and now export the person
+                        MainDS = TExportAllPartnerData.ExportPartner(APartnerKey, TPartnerClass.PERSON);
+                        ExtText += Exporter.ExportPartnerExt(MainDS, 0, 0, null, AOldPetraFormat);
+                    }
+                    else
+                    {
+                        // export the partner with the given key
+                        MainDS = TExportAllPartnerData.ExportPartner(APartnerKey);
+                        ExtText += Exporter.ExportPartnerExt(MainDS, 0, 0, null, AOldPetraFormat);
+                    }
+                });
+
+            // add footer
+            ExtText += GetExtFileFooter();
+
+            return ExtText;
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <returns>All the text to write into an EXT file.</returns>
@@ -2090,8 +2152,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static String ExportAllPartnersExt()
         {
             TDBTransaction ReadTransaction = null;
-            String ExtText = GetExtFileHeader(false);
             TPartnerFileExport Exporter = new TPartnerFileExport();
+            String ExtText = Exporter.ExtFileHeader(false);
             PartnerImportExportTDS MainDS;
             PPartnerTable Partners = new PPartnerTable();
 

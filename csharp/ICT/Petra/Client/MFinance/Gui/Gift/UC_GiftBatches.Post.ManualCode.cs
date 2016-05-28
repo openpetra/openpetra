@@ -92,8 +92,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ACurrentBatchRow">The batch row to post</param>
         /// <param name="APostingAlreadyConfirmed">True means ask user if they want to post</param>
         /// <param name="AWarnOfInactiveValues">True means user is warned if inactive values exist</param>
+        /// <param name="ADonorZeroIsValid"></param>
+        /// <param name="ARecipientZeroIsValid"></param>
         /// <returns>True if the batch was successfully posted</returns>
-        public bool PostBatch(AGiftBatchRow ACurrentBatchRow, bool APostingAlreadyConfirmed = false, bool AWarnOfInactiveValues = true)
+        public bool PostBatch(AGiftBatchRow ACurrentBatchRow,
+            bool APostingAlreadyConfirmed = false,
+            bool AWarnOfInactiveValues = true,
+            bool ADonorZeroIsValid = false,
+            bool ARecipientZeroIsValid = false)
         {
             //This assumes that all gift data etc is loaded into the batch before arriving here
 
@@ -162,6 +168,98 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return RetVal;
             }
 
+            //Check for zero Donors or Recipients
+            if (!ADonorZeroIsValid)
+            {
+                DataView batchGiftDV = new DataView(FMainDS.AGift);
+
+                batchGiftDV.RowFilter = string.Format("{0}={1} And {2}=0",
+                    AGiftTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber,
+                    AGiftTable.GetDonorKeyDBName());
+
+                int numDonorZeros = batchGiftDV.Count;
+
+                if (numDonorZeros > 0)
+                {
+                    string messageListOfOffendingGifts =
+                        String.Format(Catalog.GetString(
+                                "Gift Batch {0} contains {1} gift detail(s) with Donor 0000000. Please fix before posting!{2}{2}"),
+                            FSelectedBatchNumber,
+                            numDonorZeros,
+                            Environment.NewLine);
+
+                    string listOfOffendingRows = string.Empty;
+
+                    listOfOffendingRows += "Gift" + Environment.NewLine;
+                    listOfOffendingRows += "------------";
+
+                    foreach (DataRowView drv in batchGiftDV)
+                    {
+                        AGiftRow giftRow = (AGiftRow)drv.Row;
+
+                        listOfOffendingRows += String.Format("{0}{1:0000}",
+                            Environment.NewLine,
+                            giftRow.GiftTransactionNumber);
+                    }
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
+                    extendedMessageBox.ShowDialog((messageListOfOffendingGifts + listOfOffendingRows),
+                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
+
+                    return RetVal;
+                }
+            }
+
+            if (!ARecipientZeroIsValid)
+            {
+                DataView batchGiftDetailsDV = new DataView(FMainDS.AGiftDetail);
+
+                batchGiftDetailsDV.RowFilter = string.Format("{0}={1} And {2}=0",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber,
+                    AGiftDetailTable.GetRecipientKeyDBName());
+
+                int numRecipientZeros = batchGiftDetailsDV.Count;
+
+                if (numRecipientZeros > 0)
+                {
+                    string messageListOfOffendingGifts =
+                        String.Format(Catalog.GetString(
+                                "Gift Batch {0} contains {1} gift detail(s) with Recipient 0000000. Please fix before posting!{2}{2}"),
+                            FSelectedBatchNumber,
+                            numRecipientZeros,
+                            Environment.NewLine);
+
+                    string listOfOffendingRows = string.Empty;
+
+                    listOfOffendingRows += "Gift   Detail" + Environment.NewLine;
+                    listOfOffendingRows += "-------------------";
+
+                    foreach (DataRowView drv in batchGiftDetailsDV)
+                    {
+                        AGiftDetailRow giftDetailRow = (AGiftDetailRow)drv.Row;
+
+                        listOfOffendingRows += String.Format("{0}{1:0000}  {2:00}",
+                            Environment.NewLine,
+                            giftDetailRow.GiftTransactionNumber,
+                            giftDetailRow.DetailNumber);
+                    }
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
+                    extendedMessageBox.ShowDialog((messageListOfOffendingGifts + listOfOffendingRows),
+                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
+
+                    return RetVal;
+                }
+            }
+
             //Check for inactive KeyMinistries
             DataTable GiftsWithInactiveKeyMinistries;
             bool ModifiedDetails = false;
@@ -172,15 +270,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 int numInactiveValues = GiftsWithInactiveKeyMinistries.Rows.Count;
 
                 string messageNonModifiedBatch =
-                    String.Format(Catalog.GetString("{0} inactive key ministries found in Gift Batch {1}. Please fix before posting!{2}{2}"),
-                        numInactiveValues,
+                    String.Format(Catalog.GetString("Gift Batch {0} contains {1} inactive key ministries. Please fix before posting!{2}{2}"),
                         FSelectedBatchNumber,
+                        numInactiveValues,
                         Environment.NewLine);
                 string messageModifiedBatch =
                     String.Format(Catalog.GetString(
-                            "{0} inactive key ministries found in Reversal/Adjustment Gift Batch {1}. Do you still want to post?{2}{2}"),
-                        numInactiveValues,
+                            "Reversal/Adjustment Gift Batch {0} contains {1} inactive key ministries. Do you still want to post?{2}{2}"),
                         FSelectedBatchNumber,
+                        numInactiveValues,
                         Environment.NewLine);
 
                 string listOfOffendingRows = string.Empty;

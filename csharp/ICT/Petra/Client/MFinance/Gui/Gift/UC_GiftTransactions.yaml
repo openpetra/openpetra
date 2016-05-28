@@ -181,7 +181,7 @@ RootNode:
 
     Menu:
         mniTransactions:
-            Label: Gift Transacti&on
+            Label: &Gift Transaction
             mniAdjustGift: {Label=&Adjust Gift, Action=actAdjustGift}
             mniReverseGiftBatch: {Label=Reverse Gift &Batch, Action=actReverseGiftBatch}
             mniReverseGift: {Label=Reverse &Gift, Action=actReverseGift}

@@ -40,6 +40,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         private ListBox lstDoPrint;
         private ListBox lstDontPrint;
         private String[] FSelectedFees;
+        private String[] FUnselectedFees;
         private Int32 FLedgerNumber = -1;
 
         /// <summary>How many fee columns can I fit on a page</summary>
@@ -88,12 +89,18 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             btnRemove.Enabled = (lstDoPrint.SelectedIndices.Count > 0);
         }
 
-        private void RefreshDoList()
+        private void RefreshLists()
         {
             lstDoPrint.BeginUpdate();
             lstDoPrint.Items.Clear();
             lstDoPrint.Items.AddRange(FSelectedFees);
             lstDoPrint.EndUpdate();
+
+            lstDontPrint.BeginUpdate();
+            lstDontPrint.Items.Clear();
+            lstDontPrint.Items.AddRange(FUnselectedFees);
+            lstDontPrint.EndUpdate();
+            EnableAddRemoveButtons(null, null);
         }
 
         private void AddSelected(Object Sender, EventArgs e)
@@ -117,13 +124,45 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
             }
 
-            RefreshDoList();
+            // Now I want to remove these items from the FUnselectedFees list:
+            foreach (Int32 SelNum in Selections)
+            {
+                String Itm = lstDontPrint.Items[SelNum].ToString();
+
+                for (Int32 Idx = ((IList)FUnselectedFees).IndexOf(Itm); Idx < FUnselectedFees.Length - 1; Idx++)
+                {
+                    FUnselectedFees[Idx] = FUnselectedFees[Idx + 1];
+                }
+
+                Array.Resize(ref FUnselectedFees, FUnselectedFees.Length - 1);
+            }
+
+            RefreshLists();
         }
 
         private void RemoveSelected(Object Sender, EventArgs e)
         {
             ListBox.SelectedIndexCollection Selections = lstDoPrint.SelectedIndices;
 
+            // Add on the front of FUnselectedFees list
+            foreach (Int32 SelNum in Selections)
+            {
+                String Itm = lstDoPrint.Items[SelNum].ToString();
+
+                if (((IList)FUnselectedFees).IndexOf(Itm) < 0)
+                {
+                    Array.Resize(ref FUnselectedFees, FUnselectedFees.Length + 1);
+
+                    for (Int32 Idx = FUnselectedFees.Length - 1; Idx > 0; Idx--)
+                    {
+                        FUnselectedFees[Idx] = FUnselectedFees[Idx - 1];
+                    }
+
+                    FUnselectedFees[0] = Itm;
+                }
+            }
+
+            // Now I want to remove these items from the FSelectedFees list:
             foreach (Int32 SelNum in Selections)
             {
                 Int32 NewLength = FSelectedFees.Length - 1;
@@ -137,7 +176,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 Array.Resize(ref FSelectedFees, NewLength);
             }
 
-            RefreshDoList();
+            RefreshLists();
         }
 
         /// <summary>
@@ -164,9 +203,6 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 return;
             }
 
-            lstDontPrint.BeginUpdate();
-            lstDontPrint.Items.Clear();
-
             AFeesReceivableTable FeesReceivable = new AFeesReceivableTable();
             Type DataTableType;
             DataTable CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("FeesReceivableList",
@@ -175,21 +211,25 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 out DataTableType);
             FeesReceivable.Merge(CacheDT);
 
-            foreach (AFeesReceivableRow Row in FeesReceivable.Rows)
+            Array.Resize(ref FUnselectedFees, FeesReceivable.Rows.Count);
+
+            for (Int32 Idx = 0; Idx < FeesReceivable.Rows.Count; Idx++)
             {
-                lstDontPrint.Items.Add(Row.FeeCode);
+                AFeesReceivableRow Row = FeesReceivable[Idx];
+                FUnselectedFees[Idx] = Row.FeeCode;
             }
 
             AFeesPayableTable FeesPayable = new AFeesPayableTable();
             CacheDT = TDataCache.GetSpecificallyFilteredCacheableDataTableFromCache("FeesPayableList", "Ledger", FLedgerNumber, out DataTableType);
             FeesPayable.Merge(CacheDT);
 
-            foreach (AFeesPayableRow Row in FeesPayable.Rows)
-            {
-                lstDontPrint.Items.Add(Row.FeeCode);
-            }
+            Array.Resize(ref FUnselectedFees, FUnselectedFees.Length + FeesPayable.Rows.Count);
 
-            lstDontPrint.EndUpdate();
+            for (Int32 Idx = 0; Idx < FeesPayable.Rows.Count; Idx++)
+            {
+                AFeesPayableRow Row = FeesPayable[Idx];
+                FUnselectedFees[FeesReceivable.Rows.Count + Idx] = Row.FeeCode;
+            }
 
             String FeeStr = AParameters.Get("param_fee_codes").ToString();
 
@@ -211,7 +251,25 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 FSelectedFees = FeeStr.Split(',');
             }
 
-            RefreshDoList();
+            // Now I want to remove the selected items from the FSelectedFees list:
+            for (Int32 Idx = 0; Idx < FSelectedFees.Length; Idx++)
+            {
+                Int32 pos = ((IList)FUnselectedFees).IndexOf(FSelectedFees[Idx]);
+
+                if (pos >= 0)
+                {
+                    Int32 NewLength = FUnselectedFees.Length - 1;
+
+                    for (Int32 i = pos; i < NewLength; i++)
+                    {
+                        FUnselectedFees[i] = FUnselectedFees[i + 1];
+                    }
+
+                    Array.Resize(ref FUnselectedFees, NewLength);
+                }
+            }
+
+            RefreshLists();
         }
 
         /// <summary>

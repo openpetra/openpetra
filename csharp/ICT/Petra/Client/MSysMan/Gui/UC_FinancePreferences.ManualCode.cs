@@ -35,11 +35,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         //private int FCurrentLedger;
         private int FInitiallySelectedLedger;
-        private bool FInactiveValuesWarningOnGiftPosting = false;
         private bool FInactiveValuesWarningOnGLPosting = false;
-        private bool FNewDonorWarning = true;
-        private bool FAutoSave = false;
-        private bool FIncludeCommentsSplitGiftCopy = false;
         private bool FShowMoneyAsCurrency = true;
         private bool FShowDecimalsAsCurrency = true;
         private bool FShowThousands = true;
@@ -49,22 +45,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
             FInitiallySelectedLedger = TLstTasks.InitiallySelectedLedger;
 
             cmbDefaultLedger.SetSelectedInt32(FInitiallySelectedLedger);
-
-            FInactiveValuesWarningOnGiftPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING,
-                true);
-            chkInactiveValuesWarningOnGiftPosting.Checked = FInactiveValuesWarningOnGiftPosting;
-
-            FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING, true);
-            chkInactiveValuesWarningOnGLPosting.Checked = FInactiveValuesWarningOnGLPosting;
-
-            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
-            chkNewDonorWarning.Checked = FNewDonorWarning;
-
-            FAutoSave = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, false);
-            chkAutoSave.Checked = FAutoSave;
-
-            FIncludeCommentsSplitGiftCopy = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_AUTO_FILL_COMMENTS_FOR_SPLIT_GIFT, false);
-            chkSplitGiftCopyIncludeComments.Checked = FIncludeCommentsSplitGiftCopy;
 
             FShowMoneyAsCurrency = TUserDefaults.GetBooleanDefault(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, true);
             chkMoneyFormat.Checked = FShowMoneyAsCurrency;
@@ -114,34 +94,10 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 return true;
             }
 
-            if (FNewDonorWarning != chkNewDonorWarning.Checked)
-            {
-                FNewDonorWarning = chkNewDonorWarning.Checked;
-                TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
-            }
-
-            if (FInactiveValuesWarningOnGiftPosting != chkInactiveValuesWarningOnGiftPosting.Checked)
-            {
-                FInactiveValuesWarningOnGiftPosting = chkInactiveValuesWarningOnGiftPosting.Checked;
-                TUserDefaults.SetDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING, FInactiveValuesWarningOnGiftPosting);
-            }
-
             if (FInactiveValuesWarningOnGLPosting != chkInactiveValuesWarningOnGLPosting.Checked)
             {
                 FInactiveValuesWarningOnGLPosting = chkInactiveValuesWarningOnGLPosting.Checked;
-                TUserDefaults.SetDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING, FInactiveValuesWarningOnGLPosting);
-            }
-
-            if (FAutoSave != chkAutoSave.Checked)
-            {
-                FAutoSave = chkAutoSave.Checked;
-                TUserDefaults.SetDefault(TUserDefaults.FINANCE_AUTO_SAVE_GIFT_SCREEN, FAutoSave);
-            }
-
-            if (FIncludeCommentsSplitGiftCopy != chkSplitGiftCopyIncludeComments.Checked)
-            {
-                FIncludeCommentsSplitGiftCopy = chkSplitGiftCopyIncludeComments.Checked;
-                TUserDefaults.SetDefault(TUserDefaults.FINANCE_AUTO_FILL_COMMENTS_FOR_SPLIT_GIFT, FIncludeCommentsSplitGiftCopy);
+                TUserDefaults.SetDefault(TUserDefaults.FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_POSTING, FInactiveValuesWarningOnGLPosting);
             }
 
             if (FShowMoneyAsCurrency != chkMoneyFormat.Checked)

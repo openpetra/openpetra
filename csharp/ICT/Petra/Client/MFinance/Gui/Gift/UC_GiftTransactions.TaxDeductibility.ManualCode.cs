@@ -154,31 +154,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
-        private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
-        {
-            if (FCreatingNewGift || (txtDeductiblePercentage.NumberValueDecimal == null) || (FPreviouslySelectedDetailRow == null))
-            {
-                return;
-            }
-
-            if (FPreviouslySelectedDetailRow.IsTaxDeductiblePctNull())
-            {
-                FPreviouslySelectedDetailRow.TaxDeductiblePct = 0;
-            }
-
-            if (sender == txtDeductiblePercentage)
-            {
-                FPreviouslySelectedDetailRow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
-            }
-
-            AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
-            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-
-            txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
-            txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
-        }
-
         // show tax deductible percentage data in controls
         private void ShowTaxDeductibleManual(GiftBatchTDSAGiftDetailRow ARow)
         {
@@ -200,19 +175,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDeductibleAccount.Text = ARow.TaxDeductibleAccountCode;
             }
 
-            EnableOrDiasbleTaxDeductibilityPct(ARow.TaxDeductible);
-
+            EnableTaxDeductibilityPct(ARow.TaxDeductible);
             UpdateTaxDeductibilityAmounts(this, null);
         }
 
         // get tax deductible percentage data from controls
-        private void GetTaxDeductibleDataFromControlsManual(ref GiftBatchTDSAGiftDetailRow ARow)
+        private void GetTaxDeductibleDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            ARow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
+            if (FCreatingNewGift)
+            {
+                return;
+            }
 
-            ARow.TaxDeductibleAmount = (decimal)txtTaxDeductAmount.NumberValueDecimal;
+            ARow.TaxDeductiblePct = txtDeductiblePercentage.NumberValueDecimal.Value;
 
-            ARow.NonDeductibleAmount = (decimal)txtNonDeductAmount.NumberValueDecimal;
+            ARow.TaxDeductibleAmount = txtTaxDeductAmount.NumberValueDecimal.Value;
+
+            ARow.NonDeductibleAmount = txtNonDeductAmount.NumberValueDecimal.Value;
 
             if (txtDeductibleAccount.Text.Length == 0)
             {
@@ -224,16 +203,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void EnableOrDiasbleTaxDeductibilityPct(bool AEnabled)
+        private void EnableTaxDeductibilityPct(bool AEnable)
         {
-            if (AEnabled && !string.IsNullOrEmpty(txtDeductibleAccount.Text))
-            {
-                txtDeductiblePercentage.Enabled = true;
-            }
-            else
-            {
-                txtDeductiblePercentage.Enabled = false;
-            }
+            txtDeductiblePercentage.Enabled = AEnable;
         }
 
         // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
@@ -241,20 +213,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (APartnerKey == 0)
             {
-                if (!txtDeductiblePercentage.Enabled)
-                {
-                    txtDeductiblePercentage.NumberValueDecimal = 0;
-                }
-                else
-                {
-                    txtDeductiblePercentage.NumberValueDecimal = 100;
-                }
-
+                txtDeductiblePercentage.NumberValueDecimal = txtDeductiblePercentage.Enabled ? 100.0m : 0.0m;
                 return;
             }
 
             // 100% default if tax deductibility is not limited
-            decimal TaxDeductiblePct = 100;
+            decimal TaxDeductiblePct = 100.0m;
 
             if (ARecipientChanged)
             {
@@ -276,10 +240,48 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (!chkDetailTaxDeductible.Checked || !txtDeductiblePercentage.Enabled)
             {
-                TaxDeductiblePct = 0;
+                TaxDeductiblePct = 0.0m;
             }
 
             txtDeductiblePercentage.NumberValueDecimal = TaxDeductiblePct;
+        }
+
+        // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
+        private decimal RetrieveTaxDeductiblePct(Int64 APartnerKey, bool ATaxDeductible)
+        {
+            // 100% default if tax deductibility is not limited
+            decimal TaxDeductiblePct = 100;
+
+            if (APartnerKey > 0)
+            {
+                if (ATaxDeductible)
+                {
+                    FMainDS.PPartnerTaxDeductiblePct.Clear();
+                    FMainDS.PPartnerTaxDeductiblePct.Merge(TRemote.MFinance.Gift.WebConnectors.LoadPartnerTaxDeductiblePct(APartnerKey));
+
+                    if ((FMainDS.PPartnerTaxDeductiblePct != null) && (FMainDS.PPartnerTaxDeductiblePct.Rows.Count > 0))
+                    {
+                        foreach (PPartnerTaxDeductiblePctRow Row in FMainDS.PPartnerTaxDeductiblePct.Rows)
+                        {
+                            // if no valid records exist then the recipient has not limited tax deductible by default
+                            if ((Row.PartnerKey == APartnerKey) && (Row.DateValidFrom <= dtpDateEntered.Date))
+                            {
+                                TaxDeductiblePct = Row.PercentageTaxDeductible;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    TaxDeductiblePct = 0.0m;
+                }
+            }
+            else
+            {
+                TaxDeductiblePct = ATaxDeductible ? 100.0m : 0.0m;
+            }
+
+            return TaxDeductiblePct;
         }
 
         private void ValidateTaxDeductiblePct(GiftBatchTDSAGiftDetailRow ARow, ref TVerificationResultCollection AVerificationResultCollection)
