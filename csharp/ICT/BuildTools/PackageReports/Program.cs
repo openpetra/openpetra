@@ -55,7 +55,7 @@ namespace PackageReports
   s_date_modified_d date,
   s_modified_by_c character varying(20),
   s_modification_id_t timestamp without time zone,
-  CONSTRAINT s_report_latest_pk PRIMARY KEY (s_template_id_i));"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
+  CONSTRAINT s_report_latest_pk PRIMARY KEY (s_template_id_i));"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
 
         static string updateExistingQuery =
             @"
@@ -63,7 +63,7 @@ UPDATE s_report_template
 SET s_xml_text_c=s_report_latest.s_xml_text_c, s_readonly_l=TRUE
 FROM s_report_latest
 WHERE s_report_template.s_template_id_i = s_report_latest.s_template_id_i
-	and s_report_template.s_report_type_c = s_report_latest.s_report_type_c;"                                                                                                                                                                                                          ;
+	and s_report_template.s_report_type_c = s_report_latest.s_report_type_c;"                                                                                                                                                                                                      ;
 
         static string replaceMissingQuery =
             @"
@@ -86,7 +86,7 @@ LEFT OUTER JOIN s_report_template RT
 ON RL.s_template_id_i = RT.s_template_id_i
 and RL.s_report_type_c = RT.s_report_type_c
 
-WHERE RT.s_template_id_i is null;"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ;
+WHERE RT.s_template_id_i is null;"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ;
 
 
         static void Main(string[] args)

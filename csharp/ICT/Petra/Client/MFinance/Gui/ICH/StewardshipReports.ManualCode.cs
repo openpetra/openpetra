@@ -389,9 +389,9 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 String MyCostCentreCode = String.Format("{0:##00}00", FLedgerNumber);
                 String PeriodEnd = Params.Get("param_end_date").ToDate().ToString("dd/MM/yyyy");
                 Int32 RunNumber = Params.Get("param_cmbICHNumber").ToInt32();
-                String CsvAttachment = String.Format("\"{0}\",{1},\"{2}\",{3},\"{4}\",{5}\n", // "OP:1",30/11/2014,\"0200\",09/12/2014,\"USD\",0"
+                String CsvAttachment = String.Format("\"{0}\",{1},\"{2}\",{3},\"{4}\",{5}\n", // "** Header **",30/11/2014,\"0200\",09/12/2014,\"USD\",0"
 
-                    "OP:1",                                     // software originator and version ID
+                    "** Header **",                                     // software originator and version ID
                     PeriodEnd,
                     MyCostCentreCode,                           // Field Cost Centre Code
                     DateTime.Now.ToString("dd/MM/yyyy"),

@@ -378,8 +378,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (DoTaxUpdate)
             {
+                EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
-                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
             }
 
             //On populating key ministry
@@ -715,7 +715,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (DoTaxUpdate)
             {
-                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+                EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
                 UpdateTaxDeductiblePct(APartnerKey, true);
             }
 
@@ -986,8 +986,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (DoTaxUpdate)
             {
+                EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
                 UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
-                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
             }
 
             if (!FInRecipientKeyChanging)
@@ -1030,12 +1030,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (DoTaxUpdate)
             {
                 bool DeductiblePercentageEnabled = txtDeductiblePercentage.Enabled;
-                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+                EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
 
                 // if txtDeductiblePercentage has been enabled or disabled then update the percentage
                 if (DeductiblePercentageEnabled != txtDeductiblePercentage.Enabled)
                 {
                     UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), FInRecipientKeyChanging);
+                    UpdateTaxDeductibilityAmounts(null, null);
                 }
             }
 
@@ -2136,11 +2137,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            //Process amounts, including taxes and currencies
             if (FGiftAmountChanged)
             {
                 ProcessGiftAmountChange();
             }
+            else if (FTaxDeductiblePercentageEnabled && !ARow.IsTaxDeductibleNull() && ARow.TaxDeductible)
+            {
+                AGiftDetailRow giftDetails = (AGiftDetailRow)ARow;
+                TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+            }
 
+            //Recipient field
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             if ((ARow[GiftBatchTDSAGiftDetailTable.GetRecipientFieldDBName()] != DBNull.Value)
@@ -2610,6 +2618,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (FTaxDeductiblePercentageEnabled)
                 {
+                    EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
                     UpdateTaxDeductibilityAmounts(this, null);
                 }
 
@@ -2642,6 +2651,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Update all transactions
                 RecalcTransactionsCurrencyAmounts(CurrentBatchRow, IntlToBaseCurrencyExchRate, IsTransactionInIntlCurrency);
             }
+        }
+
+        // update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
+        private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
+        {
+            if (!FTaxDeductiblePercentageEnabled
+                || (FPreviouslySelectedDetailRow == null)
+                || FCreatingNewGift
+                || (txtDeductiblePercentage.NumberValueDecimal == null))
+            {
+                return;
+            }
+
+            if (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+            {
+                if (!chkDetailTaxDeductible.Checked)
+                {
+                    FPreviouslySelectedDetailRow.TaxDeductible = false;
+                    FPreviouslySelectedDetailRow.TaxDeductiblePct = 0.0m;
+                    FPreviouslySelectedDetailRow.TaxDeductibleAmount = 0.0m;
+                    FPreviouslySelectedDetailRow.NonDeductibleAmount = 0.0m;
+                }
+                else
+                {
+                    FPreviouslySelectedDetailRow.TaxDeductible = true;
+                    FPreviouslySelectedDetailRow.TaxDeductiblePct = txtDeductiblePercentage.NumberValueDecimal.Value;
+
+                    AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
+                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+                }
+            }
+
+            txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
+            txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
         }
 
         /// <summary>
@@ -2905,11 +2948,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMailingCode.SetSelectedString(giftDetailRow.MailingCode, -1);
 
                 //Handle tax fields
-                chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
-                ToggleTaxDeductible(this, null);
-                txtDeductiblePercentage.NumberValueDecimal = giftDetailRow.TaxDeductiblePct;
-                txtTaxDeductAmount.NumberValueDecimal = giftDetailRow.TaxDeductibleAmount;
-                txtNonDeductAmount.NumberValueDecimal = giftDetailRow.NonDeductibleAmount;
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    giftDetailRow.TaxDeductible = (giftDetailRow.IsTaxDeductibleNull() ? false : giftDetailRow.TaxDeductible);
+                    chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
+                    ToggleTaxDeductible(this, null);
+
+                    //TODO:  Need to determine whether or not the TaxDeductPct was pulled up from RecipientKey else pull the value
+                    //  from giftDetailRow.TaxDeductiblePct
+                    if (!IsSplitGift)
+                    {
+                        txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                        txtNonDeductAmount.NumberValueDecimal = 0.0m;
+                    }
+                    else
+                    {
+                        if (giftDetailRow.TaxDeductible)
+                        {
+                            //In case the tax percentage has changed or null values in amount fields
+                            AGiftDetailRow giftDetails = (AGiftDetailRow)giftDetailRow;
+                            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+
+                            txtTaxDeductAmount.NumberValueDecimal = giftDetailRow.TaxDeductibleAmount;
+                            txtNonDeductAmount.NumberValueDecimal = giftDetailRow.NonDeductibleAmount;
+                        }
+                        else
+                        {
+                            txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                            txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                            txtNonDeductAmount.NumberValueDecimal = 0.0m;
+                        }
+                    }
+                }
 
                 //Set underlying row values
                 FPreviouslySelectedDetailRow.ReceiptPrinted = false;
@@ -2945,6 +3015,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         GiftBatchTDSAGiftDetailRow detailRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
 
+                        //______________________
+                        //Update some key field values
                         detailRow.LedgerNumber = FLedgerNumber;
                         detailRow.BatchNumber = FBatchNumber;
                         detailRow.GiftTransactionNumber = AGiftTransactionNumber;
@@ -2955,16 +3027,160 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         detailRow.ReceiptPrinted = false;
                         detailRow.ReceiptNumber = 0;
 
-                        //TODO: Only add this code if it is determined that
-                        // a partner's class may actually change
-                        //string partnerShortName = string.Empty;
-                        //TPartnerClass partnerClass;
+                        //______________________
+                        //process recipient details to get most recent data
+                        Int64 partnerKey = detailRow.RecipientKey;
+                        string partnerShortName = string.Empty;
+                        TPartnerClass partnerClass;
+                        bool recipientIsValid = true;
 
-                        //TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(detailRow.RecipientKey,
-                        //    out partnerShortName,
-                        //    out partnerClass);
-                        //detailRow.RecipientClass = partnerClass.ToString();
+                        if (TServerLookup.TMPartner.GetPartnerShortName(partnerKey, out partnerShortName, out partnerClass))
+                        {
+                            detailRow.RecipientDescription = partnerShortName;
+                            detailRow.RecipientClass = partnerClass.ToString();
 
+                            if (partnerClass == TPartnerClass.FAMILY)
+                            {
+                                detailRow.RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(partnerKey,
+                                    FGift.DateEntered);
+                                detailRow.RecipientField = detailRow.RecipientLedgerNumber;
+                                detailRow.RecipientKeyMinistry = string.Empty;
+                            }
+                            else
+                            {
+                                //Class - UNIT
+                                Int64 field;
+                                string keyMinName;
+
+                                recipientIsValid = TFinanceControls.GetRecipientKeyMinData(partnerKey, out field, out keyMinName);
+
+                                detailRow.RecipientLedgerNumber = field;
+                                detailRow.RecipientField = field;
+                                detailRow.RecipientKeyMinistry = keyMinName;
+
+                                if (!recipientIsValid)
+                                {
+                                    string msg =
+                                        String.Format(Catalog.GetString(
+                                                "Gift: {0}, Detail: {1} has a recipient: '{2}-{3}' that is an inactive Key Ministry!"),
+                                            AGiftTransactionNumber,
+                                            detailRow.DetailNumber,
+                                            partnerKey,
+                                            keyMinName);
+                                    MessageBox.Show(msg, Catalog.GetString(
+                                            "Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            recipientIsValid = false;
+                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has an invalid Recipient key: '{2}'!"),
+                                AGiftTransactionNumber,
+                                detailRow.DetailNumber,
+                                partnerKey);
+                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+
+                        //______________________
+                        //Process motivation
+                        if (string.IsNullOrEmpty(detailRow.MotivationGroupCode))
+                        {
+                            detailRow.MotivationGroupCode = string.Empty;
+                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has no Motivation Group!"),
+                                AGiftTransactionNumber,
+                                detailRow.DetailNumber);
+                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else if (string.IsNullOrEmpty(detailRow.MotivationDetailCode))
+                        {
+                            detailRow.MotivationDetailCode = string.Empty;
+                            string msg = String.Format(Catalog.GetString("Gift: {0}, Detail: {1} has no Motivation Detail!"),
+                                AGiftTransactionNumber,
+                                detailRow.DetailNumber);
+                            MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                        else
+                        {
+                            AMotivationDetailRow motivationDetailRow = null;
+                            string motivationGroup = detailRow.MotivationGroupCode;
+                            string motivationDetail = detailRow.MotivationDetailCode;
+
+                            motivationDetailRow = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
+                                new object[] { FLedgerNumber, motivationGroup, motivationDetail });
+
+                            if (motivationDetailRow != null)
+                            {
+                                if (partnerKey > 0)
+                                {
+                                    detailRow.CostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                                        partnerKey,
+                                        detailRow.RecipientLedgerNumber,
+                                        detailRow.DateEntered,
+                                        motivationGroup,
+                                        motivationDetail);
+                                }
+                                else
+                                {
+                                    if (motivationGroup != MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                                    {
+                                        detailRow.RecipientDescription = motivationGroup;
+                                    }
+                                    else
+                                    {
+                                        detailRow.RecipientDescription = string.Empty;
+                                    }
+
+                                    detailRow.CostCentreCode = motivationDetailRow.CostCentreCode;
+                                }
+
+                                detailRow.AccountCode = motivationDetailRow.AccountCode;
+
+                                if (FTaxDeductiblePercentageEnabled && string.IsNullOrEmpty(motivationDetailRow.TaxDeductibleAccountCode))
+                                {
+                                    detailRow.TaxDeductibleAccountCode = string.Empty;
+
+                                    string msg = String.Format(Catalog.GetString(
+                                            "Gift: {0}, Detail: {1} has  Motivation Detail: {2} which has no Tax Deductible Account!" +
+                                            "This can be added in Finance / Setup / Motivation Details.{3}{3}" +
+                                            "Unless this is changed it will be impossible to assign a Tax Deductible Percentage to this gift."),
+                                        AGiftTransactionNumber,
+                                        detailRow.DetailNumber,
+                                        motivationDetail,
+                                        Environment.NewLine);
+                                    MessageBox.Show(msg, Catalog.GetString(
+                                            "Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }
+                                else
+                                {
+                                    detailRow.TaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccountCode;
+                                }
+                            }
+                            else
+                            {
+                                string msg =
+                                    String.Format(Catalog.GetString(
+                                            "Gift: {0}, Detail: {1} has Motivation Group and Detail codes ('{2} : {3}') not found in the database!"),
+                                        AGiftTransactionNumber,
+                                        detailRow.DetailNumber,
+                                        motivationGroup,
+                                        motivationDetail);
+                                MessageBox.Show(msg, Catalog.GetString("Copying Previous Split Gift"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                                detailRow.TaxDeductible = false;
+                            }
+                        }
+
+                        //______________________
+                        //Handle tax fields
+                        detailRow.TaxDeductiblePct = RetrieveTaxDeductiblePct((recipientIsValid ? detailRow.RecipientKey : 0),
+                            detailRow.TaxDeductible);
+
+                        AGiftDetailRow giftDetails = (AGiftDetailRow)detailRow;
+                        TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+
+                        //______________________
+                        //Process comments
                         if (!FIncludeCommentsSplitGiftCopy)
                         {
                             detailRow.CommentOneType = "Both";
@@ -3066,8 +3282,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (FTaxDeductiblePercentageEnabled)
             {
-                EnableOrDiasbleTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
-                UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
+                bool taxDeductible = chkDetailTaxDeductible.Checked;
+
+                EnableTaxDeductibilityPct(taxDeductible);
+
+                if (taxDeductible && txtDeductiblePercentage.Enabled)
+                {
+                    UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
+                    AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
+                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+
+                    txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
+                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
+                }
+                else
+                {
+                    txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                    txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                    txtNonDeductAmount.NumberValueDecimal = 0.0m;
+                }
             }
         }
 

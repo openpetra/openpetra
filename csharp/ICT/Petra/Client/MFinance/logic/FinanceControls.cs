@@ -967,6 +967,41 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <summary>
         /// This function fills the combobox for the key ministry depending on the partnerkey
         /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AFieldNumber"></param>
+        /// <param name="AKeyMinistryDescription"></param>
+        public static Boolean GetRecipientKeyMinData(Int64 APartnerKey,
+            out Int64 AFieldNumber,
+            out string AKeyMinistryDescription)
+        {
+            bool RetVal = true;
+
+            AFieldNumber = 0;
+            AKeyMinistryDescription = string.Empty;
+
+            //Get keyministries if they exist
+            PUnitTable KeyMinTable = TRemote.MFinance.Gift.WebConnectors.LoadKeyMinistry(APartnerKey, out AFieldNumber, false);
+
+            KeyMinTable.DefaultView.RowFilter = String.Format("{0}={1} And {2}='{3}'",
+                PUnitTable.GetPartnerKeyDBName(),
+                APartnerKey,
+                PUnitTable.GetUnitTypeCodeDBName(),
+                MPartnerConstants.UNIT_TYPE_KEYMIN);
+
+            if (KeyMinTable.DefaultView.Count > 0)
+            {
+                PUnitRow pUR = (PUnitRow)KeyMinTable.DefaultView[0].Row;
+                AKeyMinistryDescription = pUR.UnitName;
+
+                RetVal = TRemote.MFinance.Gift.WebConnectors.KeyMinistryIsActive(APartnerKey);
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
+        /// This function fills the combobox for the key ministry depending on the partnerkey
+        /// </summary>
         /// <param name="ACmbMinistry"></param>
         /// <param name="ATxtField"></param>
         /// <param name="APartnerKey"></param>
