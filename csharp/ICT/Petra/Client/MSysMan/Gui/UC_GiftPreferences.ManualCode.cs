@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -37,15 +38,20 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private int FInitiallySelectedLedger;
 
         private bool FNewDonorAlert = true;
+        private bool FDonorZeroIsValidSystemDefault = false;
         private bool FDonorZeroIsValid = false;
         private bool FAutoCopyIncludeMailingCode = false;
         private bool FAutoCopyIncludeComments = false;
         private bool FRecipientZeroIsValid = false;
+        private bool FRecipientZeroIsValidSystemDefault = false;
         private bool FAutoSave = false;
         private bool FWarnOfInactiveValuesOnPosting = false;
 
         private void InitializeManualCode()
         {
+            FDonorZeroIsValidSystemDefault = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DONORZEROISVALID, false);
+            FRecipientZeroIsValidSystemDefault = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_RECIPIENTZEROISVALID, false);
+
             FInitiallySelectedLedger = TLstTasks.InitiallySelectedLedger;
 
             //New Donor alert
@@ -53,7 +59,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             chkNewDonorAlert.Checked = FNewDonorAlert;
 
             //Donor zero is valid
-            FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, false);
+            FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, FDonorZeroIsValidSystemDefault);
             chkDonorZeroIsValid.Checked = FDonorZeroIsValid;
 
             //Auto-copying fields
@@ -64,7 +70,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
             chkAutoCopyIncludeComments.Checked = FAutoCopyIncludeComments;
 
             //Recipient zero is valid
-            FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, false);
+            FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID,
+                FRecipientZeroIsValidSystemDefault);
             chkRecipientZeroIsValid.Checked = FRecipientZeroIsValid;
 
             //Allow auto-saving of form
@@ -75,6 +82,52 @@ namespace Ict.Petra.Client.MSysMan.Gui
             FWarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING,
                 true);
             chkWarnOfInactiveValuesOnPosting.Checked = FWarnOfInactiveValuesOnPosting;
+
+            //Only highest level finance users can change these settings
+            if (!UserInfo.GUserInfo.IsInModule("FINANCE-3"))
+            {
+                chkDonorZeroIsValid.Enabled = false;
+                chkRecipientZeroIsValid.Enabled = false;
+            }
+            else
+            {
+                chkDonorZeroIsValid.CheckStateChanged += new System.EventHandler(ConfirmDonorZeroChange);
+                chkRecipientZeroIsValid.CheckStateChanged += new System.EventHandler(ConfirmRecipientZeroChange);
+            }
+        }
+
+        private void ConfirmDonorZeroChange(object sender, System.EventArgs e)
+        {
+            if (chkDonorZeroIsValid.Checked != FDonorZeroIsValidSystemDefault)
+            {
+                string msg =
+                    String.Format(Catalog.GetString(
+                            "You are about to set the 'Accept Donor key 0000000' preference to a value different from the System Default which is: {0}{1}{1}Do you want to continue?"),
+                        FDonorZeroIsValidSystemDefault,
+                        Environment.NewLine);
+
+                if (MessageBox.Show(msg, Catalog.GetString("Gift Preferences"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                {
+                    chkDonorZeroIsValid.Checked = FDonorZeroIsValidSystemDefault;
+                }
+            }
+        }
+
+        private void ConfirmRecipientZeroChange(object sender, System.EventArgs e)
+        {
+            if (chkRecipientZeroIsValid.Checked != FRecipientZeroIsValidSystemDefault)
+            {
+                string msg =
+                    String.Format(Catalog.GetString(
+                            "You are about to set the 'Accept Recipient key 0000000' preference to a value different from the System Default which is: {0}{1}{1}Do you want to continue?"),
+                        FRecipientZeroIsValidSystemDefault,
+                        Environment.NewLine);
+
+                if (MessageBox.Show(msg, Catalog.GetString("Gift Preferences"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                {
+                    chkRecipientZeroIsValid.Checked = FRecipientZeroIsValidSystemDefault;
+                }
+            }
         }
 
         /// <summary>

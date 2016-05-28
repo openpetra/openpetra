@@ -65,7 +65,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FCreatingNewGift = false;
         private bool FAutoPopulatingGift = false;
         private bool FInEditMode = false;
-        private bool FTaxDeductiblePercentageEnabled = false;
         private ToolTip FDonorInfoToolTip = new ToolTip();
 
         private AGiftRow FGift = null;
@@ -85,16 +84,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FGiftAmountChanged = false;
         private Int32 FCurrentGiftInBatch = 0;
 
-        //User preferences
-        private bool FNewDonorAlert = true;
+        //System Defaults
+        private bool FTaxDeductiblePercentageEnabled = false;
+        // Specifies if Donor zero is allowed
+        // This value is system wide but can be over-ruled by FINANCE-3 level user
         private bool FDonorZeroIsValid = false;
+        // Specifies if Recipient zero is allowed
+        // This value is system wide but can be over-ruled by FINANCE-3 level user
+        private bool FRecipientZeroIsValid = false;
+
+        //User Defaults
+        private bool FNewDonorAlert = true;
         private bool FAutoCopyIncludeMailingCode = false;
         private bool FAutoCopyIncludeComments = false;
-        private bool FRecipientZeroIsValid = false;
         private bool FAutoSave = false;
         private bool FWarnOfInactiveValuesOnPosting = false;
 
-
+        //List new donors
         private List <Int64>FNewDonorsList = new List <long>();
 
         /// <summary>
@@ -228,15 +234,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
-            // read user defaults
+            // read system defaults
             FTaxDeductiblePercentageEnabled = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+
+            // read user defaults
             FNewDonorAlert = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
-            FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, false);
+            FDonorZeroIsValid = ((TFrmGiftBatch)ParentForm).FDonorZeroIsValid;
             FAutoCopyIncludeMailingCode = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_AUTO_COPY_INCLUDE_MAILING_CODE, false);
             FAutoCopyIncludeComments = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_AUTO_COPY_INCLUDE_COMMENTS, false);
-            FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, false);
+            FRecipientZeroIsValid = ((TFrmGiftBatch)ParentForm).FRecipientZeroIsValid;
             FAutoSave = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_AUTO_SAVE, false);
-            FWarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+            FWarnOfInactiveValuesOnPosting = ((TFrmGiftBatch)ParentForm).FWarnOfInactiveValuesOnPosting;
         }
 
         private void InitialiseControls()

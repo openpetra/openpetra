@@ -86,11 +86,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
 
-        //User preferences
-        private bool FDonorZeroIsValid = false;
-        private bool FRecipientZeroIsValid = false;
-        bool FWarnOfInactiveValuesOnPosting = false;
-
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
@@ -102,6 +97,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         //Currency related
         private string FLedgerBaseCurrency = String.Empty;
         //private const Decimal DEFAULT_CURRENCY_EXCHANGE = 1.0m;
+
+        //System & User Defaults
+        private bool FDonorZeroIsValid = false;
+        private bool FRecipientZeroIsValid = false;
+        private bool FWarnOfInactiveValuesOnPosting = false;
 
         /// <summary>
         /// Flags whether all the gift batch rows for this form have finished loading
@@ -220,10 +220,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.ActivateFilter();
                 LoadBatchesForCurrentYear();
 
-                // read user defaults
-                FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, false);
-                FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, false);
-                FWarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+                // read system and user defaults
+                FDonorZeroIsValid = ((TFrmGiftBatch)ParentForm).FDonorZeroIsValid;
+                FRecipientZeroIsValid = ((TFrmGiftBatch)ParentForm).FRecipientZeroIsValid;
+                FWarnOfInactiveValuesOnPosting = ((TFrmGiftBatch)ParentForm).FWarnOfInactiveValuesOnPosting;
 
                 SetInitialFocus();
             }

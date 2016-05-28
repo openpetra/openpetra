@@ -53,9 +53,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private GiftBatchTDS FViewModeTDS;
         private int standardTabIndex = 0;
-        private bool FNewDonorWarning = true;
         private bool FWarnAboutMissingIntlExchangeRate = false;
         private eGiftTabs FPreviouslySelectedTab = eGiftTabs.None;
+
+        //System & User Defaults
+        /// <summary>
+        /// Setting that determines if user is notified of new donor
+        /// </summary>
+        private bool FNewDonorWarning = true;
+
+        /// <summary>
+        /// Specifies if Donor zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FDonorZeroIsValid = false;
+
+        /// <summary>
+        /// Specifies if Recipient zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FRecipientZeroIsValid = false;
+
+        /// <summary>
+        /// Specifies if Recipient zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FWarnOfInactiveValuesOnPosting = false;
 
         // changed gift records
         GiftBatchTDSAGiftDetailTable FGiftDetailTable = null;
@@ -359,7 +382,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgTransactions.Enabled = false;
 
-            // get user default
+            // read system and user defaults
+            bool DonorZeroIsValid = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DONORZEROISVALID, false);
+            bool RecipientZeroIsValid = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_RECIPIENTZEROISVALID, false);
+            //If user is FINANCE-3 level then their user settings can override system level setting
+            FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, DonorZeroIsValid);
+            FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, RecipientZeroIsValid);
+
+            FWarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 

@@ -4044,16 +4044,34 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                                                                             giftDetail.MotivationGroupCode,
                                                                                             giftDetail.MotivationDetailCode });
 
-                //do not allow posting gifts with no donor
-                if (giftDetail.DonorKey == 0)
-                {
-                    AVerifications.Add(
-                        new TVerificationResult(
-                            "Posting Gift Batch",
-                            String.Format(Catalog.GetString("Donor Key needed in gift {0}"),
-                                giftDetail.GiftTransactionNumber),
-                            TResultSeverity.Resv_Critical));
-                }
+                /*TODO: put this back in if GiftBatches can get posted from elsewhere
+                 * //  i.e. bypassing the check for zero donor and or recipient from the Gift form
+                 * //  Will also then need to pass system default values that allow donor/recip zero
+                 * //  or user defaults if FINANCE-3 level user
+                 *
+                 * //do not allow posting gifts with no donor
+                 * if (giftDetail.DonorKey == 0)
+                 * {
+                 *  AVerifications.Add(
+                 *      new TVerificationResult(
+                 *          "Posting Gift Batch",
+                 *          String.Format(Catalog.GetString("Donor Key needed in gift {0}"),
+                 *              giftDetail.GiftTransactionNumber),
+                 *          TResultSeverity.Resv_Critical));
+                 * }
+                 *
+                 * //do not allow posting gifts with no recipient
+                 * if (giftDetail.RecipientKey == 0)
+                 * {
+                 *  AVerifications.Add(
+                 *      new TVerificationResult(
+                 *          "Posting Gift Batch",
+                 *          String.Format(Catalog.GetString("Recipient Key needed in gift {0} and detail {1}"),
+                 *              giftDetail.GiftTransactionNumber,
+                 *              giftDetail.DetailNumber),
+                 *          TResultSeverity.Resv_Critical));
+                 * }
+                 */
 
                 //check for valid motivation detail code
                 if (motivationRow == null)
