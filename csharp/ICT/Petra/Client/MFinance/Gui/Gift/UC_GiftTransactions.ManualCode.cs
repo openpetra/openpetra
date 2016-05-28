@@ -840,9 +840,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             giftDetail.DonorClass = pr.PartnerClass;
                         }
 
-                        if (giftDetailDV.Count == 1)
+                        //Only autopopulate if this is a donor selection on a clean gift,
+                        //  i.e. determine this is not a donor change where other changes have been made
+                        //Sometimes you want to just change the donor without changing what already has been entered
+                        //  e.g. when you realise you have entered the wrong donor after entering the correct recipient data
+                        if ((giftDetailDV.Count == 1) && (Convert.ToInt64(txtDetailRecipientKey.Text) == 0))
                         {
-                            //If only 1 gift detail updated, then offer to auto populate
                             AutoPopulateGiftDetail(APartnerKey, giftTransactionNo);
                         }
 
@@ -2116,7 +2119,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FTaxDeductiblePercentageEnabled)
             {
-                GetTaxDeductibleDataFromControlsManual(ref ARow);
+                GetTaxDeductibleDataFromControlsManual(ARow);
             }
 
             if (chkNoReceiptOnAdjustment.Visible)
@@ -2142,11 +2145,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 ProcessGiftAmountChange();
             }
-            else if (FTaxDeductiblePercentageEnabled && !ARow.IsTaxDeductibleNull() && ARow.TaxDeductible)
-            {
-                AGiftDetailRow giftDetails = (AGiftDetailRow)ARow;
-                TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-            }
+
+            //TODO: Maybe add later
+            //else if (FTaxDeductiblePercentageEnabled && !ARow.IsTaxDeductibleNull() && ARow.TaxDeductible)
+            //{
+            //    AGiftDetailRow giftDetails = (AGiftDetailRow)ARow;
+            //    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+            //}
 
             //Recipient field
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
@@ -2671,7 +2676,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.TaxDeductible = false;
                     FPreviouslySelectedDetailRow.TaxDeductiblePct = 0.0m;
                     FPreviouslySelectedDetailRow.TaxDeductibleAmount = 0.0m;
-                    FPreviouslySelectedDetailRow.NonDeductibleAmount = 0.0m;
+                    FPreviouslySelectedDetailRow.NonDeductibleAmount = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                 }
                 else
                 {
@@ -2870,11 +2875,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    // set FirstTimeGift field in AGift to true
-                    GiftBatchTDSAGiftDetailRow CurrentDetail = GetSelectedDetailRow();
-                    AGiftRow CurrentGift = (AGiftRow)FMainDS.AGift.Rows.Find(
-                        new object[] { CurrentDetail.LedgerNumber, CurrentDetail.BatchNumber, CurrentDetail.GiftTransactionNumber });
-                    CurrentGift.FirstTimeGift = true;
+                    FGift.FirstTimeGift = true;
 
                     // add donor key to list so that new donor warning can be shown
                     if (!FNewDonorsList.Contains(ADonorKey))
@@ -2947,15 +2948,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode, -1);
                 cmbDetailMailingCode.SetSelectedString(giftDetailRow.MailingCode, -1);
 
-                //Handle tax fields
+                //Handle tax fields on current row
                 if (FTaxDeductiblePercentageEnabled)
                 {
-                    giftDetailRow.TaxDeductible = (giftDetailRow.IsTaxDeductibleNull() ? false : giftDetailRow.TaxDeductible);
-                    chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
-                    ToggleTaxDeductible(this, null);
+                    giftDetailRow.TaxDeductible = (giftDetailRow.IsTaxDeductibleNull() ? true : giftDetailRow.TaxDeductible);
 
-                    //TODO:  Need to determine whether or not the TaxDeductPct was pulled up from RecipientKey else pull the value
-                    //  from giftDetailRow.TaxDeductiblePct
+                    try
+                    {
+                        FPetraUtilsObject.SuppressChangeDetection = true;
+                        chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
+                        EnableTaxDeductibilityPct(giftDetailRow.TaxDeductible);
+                    }
+                    finally
+                    {
+                        FPetraUtilsObject.SuppressChangeDetection = false;
+                    }
+
                     if (!IsSplitGift)
                     {
                         txtTaxDeductAmount.NumberValueDecimal = 0.0m;
@@ -2974,9 +2982,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                         else
                         {
+                            //Changing this will update the unbound amount textboxes
                             txtDeductiblePercentage.NumberValueDecimal = 0.0m;
-                            txtTaxDeductAmount.NumberValueDecimal = 0.0m;
-                            txtNonDeductAmount.NumberValueDecimal = 0.0m;
                         }
                     }
                 }
@@ -3286,9 +3293,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 EnableTaxDeductibilityPct(taxDeductible);
 
-                if (taxDeductible && txtDeductiblePercentage.Enabled)
+                if (taxDeductible)
                 {
                     UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
+
                     AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
                     TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
 
@@ -3299,7 +3307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     txtDeductiblePercentage.NumberValueDecimal = 0.0m;
                     txtTaxDeductAmount.NumberValueDecimal = 0.0m;
-                    txtNonDeductAmount.NumberValueDecimal = 0.0m;
+                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                 }
             }
         }

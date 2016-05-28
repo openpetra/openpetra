@@ -46,12 +46,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool HasChanges = FPetraUtilsObject.HasChanges;
             bool SelectEndRow = false;
 
+            bool FPrevRowIsNull = (FPreviouslySelectedDetailRow == null);
+            bool CopyDetails = false;
+
             bool AutoSaveSuccessful = FAutoSave && HasChanges && ((TFrmGiftBatch)ParentForm).SaveChangesManual();
 
             FCreatingNewGift = true;
 
             try
             {
+                //May need to copy values down if a new detail row inside current gift
+                int giftTransactionNumber = 0;
+                string donorName = string.Empty;
+                string donorClass = string.Empty;
+                bool confidentialGiftFlag = false;
+                bool chargeFlag = false;
+                bool taxDeductible = false;
+                string motivationGroupCode = string.Empty;
+                string motivationDetailCode = string.Empty;
+
                 if (AutoSaveSuccessful || ((!FAutoSave || !HasChanges) && ValidateAllData(true, TErrorProcessingMode.Epm_IgnoreNonCritical)))
                 {
                     if (!ACompletelyNewGift)      //i.e. a gift detail
@@ -59,12 +72,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ACompletelyNewGift = IsEmptyGrid;
                     }
 
+                    CopyDetails = (!ACompletelyNewGift && !FPrevRowIsNull);
+
+                    if (CopyDetails)
+                    {
+                        //Allow for possibility that FPrev... may have some null column values
+                        giftTransactionNumber = FPreviouslySelectedDetailRow.GiftTransactionNumber;
+                        donorName = FPreviouslySelectedDetailRow.IsDonorNameNull() ? string.Empty : FPreviouslySelectedDetailRow.DonorName;
+                        donorClass = FPreviouslySelectedDetailRow.IsDonorClassNull() ? string.Empty : FPreviouslySelectedDetailRow.DonorClass;
+                        confidentialGiftFlag =
+                            FPreviouslySelectedDetailRow.IsConfidentialGiftFlagNull() ? false : FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
+                        chargeFlag = FPreviouslySelectedDetailRow.IsChargeFlagNull() ? true : FPreviouslySelectedDetailRow.ChargeFlag;
+                        taxDeductible = FPreviouslySelectedDetailRow.IsTaxDeductibleNull() ? true : FPreviouslySelectedDetailRow.TaxDeductible;
+                        motivationGroupCode =
+                            FPreviouslySelectedDetailRow.IsMotivationGroupCodeNull() ? string.Empty : FPreviouslySelectedDetailRow.
+                            MotivationGroupCode;
+                        motivationDetailCode =
+                            FPreviouslySelectedDetailRow.IsMotivationDetailCodeNull() ? string.Empty : FPreviouslySelectedDetailRow.
+                            MotivationDetailCode;
+                    }
+
+                    //Set previous row to Null.
+                    FPreviouslySelectedDetailRow = null;
+
                     if (ACompletelyNewGift)
                     {
                         //Run this if a new gift is requested or required.
                         SelectEndRow = true;
 
-                        // we create the table locally, no dataset
+                        // we create the row locally, no dataset
                         AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
                         giftRow.DateEntered = FBatchRow.GlEffectiveDate;
@@ -85,11 +121,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        CurrentGiftRow = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
+                        CurrentGiftRow = GetGiftRow(giftTransactionNumber);
                         CurrentGiftRow.LastDetailNumber++;
 
                         //If adding detail to current last gift, then new detail will be bottom row in grid
-                        if (FBatchRow.LastGiftNumber == FPreviouslySelectedDetailRow.GiftTransactionNumber)
+                        if (FBatchRow.LastGiftNumber == giftTransactionNumber)
                         {
                             SelectEndRow = true;
                         }
@@ -106,15 +142,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     newRow.MethodOfGivingCode = CurrentGiftRow.MethodOfGivingCode;
                     newRow.DonorKey = CurrentGiftRow.DonorKey;
 
-                    if (!ACompletelyNewGift && (FPreviouslySelectedDetailRow != null))
+                    if (CopyDetails)
                     {
-                        newRow.DonorName = FPreviouslySelectedDetailRow.DonorName;
-                        newRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
-                        newRow.ConfidentialGiftFlag = FPreviouslySelectedDetailRow.ConfidentialGiftFlag;
-                        newRow.ChargeFlag = FPreviouslySelectedDetailRow.ChargeFlag;
-                        newRow.TaxDeductible = FPreviouslySelectedDetailRow.TaxDeductible;
-                        newRow.MotivationGroupCode = FPreviouslySelectedDetailRow.MotivationGroupCode;
-                        newRow.MotivationDetailCode = FPreviouslySelectedDetailRow.MotivationDetailCode;
+                        newRow.DonorName = donorName;
+                        newRow.DonorClass = donorClass;
+                        newRow.ConfidentialGiftFlag = confidentialGiftFlag;
+                        newRow.ChargeFlag = chargeFlag;
+                        newRow.TaxDeductible = taxDeductible;
+                        newRow.MotivationGroupCode = motivationGroupCode;
+                        newRow.MotivationDetailCode = motivationDetailCode;
 
                         // set the auto-populate comment if needed
                         AMotivationDetailRow motivationDetail = (AMotivationDetailRow)FMainDS.AMotivationDetail.Rows.Find(
@@ -137,15 +173,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (FTaxDeductiblePercentageEnabled)
                     {
-                        newRow.TaxDeductiblePct = 100;
-                        newRow.TaxDeductibleAmount = 0;
-                        newRow.TaxDeductibleAmountBase = 0;
-                        newRow.TaxDeductibleAmountIntl = 0;
-                        newRow.NonDeductibleAmount = 0;
-                        newRow.NonDeductibleAmountBase = 0;
-                        newRow.NonDeductibleAmountIntl = 0;
-                        txtTaxDeductAmount.NumberValueDecimal = 0;
-                        txtNonDeductAmount.NumberValueDecimal = 0;
+                        newRow.TaxDeductiblePct = newRow.TaxDeductible ? 100.0m : 0.0m;
+
+                        //Set unbound textboxes to 0
+                        txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                        txtNonDeductAmount.NumberValueDecimal = 0.0m;
                     }
 
                     FMainDS.AGiftDetail.Rows.Add(newRow);
@@ -191,6 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailRecipientKey.Focus();
                     }
 
+                    //FPreviouslySelectedDetailRow should now be pointing to the newly added row
                     TUC_GiftTransactions_Recipient.UpdateRecipientKeyText(0,
                         FPreviouslySelectedDetailRow,
                         cmbDetailMotivationGroupCode.GetSelectedString(),

@@ -180,8 +180,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         // get tax deductible percentage data from controls
-        private void GetTaxDeductibleDataFromControlsManual(ref GiftBatchTDSAGiftDetailRow ARow)
+        private void GetTaxDeductibleDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
+            if (FCreatingNewGift)
+            {
+                return;
+            }
+
             ARow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
 
             ARow.TaxDeductibleAmount = (decimal)txtTaxDeductAmount.NumberValueDecimal;
@@ -200,14 +205,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void EnableTaxDeductibilityPct(bool AEnable)
         {
-            if (AEnable && !string.IsNullOrEmpty(txtDeductibleAccount.Text))
-            {
-                txtDeductiblePercentage.Enabled = true;
-            }
-            else
-            {
-                txtDeductiblePercentage.Enabled = false;
-            }
+            txtDeductiblePercentage.Enabled = AEnable;
         }
 
         // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
@@ -215,15 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if (APartnerKey == 0)
             {
-                if (!txtDeductiblePercentage.Enabled)
-                {
-                    txtDeductiblePercentage.NumberValueDecimal = 0.0m;
-                }
-                else
-                {
-                    txtDeductiblePercentage.NumberValueDecimal = 100.0m;
-                }
-
+                txtDeductiblePercentage.NumberValueDecimal = txtDeductiblePercentage.Enabled ? 100.0m : 0.0m;
                 return;
             }
 
