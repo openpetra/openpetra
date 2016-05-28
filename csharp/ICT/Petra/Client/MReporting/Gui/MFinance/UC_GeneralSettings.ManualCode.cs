@@ -567,6 +567,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
+        /// Add verification error if no radio button is selected in the group box
+        /// </summary>
+        /// <param name="AUtilsObject"></param>
+        public void VerifyRadioButtonSelection(TFrmPetraReportingUtils AUtilsObject)
+        {
+            if (grpPeriodRange.Visible)
+            {
+                TFrmPetraReportingUtils.VerifyRadioButtonSelection(grpPeriodRange, AUtilsObject);
+            }
+        }
+
+        /// <summary>
         /// Checks whether the period is inside a valid financial year
         /// </summary>
         /// <param name="AYear">which year is the period in</param>

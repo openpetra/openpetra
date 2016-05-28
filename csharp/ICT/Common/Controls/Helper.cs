@@ -110,6 +110,27 @@ namespace Ict.Common.Controls
                 APartnerKeyTextBox.BackColor = AOriginalPartnerClassColour ?? System.Drawing.Color.White;
             }
         }
+
+        /// <summary>
+        /// Used for determining whether any of the radio buttons inside a group box is selected
+        /// </summary>
+        /// <param name="ARadioGroupBox">Parent Group box that contains radio buttons.</param>
+        /// <returns>True if any of the radio buttons inside the group box is selected, otherwise false.</returns>
+        public static Boolean IsAnyRadioButtonSelected(GroupBox ARadioGroupBox)
+        {
+            foreach (var control1 in ARadioGroupBox.Controls)
+            {
+                if (control1 is RadioButton)
+                {
+                    if ((control1 as RadioButton).Checked)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 
     #endregion

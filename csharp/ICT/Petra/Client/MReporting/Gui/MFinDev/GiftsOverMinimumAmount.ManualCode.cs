@@ -61,6 +61,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            // make sure that for each group one radio button is selected
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrSorting, FPetraUtilsObject);
+            TFrmPetraReportingUtils.VerifyRadioButtonSelection(rgrFormatCurrency, FPetraUtilsObject);
+
             if (!dtpEndDate.ValidDate(false)
                 || !dtpStartDate.ValidDate(false))
             {
