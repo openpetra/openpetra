@@ -86,6 +86,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FGLEffectivePeriodChanged = false;
         private bool FGiftAmountChanged = false;
 
+        private Int32 FCurrentGiftInBatch = 0;
+
         private List <Int64>FNewDonorsList = new List <long>();
 
         /// <summary>
@@ -209,13 +211,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (keyData == (Keys.D | Keys.Alt))
             {
                 txtDetailDonorKey.PerformButtonClick();
-                return true;
-            }
-
-            if (keyData == (Keys.P | Keys.Alt))
-            {
-                txtDetailRecipientKey.PerformButtonClick();
-
                 return true;
             }
 
@@ -495,6 +490,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return false;
             }
 
+            //New Batch
+            FCurrentGiftInBatch = 0;
+
             //New set of transactions to be loaded
             TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
 
@@ -507,7 +505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FGiftTransactionsLoaded = false;
-            FSuppressListChanged = true;
+            FSuppressListChanged = false;
 
             //Apply new filter
             FPreviouslySelectedDetailRow = null;
@@ -569,8 +567,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             SelectRowInGrid(1);
 
             UpdateControlsProtection();
-
-            FSuppressListChanged = false;
 
             dlgStatus.CurrentStatus = Catalog.GetString("Updating totals for the batch ...");
             UpdateTotals();
@@ -1163,7 +1159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void UpdateTotals()
         {
-            if ((FPetraUtilsObject == null) || FShowDetailsInProcess)
+            if ((FPetraUtilsObject == null))
             {
                 return;
             }
@@ -1799,6 +1795,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode, -1);
             chkNoReceiptOnAdjustment.Checked = !ACurrentGiftRow.PrintReceipt;
+
+            if (FCurrentGiftInBatch != ACurrentGiftRow.GiftTransactionNumber)
+            {
+                //New gift is selected so update the totals
+                FCurrentGiftInBatch = ACurrentGiftRow.GiftTransactionNumber;
+                UpdateTotals();
+            }
         }
 
         /// <summary>
@@ -2258,6 +2261,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if ((grdDetails != null) && grdDetails.CanFocus)
             {
+                // NOTE: AlanP: RestoreAdditionalWindowPositionProperties must be called when the screen is fully shown,
+                // especially if Panel2 has a scrollbar that is only showing part of the panel.
+                // We have to make this call after Windows has set the scroll position because this changes the splitter distance.
+                // See https://tracker.openpetra.org/view.php?id=4936
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
                 grdDetails.AutoResizeGrid();
                 grdDetails.Focus();
             }
@@ -2295,6 +2304,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.AutoResizeGrid();
+
+                // Once we have auto-sized once and there are more than 8 rows we don't auto-size any more (unless we load data again)
+                FSuppressListChanged = (grdDetails.Rows.Count > 8);
             }
 
             btnDeleteAll.Enabled = btnDelete.Enabled;
@@ -2580,6 +2592,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //If only updating the currency active row
             if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
             {
+                FPreviouslySelectedDetailRow.BeginEdit();
+
                 FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide((decimal)txtDetailGiftTransactionAmount.NumberValueDecimal,
                     BatchExchangeRateToBase);
 
@@ -2598,12 +2612,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     UpdateTaxDeductibilityAmounts(this, null);
                 }
+
+                FPreviouslySelectedDetailRow.EndEdit();
             }
             else
             {
                 if (TransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
                 {
                     //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
+                    FPreviouslySelectedDetailRow.BeginEdit();
+
                     FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftTransactionAmount,
                         BatchExchangeRateToBase);
 
@@ -2617,6 +2635,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                     }
+
+                    FPreviouslySelectedDetailRow.EndEdit();
                 }
 
                 //Update all transactions
@@ -2740,7 +2760,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FGift = GetGiftRow(AGiftTransactionNumber);
 
             bool IsSplitGift = false;
-            bool CopySplitGift = false;
 
             DateTime LatestUnpostedGiftDateEntered = new DateTime(1900, 1, 1);
 
@@ -2853,9 +2872,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     Message += "\n" + Catalog.GetString("Do you want to create the same split gift again?");
 
-                    CopySplitGift = (MessageBox.Show(Message, Catalog.GetString(
-                                             "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-                                     == DialogResult.Yes);
+                    if (!(MessageBox.Show(Message, Catalog.GetString(
+                                  "Create Split Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                          == DialogResult.Yes))
+                    {
+                        if (cmbDetailMethodOfGivingCode.CanFocus)
+                        {
+                            cmbDetailMethodOfGivingCode.Focus();
+                        }
+                        else if (txtDetailReference.CanFocus)
+                        {
+                            txtDetailReference.Focus();
+                        }
+
+                        return;
+                    }
                 }
 
                 this.Cursor = Cursors.WaitCursor;
@@ -2869,21 +2900,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailMotivationDetailCode.SetSelectedString(giftDetailRow.MotivationDetailCode);
                 chkDetailConfidentialGiftFlag.Checked = giftDetailRow.ConfidentialGiftFlag;
                 chkDetailChargeFlag.Checked = giftDetailRow.ChargeFlag;
-                chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
                 cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment, -1);
                 cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode, -1);
-
-                ToggleTaxDeductible(this, null);
-
                 cmbDetailMailingCode.SetSelectedString(giftDetailRow.MailingCode, -1);
-                txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
+
+                //Handle tax fields
+                chkDetailTaxDeductible.Checked = giftDetailRow.TaxDeductible;
+                ToggleTaxDeductible(this, null);
+                txtDeductiblePercentage.NumberValueDecimal = giftDetailRow.TaxDeductiblePct;
+                txtTaxDeductAmount.NumberValueDecimal = giftDetailRow.TaxDeductibleAmount;
+                txtNonDeductAmount.NumberValueDecimal = giftDetailRow.NonDeductibleAmount;
 
                 //Set underlying row values
                 FPreviouslySelectedDetailRow.ReceiptPrinted = false;
                 FPreviouslySelectedDetailRow.ReceiptNumber = 0;
 
-                if (CopySplitGift)
+                if (IsSplitGift)
                 {
+                    //Only copy amount if copying split gifts
+                    txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
+
                     //Copy the comments and comment types for split gifts
                     if (FIncludeCommentsSplitGiftCopy)
                     {
@@ -2894,9 +2930,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         txtDetailGiftCommentThree.Text = giftDetailRow.GiftCommentThree;
                         cmbDetailCommentThreeType.SetSelectedString(giftDetailRow.CommentThreeType);
                     }
-
-                    // only populate amount if a split gift
-                    txtDetailGiftTransactionAmount.NumberValueDecimal = giftDetailRow.GiftTransactionAmount;
 
                     // clear previous validation errors.
                     // otherwise we get an error if the user has changed the control immediately after changing the donor key.
@@ -2917,6 +2950,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         detailRow.GiftTransactionNumber = AGiftTransactionNumber;
                         detailRow.DetailNumber = ++FGift.LastDetailNumber;
                         detailRow.DonorClass = FPreviouslySelectedDetailRow.DonorClass;
+                        detailRow.DateEntered = FGift.DateEntered;
                         detailRow.MethodOfPaymentCode = FPreviouslySelectedDetailRow.MethodOfPaymentCode;
                         detailRow.ReceiptPrinted = false;
                         detailRow.ReceiptNumber = 0;
@@ -2939,13 +2973,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             detailRow.SetGiftCommentOneNull();
                             detailRow.SetGiftCommentTwoNull();
                             detailRow.SetGiftCommentThreeNull();
-                        }
-
-                        detailRow.DateEntered = FGift.DateEntered;
-
-                        if (FTaxDeductiblePercentageEnabled)
-                        {
-                            detailRow.TaxDeductiblePct = 100;
                         }
 
                         detailRow.AcceptChanges();

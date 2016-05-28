@@ -606,7 +606,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 AAccountHierarchyAccess.LoadViaALedger(postingDS, ALedgerNumber, ADBTransaction);
 
                 ABatchTable batchTable = new ABatchTable();
-
                 ABatchRow batchTemplateRow = (ABatchRow)batchTable.NewRowTyped(false);
 
                 batchTemplateRow.LedgerNumber = ALedgerNumber;

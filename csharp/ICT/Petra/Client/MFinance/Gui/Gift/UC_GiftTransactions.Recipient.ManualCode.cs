@@ -378,6 +378,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             Int64 RecipientLedgerNumber = 0;
+            ACurrentDetailRow.BeginEdit();
 
             // get the recipient ledger number
             if (APartnerKey > 0)
@@ -459,6 +460,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     AInEditModeFlag,
                     ABatchUnpostedFlag);
 
+                ACurrentDetailRow.EndEdit();
                 APetraUtilsObject.SuppressChangeDetection = false;
             }
         }

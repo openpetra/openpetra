@@ -79,6 +79,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         CurrentGiftRow = giftRow;
 
                         mniDonorHistory.Enabled = false;
+
+                        //Reset textboxes to zero
+                        txtGiftTotal.NumberValueDecimal = 0;
                     }
                     else
                     {
@@ -131,6 +134,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     newRow.ReceiptPrinted = false;
                     newRow.ReceiptNumber = 0;
                     newRow.DateEntered = CurrentGiftRow.DateEntered;
+
+                    txtTaxDeductAmount.NumberValueDecimal = 0;
+                    newRow.TaxDeductibleAmount = 0;
+                    newRow.TaxDeductibleAmountBase = 0;
+                    newRow.TaxDeductibleAmountIntl = 0;
+                    txtNonDeductAmount.NumberValueDecimal = 0;
+                    newRow.NonDeductibleAmount = 0;
+                    newRow.NonDeductibleAmountBase = 0;
+                    newRow.NonDeductibleAmountIntl = 0;
 
                     if (FTaxDeductiblePercentageEnabled)
                     {

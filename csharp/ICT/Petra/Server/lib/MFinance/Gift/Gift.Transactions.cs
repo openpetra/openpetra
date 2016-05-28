@@ -4770,6 +4770,72 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Load the most recent Partner Tax Deductible Pct
+        /// </summary>
+        /// <param name="APartnerKey">Partner Key </param>
+        /// <param name="ADateValidFrom">To match nearest date valid from</param>
+        /// <returns>PPartnerTaxDeductiblePctTable for the partner Key</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PPartnerTaxDeductiblePctTable LoadPartnerTaxDeductiblePct(long APartnerKey, DateTime ADateValidFrom)
+        {
+            #region Validate Arguments
+
+            if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key cannot be negative!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            PPartnerTaxDeductiblePctTable PartnerTaxDeductiblePct = null;
+
+            PPartnerTaxDeductiblePctTable PartnerTaxPercentTable = new PPartnerTaxDeductiblePctTable();
+            PPartnerTaxDeductiblePctRow PartnerTaxPercentTemplateRow = (PPartnerTaxDeductiblePctRow)PartnerTaxPercentTable.NewRowTyped(false);
+
+            PartnerTaxPercentTemplateRow.PartnerKey = APartnerKey;
+            PartnerTaxPercentTemplateRow.DateValidFrom = ADateValidFrom;
+
+            StringCollection Operators0 = StringHelper.InitStrArr(new string[] { "=", "<=" });
+            StringCollection OrderList0 = new StringCollection();
+
+            OrderList0.Add("ORDER BY");
+            OrderList0.Add(PPartnerTaxDeductiblePctTable.GetDateValidFromDBName() + " DESC");
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    PartnerTaxDeductiblePct = PPartnerTaxDeductiblePctAccess.LoadUsingTemplate(PartnerTaxPercentTemplateRow,
+                        Operators0,
+                        null,
+                        Transaction,
+                        OrderList0,
+                        0,
+                        0);
+                });
+
+            if (PartnerTaxDeductiblePct != null)
+            {
+                //Only want the most recent row
+                int numRecs = PartnerTaxDeductiblePct.Count;
+
+                if (numRecs > 1)
+                {
+                    for (int i = numRecs - 1; i > 0; i--)
+                    {
+                        PartnerTaxDeductiblePct.Rows[i].Delete();
+                    }
+                }
+
+                PartnerTaxDeductiblePct.AcceptChanges();
+            }
+
+            return PartnerTaxDeductiblePct;
+        }
+
+        /// <summary>
         /// Find the cost centre associated with the partner
         /// </summary>
         /// <returns>Cost Centre code</returns>

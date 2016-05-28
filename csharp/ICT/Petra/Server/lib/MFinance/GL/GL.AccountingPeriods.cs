@@ -427,11 +427,11 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
             Int32 PeriodNumber = 0;
 
-            TDBTransaction transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref transaction,
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable, ref Transaction,
                 delegate
                 {
-                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, transaction);
+                    ALedgerTable LedgerTable = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, Transaction);
 
                     CurrentFinancialYear = ((ALedgerRow)LedgerTable.Rows[0]).CurrentFinancialYear;
 
@@ -447,7 +447,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                     AAccountingPeriodTable AccountingPeriodTable = AAccountingPeriodAccess.LoadUsingTemplate(TemplateRow,
                         operators,
                         null,
-                        transaction);
+                        Transaction);
 
                     if (AccountingPeriodTable.Count == 0)
                     {
@@ -460,6 +460,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                 });
 
             APeriodNumber = PeriodNumber;
+
             return true;
         } // Get AccountingYear Period ByDate
 

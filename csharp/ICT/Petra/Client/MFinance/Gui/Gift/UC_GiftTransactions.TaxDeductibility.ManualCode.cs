@@ -162,18 +162,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            if (FPreviouslySelectedDetailRow.IsTaxDeductiblePctNull())
+            if (FBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
             {
-                FPreviouslySelectedDetailRow.TaxDeductiblePct = 0;
-            }
+                if (FPreviouslySelectedDetailRow.IsTaxDeductiblePctNull())
+                {
+                    FPreviouslySelectedDetailRow.TaxDeductiblePct = 0;
+                }
 
-            if (sender == txtDeductiblePercentage)
-            {
-                FPreviouslySelectedDetailRow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
-            }
+                if (sender == txtDeductiblePercentage)
+                {
+                    FPreviouslySelectedDetailRow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
+                }
 
-            AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
-            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+                AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
+                TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
+            }
 
             txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
             txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
