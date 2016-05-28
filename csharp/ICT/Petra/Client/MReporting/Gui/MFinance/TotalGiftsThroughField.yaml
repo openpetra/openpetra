@@ -17,7 +17,7 @@ RootNode:
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [FINANCE-1]
-    
+
     Controls:
         tpgGeneralSettings:
             Label: General Settings

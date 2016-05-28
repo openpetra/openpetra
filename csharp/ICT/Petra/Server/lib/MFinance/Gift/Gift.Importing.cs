@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1459,15 +1459,17 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGift.ReceiptLetterCode = AGift.ReceiptLetterCode.ToUpper();
             }
 
-            if (HasExtraColumns)
+            if (HasExtraColumns) // I'm not actually importing these things - this information is thrown away:
             {
                 TCommonImport.ImportInt32(ref FImportLine, FDelimiter, Catalog.GetString("Receipt number"),
-                    FMainDS.AGift.ColumnReceiptNumber, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
                 TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("First time gift"),
-                    FMainDS.AGift.ColumnFirstTimeGift, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
                 TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Receipt printed"),
-                    FMainDS.AGift.ColumnReceiptPrinted, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
             }
+
+            AGift.FirstTimeGift = !TGiftTransactionWebConnector.DonorHasGiven(FLedgerNumber, AGift.DonorKey);
 
             AImportMessage = Catalog.GetString("Importing the gift details");
 
@@ -1508,10 +1510,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString(
                     "short name of recipient (unused)"), null, ARowNumber, AMessages, null);                           // unused
 
-            if (HasExtraColumns)
+            if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
                 TCommonImport.ImportInt32(ref FImportLine, FDelimiter, Catalog.GetString("Recipient ledger number"),
-                    FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
             }
 
             // RecipientLedgerNumber is always calculated, not imported.
@@ -1566,18 +1568,27 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.MotivationDetailCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation detail"),
                 FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper();
 
-            if (HasExtraColumns)
+            if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
                 TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre code"),
-                    FMainDS.AGiftDetail.ColumnCostCentreCode, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
             }
 
-            // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
+            // Cost Centre is always inferred from recipient field and motivation detail:
             try
             {
+                bool partnerIsMissingLink;
+
                 AGiftDetails.CostCentreCode = TGiftTransactionWebConnector.RetrieveCostCentreCodeForRecipient(
                     AGiftDetails.LedgerNumber, AGiftDetails.RecipientKey, AGiftDetails.RecipientLedgerNumber,
-                    AGift.DateEntered, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode);
+                    AGift.DateEntered, AGiftDetails.MotivationGroupCode, AGiftDetails.MotivationDetailCode,
+                    out partnerIsMissingLink);
+
+                if (partnerIsMissingLink)
+                {
+                    throw new ArgumentException(String.Format(Catalog.GetString("Recipient {0:0000000000} has no linked cost center"),
+                            AGiftDetails.RecipientKey));
+                }
             }
             catch (ArgumentException ex)
             {
@@ -1695,9 +1706,9 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// This method could be pulled out of here, but sits here quite nicely.
         /// </summary>
         /// <param name="AImportLine"></param>
-        /// <param name="AgiftBatch"></param>
-        /// <param name="Agift"></param>
-        /// <param name="AgiftDetails"></param>
+        /// <param name="AGiftsBatchRow"></param>
+        /// <param name="AGiftsRow"></param>
+        /// <param name="AGiftsDetailsRow"></param>
         /// <param name="AIntlRateToBase"></param>
         /// <param name="AMotivationDetailTable"></param>
         /// <param name="ANeedRecipientLedgerNumber"></param>
@@ -1705,9 +1716,9 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <returns></returns>
         private Boolean ParseEsrTransactionLine(
             String AImportLine,
-            AGiftBatchRow AgiftBatch,
-            AGiftRow Agift,
-            AGiftDetailRow AgiftDetails,
+            AGiftBatchRow AGiftsBatchRow,
+            AGiftRow AGiftsRow,
+            AGiftDetailRow AGiftsDetailsRow,
             Decimal AIntlRateToBase,
             AMotivationDetailTable AMotivationDetailTable,
             GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
@@ -1750,12 +1761,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                 return false;
             }
 
-            Agift.LedgerNumber = AgiftBatch.LedgerNumber;
-            Agift.BatchNumber = AgiftBatch.BatchNumber;
-            Agift.GiftTransactionNumber = AgiftBatch.LastGiftNumber + 1;
-            AgiftBatch.LastGiftNumber++;
-            AgiftBatch.BatchTotal += Amount;
-            Agift.LastDetailNumber = 1;
+            AGiftsRow.LedgerNumber = AGiftsBatchRow.LedgerNumber;
+            AGiftsRow.BatchNumber = AGiftsBatchRow.BatchNumber;
+            AGiftsRow.GiftTransactionNumber = AGiftsBatchRow.LastGiftNumber + 1;
+            AGiftsBatchRow.LastGiftNumber++;
+            AGiftsBatchRow.BatchTotal += Amount;
+            AGiftsRow.LastDetailNumber = 1;
 
             String MotivGroup = "GIFT";
             String MotivDetail = "UNDESIG";
@@ -1763,35 +1774,36 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             ExchangeFieldsInEsrTransaction(ref DonorKey, ref RecipientKey,
                 ref MotivGroup, ref MotivDetail,
-                AMessages, Agift.GiftTransactionNumber);
+                AMessages, AGiftsRow.GiftTransactionNumber);
 
+            AGiftsRow.DonorKey = DonorKey;
+            AGiftsRow.MethodOfGivingCode = "DEFAULT";
+            AGiftsRow.MethodOfPaymentCode = "ESR";
+            AGiftsRow.DateEntered = AGiftsBatchRow.GlEffectiveDate;
+            AGiftsRow.FirstTimeGift = !TGiftTransactionWebConnector.DonorHasGiven(AGiftsRow.LedgerNumber, AGiftsRow.DonorKey);
 
-            Agift.DonorKey = DonorKey;
-            Agift.MethodOfGivingCode = "DEFAULT";
-            Agift.MethodOfPaymentCode = "ESR";
-            Agift.DateEntered = AgiftBatch.GlEffectiveDate;
-            FMainDS.AGift.Rows.Add(Agift);
+            FMainDS.AGift.Rows.Add(AGiftsRow);
 
-            AgiftDetails.RecipientKey = RecipientKey;
-            AgiftDetails.LedgerNumber = AgiftBatch.LedgerNumber;
-            AgiftDetails.BatchNumber = AgiftBatch.BatchNumber;
-            AgiftDetails.GiftTransactionNumber = Agift.GiftTransactionNumber;
-            AgiftDetails.DetailNumber = 1;
-            AgiftDetails.GiftTransactionAmount = Amount;
-            AgiftDetails.GiftAmount = GLRoutines.Divide(Amount, AgiftBatch.ExchangeRateToBase);      // amount in ledger currency
-            AgiftDetails.MailingCode = MailCode;
+            AGiftsDetailsRow.RecipientKey = RecipientKey;
+            AGiftsDetailsRow.LedgerNumber = AGiftsBatchRow.LedgerNumber;
+            AGiftsDetailsRow.BatchNumber = AGiftsBatchRow.BatchNumber;
+            AGiftsDetailsRow.GiftTransactionNumber = AGiftsRow.GiftTransactionNumber;
+            AGiftsDetailsRow.DetailNumber = 1;
+            AGiftsDetailsRow.GiftTransactionAmount = Amount;
+            AGiftsDetailsRow.GiftAmount = GLRoutines.Divide(Amount, AGiftsBatchRow.ExchangeRateToBase);      // amount in ledger currency
+            AGiftsDetailsRow.MailingCode = MailCode;
 
             if (AIntlRateToBase > 0.0m)
             {
-                AgiftDetails.GiftAmountIntl = GLRoutines.Divide(AgiftDetails.GiftAmount, AIntlRateToBase, 2);
+                AGiftsDetailsRow.GiftAmountIntl = GLRoutines.Divide(AGiftsDetailsRow.GiftAmount, AIntlRateToBase, 2);
             }
 
             // RecipientLedgerNumber is always calculated, not imported.
             // This call could throw an exception, but I'm not allowing any panic here.
             try
             {
-                AgiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
-                    AgiftDetails.RecipientKey, AgiftBatch.GlEffectiveDate);
+                AGiftsDetailsRow.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                    AGiftsDetailsRow.RecipientKey, AGiftsBatchRow.GlEffectiveDate);
             }
             catch (Exception ex)
             {
@@ -1799,14 +1811,32 @@ namespace Ict.Petra.Server.MFinance.Gift
                         TResultSeverity.Resv_Critical));
             }
 
-            AgiftDetails.MotivationGroupCode = MotivGroup;
-            AgiftDetails.MotivationDetailCode = MotivDetail;
-            AgiftDetails.CostCentreCode = TGiftTransactionWebConnector.RetrieveCostCentreCodeForRecipient(
-                AgiftDetails.LedgerNumber, AgiftDetails.RecipientKey, AgiftDetails.RecipientLedgerNumber,
-                Agift.DateEntered, AgiftDetails.MotivationGroupCode, AgiftDetails.MotivationDetailCode);
+            AGiftsDetailsRow.MotivationGroupCode = MotivGroup;
+            AGiftsDetailsRow.MotivationDetailCode = MotivDetail;
+
+            bool partnerIsMissingLink;
+
+            try
+            {
+                AGiftsDetailsRow.CostCentreCode = TGiftTransactionWebConnector.RetrieveCostCentreCodeForRecipient(
+                    AGiftsDetailsRow.LedgerNumber, AGiftsDetailsRow.RecipientKey, AGiftsDetailsRow.RecipientLedgerNumber,
+                    AGiftsRow.DateEntered, AGiftsDetailsRow.MotivationGroupCode, AGiftsDetailsRow.MotivationDetailCode,
+                    out partnerIsMissingLink);
+
+                if (partnerIsMissingLink)
+                {
+                    throw new ArgumentException(String.Format(Catalog.GetString("Recipient {0:0000000000} has no linked cost center"),
+                            AGiftsDetailsRow.RecipientKey));
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                AMessages.Add(new TVerificationResult("Cost Centre link not found for recipient", ex.Message,
+                        TResultSeverity.Resv_Critical));
+            }
 
             AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)AMotivationDetailTable.Rows.Find(
-                new object[] { FLedgerNumber, AgiftDetails.MotivationGroupCode, AgiftDetails.MotivationDetailCode });
+                new object[] { FLedgerNumber, AGiftsDetailsRow.MotivationGroupCode, AGiftsDetailsRow.MotivationDetailCode });
 
             // Account Code is inferred from the motivation detail.
             Boolean IsTaxDeductible = false;
@@ -1820,24 +1850,24 @@ namespace Ict.Petra.Server.MFinance.Gift
                 NewTaxDeductibleAccountCode = motivationDetailRow.TaxDeductibleAccountCode;
             }
 
-            AgiftDetails.TaxDeductible = IsTaxDeductible;
-            AgiftDetails.AccountCode = NewAccountCode;
-            AgiftDetails.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
+            AGiftsDetailsRow.TaxDeductible = IsTaxDeductible;
+            AGiftsDetailsRow.AccountCode = NewAccountCode;
+            AGiftsDetailsRow.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
 
             // I feel that I shouldn't need to do this here, since it's been done already...
             ANeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
 
             // If the gift has a recipient with no Gift Destination then the import will fail. Gift detail is added to a table and returned to client.
-            if ((AgiftDetails.RecipientLedgerNumber == 0)
-                && (AgiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+            if ((AGiftsDetailsRow.RecipientLedgerNumber == 0)
+                && (AGiftsDetailsRow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
                 && (ANeedRecipientLedgerNumber.DefaultView.Find(RecipientKey) == -1)
                 )
             {
 //                ((GiftBatchTDSAGiftDetailRow)AgiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
-                ANeedRecipientLedgerNumber.Rows.Add((object[])AgiftDetails.ItemArray.Clone());
+                ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftsDetailsRow.ItemArray.Clone());
             }
 
-            FMainDS.AGiftDetail.Rows.Add(AgiftDetails);
+            FMainDS.AGiftDetail.Rows.Add(AGiftsDetailsRow);
             return true;
         } // Parse Esr Transaction Line
 
@@ -1873,12 +1903,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (innerMessage.Contains("a_gift_batch_fk2"))
             {
-                return Catalog.GetString("Unknown account code.") + String.Format(formatStr, "Manage Accounts");
+                return Catalog.GetString("Problem with Gift Batch bank Account code.") + String.Format(formatStr, "Manage Accounts");
             }
 
             if (innerMessage.Contains("a_gift_batch_fk3"))
             {
-                return Catalog.GetString("Unknown cost centre.") + String.Format(formatStr, "Manage Cost Centres");
+                return Catalog.GetString("Problem with Gift Batch bank Cost Centre code.");
             }
 
             if (innerMessage.Contains("a_gift_batch_fk4"))

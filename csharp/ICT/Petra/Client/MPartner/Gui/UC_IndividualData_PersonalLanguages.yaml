@@ -40,8 +40,6 @@ RootNode:
             CustomColumns:
                 LanguageCode: {Label=Language}
                 LanguageLevel: {Label=Language Level}
-                YearsOfExperience: {Label=Years Of Experience}
-                YearsOfExperienceAsOf: {Label=as of, Type=DateTime}
             ActionFocusRow: FocusedRowChanged
             
         pnlDetails:
@@ -51,13 +49,10 @@ RootNode:
 #            Height: 400
             Controls:
                 Row0: [cmbLanguageCode]
-                Row1: [txtYearsOfExperience, dtpYearsOfExperienceAsOf]
-                Row2: [cmbLanguageLevel, btnShowLanguageLevelExplanation]
-                Row3: [txtComment]
+                Row1: [cmbLanguageLevel, btnShowLanguageLevelExplanation]
+                Row2: [txtComment]
                 
         cmbLanguageCode: {Label=Language, DataField=PmPersonLanguage.LanguageCode, List=LanguageCodeList, Width=200, ColSpan=2, Validation=true}
-        txtYearsOfExperience: {DataField=PmPersonLanguage.YearsOfExperience, Width=25, Format=Integer, OnLeave=ProcessYearsOfExperience}
-        dtpYearsOfExperienceAsOf: {Label=as of Date, DataField=PmPersonLanguage.YearsOfExperienceAsOf}
         cmbLanguageLevel: {Label=Level, List=LanguageLevelList, Width=170, Validation=true}
         btnShowLanguageLevelExplanation:
         txtComment:

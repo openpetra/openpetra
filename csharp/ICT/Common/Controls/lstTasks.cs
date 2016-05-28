@@ -54,8 +54,6 @@ namespace Ict.Common.Controls
         private int FMaxTaskWidth;
         private TExtStatusBarHelp FStatusbar = null;
         private string FResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir");
-        private string FFirstGroupName = null;
-        private string FLastGroupName = null;
         private string FCurrentGroupName = null;
 
 
@@ -192,14 +190,6 @@ namespace Ict.Common.Controls
                     // Make sure Task Groups are shown in correct order and not in reverse order.
                     // (This is needed because we 'stack them up' with 'TaskGroup.Dock = DockStyle.Top')
                     TaskGroup.BringToFront();
-
-                    // Select (highlight) first Task in the first Group
-                    if (Groups.Count == 1)
-                    {
-                        FFirstGroupName = TaskGroup.Name;
-                    }
-
-                    FLastGroupName = TaskGroup.Name;
                 }
 
                 TaskGroupNode = TaskGroupNode.NextSibling;
@@ -404,28 +394,6 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Gets the name of the first group in the list
-        /// </summary>
-        public string FirstGroupName
-        {
-            get
-            {
-                return FFirstGroupName;
-            }
-        }
-
-        /// <summary>
-        /// Get the last group name on the tasks panel
-        /// </summary>
-        public string LastGroupName
-        {
-            get
-            {
-                return FLastGroupName;
-            }
-        }
-
-        /// <summary>
         /// Get the group name for the currently selected task item
         /// </summary>
         public string CurrentGroupName
@@ -433,48 +401,6 @@ namespace Ict.Common.Controls
             get
             {
                 return FCurrentGroupName;
-            }
-        }
-
-        /// <summary>
-        /// Get the group name for the group after the currently selected task item group.  Returns null if no such group exists.
-        /// </summary>
-        public string NextGroupName
-        {
-            get
-            {
-                for (int i = 0; i < this.Controls.Count; i++)
-                {
-                    Control TaskGroup = this.Controls[i];
-
-                    if ((TaskGroup.Name == FCurrentGroupName) && (i > 0))
-                    {
-                        return this.Controls[i - 1].Name;
-                    }
-                }
-
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Get the group name for the group before the currently selected task item group.  Returns null if no such group exists.
-        /// </summary>
-        public string PreviousGroupName
-        {
-            get
-            {
-                for (int i = 0; i < this.Controls.Count; i++)
-                {
-                    Control TaskGroup = this.Controls[i];
-
-                    if ((TaskGroup.Name == FCurrentGroupName) && (i < this.Controls.Count - 1))
-                    {
-                        return this.Controls[i + 1].Name;
-                    }
-                }
-
-                return null;
             }
         }
 

@@ -5,7 +5,7 @@ RootNode:
     Template: window
     FormTitle: Help with Keyboard Shortcuts
     WindowWidth: 810
-    WindowHeight: 410
+    WindowHeight: 435
 
     Actions:
 

@@ -185,14 +185,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
+                //Revert to previous state
+                FMainDS.Merge(BackupMainDS);
+
                 CompletionMessage = ex.Message;
                 MessageBox.Show(CompletionMessage,
                     "Cancellation Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {

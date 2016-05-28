@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="systemsettings" value="eBoolean:true" />
+  <Parameter id="xmlfiles" value="eString:common.xml" />
+  <Parameter id="currentReport" value="eString:StewardshipForPeriod" />
+  <Parameter id="param_diff_period_i" value="eInteger:0" />
+  <Parameter id="param_start_period_i" value="eInteger:1" />
+  <Parameter id="param_end_period_i" value="eInteger:12" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_currency_name" value="eString:CHF" />
+  <Parameter id="param_period" value="eBoolean:true" />
+  <Parameter id="param_period_checked" value="eBoolean:true" />
+  <Parameter id="param_date_checked" value="eBoolean:false" />
+  <Parameter id="param_quarter_checked" value="eBoolean:false" />
+  <Parameter id="param_year_i" value="eInteger:18" />
+  <Parameter id="param_real_year" value="eInteger:2015" />
+  <Parameter id="param_real_year_ending" value="eString:31-Dec-2015" />
+  <Parameter id="param_start_date" value="eDateTime:&quot;2015-01-01T00:00:00&quot;" />
+  <Parameter id="param_end_date" value="eDateTime:&quot;2015-12-31T00:00:00&quot;" />
+  <Parameter id="param_current_financial_year" value="eBoolean:true" />
+</Parameters>

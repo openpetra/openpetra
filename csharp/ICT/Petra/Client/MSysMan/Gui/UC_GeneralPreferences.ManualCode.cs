@@ -27,7 +27,9 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Forms;
 using System.Reflection;
+using System.Xml;
 using Ict.Common;
+using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
@@ -96,6 +98,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
             // Get the number of recent partners that the user has set, if not found take 10 as default value.
             nudNumberOfPartners.Value = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
             nudNumberOfPartners.Maximum = 10;
+
+            // Startup Module
+            PopulateStartupModuleList();
+            cmbInitialSelectedModule.SetSelectedString(TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.MODULE_TO_OPEN_AT_STARTUP,
+                    "Partner"), 0);
 
             // Other preferences
             chkEscClosesScreen.Checked = TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, true);
@@ -208,6 +215,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, nudNumberOfPartners.Value);
             TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, chkEscClosesScreen.Checked);
             TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, chkSaveWindowProperties.Checked);
+            TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.MODULE_TO_OPEN_AT_STARTUP, cmbInitialSelectedModule.GetSelectedString());
 
             return DialogResult.OK;
         }
@@ -245,6 +253,41 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private void LaunchpadLinkClicked(object ASender, EventArgs e)
         {
             System.Diagnostics.Process.Start("http://translations.openpetra.org");
+        }
+
+        private void PopulateStartupModuleList()
+        {
+            DataTable moduleTable = new DataTable();
+
+            moduleTable.Columns.Add("Value", typeof(System.String));
+            moduleTable.Columns.Add("Display", typeof(System.String));
+
+            TYml2Xml parser = new TYml2Xml(TAppSettingsManager.GetValue("UINavigation.File"));
+            XmlDocument UINavigation = parser.ParseYML2XML();
+
+            XmlNode OpenPetraNode = UINavigation.FirstChild.NextSibling.FirstChild;
+            XmlNode SearchBoxesNode = OpenPetraNode.FirstChild;
+            XmlNode MainMenuNode = SearchBoxesNode.NextSibling;
+
+            XmlNodeList modules = MainMenuNode.ChildNodes;
+
+            foreach (XmlNode n in modules)
+            {
+                string moduleName = n.Name;
+
+                if ((moduleName != "Settings") && (moduleName != "CrossLedgerSetup"))
+                {
+                    bool hasLabelAttribute = n.Attributes["Label"] != null;
+                    DataRow row = moduleTable.NewRow();
+                    row["Value"] = n.Name;
+                    row["Display"] = hasLabelAttribute ? n.Attributes["Label"].Value.Replace("&", "") : n.Name;
+                    moduleTable.Rows.Add(row);
+                }
+            }
+
+            cmbInitialSelectedModule.ValueMember = "Value";
+            cmbInitialSelectedModule.DisplayMember = "Display";
+            cmbInitialSelectedModule.DataSource = moduleTable.DefaultView;
         }
     }
 }

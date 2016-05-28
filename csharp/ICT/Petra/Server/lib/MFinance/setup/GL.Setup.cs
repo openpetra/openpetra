@@ -141,11 +141,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -282,11 +278,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -344,11 +336,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -406,11 +394,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -657,11 +641,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -759,11 +739,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -868,11 +844,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -944,11 +916,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1109,11 +1077,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1251,11 +1215,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1317,11 +1277,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -1333,9 +1289,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerKey"></param>
-        /// <returns></returns>
+        /// <param name="APartnerCostCentreTbl"></param>
+        /// <returns>False when Partner of Type CostCentre but no links exist</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static DataTable LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey = 0)
+        public static Boolean LoadCostCentrePartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey, out DataTable APartnerCostCentreTbl)
         {
             #region Validate Arguments
 
@@ -1353,6 +1310,89 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             #endregion Validate Arguments
 
+            APartnerCostCentreTbl = null;
+            DataTable PartnerCostCentreTbl = null;
+            AValidLedgerNumberTable LinksTbl = null;
+
+            bool PartnerAndLinksCombinationIsValid = true;
+            int NumPartnerWithTypeCostCentre = 0;
+            int NumPartnerLinks = 0;
+
+            // Load Partners where PartnerType includes "COSTCENTRE":
+            String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
+
+                        PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
+
+                        if (APartnerKey > 0)
+                        {
+                            LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+                        }
+                        else
+                        {
+                            LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        }
+
+                        //See how many rows exist
+                        NumPartnerWithTypeCostCentre = PartnerCostCentreTbl.Rows.Count;
+                        NumPartnerLinks = LinksTbl.Count;
+
+                        if (NumPartnerWithTypeCostCentre > 0)
+                        {
+                            if (NumPartnerLinks > 0)
+                            {
+                                foreach (AValidLedgerNumberRow validLedgNumRow in LinksTbl.Rows)
+                                {
+                                    Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(validLedgNumRow.PartnerKey);
+
+                                    if (RowIdx >= 0)
+                                    {
+                                        PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = validLedgNumRow.CostCentreCode;
+                                        ACostCentreTable cCTbl =
+                                            ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, validLedgNumRow.CostCentreCode, Transaction);
+
+                                        if (cCTbl.Rows.Count > 0)
+                                        {
+                                            PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = cCTbl[0].CostCentreToReportTo;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                PartnerAndLinksCombinationIsValid = false;
+                                //Empty the partner table as well ready for return
+                                PartnerCostCentreTbl.Rows.Clear();
+                            }
+                        }
+                    });
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+
+            //Set the out value
+            APartnerCostCentreTbl = PartnerCostCentreTbl;
+
+            return PartnerAndLinksCombinationIsValid;
+        }
+
+        private static string BuildSQLForCostCentrePartnerLinks(Int64 APartnerKey)
+        {
+            string RetSQL = string.Empty;
+
             // For easier readability
             //                  "SELECT p_partner.p_partner_short_name_c as ShortName," +
             //                  "   p_partner.p_partner_key_n as PartnerKey," +
@@ -1369,7 +1409,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             //SqlQuery += " AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
 
             // Load Partners where PartnerType includes "COSTCENTRE":
-            String SqlQuery = String.Format("SELECT {0}.{2} as ShortName," +
+            RetSQL = String.Format("SELECT {0}.{2} as ShortName," +
                 " {0}.{3} as PartnerKey, '0' as IsLinked, '0' as ReportsTo" +
                 " FROM public.{0}, public.{1}" +
                 " WHERE {0}.{3} = {1}.{4}",
@@ -1381,19 +1421,54 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
             if (APartnerKey > 0)
             {
-                SqlQuery += String.Format(" AND {0}.{1} = {2}",
+                RetSQL += String.Format(" AND {0}.{1} = {2}",
                     PPartnerTable.GetTableDBName(),
                     PPartnerTable.GetPartnerKeyDBName(),
                     APartnerKey);
             }
 
-            SqlQuery += String.Format(" AND {0}.{1} = '{2}'",
+            RetSQL += String.Format(" AND {0}.{1} = '{2}'",
                 PPartnerTypeTable.GetTableDBName(),
                 PPartnerTypeTable.GetTypeCodeDBName(),
                 MPartnerConstants.PARTNERTYPE_COSTCENTRE);
 
+            return RetSQL;
+        }
+
+        /// <summary>
+        /// LoadCostCentrePartnerLinks
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns>False when Partner of Type CostCentre but no links exist</returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean CostCentrePartnerLinksExist(Int32 ALedgerNumber, Int64 APartnerKey)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (APartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Partner Key is less than 0!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
             DataTable PartnerCostCentreTbl = null;
             AValidLedgerNumberTable LinksTbl = null;
+
+            bool PartnerAndLinksCombinationIsValid = true;
+            int NumPartnerWithTypeCostCentre = 0;
+            int NumPartnerLinks = 0;
+
+            // Load Partners where PartnerType includes "COSTCENTRE":
+            String SqlQuery = BuildSQLForCostCentrePartnerLinks(APartnerKey);
 
             TDBTransaction Transaction = null;
 
@@ -1406,96 +1481,33 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     {
                         PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
-                        PartnerCostCentreTbl.DefaultView.Sort = ("PartnerKey");
-
-                        if (APartnerKey == 0)
-                        {
-                            LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
-                        }
-                        else
+                        if (APartnerKey > 0)
                         {
                             LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
                         }
-
-                        foreach (AValidLedgerNumberRow validLedgNumRow in LinksTbl.Rows)
+                        else
                         {
-                            Int32 RowIdx = PartnerCostCentreTbl.DefaultView.Find(validLedgNumRow.PartnerKey);
+                            LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        }
 
-                            if (RowIdx >= 0)
-                            {
-                                PartnerCostCentreTbl.DefaultView[RowIdx].Row["IsLinked"] = validLedgNumRow.CostCentreCode;
-                                ACostCentreTable cCTbl =
-                                    ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, validLedgNumRow.CostCentreCode, Transaction);
+                        //See how many rows exist
+                        NumPartnerWithTypeCostCentre = PartnerCostCentreTbl.Rows.Count;
+                        NumPartnerLinks = LinksTbl.Count;
 
-                                if (cCTbl.Rows.Count > 0)
-                                {
-                                    PartnerCostCentreTbl.DefaultView[RowIdx].Row["ReportsTo"] = cCTbl[0].CostCentreToReportTo;
-                                }
-                            }
+                        if ((NumPartnerWithTypeCostCentre > 0) && (NumPartnerLinks == 0))
+                        {
+                            PartnerAndLinksCombinationIsValid = false;
                         }
                     });
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
-            return PartnerCostCentreTbl;
+            return PartnerAndLinksCombinationIsValid;
         }
-
-        ///// <summary></summary>
-        ///// <param name="ALedgerNumber"></param>
-        ///// <returns></returns>
-        //[RequireModulePermission("FINANCE-1")]
-        //public static DataTable LoadCostCentrePartnerLinksForPartner(Int32 ALedgerNumber, Int64 APartnerKey)
-        //{
-        //    // Load Partners where PartnerType includes "COSTCENTRE":
-        //    String SqlQuery = "SELECT p_partner.p_partner_short_name_c as ShortName," +
-        //                      "   p_partner.p_partner_key_n as PartnerKey," +
-        //                      "  '0' as IsLinked," +
-        //                      "  '0' as ReportsTo" +
-        //                      " FROM public.p_partner, public.p_partner_type" +
-        //                      " WHERE p_partner.p_partner_key_n = p_partner_type.p_partner_key_n" +
-        //                      "    AND p_partner.p_partner_key_n = " + APartnerKey.ToString() +
-        //                      "    AND p_type_code_c = '" + MPartnerConstants.PARTNERTYPE_COSTCENTRE + "';";
-
-        //    DataTable PartnerCostCentreTbl = null;
-
-        //    TDBTransaction Transaction = null;
-        //    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-        //        TEnforceIsolationLevel.eilMinimum,
-        //        ref Transaction,
-        //        delegate
-        //        {
-        //            PartnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
-
-        //            if (PartnerCostCentreTbl != null && PartnerCostCentreTbl.Rows.Count > 0)
-        //            {
-        //                AValidLedgerNumberTable LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
-
-        //                if (LinksTbl != null && LinksTbl.Count > 0)
-        //                {
-        //                    string costCentreCode;
-
-        //                    costCentreCode = LinksTbl[0].CostCentreCode;
-        //                    PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"] = costCentreCode;
-
-        //                    ACostCentreTable CCTbl = ACostCentreAccess.LoadByPrimaryKey(ALedgerNumber, costCentreCode, Transaction);
-        //                    if (CCTbl.Rows.Count > 0)
-        //                    {
-        //                        PartnerCostCentreTbl.DefaultView[0].Row["ReportsTo"] = CCTbl[0].CostCentreToReportTo;
-        //                    }
-        //                }
-        //            }
-        //        });
-
-        //    return PartnerCostCentreTbl;
-        //}
 
         /// <summary>
         /// Get Partners linked to Cost Centres so that I can email reports to them.
@@ -1604,11 +1616,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -1717,11 +1725,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -2167,11 +2171,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -2537,11 +2537,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -2696,11 +2692,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -2820,11 +2812,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -4557,11 +4545,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -4617,11 +4601,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -4678,11 +4658,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -4971,11 +4947,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5147,11 +5119,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5296,11 +5264,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5381,11 +5345,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -5445,11 +5405,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 

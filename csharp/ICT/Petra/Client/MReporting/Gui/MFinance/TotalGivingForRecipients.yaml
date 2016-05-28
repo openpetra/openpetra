@@ -31,18 +31,13 @@ RootNode:
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [lblLedger, rgrDonorSelection, grpCurrencySelection]
+            Controls: [cmbCurrency, rgrDonorSelection]
 
-        lblLedger:
-            Label: Ledger
         rgrDonorSelection:
             Label: Select Donors
             Controls: [rbtPartner, rbtExtract, rbtAllRecipients]
             ParameterName: param_recipient
-        grpCurrencySelection:
-            Label: Gift Limit
-            Controls: [cmbCurrency]
-        
+
         rbtExtract:
             Label: Recipients from Extract
             ParameterValue: Extract
@@ -82,7 +77,7 @@ RootNode:
         rbtCurrencyThousands:
             Label: Only Thousands
             ParameterValue: CurrencyThousands
-        
+
         tpgFields:
             Label: Fields
             Controls: [rgrFields]
@@ -116,7 +111,7 @@ RootNode:
         btnUnselectAllFields:
             Label: Unselect All
             Action: actUnselectAllFields
-            
+
         tpgTypes:
             Label: Types
             Controls: [rgrTypes]

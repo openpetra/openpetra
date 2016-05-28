@@ -82,6 +82,7 @@ namespace Ict.Testing.NUnitPetraClient
             TSharedValidationHelper.SharedGetDataDelegate = @TServerLookup.TMCommon.GetData;
             TSharedPartnerValidationHelper.VerifyPartnerDelegate = @TServerLookup.TMPartner.VerifyPartner;
             TSharedPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TServerLookup.TMPartner.PartnerIsLinkedToCC;
+            TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinkedDelegate = @TServerLookup.TMPartner.PartnerOfTypeCCIsLinked;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
 

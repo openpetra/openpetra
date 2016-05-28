@@ -1017,6 +1017,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
         }
 
         /// <summary>
+        /// Checks whether a Partner with a certain PartnerKey and a range of valid PartnerClasses exists.
+        /// </summary>
+        /// <param name="ALedgerNumber">LedgerNumber.</param>
+        /// <param name="APartnerKey">PartnerKey.</param>
+        /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
+        /// <param name="AResultContext">ResultContext (Default: null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
+        /// <returns>Not Null if the Partner is of type CC and does not have a link setup</returns>
+        public static TVerificationResult IsValidPartnerLinks(Int32 ALedgerNumber, Int64 APartnerKey,
+            string AErrorMessageText = "", object AResultContext = null,
+            System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+
+            bool VerificationOK = TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinked(ALedgerNumber, APartnerKey);
+
+            if (!VerificationOK)
+            {
+                ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                        PetraErrorCodes.ERR_PARTNER_TYPECC_UNLINKED, new string[] { APartnerKey.ToString("0000000000") }));
+
+                if (AErrorMessageText != String.Empty)
+                {
+                    ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                }
+            }
+
+            if ((ReturnValue != null)
+                && (AResultColumn != null))
+            {
+                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Checks whether a Partner with Field 0 has a non-gift Motivation Group code.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey.</param>

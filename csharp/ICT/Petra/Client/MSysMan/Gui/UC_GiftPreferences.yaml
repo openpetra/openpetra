@@ -31,7 +31,7 @@ RootNode:
             Width: 390
         chkDonorZeroIsValid:
             CheckBoxAttachedLabel: right
-            Label: Accept Donor key 00000000 as a valid entry
+            Label: Allow a donor with a Partner Key of zero (0000000000)
             Width: 390
         chkAutoCopyIncludeMailingCode:
             CheckBoxAttachedLabel: right
@@ -43,7 +43,7 @@ RootNode:
             Width: 390
         chkRecipientZeroIsValid:
             CheckBoxAttachedLabel: right
-            Label: Accept Recipient key 00000000 as a valid entry
+            Label: Allow a recipient with a Partner Key of zero (0000000000)
             Width: 390
         pnlGiftSaving:
             Controls: [chkAutoSave]

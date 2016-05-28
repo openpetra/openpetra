@@ -390,8 +390,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                     if (MakeACopy)
                     {
+                        String currentUser = UserInfo.GUserInfo.UserID;
                         NewRow.TemplateId = -1; // The value will come from the sequence
-                        NewRow.ReportVariant = "Copy of " + TemplateTable[0].ReportVariant;
+                        NewRow.ReportVariant = String.Format(Catalog.GetString("{0} copy of {1}"), currentUser, TemplateTable[0].ReportVariant);
+                        NewRow.Author = currentUser;
                         NewRow.Readonly = false;
                         NewRow.Default = false;
                         NewRow.PrivateDefault = false;

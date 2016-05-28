@@ -118,7 +118,7 @@ namespace Ict.Petra.Client.App.Gui
         private static readonly string StrDBConcurrencyActionsRequired = Catalog.GetString("Actions required:\r\n" +
             "  * If you were in a screen: please close the screen and re-open it again.\r\n" +
             "  * You will need to repeat your changes and save them again.\r\n" +
-            "  * In case the error keeps occuring: please contact your OpenPetra support team.");
+            "  * In case the error keeps occurring: please contact your OpenPetra support team.");
 
         /// <summary>Part of a Database Concurrency Message.</summary>
         private static readonly string StrDBConcurrencyWrittenSelfAction = Catalog.GetString("modified");

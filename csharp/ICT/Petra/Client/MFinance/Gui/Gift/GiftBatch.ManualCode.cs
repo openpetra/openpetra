@@ -22,9 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -49,17 +48,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
     public partial class TFrmGiftBatch : IFrmPetraEditManual
     {
         private Int32 FLedgerNumber;
-        private Boolean FViewMode = false;
 
-        private GiftBatchTDS FViewModeTDS;
-        private int standardTabIndex = 0;
-        private bool FWarnAboutMissingIntlExchangeRate = false;
+        private int DefaultTabIndex = 0;
         private eGiftTabs FPreviouslySelectedTab = eGiftTabs.None;
 
         //System & User Defaults
-        /// <summary>
-        /// Setting that determines if user is notified of new donor
-        /// </summary>
         private bool FNewDonorWarning = true;
 
         /// <summary>
@@ -75,8 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public bool FRecipientZeroIsValid = false;
 
         /// <summary>
-        /// Specifies if Recipient zero is allowed
-        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// Warn of inactive values on posting
         /// </summary>
         public bool FWarnOfInactiveValuesOnPosting = false;
 
@@ -88,6 +80,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Int32 FInitialBatchYear = -1;
         private Int32 FInitialBatchPeriod = -1;
 
+        private Boolean FViewMode = false;
+        private GiftBatchTDS FViewModeTDS;
+        private bool FWarnAboutMissingIntlExchangeRate = false;
         private Boolean FLatestSaveIncludedForex = false;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
@@ -146,7 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Set this property if you want to load the screen with an initial Year/Batch/Journal
+        /// Set this property if you want to load the screen with an initial Batch
         /// </summary>
         public Int32 InitialBatchNumber
         {
@@ -247,43 +242,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// Needs to be called prior to posting current batch to ensure all data is up-to-date
-        /// </summary>
-        public void GetControlDataForPosting()
-        {
-            GetDataFromControls();
-        }
-
-        /// <summary>
-        /// Checks to be made before saving and posting
-        /// </summary>
-        /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
-        /// <param name="ACancelledDueToExWorkerOrAnonDonor">True if batch posting has been cancelled by the user because of an Ex-Worker recipient
-        /// or an anonymous donor for a gift that is not marked as confidential</param>
-        /// <returns>True if Save is successful</returns>
-        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorkerOrAnonDonor)
-        {
-            // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.POSTING,
-                FMainDS,
-                FPetraUtilsObject,
-                APostingGiftDetails);
-
-            // if save is continuing then alert the user to any gift that are not marked confidential but have an anonymous donor
-            if (!ACancelledDueToExWorkerOrAnonDonor)
-            {
-                ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS);
-            }
-
-            if (!ACancelledDueToExWorkerOrAnonDonor)
-            {
-                return SaveChanges();
-            }
-
-            return false;
-        }
-
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
@@ -293,44 +251,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FNewDonorWarning)
             {
                 FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
-            }
-        }
-
-        // This manual method lets us peek at the data that is about to be saved...
-        // The data has already been collected from the contols and validated and there is definitely something to save...
-        private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS SubmitDS, out TVerificationResultCollection VerificationResult)
-        {
-            FLatestSaveIncludedForex = false;
-
-            if (SubmitDS.AGiftBatch != null)
-            {
-                // Check whether we are saving any rows that are in foreign currency
-                foreach (AGiftBatchRow row in SubmitDS.AGiftBatch.Rows)
-                {
-                    if (row.CurrencyCode != FMainDS.ALedger[0].BaseCurrency)
-                    {
-                        FLatestSaveIncludedForex = true;
-                        break;
-                    }
-                }
-            }
-
-            // Now do the standard call to save the changes
-            return TRemote.MFinance.Gift.WebConnectors.SaveGiftBatchTDS(ref SubmitDS, out VerificationResult);
-        }
-
-        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
-        {
-            if (FNewDonorWarning)
-            {
-                FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
-            }
-
-            if (e.Success && FLatestSaveIncludedForex)
-            {
-                // Notify the exchange rate screen, if it is there
-                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
-                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
         }
 
@@ -411,6 +331,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             tabGiftBatch.GotFocus += new EventHandler(tabGiftBatch_GotFocus);
         }
 
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
+            }
+
+            if (e.Success && FLatestSaveIncludedForex)
+            {
+                // Notify the exchange rate screen, if it is there
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+            }
+        }
+
+        // This manual method lets us peek at the data that is about to be saved...
+        // The data has already been collected from the contols and validated and there is definitely something to save...
+        private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS SubmitDS, out TVerificationResultCollection VerificationResult)
+        {
+            FLatestSaveIncludedForex = false;
+
+            if (SubmitDS.AGiftBatch != null)
+            {
+                // Check whether we are saving any rows that are in foreign currency
+                foreach (AGiftBatchRow row in SubmitDS.AGiftBatch.Rows)
+                {
+                    if (row.CurrencyCode != FMainDS.ALedger[0].BaseCurrency)
+                    {
+                        FLatestSaveIncludedForex = true;
+                        break;
+                    }
+                }
+            }
+
+            // Now do the standard call to save the changes
+            return TRemote.MFinance.Gift.WebConnectors.SaveGiftBatchTDS(ref SubmitDS, out VerificationResult);
+        }
+
         private void tabGiftBatch_GotFocus(object sender, EventArgs e)
         {
             FPetraUtilsObject.WriteToStatusBar(Catalog.GetString(
@@ -441,8 +399,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabGiftBatch.SelectedIndex = standardTabIndex;
-            TabSelectionChanged(null, null); //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            tabGiftBatch.SelectedIndex = DefaultTabIndex;
+            TabSelectionChanged(null, null);
+
+            //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             this.Shown += delegate
             {
@@ -693,7 +653,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (TransDV.Count == 0)
             {
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftAndTaxDeductDataForBatch(ALedgerNumber, ABatchNumber));
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(ALedgerNumber, ABatchNumber, true));
             }
 
             return TransDV.Count > 0;
@@ -706,7 +666,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-            standardTabIndex = 1;     // later we switch to the detail tab
+            DefaultTabIndex = 1;     // later we switch to the detail tab
         }
 
         /// <summary>
@@ -716,7 +676,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoBatches.SelectBatchNumber(ABatchNumber);
             ucoTransactions.SelectGiftDetailNumber(ATransactionNumber, ADetailNumber);
-            standardTabIndex = 1;     // later we switch to the detail tab
+            DefaultTabIndex = 1;     // later we switch to the detail tab
         }
 
         private int GetChangedRecordCountManual(out string AMessage)
@@ -886,6 +846,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return AllChangesCount;
         }
 
+        private void mniNewDonorWarning_Click(Object sender, EventArgs e)
+        {
+            // toggle menu tick
+            mniNewDonorWarning.Checked = !mniNewDonorWarning.Checked;
+
+            FNewDonorWarning = mniNewDonorWarning.Checked;
+
+            // change user default
+            TUserDefaults.SetDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, FNewDonorWarning);
+        }
+
+        // open screen to print the Gift Batch Detail report
+        private void FilePrint(Object sender, EventArgs e)
+        {
+            TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
+
+            Report.LedgerNumber = FLedgerNumber;
+            Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
+            Report.Show();
+        }
+
         /// <summary>
         /// Set up the screen to highlight this batch
         /// </summary>
@@ -961,25 +942,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return IntlToBaseCurrencyExchRate;
         }
 
-        private void mniNewDonorWarning_Click(Object sender, EventArgs e)
+        /// <summary>
+        /// Checks to be made before saving and posting
+        /// </summary>
+        /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
+        /// <param name="ACancelledDueToExWorkerOrAnonDonor">True if batch posting has been cancelled by the user because of an Ex-Worker recipient
+        /// or an anonymous donor for a gift that is not marked as confidential</param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorkerOrAnonDonor)
         {
-            // toggle menu tick
-            mniNewDonorWarning.Checked = !mniNewDonorWarning.Checked;
+            // first alert the user to any recipients who are Ex-Workers
+            ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.POSTING,
+                FMainDS,
+                FPetraUtilsObject,
+                APostingGiftDetails);
 
-            FNewDonorWarning = mniNewDonorWarning.Checked;
+            // if save is continuing then alert the user to any gift that are not marked confidential but have an anonymous donor
+            if (!ACancelledDueToExWorkerOrAnonDonor)
+            {
+                ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS);
+            }
 
-            // change user default
-            TUserDefaults.SetDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, FNewDonorWarning);
+            if (!ACancelledDueToExWorkerOrAnonDonor)
+            {
+                return SaveChanges();
+            }
+
+            return false;
         }
 
-        // open screen to print the Gift Batch Detail report
-        private void FilePrint(Object sender, EventArgs e)
+        /// <summary>
+        /// Needs to be called prior to posting current batch to ensure all data is up-to-date
+        /// </summary>
+        public void GetControlDataForPosting()
         {
-            TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
-
-            Report.LedgerNumber = FLedgerNumber;
-            Report.BatchNumber = ucoBatches.FSelectedBatchNumber;
-            Report.Show();
+            GetDataFromControls();
         }
 
         #region Forms Messaging Interface Implementation
@@ -1003,7 +1000,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged) // update gift destination
             {
-                ucoTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
+                ucoTransactions.ProcessGiftDestinationBroadcastMessage(AFormsMessage);
 
                 MessageProcessed = true;
             }

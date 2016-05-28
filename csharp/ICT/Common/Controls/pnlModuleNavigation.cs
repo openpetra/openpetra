@@ -339,14 +339,7 @@ namespace Ict.Common.Controls
             if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckCollapsiblePanelHoster)
             {
                 // The collapsible panel hosts other collapsible panels
-                if (FIsLedgerBasedModule)
-                {
-                    // AlanP - not sure what to do here!
-                }
-                else
-                {
-                    FCollapsibleNavigation.CollapsiblePanelHosterInstance.SelectNextSubModule();
-                }
+                FCollapsibleNavigation.CollapsiblePanelHosterInstance.SelectNextSubModule();
             }
             else if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckTaskList)
             {
@@ -363,14 +356,7 @@ namespace Ict.Common.Controls
             if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckCollapsiblePanelHoster)
             {
                 // The collapsible panel hosts other collapsible panels
-                if (FIsLedgerBasedModule)
-                {
-                    // AlanP - not sure what to do here!
-                }
-                else
-                {
-                    FCollapsibleNavigation.CollapsiblePanelHosterInstance.SelectPreviousSubModule();
-                }
+                FCollapsibleNavigation.CollapsiblePanelHosterInstance.SelectPreviousSubModule();
             }
             else if (FCollapsibleNavigation.HostedControlKind == THostedControlKind.hckTaskList)
             {

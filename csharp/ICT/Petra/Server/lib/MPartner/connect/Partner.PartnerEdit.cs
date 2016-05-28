@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1049,7 +1049,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PLocationTable SiteLocationDT;
             StringCollection SiteLocationRequiredColumns;
             DateTime CreationDate;
-            string SiteCountryCode = null;
+            string SiteCountryCode = String.Empty;
 
             String CreationUserID;
             String GiftReceiptingDefaults;
@@ -1143,7 +1143,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
-                    // We get the default values for all DataColumns
+                    // Create DataRow for Partner using the default values for all DataColumns
                     // and then modify some.
                     PartnerRow = FPartnerEditScreenDS.PPartner.NewRowTyped(true);
                     PartnerRow.PartnerKey = FPartnerKey;
@@ -1183,9 +1183,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // Load p_family record of the FAMILY that the PERSON will belong to
                             PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
 
-                            // Create DataRow for PPerson using the default values for all DataColumns
                             TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Person DataRow");
 
+                            // Create DataRow for PPerson using the default values for all DataColumns
+                            // and then modify some.
                             PersonRow = FPartnerEditScreenDS.PPerson.NewRowTyped(true);
                             PersonRow.PartnerKey = FPartnerKey;
                             PersonRow.DateCreated = CreationDate;
@@ -1203,6 +1204,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             PersonRow.FamilyId = FamilyID;
                             PersonRow.OccupationCode = MPartnerConstants.DEFAULT_CODE_UNKNOWN;
                             FPartnerEditScreenDS.PPerson.Rows.Add(PersonRow);
+
                             GetFamilyMembersInternal(AFamilyPartnerKey, "", out ItemsCountFamilyMembers, true);
 
                             /*
@@ -1223,6 +1225,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Family DataRow");
 
                             // Create DataRow for PFamily using the default values for all DataColumns
+                            // and then modify some.
                             FamilyRow = FPartnerEditScreenDS.PFamily.NewRowTyped(true);
                             FamilyRow.PartnerKey = FPartnerKey;
                             FamilyRow.DateCreated = CreationDate;
@@ -1245,6 +1248,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.CHURCH:
                             // Create DataRow for PChurch using the default values for all DataColumns
+                            // and then modify some.
                             ChurchRow = FPartnerEditScreenDS.PChurch.NewRowTyped(true);
                             ChurchRow.PartnerKey = FPartnerKey;
                             ChurchRow.DateCreated = CreationDate;
@@ -1272,6 +1276,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.ORGANISATION:
                             // Create DataRow for POrganisation using the default values for all DataColumns
+                            // and then modify some.
                             OrganisationRow = FPartnerEditScreenDS.POrganisation.NewRowTyped(true);
                             OrganisationRow.PartnerKey = FPartnerKey;
                             OrganisationRow.DateCreated = CreationDate;
@@ -1298,6 +1303,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.BANK:
                             // Create DataRow for PBank using the default values for all DataColumns
+                            // and then modify some.
                             BankRow = FPartnerEditScreenDS.PBank.NewRowTyped(true);
                             BankRow.PartnerKey = FPartnerKey;
                             BankRow.DateCreated = CreationDate;
@@ -1320,6 +1326,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.UNIT:
                             // Create DataRow for PUnit using the default values for all DataColumns
+                            // and then modify some.
                             UnitRow = FPartnerEditScreenDS.PUnit.NewRowTyped(true);
                             UnitRow.PartnerKey = FPartnerKey;
                             UnitRow.DateCreated = CreationDate;
@@ -1342,6 +1349,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.VENUE:
                             // Create DataRow for PVenue using the default values for all DataColumns
+                            // and then modify some.
                             VenueRow = FPartnerEditScreenDS.PVenue.NewRowTyped(true);
                             VenueRow.PartnerKey = FPartnerKey;
                             VenueRow.DateCreated = CreationDate;
@@ -1374,30 +1382,83 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (APartnerClass == TPartnerClass.PERSON)
                     {
-                        /*
-                         * Copy specified Family Address into the PLocation and PPartnerLocation
-                         * table (is needed on the Client side to copy this address as the default
-                         * address of the new Person and gets deleted there as soon as copying is
-                         * done)
-                         */
-
-                        if (AFamilyLocationKey == -1)
+                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                                SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLADDRESSES, false))
                         {
-                            // Backstop: If AFamilyLocationKey is -1, then we don't know an Address of the FAMILY. In that
-                            // case determine the 'Best Address' of the FAMILY; the Partner Edit screen will use this to
-                            // create the first address of the new PERSON.
-                            TLocationPK FamilysBestAddr =
-                                Calculations.DetermineBestAddress(PPartnerLocationAccess.LoadViaPPartner(AFamilyPartnerKey, null, ReadTransaction));
-                            AFamilyLocationKey = FamilysBestAddr.LocationKey;
-                            AFamilySiteKey = FamilysBestAddr.SiteKey;
+                            // Copy *ALL* Addresses (p_location and p_partner_location records) of the FAMILY of the new PERSON
+                            // over to the PERSON (needed on the Client side where those will be turned into new Addresses
+                            // of the PERSON).
+                            TPPartnerAddressAggregate.LoadAllAddressesForPartner(FPartnerEditScreenDS, AFamilyPartnerKey,
+                                ReadTransaction);
+
+                            // Ensure that none of the copied p_partner_location records has got the 'Send Mail' flag set
+                            // as this is normally not set on PERSON addresses!
+                            for (int PartnerLocationsCounter = 0; PartnerLocationsCounter < FPartnerEditScreenDS.PPartnerLocation.Rows.Count;
+                                 PartnerLocationsCounter++)
+                            {
+                                TLogging.LogAtLevel(7,
+                                    String.Format("TPartnerEditUIConnector.GetDataNewPartner: adding FAMILY Location with LocationKey {0} ",
+                                        FPartnerEditScreenDS.PPartnerLocation[PartnerLocationsCounter].LocationKey));
+                                FPartnerEditScreenDS.PPartnerLocation[PartnerLocationsCounter].SendMail = false;
+                            }
+                        }
+                        else
+                        {
+                            // Copy a single *specified* Family Address into the PLocation and PPartnerLocation
+                            // table (is needed on the Client side to copy this address as the default
+                            // address of the new Person and gets deleted there as soon as copying is done).
+                            if (AFamilyLocationKey == -1)
+                            {
+                                // Backstop: If AFamilyLocationKey is -1, then we don't know an Address of the FAMILY. In that
+                                // case determine the 'Best Address' of the FAMILY; the Partner Edit screen will use this to
+                                // create the first address of the new PERSON.
+                                TLocationPK FamilysBestAddr =
+                                    Calculations.DetermineBestAddress(PPartnerLocationAccess.LoadViaPPartner(AFamilyPartnerKey, null, ReadTransaction));
+                                AFamilyLocationKey = FamilysBestAddr.LocationKey;
+                                AFamilySiteKey = FamilysBestAddr.SiteKey;
+                            }
+
+//                          TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
+                            TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
+                                AFamilyPartnerKey,
+                                AFamilySiteKey,
+                                AFamilyLocationKey,
+                                ReadTransaction);
                         }
 
-                        //                  TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
-                        TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
-                            AFamilyPartnerKey,
-                            AFamilySiteKey,
-                            AFamilyLocationKey,
-                            ReadTransaction);
+                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                                SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLCONTACTDETAILS, false))
+                        {
+                            // Copy all Contact Details of the FAMILY to the PERSON (incl. 'Primary Contact Detail', but no
+                            // 'Overall Contact Settings' that don't apply to a PERSON)
+                            var FamilyPartnerAttributes = TContactDetailsAggregate.GetPartnersContactDetailAttributes(AFamilyPartnerKey);
+
+                            // Ensure that only p_partner_attribute Rows that are 'Contact Details' get copied over from the FAMILY to the PERSON
+                            for (int FamilyPartnerAttributeCounter = 0; FamilyPartnerAttributeCounter < FamilyPartnerAttributes.Rows.Count;
+                                 FamilyPartnerAttributeCounter++)
+                            {
+                                var FamilyPartnerAttributeDR = FamilyPartnerAttributes[FamilyPartnerAttributeCounter];
+
+                                // If the Partner Attribute is indeed a Partner Contact Detail or if it is the
+                                // 'Primary Contact Method'...
+                                if (((FamilyPartnerAttributeDR[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
+                                      != System.DBNull.Value)
+                                     && ((bool)FamilyPartnerAttributeDR[Ict.Petra.Shared.MPartner.Calculations.
+                                                                        PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] ==
+                                         true))
+                                    || ((string)FamilyPartnerAttributeDR[PPartnerAttributeTable.GetAttributeTypeDBName()] ==
+                                        MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD))
+                                {
+                                    // ...then add it to the PERSON!
+                                    var PersonPartnerAttributeDR = FPartnerEditScreenDS.PPartnerAttribute.NewRow();
+
+                                    PersonPartnerAttributeDR.ItemArray = FamilyPartnerAttributeDR.ItemArray;
+                                    PersonPartnerAttributeDR[PPartnerAttributeTable.GetPartnerKeyDBName()] = APartnerKey;
+
+                                    FPartnerEditScreenDS.PPartnerAttribute.Rows.Add(PersonPartnerAttributeDR);
+                                }
+                            }
+                        }
 
                         // Copy Special Types from the PERSON'S FAMILY to the PERSON
                         TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before loading Special Types from FAMILY");
@@ -2040,13 +2101,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (AResponseDS != null)
                 {
-//                  TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
+                    TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
                     if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
-//                      TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-//                          AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
-//                          AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+                        TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                            AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
+                            AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
 
                     // AResponseDS is present: make a local copy and set AResponseDS to nil
@@ -2054,13 +2115,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TmpResponseDS.Merge(AResponseDS);
                     AResponseDS = null;
                     ResponseDS = AResponseDS;
-//                  TLogging.LogAtLevel(8, "TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
+                    TLogging.LogAtLevel(8, "TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
 
                     if (TmpResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
-//                      TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-//                          TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
-//                          "; Rows.Count: " + TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+                        TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                            TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
+                            "; Rows.Count: " + TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
                 }
 
@@ -2114,12 +2175,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
                                 {
                                     ResponseDS = (DataSet)TmpResponseDS;
-                                    //                              TLogging.LogAtLevel(8, "ResponseDS.Tables.Count: " + ResponseDS.Tables.Count.ToString());
+                                    TLogging.LogAtLevel(8, "ResponseDS.Tables.Count: " + ResponseDS.Tables.Count.ToString());
 
                                     if (ResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                                     {
-                                        //                                  TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-                                        //                                      ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+                                        TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                                            ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+
                                         if (TLogging.DL >= 8)
                                         {
                                             if (ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
@@ -2137,8 +2199,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                     if (ResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
                                     {
-                                        //                                  TLogging.LogAtLevel(8,  MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
-                                        //                                      ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+                                        TLogging.LogAtLevel(8, MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
+                                            ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+
                                         if (TLogging.DL >= 8)
                                         {
                                             if (ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
@@ -2185,32 +2248,32 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             }
                         }
 
-                        // now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
-                        // (otherwise those address records for family members would show up on client where they are not needed)
                         if (SubmissionResult == TSubmitChangesResult.scrOK)
                         {
-                            if (InspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            Int64 ThisPartnerKey = FPartnerKey;
+
+                            if (ThisPartnerKey == 0)
                             {
-                                Int64 ThisPartnerKey = FPartnerKey;
-
-                                if (ThisPartnerKey == 0)
+                                // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
+                                if (InspectDS.Tables.Contains(PPartnerTable.GetTableName())
+                                    && (InspectDS.PPartner.Count == 1))
                                 {
-                                    // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
-                                    if (InspectDS.Tables.Contains(PPartnerTable.GetTableName())
-                                        && (InspectDS.PPartner.Count == 1))
-                                    {
-                                        ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
+                                    ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
 
-                                        if (ThisPartnerKey == 0)
-                                        {
-                                            // only bring up this message if there is just one partner record in the dataset
-                                            Console.WriteLine("FPartnerKey in TPartnerEditUIConnector should not be 0!");
-                                        }
+                                    if (ThisPartnerKey == 0)
+                                    {
+                                        // only bring up this message if there is just one partner record in the dataset
+                                        Console.WriteLine("FPartnerKey in TPartnerEditUIConnector should not be 0!");
                                     }
                                 }
+                            }
 
+                            if (InspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            {
                                 if (ThisPartnerKey != 0)
                                 {
+                                    // Now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
+                                    // (otherwise those address records for family members would show up on client where they are not needed)
                                     DataView OtherPartnerLocationsDV =
                                         new DataView(InspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " +
                                             ThisPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
@@ -2220,6 +2283,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     {
                                         OtherPartnerLocationsDV[Counter].Row.Delete();
                                     }
+                                }
+
+                                if (ThisPartnerKey != 0)
+                                {
+                                    // This fixes Bugs #3604 and #5040.
+                                    ManuallyDealWithLocationChanges(SubmitChangesTransaction, InspectDS, ThisPartnerKey);
                                 }
                             }
                         }
@@ -2285,6 +2354,51 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return SubmissionResult;
         }
 
+        /// <summary>
+        /// If the user took an action which results in the PPartnerLocation Record getting saved with a new LocationKey (e.g. by
+        /// accepting a Similar Location, changing a Location that other Partners are using, too, and in the
+        /// latter case the user didn't want to change *all* those Locations, or by replacing an existing Address with a Found
+        /// Address) our automatic mechanism of loading the ModificationId of such saved records fails in those cases, so we need to
+        /// fetch the ModificationId's of such records manually here. (Reason for that: our DataStore Methods are not capable of
+        /// retrieving the changed ModificationId of a Row in which part of the Primary Key, here the LocationKey, got changed in an
+        /// auto-generated UPDATE statement!). Would we not manually load the new ModificationId of such PPartnerLocation Rows the
+        /// any subsequent change of such a Row in the Partner Edit screen would result in an Optimistic Locking error on saving!
+        /// </summary>
+        /// <param name="SubmitChangesTransaction">Instantiated DB Transaction.</param>
+        /// <param name="AInspectDS">The Typed submission DataSet.</param>
+        /// <param name="ThisPartnerKey">PartnerKey of the Partner that gets saved.</param>
+        private void ManuallyDealWithLocationChanges(TDBTransaction SubmitChangesTransaction, PartnerEditTDS AInspectDS,
+            long ThisPartnerKey)
+        {
+            var ChangedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "",
+                DataViewRowState.ModifiedCurrent);
+            PPartnerLocationTable ChangedLocationAsStoredInDBDT;
+            DataRow ChangePartnerLocationDR;
+
+            // Iterate over all changed PPartnerLocation DataRows
+            foreach (DataRowView ChangePartnerLocationDRV in ChangedPartnerLocationsDV)
+            {
+                ChangePartnerLocationDR = ChangePartnerLocationDRV.Row;
+
+                // If the LocationKey of a PPartnerLocation DataRow got modified...
+                if ((int)ChangePartnerLocationDR[PPartnerLocationTable.GetLocationKeyDBName(), DataRowVersion.Current] !=
+                    (int)ChangePartnerLocationDR[PPartnerLocationTable.GetLocationKeyDBName(), DataRowVersion.Original])
+                {
+                    // ...we need to manually load the new ModificationId of such a PPartnerLocation Row.
+                    ChangedLocationAsStoredInDBDT = PPartnerLocationAccess.LoadByPrimaryKey(ThisPartnerKey,
+                        (Int64)ChangePartnerLocationDR[PPartnerLocationTable.GetSiteKeyDBName()],
+                        (int)ChangePartnerLocationDR[PPartnerLocationTable.GetLocationKeyDBName()],
+                        SubmitChangesTransaction);
+
+                    if (ChangedLocationAsStoredInDBDT.Count == 1)
+                    {
+                        ChangePartnerLocationDR[PPartnerLocationTable.GetModificationIdDBName()] =
+                            ChangedLocationAsStoredInDBDT[0].ModificationId;
+                    }
+                }
+            }
+        }
+
         private TSubmitChangesResult SubmitChangesAddresses(ref PartnerEditTDS AInspectDS,
             TDBTransaction ASubmitChangesTransaction,
             ref PartnerAddressAggregateTDS AResponseDS,
@@ -2314,13 +2428,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     if (AInspectDS.PPartnerLocation != null)
                     {
-                        DataView AddedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "", DataViewRowState.Added);
+                        DataView AddedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "",
+                            DataViewRowState.Added | DataViewRowState.ModifiedCurrent);  // or-ing with 'ModifiedCurrent' fixes Bug #5088
 
                         if (AddedPartnerLocationsDV.Count > 0)
                         {
-                            // New PPartnerLocation exists
-                            TLogging.LogAtLevel(7,
-                                "TPartnerEditUIConnector.SubmitChangesAddresses: New PPartnerLocation or changed PPartnerLocation exists.");
+                            // At least one new PPartnerLocation or changed PPartnerLocation exists
+                            TLogging.LogAtLevel(
+                                7,
+                                "TPartnerEditUIConnector.SubmitChangesAddresses: At least one new PPartnerLocation or changed PPartnerLocation exists.");
 
                             if (AInspectDS.PPartner != null)
                             {
@@ -2344,7 +2460,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     ASubmitChangesTransaction);
                                 PartnerDT[0].DateModified = DateTime.Today;
                                 AInspectDS.Merge(PartnerDT);
-//                              TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record wasn't present).");
+//                                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record wasn't present).");
                             }
                         }
                     }
@@ -2377,17 +2493,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TSubmitChangesResult ReturnValue;
 
-//          TLogging.LogAtLevel(7, this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
-//          TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
+//            TLogging.LogAtLevel(7, this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
+//            TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
-/*
- *          if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
- *          {
- *              TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
- *                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
- *                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
- *          }
- */
+
+//            if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
+//            {
+//                TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+//                    AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
+//                    AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+//            }
+
             ReturnValue = SubmitChanges(ref FSubmissionDS, ref AResponseDS, out AVerificationResult);
 
             if (AResponseDS == null)

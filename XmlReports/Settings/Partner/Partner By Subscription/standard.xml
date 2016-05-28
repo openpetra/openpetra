@@ -3,7 +3,7 @@
   <Parameter id="systemsettings" value="eBoolean:true" />
   <Parameter id="xmlfiles" value="eString:Partner\\partnerbysubscription.xml" />
   <Parameter id="currentReport" value="eString:Partner By Subscription" />
-  <Parameter id="MaxDisplayColumns" value="eInteger:9" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:8" />
   <Parameter id="orderby0" value="eString:Partner Name" />
   <Parameter id="orderby1" value="eString:Address Type" />
   <Parameter id="orderby2" value="eString:Address valid from" />
@@ -27,8 +27,6 @@
   <Parameter id="ColumnWidth" column="6" value="eDecimal:4609434218613702656" />
   <Parameter id="param_calculation" column="7" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="7" value="eDecimal:4614613358185178726" />
-  <Parameter id="param_calculation" column="8" value="eString:Field" />
-  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
   <Parameter id="param_explicit_publication" value="eString:" />
   <Parameter id="param_exclude_publication" value="eString:" />
   <Parameter id="param_active" value="eBoolean:true" />

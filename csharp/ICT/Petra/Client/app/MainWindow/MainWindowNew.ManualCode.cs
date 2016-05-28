@@ -166,6 +166,18 @@ namespace Ict.Petra.Client.App.PetraClient
                 e.Handled = true;
                 RunTestAction();
             }
+            else if ((e.KeyCode == Keys.L) && (e.Modifiers == Keys.Control))
+            {
+                // Ledger panel
+                if (dsbContent.ContainsFocus)
+                {
+                    lstFolders.SelectLedgerList();
+                }
+                else
+                {
+                    dsbContent.Focus();
+                }
+            }
             else if (e.KeyCode == Keys.Home)
             {
                 // first task
@@ -222,6 +234,8 @@ namespace Ict.Petra.Client.App.PetraClient
 
         private void RunOnceOnActivationManual()
         {
+            this.dsbContent.SelectFirstTaskWithFocus();
+
             System.Windows.Forms.Timer RunTestActionTimer = new System.Windows.Forms.Timer();
 
             // Set up Timer that is needed for running TestActions
@@ -312,6 +326,11 @@ namespace Ict.Petra.Client.App.PetraClient
                     }
 
                     TLstTasks.ExecuteAction(testActionNode, null);
+                }
+                else
+                {
+                    string startupFolder = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.MODULE_TO_OPEN_AT_STARTUP, "Partner");
+                    lstFolders.SelectFolder(startupFolder);
                 }
             }
         }

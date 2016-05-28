@@ -280,5 +280,54 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
             return ReturnValue;
         }
+
+        /// <summary>
+        /// Gets additional mobile or landline numbers that are not the primary phone number.
+        /// </summary>
+        /// <param name="APartnerKey">A partner key for which we are finding the additional information.</param>
+        /// <param name="AMobileNumbers">Additional mobile numbers for the specified partner.  Empty string if none.</param>
+        /// <param name="AAlternatePhoneNumbers">Additional landline numbers for the specified partner.  Empty string if none.</param>
+        public static void GetPartnersAdditionalPhoneNumbers(Int64 APartnerKey, out string AMobileNumbers, out string AAlternatePhoneNumbers)
+        {
+            AMobileNumbers = string.Empty;
+            AAlternatePhoneNumbers = string.Empty;
+
+            // Get all the contact details for the specified partner and then find the ones that relate to phones
+            PPartnerAttributeTable partnerAttributeDT = GetPartnersContactDetailAttributes(APartnerKey);
+            DataView allPhoneNumbers = Calculations.DeterminePartnerPhoneNumbers(partnerAttributeDT, true, false);
+
+            foreach (DataRowView rv in allPhoneNumbers)
+            {
+                // Evaluate each row in turn
+                PPartnerAttributeRow row = (PPartnerAttributeRow)rv.Row;
+
+                if (row.NoLongerCurrentFrom != null)
+                {
+                    if (row.NoLongerCurrentFrom < DateTime.Today)
+                    {
+                        continue;
+                    }
+                }
+
+                if (row.AttributeType == MPartnerConstants.ATTR_TYPE_MOBILE_PHONE)
+                {
+                    if (row.Primary == false)
+                    {
+                        string number = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(row);
+                        AMobileNumbers += (AMobileNumbers.Length > 0) ? "; " : string.Empty;
+                        AMobileNumbers += number;
+                    }
+                }
+                else if (row.AttributeType == MPartnerConstants.ATTR_TYPE_PHONE)
+                {
+                    if (row.Primary == false)
+                    {
+                        string number = Calculations.ConcatenatePhoneOrFaxNumberWithIntlCountryPrefix(row);
+                        AAlternatePhoneNumbers += (AAlternatePhoneNumbers.Length > 0) ? "; " : string.Empty;
+                        AAlternatePhoneNumbers += number;
+                    }
+                }
+            }
+        }
     }
 }

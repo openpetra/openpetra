@@ -533,7 +533,7 @@ namespace Ict.Petra.Client.CommonForms
                     ((ComboBox)AControlToClear).SelectedIndex = -1;
                     ReturnValue = true;
                 }
-                else if (AControlToClear.GetType() == typeof(CheckBox))
+                else if ((AControlToClear.GetType() == typeof(CheckBox)) || (AControlToClear.GetType() == typeof(TchkVisibleFocus)))
                 {
                     ((CheckBox)AControlToClear).Checked = false;
                     ReturnValue = true;

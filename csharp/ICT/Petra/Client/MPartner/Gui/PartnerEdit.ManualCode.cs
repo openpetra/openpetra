@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,13 +127,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrQueryUnitParent = Catalog.GetString(
             "All 'Units' MUST be assigned a 'Parent'.\r\nDo you wish to assign one now?");
         private static readonly string StrQueryUnitParentTitle = Catalog.GetString("Assign Parent in Unit Hierarchy?");
-// TODO        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
-// TODO            "Are you sure you want to replace the current address with the address\r\n" +
-// TODO            "that you are about to find?\r\n\r\nWARNING:\r\n" +
-// TODO            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
-// TODO            "If the displayed address was valid, you should instead add a new address\r\n" +
-// TODO            "and then enter an end (to) date for the old address.");
-// TODO        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
+        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
+            "Are you sure you want to replace the current address with the address " +
+            "that you are about to find?\r\n\r\nWARNING:\r\n" +
+            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
+            "If the displayed address was valid, you should instead add a new address " +
+            "and then enter an end (to) date for the old address.");
+        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
         private static readonly string StrCannotDeletePartner = Catalog.GetString(
             "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
             "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
@@ -376,8 +376,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// source for the new location</param>
         /// <param name="AShowNewPartnerDialog">If set to true, the New Partner Dialog will be
         /// shown. If false, the dialog will not be shown and the Partner Edit screen
-        /// will be automatically setup according to the parmeters passed in.
-        /// Default: true</param>
+        /// will be automatically setup according to the parmeters passed in.</param>
         /// <param name="AShowTabPage">The tab page that should be initially shown</param>
         /// <param name="ADefaultPartnerClass">The default Partner Class of the new partner (Family if not specified.)</param>
         public void SetParameters(TScreenMode AScreenMode,
@@ -555,109 +554,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// used.</param>
         /// <param name="APrivatePartner">If set to true, the new Partner will be a Private
         /// Partner for the current user.</param>
-        /// <param name="ANewPartnerFamilyPartnerKey">PartnerKey of the Family (only needed if
-        /// new Partner is of Partner Class PERSON). If -1 is passed in, the New Partner
-        /// Dialog will inquire about the FAMILY, otherwise the new PERSON's Family will
-        /// have this key. Default: -1</param>
-        /// <param name="ANewPartnerFamilyLocationKey">LocationKey of the desired Location of
-        /// the Family (only needed if new Partner is of Partner Class PERSON). If -1 is
-        /// passed in, the New Partner Dialog will inquire about the FAMILY, otherwise
-        /// the new PERSON's Family will have this Location Key. Default: -1</param>
-        public void SetParameters(TScreenMode AScreenMode,
-            String APartnerClass,
-            System.Int64 ASiteKey,
-            System.Int64 APartnerKey,
-            String ACountryCode,
-            String AAcquisitionCode,
-            Boolean APrivatePartner,
-            Int64 ANewPartnerFamilyPartnerKey,
-            Int32 ANewPartnerFamilyLocationKey)
-        {
-            SetParameters(AScreenMode,
-                APartnerClass,
-                ASiteKey,
-                APartnerKey,
-                ACountryCode,
-                AAcquisitionCode,
-                APrivatePartner,
-                ANewPartnerFamilyPartnerKey,
-                ANewPartnerFamilyLocationKey,
-                -1,
-                true,
-                TPartnerEditTabPageEnum.petpDefault);
-        }
-
-        /// <summary>
-        /// Used for passing parameters to the screen before it is actually shown.
-        /// Overload to be used if a new Partner should be opened.
-        /// </summary>
-        /// <param name="AScreenMode">Tells which mode the screen should be opened in (has
-        /// the same purpose than in 4GL screens). Must be TScreenMode.smNew if this overload is
-        /// used!</param>
-        /// <param name="APartnerClass">PartnerClass that the Partner should have.
-        /// Default: FAMILY</param>
-        /// <param name="ASiteKey">SiteKey for which the Partner should be created.
-        /// Pass in -1 to use the site Petra is installed for. Default: -1</param>
-        /// <param name="APartnerKey">PartnerKey that the Partner should have.
-        /// Pass in -1 to automatically determine a new PartnerKey (based on the
-        /// SiteKey). Default: -1</param>
-        /// <param name="ACountryCode">CountryCode that should be the default for new addresses
-        /// (optional, default: ''). If '' is passed in, the CountryCode that is
-        /// associated with the SiteKey will be used.</param>
-        /// <param name="AAcquisitionCode">AcquisitionCode that the Partner should have (optional,
-        /// default: ''). If '' is passed in, the User's UserDefault setting will be
-        /// used.</param>
-        /// <param name="APrivatePartner">If set to true, the new Partner will be a Private
-        /// Partner for the current user.</param>
-        /// <param name="ANewPartnerFamilyPartnerKey">PartnerKey of the Family (only needed if
-        /// new Partner is of Partner Class PERSON). If -1 is passed in, the New Partner
-        /// Dialog will inquire about the FAMILY, otherwise the new PERSON's Family will
-        /// have this key. Default: -1</param>
-        public void SetParameters(TScreenMode AScreenMode,
-            String APartnerClass,
-            System.Int64 ASiteKey,
-            System.Int64 APartnerKey,
-            String ACountryCode,
-            String AAcquisitionCode,
-            Boolean APrivatePartner,
-            Int64 ANewPartnerFamilyPartnerKey)
-        {
-            SetParameters(AScreenMode,
-                APartnerClass,
-                ASiteKey,
-                APartnerKey,
-                ACountryCode,
-                AAcquisitionCode,
-                APrivatePartner,
-                ANewPartnerFamilyPartnerKey,
-                -1,
-                -1,
-                true,
-                TPartnerEditTabPageEnum.petpDefault);
-        }
-
-        /// <summary>
-        /// Used for passing parameters to the screen before it is actually shown.
-        /// Overload to be used if a new Partner should be opened.
-        /// </summary>
-        /// <param name="AScreenMode">Tells which mode the screen should be opened in (has
-        /// the same purpose than in 4GL screens). Must be TScreenMode.smNew if this overload is
-        /// used!</param>
-        /// <param name="APartnerClass">PartnerClass that the Partner should have.
-        /// Default: FAMILY</param>
-        /// <param name="ASiteKey">SiteKey for which the Partner should be created.
-        /// Pass in -1 to use the site Petra is installed for. Default: -1</param>
-        /// <param name="APartnerKey">PartnerKey that the Partner should have.
-        /// Pass in -1 to automatically determine a new PartnerKey (based on the
-        /// SiteKey). Default: -1</param>
-        /// <param name="ACountryCode">CountryCode that should be the default for new addresses
-        /// (optional, default: ''). If '' is passed in, the CountryCode that is
-        /// associated with the SiteKey will be used.</param>
-        /// <param name="AAcquisitionCode">AcquisitionCode that the Partner should have (optional,
-        /// default: ''). If '' is passed in, the User's UserDefault setting will be
-        /// used.</param>
-        /// <param name="APrivatePartner">If set to true, the new Partner will be a Private
-        /// Partner for the current user.</param>
         public void SetParameters(TScreenMode AScreenMode,
             String APartnerClass,
             System.Int64 ASiteKey,
@@ -766,56 +662,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// used!</param>
         /// <param name="APartnerClass">PartnerClass that the Partner should have.
         /// Default: FAMILY</param>
-        /// <param name="ASiteKey">SiteKey for which the Partner should be created.
-        /// Pass in -1 to use the site Petra is installed for. Default: -1</param>
-        /// <param name="APartnerKey">PartnerKey that the Partner should have.
-        /// Pass in -1 to automatically determine a new PartnerKey (based on the
-        /// SiteKey). Default: -1</param>
-        public void SetParameters(TScreenMode AScreenMode, String APartnerClass, System.Int64 ASiteKey, System.Int64 APartnerKey)
-        {
-            SetParameters(AScreenMode, APartnerClass, ASiteKey, APartnerKey, "", "", false, -1, -1, -1, true, TPartnerEditTabPageEnum.petpDefault);
-        }
-
-        /// <summary>
-        /// Used for passing parameters to the screen before it is actually shown.
-        /// Overload to be used if a new Partner should be opened.
-        /// </summary>
-        /// <param name="AScreenMode">Tells which mode the screen should be opened in (has
-        /// the same purpose than in 4GL screens). Must be TScreenMode.smNew if this overload is
-        /// used!</param>
-        /// <param name="APartnerClass">PartnerClass that the Partner should have.
-        /// Default: FAMILY</param>
-        /// <param name="ASiteKey">SiteKey for which the Partner should be created.
-        /// Pass in -1 to use the site Petra is installed for. Default: -1</param>
-        public void SetParameters(TScreenMode AScreenMode, String APartnerClass, System.Int64 ASiteKey)
-        {
-            SetParameters(AScreenMode, APartnerClass, ASiteKey, -1, "", "", false, -1, -1, -1, true, TPartnerEditTabPageEnum.petpDefault);
-        }
-
-        /// <summary>
-        /// Used for passing parameters to the screen before it is actually shown.
-        /// Overload to be used if a new Partner should be opened.
-        /// </summary>
-        /// <param name="AScreenMode">Tells which mode the screen should be opened in (has
-        /// the same purpose than in 4GL screens). Must be TScreenMode.smNew if this overload is
-        /// used!</param>
-        /// <param name="APartnerClass">PartnerClass that the Partner should have.
-        /// Default: FAMILY</param>
         public void SetParameters(TScreenMode AScreenMode, String APartnerClass)
         {
             SetParameters(AScreenMode, APartnerClass, -1, -1, "", "", false, -1, -1, -1, true, TPartnerEditTabPageEnum.petpDefault);
-        }
-
-        /// <summary>
-        /// Used for passing parameters to the screen before it is actually shown.
-        /// Overload to be used if a new Partner should be opened.
-        /// </summary>
-        /// <param name="AScreenMode">Tells which mode the screen should be opened in (has
-        /// the same purpose than in 4GL screens). Must be TScreenMode.smNew if this overload is
-        /// used!</param>
-        public void SetParameters(TScreenMode AScreenMode)
-        {
-            SetParameters(AScreenMode, "FAMILY", -1, -1, "", "", false, -1, -1, -1, true, TPartnerEditTabPageEnum.petpDefault);
         }
 
         /// <summary>
@@ -2195,7 +2044,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 PartnerEditForm.SetParameters(TScreenMode.smNew, FPartnerClass,
-                    -1, -1, String.Empty, String.Empty, false, FPartnerKey,
+                    -1, -1, ucoLowerPart.PartnerLocationDataRowOfCurrentlySelectedAddress.LocationCountryCode,
+                    String.Empty, false, FPartnerKey,
                     ucoLowerPart.PartnerLocationDataRowOfCurrentlySelectedAddress.LocationKey,
                     ucoLowerPart.PartnerLocationDataRowOfCurrentlySelectedAddress.SiteKey
                     );
@@ -2381,6 +2231,66 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void EditFindPartner(System.Object sender, System.EventArgs e)
         {
             TPartnerMain.FindPartner(this);
+        }
+
+        /// <summary>
+        /// Opens the Location Find screen to allow the user to find an existing Address.
+        /// </summary>
+        private void EditFindNewAddress(System.Object sender, System.EventArgs e)
+        {
+            Int64 SiteKey;
+            Int32 LocationKey;
+            bool IsNewLocation;
+            PLocationTable LocationDT;
+            DialogResult OverwriteWarningResult;
+            TLocationFindDialogWinForm LocationFindScreenForm;
+
+            IsNewLocation = ucoLowerPart.LocationBeingAdded();
+
+            if (!IsNewLocation)
+            {
+                OverwriteWarningResult = MessageBox.Show(StrQueryOverwriteAddress,
+                    StrQueryOverwriteAddressTitle,
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2);
+
+                if (OverwriteWarningResult != System.Windows.Forms.DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            // Show Hourglass cursor
+            this.Cursor = Cursors.WaitCursor;
+            // Give windows half a chance to show cursor
+            Application.DoEvents();
+
+            using (LocationFindScreenForm = new TLocationFindDialogWinForm(this))
+            {
+                if (LocationFindScreenForm.ShowDialog() == DialogResult.OK)
+                {
+                    LocationKey = LocationFindScreenForm.SelectedLocation.LocationKey;
+                    SiteKey = LocationFindScreenForm.SelectedLocation.SiteKey;
+
+//                    MessageBox.Show("Selected Location: " + LocationKey.ToString());
+
+                    /* Need to switch to Address Tab to make sure it is initialised before */
+                    /* executing methods on it... */
+                    ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
+
+                    if (!ucoLowerPart.IsAddressRowPresent(new TLocationPK(SiteKey, LocationKey)))
+                    {
+                        /* Retrieve data for the selected Location from the PetraServer */
+                        LocationDT = FPartnerEditUIConnector.GetDataLocation(SiteKey, LocationKey);
+
+                        ucoLowerPart.CopyFoundAddressData(LocationDT[0]);
+                    }
+                }
+            }
+
+            // Normal mouse cursor again
+            this.Cursor = Cursors.Default;
         }
 
         #endregion
@@ -2741,33 +2651,60 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     /*
-                     * Create first Address for the new Partner
+                     * Create (first) Address(es) for the new Partner
                      */
                     if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) == TPartnerClass.PERSON)
                     {
-                        if (FNewPartnerFamilyLocationKey == -1)
-                        {
-                            // Backstop: If FNewPartnerFamilyLocationKey was -1, the server will have returned the
-                            // 'Best Address' of the FAMILY in the DataSet. Now use this to create the first address of the
-                            // PERSON.
-                            FNewPartnerFamilyLocationKey = FMainDS.PPartnerLocation[0].LocationKey;
-                            FNewPartnerFamilySiteKey = FMainDS.PPartnerLocation[0].SiteKey;
-                        }
-
-                        // Create Address by copying over most of the data from the Family's Address
+                        // Create (first) Address(es) by copying over most of the data from the Family's Address(es) that
+                        // the server has returned to us
                         try
                         {
-                            TAddressHandling.CreateNewAddress(FMainDS.PLocation,
-                                FMainDS.PPartnerLocation,
-                                FMainDS.PPartner[0].PartnerKey,
-                                SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass),
-                                "",
-                                FNewPartnerFamilyLocationKey,
-                                FNewPartnerFamilyPartnerKey,
-                                FNewPartnerFamilyLocationKey,
-                                FNewPartnerFamilySiteKey,
-                                false,
-                                true);
+                            List <TLocationPK>FamilyLocationKeys = new List <TLocationPK>(FMainDS.PPartnerLocation.Rows.Count);
+
+                            // First build a list of Family Addresses to process... (1..n)
+                            for (int FamilyPartnerLocationCounter = 0; FamilyPartnerLocationCounter < FMainDS.PPartnerLocation.Rows.Count;
+                                 FamilyPartnerLocationCounter++)
+                            {
+                                FamilyLocationKeys.Add(new TLocationPK(
+                                        FMainDS.PPartnerLocation[FamilyPartnerLocationCounter].SiteKey,
+                                        FMainDS.PPartnerLocation[FamilyPartnerLocationCounter].LocationKey));
+                            }
+
+                            if (FamilyLocationKeys.Count > 0)
+                            {
+                                // ...then create new Address(es) for the new PERSON out of each FAMILY Address
+                                foreach (var FamilyLocationKey in FamilyLocationKeys)
+                                {
+                                    // The following call also deletes the FAMILY address! (That is the reason we first need to
+                                    // create a List as otherwise the Family Locations would get reduced while iterating over them!)
+                                    TAddressHandling.CreateNewAddress(FMainDS.PLocation,
+                                        FMainDS.PPartnerLocation,
+                                        FMainDS.PPartner[0].PartnerKey,
+                                        SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass),
+                                        String.Empty,
+                                        FamilyLocationKey.LocationKey,
+                                        FNewPartnerFamilyPartnerKey,
+                                        new TLocationPK(FamilyLocationKey.SiteKey, FamilyLocationKey.LocationKey));
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show(Catalog.GetString("You cannot create a new PERSON with the chosen Address of the " +
+                                        "FAMILY because the Address that is selected in the Partner Edit screen of the FAMILY isn't " +
+                                        "saved yet!\r\n\r\nYou have to save the data of the FAMILY Partner first, then you can create " +
+                                        "a new PERSON."),
+                                    Catalog.GetString("Cannot Create Partner of Partner Class PERSON"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                                // for the modal dialog (called from Progress)
+                                DialogResult = System.Windows.Forms.DialogResult.Cancel;
+
+                                // to prevent strange error message, that would stop the form from closing
+                                FPetraUtilsObject.FormActivatedForFirstTime = false;
+                                Close();
+
+                                FMainDS = null;
+                                return;
+                            }
                         }
                         catch (ESecurityGroupAccessDeniedException Exp)
                         {
@@ -2792,20 +2729,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else
                     {
-                        //if (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) != TPartnerClass.PERSON)
-                        // Create Address with default values
+                        // Create first Address of the new Partner with default values (and LocationKey -1)
                         TAddressHandling.CreateNewAddress(FMainDS.PLocation,
                             FMainDS.PPartnerLocation,
                             FMainDS.PPartner[0].PartnerKey,
                             SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass),
-                            FNewPartnerCountryCode,
-                            -1);
+                            FNewPartnerCountryCode);
                     }
 
                     // make sure that location specific fields in PartnerLocationDT get initialized
                     PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(FMainDS.PLocation, FMainDS.PPartnerLocation);
 
-                    // Make this address a Current Address and also the 'Best' Address
+                    // Make the first Address a Current Address and also the 'Best' Address
                     NewPartnerLocationRow = (PartnerEditTDSPPartnerLocationRow)FMainDS.PPartnerLocation.Rows[0];
                     NewPartnerLocationRow.Icon = 1;
                     NewPartnerLocationRow.BestAddress = true;

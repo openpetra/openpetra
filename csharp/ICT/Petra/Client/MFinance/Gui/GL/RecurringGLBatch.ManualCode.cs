@@ -354,18 +354,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                string methodName = Utilities.GetMethodName(true);
-
-                string errorMsg = String.Format(Catalog.GetString("Unexpected error in {0}!{1}{1}Try closing this form and restarting OpenPetra."),
-                    methodName,
-                    Environment.NewLine);
-
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
-                MessageBox.Show(errorMsg, methodName, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 

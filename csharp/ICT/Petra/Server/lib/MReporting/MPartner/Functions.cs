@@ -34,6 +34,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MCommon.queries;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
+using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Shared;
@@ -41,6 +42,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MReporting;
 using System.Collections;
 using System.Collections.Generic;
@@ -153,9 +155,15 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return true;
             }
 
+            if (StringHelper.IsSame(f, "GetFieldOfPartnerOnDate"))
+            {
+                value = new TVariant(GetFieldOfPartnerOnDate(ops[1].ToInt64(), ops[2].ToDate()));
+                return true;
+            }
+
             if (StringHelper.IsSame(f, "GetFieldKeyOfPartner"))
             {
-                value = new TVariant(GetFieldKeyOfPartner(ops[1].ToInt64()));
+                value = new TVariant(GetFieldKeyOfPartner(ops[1].ToInt64(), ops[2].ToDate()));
                 return true;
             }
 
@@ -650,6 +658,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(APartnerKey,
                 out PhoneNumber, out EmailAddress, out FaxNumber);
 
+            // Now get any additional phone numbers that are current
+            string moreMobileNumbers, moreLandlineNumbers;
+            TContactDetailsAggregate.GetPartnersAdditionalPhoneNumbers(APartnerKey, out moreMobileNumbers, out moreLandlineNumbers);
+
             // Add Calculation Parameter for 'Primary Email Address' (String.Empty is supplied if the Partner hasn't got one)
             situation.GetParameters().AddCalculationParameter("EmailAddress",
                 new TVariant(EmailAddress ?? String.Empty));
@@ -666,9 +678,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             situation.GetParameters().AddCalculationParameter("FaxNumber",
                 new TVariant(FaxNumber ?? String.Empty));
 
+            situation.GetParameters().AddCalculationParameter("MobileNumber", new TVariant(moreMobileNumbers ?? String.Empty));
+            situation.GetParameters().AddCalculationParameter("AlternateTelephone", new TVariant(moreLandlineNumbers ?? String.Empty));
+
             // At present we no longer support the reporting of the following, so we set those Calculation Parameters to String.Empty
-            situation.GetParameters().AddCalculationParameter("MobileNumber", new TVariant(String.Empty));
-            situation.GetParameters().AddCalculationParameter("AlternateTelephone", new TVariant(String.Empty));
             situation.GetParameters().AddCalculationParameter("Url", new TVariant(String.Empty));
             // Extension and FaxExtension no longer exist in the Contact Details scheme so we set those Calculation Parameters to String.Empty
             situation.GetParameters().AddCalculationParameter("Extension", new TVariant(String.Empty));
@@ -804,30 +817,21 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// Get the field Key of one partner
         /// </summary>
         /// <param name="APartnerKey">partnerkey</param>
+        /// <param name="ACommitmentDate">date on which partner is at field</param>
         /// <returns>The field key if it was found. Otherwise 0</returns>
-        private Int64 GetFieldKeyOfPartner(Int64 APartnerKey)
+        private List <Int64>GetFieldKeyOfPartner(Int64 APartnerKey, DateTime ACommitmentDate)
         {
-            PPartnerGiftDestinationTable ResultTable = PPartnerGiftDestinationAccess.LoadViaPPartner(APartnerKey,
-                situation.GetDatabaseConnection().Transaction);
-
-            foreach (PPartnerGiftDestinationRow Row in ResultTable.Rows)
-            {
-                if (Row.DateEffective != Row.DateExpires)
-                {
-                    return Row.FieldKey;
-                }
-            }
-
+            List <Int64>ListOfFields = new List <Int64>();
             String PartnerClass = "";
+            DateTime QualifyingDate = ACommitmentDate;
 
-            //
-            // If the partner given is a family, I can see about the field for the family member with id=0.
             PPartnerTable tbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, situation.GetDatabaseConnection().Transaction);
 
             if (tbl.Rows.Count > 0)
             {
                 PartnerClass = tbl[0].PartnerClass;
 
+                // If the partner given is a family, then defer to family member with id=0 to determine the (target) field
                 if (PartnerClass == TPartnerClass.FAMILY.ToString())
                 {
                     PPersonTable familyMembers = PPersonAccess.LoadViaPFamily(APartnerKey, situation.GetDatabaseConnection().Transaction);
@@ -835,39 +839,52 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
                     if (familyMembers.DefaultView.Count > 0)
                     {
-                        return GetFieldKeyOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey);
+                        return GetFieldKeyOfPartner(((PPersonRow)familyMembers.DefaultView[0].Row).PartnerKey, QualifyingDate);
                     }
                 }
-            }
-
-            //
-            // If the partner given is a keymin, I need to find the parent field:
-            if (PartnerClass == TPartnerClass.UNIT.ToString())
-            {
-                PPartnerTypeTable TypeTbl = PPartnerTypeAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
-
-                if (TypeTbl.Rows.Count > 0)
+                // If the partner given is a person then check commitment records of the person to determine the (target) field
+                else if (PartnerClass == TPartnerClass.PERSON.ToString())
                 {
-                    String PartnerType = TypeTbl[0].TypeCode;
+                    PmStaffDataTable commitments = PmStaffDataAccess.LoadViaPPerson(APartnerKey, situation.GetDatabaseConnection().Transaction);
+                    commitments.DefaultView.RowFilter = "pm_start_of_commitment_d <= '" + QualifyingDate.Date.ToString("yyyy/MM/dd") +
+                                                        "' AND (pm_end_of_commitment_d IS NULL OR pm_end_of_commitment_d >= '" +
+                                                        QualifyingDate.Date.ToString("yyyy/MM/dd") + "')";
+                    commitments.DefaultView.Sort = "pm_start_of_commitment_d";
 
-                    if ((PartnerType == "FIELD") || (PartnerType == "LEDGER")) // I've been given a field already (perhaps by recursion)
+                    foreach (DataRowView rowView in commitments.DefaultView)
                     {
-                        return APartnerKey;
+                        DataRow row = rowView.Row;
+                        ListOfFields.Add(((PmStaffDataRow)row).ReceivingField);
                     }
-                    else
-                    {
-                        UmUnitStructureTable UnitTbl = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(APartnerKey,
-                            situation.GetDatabaseConnection().Transaction);
+                }
+                else if (PartnerClass == TPartnerClass.UNIT.ToString())
+                {
+                    // If the partner given is a keymin, I need to find the parent field:
+                    PPartnerTypeTable TypeTbl = PPartnerTypeAccess.LoadViaPPartner(APartnerKey, situation.GetDatabaseConnection().Transaction);
 
-                        if (UnitTbl.Rows.Count > 0)
+                    if (TypeTbl.Rows.Count > 0)
+                    {
+                        String PartnerType = TypeTbl[0].TypeCode;
+
+                        if ((PartnerType == "FIELD") || (PartnerType == "LEDGER")) // I've been given a field already (perhaps by recursion)
                         {
-                            return GetFieldKeyOfPartner(UnitTbl[0].ParentUnitKey);
+                            ListOfFields.Add(APartnerKey);
+                        }
+                        else
+                        {
+                            UmUnitStructureTable UnitTbl = UmUnitStructureAccess.LoadViaPUnitChildUnitKey(APartnerKey,
+                                situation.GetDatabaseConnection().Transaction);
+
+                            if (UnitTbl.Rows.Count > 0)
+                            {
+                                return GetFieldKeyOfPartner(UnitTbl[0].ParentUnitKey, QualifyingDate);
+                            }
                         }
                     }
                 }
             }
 
-            return 0;
+            return ListOfFields;
         }
 
         /// <summary>
@@ -877,9 +894,35 @@ namespace Ict.Petra.Server.MReporting.MPartner
         /// <returns>The field name if it was found. Otherwise empty string</returns>
         private String GetFieldOfPartner(Int64 APartnerKey)
         {
-            Int64 FieldKey = GetFieldKeyOfPartner(APartnerKey);
+            return GetFieldOfPartnerOnDate(APartnerKey, DateTime.Today.Date);
+        }
 
-            return (FieldKey == 0) ? "" : GetPartnerShortName(FieldKey);
+        /// <summary>
+        /// Get the field name of one partner on a certain date
+        /// </summary>
+        /// <param name="APartnerKey">partnerkey</param>
+        /// <param name="ACommitmentDate">date on which partner is at field</param>
+        /// <returns>The field name if it was found. Otherwise empty string</returns>
+        private String GetFieldOfPartnerOnDate(Int64 APartnerKey, DateTime ACommitmentDate)
+        {
+            List <Int64>FieldKeys = GetFieldKeyOfPartner(APartnerKey, ACommitmentDate);
+            String FieldKeysText = "";
+
+            if (FieldKeys.Count > 0)
+            {
+                // concatenate field keys, separated by comma (in most cases there is just one field but someone may have commitments to several fields)
+                foreach (Int64 FieldKey in FieldKeys)
+                {
+                    if (FieldKeysText.Length > 0)
+                    {
+                        FieldKeysText += ", ";
+                    }
+
+                    FieldKeysText += GetPartnerShortName(FieldKey);
+                }
+            }
+
+            return FieldKeysText;
         }
 
         /// <summary>
@@ -1663,9 +1706,9 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
         /// <summary>
         /// Converts a 4GL integer value as a string time. The format parameter defines the output.
-        /// AFormat = 1	"hh"
-        /// AFormat = 2	"hh:mm"
-        /// AFormat = 3	"hh:mm:ss"
+        /// AFormat = 1 "hh"
+        /// AFormat = 2 "hh:mm"
+        /// AFormat = 3 "hh:mm:ss"
         /// </summary>
         /// <param name="A4glTime"></param>
         /// <param name="AFormat"></param>

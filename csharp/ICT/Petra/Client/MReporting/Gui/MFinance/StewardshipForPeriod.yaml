@@ -1,0 +1,29 @@
+﻿RootNode:
+    BaseYaml: FinanceReportingForm.yaml
+    FormType: report
+    FormTitle: Historic Stewardship Report
+    WindowWidth: 680
+    WindowHeight: 480
+    Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
+    TemplateParameters:
+        XMLFILES: [common.xml]
+        REPORTNAME: StewardshipForPeriod
+        CURRENTREPORT: StewardshipForPeriod
+        SETAVAILABLEFUNCTIONS:
+        CONTROLSUSPENDLAYOUT: BLANK
+        CONTROLRESUMELAYOUT: BLANK
+        READCONTROLSVERIFICATION:BLANK
+        READCONTROLSLOCALVARS: BLANK
+        SETCONTROLSLOCALVARS: BLANK
+
+        #~ hide the YTD Checkbox (false) and hide the Ledger selection grid (false)
+        REPORTSETTINGSDIRECTORY: Finance
+    Security:
+        ModulePermissionRequired: [FINANCE-1]
+    Controls:
+        tpgGeneralSettings:
+            Label: General Settings
+            Controls: [uco_GeneralSettings]
+        uco_GeneralSettings:
+            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
+            Height:270

@@ -676,7 +676,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded.
+        /// This Method is needed for UserControls who get dynamically loaded.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
         /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
         /// </summary>

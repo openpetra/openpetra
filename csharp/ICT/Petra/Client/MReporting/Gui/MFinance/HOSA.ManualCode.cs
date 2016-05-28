@@ -107,6 +107,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        private void FilterCostCentre(System.Object sender, System.EventArgs e)
+        {
+            clbCostCentres.BoundDataTable.DefaultView.RowFilter = "a_cost_centre_name_c like '%" + txtCostCentreFilter.Text + "%'";
+        }
+
+        private void ClearAllCostCentres(System.Object sender, System.EventArgs e)
+        {
+            txtCostCentreFilter.Text = "";
+            clbCostCentres.BoundDataTable.DefaultView.RowFilter = "";
+            clbCostCentres.SetCheckedStringList("");
+        }
+
         /// <summary>
         /// Init the grid
         /// </summary>

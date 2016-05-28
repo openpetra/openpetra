@@ -65,6 +65,46 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             cmbQuarterYear.Enabled = false;
             cmbBreakdownYear.Enabled = false;
             EnableBreakdownByPeriod(false);
+            cmbPeriodYear.Leave += populateStartAndEndDate;
+            txtStartPeriod.Leave += populateStartAndEndDate;
+            txtEndPeriod.Leave += populateStartAndEndDate;
+            cmbQuarterYear.Leave += populateStartAndEndDate;
+            txtQuarter.Leave += populateStartAndEndDate;
+            cmbBreakdownYear.Leave += populateStartAndEndDate;
+        }
+
+        void populateStartAndEndDate(object sender, EventArgs e)
+        {
+            dtpStartDate.Text = "";
+            dtpEndDate.Text = "";
+
+            if (rbtQuarter.Checked)
+            {
+                Int32 Year = cmbQuarterYear.GetSelectedInt32();
+                Int32 Quarter = (Int32)StringHelper.TryStrToInt(txtQuarter.Text, 1);
+                DateTime StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, 0, Quarter * 3 - 2);
+                DateTime EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, 0, Quarter * 3);
+
+                dtpStartDate.Date = StartDate;
+                dtpEndDate.Date = EndDate;
+            }
+            else if (rbtPeriod.Checked)
+            {
+                Int32 Year = cmbPeriodYear.GetSelectedInt32();
+                Int32 EndPeriod = (Int32)StringHelper.TryStrToInt(txtEndPeriod.Text, 1);
+                Int32 StartPeriod = EndPeriod;
+
+                if (!OnlyEndPeriodShown)
+                {
+                    StartPeriod = (Int32)StringHelper.TryStrToInt(txtStartPeriod.Text, 1);
+                }
+
+                DateTime StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, 0, StartPeriod);
+                DateTime EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, 0, EndPeriod);
+
+                dtpStartDate.Date = StartDate;
+                dtpEndDate.Date = EndDate;
+            }
         }
 
         /// <summary>
@@ -121,9 +161,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         /// <returns>void</returns>
         public void ReadControls(TRptCalculator ACalculator, TReportActionEnum AReportAction)
         {
-            int Year = 0;
-            DateTime EndDate = DateTime.Now;
+            Int32 Year = 0;
             DateTime StartDate = DateTime.Now;
+            DateTime EndDate = DateTime.Now;
 
             // TODO
             int DiffPeriod = 0;             //(System.Int32)CbB_YearEndsOn.SelectedItem;
@@ -175,14 +215,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3);
                 ACalculator.AddParameter("param_end_date", EndDate);
 
-                //VerificationResult = TFinancialPeriodChecks.ValidQuarter(DiffPeriod, Year, Quarter, "Quarter");
                 if (AReportAction == TReportActionEnum.raGenerate)
                 {
                     CheckQuarter(Year, Quarter);
                 }
-
-                dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, (Quarter * 3 - 2));
-                dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, Quarter * 3);
             }
             else if (rbtPeriod.Checked)
             {
@@ -199,7 +235,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_end_date", EndDate);
 
                 CheckPeriod(Year, EndPeriod);
-                dtpEndDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, EndPeriod);
 
                 if (!OnlyEndPeriodShown)
                 {
@@ -220,8 +255,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                                     TResultSeverity.Resv_Critical));
                         }
                     }
-
-                    dtpStartDate.Date = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, StartPeriod);
                 }
             }
             else if (rbtDate.Checked)
@@ -252,8 +285,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 ACalculator.AddParameter("param_year_i", Year);
                 StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(FLedgerNumber, Year, DiffPeriod, 1);
                 ACalculator.AddParameter("param_start_date", StartDate);
-                //TODO: Calendar vs Financial Date Handling - Check if below has assumed a 12 period financial year
-                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, 12);
+                EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(FLedgerNumber, Year, DiffPeriod, FLedgerRow.NumberOfAccountingPeriods);
                 ACalculator.AddParameter("param_end_date", EndDate);
             }
 
@@ -369,6 +401,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 dtpStartDate.Date = AParameters.Get("param_start_date").ToDate();
                 dtpEndDate.Date = AParameters.Get("param_end_date").ToDate();
             }
+
+            populateStartAndEndDate(null, null);
         }
 
         #endregion

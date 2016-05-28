@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -63,10 +63,10 @@ namespace Ict.Petra.Server.MFinance.Gift
         String FDelimiter;
         String FDateFormatString;
         CultureInfo FCultureInfo;
-        bool FTransactionsOnly;
-        bool FExtraColumns;
+        Boolean FTransactionsOnly;
+        Boolean FExtraColumns;
         DateTime FDateForSummary;
-        bool FUseBaseCurrency;
+        Boolean FUseBaseCurrency;
         Int32 FLedgerNumber;
         String FCurrencyCode = "";
         GiftBatchTDS FMainDS;
@@ -94,12 +94,12 @@ namespace Ict.Petra.Server.MFinance.Gift
             FLedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
             FDateFormatString = (String)ARequestParams["DateFormatString"];
             Boolean Summary = (Boolean)ARequestParams["Summary"];
-            FUseBaseCurrency = (bool)ARequestParams["bUseBaseCurrency"];
+            FUseBaseCurrency = (Boolean)ARequestParams["bUseBaseCurrency"];
             FDateForSummary = (DateTime)ARequestParams["DateForSummary"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FCultureInfo = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FTransactionsOnly = (bool)ARequestParams["TransactionsOnly"];
-            FExtraColumns = (bool)ARequestParams["ExtraColumns"];
+            FTransactionsOnly = (Boolean)ARequestParams["TransactionsOnly"];
+            FExtraColumns = (Boolean)ARequestParams["ExtraColumns"];
             Int64 recipientNumber = (Int64)ARequestParams["RecipientNumber"];
             String RecipientFilter = (recipientNumber != 0) ? " AND PUB_a_gift_detail.p_recipient_key_n = " + recipientNumber : "";
 

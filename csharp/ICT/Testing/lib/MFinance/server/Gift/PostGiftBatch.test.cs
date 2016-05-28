@@ -433,7 +433,8 @@ namespace Tests.MFinance.Server.Gift
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
                 });
 
-            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            DataTable PartnerCostCentreTbl = null;
+            TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber, out PartnerCostCentreTbl);
             PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
@@ -516,7 +517,8 @@ namespace Tests.MFinance.Server.Gift
                     AGiftDetailAccess.DeleteRow(AGiftDetailTable.TableId, NegativeGiftDetailRow, Transaction);
                 });
 
-            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            DataTable PartnerCostCentreTbl = null;
+            TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber, out PartnerCostCentreTbl);
             PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
@@ -591,7 +593,8 @@ namespace Tests.MFinance.Server.Gift
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
 
             // link unit to Cost Centre
-            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
+            DataTable PartnerCostCentreTbl = null;
+            TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0, out PartnerCostCentreTbl);
             DataRow PartnerCostCentreRow = PartnerCostCentreTbl.NewRow();
             PartnerCostCentreRow["PartnerKey"] = ARealRecipientLedgerNumber;
             PartnerCostCentreRow["IsLinked"] = ARealCostCentreCode;
@@ -748,7 +751,8 @@ namespace Tests.MFinance.Server.Gift
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
                 });
 
-            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            DataTable PartnerCostCentreTbl = null;
+            TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber, out PartnerCostCentreTbl);
             PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
@@ -821,7 +825,8 @@ namespace Tests.MFinance.Server.Gift
                     ARecurringGiftDetailAccess.DeleteRow(ARecurringGiftDetailTable.TableId, RecurringGiftDetailRow, Transaction);
                 });
 
-            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber);
+            DataTable PartnerCostCentreTbl = null;
+            TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, RealRecipientLedgerNumber, out PartnerCostCentreTbl);
             PartnerCostCentreTbl.Rows[0]["IsLinked"] = '0';
             TGLSetupWebConnector.SaveCostCentrePartnerLinks(FLedgerNumber, PartnerCostCentreTbl);
 
@@ -893,7 +898,8 @@ namespace Tests.MFinance.Server.Gift
                     TSubmitChangesResult.scrOK), "SubmitChanges for PartnerEditDS failed: " + VerificationResult.BuildVerificationResultString());
 
             // link unit to Cost Centre
-            DataTable PartnerCostCentreTbl = TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0);
+            DataTable PartnerCostCentreTbl = null;
+            TGLSetupWebConnector.LoadCostCentrePartnerLinks(FLedgerNumber, 0, out PartnerCostCentreTbl);
             DataRow PartnerCostCentreRow = PartnerCostCentreTbl.NewRow();
             PartnerCostCentreRow["PartnerKey"] = ARealRecipientLedgerNumber;
             PartnerCostCentreRow["IsLinked"] = 4300;

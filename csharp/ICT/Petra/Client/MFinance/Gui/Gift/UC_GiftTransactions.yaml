@@ -44,12 +44,12 @@ RootNode:
                 Row0: [txtLedgerNumber, Empty0, txtBatchTotal]
                 Row1: [txtBatchNumber, txtBatchStatus, txtHashTotal]
             Dock: Top
-        Empty0:
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Gift Batch, Unbound=true, SuppressChangeDetection=true}
         txtBatchTotal: {Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
         txtHashTotal: {Format=Currency, ReadOnly=true,  Unbound=true, SuppressChangeDetection=true}
         txtBatchStatus: {ReadOnly=true, NoLabel=true, Unbound=true, SuppressChangeDetection=true}
+        Empty0:
         pnlDetailGrid:
             Dock: Fill
             Controls: [pnlDetailButtons, grdDetails]

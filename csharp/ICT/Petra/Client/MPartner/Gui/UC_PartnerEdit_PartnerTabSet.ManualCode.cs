@@ -735,6 +735,66 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Returns true if a new location is being added, otherwise false.
+        /// </summary>
+        /// <returns>True if a new location is being added, otherwise false.</returns>
+        public bool LocationBeingAdded()
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                return false;
+            }
+            else
+            {
+                return FUcoAddresses.LocationBeingAdded();
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the Partner has an Address with the specified PK.
+        /// </summary>
+        /// <remarks>Displays an error message to the user if it will return false!</remarks>
+        /// <param name="ALocationPK">PK of a DataRow in the PLocation table.</param>
+        /// <returns>True if the Address was found, otherwise false.</returns>
+        public bool IsAddressRowPresent(TLocationPK ALocationPK)
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                return false;
+            }
+            else
+            {
+                return FUcoAddresses.IsAddressRowPresent(ALocationPK);
+            }
+        }
+
+        /// <summary>
+        /// Allows copying of an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address...') into the currently edited Address.
+        /// </summary>
+        /// <param name="AFoundAddressLocationRow">DataRow containing the Location information
+        /// for the found Address.
+        /// </param>
+        public void CopyFoundAddressData(PLocationRow AFoundAddressLocationRow)
+        {
+            FUcoAddresses.CopyFoundAddressData(AFoundAddressLocationRow);
+        }
+
+        /// <summary>
+        /// Allows adding an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address...').
+        /// </summary>
+        /// <remarks>The found Address must be merged into the PLocation DataTable in the
+        /// FMultiTableDS before this function can be called! The record that was merged
+        /// gets deleted by a call to this procedure!</remarks>
+        /// <param name="ASiteKey">SiteKey of the found Location.</param>
+        /// <param name="ALocationKey">LocationKey of the found Location.</param>
+        public void AddNewFoundAddress(Int64 ASiteKey, Int32 ALocationKey)
+        {
+            FUcoAddresses.AddNewFoundAddress(ASiteKey, ALocationKey);
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         public void CleanupRecordsBeforeMerge()

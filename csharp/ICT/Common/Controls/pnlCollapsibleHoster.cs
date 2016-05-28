@@ -504,7 +504,11 @@ namespace Ict.Common.Controls
                 }
                 else if (foundInitialPanel && !CollPanel.IsCollapsed)
                 {
-                    if (CollPanel.TaskListInstance.SelectFirstTaskItem())
+                    if ((CollPanel.Text == Catalog.GetString("Current Conference")) || (CollPanel.Text == Catalog.GetString("Select Ledger")))
+                    {
+                        // skip a panel with this title
+                    }
+                    else if (CollPanel.TaskListInstance.SelectFirstTaskItem())
                     {
                         return;
                     }

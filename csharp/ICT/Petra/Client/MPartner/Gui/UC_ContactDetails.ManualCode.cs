@@ -468,7 +468,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// This Method is needed for UserControls who get dynamicly loaded on TabPages.
+        /// This Method is needed for UserControls who get dynamically loaded on TabPages.
         /// Since we don't have controls on this UserControl that need adjusting after resizing
         /// on 'Large Fonts (120 DPI)', we don't need to do anything here.
         /// </summary>
@@ -575,11 +575,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                 pnlFamilyExtraControls.Visible = false;
             }
 
-            // Move the 'Within the Organsiation' GroupBox a bit up from it's automatically assigned position
+            // Move the 'Within the Organsiation' GroupBox a bit up and left from it's automatically assigned position
             grpWithinTheOrganisation.Top = 16;
+            grpWithinTheOrganisation.Left = grpWithinTheOrganisation.Left - 5;
 
-            // Move the 'Family Extra Controls' Panel a bit up from it's automatically assigned position
+            // Move the 'Family Extra Controls' Panel a bit up and left from it's automatically assigned position
             pnlFamilyExtraControls.Top = 50;
+            pnlFamilyExtraControls.Left = pnlFamilyExtraControls.Left - 18;
+
+            // Make the right panel less wide as it would otherwise cover the right border of the outer GroupBox
+            pnlOverallRight.Width = pnlOverallRight.Width - 30;
 
             // Move the Panel that groups the 'Current' Controls for layout purposes a bit up from it's automatically assigned position
             pnlCurrentGrouping.Top = 60;
@@ -608,6 +613,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             cmbSecondaryEMail.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbPhoneWithinTheOrganisation.DropDownStyle = ComboBoxStyle.DropDownList;
             cmbEMailWithinTheOrganisation.DropDownStyle = ComboBoxStyle.DropDownList;
+
+            // Make the width of all ComboBoxes in the 'Overall' GroupBox quite wide to accomodate long email addresses / phone numbers
+            cmbPrimaryPhoneForContacting.DropDownWidth = 400;
+            cmbPrimaryEMail.DropDownWidth = 400;
+            cmbSecondaryEMail.DropDownWidth = 400;
+            cmbPhoneWithinTheOrganisation.DropDownWidth = 400;
+            cmbEMailWithinTheOrganisation.DropDownWidth = 400;
 
             // Set up status bar texts for unbound controls and for bound controls whose auto-assigned texts don't match the use here on this screen (these talk about 'Partner Attributes')
             FPetraUtilsObject.SetStatusBarText(cmbPrimaryWayOfContacting,
@@ -867,6 +879,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(FilterStr, true);
             FFilterAndFindObject.ApplyFilter();
+
+            // Normally the Tab is set up in a way that the non-Current Contact Detail records are hidden (this is achieved with
+            // chkCurrent: {CheckState=CheckState.Checked} in the yaml file).
+            // However, if the following System Default is set to true this behaviour is switched off, i.e. all Contact Detail
+            // records, also no-Current ones, are shown initially. (This fixes Bug #5122)
+            if (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_CONTACTDETAILSTAB_SHOW_NONCURRENT_TOO, false) == true)
+            {
+                ((CheckBox)FFilterAndFindObject.FilterPanelControls.FStandardFilterPanels[0].PanelControl).CheckState =
+                    CheckState.Indeterminate;
+            }
         }
 
         private void GetDetailDataFromControlsManual(PPartnerAttributeRow ARow)

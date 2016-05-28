@@ -49,6 +49,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <returns></returns>
         public delegate Boolean TPartnerIsLinkedToCC(Int64 APartnerKey);
 
+        /// <summary>Delegate to determine Partner of type CC is linked</summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        public delegate Boolean TPartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey);
+
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
@@ -57,6 +63,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
         private static TPartnerHasActiveStatus FDelegatePartnerHasActiveStatus;
 
         private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC;
+
+        private static TPartnerOfTypeCCIsLinked FDelegatePartnerOfTypeCCIsLinked;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Partner.
@@ -100,6 +108,21 @@ namespace Ict.Petra.Shared.MPartner.Validation
             set
             {
                 FDelegatePartnerIsLinkedToCC = value;
+            }
+        }
+
+        /// <summary>
+        /// A function must be provided before the helper function is called.
+        /// </summary>
+        public static TPartnerOfTypeCCIsLinked PartnerOfTypeCCIsLinkedDelegate
+        {
+            get
+            {
+                return FDelegatePartnerOfTypeCCIsLinked;
+            }
+            set
+            {
+                FDelegatePartnerOfTypeCCIsLinked = value;
             }
         }
 
@@ -159,6 +182,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
             else
             {
                 throw new InvalidOperationException("Delegate 'PartnerIsLinkedToCC' must be initialised before calling this Method");
+            }
+        }
+
+        /// <summary>Attempts to call a delegate...</summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        public static Boolean PartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey)
+        {
+            if (FDelegatePartnerOfTypeCCIsLinked != null)
+            {
+                return FDelegatePartnerOfTypeCCIsLinked(ALedgerNumber, APartnerKey);
+            }
+            else
+            {
+                throw new InvalidOperationException("Delegate 'PartnerOfTypeCCIsLinked' must be initialised before calling this Method");
             }
         }
     }

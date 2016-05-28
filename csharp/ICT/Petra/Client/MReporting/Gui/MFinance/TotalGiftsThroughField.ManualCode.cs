@@ -110,38 +110,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
             ALedgerRow Row = LedgerDetailsTable[0];
-            Int32 LedgerYear = Row.CurrentFinancialYear;
-            Int32 NumPeriods = Row.NumberOfAccountingPeriods;
             String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
-            Int32 CurrentPeriod = Row.CurrentPeriod;
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_name", CurrencyName);
 
-            DateTime PeriodEndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
-                FLedgerNumber,
-                LedgerYear,
-                0,
-                CurrentPeriod);
-
-            Int32 PeriodThisYear = PeriodEndDate.Month;
-
             Int32 Years = Math.Max(detailYears, summaryYears);
-            DateTime StartDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
-                FLedgerNumber,
-                LedgerYear - Years + 1,
-                0,
-                1);
+            DateTime StartDate = new DateTime(DateTime.Now.Year - Years, 1, 1);
 
-            DateTime EndDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
-                FLedgerNumber,
-                LedgerYear,
-                0,
-                NumPeriods);
-
-            ACalc.AddParameter("param_PeriodThisYear", PeriodThisYear);
             ACalc.AddParameter("param_StartDate", StartDate);
-            ACalc.AddParameter("param_EndDate", EndDate);
             ACalc.AddParameter("param_DetailYears", detailYears);
             ACalc.AddParameter("param_SummaryYears", summaryYears);
             ACalc.AddParameter("param_TD", FTaxDeductiblePercentageEnabled);

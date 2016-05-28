@@ -1,83 +1,82 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
 <!DOCTYPE reports SYSTEM "../reports.dtd">
 <reports>
-	<report id="Partner by City">
-		<description>
-			The report should show all partners with class "Family" or "Church", 
-			who are located at the given town, using only mailing addresses.
-			The name of the town should be typed by the user.
-			The result should be presented with one partner per line, 
-			showing the name, the address, and the class.
-			At the top of the report, the current date and the name of the town searched
-			should be displayed. (is not implemented: show in header the number of found partners)
-		</description>
-		<reportparameters>
-			<reportparameter name="param_city" comment="the partners living in this city will be displayed"/>
-			<reportparameter name="param_today" comment="locations only valid on this date will be displayed" />
-		</reportparameters>
-		
-		<reportheader/>
-		<pageheader>
-			<field whichfield="title1"><value text ="Partner by City" /></field>
-			<field whichfield="title2"><value text = "city: "/><value variable="param_city"/></field>
-			<field whichfield="period1"><value text = "as at "/><value variable="param_today"/></field>
-		</pageheader>
+    <report id="Partner by City">
+        <description>
+            The report should show all partners with class "Family" or "Church", 
+            who are located at the given town, using only mailing addresses.
+            The name of the town should be typed by the user.
+            The result should be presented with one partner per line, 
+            showing the name, the address, and the class.
+            At the top of the report, the current date and the name of the town searched
+            should be displayed. (is not implemented: show in header the number of found partners)
+        </description>
+        <reportparameters>
+            <reportparameter name="param_city" comment="the partners living in this city will be displayed"/>
+            <reportparameter name="param_today" comment="locations only valid on this date will be displayed" />
+        </reportparameters>
+        
+        <reportheader/>
+        <pageheader>
+            <field whichfield="title1"><value text ="Partner by City" /></field>
+            <field whichfield="title2"><value text = "city: "/><value variable="param_city"/></field>
+            <field whichfield="period1"><value text = "as at "/><value variable="param_today"/></field>
+        </pageheader>
 
-		<calculations>
-		
-			<calculation id="Select Partners"
-					returns="PartnerKey, PartnerClass, ShortName"
-					returnsFormat="row">
-				<query>
-					<queryDetail><value>
-					SELECT pub_p_partner.p_partner_key_n AS PartnerKey,
-						   pub_p_partner.p_partner_class_c AS PartnerClass,
-						   pub_p_partner.p_partner_short_name_c AS ShortName
-					FROM pub_p_partner, pub_p_partner_location, pub_p_location
-					WHERE pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
-						AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
-						AND pub_p_location.p_city_c LIKE {param_city}
-						AND pub_p_partner.p_deleted_partner_l = false
-						AND pub_p_partner.p_status_code_c = 'ACTIVE'
-						AND (pub_p_partner.p_partner_class_c = 'FAMILY' OR pub_p_partner.p_partner_class_c = 'CHURCH')
-						AND pub_p_partner_location.p_send_mail_l = true
-						AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
-						AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
-					ORDER BY 3
-					</value></queryDetail>
-				</query>
-			</calculation>
+        <calculations>
+        
+            <calculation id="Select Partners"
+                    returns="PartnerKey, PartnerClass, ShortName"
+                    returnsFormat="row">
+                <query>
+                    <queryDetail><value>
+                    SELECT pub_p_partner.p_partner_key_n AS PartnerKey,
+                           pub_p_partner.p_partner_class_c AS PartnerClass,
+                           pub_p_partner.p_partner_short_name_c AS ShortName
+                    FROM pub_p_partner, pub_p_partner_location, pub_p_location
+                    WHERE pub_p_partner_location.p_partner_key_n = pub_p_partner.p_partner_key_n
+                        AND pub_p_partner_location.p_location_key_i = pub_p_location.p_location_key_i
+                        AND pub_p_location.p_city_c LIKE {param_city}
+                        AND pub_p_partner.p_deleted_partner_l = false
+                        AND pub_p_partner.p_status_code_c = 'ACTIVE'
+                        AND (pub_p_partner.p_partner_class_c = 'FAMILY' OR pub_p_partner.p_partner_class_c = 'CHURCH')
+                        AND pub_p_partner_location.p_send_mail_l = true
+                        AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
+                        AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
+                    ORDER BY 3
+                    </value></queryDetail>
+                </query>
+            </calculation>
 
-		<calculation id="GetBestAddressDetails" returns="City" returnsFormat="internal">
-			<query>
-				<queryDetail>
-					<value text="NO-SQL"/>
-					<value function="GetPartnerBestAddress({PartnerKey})"/>
-					<value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
-					<value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
-				</queryDetail>
-			</query>
-		</calculation>
+        <calculation id="GetBestAddressDetails" returns="City" returnsFormat="internal">
+            <query>
+                <queryDetail>
+                    <value text="NO-SQL"/>
+                    <value function="GetPartnerBestAddress({PartnerKey})"/>
+                    <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
+                </queryDetail>
+            </query>
+        </calculation>
 
-			<calculation id="Partner Key"
-					returnsFormat="partnerkey" returns="text">
-				<caption><value text="Partner Key"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="PartnerKey"/>
-					</queryDetail>
-				</query>
-			</calculation>
+            <calculation id="Partner Key"
+                    returnsFormat="partnerkey" returns="text">
+                <caption><value text="Partner Key"/></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="PartnerKey"/>
+                    </queryDetail>
+                </query>
+            </calculation>
 
-			<calculation id="Partner Name"
-					returnsFormat="text" returns="text">
-				<caption><value text="Partner name"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="ShortName"/>
-					</queryDetail>
-				</query>
-			</calculation>
+            <calculation id="Partner Name"
+                    returnsFormat="text" returns="text">
+                <caption><value text="Partner name"/></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="ShortName"/>
+                    </queryDetail>
+                </query>
+            </calculation>
 
             <!-- <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
                 <caption><value text="Partner Name"></value></caption>
@@ -88,65 +87,65 @@
                 </query>
             </calculation> -->
 
-			<calculation id="Partner Class"
-					returnsFormat="text" returns="text">
-				<caption><value text="Partner Class"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="PartnerClass"/>
-					</queryDetail>
-				</query>
-			</calculation>
+            <calculation id="Partner Class"
+                    returnsFormat="text" returns="text">
+                <caption><value text="Partner Class"/></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="PartnerClass"/>
+                    </queryDetail>
+                </query>
+            </calculation>
 
-			<calculation id="Street"
-					returnsFormat="text" returns="text">
-				<caption><value text="Street Name"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="StreetName"/>
-					</queryDetail>
-				</query>
-			</calculation>
+            <calculation id="Street"
+                    returnsFormat="text" returns="text">
+                <caption><value text="Street Name"/></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="StreetName"/>
+                    </queryDetail>
+                </query>
+            </calculation>
             
-			<calculation id="PostCode"
-					returnsFormat="text" returns="text">
-				<caption><value text="Post Code"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="PostalCode"/>
-					</queryDetail>
-				</query>
-			</calculation>
+            <calculation id="PostCode"
+                    returnsFormat="text" returns="text">
+                <caption><value text="Post Code"/></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="PostalCode"/>
+                    </queryDetail>
+                </query>
+            </calculation>
 
-			<calculation id="City"
-					returnsFormat="text" returns="text">
-				<caption><value text="City"/></caption>
-				<query>
-					<queryDetail>
-						<value variable="City"/>
-					</queryDetail>
-				</query>
-			</calculation>
+            <calculation id="City"
+                    returnsFormat="text" returns="text">
+                <caption><value text="City"/></caption>
+                <query>
+                    <queryDetail>
+                        <value variable="City"/>
+                    </queryDetail>
+                </query>
+            </calculation>
         </calculations>
 
-		<levels>		
-		
-			<!-- required: the main report level -->
-			<level name="main">
-				<detail>
-					<lowerLevelReport level="partners" calculation ="Select Partners">
-					</lowerLevelReport>
-				</detail>
-			</level> <!-- main -->
+        <levels>        
+        
+            <!-- required: the main report level -->
+            <level name="main">
+                <detail>
+                    <lowerLevelReport level="partners" calculation ="Select Partners">
+                    </lowerLevelReport>
+                </detail>
+            </level> <!-- main -->
 
-			<!-- the list of partners -->
-			<level name="partners" identification="p_partner_key_n">
-				<detail>
-					<field whichfield="Columns" calculation="GetBestAddressDetails"></field>
-				</detail>
-			</level><!-- partners -->
+            <!-- the list of partners -->
+            <level name="partners" identification="p_partner_key_n">
+                <detail>
+                    <field whichfield="Columns" calculation="GetBestAddressDetails"></field>
+                </detail>
+            </level><!-- partners -->
 
-		</levels>
-	</report><!-- Partner by City -->
-	
+        </levels>
+    </report><!-- Partner by City -->
+    
 </reports>

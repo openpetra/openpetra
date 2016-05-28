@@ -76,7 +76,7 @@
 	<calculation id="Select Partners" returns="PartnerKey, ApplicantPartnerName, FirstLanguage, Gender, MaritalStatus, DateOfBirth
 				" returnsFormat="row">
 		<query>
-			<queryDetail><value>
+            <queryDetail><value>
 				SELECT DISTINCT
 					PUB_p_partner.p_partner_key_n AS PartnerKey,
 					PUB_p_partner.p_partner_short_name_c AS ApplicantPartnerName,
@@ -227,6 +227,8 @@
 				<value function="assign(Fax, )" condition="lt({FaxNumber}, 1)"/>
 				<value function="assign(Fax, {FaxNumber})" condition="gt({FaxNumber}, 0)"/>
 				<value function="assign(Telephone, {TelephoneNumber})"/>
+				<value function="assign(MobileNumber, {MobileNumber})"/>
+				<value function="assign(AlternateTelephone, {AlternateTelephone})"/>
 			</queryDetail>
 			
 		</query>
@@ -236,10 +238,11 @@
 		<query>
 			<queryDetail>
 				<value function="GetPartnerBestAddress({PartnerKey})"/>
-				<value function="assign(FieldOfStaff, GetFieldOfPartner({PartnerKey}))"/>
+				<value function="assign(FieldOfStaff, GetFieldOfPartner({PartnerKey}))" condition="not(and(exists(param_selection),eq({param_selection},all current staff)))"/>
+				<value function="assign(FieldOfStaff, GetFieldOfPartnerOnDate({PartnerKey},{param_currentstaffdate}))" condition="and(exists(param_selection),eq({param_selection},all current staff))"/>
 				<value function="assign(PartnerNameAndField, concatenateww({PartnerKey}, {ApplicantPartnerName}, 2))"/>
 				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, Field:, 3))"/>
-				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, {FieldOfStaff}, 1))" condition="gt({FieldOfStaff}, 0)"/>
+				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, {FieldOfStaff}, 1))"/>
 				<value function="assign(PartnerNameAndField, concatenateww({PartnerNameAndField}, ?, 1))" condition="lt(length({FieldOfStaff}), 1)"/>
 				<value function="assign(PartnerAddress, {Locality})"/>
 				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
@@ -471,7 +474,7 @@
 			</queryDetail>
 		</query>
 	</calculation>
-	
+
 	<calculation align="left" id="Post Code" returns="text" returnsFormat="text">
 		<caption><value text="Post Code"></value></caption>
 		<query>

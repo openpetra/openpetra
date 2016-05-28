@@ -101,7 +101,8 @@
 				<query>
 					<queryDetail>
 						<value text="NO-SQL"/>
-						<value function="assign(FieldName, GetFieldOfPartner({PartnerKey}))"/>
+						<value function="assign(FieldName, GetFieldOfPartner({PartnerKey}))" condition="ne({param_selection},all current staff)"/>
+                        <value function="assign(FieldName, GetFieldOfPartnerOnDate({PartnerKey},{param_currentstaffdate}))" condition="eq({param_selection},all current staff)"/>
 						<!-- TODO: ORGANIZATION SPECIFIC  GetType() -->
 						<value function="assign(PartnerType, GetType({PartnerKey}, OMER;EX-OMER;ASSOC, BEGIN))"/>
 						<value function="GetOccupation({Occupation})"/>
@@ -118,8 +119,8 @@
 				</query>
 			</calculation>
 
-			<calculation id="Field Name" returnsFormat="text" returns="text">
-				<caption><value text="Field Name"/></caption>
+			<calculation id="Field" returnsFormat="text" returns="text">
+				<caption><value text="Field"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="FieldName"/>

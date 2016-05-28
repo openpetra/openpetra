@@ -267,11 +267,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
 
@@ -308,12 +304,8 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
-                throw ex;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             return LedgerBaseCurrency;
@@ -407,11 +399,7 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                        Utilities.GetMethodSignature(),
-                        Environment.NewLine,
-                        ex.Message));
-
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
         }
@@ -737,10 +725,7 @@ namespace Ict.Petra.Server.MFinance.Common
                 }
                 catch (Exception ex)
                 {
-                    TLogging.Log(String.Format("Method:{0} - Unexpected error!{1}{1}{2}",
-                            Utilities.GetMethodSignature(),
-                            Environment.NewLine,
-                            ex.Message));
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
                     throw;
                 }
             }

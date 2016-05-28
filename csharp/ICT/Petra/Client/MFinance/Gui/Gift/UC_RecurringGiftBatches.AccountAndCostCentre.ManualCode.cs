@@ -1,0 +1,280 @@
+//
+// DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
+//
+// @Authors:
+//       timop, christophert, alanP
+//
+// Copyright 2004-2014 by OM International
+//
+// This file is part of OpenPetra.org.
+//
+// OpenPetra.org is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// OpenPetra.org is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
+//
+using System;
+using System.Data;
+
+using Ict.Common;
+using Ict.Common.Data;
+
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.MFinance.Logic;
+
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MFinance.Gift.Data;
+
+namespace Ict.Petra.Client.MFinance.Gui.Gift
+{
+    /// <summary>
+    /// A business logic class that handles the account and cost centre code
+    /// </summary>
+    public class TUC_RecurringGiftBatches_AccountAndCostCentre
+    {
+        private Int32 FLedgerNumber = 0;
+        private GiftBatchTDS FMainDS = null;
+        private TCmbAutoPopulated FCmbBankAccountCode = null;
+        private TCmbAutoPopulated FCmbCostCentreCode = null;
+
+        private AAccountTable FAccountTable = null;
+        private ACostCentreTable FCostCentreTable = null;
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the Account table
+        /// </summary>
+        public AAccountTable AccountTable
+        {
+            get
+            {
+                return FAccountTable;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Cost Centre table
+        /// </summary>
+        public ACostCentreTable CostCentreTable
+        {
+            get
+            {
+                return FCostCentreTable;
+            }
+        }
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public TUC_RecurringGiftBatches_AccountAndCostCentre(Int32 ALedgerNumber,
+            GiftBatchTDS AMainDS,
+            TCmbAutoPopulated ACmbBankAccountCode,
+            TCmbAutoPopulated ACmbCostCentreCode)
+        {
+            FLedgerNumber = ALedgerNumber;
+            FMainDS = AMainDS;
+
+            FCmbBankAccountCode = ACmbBankAccountCode;
+            FCmbCostCentreCode = ACmbCostCentreCode;
+        }
+
+        #endregion
+
+        #region Public methods
+
+        /// <summary>
+        /// Returns true if the specified account code is active
+        /// </summary>
+        /// <param name="AAccountCode">The account code string to test.  If not supplied the code is taken from the current combo box item</param>
+        /// <returns>Returns true if the specified account code is active</returns>
+        public bool AccountIsActive(string AAccountCode = "")
+        {
+            bool retVal = true;
+
+            AAccountRow currentAccountRow = null;
+
+            //If empty, read value from combo
+            if (AAccountCode == string.Empty)
+            {
+                if ((FAccountTable != null) && (FCmbBankAccountCode.SelectedIndex != -1) && (FCmbBankAccountCode.Count > 0)
+                    && (FCmbBankAccountCode.GetSelectedString() != null))
+                {
+                    AAccountCode = FCmbBankAccountCode.GetSelectedString();
+                }
+            }
+
+            if (FAccountTable != null)
+            {
+                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
+            }
+
+            if (currentAccountRow != null)
+            {
+                retVal = currentAccountRow.AccountActiveFlag;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns true if the specified cost centre code is active
+        /// </summary>
+        /// <param name="ACostCentreCode">The account code string to test.  If not supplied the code is taken from the current combo box item</param>
+        /// <returns>Returns true if the specified cost centre code is active</returns>
+        public bool CostCentreIsActive(string ACostCentreCode = "")
+        {
+            bool retVal = true;
+
+            ACostCentreRow currentCostCentreRow = null;
+
+            //If empty, read value from combo
+            if (ACostCentreCode == string.Empty)
+            {
+                if ((FCostCentreTable != null) && (FCmbCostCentreCode.SelectedIndex != -1) && (FCmbCostCentreCode.Count > 0)
+                    && (FCmbCostCentreCode.GetSelectedString() != null))
+                {
+                    ACostCentreCode = FCmbCostCentreCode.GetSelectedString();
+                }
+            }
+
+            if (FCostCentreTable != null)
+            {
+                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
+            }
+
+            if (currentCostCentreRow != null)
+            {
+                retVal = currentCostCentreRow.CostCentreActiveFlag;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Call this to initialise the 'Lists' (tables) for the ComboBoxes
+        /// </summary>
+        /// <param name="ALoadAndFilterLogicObject">Supply a reference to the Filter Logic object because it needs a reference to the same Lists</param>
+        /// <param name="ACostCentreTab"></param>
+        /// <param name="AAccountTab"></param>
+        public void RefreshBankAccountAndCostCentreData(TUC_RecurringGiftBatches_LoadAndFilter ALoadAndFilterLogicObject,
+            out ACostCentreTable ACostCentreTab,
+            out AAccountTable AAccountTab)
+        {
+            //Populate CostCentreList variable
+            DataTable CostCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                FLedgerNumber);
+
+            ACostCentreTable TmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(TmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreList, FMainDS.Tables[TmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(TmpCostCentreTable.TableName);
+
+            FCostCentreTable = (ACostCentreTable)CostCentreList;
+            ALoadAndFilterLogicObject.CostCentreTable = FCostCentreTable;
+            ACostCentreTab = FCostCentreTable;
+
+            //Populate AccountList variable
+            DataTable AccountList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+
+            AAccountTable TmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(TmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountList, FMainDS.Tables[TmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(TmpAccountTable.TableName);
+
+            FAccountTable = (AAccountTable)AccountList;
+            ALoadAndFilterLogicObject.AccountTable = FAccountTable;
+            AAccountTab = FAccountTable;
+        }
+
+        /// <summary>
+        /// Call this to do initial set up the Bank account and cost centre combo boxes
+        /// </summary>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ARow"></param>
+        public void SetupAccountAndCostCentreCombos(bool AActiveOnly, ARecurringGiftBatchRow ARow)
+        {
+            FCmbCostCentreCode.Clear();
+            FCmbBankAccountCode.Clear();
+            TFinanceControls.InitialiseAccountList(ref FCmbBankAccountCode, FLedgerNumber, true, false, AActiveOnly, true, true, FAccountTable);
+            TFinanceControls.InitialiseCostCentreList(ref FCmbCostCentreCode, FLedgerNumber, true, false, AActiveOnly, true, true, FCostCentreTable);
+
+            if (ARow != null)
+            {
+                FCmbCostCentreCode.SetSelectedString(ARow.BankCostCentre, -1);
+                FCmbBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+            }
+        }
+
+        /// <summary>
+        /// Call this to change the accounts being shown in the accounts combobox (used when changing the Recurring Gift type)
+        /// </summary>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ABankAccountOnly"></param>
+        /// <param name="ALblBankAccountCode"></param>
+        /// <param name="ARow"></param>
+        public void SetupAccountCombo(bool AActiveOnly,
+            bool ABankAccountOnly,
+            ref System.Windows.Forms.Label ALblBankAccountCode,
+            ARecurringGiftBatchRow ARow)
+        {
+            FCmbBankAccountCode.Clear();
+            TFinanceControls.InitialiseAccountList(ref FCmbBankAccountCode,
+                FLedgerNumber,
+                true,
+                false,
+                AActiveOnly,
+                ABankAccountOnly,
+                true,
+                FAccountTable);
+
+            if (ABankAccountOnly)
+            {
+                ALblBankAccountCode.Text = Catalog.GetString("Bank Account:");
+            }
+            else
+            {
+                ALblBankAccountCode.Text = Catalog.GetString("Account Code:");
+            }
+
+            if (ARow != null)
+            {
+                FCmbBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the filters on the combo boxes
+        /// </summary>
+        /// <param name="AActiveOnly"></param>
+        /// <param name="ARow"></param>
+        public void RefreshBankAccountAndCostCentreFilters(bool AActiveOnly, ARecurringGiftBatchRow ARow)
+        {
+            FCmbBankAccountCode.Filter = TFinanceControls.PrepareAccountFilter(true, false, AActiveOnly, true, "");
+            FCmbCostCentreCode.Filter = TFinanceControls.PrepareCostCentreFilter(true, false, AActiveOnly, true);
+
+            if (ARow != null)
+            {
+                FCmbCostCentreCode.SetSelectedString(ARow.BankCostCentre, -1);
+                FCmbBankAccountCode.SetSelectedString(ARow.BankAccountCode, -1);
+            }
+        }
+
+        #endregion
+    }
+}

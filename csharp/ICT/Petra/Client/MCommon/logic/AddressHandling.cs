@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,10 +27,12 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Exceptions;
+
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
 namespace Ict.Petra.Client.MCommon
@@ -38,110 +40,14 @@ namespace Ict.Petra.Client.MCommon
     /// <summary>
     /// Contains functions for handling of Addresses.
     /// </summary>
-    public class TAddressHandling : System.Object
+    public static class TAddressHandling
     {
-        #region TAddressHandling
-
-        /// <summary>
-        /// Creates a new DataRow in the passed PLocation and PPartnerLocation tables.
-        ///
-        /// </summary>
-        /// <param name="ALocationDT">Typed PLocation table. If nil is passed in it is created
-        /// automatically</param>
-        /// <param name="APartnerLocationDT">Typed PPartnerLocation table. If nil is passed in
-        /// it is created automatically</param>
-        /// <param name="APartnerKey">PartneKey of the Partner for which the Address should
-        /// be created</param>
-        /// <param name="APartnerClass">PartnerClass of the Partner for which the Address should
-        /// be created</param>
-        /// <param name="ACountryCode"></param>
-        /// <param name="ANewLocationKey">A LocationKey that the new Location and
-        /// PartnerLocation rows would be set to.</param>
-        /// <returns>void</returns>
-        /// <exception cref="ArgumentException"> if any of the Arguments (or their combination) is
-        /// not valid
-        /// </exception>
-        public static void CreateNewAddress(PLocationTable ALocationDT,
-            PPartnerLocationTable APartnerLocationDT,
-            Int64 APartnerKey,
-            TPartnerClass APartnerClass,
-            String ACountryCode,
-            Int32 ANewLocationKey)
-        {
-            CreateNewAddressInternal(ALocationDT, APartnerLocationDT, APartnerKey, APartnerClass, ACountryCode, ANewLocationKey);
-        }
-
-        /// <summary>
-        /// Creates a new DataRow in the passed PLocation and PPartnerLocation tables.
-        /// </summary>
-        /// <param name="ALocationDT">Typed PLocation table. If null is passed in it is created
-        /// automatically</param>
-        /// <param name="APartnerLocationDT">Typed PPartnerLocation table. If null is passed in
-        /// it is created automatically</param>
-        /// <param name="APartnerKey">PartneKey of the Partner for which the Address should
-        /// be created</param>
-        /// <param name="APartnerClass">PartnerClass of the Partner for which the Address should
-        /// be created</param>
-        /// <param name="ACountryCode"></param>
-        /// <param name="ANewLocationKey">A LocationKey that the new Location and
-        /// PartnerLocation rows would be set to.</param>
-        /// <param name="ACopyFromFamilyPartnerKey">Pass in the PartnerKey of a Family Partner
-        /// to copy over all data from the Family's Address. Note: the DataRow
-        /// specified with ACopyFromFamilyPartnerKey must be present in the
-        /// APartnerLocationDT table!</param>
-        /// <param name="ACopyFromFamilyLocationKey">Pass in the LocationKey of the Family
-        /// Partner specified in ACopyFromFamilyPartnerKey to copy over all data from
-        /// the Family's Address. Note: the DataRow specified with
-        /// ACopyFromFamilyLocationKey must be present in both the ALocationDT and
-        /// APartnerLocationDT table!</param>
-        /// <param name="ACopyFromFamilySiteKey">A SiteKey to find the location that should be the source of the copy</param>
-        /// <param name="ACopyFromFamilyOnlyLocation"></param>
-        /// <param name="ADeleteDataRowCopiedFrom"></param>
-        /// <exception cref="ArgumentException"> if any of the Arguments (or their combination) is
-        /// not valid.</exception>
-        public static void CreateNewAddress(PLocationTable ALocationDT,
-            PPartnerLocationTable APartnerLocationDT,
-            Int64 APartnerKey,
-            TPartnerClass APartnerClass,
-            String ACountryCode,
-            Int32 ANewLocationKey,
-            Int64 ACopyFromFamilyPartnerKey,
-            Int32 ACopyFromFamilyLocationKey,
-            Int64 ACopyFromFamilySiteKey,
-            Boolean ACopyFromFamilyOnlyLocation,
-            Boolean ADeleteDataRowCopiedFrom)
-        {
-            CreateNewAddressInternal(ALocationDT,
-                APartnerLocationDT,
-                APartnerKey,
-                APartnerClass,
-                ACountryCode,
-                ANewLocationKey,
-                ACopyFromFamilyPartnerKey,
-                ACopyFromFamilyLocationKey,
-                ACopyFromFamilySiteKey,
-                ACopyFromFamilyOnlyLocation,
-                ADeleteDataRowCopiedFrom);
-        }
-
-        /// <summary>
-        /// </summary>
-        /// <param name="AFoundAddressLocationRow"></param>
-        /// <param name="ADestinationLocationRow"></param>
-        public static void CopyFoundAddressLocationData(PLocationRow AFoundAddressLocationRow, PLocationRow ADestinationLocationRow)
-        {
-            CopyLocationData(AFoundAddressLocationRow, ADestinationLocationRow);
-        }
-
         /// <summary>
         /// Copies over all columns of a Location Row, except the Primary Key columns
         /// and the last four columns (containing creation and change information).
-        ///
         /// </summary>
-        /// <param name="ACopyLocationsRow">Row to copy data from</param>
-        /// <param name="ADestinationLocationsRow">Row to copy data to
-        /// </param>
-        /// <returns>void</returns>
+        /// <param name="ACopyLocationsRow">Row to copy data from.</param>
+        /// <param name="ADestinationLocationsRow">Row to copy data to.</param>
         public static void CopyLocationData(PLocationRow ACopyLocationsRow, PLocationRow ADestinationLocationsRow)
         {
             ADestinationLocationsRow.Locality = ACopyLocationsRow.Locality;
@@ -185,40 +91,58 @@ namespace Ict.Petra.Client.MCommon
         /// <param name="ANewLocationKey">A LocationKey that the new Location and
         /// PartnerLocation rows would be set to.</param>
         /// <param name="ACopyFromFamilyPartnerKey">Pass in the PartnerKey of a Family Partner
-        /// to copy over all data from the Family's Address
-        /// (ACopyFromPartnerLocationKey must be -1 to be legal). Default: -1
-        /// (=no copy). Note: the DataRow specified with ACopyFromFamilyPartnerKey must
-        /// be present in the APartnerLocationDT table!</param>
-        /// <param name="ACopyFromFamilyLocationKey">Pass in the LocationKey of the Family
-        /// Partner specified in ACopyFromFamilyPartnerKey to copy over all data from
-        /// the Family's Address (ACopyFromPartnerLocationKey must be -1 to be legal)
-        /// Default: -1 (=no copy). Note: the DataRow specified with
-        /// ACopyFromFamilyLocationKey must be present in both the ALocationDT and
+        /// to copy over all data from the Family's Address if that is desired. Note: the DataRow
+        /// specified with <paramref name="ACopyFromFamilyPartnerKey"/> must be present in the
         /// APartnerLocationDT table!</param>
-        /// <param name="ACopyFromFamilySiteKey">A SiteKey to find the location that should be the
-        /// source of the copy</param>
-        /// <param name="ACopyFromFamilyOnlyLocation"></param>
-        /// <param name="ADeleteDataRowCopiedFrom"></param>
-        /// <exception cref="ArgumentException">If any of the Arguments (or their combination) is
-        /// not valid.</exception>
-        public static void CreateNewAddressInternal(PLocationTable ALocationDT,
+        /// <param name="ACopyFromFamilyLocation">Pass in the Location of the Family
+        /// Partner specified with <paramref name="ACopyFromFamilyPartnerKey"/> to copy over all
+        /// data from the Family's Address if that is desired. Note: the
+        /// DataRow specified with <paramref name="ACopyFromFamilyLocation"/> must be present in
+        /// both the ALocationDT and APartnerLocationDT table!</param>
+        /// <exception cref="ArgumentException">Throws an <see cref="ArgumentException"/> if any
+        /// of the Arguments (or their combination) is not valid.</exception>
+        public static void CreateNewAddress(PLocationTable ALocationDT,
             PPartnerLocationTable APartnerLocationDT,
             Int64 APartnerKey,
             TPartnerClass APartnerClass,
             String ACountryCode,
-            Int32 ANewLocationKey,
-            Int64 ACopyFromFamilyPartnerKey,
-            Int32 ACopyFromFamilyLocationKey,
-            Int64 ACopyFromFamilySiteKey,
-            Boolean ACopyFromFamilyOnlyLocation,
-            Boolean ADeleteDataRowCopiedFrom)
+            Int32 ANewLocationKey = -1,
+            Int64? ACopyFromFamilyPartnerKey = null,
+            TLocationPK ACopyFromFamilyLocation = null)
         {
             PLocationRow NewLocationsRow;
             PLocationRow CopyLocationsRow;
             PPartnerLocationRow NewPartnerLocationRow;
             PPartnerLocationRow CopyPartnerLocationRow;
 
-            #region Check parameters
+            #region Argument checks
+
+            if (TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.PartnerClassList).Rows.Find(APartnerClass) == null)
+            {
+                throw new ArgumentException("APartnerClass needs to be a valid Partner Class");
+            }
+
+            // Ensure that ACopyFromFamilyPartnerKey and ACopyFromFamilyLocation go hand in hand
+            if ((ACopyFromFamilyPartnerKey.HasValue) || (ACopyFromFamilyLocation != null))
+            {
+                if (ACopyFromFamilyPartnerKey.HasValue)
+                {
+                    if (ACopyFromFamilyLocation == null)
+                    {
+                        throw new ArgumentException("ACopyFromFamilyLocationKey needs to be specified if ACopyFromFamilyPartnerKey is specified");
+                    }
+                }
+
+                if (ACopyFromFamilyLocation != null)
+                {
+                    if (!ACopyFromFamilyPartnerKey.HasValue)
+                    {
+                        throw new ArgumentException("ACopyFromFamilyPartnerKey needs to be specified if ACopyFromFamilyLocationKey is specified");
+                    }
+                }
+            }
+
+            #endregion
 
             if (ALocationDT == null)
             {
@@ -230,32 +154,6 @@ namespace Ict.Petra.Client.MCommon
                 APartnerLocationDT = new PPartnerLocationTable();
             }
 
-            if (TStaticDataTables.TMPartner.GetStaticTable(TStaticPartnerTablesEnum.PartnerClassList).Rows.Find(APartnerClass) == null)
-            {
-                throw new ArgumentException("APartnerClass needs to be a valid Partner Class");
-            }
-
-            if ((ACopyFromFamilyPartnerKey != -1) || (ACopyFromFamilyLocationKey != -99))
-            {
-                if (ACopyFromFamilyPartnerKey != -1)
-                {
-                    if (ACopyFromFamilyLocationKey == -99)
-                    {
-                        throw new ArgumentException("ACopyFromFamilyLocationKey needs to be specified if ACopyFromFamilyPartnerKey is specified");
-                    }
-                }
-
-                if (ACopyFromFamilyLocationKey != -99)
-                {
-                    if (ACopyFromFamilyPartnerKey == -1)
-                    {
-                        throw new ArgumentException("ACopyFromFamilyPartnerKey needs to be specified if ACopyFromFamilyLocationKey is specified");
-                    }
-                }
-            }
-
-            #endregion
-
             /*
              * Add new Locations row
              */
@@ -266,9 +164,10 @@ namespace Ict.Petra.Client.MCommon
             NewLocationsRow.LocationKey = ANewLocationKey;
 
             // Copy over Columns of the Row specified with ACopyFromFamilyLocationKey?
-            if (ACopyFromFamilyLocationKey != -99)
+            if (ACopyFromFamilyLocation != null)
             {
-                CopyLocationsRow = (PLocationRow)ALocationDT.Rows.Find(new Object[] { ACopyFromFamilySiteKey, ACopyFromFamilyLocationKey });
+                CopyLocationsRow = (PLocationRow)ALocationDT.Rows.Find(new Object[] { ACopyFromFamilyLocation.SiteKey,
+                                                                                      ACopyFromFamilyLocation.LocationKey });
 
                 if (CopyLocationsRow != null)
                 {
@@ -280,11 +179,9 @@ namespace Ict.Petra.Client.MCommon
 
                     CopyLocationData(CopyLocationsRow, NewLocationsRow);
 
-                    if (ADeleteDataRowCopiedFrom)
-                    {
-                        CopyLocationsRow.Delete();
-                        CopyLocationsRow.AcceptChanges();
-                    }
+                    // Now remove the Row that we copied data from
+                    CopyLocationsRow.Delete();
+                    CopyLocationsRow.AcceptChanges();
                 }
                 else
                 {
@@ -319,11 +216,12 @@ namespace Ict.Petra.Client.MCommon
 
             // Copy over Columns of the Row specified with ACopyFromFamilyPartnerKey
             // and ACopyFromFamilyLocationKey?
-            if ((!ACopyFromFamilyOnlyLocation) && (ACopyFromFamilyLocationKey != -99))
+            if (ACopyFromFamilyLocation != null)
             {
                 CopyPartnerLocationRow =
-                    (PPartnerLocationRow)APartnerLocationDT.Rows.Find(new Object[] { ACopyFromFamilyPartnerKey, ACopyFromFamilySiteKey,
-                                                                                     ACopyFromFamilyLocationKey });
+                    (PPartnerLocationRow)APartnerLocationDT.Rows.Find(new Object[] { ACopyFromFamilyPartnerKey.Value,
+                                                                                     ACopyFromFamilyLocation.SiteKey,
+                                                                                     ACopyFromFamilyLocation.LocationKey });
 
                 if (CopyPartnerLocationRow != null)
                 {
@@ -345,11 +243,9 @@ namespace Ict.Petra.Client.MCommon
                             }
                         }
 
-                        if (ADeleteDataRowCopiedFrom)
-                        {
-                            CopyPartnerLocationRow.Delete();
-                            CopyPartnerLocationRow.AcceptChanges();
-                        }
+                        // Now remove the Row that we copied data from
+                        CopyPartnerLocationRow.Delete();
+                        CopyPartnerLocationRow.AcceptChanges();
                     }
                     else
                     {
@@ -361,7 +257,9 @@ namespace Ict.Petra.Client.MCommon
                 }
                 else
                 {
-                    throw new ArgumentException("Row with specified ACopyFromFamilyPartnerKey cannot be found in PPartnerLocations DataTable!");
+                    throw new ArgumentException(
+                        String.Format("Row with specified ACopyFromFamilyPartnerKey {0} cannot be found in PPartnerLocations DataTable!",
+                            ACopyFromFamilyPartnerKey));
                 }
             }
             else
@@ -385,37 +283,9 @@ namespace Ict.Petra.Client.MCommon
         }
 
         /// <summary>
-        /// </summary>
-        /// <param name="ALocationDT"></param>
-        /// <param name="APartnerLocationDT"></param>
-        /// <param name="APartnerKey"></param>
-        /// <param name="APartnerClass"></param>
-        /// <param name="ACountryCode"></param>
-        /// <param name="ANewLocationKey"></param>
-        public static void CreateNewAddressInternal(PLocationTable ALocationDT,
-            PPartnerLocationTable APartnerLocationDT,
-            Int64 APartnerKey,
-            TPartnerClass APartnerClass,
-            String ACountryCode,
-            Int32 ANewLocationKey)
-        {
-            CreateNewAddressInternal(ALocationDT,
-                APartnerLocationDT,
-                APartnerKey,
-                APartnerClass,
-                ACountryCode,
-                ANewLocationKey,
-                -1,
-                -99,
-                -99,
-                false,
-                true);
-        }
-
-        /// <summary>
         /// Gets the AddressOrder (p_address_order_i DB field) of a certain Country.
         /// </summary>
-        /// <param name="ACountryCode">CountryCode (ISO Code) of a Country</param>
+        /// <param name="ACountryCode">CountryCode (ISO Code) of a Country.</param>
         /// <returns>AddressOrder for that Country (0 if Country cannot be found).</returns>
         public static Int32 GetAddressOrder(String ACountryCode)
         {
@@ -424,7 +294,5 @@ namespace Ict.Petra.Client.MCommon
 
             return (CountryDR != null) ? CountryDR.AddressOrder : 0;
         }
-
-        #endregion
     }
 }

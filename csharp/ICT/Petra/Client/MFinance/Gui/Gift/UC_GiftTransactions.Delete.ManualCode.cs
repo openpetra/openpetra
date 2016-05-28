@@ -278,7 +278,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     //Clear current batch's gift data and reload from server
-                    RefreshCurrentBatchGiftData(FBatchNumber);
+                    RefreshCurrentBatchGiftData(FBatchNumber, true);
                 }
                 else
                 {
@@ -289,14 +289,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    "Gift Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
                 //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                RevertDataSet(FMainDS, BackupMainDS);
+
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
@@ -309,6 +306,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateRecordNumberDisplay();
 
             return DeletionSuccessful;
+        }
+
+        private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS)
+        {
+            AMainDS.ALedger.Clear();
+            AMainDS.AGiftDetail.Clear();
+            AMainDS.AGift.Clear();
+            AMainDS.AGiftBatch.Clear();
+
+            AMainDS.Merge(ABackupDS);
         }
 
         private void OnPostDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete,
@@ -379,7 +386,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             BackupMainDS.Merge(FMainDS);
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have chosen to delete all gifts from batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                            "You have chosen to delete all gifts from Gift Batch ({0}).{1}{1}Are you sure you want to delete all?"),
                         BatchNumberToClear,
                         Environment.NewLine),
                     Catalog.GetString("Confirm Delete All"),
@@ -398,10 +405,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //clear any transactions currently being editied in the Transaction Tab
                     ClearCurrentSelection(false);
 
-                    //Clear out the gift data for the current batch without marking the records for deletion
-                    //  and then reload from server
-                    RefreshCurrentBatchGiftData(BatchNumberToClear);
-
                     //Now delete all gift data for current batch
                     DeleteCurrentBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
 
@@ -409,7 +412,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     txtBatchTotal.NumberValueDecimal = 0;
 
                     // Be sure to set the last gift number in the parent table before saving all the changes
-                    SetBatchLastGiftNumber();
+                    FBatchRow.LastGiftNumber = 0;
 
                     FPetraUtilsObject.SetChangedFlag();
 
@@ -434,13 +437,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message,
-                        "Deletion Error",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
                     //Revert to previous state
-                    FMainDS.Merge(BackupMainDS);
+                    RevertDataSet(FMainDS, BackupMainDS);
+
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
                 }
                 finally
                 {

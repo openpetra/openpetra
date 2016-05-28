@@ -287,26 +287,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Disable the Year and Period ComboBoxes.  Also optionally select a status of 'All' - or uncheck all status options
-        /// </summary>
-        public void DisableYearAndPeriod(Boolean AAndSelectAllBatches)
-        {
-            FcmbYearEnding.Enabled = false;
-            FcmbPeriod.Enabled = false;
-
-            if (AAndSelectAllBatches)
-            {
-                FrbtAll.Checked = true;
-            }
-            else
-            {
-                FrbtPosting.Checked = false;
-                FrbtEditing.Checked = false;
-                FrbtAll.Checked = false;
-            }
-        }
-
-        /// <summary>
         /// The main method that handles all filtering.  Every change on the filter panel causes this event to fire.
         /// It is important to manage the fact that this method may be called recursively and so nesting can be tricky!
         /// </summary>
@@ -422,8 +402,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             StringHelper.JoinAndAppend(ref AFilterString, AdditionalFilter, CommonJoinString.JOIN_STRING_SQL_AND);
 
             FPrevFilter = AFilterString;
-
-            //TLogging.Log(String.Format("working filter: {0}", workingFilter));
         }
 
         /// <summary>
@@ -464,6 +442,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // This is quicker than getting the cached table again
                 DataView dv = new DataView(FAccountTable.Copy());
                 dv.RowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+                dv.Sort = String.Format("{0}", AAccountTable.GetAccountCodeDBName());
                 AFFInstance.DataSource = dv;
             }
             else if (AClonedFromComboBox.Name.Contains("CostCentre"))
@@ -471,6 +450,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // This is quicker than getting the cached table again
                 DataView dv = new DataView(FCostCentreTable.Copy());
                 dv.RowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+                dv.Sort = String.Format("{0}", ACostCentreTable.GetCostCentreCodeDBName());
                 AFFInstance.DataSource = dv;
             }
             else
@@ -498,6 +478,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Update the periods for the newly selected year
             TFinanceControls.InitialiseAvailableFinancialPeriodsList(ref FcmbPeriod, FLedgerNumber, ASelectedYear, 0, IncludeCurrentAndForwardingItem);
+        }
+
+        /// <summary>
+        /// Disable the Year and Period ComboBoxes.  Also optionally select a status of 'All' - or uncheck all status options
+        /// </summary>
+        public void DisableYearAndPeriod(Boolean AAndSelectAllBatches)
+        {
+            FcmbYearEnding.Enabled = false;
+            FcmbPeriod.Enabled = false;
+
+            if (AAndSelectAllBatches)
+            {
+                FrbtAll.Checked = true;
+            }
+            else
+            {
+                FrbtPosting.Checked = false;
+                FrbtEditing.Checked = false;
+                FrbtAll.Checked = false;
+            }
         }
 
         /// <summary>

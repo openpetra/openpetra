@@ -1371,12 +1371,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref ReadTrans,
                 delegate
                 {
-                    String YearFilter =                                         // Get last year's values too.
-                                        " AND glm.a_year_i>=" + (AccountingYear - 1) +
-                                        " AND glm.a_year_i<=" + AccountingYear;
+                    String YearFilter = " AND glm.a_year_i>=" + (AccountingYear - 1) +   // Last year's values are needed.
+                                        " AND glm.a_year_i<=" + (AccountingYear + 1);    // Next year can only contain budgets
 
                     String isThisYear = " Year=" + AccountingYear;
                     String isLastYear = " Year=" + (AccountingYear - 1);
+                    String isNextYear = " Year=" + (AccountingYear + 1);
 
                     Int32 LastPeriod = Math.Max(ReportPeriodEnd,
                         NumberOfAccountingPeriods);                                          // I need the whole year to see "whole year budget".
@@ -1385,51 +1385,89 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
                     String is12MothsBeforeEnd = "Period=" + (ReportPeriodEnd - 12);
 
-                    String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualYTD ELSE 0 END) AS ActualYtd, ";
+                    String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualGLM ELSE 0 END) AS ActualTemp, ";
+
                     String PrevPeriodQuery = (ReportPeriodStart == 1) ?
-                                             "SUM (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS LastMonthYtd, "
-                                             : "SUM (CASE WHEN " + isThisYear + " AND " + isPrevPeriod +
-                                             " THEN ActualYTD ELSE 0 END) AS LastMonthYtd, ";
-                    String LastYearActualYtdQuery = "SUM (CASE WHEN " + isLastYear + " AND " + isEndPeriod +
-                                                    " THEN ActualYTD ELSE 0 END) AS LastYearActualYtd, ";
-                    String LastYearPrevPeriodQuery = (ReportPeriodStart == 1) ?
+                                             "SUM (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS LastMonthTemp, "
+                                             :
+                                             "SUM (CASE WHEN " + isThisYear + " AND " + isPrevPeriod +
+                                             " THEN ActualGLM ELSE 0 END) AS LastMonthTemp, ";
+
+                    String LastYearActualYtdQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year I'm actually looking back to the beginning of this year!
+                                                    "SUM (CASE WHEN " + isThisYear + " AND Period=" +
+                                                    (ReportPeriodEnd -
+                                                     NumberOfAccountingPeriods) + " THEN ActualGLM ELSE 0 END) AS LastYearActualYtd, "
+                                                    :
+                                                    "SUM (CASE WHEN " + isLastYear + " AND " + isEndPeriod +
+                                                    " THEN ActualGLM ELSE 0 END) AS LastYearActualYtd, ";
+
+                    String LastYearPrevPeriodQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year I'm actually looking back to the beginning of this year!
+                                                     (ReportPeriodStart == NumberOfAccountingPeriods + 1) ?
+                                                     "SUM (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS LastYearLastMonthYtd, "
+                                                     :
+                                                     "SUM (CASE WHEN " + isThisYear + " AND Period=" +
+                                                     (ReportPeriodStart +  - NumberOfAccountingPeriods -
+                                                      1) + " THEN ActualGLM ELSE 0 END) AS LastYearLastMonthYtd, "
+                                                     : (ReportPeriodStart == 1) ?
                                                      "SUM (CASE WHEN " + isLastYear + " THEN StartBalance ELSE 0 END) AS LastYearLastMonthYtd, "
-                                                     : "SUM (CASE WHEN " + isLastYear + " AND " + isPrevPeriod +
-                                                     " THEN ActualYTD ELSE 0 END) AS LastYearLastMonthYtd, ";
+                                                     :
+                                                     "SUM (CASE WHEN " + isLastYear + " AND " + isPrevPeriod +
+                                                     " THEN ActualGLM ELSE 0 END) AS LastYearLastMonthYtd, ";
 
                     String LastYearEndQuery = "SUM (CASE WHEN " + isLastYear + " THEN EndBalance ELSE 0 END) AS LastYearEnd, ";
-                    String BudgetQuery = "SUM (CASE WHEN " + isThisYear + " AND Period>=" + ReportPeriodStart + " AND Period <= " + ReportPeriodEnd +
+
+                    String BudgetQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year I can get next year's budget (if it's there!)
+                                         "SUM (CASE WHEN " + isNextYear + " AND Period>=" + (ReportPeriodStart - NumberOfAccountingPeriods) +
+                                         " AND Period <= " + (ReportPeriodEnd - NumberOfAccountingPeriods) +
+                                         " THEN Budget ELSE 0 END) AS Budget, "
+                                         :
+                                         "SUM (CASE WHEN " + isThisYear + " AND Period>=" + ReportPeriodStart + " AND Period <= " + ReportPeriodEnd +
                                          " THEN Budget ELSE 0 END) AS Budget, ";
-                    String BudgetYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND Period<=" + ReportPeriodEnd +
+
+                    String BudgetYtdQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year I can get next year's budget (if it's there!)
+                                            "SUM (CASE WHEN " + isNextYear + " AND Period<=" + (ReportPeriodEnd - NumberOfAccountingPeriods) +
+                                            " THEN Budget ELSE 0 END) AS BudgetYTD, "
+                                            :
+                                            "SUM (CASE WHEN " + isThisYear + " AND Period<=" + ReportPeriodEnd +
                                             " THEN Budget ELSE 0 END) AS BudgetYTD, ";
-                    String BudgetWholeYearQuery = "SUM (CASE WHEN " + isThisYear + " THEN Budget ELSE 0 END) AS WholeYearBudget, ";
-                    String BudgetLastYearQuery = "SUM (CASE WHEN " + isLastYear + " THEN Budget ELSE 0 END) AS LastYearBudget, ";
+
+                    String BudgetWholeYearQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year it's next year's budget I'm showing
+                                                  "SUM (CASE WHEN " + isNextYear + " THEN Budget ELSE 0 END) AS WholeYearBudget, "
+                                                  :
+                                                  "SUM (CASE WHEN " + isThisYear + " THEN Budget ELSE 0 END) AS WholeYearBudget, ";
+
+                    String BudgetLastYearQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year it's this year's budget I'm showing
+                                                 "SUM (CASE WHEN " + isThisYear + " THEN Budget ELSE 0 END) AS LastYearBudget, "
+                                                 :
+                                                 "SUM (CASE WHEN " + isLastYear + " THEN Budget ELSE 0 END) AS LastYearBudget, ";
+
                     String MonthlyBreakdownQuery =
                         "0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 , 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
 
                     String NoZeroesFilter =
-                        "WHERE (LastMonthYtd != 0 OR ActualYtd != 0 OR Budget != 0 OR BudgetYTD != 0 OR WholeYearBudget != 0 OR LastYearBudget != 0 OR LastYearLastMonthYtd != 0 OR LastYearActualYtd != 0)";
+                        "WHERE (LastMonthTemp != 0 OR ActualTemp != 0" +
+                        " OR Budget != 0 OR BudgetYTD != 0 OR WholeYearBudget != 0 OR LastYearBudget != 0 OR LastYearLastMonthYtd != 0 OR LastYearActualYtd != 0)";
 
                     if (WholeYearPeriodsBreakdown)
                     {
                         //TODO: Calendar vs Financial Date Handling - Check if this should use financial num periods and not assume 12
                         CostCentreBreakdown = false;                            // Hopefully the client will have ensured this is false anyway - I'm just asserting it!
                         MonthlyBreakdownQuery =
-                            "SUM (CASE WHEN Period=1 THEN ActualYTD ELSE 0 END) AS P1, " +
-                            "SUM (CASE WHEN Period=2 THEN ActualYTD ELSE 0 END) AS P2, " +
-                            "SUM (CASE WHEN Period=3 THEN ActualYTD ELSE 0 END) AS P3, " +
-                            "SUM (CASE WHEN Period=4 THEN ActualYTD ELSE 0 END) AS P4, " +
-                            "SUM (CASE WHEN Period=5 THEN ActualYTD ELSE 0 END) AS P5, " +
-                            "SUM (CASE WHEN Period=6 THEN ActualYTD ELSE 0 END) AS P6, " +
-                            "SUM (CASE WHEN Period=7 THEN ActualYTD ELSE 0 END) AS P7, " +
-                            "SUM (CASE WHEN Period=8 THEN ActualYTD ELSE 0 END) AS P8, " +
-                            "SUM (CASE WHEN Period=9 THEN ActualYTD ELSE 0 END) AS P9, " +
-                            "SUM (CASE WHEN Period=10 THEN ActualYTD ELSE 0 END) AS P10, " +
-                            "SUM (CASE WHEN Period=11 THEN ActualYTD ELSE 0 END) AS P11, " +
-                            "SUM (CASE WHEN Period=12 THEN ActualYTD ELSE 0 END) AS P12 "; // No comma because this is the last field!
+                            "SUM (CASE WHEN Period=1 THEN ActualGLM ELSE 0 END) AS P1, " +
+                            "SUM (CASE WHEN Period=2 THEN ActualGLM ELSE 0 END) AS P2, " +
+                            "SUM (CASE WHEN Period=3 THEN ActualGLM ELSE 0 END) AS P3, " +
+                            "SUM (CASE WHEN Period=4 THEN ActualGLM ELSE 0 END) AS P4, " +
+                            "SUM (CASE WHEN Period=5 THEN ActualGLM ELSE 0 END) AS P5, " +
+                            "SUM (CASE WHEN Period=6 THEN ActualGLM ELSE 0 END) AS P6, " +
+                            "SUM (CASE WHEN Period=7 THEN ActualGLM ELSE 0 END) AS P7, " +
+                            "SUM (CASE WHEN Period=8 THEN ActualGLM ELSE 0 END) AS P8, " +
+                            "SUM (CASE WHEN Period=9 THEN ActualGLM ELSE 0 END) AS P9, " +
+                            "SUM (CASE WHEN Period=10 THEN ActualGLM ELSE 0 END) AS P10, " +
+                            "SUM (CASE WHEN Period=11 THEN ActualGLM ELSE 0 END) AS P11, " +
+                            "SUM (CASE WHEN Period=12 THEN ActualGLM ELSE 0 END) AS P12 "; // No comma because this is the last field!
 
-                        ActualYtdQuery = "0 AS ActualYtd, ";
-                        PrevPeriodQuery = "0.0 AS LastMonthYtd, ";
+                        ActualYtdQuery = "0 AS ActualTemp, ";
+                        PrevPeriodQuery = "0.0 AS LastMonthTemp, ";
                         LastYearActualYtdQuery = "0 AS LastYearActualYtd, ";
                         LastYearPrevPeriodQuery = "0.0 AS LastYearLastMonthYtd, ";
                         LastYearEndQuery = "0.0 AS LastYearEnd, ";
@@ -1468,7 +1506,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                          "glm.a_start_balance_base_n AS StartBalance, " +
                                          "glm.a_closing_period_actual_base_n AS EndBalance, " +
                                          "glmp.a_period_number_i AS Period, " +
-                                         "glmp.a_actual_base_n AS ActualYTD, " +
+                                         "glmp.a_actual_base_n AS ActualGLM, " +
                                          "glmp.a_budget_base_n AS Budget " +
                                          "FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account " +
                                          "WHERE " +
@@ -1489,6 +1527,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                             "(SELECT " +
                                             "AccountCode, AccountType, AccountName, DebitCredit, " +
                                             "SUM (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS YearStart, " +
+                                            "SUM (CASE WHEN " + isThisYear + " AND Period=" + NumberOfAccountingPeriods +
+                                            " THEN ActualGLM ELSE 0 END) AS Period12End," +
                                             PrevPeriodQuery +
                                             ActualYtdQuery +
                                             LastYearActualYtdQuery +
@@ -1514,7 +1554,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             "''") + "' AS CostCentreName," +
 
                                        "Summarised.*, " +
-                                       "ActualYtd - LastMonthYtd AS Actual, " +
+                                       (
+                            (ReportPeriodEnd > NumberOfAccountingPeriods) ?
+                            " ActualTemp  - Period12End AS ActualYtd, " +
+                            " LastMonthTemp  - Period12End AS LastMonthYtd, "
+                            :
+                            " ActualTemp AS ActualYtd, " +
+                            " LastMonthTemp AS LastMonthYtd, "
+                                       ) +
+                                       "ActualTemp - LastMonthTemp AS Actual, " +
                                        "LastYearActualYtd - LastYearLastMonthYtd AS LastYearActual, " +
                                        "1 AS AccountLevel, false AS HasChildren, false AS ParentFooter, false AS AccountIsSummary, false AS Breakdown,'Path' AS AccountPath "
                                        +
@@ -2415,6 +2463,97 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
+        public static DataTable StewardshipForPeriodTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable Result = null;
+            TDBTransaction Transaction = null;
+            Int32 Year = AParameters["param_year_i"].ToInt32();
+            Int32 startPeriod = AParameters["param_start_period_i"].ToInt32();
+            Int32 endPeriod = AParameters["param_end_period_i"].ToInt32();
+            Int32 ledgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String ichSettlementAccount = MFinanceConstants.ICH_ACCT_SETTLEMENT;
+                    TGetAccountHierarchyDetailInfo AccountInfo = new TGetAccountHierarchyDetailInfo(ledgerNumber);
+                    List <String>incomeAccounts = AccountInfo.GetChildren(MFinanceConstants.INCOME_HEADING, true);
+                    incomeAccounts.Remove(ichSettlementAccount);
+                    List <String>expenseAccounts = AccountInfo.GetChildren(MFinanceConstants.EXPENSE_HEADING, true);
+                    expenseAccounts.Remove(ichSettlementAccount);
+                    expenseAccounts.Remove(MFinanceConstants.DIRECT_XFER_ACCT);
+
+                    String incomeAccountList = "('" +
+                                               String.Join("','", incomeAccounts.ToArray()) +
+                                               "')";
+                    String expenseAccountList = "('" +
+                                                String.Join("','", expenseAccounts.ToArray()) +
+                                                "')";
+                    String incomeAndExpenseAccountList = "('" +
+                                                         String.Join("','", incomeAccounts.ToArray()) + "','" +
+                                                         String.Join("','",
+                        expenseAccounts.ToArray()) +
+                                                         "','" + MFinanceConstants.DIRECT_XFER_ACCT +
+                                                         "')";
+                    String openingBalanceIncomeCcSelect = "SUM (CASE WHEN GLM.a_account_code_c IN " + incomeAccountList +
+                                                          " THEN GLM.a_start_balance_base_n ELSE 0 END)";
+                    String openingBalanceExpenseCcSelect = "SUM (CASE WHEN GLM.a_account_code_c IN " + expenseAccountList +
+                                                           " THEN GLM.a_start_balance_base_n ELSE 0 END)";
+                    String openingBalanceXferCcSelect = "SUM (CASE WHEN GLM.a_account_code_c = '" + MFinanceConstants.DIRECT_XFER_ACCT +
+                                                        "' THEN GLM.a_start_balance_base_n ELSE 0 END)";
+                    String periodFilter = " AND GLMP.a_period_number_i=" + endPeriod;
+
+                    if (startPeriod > 1)
+                    {
+                        startPeriod -= 1;
+                        openingBalanceIncomeCcSelect = " SUM(CASE WHEN (GLMP.a_period_number_i=" + startPeriod + " AND GLM.a_account_code_c IN " +
+                                                       incomeAccountList + ") THEN GLMP.a_actual_base_n ELSE 0 END)";
+                        openingBalanceExpenseCcSelect = " SUM(CASE WHEN (GLMP.a_period_number_i=" + startPeriod + " AND GLM.a_account_code_c IN " +
+                                                        expenseAccountList + ") THEN GLMP.a_actual_base_n ELSE 0 END)";
+                        openingBalanceXferCcSelect = " SUM(CASE WHEN (GLMP.a_period_number_i=" + startPeriod + " AND GLM.a_account_code_c = '" +
+                                                     MFinanceConstants.DIRECT_XFER_ACCT + "') THEN GLMP.a_actual_base_n ELSE 0 END)";
+                        periodFilter = " AND (GLMP.a_period_number_i=" + startPeriod + " OR GLMP.a_period_number_i=" + endPeriod + ")";
+                    }
+
+                    String Query =
+                        "SELECT CostCentreCode, CostCentreName, ClosingIncome-OpeningIncome AS Income, ClosingExpense-OpeningExpense AS Expense, " +
+                        " ClosingXfer-OpeningXfer AS Xfer FROM (" +
+                        " SELECT CC.a_cost_centre_code_c AS CostCentreCode, " +
+                        " CC.a_cost_centre_name_c AS CostCentreName, " +
+                        openingBalanceIncomeCcSelect + " AS OpeningIncome, " +
+                        " SUM(CASE WHEN (GLMP.a_period_number_i=" + endPeriod + " AND GLM.a_account_code_c IN " + incomeAccountList +
+                        ") THEN GLMP.a_actual_base_n ELSE 0 END) AS ClosingIncome, " +
+                        openingBalanceExpenseCcSelect + " AS OpeningExpense, " +
+                        " SUM(CASE WHEN (GLMP.a_period_number_i=" + endPeriod + " AND GLM.a_account_code_c IN " + expenseAccountList +
+                        ") THEN GLMP.a_actual_base_n ELSE 0 END) AS ClosingExpense, " +
+                        openingBalanceXferCcSelect + " AS OpeningXfer, " +
+                        " SUM(CASE WHEN (GLMP.a_period_number_i=" + endPeriod + " AND GLM.a_account_code_c = '" +
+                        MFinanceConstants.DIRECT_XFER_ACCT + "') THEN GLMP.a_actual_base_n ELSE 0 END) AS ClosingXfer " +
+                        " FROM a_cost_centre CC, " +
+                        " a_general_ledger_master GLM, " +
+                        " a_general_ledger_master_period GLMP " +
+                        " WHERE " +
+                        " GLM.a_year_i=" + Year +
+                        periodFilter +
+                        " AND GLM.a_cost_centre_code_c = CC.a_cost_centre_code_c " +
+                        " AND GLMP.a_glm_sequence_i = GLM.a_glm_sequence_i " +
+                        " AND CC.a_cost_centre_type_c='Foreign' " +
+                        " AND CC.a_clearing_account_c= '" + MFinanceConstants.ICH_ACCT_ICH + "' " +
+                        " AND GLM.a_account_code_c IN " + incomeAndExpenseAccountList +
+                        " GROUP BY CC.a_cost_centre_code_c, CC.a_cost_centre_name_c " +
+                        " ORDER BY CC.a_cost_centre_code_c " +
+                        ") DETAILS";
+                    Result = DbAdapter.RunQuery(Query, "StewardshipForPeriod", Transaction);
+                }); // Get NewOrExisting AutoReadTransaction
+            return Result;
+        } // Stewardship For Period Table
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
         public static DataTable AFOTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
             AAccountTable AccountTable = new AAccountTable();
@@ -2963,8 +3102,20 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
             DateTime startDate = AParameters["param_StartDate"].ToDate();
             string strStartDate = startDate.ToString("#yyyy-MM-dd#");
-            DateTime endDate = AParameters["param_EndDate"].ToDate();
+            DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
             string strEndDate = endDate.ToString("#yyyy-MM-dd#");
+
+            Int32 LedgerAccountingPeriods;
+            Int32 LedgerForwardPeriods;
+            Int32 LedgerCurrentPeriod;
+            Int32 LedgerCurrentYear;
+
+            GetLedgerPeriodDetails(LedgerNum,
+                out LedgerAccountingPeriods,
+                out LedgerForwardPeriods,
+                out LedgerCurrentPeriod,
+                out LedgerCurrentYear);
+            Int32 MostRecentCompletedMonth = 0;
 
             bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
@@ -2997,9 +3148,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                          " AND batch.a_batch_number_i = gift.a_batch_number_i" +
                          " AND batch.a_ledger_number_i = " + LedgerNum +
                          " AND batch.a_gl_effective_date_d >= " + strStartDate +
-                         " AND batch.a_gl_effective_date_d <= " + strEndDate
 
-                         + " AND gift.a_ledger_number_i = " + LedgerNum +
+                         " AND gift.a_ledger_number_i = " + LedgerNum +
                          " AND detail.a_batch_number_i = gift.a_batch_number_i" +
                          " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
 
@@ -3017,6 +3167,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    String todaysDateSql = DateTime.Now.ToString("yyyy-MM-dd");
+
+                    AAccountingPeriodTable periodTbl = AAccountingPeriodAccess.LoadAll(Transaction);
+                    periodTbl.DefaultView.RowFilter = "a_ledger_number_i=" + LedgerNum +
+                                                      " AND a_period_start_date_d<='" + todaysDateSql + "'" +
+                                                      " AND a_period_end_date_d>='" + todaysDateSql + "'";
+
+                    if (periodTbl.DefaultView.Count > 0)
+                    {
+                        Int32 accountingPeriodToday = ((AAccountingPeriodRow)periodTbl.DefaultView[0].Row).AccountingPeriodNumber;
+                        MostRecentCompletedMonth = accountingPeriodToday - 1;
+
+                        if (accountingPeriodToday > 1)
+                        {
+                            periodTbl.DefaultView.RowFilter = "a_accounting_period_number_i=" + (accountingPeriodToday - 1);
+
+                            if (periodTbl.DefaultView.Count > 0)
+                            {
+                                MostRecentCompletedMonth = ((AAccountingPeriodRow)periodTbl.DefaultView[0].Row).PeriodStartDate.Month;
+                            }
+                        }
+                    }
+
                     tempTbl = DbAdapter.RunQuery(SqlQuery, "AllGifts", Transaction);
                 });
 
@@ -3036,18 +3209,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             for (Int32 Year = endDate.Year; Year >= startDate.Year; Year--)
             {
-                //TODO: Calendar vs Financial Date Handling - Check if this should use financial num periods and not assume 12
-                for (Int32 Month = 1; Month <= 12; Month++)
+                Int32 MaxMonth = (Year == endDate.Year) ? MostRecentCompletedMonth : LedgerAccountingPeriods;
+
+                for (Int32 Month = 1; Month <= MaxMonth; Month++)
                 {
-                    string monthStart = String.Format("#{0:0000}-{1:00}-01#", Year, Month);
-                    string nextMonthStart = String.Format("#{0:0000}-{1:00}-01#", Year, Month + 1);
+                    DateTime monthStart = new DateTime(Year, 1, 1).AddMonths(Month - 1);
+                    string monthStartSql = monthStart.ToString("yyyy-MM-dd");
+                    DateTime nextMonthStart = new DateTime(Year, 1, 1).AddMonths(Month);
+                    string nextMonthStartSql = nextMonthStart.ToString("yyyy-MM-dd");
 
-                    if (Month == 12)
-                    {
-                        nextMonthStart = String.Format("#{0:0000}-01-01#", Year + 1);
-                    }
-
-                    tempTbl.DefaultView.RowFilter = "Date >= " + monthStart + " AND Date < " + nextMonthStart;
+                    tempTbl.DefaultView.RowFilter = "Date >= '" + monthStartSql + "' AND Date < '" + nextMonthStartSql + "'";
 
                     DataRow resultRow = resultTable.NewRow();
 
@@ -3088,7 +3259,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     resultRow["Year"] = Year;
                     resultRow["Month"] = Month;
-                    resultRow["MonthName"] = StringHelper.GetLongMonthName(Month);
+                    Int32 monthMod12 = 1 + ((Month - 1) % 12);
+                    resultRow["MonthName"] = StringHelper.GetLongMonthName(monthMod12);
                     resultRow["MonthWorker"] = WorkerTotal;
                     resultRow["MonthWorkerCount"] = WorkerCount;
                     resultRow["MonthField"] = FieldTotal;
@@ -3320,6 +3492,110 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             }
                         }
                     }
+                });
+            return resultTable;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable TotalForRecipients(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
+            Boolean onlySelectedTypes = AParameters["param_type_selection"].ToString() == "selected_types";
+            Boolean onlySelectedFields = AParameters["param_field_selection"].ToString() == "selected_fields";
+            Boolean fromExtract = AParameters["param_recipient"].ToString() == "Extract";
+            Boolean oneRecipient = AParameters["param_recipient"].ToString() == "One Recipient";
+            String period0Start = AParameters["param_from_date_0"].ToDate().ToString("yyyy-MM-dd");
+            String period0End = AParameters["param_to_date_0"].ToDate().ToString("yyyy-MM-dd");
+            String period1Start = AParameters["param_from_date_1"].ToDate().ToString("yyyy-MM-dd");
+            String period1End = AParameters["param_to_date_1"].ToDate().ToString("yyyy-MM-dd");
+            String period2Start = AParameters["param_from_date_2"].ToDate().ToString("yyyy-MM-dd");
+            String period2End = AParameters["param_to_date_2"].ToDate().ToString("yyyy-MM-dd");
+            String period3Start = AParameters["param_from_date_3"].ToDate().ToString("yyyy-MM-dd");
+            String period3End = AParameters["param_to_date_3"].ToDate().ToString("yyyy-MM-dd");
+            String amountFieldName = (AParameters["param_currency"].ToString() == "International") ?
+                                     "detail.a_gift_amount_intl_n" : "detail.a_gift_amount_n";
+
+            string SqlQuery = "SELECT " +
+                              "recipient.p_partner_key_n AS RecipientKey, " +
+                              "recipient.p_partner_short_name_c AS RecipientName, " +
+//                              "RecipientType.p_type_code_c AS RecipientType, " +
+//                              "detail.a_recipient_ledger_number_n AS RecipientField, " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period0Start + "' AND '" + period0End + "' " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal0, " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period1Start + "' AND '" + period1End + "' " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal1, " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period2Start + "' AND '" + period2End + "' " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal2, " +
+                              "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period3Start + "' AND '" + period3End + "' " +
+                              "THEN " + amountFieldName + " ELSE 0 END )as YearTotal3 " +
+                              "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch AS GiftBatch, PUB_p_partner AS recipient, " +
+                              "PUB_p_partner_type AS RecipientType ";
+
+            if (fromExtract)
+            {
+                String extractName = AParameters["param_extract_name"].ToString();
+                SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster " +
+                             "WHERE " +
+                             "recipient.p_partner_key_n = Extract.p_partner_key_n " +
+                             "AND Extract.m_extract_id_i = ExtractMaster.m_extract_id_i " +
+                             "AND ExtractMaster.m_extract_name_c = '" + extractName + "' " +
+                             "AND "
+                             );
+            }
+            else
+            {
+                SqlQuery += "WHERE ";
+            }
+
+            SqlQuery += ("detail.a_ledger_number_i = " + LedgerNum +
+                         " AND detail.p_recipient_key_n = recipient.p_partner_key_n " +
+                         " AND detail.a_batch_number_i = gift.a_batch_number_i " +
+                         " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i " +
+                         " AND gift.a_date_entered_d BETWEEN '" + period3Start + "' AND '" + period0End + "' " +
+                         " AND gift.a_ledger_number_i = " + LedgerNum +
+                         " AND GiftBatch.a_batch_status_c = 'Posted' " +
+                         " AND GiftBatch.a_batch_number_i = gift.a_batch_number_i " +
+                         " AND GiftBatch.a_ledger_number_i = " + LedgerNum +
+                         " AND RecipientType.p_partner_key_n = detail.p_recipient_key_n "
+                         );
+
+            if (oneRecipient)
+            {
+                String recipientKey = AParameters["param_recipient_key"].ToString();
+                SqlQuery += (" AND recipient.p_partner_key_n = " + recipientKey);
+            }
+
+            if (onlySelectedFields)
+            {
+                String selectedFieldList = AParameters["param_clbFields"].ToString();
+                selectedFieldList = selectedFieldList.Replace('\'', ' ');
+                SqlQuery += (" AND detail.a_recipient_ledger_number_n IN (" + selectedFieldList + ")");
+            }
+
+            if (onlySelectedTypes)
+            {
+                String selectedTypeList = AParameters["param_clbTypes"].ToString();
+                selectedTypeList = selectedTypeList.Replace(",", "','");
+
+                SqlQuery += (" AND RecipientType.p_type_code_c IN ('" + selectedTypeList + "')");
+            }
+
+            SqlQuery +=
+                (
+                    " GROUP by recipient.p_partner_key_n, recipient.p_partner_short_name_c" + // , RecipientType.p_type_code_c, detail.a_recipient_ledger_number_n" +
+                    " ORDER BY recipient.p_partner_short_name_c");
+
+            DataTable resultTable = new DataTable();
+            TDBTransaction Transaction = null;
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    resultTable = DbAdapter.RunQuery(SqlQuery, "TotalForRecipients", Transaction);
                 });
             return resultTable;
         }

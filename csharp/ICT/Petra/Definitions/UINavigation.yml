@@ -180,6 +180,7 @@ OpenPetra:
                     ICHProcessing: {Namespace=Ict.Petra.Client.MFinance.Gui.ICH}
                         StewardshipCalculation: {ActionOpenScreen=TFrmStewardshipCalculation}
                         StewardshipReports: {ActionOpenScreen=TFrmStewardshipReports}
+                        StewardshipForPeriodReport: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, ActionOpenScreen=TFrmStewardshipForPeriod}
                     PeriodEnd: {Namespace=Ict.Petra.Client.MFinance.Gui.GL}
                         MonthEnd: {Description:Close a month, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndMonth}
                         YearEnd: {Description:Close a year, Namespace=Ict.Petra.Client.MFinance.Gui.GL, ActionOpenScreen=TPeriodEndYear}
@@ -223,7 +224,6 @@ OpenPetra:
                         RecipientGiftStatement: {ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {ActionOpenScreen=TFrmDonorGiftStatement}
                         DonorGiftsToFieldsReport: {ActionOpenScreen=TFrmDonorGiftsToFieldsReport}
-                        TotalGivingForRecipients: {ActionOpenScreen=TFrmTotalGivingForRecipients}
                         FieldGiftTotalsReport: {ActionOpenScreen=TFrmFieldGiftTotalsReport}
                         FieldLeaderGiftSummary: {ActionOpenScreen=TFrmFieldLeaderGiftSummary}
                         #FieldLeaderGiftSummary-2: {ActionOpenScreen=TFrmFieldLeaderGiftSummary_2}
@@ -234,6 +234,8 @@ OpenPetra:
                         EsrInpaymentSlip: {Label=ESR Inpayment Slip, ActionOpenScreen=TFrmEsrInpaymentSlip}
                         MotivationResponse: {ActionOpenScreen=TFrmMotivationResponse}
                         RecipientGiftDestination: {ActionOpenScreen=TFrmGiftDestination}
+                        TotalGivingForRecipients: {Label=Historic Donors Per Recipient, ActionOpenScreen=TFrmTotalGivingForRecipients}
+                        TotalForRecipients: {Label=Historic Totals Per Recipient, ActionOpenScreen=TFrmTotalForRecipients}
                     #Extracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts}
                         #ExtractMasterList: {Label=Extract Master List, ActionOpenScreen=TFrmExtractMaster}
                         #RecipientByField: {Namespace=Ict.Petra.Client.MFinance.Gui, Label=Recipient by Field, ActionClick=TFinanceMain.RecipientByFieldExtract}

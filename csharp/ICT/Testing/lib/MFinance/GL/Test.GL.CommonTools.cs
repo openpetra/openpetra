@@ -189,7 +189,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         {
             TGetAccountHierarchyDetailInfo gahdi = new TGetAccountHierarchyDetailInfo(FLedgerNumber);
 
-            Assert.IsTrue(gahdi.HasNoChildren("6800"), "Base Account without childs");
+            Assert.IsTrue(gahdi.HasNoChildren("6800"), "Base Account without children");
             Assert.IsFalse(gahdi.HasNoChildren("6800S"), "Root Account");
             List <String>list = gahdi.GetChildren("7000S");
             Assert.AreEqual(2, list.Count, "Two entries ...");
@@ -198,7 +198,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.AreEqual("7000S", gahdi.GetParentAccount("7010"));
 
             List <String>list2 = gahdi.GetChildren("ASSETS");
-            Assert.AreEqual(41, list2.Count, "Currently 41 chield entries ...");
+            Assert.AreEqual(41, list2.Count, "Currently 41 child entries");
         }
 
         /// <summary>

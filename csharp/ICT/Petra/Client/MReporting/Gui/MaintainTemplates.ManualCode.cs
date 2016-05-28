@@ -79,7 +79,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             chkDefault.Enabled = !chkPrivate.Checked;
             txtDescription.Enabled = !chkReadonly.Checked;
             chkPrivate.Visible = (!chkDefault.Checked && FSelectedRow.Author == FCurrentUser);
-            chkPrivateDefault.Visible = chkPrivate.Checked;
+            chkPrivateDefault.Visible = true; // chkPrivate.Checked;
             chkReadonly.Visible = (Control.ModifierKeys == Keys.Control);
             btnRemove.Enabled = !FSelectedRow.Readonly;
 
@@ -291,7 +291,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             NewRow.Author = FCurrentUser;
             NewRow.Default = false;
             NewRow.Readonly = false;
-            NewRow.ReportVariant = String.Format(Catalog.GetString("Copy of {0}"), NewRow.ReportVariant);
+            NewRow.ReportVariant = String.Format(Catalog.GetString("{0} copy of {1}"), FCurrentUser, NewRow.ReportVariant);
             FTemplateTable.Rows.Add(NewRow);
             DataChangedFlag = true;
         }

@@ -236,6 +236,69 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             return Ret;
         }
 
+        /// <summary>Is this Recipient, if of type CC, linked?</summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="APartnerKey"></param>
+        /// <returns>True if this is a valid key to a partner of type CC
+        /// that is linked (in the specified ledger)</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean PartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey)
+        {
+            bool PartnerAndLinksCombinationIsValid = true;
+            int NumPartnerWithTypeCostCentre = 0;
+            int NumPartnerLinks = 0;
+
+            AValidLedgerNumberTable LinksTbl = null;
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string sQL = String.Format("SELECT COUNT(*)" +
+                        " FROM public.{0}, public.{1}" +
+                        " WHERE {0}.{2} = {1}.{3}",
+                        PPartnerTable.GetTableDBName(),
+                        PPartnerTypeTable.GetTableDBName(),
+                        PPartnerTable.GetPartnerKeyDBName(),
+                        PPartnerTypeTable.GetPartnerKeyDBName());
+
+                    if (APartnerKey > 0)
+                    {
+                        sQL += String.Format(" AND {0}.{1} = {2}",
+                            PPartnerTable.GetTableDBName(),
+                            PPartnerTable.GetPartnerKeyDBName(),
+                            APartnerKey);
+                    }
+
+                    sQL += String.Format(" AND {0}.{1} = '{2}'",
+                        PPartnerTypeTable.GetTableDBName(),
+                        PPartnerTypeTable.GetTypeCodeDBName(),
+                        MPartnerConstants.PARTNERTYPE_COSTCENTRE);
+
+                    NumPartnerWithTypeCostCentre = Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar(sQL, Transaction));
+
+                    if (APartnerKey > 0)
+                    {
+                        LinksTbl = AValidLedgerNumberAccess.LoadByPrimaryKey(ALedgerNumber, APartnerKey, Transaction);
+                    }
+                    else
+                    {
+                        LinksTbl = AValidLedgerNumberAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                    }
+
+                    NumPartnerLinks = LinksTbl.Count;
+
+                    if ((NumPartnerWithTypeCostCentre > 0) && (NumPartnerLinks == 0))
+                    {
+                        PartnerAndLinksCombinationIsValid = false;
+                    }
+                });
+
+            return PartnerAndLinksCombinationIsValid;
+        }
+
         /// <summary>
         /// Verifies the existence of a Partner and checks if the current user can modify it.
         /// </summary>

@@ -27,6 +27,7 @@ using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data; // Implicit reference
+using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
@@ -424,6 +425,80 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             ucoPartnerTabSet.GetDataFromControls();
             ucoPersonnelTabSet.GetDataFromControls();
+        }
+
+        /// <summary>
+        /// Returns true if a new location is being added, otherwise false.
+        /// </summary>
+        /// <returns>True if a new location is being added, otherwise false.</returns>
+        public bool LocationBeingAdded()
+        {
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+            {
+                return ucoPartnerTabSet.LocationBeingAdded();
+            }
+            else
+            {
+                throw new EOPAppException("This Menu item must only be used when the Partner Data Tab Group is shown");
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the Partner has an Address with the specified PK.
+        /// </summary>
+        /// <remarks>Displays an error message to the user if it will return false!</remarks>
+        /// <param name="ALocationPK">PK of a DataRow in the PLocation table.</param>
+        /// <returns>True if the Address was found, otherwise false.</returns>
+        public bool IsAddressRowPresent(TLocationPK ALocationPK)
+        {
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+            {
+                return ucoPartnerTabSet.IsAddressRowPresent(ALocationPK);
+            }
+            else
+            {
+                throw new EOPAppException("This Menu item must only be used when the Partner Data Tab Group is shown");
+            }
+        }
+
+        /// <summary>
+        /// Allows copying of an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address...') into the currently edited Address.
+        /// </summary>
+        /// <param name="AFoundAddressLocationRow">DataRow containing the Location information
+        /// for the found Address.
+        /// </param>
+        public void CopyFoundAddressData(PLocationRow AFoundAddressLocationRow)
+        {
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+            {
+                ucoPartnerTabSet.CopyFoundAddressData(AFoundAddressLocationRow);
+            }
+            else
+            {
+                throw new EOPAppException("This Menu item must only be used when the Partner Data Tab Group is shown");
+            }
+        }
+
+        /// <summary>
+        /// Allows adding an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address...').
+        /// </summary>
+        /// <remarks>The found Address must be merged into the PLocation DataTable in the
+        /// FMultiTableDS before this function can be called! The record that was merged
+        /// gets deleted by a call to this procedure!</remarks>
+        /// <param name="ASiteKey">SiteKey of the found Location.</param>
+        /// <param name="ALocationKey">LocationKey of the found Location.</param>
+        public void AddNewFoundAddress(Int64 ASiteKey, Int32 ALocationKey)
+        {
+            if (FCurrentModuleTabGroup == TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner)
+            {
+                ucoPartnerTabSet.AddNewFoundAddress(ASiteKey, ALocationKey);
+            }
+            else
+            {
+                throw new EOPAppException("This Menu item must only be used when the Partner Data Tab Group is shown");
+            }
         }
 
         /// <summary>

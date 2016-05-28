@@ -73,9 +73,9 @@ namespace Ict.Common.Controls
                 {
                     FMaxTaskWidth = value;
 
-                    if (this.Controls.Count > 0)
+                    for (int i = 0; i < this.Controls.Count; i++)
                     {
-                        ((TLstTasks) this.Controls[0]).MaxTaskWidth = FMaxTaskWidth;
+                        ((TLstTasks) this.Controls[i]).MaxTaskWidth = FMaxTaskWidth;
                     }
                 }
             }
@@ -97,9 +97,9 @@ namespace Ict.Common.Controls
                 {
                     FTaskAppearance = value;
 
-                    if (this.Controls.Count > 0)
+                    for (int i = 0; i < this.Controls.Count; i++)
                     {
-                        ((TLstTasks) this.Controls[0]).TaskAppearance = FTaskAppearance;
+                        ((TLstTasks) this.Controls[i]).TaskAppearance = FTaskAppearance;
                     }
                 }
             }
@@ -121,9 +121,9 @@ namespace Ict.Common.Controls
                 {
                     FSingleClickExecution = value;
 
-                    if (this.Controls.Count > 0)
+                    for (int i = 0; i < this.Controls.Count; i++)
                     {
-                        ((TLstTasks) this.Controls[0]).SingleClickExecution = FSingleClickExecution;
+                        ((TLstTasks) this.Controls[i]).SingleClickExecution = FSingleClickExecution;
                     }
                 }
             }
@@ -223,9 +223,20 @@ namespace Ict.Common.Controls
         /// </summary>
         private void SelectFirstTaskWithFocus(TLstTasks ATaskList)
         {
-            if (ATaskList.Groups.Count > 0)
+            for (int i = ATaskList.Controls.Count - 1; i >= 0; i--)
             {
-                ATaskList.Groups[ATaskList.FirstGroupName].SelectFirstTaskWithFocus();
+                TUcoTaskGroup group = (TUcoTaskGroup)ATaskList.Controls[i];
+
+                for (int k = 0; k < group.Controls[0].Controls.Count; k++)
+                {
+                    TUcoSingleTask task = (TUcoSingleTask)group.Controls[0].Controls[k];
+
+                    if (task.Enabled)
+                    {
+                        task.FocusTask();
+                        return;
+                    }
+                }
             }
         }
 
@@ -242,9 +253,20 @@ namespace Ict.Common.Controls
         /// </summary>
         private void SelectLastTaskWithFocus(TLstTasks ATaskList)
         {
-            if (ATaskList.Groups.Count > 0)
+            for (int i = 0; i < ATaskList.Controls.Count; i++)
             {
-                ATaskList.Groups[ATaskList.LastGroupName].SelectLastTaskWithFocus();
+                TUcoTaskGroup group = (TUcoTaskGroup)ATaskList.Controls[i];
+
+                for (int k = group.Controls[0].Controls.Count - 1; k >= 0; k--)
+                {
+                    TUcoSingleTask task = (TUcoSingleTask)group.Controls[0].Controls[k];
+
+                    if (task.Enabled)
+                    {
+                        task.FocusTask();
+                        return;
+                    }
+                }
             }
         }
 
@@ -253,9 +275,32 @@ namespace Ict.Common.Controls
         /// </summary>
         public void SelectNextGroupWithFocus()
         {
-            if (FCurrentTaskList.NextGroupName != null)
+            if (FCurrentTaskList != null)
             {
-                FCurrentTaskList.Groups[FCurrentTaskList.NextGroupName].SelectFirstTaskWithFocus();
+                bool foundThisGroup = false;
+
+                for (int i = FCurrentTaskList.Controls.Count - 1; i >= 0; i--)
+                {
+                    TUcoTaskGroup group = (TUcoTaskGroup)FCurrentTaskList.Controls[i];
+
+                    if (group.Name == FCurrentTaskList.CurrentGroupName)
+                    {
+                        foundThisGroup = true;
+                    }
+                    else if (foundThisGroup)
+                    {
+                        for (int k = 0; k < group.Controls[0].Controls.Count; k++)
+                        {
+                            TUcoSingleTask task = (TUcoSingleTask)group.Controls[0].Controls[k];
+
+                            if (task.Enabled)
+                            {
+                                task.FocusTask();
+                                return;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -264,10 +309,121 @@ namespace Ict.Common.Controls
         /// </summary>
         public void SelectPreviousGroupWithFocus()
         {
-            if (FCurrentTaskList.PreviousGroupName != null)
+            if (FCurrentTaskList != null)
             {
-                FCurrentTaskList.Groups[FCurrentTaskList.PreviousGroupName].SelectFirstTaskWithFocus();
+                bool foundThisGroup = false;
+
+                for (int i = 0; i < FCurrentTaskList.Controls.Count; i++)
+                {
+                    TUcoTaskGroup group = (TUcoTaskGroup)FCurrentTaskList.Controls[i];
+
+                    if (group.Name == FCurrentTaskList.CurrentGroupName)
+                    {
+                        foundThisGroup = true;
+                    }
+                    else if (foundThisGroup)
+                    {
+                        for (int k = 0; k < group.Controls[0].Controls.Count; k++)
+                        {
+                            TUcoSingleTask task = (TUcoSingleTask)group.Controls[0].Controls[k];
+
+                            if (task.Enabled)
+                            {
+                                task.FocusTask();
+                                return;
+                            }
+                        }
+                    }
+                }
             }
+        }
+
+        /// <summary>
+        /// The main override for handling command keys such as the arrow keys
+        /// </summary>
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            bool foundTask = false;
+
+            // Try and select the next task in the direction specified.  Will return false if the group does not have an enabled task in that direction.
+            switch (keyData)
+            {
+                case Keys.Up | Keys.Control:
+                    // Jump by a whole group
+                    SelectPreviousGroupWithFocus();
+                    return true;
+
+                case Keys.Down | Keys.Control:
+                    // Jump by a whole group
+                    SelectNextGroupWithFocus();
+                    return true;
+
+                case Keys.Left:
+                case Keys.Right:
+                case Keys.Up:
+                case Keys.Down:
+                    foundTask = FCurrentTaskList.Groups[FCurrentTaskList.CurrentGroupName].SelectNextTask(keyData);
+                    break;
+
+                case Keys.Tab:
+                case Keys.Tab | Keys.Shift:
+                    // The tab key does nothing when the task list has the focus
+                    return true;
+            }
+
+            if (foundTask)
+            {
+                // we are done
+                return true;
+            }
+
+            // We only need to keep looking if the arrow key was up or down
+            if ((keyData == Keys.Up) || (keyData == Keys.Down))
+            {
+                // So now we will need to try the next group, if it exists.
+                // Start by finding the index of the current group
+                int curGroupIndex = -1;
+
+                for (int i = 0; i < FCurrentTaskList.Controls.Count; i++)
+                {
+                    if (FCurrentTaskList.Controls[i].Name == FCurrentTaskList.CurrentGroupName)
+                    {
+                        curGroupIndex = i;
+                        break;
+                    }
+                }
+
+                // And get the current column in the current group
+                int currentRow, currentColumn;
+                FCurrentTaskList.Groups[FCurrentTaskList.CurrentGroupName].GetTaskLocation(out currentRow, out currentColumn);
+
+                bool keepLooking = true;
+
+                while (keepLooking)
+                {
+                    // We can try another group.  Group indexes are back to front (due to docking)
+                    if ((keyData == Keys.Up) && (curGroupIndex < FCurrentTaskList.Groups.Count - 1))
+                    {
+                        foundTask = FCurrentTaskList.Groups[FCurrentTaskList.Controls[++curGroupIndex].Name].SelectNextTask(int.MaxValue,
+                            currentColumn,
+                            keyData);
+                    }
+                    else if ((keyData == Keys.Down) && (curGroupIndex > 0))
+                    {
+                        foundTask = FCurrentTaskList.Groups[FCurrentTaskList.Controls[--curGroupIndex].Name].SelectNextTask(0, currentColumn, keyData);
+                    }
+
+                    if (foundTask)
+                    {
+                        return true;
+                    }
+
+                    // we are out of groups if our index is at one end or the other
+                    keepLooking = (curGroupIndex > 0 && curGroupIndex < FCurrentTaskList.Groups.Count - 1);
+                }
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         #endregion

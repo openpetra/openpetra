@@ -296,7 +296,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newPartnerLocation.PartnerKey = newPartner.PartnerKey;
             newPartnerLocation.DateEffective = DateTime.Now.Date;
             newPartnerLocation.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-            newPartnerLocation.SendMail = true;
+            newPartnerLocation.SendMail = false;
 
             newPartnerLocation["p_email_address_c"] =
                 TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EMAIL);        // Important: Do not use 'newPartnerLocation.EmailAddress' as this Column will get removed once Contact Details conversion is finished!

@@ -151,17 +151,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             String ReferenceFilter = "";
             String AnalysisTypeFilter = " ";
-            String OrderByClause = "AccountCode, a_cost_centre_code_c, TransactionDate";
+            String OrderByClause = "AccountCode, a_cost_centre_code_c, TransactionDate, BatchNumber, TransactionNumber";
             String Sortby = parameters.Get("param_sortby").ToString();
 
             if (Sortby == "Cost Centre")
             {
-                OrderByClause = "a_cost_centre_code_c, AccountCode, TransactionDate";
+                OrderByClause = "a_cost_centre_code_c, AccountCode, TransactionDate, BatchNumber, TransactionNumber";
             }
 
             if (Sortby == "Reference")
             {
-                OrderByClause = "a_reference_c, a_cost_centre_code_c, AccountCode, TransactionDate";
+                OrderByClause = "a_reference_c, a_cost_centre_code_c, AccountCode, TransactionDate, BatchNumber, TransactionNumber";
                 String FilterItem = parameters.Get("param_reference_start").ToString();
 
                 if (FilterItem != "")
@@ -179,7 +179,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             if (Sortby == "Analysis Type")
             {
-                OrderByClause = "AnalysisTypeCode, AnalysisValue, TransactionDate";
+                OrderByClause = "AnalysisTypeCode, AnalysisValue, TransactionDate, BatchNumber, TransactionNumber";
                 String FilterItem = parameters.Get("param_analyis_type_start").ToString();
 
                 if (FilterItem != "")
@@ -239,6 +239,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "SELECT a_transaction.a_account_code_c AS AccountCode," +
                     "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
                     "a_transaction.a_transaction_date_d AS TransactionDate," +
+                    "a_transaction.a_batch_number_i AS BatchNumber," +
+                    "a_transaction.a_transaction_number_i AS TransactionNumber," +
                     "a_transaction." + AmountField + " AS Amount," +
                     CurrencyField + " AS Currency," +
                     "a_transaction.a_debit_credit_indicator_l AS Debit," +
@@ -274,6 +276,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                     "SELECT a_transaction.a_account_code_c AS AccountCode," +
                     "a_transaction.a_cost_centre_code_c AS CostCentreCode," +
                     "a_transaction.a_transaction_date_d AS TransactionDate," +
+                    "a_transaction.a_batch_number_i AS BatchNumber," +
+                    "a_transaction.a_transaction_number_i AS TransactionNumber," +
                     "a_transaction." + AmountField + " AS Amount," +
                     CurrencyField + " AS Currency," +
                     "a_transaction.a_debit_credit_indicator_l AS Debit," +

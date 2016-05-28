@@ -22,27 +22,76 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
 
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TFrmRecurringGiftBatch : IFrmPetraEditManual
     {
         private Int32 FLedgerNumber;
-        private int standardTabIndex = 0;
+
+        private int DefaultTabIndex = 0;
+        private eGiftTabs FPreviouslySelectedTab = eGiftTabs.None;
+
+        //System & User Defaults
         private bool FNewDonorWarning = true;
+
+        /// <summary>
+        /// Specifies if Donor zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FDonorZeroIsValid = false;
+
+        /// <summary>
+        /// Specifies if Recipient zero is allowed
+        /// This value is system wide but can be over-ruled by FINANCE-3 level user
+        /// </summary>
+        public bool FRecipientZeroIsValid = false;
+
+        /// <summary>
+        /// Warn of inactive values on posting
+        /// </summary>
+        public bool FWarnOfInactiveValuesOnSubmitting = false;
+
+        // changed gift records
+        GiftBatchTDSARecurringGiftDetailTable FRecurringGiftDetailTable = null;
+
+        // Variables that are used to select a specific batch on startup
+        private Int32 FInitialBatchNumber = -1;
+
+        /// <summary>
+        /// Set this property if you want to load the screen with an initial Batch
+        /// </summary>
+        public Int32 InitialBatchNumber
+        {
+            set
+            {
+                FInitialBatchNumber = value;
+            }
+            get
+            {
+                return FInitialBatchNumber;
+            }
+        }
 
         /// <summary>
         /// use this ledger
@@ -68,11 +117,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public bool NewDonorWarning
         {
-            // We need a get, otherwise we get a Jenkins warning that FNewDonorWarning is not used
-            private get
-            {
-                return FNewDonorWarning;
-            }
             set
             {
                 FNewDonorWarning = value;
@@ -82,9 +126,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
-        public void RefreshAll()
+        public void RefreshAll(bool AShowStatusDialogOnLoad = true, bool AIsMessageRefresh = false)
         {
-            ucoRecurringBatches.RefreshAllData();
+            ucoRecurringBatches.RefreshAllData(AShowStatusDialogOnLoad, AIsMessageRefresh);
         }
 
         private void FileSaveManual(object sender, EventArgs e)
@@ -119,25 +163,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Check for Ex-Worker before saving and submitting
+        /// Save AND close the form
         /// </summary>
-        /// <param name="ASubmittingGiftDetails">GiftDetails for the recurring batch that is to be submitted</param>
-        /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
-        /// <returns>True if Save is successful</returns>
-        public bool SaveChangesForSubmitting(DataTable ASubmittingGiftDetails, out bool ACancelledDueToExWorker)
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void FileSaveClose(object sender, EventArgs e)
         {
-            GetDataFromControls();
-
-            // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorker = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(
-                TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING, FMainDS, FPetraUtilsObject, ASubmittingGiftDetails);
-
-            if (!ACancelledDueToExWorker)
+            if (SaveChanges() == true)
             {
-                return SaveChanges();
+                FPetraUtilsObject.CloseFormCheckRun = false;
+                Close();
             }
-
-            return false;
         }
 
         // Before the dataset is saved, check for correlation between batch and transactions
@@ -145,12 +181,79 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             ucoRecurringBatches.CheckBeforeSaving();
             ucoRecurringTransactions.CheckBeforeSaving();
+
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
+            }
+        }
+
+        private void FPetraUtilsObject_DataSavingStarted_NewDonorWarning()
+        {
+            GetDataFromControls();
+
+            FRecurringGiftDetailTable = FMainDS.ARecurringGiftDetail.GetChangesTyped();
+        }
+
+        private void FPetraUtilsObject_DataSaved_NewDonorWarning(object Sender, TDataSavedEventArgs e)
+        {
+            // if data successfully saved then look for new donors and warn the user
+            if (e.Success && (FRecurringGiftDetailTable != null) && FNewDonorWarning)
+            {
+                // this list contains a list of all new donors that were entered onto form
+                List <Int64>NewDonorsList = ucoRecurringTransactions.NewDonorsList;
+
+                foreach (GiftBatchTDSARecurringGiftDetailRow Row in FRecurringGiftDetailTable.Rows)
+                {
+                    // check changed data is either added or modified and that it is by a new donor
+                    if (((Row.RowState == DataRowState.Added) || (Row.RowState == DataRowState.Modified))
+                        && (!Row.IsDonorKeyNull() && NewDonorsList.Contains(Row.DonorKey)))
+                    {
+                        if (MessageBox.Show(string.Format(Catalog.GetString(
+                                        "{0} ({1}) is a new Donor.{2}Do you want to add subscriptions for them?{2}" +
+                                        "(Note: this message can be disabled in the 'File' menu by unselecting the 'New Donor Warning' item.)"),
+                                    Row.DonorName, Row.DonorKey, "\n\n"),
+                                Catalog.GetString("New Donor"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            // Open the donor's Edit screen so subscriptions can be added
+                            TFrmPartnerEdit frm = new TFrmPartnerEdit(FPetraUtilsObject.GetForm());
+
+                            frm.SetParameters(TScreenMode.smEdit, Row.DonorKey, TPartnerEditTabPageEnum.petpSubscriptions);
+                            frm.ShowDialog();
+                        }
+
+                        // ensures message is not displayed twice for one new donor with two gifts
+                        NewDonorsList.Remove(Row.DonorKey);
+                    }
+                }
+
+                ucoRecurringTransactions.NewDonorsList.Clear();
+            }
         }
 
         private void InitializeManualCode()
         {
             tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
             this.tpgRecurringTransactions.Enabled = false;
+
+            // read system and user defaults
+            bool DonorZeroIsValid = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DONORZEROISVALID, false);
+            bool RecipientZeroIsValid = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_RECIPIENTZEROISVALID, false);
+            //If user is FINANCE-3 level then their user settings can override system level setting
+            FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, DonorZeroIsValid);
+            FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, RecipientZeroIsValid);
+            //Use the same setting as for posting
+            FWarnOfInactiveValuesOnSubmitting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
+            mniNewDonorWarning.Checked = FNewDonorWarning;
+
+            // only add this event if the user want a new donor warning (this will still work without the condition)
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
+            }
+
+            mniFilePrint.Enabled = true;
 
             // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
             tbbSave.Click -= FileSave;
@@ -159,6 +262,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             mniFileSave.Click += FileSaveManual;
 
             tabGiftBatch.GotFocus += new EventHandler(tabGiftBatch_GotFocus);
+        }
+
+        private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)
+        {
+            if (FNewDonorWarning)
+            {
+                FPetraUtilsObject_DataSaved_NewDonorWarning(Sender, e);
+            }
+        }
+
+        // This manual method lets us peek at the data that is about to be saved...
+        // The data has already been collected from the contols and validated and there is definitely something to save...
+        private TSubmitChangesResult StoreManualCode(ref GiftBatchTDS SubmitDS, out TVerificationResultCollection VerificationResult)
+        {
+            //Used in Gift Batch, which has more code. Included here for easier cross-refeence
+
+            // Now do the standard call to save the changes
+            return TRemote.MFinance.Gift.WebConnectors.SaveGiftBatchTDS(ref SubmitDS, out VerificationResult);
         }
 
         private void tabGiftBatch_GotFocus(object sender, EventArgs e)
@@ -191,8 +312,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             FPetraUtilsObject.TFrmPetra_Load(sender, e);
 
-            tabGiftBatch.SelectedIndex = standardTabIndex;
+            tabGiftBatch.SelectedIndex = DefaultTabIndex;
             TabSelectionChanged(null, null);
+
+            //tabGiftBatch.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             this.Shown += delegate
             {
@@ -280,7 +403,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Batches,
 
             /// list of transactions
-            Transactions
+            Transactions,
+
+            /// None
+            None
         };
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
@@ -308,13 +434,42 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Return the currently selected Tab
+        /// </summary>
+        /// <returns></returns>
+        public eGiftTabs ActiveTab()
+        {
+            if (this.tabGiftBatch.SelectedTab == this.tpgRecurringBatches)
+            {
+                return eGiftTabs.Batches;
+            }
+            else if (this.tabGiftBatch.SelectedTab == this.tpgRecurringTransactions)
+            {
+                return eGiftTabs.Transactions;
+            }
+            else
+            {
+                return eGiftTabs.None;
+            }
+        }
+
+        /// <summary>
         /// Switch to the given tab
         /// </summary>
         /// <param name="ATab"></param>
-        public void SelectTab(eGiftTabs ATab)
+        /// <param name="AAllowRepeatEvent"></param>
+        public void SelectTab(eGiftTabs ATab, bool AAllowRepeatEvent = false)
         {
             if (ATab == eGiftTabs.Batches)
             {
+                if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !AAllowRepeatEvent)
+                {
+                    //Repeat event
+                    return;
+                }
+
+                FPreviouslySelectedTab = eGiftTabs.Batches;
+
                 FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
 
                 this.tabGiftBatch.SelectedTab = this.tpgRecurringBatches;
@@ -323,8 +478,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (ATab == eGiftTabs.Transactions)
             {
+                if ((FPreviouslySelectedTab == eGiftTabs.Transactions) && !AAllowRepeatEvent)
+                {
+                    //Repeat event
+                    return;
+                }
+
                 if (this.tpgRecurringTransactions.Enabled)
                 {
+                    FPreviouslySelectedTab = eGiftTabs.Transactions;
+
                     // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                     this.tabGiftBatch.SelectedTab = this.tpgRecurringTransactions;
 
@@ -342,7 +505,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             this.Cursor = Cursors.WaitCursor;
 
-                            LoadTransactions(SelectedRow.LedgerNumber, SelectedRow.BatchNumber);
+                            LoadTransactions(SelectedRow.LedgerNumber,
+                                SelectedRow.BatchNumber);
                         }
                         finally
                         {
@@ -412,9 +576,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void FindGiftDetail(ARecurringGiftDetailRow gdr)
         {
             //TODO add to other forms
-            //ucoRecurringBatches.SelectBatchNumber(gdr.BatchNumber);
-            //ucoRecurringTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
-            //standardTabIndex = 1;     // later we switch to the detail tab
+            ucoRecurringBatches.SelectRecurringBatchNumber(gdr.BatchNumber);
+            ucoRecurringTransactions.SelectRecurringGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
+            DefaultTabIndex = 1;     // later we switch to the detail tab
         }
 
         private int GetChangedRecordCountManual(out string AMessage)
@@ -584,6 +748,49 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return AllChangesCount;
         }
 
+        private void mniNewDonorWarning_Click(Object sender, EventArgs e)
+        {
+            // toggle menu tick
+            mniNewDonorWarning.Checked = !mniNewDonorWarning.Checked;
+
+            FNewDonorWarning = mniNewDonorWarning.Checked;
+
+            // change user default
+            TUserDefaults.SetDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, FNewDonorWarning);
+        }
+
+        // open screen to print the Gift Batch Detail report
+        private void FilePrint(Object sender, EventArgs e)
+        {
+            TFrmGiftBatchDetail Report = new TFrmGiftBatchDetail(this);
+
+            Report.LedgerNumber = FLedgerNumber;
+            Report.BatchNumber = ucoRecurringBatches.FSelectedBatchNumber;
+            Report.Show();
+        }
+
+        /// <summary>
+        /// Check for Ex-Worker before saving and submitting
+        /// </summary>
+        /// <param name="ASubmittingGiftDetails">GiftDetails for the recurring batch that is to be submitted</param>
+        /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesForSubmitting(DataTable ASubmittingGiftDetails, out bool ACancelledDueToExWorker)
+        {
+            GetDataFromControls();
+
+            // first alert the user to any recipients who are Ex-Workers
+            ACancelledDueToExWorker = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(
+                TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING, FMainDS, FPetraUtilsObject, ASubmittingGiftDetails);
+
+            if (!ACancelledDueToExWorker)
+            {
+                return SaveChanges();
+            }
+
+            return false;
+        }
+
         #region Forms Messaging Interface Implementation
 
         /// <summary>
@@ -606,7 +813,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // update gift destination
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftDestinationChanged)
             {
-                ucoRecurringTransactions.ProcessGiftDetainationBroadcastMessage(AFormsMessage);
+                ucoRecurringTransactions.ProcessGiftDestinationBroadcastMessage(AFormsMessage);
 
                 MessageProcessed = true;
             }

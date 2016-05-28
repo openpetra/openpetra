@@ -103,12 +103,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // we create the row locally, no dataset
                         AGiftRow giftRow = FMainDS.AGift.NewRowTyped(true);
 
-                        giftRow.DateEntered = FBatchRow.GlEffectiveDate;
                         giftRow.LedgerNumber = FBatchRow.LedgerNumber;
                         giftRow.BatchNumber = FBatchRow.BatchNumber;
                         giftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
                         giftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
                         giftRow.LastDetailNumber = 1;
+                        giftRow.DateEntered = FBatchRow.GlEffectiveDate;
 
                         FMainDS.AGift.Rows.Add(giftRow);
 
@@ -167,9 +167,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         newRow.MotivationDetailCode = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                     }
 
+                    newRow.DateEntered = CurrentGiftRow.DateEntered;
                     newRow.ReceiptPrinted = false;
                     newRow.ReceiptNumber = 0;
-                    newRow.DateEntered = CurrentGiftRow.DateEntered;
 
                     if (FTaxDeductiblePercentageEnabled)
                     {

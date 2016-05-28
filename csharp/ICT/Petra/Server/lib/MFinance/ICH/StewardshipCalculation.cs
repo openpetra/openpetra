@@ -706,8 +706,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 BuildChildAccountList(ALedgerNumber,
                     accountRow,
                     ADBTransaction,
-                    ref incomeAccounts,
-                    ref AVerificationResults);
+                    ref incomeAccounts);
 
                 //Process expense accounts
                 accountRow = (AAccountRow)postingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.EXPENSE_HEADING });
@@ -732,8 +731,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 BuildChildAccountList(ALedgerNumber,
                     accountRow,
                     ADBTransaction,
-                    ref expenseAccounts,
-                    ref AVerificationResults);
+                    ref expenseAccounts);
 
                 //Process P&L accounts
                 accountRow = (AAccountRow)postingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
@@ -1165,16 +1163,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <summary>
         /// To build a CSV list of accounts
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="AAccountRowFirst"></param>
-        /// <param name="DBTransaction"></param>
-        /// <param name="AChildAccounts"></param>
-        /// <param name="AVerificationResults"></param>
         private static void BuildChildAccountList(int ALedgerNumber,
             AAccountRow AAccountRowFirst,
             TDBTransaction DBTransaction,
-            ref string AChildAccounts,
-            ref TVerificationResultCollection AVerificationResults)
+            ref string AChildAccounts)
         {
             //Return value
             string AccountCode = AAccountRowFirst.AccountCode;
@@ -1218,8 +1210,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 BuildChildAccountList(ALedgerNumber,
                                     AccountRow,
                                     DBTransaction,
-                                    ref AChildAccounts,
-                                    ref AVerificationResults);
+                                    ref AChildAccounts);
                             }
                             else
                             {

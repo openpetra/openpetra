@@ -17,26 +17,43 @@
         SETCONTROLSLOCALVARS: BLANK
     Security:
         ModulePermissionRequired: [FINANCE-1]
+    Actions:
+        actUnselectAllCostCentres:
+            ActionClick: ClearAllCostCentres
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [uco_GeneralSettings, pnlCostCentre]
+            Controls: [uco_GeneralSettings, grpCostCentreFilter, pnlCostCentreList]
         uco_GeneralSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_GeneralSettings
             Height: 270
             Dock: Top
-        pnlCostCentre:
+        grpCostCentreFilter:
             Dock: Top
-            Controls: [rgrFilterCostCentres, chkExcludeInactiveCostCentres, clbCostCentres]
+            Controls: 
+               Row0: [rgrFilterCostCentres, pnlFilterOptions]
+        pnlCostCentreList:
+            Dock: Top
+            Controls: 
+               Row2: [clbCostCentres, btnUnselectAll]
         rgrFilterCostCentres:
             OptionalValues: [Fields, Departments, Personal Costcentres]
             OnChange: chkExcludeCostCentresChanged
             ParameterName: param_filter_cost_centres
+            BorderVisible :false
+        pnlFilterOptions:
+            Controls: [txtCostCentreFilter, chkExcludeInactiveCostCentres]
+        txtCostCentreFilter:
+            Label: Containing Text
+            OnChange:FilterCostCentre
+            Width:60
         chkExcludeInactiveCostCentres:
             Label: Exclude inactive Cost Centres
             CheckBoxAttachedLabel: right
             ParameterName: param_ExcludeInactiveCostCentres
             OnChange: chkExcludeCostCentresChanged
+        btnUnselectAll:
+            Action: actUnselectAllCostCentres
         clbCostCentres: 
             List: UserDefinedList
             AutoFindColumn: 2
