@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2040,13 +2040,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (AResponseDS != null)
                 {
-//                  TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
+                    TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
                     if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
-//                      TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-//                          AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
-//                          AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+                        TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                            AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
+                            AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
 
                     // AResponseDS is present: make a local copy and set AResponseDS to nil
@@ -2054,13 +2054,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     TmpResponseDS.Merge(AResponseDS);
                     AResponseDS = null;
                     ResponseDS = AResponseDS;
-//                  TLogging.LogAtLevel(8, "TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
+                    TLogging.LogAtLevel(8, "TmpResponseDS.Tables.Count: " + TmpResponseDS.Tables.Count.ToString());
 
                     if (TmpResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                     {
-//                      TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-//                          TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
-//                          "; Rows.Count: " + TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+                        TLogging.LogAtLevel(8, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                            TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() +
+                            "; Rows.Count: " + TmpResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
                     }
                 }
 
@@ -2114,12 +2114,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                 if (SubmitChangesAddressResult == TSubmitChangesResult.scrInfoNeeded)
                                 {
                                     ResponseDS = (DataSet)TmpResponseDS;
-                                    //                              TLogging.LogAtLevel(8, "ResponseDS.Tables.Count: " + ResponseDS.Tables.Count.ToString());
+                                    TLogging.LogAtLevel(8, "ResponseDS.Tables.Count: " + ResponseDS.Tables.Count.ToString());
 
                                     if (ResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
                                     {
-                                        //                                  TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
-                                        //                                      ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+                                        TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+                                            ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString());
+
                                         if (TLogging.DL >= 8)
                                         {
                                             if (ResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count > 0)
@@ -2137,8 +2138,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                                     if (ResponseDS.Tables.Contains(MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME))
                                     {
-                                        //                                  TLogging.LogAtLevel(8,  MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
-                                        //                                      ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+                                        TLogging.LogAtLevel(8, MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME + " Type: " +
+                                            ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].GetType().ToString());
+
                                         if (TLogging.DL >= 8)
                                         {
                                             if (ResponseDS.Tables[MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME].Rows.Count > 0)
@@ -2185,32 +2187,32 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             }
                         }
 
-                        // now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
-                        // (otherwise those address records for family members would show up on client where they are not needed)
                         if (SubmissionResult == TSubmitChangesResult.scrOK)
                         {
-                            if (InspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            Int64 ThisPartnerKey = FPartnerKey;
+
+                            if (ThisPartnerKey == 0)
                             {
-                                Int64 ThisPartnerKey = FPartnerKey;
-
-                                if (ThisPartnerKey == 0)
+                                // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
+                                if (InspectDS.Tables.Contains(PPartnerTable.GetTableName())
+                                    && (InspectDS.PPartner.Count == 1))
                                 {
-                                    // if FPartnerKey is not set then check if there is just one partner record in the dataset and take that key
-                                    if (InspectDS.Tables.Contains(PPartnerTable.GetTableName())
-                                        && (InspectDS.PPartner.Count == 1))
-                                    {
-                                        ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
+                                    ThisPartnerKey = ((PPartnerRow)InspectDS.PPartner.Rows[0]).PartnerKey;
 
-                                        if (ThisPartnerKey == 0)
-                                        {
-                                            // only bring up this message if there is just one partner record in the dataset
-                                            Console.WriteLine("FPartnerKey in TPartnerEditUIConnector should not be 0!");
-                                        }
+                                    if (ThisPartnerKey == 0)
+                                    {
+                                        // only bring up this message if there is just one partner record in the dataset
+                                        Console.WriteLine("FPartnerKey in TPartnerEditUIConnector should not be 0!");
                                     }
                                 }
+                            }
 
+                            if (InspectDS.Tables.Contains(PPartnerLocationTable.GetTableName()))
+                            {
                                 if (ThisPartnerKey != 0)
                                 {
+                                    // Now remove temporary records from PPartnerLocation that were used for propagation of addresses to family members
+                                    // (otherwise those address records for family members would show up on client where they are not needed)
                                     DataView OtherPartnerLocationsDV =
                                         new DataView(InspectDS.PPartnerLocation, PPartnerLocationTable.GetPartnerKeyDBName() + " <> " +
                                             ThisPartnerKey.ToString(), "", DataViewRowState.CurrentRows);
@@ -2220,6 +2222,12 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     {
                                         OtherPartnerLocationsDV[Counter].Row.Delete();
                                     }
+                                }
+
+                                if (ThisPartnerKey != 0)
+                                {
+                                    // This fixes Bugs #3604 and #5040.
+                                    ManuallyDealWithLocationChanges(SubmitChangesTransaction, InspectDS, ThisPartnerKey);
                                 }
                             }
                         }
@@ -2285,6 +2293,51 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             return SubmissionResult;
         }
 
+        /// <summary>
+        /// If the user took an action which results in the PPartnerLocation Record getting saved with a new LocationKey (e.g. by
+        /// accepting a Similar Location, changing a Location that other Partners are using, too, and in the
+        /// latter case the user didn't want to change *all* those Locations, or by replacing an existing Address with a Found
+        /// Address) our automatic mechanism of loading the ModificationId of such saved records fails in those cases, so we need to
+        /// fetch the ModificationId's of such records manually here. (Reason for that: our DataStore Methods are not capable of
+        /// retrieving the changed ModificationId of a Row in which part of the Primary Key, here the LocationKey, got changed in an
+        /// auto-generated UPDATE statement!). Would we not manually load the new ModificationId of such PPartnerLocation Rows the
+        /// any subsequent change of such a Row in the Partner Edit screen would result in an Optimistic Locking error on saving!
+        /// </summary>
+        /// <param name="SubmitChangesTransaction">Instantiated DB Transaction.</param>
+        /// <param name="AInspectDS">The Typed submission DataSet.</param>
+        /// <param name="ThisPartnerKey">PartnerKey of the Partner that gets saved.</param>
+        private void ManuallyDealWithLocationChanges(TDBTransaction SubmitChangesTransaction, PartnerEditTDS AInspectDS,
+            long ThisPartnerKey)
+        {
+            var ChangedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "",
+                DataViewRowState.ModifiedCurrent);
+            PPartnerLocationTable ChangedLocationAsStoredInDBDT;
+            DataRow ChangePartnerLocationDR;
+
+            // Iterate over all changed PPartnerLocation DataRows
+            foreach (DataRowView ChangePartnerLocationDRV in ChangedPartnerLocationsDV)
+            {
+                ChangePartnerLocationDR = ChangePartnerLocationDRV.Row;
+
+                // If the LocationKey of a PPartnerLocation DataRow got modified...
+                if ((int)ChangePartnerLocationDR[PPartnerLocationTable.GetLocationKeyDBName(), DataRowVersion.Current] !=
+                    (int)ChangePartnerLocationDR[PPartnerLocationTable.GetLocationKeyDBName(), DataRowVersion.Original])
+                {
+                    // ...we need to manually load the new ModificationId of such a PPartnerLocation Row.
+                    ChangedLocationAsStoredInDBDT = PPartnerLocationAccess.LoadByPrimaryKey(ThisPartnerKey,
+                        (Int64)ChangePartnerLocationDR[PPartnerLocationTable.GetSiteKeyDBName()],
+                        (int)ChangePartnerLocationDR[PPartnerLocationTable.GetLocationKeyDBName()],
+                        SubmitChangesTransaction);
+
+                    if (ChangedLocationAsStoredInDBDT.Count == 1)
+                    {
+                        ChangePartnerLocationDR[PPartnerLocationTable.GetModificationIdDBName()] =
+                            ChangedLocationAsStoredInDBDT[0].ModificationId;
+                    }
+                }
+            }
+        }
+
         private TSubmitChangesResult SubmitChangesAddresses(ref PartnerEditTDS AInspectDS,
             TDBTransaction ASubmitChangesTransaction,
             ref PartnerAddressAggregateTDS AResponseDS,
@@ -2314,13 +2367,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 {
                     if (AInspectDS.PPartnerLocation != null)
                     {
-                        DataView AddedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "", DataViewRowState.Added);
+                        DataView AddedPartnerLocationsDV = new DataView(AInspectDS.PPartnerLocation, "", "",
+                            DataViewRowState.Added | DataViewRowState.ModifiedCurrent);  // or-ing with 'ModifiedCurrent' fixes Bug #5088
 
                         if (AddedPartnerLocationsDV.Count > 0)
                         {
-                            // New PPartnerLocation exists
-                            TLogging.LogAtLevel(7,
-                                "TPartnerEditUIConnector.SubmitChangesAddresses: New PPartnerLocation or changed PPartnerLocation exists.");
+                            // At least one new PPartnerLocation or changed PPartnerLocation exists
+                            TLogging.LogAtLevel(
+                                7,
+                                "TPartnerEditUIConnector.SubmitChangesAddresses: At least one new PPartnerLocation or changed PPartnerLocation exists.");
 
                             if (AInspectDS.PPartner != null)
                             {
@@ -2344,7 +2399,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                                     ASubmitChangesTransaction);
                                 PartnerDT[0].DateModified = DateTime.Today;
                                 AInspectDS.Merge(PartnerDT);
-//                              TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record wasn't present).");
+//                                TLogging.LogAtLevel(7, "TPartnerEditUIConnector.SubmitChangesAddresses: updated PPartner's DateModified to today (PPartner record wasn't present).");
                             }
                         }
                     }
@@ -2377,17 +2432,17 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             TSubmitChangesResult ReturnValue;
 
-//          TLogging.LogAtLevel(7, this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
-//          TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
+//            TLogging.LogAtLevel(7, this.GetType().FullName + ".SubmitChangesContinue: Instance hash is " + this.GetHashCode().ToString());
+//            TLogging.LogAtLevel(8, "AResponseDS.Tables.Count: " + AResponseDS.Tables.Count.ToString());
 
-/*
- *          if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
- *          {
- *              TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
- *                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
- *                      AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
- *          }
- */
+
+//            if (AResponseDS.Tables.Contains(MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME))
+//            {
+//                TLogging.LogAtLevel(7, MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME + " Type: " +
+//                    AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].GetType().ToString() + "; Rows.Count: " +
+//                    AResponseDS.Tables[MPartnerConstants.EXISTINGLOCATIONPARAMETERS_TABLENAME].Rows.Count.ToString());
+//            }
+
             ReturnValue = SubmitChanges(ref FSubmissionDS, ref AResponseDS, out AVerificationResult);
 
             if (AResponseDS == null)

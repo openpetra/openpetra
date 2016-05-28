@@ -63,40 +63,51 @@ namespace Ict.Petra.Shared.MPartner
         /// </summary>
         /// <param name="ALocationTable">Table containing location records to be used to update APartnerLocation records</param>
         /// <param name="APartnerLocationTable">Table to be updated with Location specific information</param>
+        /// <param name="AMakePLocationRecordUnchanged">Set to true to make the PLocation Record unchanged
+        /// (by calling .AcceptChanges() on it).</param>
         /// <returns></returns>
-        public static void SyncPartnerEditTDSPartnerLocation(PLocationTable ALocationTable, PartnerEditTDSPPartnerLocationTable APartnerLocationTable)
+        public static void SyncPartnerEditTDSPartnerLocation(PLocationTable ALocationTable, PartnerEditTDSPPartnerLocationTable APartnerLocationTable,
+            bool AMakePLocationRecordUnchanged = false)
         {
             DataRow Row;
             PLocationRow LocationRow;
 
             foreach (PartnerEditTDSPPartnerLocationRow PartnerLocationRow in APartnerLocationTable.Rows)
             {
-                Row = ALocationTable.Rows.Find(new Object[] { PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey });
-
-                if (Row != null)
+                if (PartnerLocationRow.RowState != DataRowState.Deleted)
                 {
-                    LocationRow = (PLocationRow)Row;
+                    Row = ALocationTable.Rows.Find(new Object[] { PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey });
 
-                    PartnerLocationRow.LocationLocality = LocationRow.Locality;
-                    PartnerLocationRow.LocationStreetName = LocationRow.StreetName;
-                    PartnerLocationRow.LocationAddress3 = LocationRow.Address3;
-                    PartnerLocationRow.LocationCity = LocationRow.City;
-                    PartnerLocationRow.LocationCounty = LocationRow.County;
-                    PartnerLocationRow.LocationPostalCode = LocationRow.PostalCode;
-                    PartnerLocationRow.LocationCountryCode = LocationRow.CountryCode;
-
-                    PartnerLocationRow.LocationCreatedBy = LocationRow.CreatedBy;
-
-                    if (!LocationRow.IsDateCreatedNull())
+                    if (Row != null)
                     {
-                        PartnerLocationRow.LocationDateCreated = (DateTime)LocationRow.DateCreated;
-                    }
+                        LocationRow = (PLocationRow)Row;
 
-                    PartnerLocationRow.LocationModifiedBy = LocationRow.ModifiedBy;
+                        PartnerLocationRow.LocationLocality = LocationRow.Locality;
+                        PartnerLocationRow.LocationStreetName = LocationRow.StreetName;
+                        PartnerLocationRow.LocationAddress3 = LocationRow.Address3;
+                        PartnerLocationRow.LocationCity = LocationRow.City;
+                        PartnerLocationRow.LocationCounty = LocationRow.County;
+                        PartnerLocationRow.LocationPostalCode = LocationRow.PostalCode;
+                        PartnerLocationRow.LocationCountryCode = LocationRow.CountryCode;
 
-                    if (!LocationRow.IsDateModifiedNull())
-                    {
-                        PartnerLocationRow.LocationDateModified = (DateTime)LocationRow.DateModified;
+                        PartnerLocationRow.LocationCreatedBy = LocationRow.CreatedBy;
+
+                        if (!LocationRow.IsDateCreatedNull())
+                        {
+                            PartnerLocationRow.LocationDateCreated = (DateTime)LocationRow.DateCreated;
+                        }
+
+                        PartnerLocationRow.LocationModifiedBy = LocationRow.ModifiedBy;
+
+                        if (!LocationRow.IsDateModifiedNull())
+                        {
+                            PartnerLocationRow.LocationDateModified = (DateTime)LocationRow.DateModified;
+                        }
+
+                        if (AMakePLocationRecordUnchanged)
+                        {
+                            Row.AcceptChanges();
+                        }
                     }
                 }
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -223,15 +223,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                         NewLocationLocationKey = (Int32)NewLocationRowSaved.LocationKey;
 //                      TLogging.LogAtLevel(9, "PerformLocationChangeChecks: New Location created! Its Location Key is: " + NewLocationLocationKey.ToString());
 
-                        // Add the new row to the LocationTable that is beeing processed as well
-                        // NewLocationCurrentTableRow := (ALocationRow.Table as PLocationTable).NewRowTyped(false);
-                        // NewLocationCurrentTableRow.ItemArray := NewLocationRowSaved.ItemArray;
-                        // ALocationRow.Table.Rows.Add(NewLocationCurrentTableRow);
-                        // Make the row unchanged so that it isn't picked up as a 'new Address'
-                        // and that it doesn't get saved later. Will be sent back to the Partner
-                        // Edit screen lateron.
-                        // NewLocationCurrentTableRow.AcceptChanges;
-
                         /*
                          * Update the reference from the changed Location to the new Location in
                          * the Partner's PartnerLocation DataTable. This will be saved later in
@@ -242,11 +233,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                                                                                 ALocationRow.LocationKey });
                         PartnerLocationRowForChangedLocation.LocationKey = NewLocationLocationKey;
 
-                        // Now delete the changed Location so that it doesn't get saved!
-                        // ALocationRow.Delete;
-                        // ALocationRow.AcceptChanges;
                         // Overwrite the Location that should be replaced with the data of the new Location
                         ALocationRow.ItemArray = NewLocationRowSaved.ItemArray;
+
                         PropagateLocationParametersDV2 = new DataView(AAddressAddedPromotionDT,
                             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " +
                             NewLocationRowSaved.SiteKey.ToString() + " AND " +
@@ -1907,12 +1896,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                                         return TmpResult;
                                     }
                                 }
-
-                                if (PerformPropagation)
-                                {
-                                    ModifyAddressAddedOrChangedParameters(PartnerLocationTable[PartnerLocationCounter],
-                                        ref AAddressAddedOrChangedPromotionParametersDT);
-                                }
                             }
 
                             /*
@@ -2153,20 +2136,19 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                          LocationReUseCounter <= SimilarLocationReUseKeyMapping.GetLength(0) - 1;
                          LocationReUseCounter += 1)
                     {
-/* if DEBUGMODE
- *                      if (TLogging.DL >= 9)
- *                      {
- *                          TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
- *                          TLogging.Log(
- *                              "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
- *                              ", 0].LocationKey: " +
- *                              SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
- *                          TLogging.Log(
- *                              "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
- *                              ", 1].LocationKey: " +
- *                              SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey.ToString());
- *                      }
- */
+//                        if (TLogging.DL >= 9)
+//                        {
+//                            TLogging.Log("LocationReUseCounter: " + LocationReUseCounter.ToString());
+//                            TLogging.Log(
+//                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
+//                                ", 0].LocationKey: " +
+//                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].LocationKey.ToString());
+//                            TLogging.Log(
+//                                "SubmitChanges: LocationReUseKeyMapping[" + LocationReUseCounter.ToString() +
+//                                ", 1].LocationKey: " +
+//                                SimilarLocationReUseKeyMapping[LocationReUseCounter, 1].LocationKey.ToString());
+//                        }
+
                         PLocationRow ReUsedLocationDR =
                             (PLocationRow)AInspectDS.PLocation.Rows.Find(
                                 new System.Object[] { SimilarLocationReUseKeyMapping[LocationReUseCounter, 0].SiteKey,
@@ -2269,8 +2251,9 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
                     if (PPartnerLocationAccess.Exists(APartnerKey, APartnerLocationRow.SiteKey, 0, ASubmitChangesTransaction))
                     {
-                        throw new EOPAppException(
-                            "A new PPartnerLocation DataRow with LocationKey 0 was added, but the Partner already has a PPartnerLocation with LocationKey 0");
+                        // Prevent the current PPartnerLocation with LocationKey 0 from getting saved the Partner has already got that record in the DB!
+                        // (Fixes Bug #5094)
+                        APartnerLocationRow.AcceptChanges();
                     }
                     else
                     {
@@ -2283,60 +2266,6 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             {
                 throw new EOPAppException(
                     "A new PPartnerLocation DataRow with LocationKey 0 was added, but the Partner already has a PPartnerLocation with LocationKey 0");
-            }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="APartnerLocationRow"></param>
-        /// <param name="AAddressAddedPromotionDT"></param>
-        private static void ModifyAddressAddedOrChangedParameters(PPartnerLocationRow APartnerLocationRow,
-            ref PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable AAddressAddedPromotionDT)
-        {
-            DataView AddressAddedOrChangedParametersDV;
-            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedRow;
-
-//          TLogging.LogAtLevel(9, "ModifyAddressAddedOrChangedParameters: Looking for ExistingLocationParameters with LocationKey " + APartnerLocationRow.LocationKey.ToString());
-
-/* if DEBUGMODE
- *          if (TLogging.DL >= 8)
- *          {
- *              for (int TmpRowCounter = 0; TmpRowCounter <= AAddressAddedPromotionDT.Rows.Count - 1; TmpRowCounter += 1)
- *              {
- *                  TLogging.Log("Checking Row: " + TmpRowCounter.ToString());
- *                  TLogging.Log(
- *                      "ModifyAddressAddedOrChangedParameters: AAddressAddedPromotionDT.Row[" + TmpRowCounter.ToString() + ".RowState: " +
- *                      (Enum.GetName(typeof(DataRowState), AAddressAddedPromotionDT.Rows[TmpRowCounter].RowState)));
- *                  TLogging.Log(
- *                      "ModifyAddressAddedOrChangedParameters: before searching: Row[" + TmpRowCounter.ToString() + "]: PLocationKey: " +
- *                      AAddressAddedPromotionDT[TmpRowCounter][PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName(),
- *                                                              DataRowVersion.Current].ToString() + "; PSiteKey: " +
- *                      AAddressAddedPromotionDT[TmpRowCounter][PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName(),
- *                                                              DataRowVersion.Current].ToString() + "; RowState: " +
- *                      (Enum.GetName(typeof(DataRowState), AAddressAddedPromotionDT.Rows[TmpRowCounter].RowState)));
- *              }
- *          }
- */
-
-            // Check if there is a Parameter Row for the LocationKey we are looking at
-            AddressAddedOrChangedParametersDV = new DataView(AAddressAddedPromotionDT,
-                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " +
-                Convert.ToInt64(APartnerLocationRow[PLocationTable.GetSiteKeyDBName(),
-                                                    DataRowVersion.Current]).ToString() + " AND " +
-                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName() +
-                " = " + Convert.ToInt32(APartnerLocationRow[PLocationTable.GetLocationKeyDBName(), DataRowVersion.Current]).ToString(),
-                "",
-                DataViewRowState.CurrentRows);
-
-            // There is a row like that: replace SiteKey and LocationKey!
-            if (AddressAddedOrChangedParametersDV.Count != 0)
-            {
-                AddressAddedOrChangedRow = (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)AddressAddedOrChangedParametersDV[0].Row;
-//              TLogging.LogAtLevel(9, "ModifyAddressAddedOrChangedParameters: Exchanging LocationKey " + AddressAddedOrChangedRow.LocationKey.ToString() +
-//                  " with LocationKey " + APartnerLocationRow.LocationKey.ToString());
-                AddressAddedOrChangedRow.SiteKey = APartnerLocationRow.SiteKey;
-                AddressAddedOrChangedRow.LocationKey = APartnerLocationRow.LocationKey;
             }
         }
 
@@ -2681,8 +2610,10 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out Boolean APerformPropagation,
             ref TVerificationResultCollection AVerificationResult)
         {
-//          TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks for LocationKey: " + APartnerLocationRow.LocationKey.ToString() +
-//                    "; AAddressAddedPromotionDT.Rows.Count: " + AAddressAddedPromotionDT.Rows.Count.ToString());
+            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow PropagateLocationDR = null;
+
+//            TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks for LocationKey: " + APartnerLocationRow.LocationKey.ToString() +
+//                "; AAddressAddedPromotionDT.Rows.Count: " + AAddressAddedPromotionDT.Rows.Count.ToString());
 
             APerformPropagation = false;
             TLocationPK SubmittedLocationPK = DetermineReplacedLocationPK(APartnerLocationRow, ALocationReUseKeyMapping);
@@ -2727,82 +2658,110 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-//                  TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Location " + APartnerLocationRow.LocationKey.ToString() + ": found Family Members and new Location should be propagated to them!");
-
-                    /*
-                     * Family Members were found and the new Location should be added to all
-                     * of them!
-                     */
-                    APerformPropagation = true;
-
-                    // Load all Persons of the Family
-                    PPersonTable FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
-
-                    // Find PPartnerLocation row of the Family that we should process
-                    PPartnerLocationRow FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
-                        new System.Object[] { APartnerKey, APartnerLocationRow.SiteKey,
-                                              APartnerLocationRow.LocationKey });
-
-                    if (FamilyPartnerLocationRow != null)
+                    if (!AAddressAddedPromotionDT[0].AnswerProcessedServerSide)
                     {
-                        for (int Counter = 0; Counter <= FamilyPersonsDT.Rows.Count - 1; Counter += 1)
+                        AAddressAddedPromotionDT[0].AnswerProcessedServerSide = true;
+
+                        TLogging.LogAtLevel(9,
+                            "PerformLocationFamilyMemberPropagationChecks: Location " + APartnerLocationRow.LocationKey.ToString() +
+                            ": found Family Members and new Location should be propagated to them!");
+
+                        /*
+                         * Family Members were found and the new Location should be added to all
+                         * of them!
+                         */
+                        APerformPropagation = true;
+
+                        // Load all Persons of the Family
+                        PPersonTable FamilyPersonsDT = PPersonAccess.LoadViaPFamily(APartnerKey, ASubmitChangesTransaction);
+
+                        // Find PPartnerLocation row of the Family that we should process
+                        PPartnerLocationRow FamilyPartnerLocationRow = (PPartnerLocationRow)APartnerLocationTable.Rows.Find(
+                            new System.Object[] { APartnerKey, APartnerLocationRow.SiteKey,
+                                                  APartnerLocationRow.LocationKey });
+
+                        if (FamilyPartnerLocationRow != null)
                         {
-                            PPersonRow ProcessedPersonRow = FamilyPersonsDT[Counter];
-//                          TLogging.LogAtLevel(9,  "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() + ": checking...");
-
-                            // Check if Person doesn't already have the Location
-                            if (!PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,
-                                    SubmittedLocationPK.LocationKey, ASubmitChangesTransaction))
+                            for (int Counter = 0; Counter <= FamilyPersonsDT.Rows.Count - 1; Counter += 1)
                             {
-                                /*
-                                 * PartnerLocation records for family members are added to APartnerLocationTable for easier data handling and
-                                 * will be removed again after SubmitChanges of whole dataset but before returning to client as otherwise
-                                 * they would confusingly show up on client side.
-                                 */
+                                PPersonRow ProcessedPersonRow = FamilyPersonsDT[Counter];
+                                //                          TLogging.LogAtLevel(9,  "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() + ": checking...");
 
-                                // Make sure record is not added more than once to APartnerLocationTable (in case it is not yet in database).
-                                if (APartnerLocationTable.Rows.Find(new System.Object[] { ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,
-                                                                                          SubmittedLocationPK.LocationKey }) == null)
+                                // Check if Person doesn't already have the Location
+                                if (!PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey,
+                                        SubmittedLocationPK.LocationKey, ASubmitChangesTransaction))
                                 {
-                                    //                              TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
-                                    //                                  ": adding Location " + SubmittedLocationPK.LocationKey.ToString() + "...");
-
-                                    // Add a copy of the PartnerLocation data to the Person
-                                    PPartnerLocationRow AddPartnerLocationRow = APartnerLocationTable.NewRowTyped(false);
-                                    AddPartnerLocationRow.ItemArray = DataUtilities.DestinationSaveItemArray(AddPartnerLocationRow,
-                                        FamilyPartnerLocationRow);
-                                    AddPartnerLocationRow.PartnerKey = ProcessedPersonRow.PartnerKey;
-                                    AddPartnerLocationRow.SiteKey = SubmittedLocationPK.SiteKey;
-                                    AddPartnerLocationRow.LocationKey = SubmittedLocationPK.LocationKey;
-                                    APartnerLocationTable.Rows.Add(AddPartnerLocationRow);
-
                                     /*
-                                     * If this Person has an PartnerLocation with LocationKey 0 (this
-                                     * means that this was the only PartnerLocation so far), delete the
-                                     * PartnerLocation with LocationKey 0.
+                                     * PartnerLocation records for family members are added to APartnerLocationTable for easier data handling and
+                                     * will be removed again after SubmitChanges of whole dataset but before returning to client as otherwise
+                                     * they would confusingly show up on client side.
                                      */
-                                    if (PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey, 0,
-                                            ASubmitChangesTransaction))
+
+                                    // Make sure record is not added more than once to APartnerLocationTable (in case it is not yet in database).
+                                    if (APartnerLocationTable.Rows.Find(new System.Object[] { ProcessedPersonRow.PartnerKey,
+                                                                                              SubmittedLocationPK.SiteKey,
+                                                                                              SubmittedLocationPK.LocationKey }) == null)
                                     {
-                                        //                                  TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() + ": had Location 0 assigned, deleting it.");
-                                        PPartnerLocationAccess.DeleteByPrimaryKey(ProcessedPersonRow.PartnerKey,
-                                            APartnerLocationRow.SiteKey,
-                                            0,
-                                            ASubmitChangesTransaction);
+                                        //                              TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
+                                        //                                  ": adding Location " + SubmittedLocationPK.LocationKey.ToString() + "...");
+
+                                        // Add a copy of the PartnerLocation data to the Person
+                                        PPartnerLocationRow AddPartnerLocationRow = APartnerLocationTable.NewRowTyped(false);
+                                        AddPartnerLocationRow.ItemArray = DataUtilities.DestinationSaveItemArray(AddPartnerLocationRow,
+                                            FamilyPartnerLocationRow);
+                                        AddPartnerLocationRow.PartnerKey = ProcessedPersonRow.PartnerKey;
+                                        AddPartnerLocationRow.SiteKey = SubmittedLocationPK.SiteKey;
+                                        AddPartnerLocationRow.LocationKey = SubmittedLocationPK.LocationKey;
+                                        APartnerLocationTable.Rows.Add(AddPartnerLocationRow);
+
+                                        /*
+                                         * If this Person has an PartnerLocation with LocationKey 0 (this
+                                         * means that this was the only PartnerLocation so far), delete the
+                                         * PartnerLocation with LocationKey 0.
+                                         */
+                                        if (PPartnerLocationAccess.Exists(ProcessedPersonRow.PartnerKey, SubmittedLocationPK.SiteKey, 0,
+                                                ASubmitChangesTransaction))
+                                        {
+                                            //                                  TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() + ": had Location 0 assigned, deleting it.");
+                                            PPartnerLocationAccess.DeleteByPrimaryKey(ProcessedPersonRow.PartnerKey,
+                                                APartnerLocationRow.SiteKey,
+                                                0,
+                                                ASubmitChangesTransaction);
+                                        }
                                     }
                                 }
+                                else
+                                {
+                                    //                              TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
+                                    //                                      ": already has Location " + SubmittedLocationPK.LocationKey.ToString() + " assigned.");
+                                }
                             }
-                            else
-                            {
-//                              TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks: Person  " + ProcessedPersonRow.PartnerKey.ToString() +
-//                                      ": already has Location " + SubmittedLocationPK.LocationKey.ToString() + " assigned.");
-                            }
+
+                            // Now change the SiteKey and LocationKey of the PromotionRow to match any new LocationKey (necessary if a Similar Location was found
+                            // and accepted by the user!) (Fixes Bug #5041)
+                            DataView PropagateLocationParameters2DV = new DataView(AAddressAddedPromotionDT,
+                                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetSiteKeyDBName() + " = " +
+                                LocationPK.SiteKey.ToString() +
+                                " AND " +
+                                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationKeyDBName() + " = " +
+                                LocationPK.LocationKey.ToString() +
+                                " AND " + PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetLocationAddedDBName() + " = true AND " +
+                                PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable.GetAnswerProcessedClientSideDBName() + " = true",
+                                "",
+                                DataViewRowState.CurrentRows);
+
+                            PropagateLocationDR = ((PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)PropagateLocationParameters2DV[0].Row);
+                            PropagateLocationDR.SiteKey = SubmittedLocationPK.SiteKey;
+                            PropagateLocationDR.LocationKey = SubmittedLocationPK.LocationKey;
+
+                            TLogging.LogAtLevel(9,
+                                "PerformLocationFamilyMemberPropagationChecks: LocationKey is now " + PropagateLocationDR.LocationKey.ToString());
                         }
-                    }
-                    else
-                    {
-                        throw new EOPAppException(
-                            "TPPartnerAddressAggregate.PerformLocationFamilyMemberPropagationChecks: PPartnerLocation record for Family is missing");
+                        else
+                        {
+                            throw new EOPAppException(
+                                "TPPartnerAddressAggregate.PerformLocationFamilyMemberPropagationChecks: PPartnerLocation record for Family is missing");
+                        }
                     }
                 }
             }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -127,13 +127,13 @@ namespace Ict.Petra.Client.MPartner.Gui
         private static readonly string StrQueryUnitParent = Catalog.GetString(
             "All 'Units' MUST be assigned a 'Parent'.\r\nDo you wish to assign one now?");
         private static readonly string StrQueryUnitParentTitle = Catalog.GetString("Assign Parent in Unit Hierarchy?");
-// TODO        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
-// TODO            "Are you sure you want to replace the current address with the address\r\n" +
-// TODO            "that you are about to find?\r\n\r\nWARNING:\r\n" +
-// TODO            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
-// TODO            "If the displayed address was valid, you should instead add a new address\r\n" +
-// TODO            "and then enter an end (to) date for the old address.");
-// TODO        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
+        private static readonly string StrQueryOverwriteAddress = Catalog.GetString(
+            "Are you sure you want to replace the current address with the address " +
+            "that you are about to find?\r\n\r\nWARNING:\r\n" +
+            "If you choose 'Yes', history for the currently displayed address will be lost!\r\n" +
+            "If the displayed address was valid, you should instead add a new address " +
+            "and then enter an end (to) date for the old address.");
+        private static readonly string StrQueryOverwriteAddressTitle = Catalog.GetString("Replace Current Address?");
         private static readonly string StrCannotDeletePartner = Catalog.GetString(
             "Cannot delete Partner that has unsaved changes.\r\n\r\n" +
             "Either save the changes that you have made, or close this Partner Edit screen without saving the data " +
@@ -2381,6 +2381,66 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void EditFindPartner(System.Object sender, System.EventArgs e)
         {
             TPartnerMain.FindPartner(this);
+        }
+
+        /// <summary>
+        /// Opens the Location Find screen to allow the user to find an existing Address.
+        /// </summary>
+        private void EditFindNewAddress(System.Object sender, System.EventArgs e)
+        {
+            Int64 SiteKey;
+            Int32 LocationKey;
+            bool IsNewLocation;
+            PLocationTable LocationDT;
+            DialogResult OverwriteWarningResult;
+            TLocationFindDialogWinForm LocationFindScreenForm;
+
+            IsNewLocation = ucoLowerPart.LocationBeingAdded();
+
+            if (!IsNewLocation)
+            {
+                OverwriteWarningResult = MessageBox.Show(StrQueryOverwriteAddress,
+                    StrQueryOverwriteAddressTitle,
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2);
+
+                if (OverwriteWarningResult != System.Windows.Forms.DialogResult.Yes)
+                {
+                    return;
+                }
+            }
+
+            // Show Hourglass cursor
+            this.Cursor = Cursors.WaitCursor;
+            // Give windows half a chance to show cursor
+            Application.DoEvents();
+
+            using (LocationFindScreenForm = new TLocationFindDialogWinForm(this))
+            {
+                if (LocationFindScreenForm.ShowDialog() == DialogResult.OK)
+                {
+                    LocationKey = LocationFindScreenForm.SelectedLocation.LocationKey;
+                    SiteKey = LocationFindScreenForm.SelectedLocation.SiteKey;
+
+//                    MessageBox.Show("Selected Location: " + LocationKey.ToString());
+
+                    /* Need to switch to Address Tab to make sure it is initialised before */
+                    /* executing methods on it... */
+                    ucoLowerPart.SelectTabPage(TPartnerEditTabPageEnum.petpAddresses);
+
+                    if (!ucoLowerPart.IsAddressRowPresent(new TLocationPK(SiteKey, LocationKey)))
+                    {
+                        /* Retrieve data for the selected Location from the PetraServer */
+                        LocationDT = FPartnerEditUIConnector.GetDataLocation(SiteKey, LocationKey);
+
+                        ucoLowerPart.CopyFoundAddressData(LocationDT[0]);
+                    }
+                }
+            }
+
+            // Normal mouse cursor again
+            this.Cursor = Cursors.Default;
         }
 
         #endregion

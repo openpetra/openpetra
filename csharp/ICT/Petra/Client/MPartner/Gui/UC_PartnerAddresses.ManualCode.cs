@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       wolfgangb
+//       wolfgangb, christiank
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -48,6 +48,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerAddresses
     {
+        private readonly string StrFoundAddressCannotBeUsedReason1 = Catalog.GetString("The found Address cannot be used because " +
+            "the Partner already has an Address record with this address!");
+
+        private readonly string StrFoundAddressCannotBeUsedReason2 = Catalog.GetString("The found Address cannot be used because " +
+            "the Partner had an Address record with this Address and you have just deleted it, but you haven't saved " +
+            "the Partner yet." + Environment.NewLine + Environment.NewLine + "You have to save the Partner first before you can " +
+            "add the same Address again to this Partner!");
+
         /// <summary>holds a reference to the Proxy System.Object of the Serverside UIConnector</summary>
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
@@ -58,9 +66,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>Array holding LocationKeys of records that need to be cleaned up (deleted) before Merging</summary>
         private Int32[] FCleanupAddressesLocationKeys;
-//TODOWB        private Boolean FRecordBeingAddedIsFoundRecord;
-//TODOWB        private TLocationPK FRecordKeyBeforeFinding;
-//TODOWB        private PLocationRow FLocationRowAfterCopying;
+
+        /// <summary>Fictive DataTable Key value for new records that is used on the Client side  until the record is saved by the PetraServer and gets a proper Key value</summary>
+        private Int32 FClientSideNewDataRowKey;
+
         private int FSelectedRowIndexBeforeSaving = -1;
 
         /// <summary>Copy of the PartnerLocation record that is being deleted</summary>
@@ -69,6 +78,12 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <summary>Current Address Order (used for optimising the number of TabIndex changes of certain Controls)</summary>
         private Int32 FCurrentAddressOrder;
         private Int32 FLastNonChangedAddressFieldTabIndex;
+
+        /// <summary>DataTable Key value for the record we are currently working with</summary>
+        private Int32 FCurrentLocationKey;
+
+        /// <summary>DataTable Key value for the record we are currently working with</summary>
+        private Int64 FCurrentSiteKey;
 
         /// <summary>Holds a reference to an ImageList containing Icons that can be shown in Grid Rows</summary>
         private ImageList FGridRowIconsImageList;
@@ -558,6 +573,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn("Address-3", FMainDS.PPartnerLocation.Columns[PartnerEditTDSPPartnerLocationTable.GetLocationAddress3DBName()]);
             grdDetails.AddTextColumn("City", FMainDS.PPartnerLocation.Columns[PartnerEditTDSPPartnerLocationTable.GetLocationCityDBName()]);
             grdDetails.AddTextColumn("Location Type", FMainDS.PPartnerLocation.ColumnLocationType);
+#if DATASETDEBUGGING
+            // p_location_key_i (for debugging purposes only...)
+            grdDetails.AddTextColumn("Location Key", FMainDS.PPartnerLocation.ColumnLocationKey);
+#endif
             grdDetails.Columns[0].Width = 20;
             grdDetails.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
             grdDetails.Columns[1].Width = 20;
@@ -620,11 +639,172 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Returns true if a new location is being added or if Location 0 is selected, otherwise false.
+        /// </summary>
+        /// <returns>True if a new location is being added or if Location 0 is selected, otherwise false.</returns>
+        public bool LocationBeingAdded()
+        {
+            if (FPreviouslySelectedDetailRow.LocationKey != 0)
+            {
+                return FPreviouslySelectedDetailRow.RowState == DataRowState.Added;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the Partner has an Address with the specified PK.
+        /// </summary>
+        /// <remarks>Displays an error message to the user if it will return false!</remarks>
+        /// <param name="ALocationPK">PK of a DataRow in the PLocation table.</param>
+        /// <returns>True if the Address was found, otherwise false.</returns>
+        public bool IsAddressRowPresent(TLocationPK ALocationPK)
+        {
+            Boolean ReturnValue = false;
+            var DuplicatePartnerLocationDV = new DataView(FMainDS.PPartnerLocation,
+                String.Format(PPartnerLocationTable.GetPartnerKeyDBName() + " = {0} AND " +
+                    PPartnerLocationTable.GetSiteKeyDBName() + " = {1} AND " +
+                    PPartnerLocationTable.GetLocationKeyDBName() + " = {2}",
+                    FMainDS.PPartner[0].PartnerKey, ALocationPK.SiteKey, ALocationPK.LocationKey),
+                "", DataViewRowState.CurrentRows | DataViewRowState.Deleted);
+
+            if (DuplicatePartnerLocationDV.Count != 0)
+            {
+                MessageBox.Show(
+                    DuplicatePartnerLocationDV[0].Row.RowState != DataRowState.Deleted ?
+                    StrFoundAddressCannotBeUsedReason1 : StrFoundAddressCannotBeUsedReason2,
+                    Catalog.GetString("Duplicate Address Not Permitted"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+
+                ReturnValue = true;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Allows copying of an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address...') into the currently edited Address.
+        /// </summary>
+        /// <param name="AFoundAddressLocationRow">DataRow containing the Location information
+        /// for the found Address.
+        /// </param>
+        public void CopyFoundAddressData(PLocationRow AFoundAddressLocationRow)
+        {
+            // Make sure that the values of all Controls in ucoDetails are written to the underlying
+            // DataSource (for taking over current PartnerLocation changes made by the user!)
+            GetDataFromControls();
+
+            CopyFoundAddressDataInternal(AFoundAddressLocationRow);
+
+            // make sure that location specific fields in PartnerLocationDT get initialized
+            PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(FMainDS.PLocation, FMainDS.PPartnerLocation, true);
+
+            // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
+            Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);
+            Calculations.DetermineBestAddress((DataSet)FMainDS);
+
+            ShowDetails();
+        }
+
+        /// <summary>
+        /// Allows copying of an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address') into the currently edited Address.
+        /// </summary>
+        /// <param name="AFoundAddressLocationRow">DataRow containing the Location information
+        /// for the found Address.
+        /// </param>
+        /// <returns>void</returns>
+        private void CopyFoundAddressDataInternal(PLocationRow AFoundAddressLocationRow)
+        {
+            PLocationRow CurrentLocationRow;
+            Int32 FindLocationKey;
+            Int64 FindSiteKey;
+            PPartnerLocationRow CurrentPartnerLocationRow;
+
+            if (FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+            {
+                FindLocationKey = FClientSideNewDataRowKey;
+                FindSiteKey = FCurrentSiteKey;
+            }
+            else
+            {
+                FindLocationKey = FCurrentLocationKey;
+                FindSiteKey = FCurrentSiteKey;
+            }
+
+            /* Get a reference to the DataRow that is currently selected in the Grid */
+            CurrentLocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { FindSiteKey, FindLocationKey });
+            CurrentPartnerLocationRow =
+                (PPartnerLocationRow)FMainDS.PPartnerLocation.Rows.Find(new Object[] { FMainDS.PPartner[0].PartnerKey, FindSiteKey,
+                                                                                       FindLocationKey });
+//            if (FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+//            {
+//                MessageBox.Show("Before BeginEdit:" + "\r\n" + "CurrentLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
+//                    CurrentLocationRow.RowState)) + "\r\n" +
+//                      "CurrentPartnerLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
+//                  CurrentPartnerLocationRow.RowState)));
+//                CurrentLocationRow.BeginEdit();
+//                CurrentPartnerLocationRow.BeginEdit();
+//
+//                MessageBox.Show("After BeginEdit:" + "\r\n" + "CurrentLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
+//                    CurrentLocationRow.RowState)) + "\r\n" +
+//                   "CurrentPartnerLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
+//                   CurrentPartnerLocationRow.RowState)));
+//            }
+
+            /* update current PLocation record data */
+            TAddressHandling.CopyFoundAddressLocationData(AFoundAddressLocationRow, CurrentLocationRow);
+            CurrentLocationRow.SiteKey = AFoundAddressLocationRow.SiteKey;
+            CurrentLocationRow.LocationKey = AFoundAddressLocationRow.LocationKey;
+
+//            MessageBox.Show("Before changing  CurrentPartnerLocationRow.LocationKey: " + CurrentPartnerLocationRow.LocationKey.ToString() + "; CurrentPartnerLocationRow.SiteKey: " + CurrentPartnerLocationRow.SiteKey.ToString());
+
+            /* update current PPartnerLocation record data */
+            CurrentPartnerLocationRow.BeginEdit();
+            CurrentPartnerLocationRow.SiteKey = AFoundAddressLocationRow.SiteKey;
+            CurrentPartnerLocationRow.LocationKey = (Int32)AFoundAddressLocationRow.LocationKey;
+            CurrentPartnerLocationRow.EndEdit();
+
+            /* update the date that this change is effective */
+            CurrentPartnerLocationRow.SetDateGoodUntilNull();
+
+            /* needs to be set before DateEffective to prevent date check trigger to run! */
+            CurrentPartnerLocationRow.DateEffective = DateTime.Now.Date;
+
+            FCurrentSiteKey = AFoundAddressLocationRow.SiteKey;
+            FCurrentLocationKey = (Int32)AFoundAddressLocationRow.LocationKey;
+
+//            MessageBox.Show("CopyFoundAddressData: FCurrentLocationKey: " + FCurrentLocationKey.ToString() + ";  FCurrentSiteKey: " + FCurrentSiteKey.ToString() + "; CurrentPartnerLocationRow.LocationKey: " +
+//                CurrentPartnerLocationRow.LocationKey.ToString() + "; CurrentPartnerLocationRow.SiteKey: " + CurrentPartnerLocationRow.SiteKey.ToString() + "; FRecordBeingAddedIsFoundRecord: " + FRecordBeingAddedIsFoundRecord.ToString());
+        }
+
+        /// <summary>
+        /// Allows adding an Address that the user has found (using Menu 'Edit'->'Find
+        /// New Address...').
+        /// </summary>
+        /// <remarks>The found Address must be merged into the PLocation DataTable in the
+        /// FMultiTableDS before this function can be called! The record that was merged
+        /// gets deleted by a call to this procedure!</remarks>
+        /// <param name="ASiteKey">SiteKey of the found Location.</param>
+        /// <param name="ALocationKey">LocationKey of the found Location.</param>
+        public void AddNewFoundAddress(Int64 ASiteKey, Int32 ALocationKey)
+        {
+//            FFoundNewAddressLocationKey = ALocationKey;
+
+//            /* The 'New' button needs to be enabled in order for ActionNewAddress to be run! */
+//            btnNewRecord.Enabled = true;
+            NewRecord(null, null);
+
+//            FFoundNewAddressLocationKey = 0;
+        }
+
+        /// <summary>
         /// Performs necessary actions to make the Merging of rows that were changed on
         /// the Server side into the Client-side DataSet possible.
-        ///
         /// </summary>
-        /// <returns>void</returns>
         public void CleanupRecordsBeforeMerge()
         {
             DataView NewLocationsDV;
@@ -754,6 +934,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             // it got replaced during merge process.
             if (FSelectedRowIndexBeforeSaving >= 0)
             {
+                // make sure that location specific fields in PartnerLocationDT get initialized (fixes Bug # 5039)
+                PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(FMainDS.PLocation, FMainDS.PPartnerLocation, true);
+
                 grdDetails.SelectRowInGrid(FSelectedRowIndexBeforeSaving);
             }
 
@@ -877,14 +1060,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                     pnlDetails.Enabled = true;
                     btnDelete.Enabled = true;
                 }
+
+                FCurrentSiteKey = ARow.SiteKey;
+                FCurrentLocationKey = ARow.LocationKey;
             }
 
             ApplySecurity();
             SetAddressFieldOrder();
-        }
-
-        private void GetDetailDataFromControlsManual(PPartnerLocationRow ARow)
-        {
         }
 
         /// <summary>
@@ -919,13 +1101,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             PLocationRow NewLocationRow = FMainDS.PLocation.NewRowTyped(true);
             Int32 LocationKey = -1;
 
+            FCurrentSiteKey = SharedConstants.FIXED_SITE_KEY; // TODO: use s_system_parameter.s_site_key_n once p_partner_location actually uses the Petra System SiteKey in the PrimaryKey (instead of 0, which is used currently)
+
+            // Determine new temporary, client-side LocationKey (a unique number less than 0)
             while (FMainDS.PLocation.Rows.Find(new object[] { ARow.SiteKey, LocationKey }) != null)
             {
                 LocationKey = LocationKey - 1;
             }
 
+            /* Assign Primary Key columns */
+            NewLocationRow.SiteKey = FCurrentSiteKey;
             NewLocationRow.LocationKey = LocationKey;
             FMainDS.PLocation.Rows.Add(NewLocationRow);
+
+            FClientSideNewDataRowKey = NewLocationRow.LocationKey;
 
             ARow.PartnerKey = ((PPartnerRow)FMainDS.PPartner.Rows[0]).PartnerKey;
 
@@ -954,6 +1143,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.Icon = 1;
 
             RemoveDefaultRecord();
+
+#if TODO
+            if (FMainDS.PPartner[0].StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
+            {
+                // Business Rule: if a new Address is added and the Partner's StatusCode
+                // isn't ACTIVE, set it to ACTIVE automatically.
+                MessageBox.Show(String.Format(MCommonResourcestrings.StrPartnerStatusChange +
+                        " because you have added a new Address!",
+                        FMainDS.PPartner[0].StatusCode,
+                        SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE)),
+                    MCommonResourcestrings.StrPartnerReActivationTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Note: While the code line below worked in Petra 2.3, in OpenPetra this doesn't work as DataBinding isn't here to
+                // help us anymore! Instead, we will likely need to raise a new Event to which the Partner Edit Form will need to
+                // subscribe and on receiving it the Form will need to call a new Method in UC_PartnerEdit_TopPart.ManualCode.cs that
+                // will need to set the Partner Status ComboBox to 'ACTIVE'...
+                // --> Bug for implementation change: #5092 <--
+                //FMainDS.PPartner[0].StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+            }
+#endif
         }
 
         /// <summary>
@@ -1033,14 +1243,22 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (ADeletionPerformed)
             {
-                if (!FSharedLocationPartnerLocation)
-                {
-                    // delete location row if it was the last one
-                    LocationRow = FMainDS.PLocation.Rows.Find(new object[] { DeletedRowSiteKey, DeletedRowLocationKey });
+                // Delete Location Row, too!
+                LocationRow = FMainDS.PLocation.Rows.Find(new object[] { DeletedRowSiteKey, DeletedRowLocationKey });
 
-                    if (LocationRow != null)
+                if (LocationRow != null)
+                {
+                    LocationRow.Delete();
+
+                    if (FSharedLocationPartnerLocation)
                     {
-                        LocationRow.Delete();
+                        // Remove the Location Row completely from its DataTable.
+                        // 1) We must NOT do this in case the Location is shared because otherwise the p_location record wouldn't
+                        //    get deleted server-side when data gets saved!
+                        // 2) We MUST do this in case the Location is shared otherwise it wouldn't be possible to add the
+                        //    same Location again once it got deleted (accidentally) as a duplicate record exception would
+                        //    happen then!
+                        LocationRow.AcceptChanges();
                     }
                 }
 

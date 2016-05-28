@@ -33,8 +33,9 @@ RootNode:
         actFileExportPartner: {Label=E&xport Partner to OpenPetra..., ActionClick=FileExportPartner, Image: ExportPetra.ico}
         actFileExportPartnerToPetra: {Label=E&xport Partner to Petra..., ActionClick=FileExportPartnerToPetra, Image: ExportPetra.ico}
         actSaveClose: {Label=Save and Close, ActionClick=FileSaveClose, Tooltip=Save and Close, Image=Save.ico}
-		
+
         actEditFind: {Label=&Find Partner..., ActionClick=EditFindPartner}
+        actEditFindNewAddress: {Label=Find New &Address..., ActionClick=EditFindNewAddress}
         
         actMaintainAddresses: {Label=&Addresses, ActionClick=MaintainAddresses, Image: Address.ico}
         actMaintainContactDetails: {Label=C&ontact Details, ActionClick=MaintainContactDetails, Image: ContactDetails.ico}
@@ -106,8 +107,8 @@ RootNode:
             mniSeparator:
             
         mniEdit:
-            mniEditFind:
-            mniEditFindNewAddress: {Label=Find New Address...}
+            mniEditFind: {ShortcutKeys=Keys.F | Keys.Control}
+            mniEditFindNewAddress: {ShortcutKeys=Keys.F | Keys.Control | Keys.Shift}
             mniSeparator:
             mniEditUndoCurrentField: 
               Label:Undo &Current Field
