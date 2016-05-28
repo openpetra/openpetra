@@ -1099,9 +1099,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                //Leave BatchPeriod as it is
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 

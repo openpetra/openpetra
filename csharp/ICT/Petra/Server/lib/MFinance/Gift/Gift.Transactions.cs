@@ -1348,6 +1348,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="ADateGiftEntered"></param>
         /// <param name="AMotivationGroupCode"></param>
         /// <param name="AMotivationDetailCode"></param>
+        /// <param name="APartnerIsMissingLink"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         public static string RetrieveCostCentreCodeForRecipient(Int32 ALedgerNumber,
@@ -1355,7 +1356,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int64 ARecipientLedgerNumber,
             DateTime ADateGiftEntered,
             String AMotivationGroupCode,
-            String AMotivationDetailCode)
+            String AMotivationDetailCode,
+            out bool APartnerIsMissingLink)
         {
             #region Validate Arguments
 
@@ -1392,6 +1394,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
+            APartnerIsMissingLink = false;
+            bool PartnerIsMissingLink = APartnerIsMissingLink;
             string CostCentreCode = string.Empty;
 
             TDBTransaction Transaction = null;
@@ -1408,6 +1412,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             ADateGiftEntered,
                             AMotivationGroupCode,
                             AMotivationDetailCode,
+                            out PartnerIsMissingLink,
                             Transaction);
                     });
             }
@@ -1417,20 +1422,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 throw;
             }
 
+            APartnerIsMissingLink = PartnerIsMissingLink;
+
             return CostCentreCode;
         }
 
         /// <summary>
         /// Retrieve the cost centre code for the recipient
         /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ARecipientPartnerKey"></param>
-        /// <param name="ARecipientLedgerNumber"></param>
-        /// <param name="ADateGiftEntered"></param>
-        /// <param name="AMotivationGroupCode"></param>
-        /// <param name="AMotivationDetailCode"></param>
-        /// <param name="ATransaction"></param>
-        /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
         private static string RetrieveCostCentreCodeForRecipient(Int32 ALedgerNumber,
             Int64 ARecipientPartnerKey,
@@ -1438,6 +1437,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DateTime ADateGiftEntered,
             String AMotivationGroupCode,
             String AMotivationDetailCode,
+            out bool APartnerIsMissingLink,
             TDBTransaction ATransaction)
         {
             #region Validate Arguments
@@ -1477,6 +1477,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
+            APartnerIsMissingLink = false;
             string CostCentreCode = string.Empty;
 
             //bool KeyMinIsActive = false;
@@ -1484,11 +1485,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (ARecipientPartnerKey > 0)
             {
-                DataTable PartnerCostCentreTbl = Ict.Petra.Server.MFinance.Setup.WebConnectors.TGLSetupWebConnector.LoadCostCentrePartnerLinks(
-                    ALedgerNumber,
-                    ARecipientPartnerKey);
+                DataTable PartnerCostCentreTbl = null;
 
-                if ((PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
+                APartnerIsMissingLink = !TGLSetupWebConnector.LoadCostCentrePartnerLinks(ALedgerNumber,
+                    ARecipientPartnerKey,
+                    out PartnerCostCentreTbl);
+
+                if (!APartnerIsMissingLink && (PartnerCostCentreTbl != null) && (PartnerCostCentreTbl.Rows.Count > 0))
                 {
                     CostCentreCode = (string)PartnerCostCentreTbl.DefaultView[0].Row["IsLinked"];
                 }
@@ -3245,6 +3248,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         #endregion Validate Data 4
 
+                        bool partnerIsMissingLink = false;
+
                         string newCostCentreCode =
                             RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                                 giftDetail.RecipientKey,
@@ -3252,6 +3257,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 giftDetail.DateEntered,
                                 motivationDetailRow.MotivationGroupCode,
                                 motivationDetailRow.MotivationDetailCode,
+                                out partnerIsMissingLink,
                                 ATransaction);
 
                         if (giftDetail.CostCentreCode != newCostCentreCode)
@@ -3560,6 +3566,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         #endregion Validate Data 4
 
+                        bool partnerIsMissingLink = false;
+
                         string newCostCentreCode =
                             RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                                 giftDetail.RecipientKey,
@@ -3567,6 +3575,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 giftDetail.DateEntered,
                                 motivationDetailRow.MotivationGroupCode,
                                 motivationDetailRow.MotivationDetailCode,
+                                out partnerIsMissingLink,
                                 ATransaction);
 
                         if (giftDetail.CostCentreCode != newCostCentreCode)
@@ -4139,6 +4148,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     "A Gift Destination will need to be assigned to this Partner."),
                                 TResultSeverity.Resv_Critical));
                     }
+
+                    //Check Cost centre code
+                    if (!TPartnerServerLookups.PartnerOfTypeCCIsLinked(ALedgerNumber, giftDetail.RecipientKey))
+                    {
+                        AVerifications.Add(
+                            new TVerificationResult(
+                                "Posting Gift Batch",
+                                String.Format(Catalog.GetString(
+                                        "Recipient: {0} ({1} - with partner type 'Cost Centre') in Gift {2} has no linked cost center."),
+                                    giftDetail.RecipientDescription,
+                                    giftDetail.RecipientKey.ToString("0000000000"),
+                                    giftDetail.GiftTransactionNumber) +
+                                "\n\n" +
+                                Catalog.GetString(
+                                    " A linked Cost Centre needs to be added to this Recipient."),
+                                TResultSeverity.Resv_Critical));
+                    }
                 }
 
                 // set column giftdetail.AccountCode motivation
@@ -4214,6 +4240,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 return null;
             }
 
+            //Further changes would have been made at the gift detail level in recalculating amounts,
+            //  but submitting changes will be done by the calling method
             return MainDS;
         }
 

@@ -66,129 +66,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         #region Public methods
 
         /// <summary>
-        /// Method to Delete a specified batch
-        /// </summary>
-        /// <param name="ACurrentBatchRow"></param>
-        /// <returns></returns>
-        private bool DeleteBatch(ARecurringGiftBatchRow ACurrentBatchRow)
-        {
-            //Assign default value(s)
-            bool DeletelationSuccessful = false;
-
-            string DeleteMessage = string.Empty;
-            string CompletionMessage = string.Empty;
-
-            List <string>ModifiedDetailKeys = new List <string>();
-
-            if ((ACurrentBatchRow == null))
-            {
-                return DeletelationSuccessful;
-            }
-
-            int CurrentBatchNo = ACurrentBatchRow.BatchNumber;
-
-            DeleteMessage = String.Format(Catalog.GetString("Are you sure you want to Delete Recurring Gift batch number: {0}?"),
-                ACurrentBatchRow.BatchNumber);
-
-            if ((MessageBox.Show(DeleteMessage,
-                     "Delete Batch",
-                     MessageBoxButtons.YesNo,
-                     MessageBoxIcon.Question,
-                     MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
-            {
-                return DeletelationSuccessful;
-            }
-
-            //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
-
-            try
-            {
-                FMyForm.Cursor = Cursors.WaitCursor;
-
-                //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} Deleteled successfully."),
-                    ACurrentBatchRow.BatchNumber);
-
-                FMyForm.GetBatchControl().UndoModifiedBatchRow(ACurrentBatchRow, true);
-
-                //Load all journals for current Batch
-                //clear any transactions currently being editied in the Transaction Tab
-                FMyForm.GetTransactionsControl().ClearCurrentSelection();
-
-                //Delete transactions
-                DataView RecurringGiftDV = new DataView(FMainDS.ARecurringGift);
-                DataView RecurringGiftDetailDV = new DataView(FMainDS.ARecurringGiftDetail);
-
-                RecurringGiftDV.AllowDelete = true;
-                RecurringGiftDetailDV.AllowDelete = true;
-
-                RecurringGiftDV.RowFilter = String.Format("{0}={1}",
-                    ARecurringGiftTable.GetBatchNumberDBName(),
-                    CurrentBatchNo);
-
-                RecurringGiftDV.Sort = ARecurringGiftTable.GetGiftTransactionNumberDBName() + " DESC";
-
-                RecurringGiftDetailDV.RowFilter = String.Format("{0}={1}",
-                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                    CurrentBatchNo);
-
-                RecurringGiftDetailDV.Sort = String.Format("{0} DESC, {1} DESC",
-                    ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
-                    ARecurringGiftDetailTable.GetDetailNumberDBName());
-
-                for (int i = 0; i < RecurringGiftDetailDV.Count; i++)
-                {
-                    RecurringGiftDetailDV.Delete(i);
-                }
-
-                for (int i = 0; i < RecurringGiftDV.Count; i++)
-                {
-                    RecurringGiftDV.Delete(i);
-                }
-
-                //Batch is only Deleteled and never deleted
-                ACurrentBatchRow.BatchTotal = 0;
-                ACurrentBatchRow.LastGiftNumber = 0;
-
-                FPetraUtilsObject.SetChangedFlag();
-
-                // save first
-                if (FMyForm.SaveChanges())
-                {
-                    MessageBox.Show(CompletionMessage,
-                        "Batch Deleted",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
-                }
-                else
-                {
-                    throw new Exception(Catalog.GetString("The batch failed to save after being Deleteled! Reopen the form and retry."));
-                }
-
-                DeletelationSuccessful = true;
-            }
-            catch (Exception ex)
-            {
-                CompletionMessage = ex.Message;
-                MessageBox.Show(CompletionMessage,
-                    "Deletelation Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-
-                //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
-            }
-            finally
-            {
-                FMyForm.Cursor = Cursors.Default;
-            }
-
-            return DeletelationSuccessful;
-        }
-
-        /// <summary>
         /// Deletes the current row and optionally populates a completion message
         /// </summary>
         /// <param name="ARowToDelete">the currently selected row to delete</param>
@@ -257,14 +134,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             catch (Exception ex)
             {
+                //Revert to previous state
+                FMainDS.Merge(BackupMainDS);
+
                 ACompletionMessage = ex.Message;
                 MessageBox.Show(ACompletionMessage,
                     "Deletion Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {

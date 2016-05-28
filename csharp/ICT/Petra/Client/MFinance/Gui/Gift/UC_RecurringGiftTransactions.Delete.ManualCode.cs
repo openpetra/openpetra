@@ -301,9 +301,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS)
         {
             AMainDS.ALedger.Clear();
-            AMainDS.AGiftDetail.Clear();
-            AMainDS.AGift.Clear();
-            AMainDS.AGiftBatch.Clear();
+            AMainDS.ARecurringGiftDetail.Clear();
+            AMainDS.ARecurringGift.Clear();
+            AMainDS.ARecurringGiftBatch.Clear();
 
             AMainDS.Merge(ABackupDS);
         }

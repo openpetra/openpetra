@@ -36,6 +36,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MPartner;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -237,10 +238,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AMotivationDetail.Length > 0)
             {
+                ACmbMotivationDetailCode.RefreshLabel();
+
                 AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, AMotivationGroup, AMotivationDetail });
-
-                ACmbMotivationDetailCode.RefreshLabel();
 
                 if (motivationDetail != null)
                 {
@@ -301,12 +302,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // it is possible that there are no active motivation details and so AMotivationDetail is blank
                 if (!string.IsNullOrEmpty(AMotivationDetail))
                 {
+                    bool partnerIsMissingLink = false;
+
                     NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                         ARecipientKey,
                         ACurrentDetailRow.RecipientLedgerNumber,
                         ACurrentDetailRow.DateEntered,
                         AMotivationGroup,
-                        AMotivationDetail);
+                        AMotivationDetail,
+                        out partnerIsMissingLink);
                 }
 
                 if (ATxtDetailCostCentreCode.Text != NewCCCode)
@@ -455,12 +459,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // it is possible that there are no active motivation details and so AMotivationDetail is blank
             if (!string.IsNullOrEmpty(ACurrentDetailRow.MotivationDetailCode))
             {
+                bool partnerIsMissingLink = false;
+
                 NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                     ACurrentDetailRow.RecipientKey,
                     ACurrentDetailRow.RecipientLedgerNumber,
                     ACurrentDetailRow.DateEntered,
                     ACurrentDetailRow.MotivationGroupCode,
-                    ACurrentDetailRow.MotivationDetailCode);
+                    ACurrentDetailRow.MotivationDetailCode,
+                    out partnerIsMissingLink);
             }
 
             if (ATxtDetailCostCentreCode.Text != NewCCCode)
@@ -918,25 +925,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
+            bool PartnerIsMissingLink = false;
+
             try
             {
-                string NewCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ARow.LedgerNumber,
+                string newCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ARow.LedgerNumber,
                     ARow.RecipientKey,
                     ARow.RecipientLedgerNumber,
                     ARow.DateEntered,
                     ARow.MotivationGroupCode,
-                    ARow.MotivationDetailCode);
+                    ARow.MotivationDetailCode,
+                    out PartnerIsMissingLink);
 
-                if (ARow.CostCentreCode != NewCostCentreCode)
+                if (ARow.CostCentreCode != newCostCentreCode)
                 {
-                    ARow.CostCentreCode = NewCostCentreCode;
+                    ARow.CostCentreCode = newCostCentreCode;
                 }
             }
             catch (Exception ex)
             {
-                string errMsg = Catalog.GetString("Error accessing Cost Centre Code:" + Environment.NewLine + ex.Message);
-
-                MessageBox.Show(errMsg, "Cost Centre Code", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
 
             if (ATxtDetailCostCentreCode.Text != ARow.CostCentreCode)
@@ -1040,8 +1049,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AMotivationDetail.Length > 0)
             {
-                ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
-                ACmbMotivationDetailCode.Text = AMotivationDetail;
+                if ((ACmbMotivationDetailCode.GetSelectedString() != null) && (ACmbMotivationDetailCode.GetSelectedString() != AMotivationDetail))
+                {
+                    ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+                }
+
+                ACmbMotivationDetailCode.RefreshLabel();
             }
             else if (ACmbMotivationDetailCode.Count > 0)
             {

@@ -268,8 +268,13 @@ namespace Ict.Petra.Shared
 
         /// <summary>Partner Key is invalid.</summary>
         [ErrCodeAttribute("Invalid Partner.",
-             ErrorMessageText = "Invalid Partner entered: The Partner specified with PartnerKey {0} is not valid.")]
+             ErrorMessageText = "Invalid Partner entered: The Partner with PartnerKey {0} is not valid.")]
         public const String ERR_PARTNERKEY_INVALID = "PARTN.00001V";
+
+        /// <summary>Partner Key is invalid.</summary>
+        [ErrCodeAttribute("Invalid Partner.",
+             ErrorMessageText = "Invalid Partner entered: The Partner with PartnerKey {0} has no linked cost center.")]
+        public const String ERR_PARTNER_TYPECC_UNLINKED = "PARTN.00998V";
 
         /// <summary>Partner Key is invalid (must be non-zero).</summary>
         [ErrCodeAttribute("Invalid Partner.",

@@ -1107,12 +1107,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 if (partnerKey > 0)
                                 {
+                                    bool partnerIsMissingLink = false;
+
                                     detailRow.CostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
                                         partnerKey,
                                         detailRow.RecipientLedgerNumber,
                                         detailRow.DateEntered,
                                         motivationGroup,
-                                        motivationDetail);
+                                        motivationDetail,
+                                        out partnerIsMissingLink);
                                 }
                                 else
                                 {
@@ -1473,7 +1476,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            decimal NewAmount = (decimal)txtDetailGiftAmount.NumberValueDecimal;
+            decimal NewAmount = txtDetailGiftAmount.NumberValueDecimal.Value;
 
             if (FPreviouslySelectedDetailRow != null)
             {

@@ -253,9 +253,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 this.grdResult.DoubleClickCell += new Ict.Common.Controls.TDoubleClickCellEventHandler(this.GrdResult_DoubleClickCell);
             }
-            catch (Exception exp)
+            catch (Exception ex)
             {
-                MessageBox.Show("Exception occured in SetupGrid: " + exp.Message + exp.StackTrace);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -389,8 +390,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                      */
                     return;  // Thread ends here!
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
                     throw;
                 }
 
@@ -406,9 +408,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // TSgrdDataGridPaged.LoadFirstDataPage for details!
                         FPagedDataTable = grdResult.LoadFirstDataPage(@GetDataPagedResult, false);
                     }
-                    catch (Exception E)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show(E.ToString());
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
+                        throw;
                     }
                 }
                 else if (ProgressState.CancelJob)

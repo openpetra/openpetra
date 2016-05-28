@@ -202,6 +202,15 @@ namespace Ict.Petra.Client.App.Core
                 return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerIsLinkedToCC(APartnerKey);
             }
 
+            /// <summary>Is Partner of type CC linked?</summary>
+            /// <param name="ALedgerNumber"></param>
+            /// <param name="APartnerKey"></param>
+            /// <returns>True if this is a valid key of a partner of type CC that's linked</returns>
+            public static Boolean PartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerOfTypeCCIsLinked(ALedgerNumber, APartnerKey);
+            }
+
             /// <summary>
             /// Verifies the existence of a Partner.
             /// </summary>

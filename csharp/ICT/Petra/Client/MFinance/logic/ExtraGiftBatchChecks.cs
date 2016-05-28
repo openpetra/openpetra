@@ -26,6 +26,7 @@ using System.Data;
 using System.Windows.Forms;
 
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
@@ -58,6 +59,360 @@ namespace Ict.Petra.Client.MFinance.Logic
             /// <summary>RecurringGiftBatch</summary>
             DELETING
         };
+
+
+        /// <summary>
+        /// Checks the entire gift batch for inactive values and informs the user
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AAction"></param>
+        /// <param name="AMainDS"></param>
+        /// <param name="APetraUtilsObject"></param>
+        /// <param name="AIsRecurringGift"></param>
+        /// <returns></returns>
+        public static bool CheckForInactiveFieldValues(Int32 ALedgerNumber,
+            GiftBatchAction AAction,
+            GiftBatchTDS AMainDS,
+            TFrmPetraEditUtils APetraUtilsObject,
+            Boolean AIsRecurringGift = false)
+        {
+            #region Validate Arguments
+
+            if (AMainDS == null)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Gift Batch dataset is empty!"),
+                        Utilities.GetMethodName(true)));
+            }
+            else if (AMainDS.AGiftBatch.Count == 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Gift Batch table contains no batches to validate!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            //TODO: Need to rewrite...
+
+            bool RetVal = false;
+
+            bool ChangesAtGiftBatchLevel = false;
+            bool ChangesAtGiftLevel = false;
+            bool ChangesAtGiftDetailLevel = false;
+
+            string IndentifyRecurring = (AIsRecurringGift ? "ARecurring" : "A");
+            Type GiftBatchTableType = Type.GetType(IndentifyRecurring + "GiftBatchTable");
+
+
+            bool WarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+
+            if ((AAction == GiftBatchAction.POSTING) && !WarnOfInactiveValuesOnPosting)
+            {
+                return true;
+            }
+
+            if (APetraUtilsObject.HasChanges)
+            {
+                GiftBatchTDS Changes = new GiftBatchTDS();
+
+                //Batch level
+                if (!AIsRecurringGift && (AMainDS.AGiftBatch.GetChangesTyped() != null))
+                {
+                    Changes.Merge(AMainDS.AGiftBatch.GetChangesTyped());
+                    ChangesAtGiftBatchLevel = true;
+                }
+                else if (AIsRecurringGift && (AMainDS.ARecurringGiftBatch.GetChangesTyped() != null))
+                {
+                    Changes.Merge(AMainDS.ARecurringGiftBatch.GetChangesTyped());
+                    ChangesAtGiftBatchLevel = true;
+                }
+
+                //Gift level
+                if (!AIsRecurringGift && (AMainDS.AGift.GetChangesTyped() != null))
+                {
+                    Changes.Merge(AMainDS.AGift.GetChangesTyped());
+                    ChangesAtGiftLevel = true;
+                }
+                else if (AIsRecurringGift && (AMainDS.ARecurringGift.GetChangesTyped() != null))
+                {
+                    Changes.Merge(AMainDS.ARecurringGift.GetChangesTyped());
+                    ChangesAtGiftLevel = true;
+                }
+
+                //Detail level
+                if (!AIsRecurringGift && (AMainDS.AGiftDetail.GetChangesTyped() != null))
+                {
+                    Changes.Merge(AMainDS.AGiftDetail.GetChangesTyped());
+                    ChangesAtGiftDetailLevel = true;
+                }
+                else if (AIsRecurringGift && (AMainDS.ARecurringGiftDetail.GetChangesTyped() != null))
+                {
+                    Changes.Merge(AMainDS.ARecurringGiftDetail.GetChangesTyped());
+                    ChangesAtGiftDetailLevel = true;
+                }
+
+                //Process changes
+                if (ChangesAtGiftBatchLevel)
+                {
+                    //***Batch level
+                    //TODO: Check for inactive Bank Cost Centre
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Bank Account
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Currency Code
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Method of Payment
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+                }
+
+                if (ChangesAtGiftLevel)
+                {
+                    //**Gift-level
+                    //TODO: Check for inactive Donor
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Method of Payment
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Method of Giving
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+                }
+
+                if (ChangesAtGiftDetailLevel)
+                {
+                    //*Detail-level
+                    //TODO: Check for inactive Recipient
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Key Ministry
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Cost Centre
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Account
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Tax Account
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive Motivation Group or Detail
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+
+                    //TODO: Check for inactive MailingCode
+                    if (!AIsRecurringGift)
+                    {
+                    }
+                    else
+                    {
+                        //Recurring gift batch changes
+                    }
+                }
+            }
+
+            return RetVal;
+        }
+
+        private static bool CheckForInactiveKeyMinistries(GiftBatchTDS AChangesDS, Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            bool RetVal = false;
+
+            //int CurrentBatchNumber = 0;
+
+            //Check for inactive KeyMinistries
+            DataTable GiftsWithInactiveKeyMinistries;
+            bool ModifiedDetails = false;
+
+            if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(ALedgerNumber, ABatchNumber,
+                    out GiftsWithInactiveKeyMinistries, false))
+            {
+                int numInactiveValues = GiftsWithInactiveKeyMinistries.Rows.Count;
+
+                string messageNonModifiedBatch =
+                    String.Format(Catalog.GetString("Gift Batch {0} contains {1} inactive key ministries. Please fix before saving!{2}{2}"),
+                        ABatchNumber,
+                        numInactiveValues,
+                        Environment.NewLine);
+                string messageModifiedBatch =
+                    String.Format(Catalog.GetString(
+                            "Reversal/Adjustment Gift Batch {0} contains {1} inactive key ministries. Do you still want to save?{2}{2}"),
+                        ABatchNumber,
+                        numInactiveValues,
+                        Environment.NewLine);
+
+                string listOfOffendingRows = string.Empty;
+
+                listOfOffendingRows += "Gift      Detail   Recipient          KeyMinistry" + Environment.NewLine;
+                listOfOffendingRows += "-------------------------------------------------------------------------------";
+
+                foreach (DataRow dr in GiftsWithInactiveKeyMinistries.Rows)
+                {
+                    listOfOffendingRows += String.Format("{0}{1:0000}    {2:00}        {3:00000000000}    {4}",
+                        Environment.NewLine,
+                        dr[0],
+                        dr[1],
+                        dr[2],
+                        dr[3]);
+
+                    bool isModified = Convert.ToBoolean(dr[4]);
+
+                    if (isModified)
+                    {
+                        ModifiedDetails = true;
+                    }
+                }
+
+                //TODO: work on how to relate to form
+                TFrmExtendedMessageBox extendedMessageBox = null;  // new TFrmExtendedMessageBox(FMyForm);
+
+                if (ModifiedDetails)
+                {
+                    if (extendedMessageBox.ShowDialog((messageModifiedBatch + listOfOffendingRows),
+                            Catalog.GetString("Post Batch"), string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbYesNo,
+                            TFrmExtendedMessageBox.TIcon.embiWarning) == TFrmExtendedMessageBox.TResult.embrYes)
+                    {
+                        //TODO: Check this
+                        //APostingAlreadyConfirmed = true;
+                    }
+                }
+                else
+                {
+                    extendedMessageBox.ShowDialog((messageNonModifiedBatch + listOfOffendingRows),
+                        Catalog.GetString("Post Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
+                }
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
+        /// Checks the entire gift batch for inactive values and informs the user
+        /// </summary>
+        /// <param name="AAction"></param>
+        /// <param name="AMainDS"></param>
+        /// <param name="APetraUtilsObject"></param>
+        /// <param name="AIsRecurringGift"></param>
+        /// <returns></returns>
+        public static bool CheckForConsistentFieldValues(GiftBatchAction AAction,
+            GiftBatchTDS AMainDS,
+            TFrmPetraEditUtils APetraUtilsObject,
+            Boolean AIsRecurringGift = false)
+        {
+            bool RetVal = false;
+
+            //TODO: check for field value consistency before saving
+
+            //TODO: Check Batch, Gift and Detail key field consistency
+            //  e.g. consecutive numbers, last number values etc
+            if (!AIsRecurringGift)
+            {
+            }
+            else
+            {
+            }
+
+            //TODO: Check Method of Payment between Batch and Gift level
+            if (!AIsRecurringGift)
+            {
+            }
+            else
+            {
+            }
+
+            //TODO: Check for Tax value correctness at Gift Detail level
+            if (!AIsRecurringGift)
+            {
+            }
+
+            //Nothing to do for recurring
+
+            return RetVal;
+        }
 
         /// <summary>
         /// Looks for gifts where the recipient is an ExWorker and asks the user if they want to continue.

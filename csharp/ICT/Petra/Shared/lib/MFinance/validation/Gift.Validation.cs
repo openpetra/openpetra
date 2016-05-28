@@ -473,6 +473,28 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ValidPartner = false;
             }
 
+            //Check for links if recipient is partner of type CC
+            TScreenVerificationResult VerificationResult2 = null;
+
+            VerificationResult2 = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartnerLinks(ARow.LedgerNumber,
+                ARow.RecipientKey,
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
+                AContext,
+                ValidationColumn,
+                null);
+
+            if (VerificationResult2 != null)
+            {
+                //If no verification result returned in partner check above
+                if (VerificationResult != null)
+                {
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                }
+
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult2);
+                ValidPartner = false;
+            }
+
             // 'Gift amount must be non-zero
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnGiftTransactionAmountId];
             ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
@@ -1367,9 +1389,31 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ValidPartner = false;
             }
 
+            //Check for links if recipient is partner of type CC
+            TScreenVerificationResult VerificationResult2 = null;
+
+            VerificationResult2 = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidPartnerLinks(ARow.LedgerNumber,
+                ARow.RecipientKey,
+                "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
+                AContext,
+                ValidationColumn,
+                null);
+
+            if (VerificationResult2 != null)
+            {
+                //If no verification result returned in partner check above
+                if (VerificationResult != null)
+                {
+                    AVerificationResultCollection.Remove(ValidationColumn);
+                }
+
+                AVerificationResultCollection.AddAndIgnoreNullValue(VerificationResult2);
+                ValidPartner = false;
+            }
+
             // 'Gift amount must be non-zero
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnGiftAmountId];
-            ValidationContext = String.Format("Batch Number {0} (transaction:{1} detail:{2})",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -1389,7 +1433,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // If recipient is non-zero, field must also be non-zero. Only check for valid recipient keys.
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnRecipientLedgerNumberId];
-            ValidationContext = String.Format("batch:{0} transaction:{1} detail:{2}",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -1412,7 +1456,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Motivation Detail must not be null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnMotivationDetailCodeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -1476,7 +1520,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Detail comments type 1 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentOneTypeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -1499,7 +1543,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Detail comments type 2 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentTwoTypeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
@@ -1522,7 +1566,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
             // Detail comments type 3 must not be null if associated comment is not null
             ValidationColumn = ARow.Table.Columns[ARecurringGiftDetailTable.ColumnCommentThreeTypeId];
-            ValidationContext = String.Format("(batch:{0} transaction:{1} detail:{2})",
+            ValidationContext = String.Format("Recurring Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
                 ARow.DetailNumber);
