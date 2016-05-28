@@ -46,6 +46,7 @@ namespace Ict.Common.Controls
         private static int FInitiallySelectedLedger = -1;
         private static TOpenNewOrExistingForm FOpenNewOrExistingForm;
         private static bool FTaxDeductiblePercentageEnabled = false;
+        private static bool FDevelopersOnly = false;
 
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
         private TaskAppearance FTaskAppearance;
@@ -500,14 +501,16 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
-        /// <param name="TaxDeductiblePercentageEnabled"></param>
+        /// <param name="ATaxDeductiblePercentageEnabled"></param>
+        /// <param name="ADevelopersOnly"></param>
         public static void Init(string AUserId,
             TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission,
-            bool TaxDeductiblePercentageEnabled = false)
+            bool ATaxDeductiblePercentageEnabled = false, bool ADevelopersOnly = false)
         {
             FUserId = AUserId;
             FHasAccessPermission = AHasAccessPermission;
-            FTaxDeductiblePercentageEnabled = TaxDeductiblePercentageEnabled;
+            FTaxDeductiblePercentageEnabled = ATaxDeductiblePercentageEnabled;
+            FDevelopersOnly = ADevelopersOnly;
         }
 
         /// <summary>
