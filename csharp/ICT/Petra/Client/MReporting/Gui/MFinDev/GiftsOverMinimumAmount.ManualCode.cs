@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
                 FPetraUtilsObject.LoadDefaultSettings();
-                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                //FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
