@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,24 +22,22 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-
-using Ict.Common;
-using Ict.Common.Verification;
+using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Client.App.Core;
-using Ict.Petra.Shared;
-using System.Data;
-using Ict.Petra.Client.App.Core.RemoteObjects;
 using System.Collections;
 using System.Collections.Generic;
-using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Common;
+using System.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmTotalGiftsThroughField
+    public partial class TFrmStewardshipForPeriod
     {
         private Int32 FLedgerNumber;
-        private bool FTaxDeductiblePercentageEnabled = false;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -49,13 +47,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
-                lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
 
-                FTaxDeductiblePercentageEnabled =
-                    TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                uco_GeneralSettings.InitialiseLedger(FLedgerNumber);
 
+                FPetraUtilsObject.LoadDefaultSettings();
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+//          uco_GeneralSettings.ShowOnlyEndPeriod();
+            uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
         }
 
         //
@@ -75,26 +78,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("TotalGiftsThroughField", paramsDictionary);
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "MonthlyGifts");
-            return true;
-        }
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("StewardshipForPeriod", paramsDictionary);
 
-        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
-        {
-            int detailYears = Convert.ToInt16(txtYearsDetail.Text);
-            int summaryYears = Convert.ToInt16(txtYearsSummary.Text);
-
-            if ((AReportAction == TReportActionEnum.raGenerate)
-                && ((detailYears > 99) || (detailYears < 0) || (summaryYears > 99) || (summaryYears < 0)))
+            if (this.IsDisposed)
             {
-                TVerificationResult VerificationMessage = new TVerificationResult(
-                    Catalog.GetString("Report Years"),
-                    Catalog.GetString("Set the year range between 1 and 99"), TResultSeverity.Resv_Critical);
-                FPetraUtilsObject.AddVerificationResult(VerificationMessage);
+                return false;
             }
 
-            ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+            if (ReportTable == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "StewardshipForPeriod");
+
             //
             // I need to get the name of the current ledger..
 
@@ -108,20 +106,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 LedgerName = LedgerView[0].Row["LedgerName"].ToString();
             }
 
-            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
-            ALedgerRow Row = LedgerDetailsTable[0];
-            String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
-
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_currency_name", CurrencyName);
+            return true;
+        }
 
-            Int32 Years = Math.Max(detailYears, summaryYears);
-            DateTime StartDate = new DateTime(DateTime.Now.Year - Years, 1, 1);
-
-            ACalc.AddParameter("param_StartDate", StartDate);
-            ACalc.AddParameter("param_DetailYears", detailYears);
-            ACalc.AddParameter("param_SummaryYears", summaryYears);
-            ACalc.AddParameter("param_TD", FTaxDeductiblePercentageEnabled);
+        private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
         }
     }
 }

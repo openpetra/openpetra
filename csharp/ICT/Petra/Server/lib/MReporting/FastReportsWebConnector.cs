@@ -125,6 +125,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.FeesTable(AParameters, FDbAdapter);
                     break;
 
+                case "StewardshipForPeriod":
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+
+                    ResultTbl = TFinanceReportingWebConnector.StewardshipForPeriodTable(AParameters, FDbAdapter);
+                    break;
+
                 case "IncomeExpense":
                     FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
@@ -195,6 +201,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 case "GiftDestination":
                     FDbAdapter = new TReportingDbAdapter(false);
                     ResultTbl = TFinanceReportingWebConnector.GiftDestination(AParameters, FDbAdapter);
+                    break;
+
+                case "TotalForRecipients":
+                    FDbAdapter = new TReportingDbAdapter(false);
+                    ResultTbl = TFinanceReportingWebConnector.TotalForRecipients(AParameters, FDbAdapter);
                     break;
 
                 /* Financial Development */

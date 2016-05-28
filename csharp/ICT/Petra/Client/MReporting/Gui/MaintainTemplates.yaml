@@ -21,18 +21,21 @@ RootNode:
             Dock: Fill
         pnlTemplateList:
             Controls: [grdTemplateList]
-            Width:340
+            Width:350
             Height:180
         grdTemplateList:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
         grpDetails:
-            Width:340
+            Width:350
             Controls: [txtDescription,chkDefault,chkPrivate,chkPrivateDefault,chkReadonly]
-        txtDescription: {Width=220}
+        txtDescription: {Width=210}
         chkDefault:
+            Label: Site-wide default
         chkPrivate:
+            Label: Only visible to me
         chkPrivateDefault:
+            Label: Default for me
         chkReadonly:
         pnlBtnRow: {AutoButtonMaxWidths=true, ControlsOrientation = horizontal }
             Padding:97,0,0,0

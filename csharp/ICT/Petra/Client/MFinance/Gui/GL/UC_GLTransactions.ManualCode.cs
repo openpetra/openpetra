@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // Different batch selected
                 DifferentBatchSelected = true;
-                bool requireControlSetup = (FLedgerNumber == -1) || (FTransactionCurrency != ACurrencyCode);
+                bool requireControlSetup = (FLedgerNumber == -1) || (CurrencyChanged);
 
                 //Handle dialog
                 dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());

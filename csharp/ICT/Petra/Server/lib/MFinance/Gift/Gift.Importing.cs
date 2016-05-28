@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1459,15 +1459,17 @@ namespace Ict.Petra.Server.MFinance.Gift
                 AGift.ReceiptLetterCode = AGift.ReceiptLetterCode.ToUpper();
             }
 
-            if (HasExtraColumns)
+            if (HasExtraColumns) // I'm not actually importing these things - this information is thrown away:
             {
                 TCommonImport.ImportInt32(ref FImportLine, FDelimiter, Catalog.GetString("Receipt number"),
-                    FMainDS.AGift.ColumnReceiptNumber, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
                 TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("First time gift"),
-                    FMainDS.AGift.ColumnFirstTimeGift, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
                 TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Receipt printed"),
-                    FMainDS.AGift.ColumnReceiptPrinted, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
             }
+
+            AGift.FirstTimeGift = !TGiftTransactionWebConnector.DonorHasGiven(FLedgerNumber, AGift.DonorKey);
 
             AImportMessage = Catalog.GetString("Importing the gift details");
 
@@ -1508,10 +1510,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString(
                     "short name of recipient (unused)"), null, ARowNumber, AMessages, null);                           // unused
 
-            if (HasExtraColumns)
+            if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
                 TCommonImport.ImportInt32(ref FImportLine, FDelimiter, Catalog.GetString("Recipient ledger number"),
-                    FMainDS.AGiftDetail.ColumnRecipientLedgerNumber, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
             }
 
             // RecipientLedgerNumber is always calculated, not imported.
@@ -1566,13 +1568,13 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.MotivationDetailCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation detail"),
                 FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper();
 
-            if (HasExtraColumns)
+            if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
                 TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre code"),
-                    FMainDS.AGiftDetail.ColumnCostCentreCode, ARowNumber, AMessages, null);
+                    null, ARowNumber, AMessages, null);
             }
 
-            // "In Petra Cost Centre is always inferred from recipient field and motivation detail so is not needed in the import."
+            // Cost Centre is always inferred from recipient field and motivation detail:
             try
             {
                 bool partnerIsMissingLink;
@@ -1774,11 +1776,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                 ref MotivGroup, ref MotivDetail,
                 AMessages, AGiftsRow.GiftTransactionNumber);
 
-
             AGiftsRow.DonorKey = DonorKey;
             AGiftsRow.MethodOfGivingCode = "DEFAULT";
             AGiftsRow.MethodOfPaymentCode = "ESR";
             AGiftsRow.DateEntered = AGiftsBatchRow.GlEffectiveDate;
+            AGiftsRow.FirstTimeGift = !TGiftTransactionWebConnector.DonorHasGiven(AGiftsRow.LedgerNumber, AGiftsRow.DonorKey);
+
             FMainDS.AGift.Rows.Add(AGiftsRow);
 
             AGiftsDetailsRow.RecipientKey = RecipientKey;
@@ -1900,12 +1903,12 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (innerMessage.Contains("a_gift_batch_fk2"))
             {
-                return Catalog.GetString("Unknown account code.") + String.Format(formatStr, "Manage Accounts");
+                return Catalog.GetString("Problem with Gift Batch bank Account code.") + String.Format(formatStr, "Manage Accounts");
             }
 
             if (innerMessage.Contains("a_gift_batch_fk3"))
             {
-                return Catalog.GetString("Unknown cost centre.") + String.Format(formatStr, "Manage Cost Centres");
+                return Catalog.GetString("Problem with Gift Batch bank Cost Centre code.");
             }
 
             if (innerMessage.Contains("a_gift_batch_fk4"))

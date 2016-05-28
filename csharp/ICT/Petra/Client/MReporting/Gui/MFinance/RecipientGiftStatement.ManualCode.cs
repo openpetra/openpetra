@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -136,9 +137,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             // if no recipients
-            if (ReportDataSet.Tables["Recipients"] == null)
+            if ((ReportDataSet.Tables["Recipients"] == null) || (ReportDataSet.Tables["Recipients"].Rows.Count == 0))
             {
-                FPetraUtilsObject.WriteToStatusBar("No recipients found for this report period.");
+                MessageBox.Show(Catalog.GetString("No Recipients found."), "Recipient Gift Statement");
                 return false;
             }
 
@@ -149,20 +150,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
 
             //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            // I need the name of the ledger, and the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
-
-            Boolean HasData = ReportDataSet.Tables["Recipients"].Rows.Count > 0;
-
-            if (!HasData)
-            {
-                MessageBox.Show(Catalog.GetString(
-                        "No Recipients found."), "Recipient Gift Statement");
-            }
-
-            return HasData;
+            return true;
         }
 
         #region Event Handlers

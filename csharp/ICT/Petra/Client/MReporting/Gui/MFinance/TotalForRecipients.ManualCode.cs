@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,10 +34,13 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using System.Collections;
+using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
-    public partial class TFrmTotalGivingForRecipients
+    public partial class TFrmTotalForRecipients
     {
         private Int32 FLedgerNumber;
         private DataTable FFieldTable;
@@ -53,6 +56,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FLedgerNumber = value;
                 PopulateReceivingFieldList();
                 FPetraUtilsObject.LoadDefaultSettings(); // This was done previously, but it was too early.
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
@@ -161,7 +165,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
 
-            //TODO: Calendar vs Financial Date Handling - Confirm that these should not be ledger dates, i.e. allowing for >12 periods and non-calendar period boundaries
             DateTime FromDateThisYear = new DateTime(DateTime.Today.Year, 1, 1);
             DateTime ToDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 12, 31);
             DateTime FromDatePreviousYear = new DateTime(DateTime.Today.Year - 1, 1, 1);
@@ -179,37 +182,53 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddParameter("param_from_date_2", FromDatePreviousYear.AddYears(-1));
             ACalc.AddParameter("param_to_date_3", ToDatePreviousYear.AddYears(-2));
             ACalc.AddParameter("param_from_date_3", FromDatePreviousYear.AddYears(-2));
-
-            int ColumnCounter = 0;
-            ACalc.AddParameter("param_calculation", "PartnerKey", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.5, ColumnCounter);
-            ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "DonorName", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)6.0, ColumnCounter);
-            ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "DonorClass", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)3.0, ColumnCounter);
-            ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "Year-0", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
-            ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "Year-1", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
-            ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "Year-2", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
-            ++ColumnCounter;
-            ACalc.AddParameter("param_calculation", "Year-3", ColumnCounter);
-            ACalc.AddParameter("ColumnWidth", (float)2.0, ColumnCounter);
-            ++ColumnCounter;
-
-            ACalc.SetMaxDisplayColumns(ColumnCounter);
         }
 
         private void SetControlsManual(TParameterList AParameters)
         {
             txtRecipient.Text = AParameters.Get("param_recipient_key").ToString();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
+        }
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && !paramsDictionary.ContainsKey(p.name))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            // get data for this report
+            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("TotalForRecipients", paramsDictionary);
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
+            {
+                return false;
+            }
+
+            // if no recipients
+            if ((ReportTable == null) || (ReportTable.Rows.Count == 0))
+            {
+                MessageBox.Show(Catalog.GetString("No Recipients found."), "Recipient Gift Statement");
+                return false;
+            }
+
+            // register datatables with the report
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Recipients");
+
+            //
+            // I need to get the name of the ledger, and the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.00");
+
+            return true;
         }
     }
 }

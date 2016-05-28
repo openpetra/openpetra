@@ -43,15 +43,9 @@ namespace Ict.Petra.Server.MFinance.Common
     /// </summary>
     public class TGetAccountHierarchyDetailInfo
     {
-        /// <summary>
-        /// A AChildLevel value which defines to search the children and all subchildren of a
-        /// given parent.
-        /// </summary>
-        public const int GET_ALL_LEVELS = -1;
-
         private const string STANDARD = "STANDARD";
-        AAccountHierarchyDetailTable FAccountTable;
-        AAccountHierarchyDetailRow FAccountRow = null;
+        AAccountHierarchyDetailTable FHierarchyDetailTable;
+        AAccountTable FAccountTable;
 
 
         /// <summary>
@@ -80,7 +74,9 @@ namespace Ict.Petra.Server.MFinance.Common
                     ref Transaction,
                     delegate
                     {
-                        FAccountTable = AAccountHierarchyDetailAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        FHierarchyDetailTable = AAccountHierarchyDetailAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        FAccountTable = AAccountAccess.LoadViaALedger(ALedgerNumber, Transaction);
+                        FAccountTable.DefaultView.Sort = "a_account_code_c";
                     });
             }
             catch (Exception ex)
@@ -91,55 +87,61 @@ namespace Ict.Petra.Server.MFinance.Common
         }
 
         /// <summary>
-        /// The idea of this routine is given by x_clist.i
-        /// of course the data are read only one time (Constructor) and the results are put
-        /// into a list for a more specific use.
-        /// All children and sub children are listed ...
+        /// The data were read only one time (in the constructor)
+        /// and the results are put into a list for a more specific use.
         /// </summary>
         /// <param name="AAccountCode"></param>
+        /// <param name="OnlyPosting">Don't show me all the summary accounts</param>
+        /// <param name="AChildLevel">-1 = all levels</param>
         /// <returns></returns>
-        public List <String>GetChildren(string AAccountCode)
+        public List <String>GetChildren(string AAccountCode, Boolean OnlyPosting = false, int AChildLevel = -1)
         {
             List <String>help = new List <String>();
-            GetChildrenIntern(help, AAccountCode, GET_ALL_LEVELS);
+            GetChildrenIntern(help, AAccountCode, OnlyPosting, --AChildLevel);
             return help;
         }
 
-        /// <summary>
-        /// See ChildList definition without AChildLevel, here you can define your own
-        /// ChildLevel.
-        /// </summary>
-        /// <param name="AAccountCode"></param>
-        /// <param name="AChildLevel">Level counting starts with 1</param>
-        /// <returns></returns>
-        public List <String>GetChildren(string AAccountCode, int AChildLevel)
+        private void GetChildrenIntern(IList <String>help, string AAccountCode, Boolean OnlyPosting, int AChildLevel)
         {
-            List <String>help = new List <String>();
-            GetChildrenIntern(help, AAccountCode, --AChildLevel);
-            return help;
-        }
-
-        private void GetChildrenIntern(IList <String>help, string AAccountCode, int AChildLevel)
-        {
-            if (FAccountTable.Rows.Count > 0)
+            if (FHierarchyDetailTable.Rows.Count > 0)
             {
-                FAccountTable.DefaultView.Sort =
+                FHierarchyDetailTable.DefaultView.Sort =
                     AAccountHierarchyDetailTable.GetReportOrderDBName() + ", " +
                     AAccountHierarchyDetailTable.GetReportingAccountCodeDBName();
 
-                foreach (DataRowView rv in FAccountTable.DefaultView)
+                foreach (DataRowView rv in FHierarchyDetailTable.DefaultView)
                 {
-                    FAccountRow = (AAccountHierarchyDetailRow)rv.Row;
+                    AAccountHierarchyDetailRow Row = (AAccountHierarchyDetailRow)rv.Row;
 
-                    if (FAccountRow.AccountCodeToReportTo.Equals(AAccountCode))
+                    if (Row.AccountCodeToReportTo.Equals(AAccountCode))
                     {
-                        if (FAccountRow.AccountHierarchyCode.Equals(STANDARD))
+                        if (Row.AccountHierarchyCode.Equals(STANDARD))
                         {
-                            help.Add(FAccountRow.ReportingAccountCode);
+                            Boolean includeThis = true;
+
+                            if (OnlyPosting)
+                            {
+                                Int32 pos = FAccountTable.DefaultView.Find(Row.ReportingAccountCode);
+
+                                if (pos >= 0)
+                                {
+                                    AAccountRow account = (AAccountRow)FAccountTable.DefaultView[pos].Row;
+
+                                    if (!account.PostingStatus)
+                                    {
+                                        includeThis = false;
+                                    }
+                                }
+                            }
+
+                            if (includeThis)
+                            {
+                                help.Add(Row.ReportingAccountCode);
+                            }
 
                             if (AChildLevel != 0)
                             {
-                                GetChildrenIntern(help, FAccountRow.ReportingAccountCode, --AChildLevel);
+                                GetChildrenIntern(help, Row.ReportingAccountCode, OnlyPosting, --AChildLevel);
                             }
                         }
                     }
@@ -155,15 +157,15 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public bool HasNoChildren(string AAccountCode)
         {
-            if (FAccountTable.Rows.Count > 0)
+            if (FHierarchyDetailTable.Rows.Count > 0)
             {
-                for (int i = 0; i < FAccountTable.Rows.Count; ++i)
+                for (int i = 0; i < FHierarchyDetailTable.Rows.Count; ++i)
                 {
-                    FAccountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
+                    AAccountHierarchyDetailRow Row = (AAccountHierarchyDetailRow)FHierarchyDetailTable.Rows[i];
 
-                    if (FAccountRow.AccountCodeToReportTo.Equals(AAccountCode))
+                    if (Row.AccountCodeToReportTo.Equals(AAccountCode))
                     {
-                        if (FAccountRow.AccountHierarchyCode.Equals(STANDARD))
+                        if (Row.AccountHierarchyCode.Equals(STANDARD))
                         {
                             return false;
                         }
@@ -181,17 +183,17 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <returns></returns>
         public string GetParentAccount(string AAccountCode)
         {
-            if (FAccountTable.Rows.Count > 0)
+            if (FHierarchyDetailTable.Rows.Count > 0)
             {
-                for (int i = 0; i < FAccountTable.Rows.Count; ++i)
+                for (int i = 0; i < FHierarchyDetailTable.Rows.Count; ++i)
                 {
-                    FAccountRow = (AAccountHierarchyDetailRow)FAccountTable.Rows[i];
+                    AAccountHierarchyDetailRow Row = (AAccountHierarchyDetailRow)FHierarchyDetailTable.Rows[i];
 
-                    if (FAccountRow.ReportingAccountCode.Equals(AAccountCode))
+                    if (Row.ReportingAccountCode.Equals(AAccountCode))
                     {
-                        if (FAccountRow.AccountHierarchyCode.Equals(STANDARD))
+                        if (Row.AccountHierarchyCode.Equals(STANDARD))
                         {
-                            return FAccountRow.AccountCodeToReportTo;
+                            return Row.AccountCodeToReportTo;
                         }
                     }
                 }

@@ -1,22 +1,21 @@
-RootNode:
+﻿RootNode:
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
-    FormTitle: Total giving for selected recipients
+    FormTitle: Historic Totals For Recipients
     WindowWidth: 680
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
-        XMLFILES: [Finance\\\\totalgivingforrecipients.xml,Finance\\\\finance.xml,common.xml]
-        REPORTNAME: TotalGivingForRecipients
-        CURRENTREPORT: TotalGivingForRecipients
+        XMLFILES: [Finance\\\\recipientgiftstatement.xml,Finance\\\\finance.xml,common.xml]
+        REPORTNAME: TotalForRecipients
+        CURRENTREPORT: TotalForRecipients
         SETAVAILABLEFUNCTIONS:
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION:BLANK
-        READCONTROLSLOCALVARS: BLANK
+        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
         SETCONTROLSLOCALVARS: BLANK
         REPORTSETTINGSDIRECTORY: Finance
-        #INITUSERCONTROLS: InitReceivingFieldList(); - will be called before ledger is set, so leave out
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Actions:
@@ -60,23 +59,6 @@ RootNode:
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
-        
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
 
         tpgFields:
             Label: Fields

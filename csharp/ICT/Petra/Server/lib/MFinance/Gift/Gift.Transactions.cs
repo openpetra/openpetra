@@ -1051,7 +1051,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
-        /// Loads a donor's last gift (if it exists) and returns the associated gift details.
+        /// Returns True if this person is a Gift Donor.
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADonorPartnerKey"></param>
@@ -1074,7 +1074,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DataTable GiftTable = null;
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
