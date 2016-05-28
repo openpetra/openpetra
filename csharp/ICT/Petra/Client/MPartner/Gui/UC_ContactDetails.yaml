@@ -44,15 +44,15 @@ RootNode:
                 Row1: [cmbSecondaryEMail, btnLaunchHyperlinkSecondaryEMail]
         cmbPrimaryWayOfContacting:
             Label: Primar&y Contact Method
-            Width: 205
+            Width: 235
             OptionalValues: [=,Phone, E-Mail, Letter, Skype, Skype for Business, Digital Media, Instant Messaging & Chat]
             Validation: true
             ColSpan: 2
-        cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePrimaryPhoneSelectedValueChanged}
-        cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=205, Width=205, ColSpan=2, Validation=true,OnChange=HandlePhoneWithinTheOrganisationSelectedValueChanged}
-        cmbPrimaryEMail: {Label=Primary E-Mai&l, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
-        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandleEMailWithinTheOrganisationSelectedValueChanged}
-        cmbSecondaryEMail: {Label=Secondary E-Mail, OptionalValues=[], ComboBoxWidth=170, Width=170, Validation=true, OnChange=HandleSecondaryEmailSelectedValueChanged}
+        cmbPrimaryPhoneForContacting: {Label=Primary Ph&one, OptionalValues=[], ComboBoxWidth=235, Width=235, ColSpan=2, Validation=true,OnChange=HandlePrimaryPhoneSelectedValueChanged}
+        cmbPhoneWithinTheOrganisation: {Label=Office Phone, OptionalValues=[], ComboBoxWidth=235, Width=235, ColSpan=2, Validation=true,OnChange=HandlePhoneWithinTheOrganisationSelectedValueChanged}
+        cmbPrimaryEMail: {Label=Primary E-Mai&l, OptionalValues=[], ComboBoxWidth=200, Width=200, Validation=true, OnChange=HandlePrimaryEmailSelectedValueChanged}
+        cmbEMailWithinTheOrganisation: {Label=Office E-Mail, OptionalValues=[], ComboBoxWidth=200, Width=200, Validation=true, OnChange=HandleEMailWithinTheOrganisationSelectedValueChanged}
+        cmbSecondaryEMail: {Label=Secondary E-Mail, OptionalValues=[], ComboBoxWidth=200, Width=200, Validation=true, OnChange=HandleSecondaryEmailSelectedValueChanged}
         btnLaunchHyperlinkPrefEMail: {NoLabel=true, Width=15}
         btnLaunchHyperlinkEMailWithinOrg: {NoLabel=true, Width=15}
         btnLaunchHyperlinkSecondaryEMail: {NoLabel=true, Width=15}

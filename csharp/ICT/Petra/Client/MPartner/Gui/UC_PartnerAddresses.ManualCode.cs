@@ -699,8 +699,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             CopyFoundAddressDataInternal(AFoundAddressLocationRow);
 
-            // make sure that location specific fields in PartnerLocationDT get initialized
-            PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(FMainDS.PLocation, FMainDS.PPartnerLocation, true);
+            // make sure that location specific fields in PartnerLocationDT get initialized for the just copied record
+            PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(FMainDS.PLocation, FPreviouslySelectedDetailRow);
 
             // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
             Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);
@@ -719,60 +719,29 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void CopyFoundAddressDataInternal(PLocationRow AFoundAddressLocationRow)
         {
-            PLocationRow CurrentLocationRow;
-            Int32 FindLocationKey;
-            Int64 FindSiteKey;
-            PPartnerLocationRow CurrentPartnerLocationRow;
-
-            if (FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-            {
-                FindLocationKey = FClientSideNewDataRowKey;
-                FindSiteKey = FCurrentSiteKey;
-            }
-            else
-            {
-                FindLocationKey = FCurrentLocationKey;
-                FindSiteKey = FCurrentSiteKey;
-            }
-
-            /* Get a reference to the DataRow that is currently selected in the Grid */
-            CurrentLocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new Object[] { FindSiteKey, FindLocationKey });
-            CurrentPartnerLocationRow =
-                (PPartnerLocationRow)FMainDS.PPartnerLocation.Rows.Find(new Object[] { FMainDS.PPartner[0].PartnerKey, FindSiteKey,
-                                                                                       FindLocationKey });
-//            if (FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
-//            {
-//                MessageBox.Show("Before BeginEdit:" + "\r\n" + "CurrentLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
-//                    CurrentLocationRow.RowState)) + "\r\n" +
-//                      "CurrentPartnerLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
-//                  CurrentPartnerLocationRow.RowState)));
-//                CurrentLocationRow.BeginEdit();
-//                CurrentPartnerLocationRow.BeginEdit();
-//
-//                MessageBox.Show("After BeginEdit:" + "\r\n" + "CurrentLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
-//                    CurrentLocationRow.RowState)) + "\r\n" +
-//                   "CurrentPartnerLocationRow RowState: " + (Enum.GetName(typeof(DataRowState),
-//                   CurrentPartnerLocationRow.RowState)));
-//            }
+            PLocationRow CurrentLocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(
+                new Object[] { FPreviouslySelectedDetailRow.SiteKey, FPreviouslySelectedDetailRow.LocationKey });
 
             /* update current PLocation record data */
-            TAddressHandling.CopyFoundAddressLocationData(AFoundAddressLocationRow, CurrentLocationRow);
+            TAddressHandling.CopyLocationData(AFoundAddressLocationRow, CurrentLocationRow);
+
             CurrentLocationRow.SiteKey = AFoundAddressLocationRow.SiteKey;
             CurrentLocationRow.LocationKey = AFoundAddressLocationRow.LocationKey;
+            CurrentLocationRow.AcceptChanges();
 
 //            MessageBox.Show("Before changing  CurrentPartnerLocationRow.LocationKey: " + CurrentPartnerLocationRow.LocationKey.ToString() + "; CurrentPartnerLocationRow.SiteKey: " + CurrentPartnerLocationRow.SiteKey.ToString());
 
             /* update current PPartnerLocation record data */
-            CurrentPartnerLocationRow.BeginEdit();
-            CurrentPartnerLocationRow.SiteKey = AFoundAddressLocationRow.SiteKey;
-            CurrentPartnerLocationRow.LocationKey = (Int32)AFoundAddressLocationRow.LocationKey;
-            CurrentPartnerLocationRow.EndEdit();
+            FPreviouslySelectedDetailRow.BeginEdit();
+            FPreviouslySelectedDetailRow.SiteKey = AFoundAddressLocationRow.SiteKey;
+            FPreviouslySelectedDetailRow.LocationKey = (Int32)AFoundAddressLocationRow.LocationKey;
+            FPreviouslySelectedDetailRow.EndEdit();
 
             /* update the date that this change is effective */
-            CurrentPartnerLocationRow.SetDateGoodUntilNull();
+            FPreviouslySelectedDetailRow.SetDateGoodUntilNull();
 
             /* needs to be set before DateEffective to prevent date check trigger to run! */
-            CurrentPartnerLocationRow.DateEffective = DateTime.Now.Date;
+            FPreviouslySelectedDetailRow.DateEffective = DateTime.Now.Date;
 
             FCurrentSiteKey = AFoundAddressLocationRow.SiteKey;
             FCurrentLocationKey = (Int32)AFoundAddressLocationRow.LocationKey;

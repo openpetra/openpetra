@@ -1476,17 +1476,14 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
         /// which is specified through ALocationKey.
         ///
         /// </summary>
-        /// <param name="ADataSet">DataSet that holds a DataSet with a DataTable for the
-        /// Person</param>
+        /// <param name="ADataSet">Instantiated DataSet.</param>
         /// <param name="APartnerKey">PartnerKey of the Partner for which Address data is to be
         /// loaded</param>
         /// <param name="ASiteKey">SiteKey of the Location for which Address data is to
-        /// be loaded</param>
+        /// be loaded.</param>
         /// <param name="ALocationKey">LocationKey of the Location for which Address data is to
-        /// be loaded</param>
-        /// <param name="AReadTransaction">Transaction for the SELECT statement
-        /// </param>
-        /// <returns>void</returns>
+        /// be loaded.</param>
+        /// <param name="AReadTransaction">Instantiated DB Transaction.</param>
         public static void LoadByPrimaryKey(DataSet ADataSet, Int64 APartnerKey, Int64 ASiteKey, Int32 ALocationKey, TDBTransaction AReadTransaction)
         {
             PLocationTable LocationDT;
@@ -1494,6 +1491,34 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
 
             PPartnerLocationAccess.LoadByPrimaryKey(ADataSet, APartnerKey, ASiteKey, ALocationKey, AReadTransaction);
             PLocationAccess.LoadByPrimaryKey(ADataSet, ASiteKey, ALocationKey, AReadTransaction);
+
+            // Apply security
+            LocationDT = (PLocationTable)ADataSet.Tables[PLocationTable.GetTableName()];
+            PartnerLocationDT = (PPartnerLocationTable)ADataSet.Tables[PPartnerLocationTable.GetTableName()];
+            ApplySecurity(ref PartnerLocationDT, ref LocationDT);
+
+            // make sure that location specific fields in PartnerLocationDT get initialized
+            if (ADataSet.GetType() == typeof(PartnerEditTDS))
+            {
+                PartnerCodeHelper.SyncPartnerEditTDSPartnerLocation(LocationDT, (PartnerEditTDSPPartnerLocationTable)PartnerLocationDT);
+            }
+        }
+
+        /// <summary>
+        /// Passes Partner Address data as a DataSet to the caller. Loads all Addresses
+        /// of the specified Partner.
+        /// </summary>
+        /// <param name="ADataSet">Instantiated DataSet.</param>
+        /// <param name="APartnerKey">PartnerKey of the Partner for which the Address data
+        /// of all its Addresses is to be loaded.</param>
+        /// <param name="AReadTransaction">Instantiated DB Transaction.</param>
+        public static void LoadAllAddressesForPartner(DataSet ADataSet, Int64 APartnerKey, TDBTransaction AReadTransaction)
+        {
+            PLocationTable LocationDT;
+            PPartnerLocationTable PartnerLocationDT;
+
+            PPartnerLocationAccess.LoadViaPPartner(ADataSet, APartnerKey, AReadTransaction);
+            PLocationAccess.LoadViaPPartner(ADataSet, APartnerKey, AReadTransaction);
 
             // Apply security
             LocationDT = (PLocationTable)ADataSet.Tables[PLocationTable.GetTableName()];

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -61,53 +61,65 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>
         /// Update extra location specific fields in table APartnerLocationTable
         /// </summary>
-        /// <param name="ALocationTable">Table containing location records to be used to update APartnerLocation records</param>
-        /// <param name="APartnerLocationTable">Table to be updated with Location specific information</param>
+        /// <param name="ALocationDT">Table containing location records to be used to update APartnerLocation records.</param>
+        /// <param name="APartnerLocationDT">Table to be updated with Location specific information.</param>
         /// <param name="AMakePLocationRecordUnchanged">Set to true to make the PLocation Record unchanged
         /// (by calling .AcceptChanges() on it).</param>
-        /// <returns></returns>
-        public static void SyncPartnerEditTDSPartnerLocation(PLocationTable ALocationTable, PartnerEditTDSPPartnerLocationTable APartnerLocationTable,
+        public static void SyncPartnerEditTDSPartnerLocation(PLocationTable ALocationDT, PartnerEditTDSPPartnerLocationTable APartnerLocationDT,
+            bool AMakePLocationRecordUnchanged = false)
+        {
+            foreach (PartnerEditTDSPPartnerLocationRow PartnerLocationRow in APartnerLocationDT.Rows)
+            {
+                SyncPartnerEditTDSPartnerLocation(ALocationDT, PartnerLocationRow, AMakePLocationRecordUnchanged);
+            }
+        }
+
+        /// <summary>
+        /// Update extra location specific fields in DataRow APartnerLocationDR
+        /// </summary>
+        /// <param name="ALocationDT">Table containing location records to be used to update APartnerLocation records.</param>
+        /// <param name="APartnerLocationDR">Single DataRow to be updated with Location specific information.</param>
+        /// <param name="AMakePLocationRecordUnchanged">Set to true to make the PLocation Record unchanged
+        /// (by calling .AcceptChanges() on it).</param>
+        public static void SyncPartnerEditTDSPartnerLocation(PLocationTable ALocationDT, PartnerEditTDSPPartnerLocationRow APartnerLocationDR,
             bool AMakePLocationRecordUnchanged = false)
         {
             DataRow Row;
             PLocationRow LocationRow;
 
-            foreach (PartnerEditTDSPPartnerLocationRow PartnerLocationRow in APartnerLocationTable.Rows)
+            if (APartnerLocationDR.RowState != DataRowState.Deleted)
             {
-                if (PartnerLocationRow.RowState != DataRowState.Deleted)
+                Row = ALocationDT.Rows.Find(new Object[] { APartnerLocationDR.SiteKey, APartnerLocationDR.LocationKey });
+
+                if (Row != null)
                 {
-                    Row = ALocationTable.Rows.Find(new Object[] { PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey });
+                    LocationRow = (PLocationRow)Row;
 
-                    if (Row != null)
+                    APartnerLocationDR.LocationLocality = LocationRow.Locality;
+                    APartnerLocationDR.LocationStreetName = LocationRow.StreetName;
+                    APartnerLocationDR.LocationAddress3 = LocationRow.Address3;
+                    APartnerLocationDR.LocationCity = LocationRow.City;
+                    APartnerLocationDR.LocationCounty = LocationRow.County;
+                    APartnerLocationDR.LocationPostalCode = LocationRow.PostalCode;
+                    APartnerLocationDR.LocationCountryCode = LocationRow.CountryCode;
+
+                    APartnerLocationDR.LocationCreatedBy = LocationRow.CreatedBy;
+
+                    if (!LocationRow.IsDateCreatedNull())
                     {
-                        LocationRow = (PLocationRow)Row;
+                        APartnerLocationDR.LocationDateCreated = (DateTime)LocationRow.DateCreated;
+                    }
 
-                        PartnerLocationRow.LocationLocality = LocationRow.Locality;
-                        PartnerLocationRow.LocationStreetName = LocationRow.StreetName;
-                        PartnerLocationRow.LocationAddress3 = LocationRow.Address3;
-                        PartnerLocationRow.LocationCity = LocationRow.City;
-                        PartnerLocationRow.LocationCounty = LocationRow.County;
-                        PartnerLocationRow.LocationPostalCode = LocationRow.PostalCode;
-                        PartnerLocationRow.LocationCountryCode = LocationRow.CountryCode;
+                    APartnerLocationDR.LocationModifiedBy = LocationRow.ModifiedBy;
 
-                        PartnerLocationRow.LocationCreatedBy = LocationRow.CreatedBy;
+                    if (!LocationRow.IsDateModifiedNull())
+                    {
+                        APartnerLocationDR.LocationDateModified = (DateTime)LocationRow.DateModified;
+                    }
 
-                        if (!LocationRow.IsDateCreatedNull())
-                        {
-                            PartnerLocationRow.LocationDateCreated = (DateTime)LocationRow.DateCreated;
-                        }
-
-                        PartnerLocationRow.LocationModifiedBy = LocationRow.ModifiedBy;
-
-                        if (!LocationRow.IsDateModifiedNull())
-                        {
-                            PartnerLocationRow.LocationDateModified = (DateTime)LocationRow.DateModified;
-                        }
-
-                        if (AMakePLocationRecordUnchanged)
-                        {
-                            Row.AcceptChanges();
-                        }
+                    if (AMakePLocationRecordUnchanged)
+                    {
+                        Row.AcceptChanges();
                     }
                 }
             }

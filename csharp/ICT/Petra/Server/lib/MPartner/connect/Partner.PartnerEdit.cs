@@ -1049,7 +1049,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             PLocationTable SiteLocationDT;
             StringCollection SiteLocationRequiredColumns;
             DateTime CreationDate;
-            string SiteCountryCode = null;
+            string SiteCountryCode = String.Empty;
 
             String CreationUserID;
             String GiftReceiptingDefaults;
@@ -1143,7 +1143,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     #endregion
 
-                    // We get the default values for all DataColumns
+                    // Create DataRow for Partner using the default values for all DataColumns
                     // and then modify some.
                     PartnerRow = FPartnerEditScreenDS.PPartner.NewRowTyped(true);
                     PartnerRow.PartnerKey = FPartnerKey;
@@ -1183,9 +1183,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             // Load p_family record of the FAMILY that the PERSON will belong to
                             PersonFamilyDT = PFamilyAccess.LoadByPrimaryKey(AFamilyPartnerKey, ReadTransaction);
 
-                            // Create DataRow for PPerson using the default values for all DataColumns
                             TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Person DataRow");
 
+                            // Create DataRow for PPerson using the default values for all DataColumns
+                            // and then modify some.
                             PersonRow = FPartnerEditScreenDS.PPerson.NewRowTyped(true);
                             PersonRow.PartnerKey = FPartnerKey;
                             PersonRow.DateCreated = CreationDate;
@@ -1203,6 +1204,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             PersonRow.FamilyId = FamilyID;
                             PersonRow.OccupationCode = MPartnerConstants.DEFAULT_CODE_UNKNOWN;
                             FPartnerEditScreenDS.PPerson.Rows.Add(PersonRow);
+
                             GetFamilyMembersInternal(AFamilyPartnerKey, "", out ItemsCountFamilyMembers, true);
 
                             /*
@@ -1223,6 +1225,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                             TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before adding Family DataRow");
 
                             // Create DataRow for PFamily using the default values for all DataColumns
+                            // and then modify some.
                             FamilyRow = FPartnerEditScreenDS.PFamily.NewRowTyped(true);
                             FamilyRow.PartnerKey = FPartnerKey;
                             FamilyRow.DateCreated = CreationDate;
@@ -1245,6 +1248,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.CHURCH:
                             // Create DataRow for PChurch using the default values for all DataColumns
+                            // and then modify some.
                             ChurchRow = FPartnerEditScreenDS.PChurch.NewRowTyped(true);
                             ChurchRow.PartnerKey = FPartnerKey;
                             ChurchRow.DateCreated = CreationDate;
@@ -1272,6 +1276,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.ORGANISATION:
                             // Create DataRow for POrganisation using the default values for all DataColumns
+                            // and then modify some.
                             OrganisationRow = FPartnerEditScreenDS.POrganisation.NewRowTyped(true);
                             OrganisationRow.PartnerKey = FPartnerKey;
                             OrganisationRow.DateCreated = CreationDate;
@@ -1298,6 +1303,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.BANK:
                             // Create DataRow for PBank using the default values for all DataColumns
+                            // and then modify some.
                             BankRow = FPartnerEditScreenDS.PBank.NewRowTyped(true);
                             BankRow.PartnerKey = FPartnerKey;
                             BankRow.DateCreated = CreationDate;
@@ -1320,6 +1326,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.UNIT:
                             // Create DataRow for PUnit using the default values for all DataColumns
+                            // and then modify some.
                             UnitRow = FPartnerEditScreenDS.PUnit.NewRowTyped(true);
                             UnitRow.PartnerKey = FPartnerKey;
                             UnitRow.DateCreated = CreationDate;
@@ -1342,6 +1349,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                         case TPartnerClass.VENUE:
                             // Create DataRow for PVenue using the default values for all DataColumns
+                            // and then modify some.
                             VenueRow = FPartnerEditScreenDS.PVenue.NewRowTyped(true);
                             VenueRow.PartnerKey = FPartnerKey;
                             VenueRow.DateCreated = CreationDate;
@@ -1374,30 +1382,83 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     if (APartnerClass == TPartnerClass.PERSON)
                     {
-                        /*
-                         * Copy specified Family Address into the PLocation and PPartnerLocation
-                         * table (is needed on the Client side to copy this address as the default
-                         * address of the new Person and gets deleted there as soon as copying is
-                         * done)
-                         */
-
-                        if (AFamilyLocationKey == -1)
+                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                                SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLADDRESSES, false))
                         {
-                            // Backstop: If AFamilyLocationKey is -1, then we don't know an Address of the FAMILY. In that
-                            // case determine the 'Best Address' of the FAMILY; the Partner Edit screen will use this to
-                            // create the first address of the new PERSON.
-                            TLocationPK FamilysBestAddr =
-                                Calculations.DetermineBestAddress(PPartnerLocationAccess.LoadViaPPartner(AFamilyPartnerKey, null, ReadTransaction));
-                            AFamilyLocationKey = FamilysBestAddr.LocationKey;
-                            AFamilySiteKey = FamilysBestAddr.SiteKey;
+                            // Copy *ALL* Addresses (p_location and p_partner_location records) of the FAMILY of the new PERSON
+                            // over to the PERSON (needed on the Client side where those will be turned into new Addresses
+                            // of the PERSON).
+                            TPPartnerAddressAggregate.LoadAllAddressesForPartner(FPartnerEditScreenDS, AFamilyPartnerKey,
+                                ReadTransaction);
+
+                            // Ensure that none of the copied p_partner_location records has got the 'Send Mail' flag set
+                            // as this is normally not set on PERSON addresses!
+                            for (int PartnerLocationsCounter = 0; PartnerLocationsCounter < FPartnerEditScreenDS.PPartnerLocation.Rows.Count;
+                                 PartnerLocationsCounter++)
+                            {
+                                TLogging.LogAtLevel(7,
+                                    String.Format("TPartnerEditUIConnector.GetDataNewPartner: adding FAMILY Location with LocationKey {0} ",
+                                        FPartnerEditScreenDS.PPartnerLocation[PartnerLocationsCounter].LocationKey));
+                                FPartnerEditScreenDS.PPartnerLocation[PartnerLocationsCounter].SendMail = false;
+                            }
+                        }
+                        else
+                        {
+                            // Copy a single *specified* Family Address into the PLocation and PPartnerLocation
+                            // table (is needed on the Client side to copy this address as the default
+                            // address of the new Person and gets deleted there as soon as copying is done).
+                            if (AFamilyLocationKey == -1)
+                            {
+                                // Backstop: If AFamilyLocationKey is -1, then we don't know an Address of the FAMILY. In that
+                                // case determine the 'Best Address' of the FAMILY; the Partner Edit screen will use this to
+                                // create the first address of the new PERSON.
+                                TLocationPK FamilysBestAddr =
+                                    Calculations.DetermineBestAddress(PPartnerLocationAccess.LoadViaPPartner(AFamilyPartnerKey, null, ReadTransaction));
+                                AFamilyLocationKey = FamilysBestAddr.LocationKey;
+                                AFamilySiteKey = FamilysBestAddr.SiteKey;
+                            }
+
+//                          TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
+                            TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
+                                AFamilyPartnerKey,
+                                AFamilySiteKey,
+                                AFamilyLocationKey,
+                                ReadTransaction);
                         }
 
-                        //                  TLogging.LogAtLevel(7, "Getting Family Address - AFamilyPartnerKey: " + AFamilyPartnerKey.ToString() + "; AFamilyLocationKey: " + AFamilyLocationKey.ToString());
-                        TPPartnerAddressAggregate.LoadByPrimaryKey(FPartnerEditScreenDS,
-                            AFamilyPartnerKey,
-                            AFamilySiteKey,
-                            AFamilyLocationKey,
-                            ReadTransaction);
+                        if (TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                                SharedConstants.SYSDEFAULT_NEW_PERSON_TAKEOVERALLCONTACTDETAILS, false))
+                        {
+                            // Copy all Contact Details of the FAMILY to the PERSON (incl. 'Primary Contact Detail', but no
+                            // 'Overall Contact Settings' that don't apply to a PERSON)
+                            var FamilyPartnerAttributes = TContactDetailsAggregate.GetPartnersContactDetailAttributes(AFamilyPartnerKey);
+
+                            // Ensure that only p_partner_attribute Rows that are 'Contact Details' get copied over from the FAMILY to the PERSON
+                            for (int FamilyPartnerAttributeCounter = 0; FamilyPartnerAttributeCounter < FamilyPartnerAttributes.Rows.Count;
+                                 FamilyPartnerAttributeCounter++)
+                            {
+                                var FamilyPartnerAttributeDR = FamilyPartnerAttributes[FamilyPartnerAttributeCounter];
+
+                                // If the Partner Attribute is indeed a Partner Contact Detail or if it is the
+                                // 'Primary Contact Method'...
+                                if (((FamilyPartnerAttributeDR[Ict.Petra.Shared.MPartner.Calculations.PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN]
+                                      != System.DBNull.Value)
+                                     && ((bool)FamilyPartnerAttributeDR[Ict.Petra.Shared.MPartner.Calculations.
+                                                                        PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN] ==
+                                         true))
+                                    || ((string)FamilyPartnerAttributeDR[PPartnerAttributeTable.GetAttributeTypeDBName()] ==
+                                        MPartnerConstants.ATTR_TYPE_PARTNERS_PRIMARY_CONTACT_METHOD))
+                                {
+                                    // ...then add it to the PERSON!
+                                    var PersonPartnerAttributeDR = FPartnerEditScreenDS.PPartnerAttribute.NewRow();
+
+                                    PersonPartnerAttributeDR.ItemArray = FamilyPartnerAttributeDR.ItemArray;
+                                    PersonPartnerAttributeDR[PPartnerAttributeTable.GetPartnerKeyDBName()] = APartnerKey;
+
+                                    FPartnerEditScreenDS.PPartnerAttribute.Rows.Add(PersonPartnerAttributeDR);
+                                }
+                            }
+                        }
 
                         // Copy Special Types from the PERSON'S FAMILY to the PERSON
                         TLogging.LogAtLevel(7, "TPartnerEditUIConnector.GetDataNewPartner: before loading Special Types from FAMILY");
