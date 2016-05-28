@@ -2290,15 +2290,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // Also the data source for the combos will be wrong because they have been cloned from items that may not have shown inactive values
             if ((AFilterIsOff == false) && !FDoneComboInitialise)
             {
-                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailAccountCode"),
-                    TCacheableFinanceTablesEnum.AccountList);
+                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailAccountCode"));
                 InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(
-                        "cmbDetailCostCentreCode"),
-                    TCacheableFinanceTablesEnum.CostCentreList);
-                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailAccountCode"),
-                    TCacheableFinanceTablesEnum.AccountList);
-                InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailCostCentreCode"),
-                    TCacheableFinanceTablesEnum.CostCentreList);
+                        "cmbDetailCostCentreCode"));
+                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailAccountCode"));
+                InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailCostCentreCode"));
 
                 FDoneComboInitialise = true;
             }
@@ -2307,11 +2303,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Helper method that we can call to initialise each of the filter/find comboBoxes
         /// </summary>
-        private void InitFilterFindAccountCodeComboBox(TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTable)
+        private void InitFilterFindAccountCodeComboBox(TCmbAutoComplete AFFInstance)
         {
-            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber));
+            string rowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+            string sort = string.Format("{0}", AAccountTable.GetAccountCodeDBName());
+            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber),
+                rowFilter, sort, DataViewRowState.CurrentRows);
 
-            dv.RowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
             AFFInstance.DataSource = dv;
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
@@ -2320,11 +2318,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Helper method that we can call to initialise each of the filter/find comboBoxes
         /// </summary>
-        private void InitFilterFindCostCentreComboBox(TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTable)
+        private void InitFilterFindCostCentreComboBox(TCmbAutoComplete AFFInstance)
         {
-            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber));
+            string rowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+            string sort = string.Format("{0}", ACostCentreTable.GetCostCentreCodeDBName());
+            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber),
+                rowFilter, sort, DataViewRowState.CurrentRows);
 
-            dv.RowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
             AFFInstance.DataSource = dv;
             AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
             AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);

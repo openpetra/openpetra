@@ -65,6 +65,16 @@ namespace Ict.Common.IO
         public String FErrorStatus;
 
 
+        /// <summary>
+        /// Initialise method
+        /// </summary>
+        /// <param name="ASMTPHost">The address of the mail server</param>
+        /// <param name="ASMTPPort">The port for the connection</param>
+        /// <param name="AEnableSsl">True to use SSL</param>
+        /// <param name="AUsername">A username on the server.  Can be null or empty string in which case default credentials are used.</param>
+        /// <param name="APassword">Password for the username specified.</param>
+        /// <param name="AOutputEMLToDirectory">Path to pickup folder</param>
+        /// <returns></returns>
         private Boolean Initialise(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
             try
@@ -80,10 +90,25 @@ namespace Ict.Common.IO
                 {
                     FSmtpClient.Host = ASMTPHost;
                     FSmtpClient.Port = ASMTPPort;
-                    FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                    FSmtpClient.UseDefaultCredentials = false;
-                    FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
                     FSmtpClient.EnableSsl = AEnableSsl;
+                    FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+
+                    if (AUsername == null)
+                    {
+                        AUsername = string.Empty;
+                    }
+
+                    if (APassword == null)
+                    {
+                        APassword = string.Empty;
+                    }
+
+                    FSmtpClient.UseDefaultCredentials = (AUsername.Length == 0);
+
+                    if (FSmtpClient.UseDefaultCredentials == false)
+                    {
+                        FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
+                    }
 
                     if (TAppSettingsManager.GetValue("IgnoreServerCertificateValidation", "false", false) == "true")
                     {
@@ -111,6 +136,12 @@ namespace Ict.Common.IO
         /// <summary>
         /// setup the smtp client
         /// </summary>
+        /// <param name="ASMTPHost">The address of the mail server</param>
+        /// <param name="ASMTPPort">The port for the connection</param>
+        /// <param name="AEnableSsl">True to use SSL</param>
+        /// <param name="AUsername">A username on the server.  Can be null or empty string in which case default credentials are used.</param>
+        /// <param name="APassword">Password for the username specified.</param>
+        /// <param name="AOutputEMLToDirectory">Path to pickup folder</param>
         public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
         {
             FErrorStatus = "";
@@ -137,8 +168,8 @@ namespace Ict.Common.IO
                 TAppSettingsManager.GetValue("SmtpHost"),
                 TAppSettingsManager.GetInt16("SmtpPort", 25),
                 TAppSettingsManager.GetBoolean("SmtpEnableSsl", false),
-                TAppSettingsManager.GetValue("SmtpUser", ""),
-                TAppSettingsManager.GetValue("SmtpPassword", ""),
+                null,
+                null,
                 EmailDirectory);
         }
 

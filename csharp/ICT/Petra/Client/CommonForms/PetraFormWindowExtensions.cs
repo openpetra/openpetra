@@ -414,7 +414,13 @@ namespace Ict.Petra.Client.CommonForms
                                     distance = Math.Min(distance, splitter.Width - splitter.Panel2MinSize);
                                 }
 
-                                splitter.SplitterDistance = distance;
+                                // the value of distance can end up as 0 if there are two splitters and one is 'underneath' the other
+                                // this happens on Motivation Details setup screen for example.  The second splitter is effectively hidden by the first.
+                                if (distance > 0)
+                                {
+                                    splitter.SplitterDistance = distance;
+                                }
+
                                 FSplittersDisplayed.Add(extraItems[0]);
                             }
                         }

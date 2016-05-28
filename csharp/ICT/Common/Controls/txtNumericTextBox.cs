@@ -957,7 +957,8 @@ namespace Ict.Common.Controls
                             // If Keypressed is of type numeric or the decimal separator (usually ".")
                             if (Char.IsDigit(chrKeyPressed))
                             {
-                                if ((FCurrentUndoString != null) && (FCurrentUndoString != this.Text))
+                                if ((this.ControlMode == TNumericTextBoxMode.NormalTextBox) && (FCurrentUndoString != null)
+                                    && (FCurrentUndoString != this.Text))
                                 {
                                     // We need to ascertain if the keypress is within the bounds of the current Undo block.
                                     // If not then the Undo string needs to be reset and we start a new edit in the new block.
@@ -1658,10 +1659,19 @@ namespace Ict.Common.Controls
         /// <param name="e"></param>
         protected void OnEntering(object sender, EventArgs e)
         {
-            if (FCurrentUndoString == null)
+            if (this.ControlMode == TNumericTextBoxMode.NormalTextBox)
             {
-                // Initialise the undo string - but only if we are entering for the first time.
-                // Otherwise our Undo needs to use the same buffer that it had when we left.
+                // Special case of a normal text box which is likely to be edited in more than one place in its length
+                if (FCurrentUndoString == null)
+                {
+                    // Initialise the undo string - but only if we are entering for the first time.
+                    // Otherwise our Undo needs to use the same buffer that it had when we left.
+                    ResetUndo();
+                }
+            }
+            else
+            {
+                // For numeric style text boxes we always set the undo string to the entire initial content
                 ResetUndo();
             }
 
@@ -1700,7 +1710,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Gets the current edit range by comparing the difference between the ACompareText and the current text
+        /// Gets the current edit range by comparing the difference between the AInitialText and the current text
         /// </summary>
         /// <param name="AInitialText">Text that applied before editing</param>
         /// <param name="AEditedText">Text after editing AInitialText</param>
@@ -1708,38 +1718,15 @@ namespace Ict.Common.Controls
         /// <param name="ALength">The length of the current edit</param>
         private void GetEditRange(string AInitialText, string AEditedText, out int AStart, out int ALength)
         {
-            // Start by removing any trailing percentages
-            AInitialText = AInitialText.TrimEnd(new char[] { ' ', '%' });
-            AEditedText = AEditedText.TrimStart(new char[] { ' ', '%' });
-
-            // If it is a decimal we can trim trailing zeros
-            if (FDecimalPlaces > 0)
-            {
-                AInitialText = AInitialText.TrimEnd('0');
-                AEditedText = AEditedText.TrimEnd('0');
-            }
-
             // Set these values that will apply if there is no difference
             AStart = Math.Min(AInitialText.Length, AEditedText.Length);
             ALength = Math.Max(AEditedText.Length - AInitialText.Length, 0);
-            string groupSeps = FCurrentCulture.NumberFormat.NumberGroupSeparator + FCurrentCulture.NumberFormat.CurrencyGroupSeparator;
 
-            // Work from the left of the two strings and find the first difference, ignoring any group separators
+            // Work from the left of the two strings and find the first difference
             int k = 0;
 
             for (int i = 0; k < AInitialText.Length && i < AEditedText.Length; i++)
             {
-                // If we encounter a group separator we just skip to the next character
-                if (groupSeps.IndexOf(AInitialText[k]) >= 0)
-                {
-                    k++;
-                }
-
-                if (groupSeps.IndexOf(AEditedText[i]) >= 0)
-                {
-                    i++;
-                }
-
                 if (AInitialText[k] != AEditedText[i])
                 {
                     AStart = i;
@@ -1755,17 +1742,6 @@ namespace Ict.Common.Controls
 
             for (int i = 0; k < AInitialText.Length && i < AEditedText.Length; i++)
             {
-                // If we encounter a group separator we just skip to the next character
-                if (groupSeps.IndexOf(AInitialText[AInitialText.Length - k - 1]) >= 0)
-                {
-                    k++;
-                }
-
-                if (groupSeps.IndexOf(AEditedText[AEditedText.Length - i - 1]) >= 0)
-                {
-                    i++;
-                }
-
                 if (AInitialText[AInitialText.Length - k - 1] != AEditedText[AEditedText.Length - i - 1])
                 {
                     ALength = AEditedText.Length - i - AStart;

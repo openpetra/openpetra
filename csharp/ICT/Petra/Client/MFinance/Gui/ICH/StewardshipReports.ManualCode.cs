@@ -365,14 +365,29 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             if ((!Params.Get("param_design_template").ToBool())
                 && (rbtEmailStewardship.Checked))
             {
+                // This gets email defaults from the user settings table
                 TUC_EmailPreferences.LoadEmailDefaults();
-                TSmtpSender EmailSender = new TSmtpSender(
-                    TUserDefaults.GetStringDefault("SmtpHost"),
-                    TUserDefaults.GetInt16Default("SmtpPort"),
-                    TUserDefaults.GetBooleanDefault("SmtpUseSsl"),
-                    TUserDefaults.GetStringDefault("SmtpUser"),
-                    TUserDefaults.GetStringDefault("SmtpPassword"),
-                    "");
+
+                // This gets some of the settings from the server configuration.  We no longer get these items from local PC.
+                // SmtpUsername and SmtpPassword will usually be null
+                string smtpHost, smtpUsername, smtpPassword;
+                int smtpPort;
+                bool smtpUseSSL;
+                TRemote.MSysMan.Application.WebConnectors.GetServerSmtpSettings(out smtpHost,
+                    out smtpPort,
+                    out smtpUseSSL,
+                    out smtpUsername,
+                    out smtpPassword);
+
+                if ((smtpHost == string.Empty) || (smtpPort < 0))
+                {
+                    FStatusMsg += Catalog.GetString(
+                        "\r\nCannot send email because 'smtpHost' and/or 'smtpPort' are not configured in the OP server configuration file.");
+                    return false;
+                }
+
+                TSmtpSender EmailSender = new TSmtpSender(smtpHost, smtpPort, smtpUseSSL, smtpUsername, smtpPassword, "");
+
                 EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
                 EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
 

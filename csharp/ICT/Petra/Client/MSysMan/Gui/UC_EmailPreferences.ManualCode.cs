@@ -55,36 +55,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// </summary>
         public static void LoadEmailDefaults()
         {
-            if (!TUserDefaults.HasDefault("SmtpHost") || (TUserDefaults.GetStringDefault("SmtpHost") == ""))
-            {
-                TUserDefaults.SetDefault("SmtpHost", TAppSettingsManager.GetValue("SmtpHost", ""));
-            }
-
-            if (!TUserDefaults.HasDefault("SmtpPort") || (TUserDefaults.GetInt16Default("SmtpPort") == -1))
-            {
-                TUserDefaults.SetDefault("SmtpPort", TAppSettingsManager.GetInt16("SmtpPort", -1));
-            }
-
-            if (!TUserDefaults.HasDefault("SmtpUseSsl"))
-            {
-                TUserDefaults.SetDefault("SmtpUseSsl", TAppSettingsManager.GetValue("SmtpEnableSsl", false));
-            }
-
-            if (!TUserDefaults.HasDefault("SmtpUser"))
-            {
-                TUserDefaults.SetDefault("SmtpUser", TAppSettingsManager.GetValue("SmtpUser", ""));
-            }
-
-            if (!TUserDefaults.HasDefault("SmtpPassword"))
-            {
-                TUserDefaults.SetDefault("SmtpPassword", TAppSettingsManager.GetValue("SmtpPassword", ""));
-            }
-
-            if (!TUserDefaults.HasDefault("SmtpEnableSsl"))
-            {
-                TUserDefaults.SetDefault("SmtpEnableSsl", TAppSettingsManager.GetBoolean("SmtpEnableSsl", false));
-            }
-
             if (!TUserDefaults.HasDefault("SmtpFromAccount") || (TUserDefaults.GetStringDefault("SmtpFromAccount") == ""))
             {
                 TUserDefaults.SetDefault("SmtpFromAccount", TAppSettingsManager.GetValue("SmtpFromAccount", ""));
@@ -120,14 +90,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         public void InitializeManualCode()
         {
             txtEmailBody.AcceptsReturn = true;
-            txtAccountPswd.UseSystemPasswordChar = true;
 
             LoadEmailDefaults();
-            txtServerName.Text = TUserDefaults.GetStringDefault("SmtpHost");
-            txtPort.Text = TUserDefaults.GetInt16Default("SmtpPort").ToString();
-            chkUseSsl.Checked = TUserDefaults.GetBooleanDefault("SmtpUseSsl");
-            txtAccountName.Text = TUserDefaults.GetStringDefault("SmtpUser");
-            txtAccountPswd.Text = TUserDefaults.GetStringDefault("SmtpPassword");
             txtSenderAddress.Text = TUserDefaults.GetStringDefault("SmtpFromAccount");
             txtDisplayName.Text = TUserDefaults.GetStringDefault("SmtpDisplayName");
             txtReplyTo.Text = TUserDefaults.GetStringDefault("SmtpReplyTo");
@@ -142,11 +106,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <returns>void</returns>
         public void GetDataFromControls()
         {
-            TUserDefaults.SetDefault("SmtpHost", txtServerName.Text);
-            TUserDefaults.SetDefault("SmtpPort", Convert.ToInt16(txtPort.Text));
-            TUserDefaults.SetDefault("SmtpUseSsl", chkUseSsl.Checked);
-            TUserDefaults.SetDefault("SmtpUser", txtAccountName.Text);
-            TUserDefaults.SetDefault("SmtpPassword", txtAccountPswd.Text);
             TUserDefaults.SetDefault("SmtpFromAccount", txtSenderAddress.Text);
             TUserDefaults.SetDefault("SmtpDisplayName", txtDisplayName.Text);
             TUserDefaults.SetDefault("SmtpReplyTo", txtReplyTo.Text);
