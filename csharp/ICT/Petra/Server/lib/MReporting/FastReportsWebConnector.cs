@@ -202,7 +202,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 case "SYBUNT":
                     FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
                     ResultTbl = TFinanceReportingWebConnector.SYBUNTTable(AParameters, FDbAdapter);
+                    break;
 
+                case "GiftsOverMinimum":
+                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+                    ResultTbl = TFinanceReportingWebConnector.GiftsOverMinimum(AParameters, FDbAdapter);
                     break;
 
                 default:

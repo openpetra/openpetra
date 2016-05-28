@@ -1378,9 +1378,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String isThisYear = " Year=" + AccountingYear;
                     String isLastYear = " Year=" + (AccountingYear - 1);
 
-                    String PeriodFilter = " AND glmp.a_period_number_i<=" + NumberOfAccountingPeriods; // I need the whole year to see "whole year budget".
+                    Int32 LastPeriod = Math.Max(ReportPeriodEnd,
+                        NumberOfAccountingPeriods);                                          // I need the whole year to see "whole year budget".
+                    String PeriodFilter = " AND glmp.a_period_number_i<=" + LastPeriod;
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
+                    String is12MothsBeforeEnd = "Period=" + (ReportPeriodEnd - 12);
 
                     String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualYTD ELSE 0 END) AS ActualYtd, ";
                     String PrevPeriodQuery = (ReportPeriodStart == 1) ?
@@ -3134,7 +3137,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable resultTable = new DataTable();
             String ExtractTables = " ";
             String donorOption = AParameters["param_donor"].ToString();
-            String AmountFilter = " AND " + AmountField + " >= " + MinAmount + " AND " + AmountField + " <= " + MaxAmount;
+            String AmountFilter = " AND ABS(" + AmountField + ") >= " + MinAmount + " AND ABS(" + AmountField + ") <= " + MaxAmount;
             String FieldFilter = "";
 
             if (AParameters["param_field_selection"].ToString() == "selected_fields")

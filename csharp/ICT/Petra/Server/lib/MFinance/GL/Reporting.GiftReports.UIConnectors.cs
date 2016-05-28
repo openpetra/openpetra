@@ -133,14 +133,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             string RecipientSelection = AParameters["param_recipient"].ToString();
             string OrderBy = AParameters["param_order_by_name"].ToString();
 
-            /*
-             *          string ReportType = string.Empty;
-             *
-             *          if (AParameters.ContainsKey("param_report_type"))
-             *          {
-             *              ReportType = AParameters["param_report_type"].ToString();
-             *          }
-             */
             DateTime CurrentDate = DateTime.Today;
 
             // create new datatable
@@ -159,6 +151,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     //     through the IN clause.
                     // I have tested this form of the quey with SwissDev4 and some pretty random date ranges and an extract with 7000 partners
                     // and it is always quick - of the order of about 1 second or less.
+                    DateTime paramFromDate = AParameters["param_from_date"].ToDate();
+                    DateTime paramToDate = AParameters["param_to_date"].ToDate();
+
                     string Query = "SELECT" +
                                    " Recipient.p_partner_key_n AS RecipientKey," +
                                    " Recipient.p_partner_short_name_c AS RecipientName," +
@@ -187,9 +182,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " LEFT JOIN PUB_p_partner_gift_destination" +
                                    " ON Recipient.p_partner_class_c = 'FAMILY'" +
                                    " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
-                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + CurrentDate.ToString("yyyy-MM-dd") + "'" +
-                                   " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL" +
-                                   " OR (PUB_p_partner_gift_destination.p_date_expires_d >= '" + CurrentDate.ToString(
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + paramFromDate.ToString(
+                        "yyyy-MM-dd") + "'" +
+                                   " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL OR (PUB_p_partner_gift_destination.p_date_expires_d >= '"
+                                   +
+                                   paramToDate.ToString(
                         "yyyy-MM-dd") + "'" +
                                    " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
 
@@ -211,8 +208,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                              " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
                              " AND PUB_a_gift_batch.a_ledger_number_i = gift.a_ledger_number_i" +
                              " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
-                             " AND gift.a_date_entered_d BETWEEN '" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") +
-                             "' AND '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'" +
+                             " AND gift.a_date_entered_d BETWEEN '" + paramFromDate.ToString("yyyy-MM-dd") +
+                             "' AND '" + paramToDate.ToString("yyyy-MM-dd") + "'" +
                              " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
                              " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
 
@@ -233,8 +230,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " LEFT JOIN PUB_a_gift_batch batch ON batch.a_batch_number_i = detail.a_batch_number_i AND batch.a_ledger_number_i = detail.a_ledger_number_i"
                                  +
                                  " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
-                                 " AND gift.a_date_entered_d BETWEEN '" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") +
-                                 "' AND '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'" +
+                                 " AND gift.a_date_entered_d BETWEEN '" + paramFromDate.ToString("yyyy-MM-dd") +
+                                 "' AND '" + paramToDate.ToString("yyyy-MM-dd") + "'" +
                                  " AND batch.a_batch_status_c = 'Posted'" +
                                  " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
                     }
@@ -256,7 +253,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 });
 
             // Now we need to get just the DISTINCT rows from the Results table
-            if ((Results.Columns.Count > 0) && (Results.DefaultView.Count > 0))
+            if ((Results != null) && (Results.Columns.Count > 0) && (Results.Rows.Count > 0) && (Results.DefaultView.Count > 0))
             {
                 string[] columnNames = new string[Results.Columns.Count];
 
@@ -294,22 +291,27 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    DateTime thisYearStart = new DateTime(CurrentYear, 1, 1);
+                    DateTime paramToDate = AParameters["param_to_date"].ToDate();
+                    DateTime lastYearStart = new DateTime(CurrentYear - 1, 1, 1);
+                    DateTime lastYearEnd = new DateTime(CurrentYear - 1, 12, 31);
+
                     //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end in all places below
                     string Query = "SELECT " +
                                    " GiftDetail.p_recipient_key_n AS RecipientKey," +
 
                                    " SUM (" +
                                    " CASE WHEN" +
-                                   " Gift.a_date_entered_d >= '" + new DateTime(CurrentYear - 1, 1, 1).ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + new DateTime(CurrentYear - 1, 12, 31).ToString("yyyy-MM-dd") + "'" +
+                                   " Gift.a_date_entered_d >= '" + lastYearStart.ToString("yyyy-MM-dd") + "'" +
+                                   " AND Gift.a_date_entered_d <= '" + lastYearEnd.ToString("yyyy-MM-dd") + "'" +
                                    " THEN GiftDetail." + Currency +
                                    " ELSE 0" +
                                    " END) AS PreviousYearTotal," +
 
                                    " SUM (" +
                                    " CASE WHEN" +
-                                   " Gift.a_date_entered_d >= '" + new DateTime(CurrentYear, 1, 1).ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'" +
+                                   " Gift.a_date_entered_d >= '" + thisYearStart.ToString("yyyy-MM-dd") + "'" +
+                                   " AND Gift.a_date_entered_d <= '" + paramToDate.ToString("yyyy-MM-dd") + "'" +
                                    " THEN GiftDetail." + Currency +
                                    " ELSE 0" +
                                    " END) AS CurrentYearTotal" +
@@ -326,10 +328,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " AND Gift.a_ledger_number_i = " + LedgerNumber +
                                    " AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i" +
                                    " AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i" +
-                                   " AND ((Gift.a_date_entered_d >= '" + new DateTime(CurrentYear - 1, 1, 1).ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + new DateTime(CurrentYear - 1, 12, 31).ToString("yyyy-MM-dd") + "')" +
-                                   " OR (Gift.a_date_entered_d >= '" + new DateTime(CurrentYear, 1, 1).ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'))" +
+                                   " AND ((Gift.a_date_entered_d >= '" + lastYearStart.ToString("yyyy-MM-dd") + "'" +
+                                   " AND Gift.a_date_entered_d <= '" + lastYearEnd.ToString("yyyy-MM-dd") + "')" +
+                                   " OR (Gift.a_date_entered_d >= '" + thisYearStart.ToString("yyyy-MM-dd") + "'" +
+                                   " AND Gift.a_date_entered_d <= '" + paramToDate.ToString("yyyy-MM-dd") + "'))" +
                                    " AND GiftBatch.a_ledger_number_i = " + LedgerNumber +
                                    " AND GiftBatch.a_batch_number_i = Gift.a_batch_number_i" +
                                    " AND GiftBatch.a_batch_status_c = 'Posted'" +

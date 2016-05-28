@@ -1276,7 +1276,7 @@ namespace Ict.Common.Controls
         {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
             CurrencyEditor.TypeConverter = new Ict.Common.TypeConverter.TCurrencyConverter(
-                ADataColumn.ColumnName, Thread.CurrentThread.CurrentCulture.NumberFormat, ADecimalDigits);
+                ADataColumn, Thread.CurrentThread.CurrentCulture.NumberFormat, ADecimalDigits);
 
             CurrencyEditor.EditableMode = EditableMode.None;
 
