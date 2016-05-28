@@ -228,11 +228,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
 
-            // should Tax Deductibility Percentage be enabled? (specifically for OM Switzerland)
-            FTaxDeductiblePercentageEnabled =
-                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
-
             // read user defaults
+            FTaxDeductiblePercentageEnabled = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
             FNewDonorAlert = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
             FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, false);
             FAutoCopyIncludeMailingCode = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_AUTO_COPY_INCLUDE_MAILING_CODE, false);
@@ -3036,6 +3033,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if (!IsSplitGift)
                     {
                         //Most commonly not a split gift (?)
+                        if (!taxDeductible)
+                        {
+                            txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                        }
+
                         txtTaxDeductAmount.NumberValueDecimal = 0.0m;
                         txtNonDeductAmount.NumberValueDecimal = 0.0m;
                     }

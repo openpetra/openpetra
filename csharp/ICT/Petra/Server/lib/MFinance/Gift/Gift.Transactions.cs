@@ -4136,24 +4136,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     giftDetail.GiftAmountIntl = giftDetail.GiftTransactionAmount;
                 }
 
-                //Do tax fields
-                if (giftDetail.IsTaxDeductibleNull() || !giftDetail.TaxDeductible)
-                {
-                    giftDetail.TaxDeductible = false;
-                    giftDetail.TaxDeductiblePct = 0.0m;
-                    giftDetail.TaxDeductibleAmount = 0.0m;
-                    giftDetail.TaxDeductibleAmountBase = 0.0m;
-                    giftDetail.TaxDeductibleAmountIntl = 0.0m;
-                    giftDetail.NonDeductibleAmount = 0.0m;
-                    giftDetail.NonDeductibleAmountBase = 0.0m;
-                    giftDetail.NonDeductibleAmountIntl = 0.0m;
-                }
-                else
-                {
-                    //Redo Tax calculations
-                    AGiftDetailRow giftDetailRow = (AGiftDetailRow)giftDetail;
-                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetailRow);
-                }
+                //Redo Tax calculations
+                AGiftDetailRow giftDetailRow = (AGiftDetailRow)giftDetail;
+                TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetailRow);
 
                 // for calculation of admin fees
                 LoadAdminFeeTablesForGiftDetail(MainDS, giftDetail, ATransaction);

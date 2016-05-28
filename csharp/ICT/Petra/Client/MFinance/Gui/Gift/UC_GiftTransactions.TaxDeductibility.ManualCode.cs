@@ -187,11 +187,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            ARow.TaxDeductiblePct = (decimal)txtDeductiblePercentage.NumberValueDecimal;
+            ARow.TaxDeductiblePct = txtDeductiblePercentage.NumberValueDecimal.Value;
 
-            ARow.TaxDeductibleAmount = (decimal)txtTaxDeductAmount.NumberValueDecimal;
+            ARow.TaxDeductibleAmount = txtTaxDeductAmount.NumberValueDecimal.Value;
 
-            ARow.NonDeductibleAmount = (decimal)txtNonDeductAmount.NumberValueDecimal;
+            ARow.NonDeductibleAmount = txtNonDeductAmount.NumberValueDecimal.Value;
 
             if (txtDeductibleAccount.Text.Length == 0)
             {
