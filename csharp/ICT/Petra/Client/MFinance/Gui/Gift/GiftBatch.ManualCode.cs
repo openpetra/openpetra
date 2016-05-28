@@ -559,8 +559,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AAllowRepeatEvent"></param>
         public void SelectTab(eGiftTabs ATab, bool AAllowRepeatEvent = false)
         {
-            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
-
             if (ATab == eGiftTabs.Batches)
             {
                 if ((FPreviouslySelectedTab == eGiftTabs.Batches) && !AAllowRepeatEvent)
@@ -571,6 +569,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FPreviouslySelectedTab = eGiftTabs.Batches;
 
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.SetFocusToGrid();

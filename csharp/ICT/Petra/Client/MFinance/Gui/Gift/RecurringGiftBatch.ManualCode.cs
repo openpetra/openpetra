@@ -313,10 +313,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ATab"></param>
         public void SelectTab(eGiftTabs ATab)
         {
-            FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
-
             if (ATab == eGiftTabs.Batches)
             {
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
                 this.tabGiftBatch.SelectedTab = this.tpgRecurringBatches;
                 this.tpgRecurringTransactions.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
                 this.ucoRecurringBatches.SetFocusToGrid();

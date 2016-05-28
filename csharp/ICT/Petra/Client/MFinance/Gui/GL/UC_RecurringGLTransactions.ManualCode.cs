@@ -75,6 +75,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private SourceGrid.Cells.Editors.ComboBox FcmbAnalAttribValues;
 
         private bool FShowStatusDialogOnLoad = true;
+        private bool FDoneComboInitialise = false;
+        private bool FSuppressListChanged = false;
 
         /// <summary>
         /// Sets a flag to show the status dialog when transactions are loaded
@@ -220,6 +222,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Empty grids before filling them
                 grdDetails.DataSource = null;
                 grdAnalAttributes.DataSource = null;
+                FSuppressListChanged = false;
 
                 // This sets the main part of the filter but excluding the additional items set by the user GUI
                 // It gets the right sort order
@@ -663,7 +666,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((OldTransactionAmount != Convert.ToDecimal(ARow.TransactionAmount))
                 || (OldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
-                UpdateTransactionTotals();
+                UpdateTransactionTotals(true);
             }
         }
 
@@ -797,7 +800,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return RetVal;
         }
 
-        private void UpdateTransactionTotals()
+        private void UpdateTransactionTotals(bool AIsActionInsideRowEdit = false)
         {
             bool OriginalSaveButtonState = false;
             bool TransactionRowActive = false;
@@ -856,6 +859,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Iterate through journals
+            if ((FPreviouslySelectedDetailRow != null) && !AIsActionInsideRowEdit)
+            {
+                FPreviouslySelectedDetailRow.BeginEdit();
+            }
+
+            bool currentRowEdited = false;
+
             foreach (DataRowView drv in JournalsToUpdateDV)
             {
                 GLBatchTDSARecurringJournalRow jr = (GLBatchTDSARecurringJournalRow)drv.Row;
@@ -916,6 +926,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             {
                                 txtCreditAmount.NumberValueDecimal = 0;
                                 FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtDebitAmount.NumberValueDecimal);
+                                currentRowEdited = true;
                             }
                         }
                         else
@@ -925,6 +936,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             {
                                 txtDebitAmount.NumberValueDecimal = 0;
                                 FPreviouslySelectedDetailRow.TransactionAmount = Convert.ToDecimal(txtCreditAmount.NumberValueDecimal);
+                                currentRowEdited = true;
                             }
                         }
                     }
@@ -957,6 +969,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             {
                                 FPreviouslySelectedDetailRow.AmountInBaseCurrency =
                                     Convert.ToDecimal(drWork[ARecurringTransactionTable.ColumnAmountInBaseCurrencyId]);
+                                currentRowEdited = true;
                             }
                         }
                     }
@@ -972,6 +985,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             {
                                 FPreviouslySelectedDetailRow.AmountInBaseCurrency =
                                     Convert.ToDecimal(drWork[ARecurringTransactionTable.ColumnAmountInBaseCurrencyId]);
+                                currentRowEdited = true;
                             }
                         }
                     }
@@ -1003,6 +1017,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     txtDebitTotalAmount.NumberValueDecimal = AmtDebitTotal;
                 }
             }   // next journal
+
+            if (currentRowEdited)
+            {
+                FPreviouslySelectedDetailRow.EndEdit();
+            }
+            else if ((FPreviouslySelectedDetailRow != null) && !AIsActionInsideRowEdit)
+            {
+                FPreviouslySelectedDetailRow.CancelEdit();
+            }
 
             //Update totals of Batch
             GLRoutines.UpdateRecurringBatchTotals(ref FMainDS, ref CurrentBatchRow, CurrentJournalNumber);
@@ -1908,13 +1931,94 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void DataSource_ListChanged(object sender, ListChangedEventArgs e)
         {
-            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.AutoResizeGrid();
+
+                // Once we have auto-sized once and there are more than 8 rows we don't auto-size any more (unless we load data again)
+                FSuppressListChanged = (grdDetails.Rows.Count > 8);
             }
 
             // If the grid list changes we might need to disable the Delete All button
             btnDeleteAll.Enabled = btnDelete.Enabled && (FFilterAndFindObject.IsActiveFilterEqualToBase);
+        }
+
+        private void FilterToggledManual(bool AFilterIsOff)
+        {
+            // The first time the filter is toggled on we need to set up the cost centre and account comboBoxes
+            // This means showing inactive values in red
+            // We achieve this by using our own owner draw mode event
+            // Also the data source for the combos will be wrong because they have been cloned from items that may not have shown inactive values
+            if ((AFilterIsOff == false) && !FDoneComboInitialise)
+            {
+                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbDetailAccountCode"),
+                    TCacheableFinanceTablesEnum.AccountList);
+                InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName(
+                        "cmbDetailCostCentreCode"),
+                    TCacheableFinanceTablesEnum.CostCentreList);
+                InitFilterFindAccountCodeComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailAccountCode"),
+                    TCacheableFinanceTablesEnum.AccountList);
+                InitFilterFindCostCentreComboBox((TCmbAutoComplete)FFilterAndFindObject.FindPanelControls.FindControlByName("cmbDetailCostCentreCode"),
+                    TCacheableFinanceTablesEnum.CostCentreList);
+
+                FDoneComboInitialise = true;
+            }
+        }
+
+        /// <summary>
+        /// Helper method that we can call to initialise each of the filter/find comboBoxes
+        /// </summary>
+        private void InitFilterFindAccountCodeComboBox(TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTable)
+        {
+            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber));
+
+            dv.RowFilter = TFinanceControls.PrepareAccountFilter(true, false, false, false, "");
+            AFFInstance.DataSource = dv;
+            AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
+            AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
+        }
+
+        /// <summary>
+        /// Helper method that we can call to initialise each of the filter/find comboBoxes
+        /// </summary>
+        private void InitFilterFindCostCentreComboBox(TCmbAutoComplete AFFInstance, TCacheableFinanceTablesEnum AListTable)
+        {
+            DataView dv = new DataView(TDataCache.TMFinance.GetCacheableFinanceTable(AListTable, FLedgerNumber));
+
+            dv.RowFilter = TFinanceControls.PrepareCostCentreFilter(true, false, false, false);
+            AFFInstance.DataSource = dv;
+            AFFInstance.DrawMode = DrawMode.OwnerDrawFixed;
+            AFFInstance.DrawItem += new DrawItemEventHandler(DrawComboBoxItem);
+        }
+
+        /// <summary>
+        /// This method is called when the system wants to draw a comboBox item in the list.
+        /// We choose the colour and weight for the font, showing inactive codes in bold red text
+        /// </summary>
+        private void DrawComboBoxItem(object sender, DrawItemEventArgs e)
+        {
+            e.DrawBackground();
+
+            TCmbAutoComplete cmb = (TCmbAutoComplete)sender;
+            DataRowView drv = (DataRowView)cmb.Items[e.Index];
+            string content = drv[1].ToString();
+            Brush brush;
+
+            if (cmb.Name.StartsWith("cmbDetailCostCentre"))
+            {
+                brush = CostCentreIsActive(content) ? Brushes.Black : Brushes.Red;
+            }
+            else if (cmb.Name.StartsWith("cmbDetailAccount"))
+            {
+                brush = AccountIsActive(content) ? Brushes.Black : Brushes.Red;
+            }
+            else
+            {
+                throw new ArgumentException("Unexpected caller of DrawComboBoxItem event");
+            }
+
+            Font font = new Font(((Control)sender).Font, (brush == Brushes.Red) ? FontStyle.Bold : FontStyle.Regular);
+            e.Graphics.DrawString(content, font, brush, new PointF(e.Bounds.X, e.Bounds.Y));
         }
     }
 }

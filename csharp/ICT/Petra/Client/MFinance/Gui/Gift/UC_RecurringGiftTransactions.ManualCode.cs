@@ -331,7 +331,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FTransactionsLoaded = false;
 
             grdDetails.SuspendLayout();
-            FSuppressListChanged = true;
+            FSuppressListChanged = false;
 
             FLedgerNumber = ALedgerNumber;
             FBatchNumber = ABatchNumber;
@@ -375,7 +375,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             UpdateControlsProtection();
 
-            FSuppressListChanged = false;
             grdDetails.ResumeLayout();
 
             UpdateTotals();
@@ -458,6 +457,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                FPreviouslySelectedDetailRow.BeginEdit();
+
                 FPreviouslySelectedDetailRow.RecipientKey = APartnerKey;
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
                 FPreviouslySelectedDetailRow.RecipientClass = txtDetailRecipientKey.CurrentPartnerClass.ToString();
@@ -504,6 +505,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     FPreviouslySelectedDetailRow.MotivationDetailCode = FMotivationDetail;
                 }
 
+                FPreviouslySelectedDetailRow.EndEdit();
                 FPetraUtilsObject.SuppressChangeDetection = true;
 
                 if (APartnerKey > 0)
@@ -566,6 +568,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if ((APartnerKey == 0) && (FPreviouslySelectedDetailRow != null))
             {
+                FPreviouslySelectedDetailRow.BeginEdit();
+
                 FPreviouslySelectedDetailRow.RecipientDescription = cmbDetailMotivationDetailCode.GetSelectedString();
 
                 if (FMotivationGroup != MFinanceConstants.MOTIVATION_GROUP_GIFT)
@@ -576,6 +580,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     FPreviouslySelectedDetailRow.RecipientDescription = string.Empty;
                 }
+
+                FPreviouslySelectedDetailRow.EndEdit();
             }
         }
 
@@ -784,8 +790,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     if ((txtDetailRecipientKeyMinistry.Text != KeyMinistry)
                         || (FPreviouslySelectedDetailRow.RecipientKeyMinistry != KeyMinistry))
                     {
+                        FPreviouslySelectedDetailRow.BeginEdit();
                         txtDetailRecipientKeyMinistry.Text = KeyMinistry;
                         FPreviouslySelectedDetailRow.RecipientKeyMinistry = KeyMinistry;
+                        FPreviouslySelectedDetailRow.EndEdit();
                     }
 
                     if (Convert.ToInt64(txtDetailRecipientKey.Text) != Convert.ToInt64(RecipientKey))
@@ -2367,8 +2375,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Rows already active in transaction tab. Need to set current row ac code below will not update selected row
                 if (FPreviouslySelectedDetailRow != null)
                 {
+                    FPreviouslySelectedDetailRow.BeginEdit();
                     FPreviouslySelectedDetailRow.MethodOfPaymentCode = FBatchMethodOfPayment;
                     cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment);
+                    FPreviouslySelectedDetailRow.EndEdit();
                 }
             }
 
@@ -2614,6 +2624,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             if ((grdDetails != null) && grdDetails.CanFocus)
             {
+                FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
                 grdDetails.AutoResizeGrid();
                 grdDetails.Focus();
             }
@@ -2642,6 +2653,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (grdDetails.CanFocus && !FSuppressListChanged && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.AutoResizeGrid();
+
+                // Once we have auto-sized once and there are more than 8 rows we don't auto-size any more (unless we load data again)
+                FSuppressListChanged = (grdDetails.Rows.Count > 8);
             }
         }
 
