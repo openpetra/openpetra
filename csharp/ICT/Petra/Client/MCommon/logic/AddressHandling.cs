@@ -94,10 +94,10 @@ namespace Ict.Petra.Client.MCommon
         /// to copy over all data from the Family's Address if that is desired. Note: the DataRow
         /// specified with <paramref name="ACopyFromFamilyPartnerKey"/> must be present in the
         /// APartnerLocationDT table!</param>
-        /// <param name="ACopyFromFamilyLocationKey">Pass in the LocationKey of the Family
+        /// <param name="ACopyFromFamilyLocation">Pass in the Location of the Family
         /// Partner specified with <paramref name="ACopyFromFamilyPartnerKey"/> to copy over all
         /// data from the Family's Address if that is desired. Note: the
-        /// DataRow specified with <paramref name="ACopyFromFamilyLocationKey"/> must be present in
+        /// DataRow specified with <paramref name="ACopyFromFamilyLocation"/> must be present in
         /// both the ALocationDT and APartnerLocationDT table!</param>
         /// <exception cref="ArgumentException">Throws an <see cref="ArgumentException"/> if any
         /// of the Arguments (or their combination) is not valid.</exception>
