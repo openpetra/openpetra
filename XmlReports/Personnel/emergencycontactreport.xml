@@ -227,6 +227,8 @@
 				<value function="assign(Fax, )" condition="lt({FaxNumber}, 1)"/>
 				<value function="assign(Fax, {FaxNumber})" condition="gt({FaxNumber}, 0)"/>
 				<value function="assign(Telephone, {TelephoneNumber})"/>
+				<value function="assign(MobileNumber, {MobileNumber})"/>
+				<value function="assign(AlternateTelephone, {AlternateTelephone})"/>
 			</queryDetail>
 			
 		</query>

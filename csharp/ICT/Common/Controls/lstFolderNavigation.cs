@@ -275,6 +275,29 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Selects a Module folder based on a UINavigation element name
+        /// </summary>
+        /// <param name="AFolderName">The name of a main folder (e.g. Partner, FinancialDevelopment).
+        /// Note that this is not the display label name but the element name itself.</param>
+        /// <returns>True if the folder could be selected.  If the folder does not exist, or the user does not have permission,
+        /// or the folder is not enabled, the method will return false.</returns>
+        public bool SelectFolder(string AFolderName)
+        {
+            for (int i = 0; i < sptNavigation.Panel2.Controls.Count; i++)
+            {
+                TRbtNavigationButton btn = (TRbtNavigationButton) this.sptNavigation.Panel2.Controls[i];
+                XmlNode folderNode = (XmlNode)btn.Tag;
+
+                if (folderNode.Name == AFolderName)
+                {
+                    return SelectFolder(i);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Select the given folder, if it is enabled
         /// </summary>
         /// <param name="AIndex"></param>
@@ -406,6 +429,41 @@ namespace Ict.Common.Controls
             if (FCurrentHoster != null)
             {
                 FCurrentHoster.SelectPreviousSubModule();
+            }
+        }
+
+        /// <summary>
+        /// Selects the first control in the ledger list, if it exists.
+        /// Once this control is focused the client can use the TAB key to select other items in the folder navigation panel.
+        /// TODO: This functionality needs more thought when we get multi ledgers for real in production.   (AlanP)
+        /// because we do not get a marquee when the control gets the focus.  We really need another way (colour) for showing the
+        /// selected ledger.  I do not have time for this now.
+        /// </summary>
+        public void SelectLedgerList()
+        {
+            Control[] ledgerPanels = this.sptNavigation.Panel1.Controls.Find("SelectLedger", true);
+
+            foreach (Control c1 in ledgerPanels)
+            {
+                Control[] tasks = c1.Controls.Find("TTaskList", true);
+
+                foreach (Control c2 in tasks)
+                {
+                    TTaskList task = c2 as TTaskList;
+
+                    if ((task != null) && (task.Controls.Count > 0))
+                    {
+                        Panel c3 = (Panel)task.Controls[0];
+                        c3.Focus();
+
+                        if (c3.Controls[0] as LinkLabel != null)
+                        {
+                            LinkLabel c4 = (LinkLabel)c3.Controls[0];
+                            c4.Select();
+                            c4.Focus();
+                        }
+                    }
+                }
             }
         }
 

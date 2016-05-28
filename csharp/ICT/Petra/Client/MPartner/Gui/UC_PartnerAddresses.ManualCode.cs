@@ -1135,8 +1135,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ARow.LocationType =
                 TSharedAddressHandling.GetDefaultLocationType(SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass));
 
-            // Initialise this to a mailing address - it normally will be (Mantis 4534)
-            ARow.SendMail = true;
+            // Initialise this to a mailing address - it normally will be (Mantis 4534), but not for PERSONs because we mail the FAMILY
+            ARow.SendMail = SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass) != TPartnerClass.PERSON;
 
             // make sure this is initialized as otherwise initial drawing of cell gives problems
             ARow.BestAddress = false;

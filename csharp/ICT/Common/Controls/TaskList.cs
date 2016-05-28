@@ -398,6 +398,24 @@ namespace Ict.Common.Controls
                         CurrentNumbering++;
                     }
 
+                    long conferenceCode;
+
+                    if (TaskNode.Name.StartsWith("Conference") && Int64.TryParse(TaskNode.Name.Substring(10), out conferenceCode))
+                    {
+                        // This covers the Selected Conference panel.
+                        // NOTE: We have to set the tab stop for 'this' to false.  It is not enough to just set the lblTaskItem property
+                        // because, bizarrely, only setting the link label allows the tab key to select the user control but that does not
+                        // have any focused control!
+                        this.TabStop = false;
+                    }
+                    else
+                    {
+                        // This covers the Current ledger panel where some ledgers are inaccessible to the user.
+                        // NOTE: setting TabStop to false for a LinkLabel must be done AFTER setting the links and setting the text
+                        //  otherwise .NET will always set TabStop to true!
+                        lblTaskItem.TabStop = !IsDisabled(TaskNode);
+                    }
+
                     this.tPnlGradient1.Controls.Add(lblTaskItem);
 
                     FXmlNodeToLinkLabelMapping[TaskNode] = lblTaskItem;

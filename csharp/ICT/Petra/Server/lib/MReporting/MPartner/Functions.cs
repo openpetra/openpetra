@@ -650,6 +650,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(APartnerKey,
                 out PhoneNumber, out EmailAddress, out FaxNumber);
 
+            // Now get any additional phone numbers that are current
+            string moreMobileNumbers, moreLandlineNumbers;
+            TContactDetailsAggregate.GetPartnersAdditionalPhoneNumbers(APartnerKey, out moreMobileNumbers, out moreLandlineNumbers);
+
             // Add Calculation Parameter for 'Primary Email Address' (String.Empty is supplied if the Partner hasn't got one)
             situation.GetParameters().AddCalculationParameter("EmailAddress",
                 new TVariant(EmailAddress ?? String.Empty));
@@ -666,9 +670,10 @@ namespace Ict.Petra.Server.MReporting.MPartner
             situation.GetParameters().AddCalculationParameter("FaxNumber",
                 new TVariant(FaxNumber ?? String.Empty));
 
+            situation.GetParameters().AddCalculationParameter("MobileNumber", new TVariant(moreMobileNumbers ?? String.Empty));
+            situation.GetParameters().AddCalculationParameter("AlternateTelephone", new TVariant(moreLandlineNumbers ?? String.Empty));
+
             // At present we no longer support the reporting of the following, so we set those Calculation Parameters to String.Empty
-            situation.GetParameters().AddCalculationParameter("MobileNumber", new TVariant(String.Empty));
-            situation.GetParameters().AddCalculationParameter("AlternateTelephone", new TVariant(String.Empty));
             situation.GetParameters().AddCalculationParameter("Url", new TVariant(String.Empty));
             // Extension and FaxExtension no longer exist in the Contact Details scheme so we set those Calculation Parameters to String.Empty
             situation.GetParameters().AddCalculationParameter("Extension", new TVariant(String.Empty));

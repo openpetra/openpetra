@@ -159,16 +159,16 @@ namespace Ict.Petra.Client.CommonDialogs
             string mainMenuTable = KeyboardShortcutTableNames.MainMenu.ToString();
             AddTableToDataSet(mainMenuTable);
 
-            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("TAB / Shift+TAB"), Catalog.GetString(
-                    "Move forwards/backwards through the Task Items on the right side of the screen and Sub-Modules on the upper left."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("Arrow keys"), Catalog.GetString(
+                    "Move up, down, left or right through the Task Items on the right side of the screen."));
             AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("Home"), Catalog.GetString(
                     "Move to the first Task Item."));
             AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("End"), Catalog.GetString(
                     "Move to the last Task Item."));
-            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("+"), Catalog.GetString(
-                    "Move to the first Task Item in the next Task Group."));
-            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("-"), Catalog.GetString(
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("- or Ctrl+Up"), Catalog.GetString(
                     "Move to the first Task Item in the previous Task Group."));
+            AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("+ or Ctrl+Down"), Catalog.GetString(
+                    "Move to the first Task Item in the next Task Group."));
             AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("PgUp"), Catalog.GetString(
                     "Show the Task List for the previous Sub-Module listed at the upper left of the screen."));
             AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("PgDn"), Catalog.GetString(
@@ -178,7 +178,7 @@ namespace Ict.Petra.Client.CommonDialogs
             AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("Ctrl+PgDn"), Catalog.GetString(
                     "Select the next Main Module listed at the lower left of the screen and show the most recent Sub-Module Task List."));
             AddShortcutInfoToTable(mainMenuTable, Catalog.GetString("ENTER"), Catalog.GetString(
-                    "Launch the screen for the focused Task Item or show the Task List for the focused Sub-Module."));
+                    "Launch the screen for the focused Task Item."));
 
             string partnerEditContactDetailsTabTable = KeyboardShortcutTableNames.PartnerEditContactDetailsTab.ToString();
             AddTableToDataSet(partnerEditContactDetailsTabTable);

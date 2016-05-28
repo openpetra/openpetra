@@ -23,8 +23,9 @@ RootNode:
             Controls:
                 Row0: [chkEscClosesScreen]
                 Row1: [chkSaveWindowProperties]
+                Row2: [cmbInitialSelectedModule]
             Width: 430
-            Height: 70
+            Height: 100
         pnlLanguage:
             Controls:
                 Row0: [cmbLanguage]
@@ -72,3 +73,7 @@ RootNode:
             CheckBoxAttachedLabel: right
             Label: Save window sizes and positions between sessions
             Padding: 10, 3, 0, 0
+        cmbInitialSelectedModule:
+            Label: Module to open when Open Petra starts
+            Width: 170
+            Padding: 0, 5, 0, 0

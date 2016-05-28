@@ -43,8 +43,7 @@ namespace Ict.Common.Controls
         private TaskAppearance FTaskAppearance;
         private bool FSingleClickExecution = false;
         private int FMaxTaskWidth;
-        private TUcoSingleTask FFirstTaskInGroup = null;
-        private TUcoSingleTask FLastTaskInGroup = null;
+        private TUcoSingleTask FCurrentTask = null;
 
         /// <summary>
         /// Constructor.
@@ -194,13 +193,6 @@ namespace Ict.Common.Controls
 
             ATask.TaskClicked += new EventHandler(FireTaskClicked);
             ATask.TaskSelected += new EventHandler(FireTaskSelected);
-
-            if (FTasks.Count == 1)
-            {
-                FFirstTaskInGroup = ATask;
-            }
-
-            FLastTaskInGroup = ATask;
         }
 
         /// <summary>
@@ -211,30 +203,157 @@ namespace Ict.Common.Controls
             FTasks.Clear();
 
             flpTaskGroup.Controls.Clear();
-            FFirstTaskInGroup = null;
-            FLastTaskInGroup = null;
         }
 
         /// <summary>
-        /// Selects (highlights) the task that was first added to a TaskGroup and sets the focus.
+        /// Get the location (row and column) of a specified task.  The values will be -1 if no task is specified
         /// </summary>
-        public void SelectFirstTaskWithFocus()
+        public void GetTaskLocation(TUcoSingleTask ATask, out int ARow, out int AColumn)
         {
-            if (FTasks.Count > 0)
+            ARow = -1;
+            AColumn = -1;
+
+            if (ATask == null)
             {
-                FFirstTaskInGroup.FocusTask();
+                return;
+            }
+
+            ARow = ATask.Top / ATask.Height;
+
+            if (FTaskAppearance == TaskAppearance.staLargeTile)
+            {
+                AColumn = ATask.Left / ATask.Width;
+            }
+            else
+            {
+                // it is list entry which does not have a fixed width
+                foreach (TUcoSingleTask task in FTasks.Values)
+                {
+                    if ((task.Top == ATask.Top) && (task.Left <= ATask.Left))
+                    {
+                        AColumn++;
+                    }
+                }
             }
         }
 
         /// <summary>
-        /// Selects (highlights) the task that was added last to a TaskGroup and sets the focus.
+        /// Get the location (row and column) of the current task
         /// </summary>
-        public void SelectLastTaskWithFocus()
+        public void GetTaskLocation(out int ARow, out int AColumn)
         {
-            if (FTasks.Count > 0)
+            GetTaskLocation(FCurrentTask, out ARow, out AColumn);
+        }
+
+        /// <summary>
+        /// Select the next enabled task in the group in the direction specified.  Returns true if a task could be selected.
+        /// Returns false if there is no task or if there is a task but it is disabled.  Disabled tasks are skipped if there is an enabled task beyond.
+        /// </summary>
+        /// <param name="ADirection"></param>
+        /// <returns></returns>
+        public bool SelectNextTask(Keys ADirection)
+        {
+            if (FCurrentTask == null)
             {
-                FLastTaskInGroup.FocusTask();
+                return false;
             }
+
+            // Start by discovering the row and column of the current task in the group
+            int currentRow, currentColumn;
+            GetTaskLocation(out currentRow, out currentColumn);
+
+            TUcoSingleTask nextTask = null;
+            bool keepLooking = true;
+
+            while (keepLooking)
+            {
+                // Find the next task at a specific location
+                switch (ADirection)
+                {
+                    case Keys.Right:
+                        nextTask = FindTaskAtLocation(currentRow, ++currentColumn);
+                        break;
+
+                    case Keys.Left:
+                        nextTask = FindTaskAtLocation(currentRow, --currentColumn);
+                        break;
+
+                    case Keys.Up:
+                        nextTask = FindTaskAtLocation(--currentRow, currentColumn);
+                        break;
+
+                    case Keys.Down:
+                        nextTask = FindTaskAtLocation(++currentRow, currentColumn);
+                        break;
+                }
+
+                if ((nextTask != null) && nextTask.Enabled)
+                {
+                    // we found one and it is enabled
+                    nextTask.FocusTask();
+                    return true;
+                }
+
+                // if we found a task that was disabled we can go round again
+                keepLooking = (nextTask != null);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Select the next enabled task in the group in the direction specified and starting with the task in a specific row and column.
+        /// Returns true if a task could be selected.
+        /// Returns false if there is no task or if there is a task but it is disabled.  Disabled tasks are skipped if there is an enabled task beyond.
+        /// </summary>
+        /// <param name="ARow"></param>
+        /// <param name="AColumn"></param>
+        /// <param name="ADirection"></param>
+        /// <returns></returns>
+        public bool SelectNextTask(int ARow, int AColumn, Keys ADirection)
+        {
+            TUcoSingleTask nextTask = null;
+            bool keepLooking = true;
+
+            while (keepLooking)
+            {
+                // get the task at the location
+                nextTask = FindTaskAtLocation(ARow, AColumn);
+
+                if (nextTask != null)
+                {
+                    if (nextTask.Enabled)
+                    {
+                        // we found one and it is enabled
+                        nextTask.FocusTask();
+                        return true;
+                    }
+
+                    // we found one but it was disabled - so try again in the specified direction
+                    switch (ADirection)
+                    {
+                        case Keys.Up:
+                            ARow--;
+                            break;
+
+                        case Keys.Down:
+                            ARow++;
+                            break;
+
+                        case Keys.Left:
+                            AColumn--;
+                            break;
+
+                        case Keys.Right:
+                            AColumn++;
+                            break;
+                    }
+                }
+
+                keepLooking = (nextTask != null);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -269,6 +388,12 @@ namespace Ict.Common.Controls
 
         private void FireTaskSelected(object sender, EventArgs e)
         {
+            // An individual task has been selected
+            FCurrentTask = (TUcoSingleTask)sender;
+
+            // This line makes sure it is completely visible
+            ((TLstTasks) this.Parent).ScrollControlIntoView(FCurrentTask);
+
             if (TaskSelected != null)
             {
                 TaskSelected(sender, null);
@@ -302,6 +427,45 @@ namespace Ict.Common.Controls
             }
 
 //TLogging.Log(ControlsList + "\r\n" + "\r\n");
+        }
+
+        /// <summary>
+        /// Finds the task at the specified row and column.  Returns null if there is no task at the location requested.
+        /// </summary>
+        /// <param name="ARow">A 0-based row number.  If the value is int.MaxValue then the last task in the group in the specified column is returned.</param>
+        /// <param name="AColumn">A 0-based column number</param>
+        /// <returns></returns>
+        private TUcoSingleTask FindTaskAtLocation(int ARow, int AColumn)
+        {
+            int maxRow = -1;
+            TUcoSingleTask taskAtMaxRow = null;
+
+            foreach (TUcoSingleTask task in FTasks.Values)
+            {
+                int tryRow, tryColumn;
+                GetTaskLocation(task, out tryRow, out tryColumn);
+
+                if (ARow == int.MaxValue)
+                {
+                    // we are looking for the last task in the group
+                    if ((tryRow > maxRow) && (tryColumn == AColumn))
+                    {
+                        maxRow = tryRow;
+                        taskAtMaxRow = task;
+                    }
+                }
+                else if ((tryRow == ARow) && (tryColumn == AColumn))
+                {
+                    return task;
+                }
+            }
+
+            if (taskAtMaxRow != null)
+            {
+                return taskAtMaxRow;
+            }
+
+            return null;
         }
 
         #endregion

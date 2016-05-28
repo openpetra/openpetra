@@ -82,6 +82,9 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>Colour of the Find panel background.</summary>
             public const String COLOUR_FIND_PANEL = "COLOUR_FIND_PANEL";
 
+            /// <summary>Module to open when the application starts</summary>
+            public const String MODULE_TO_OPEN_AT_STARTUP = "STARTUP_MODULE";
+
             #region TUserDefaults.TNamedDefaults
 
             /// <summary>
