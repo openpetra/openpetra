@@ -50,4 +50,4 @@ RootNode:
         cmbDetailAddresseeTypeCode: {List=AddresseeTypeList}
         txtDetailFormalityLevel: {Format=Integer, Width=60, Validation=true}
         txtDetailSalutationText: {Width=245, Stretch=horizontally}
-        txtDetailComplimentaryClosingText: {Width=245, Stretch=horizontally}
+        txtDetailComplimentaryClosingText: {Label=Complementary Closing Text, Width=245, Stretch=horizontally}

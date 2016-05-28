@@ -54,7 +54,7 @@ RootNode:
         llbPreviousExperience: {Label=[&j] Previous Experience ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
         llbProgressReports: {Label=[&k] Progress Reports ({0}), Action=actIndivDataItemSelected, Width=175, Height=22}
         llbLocalPersonnelData: {Label=[&l] Local Personnel Data, Action=actIndivDataItemSelected, Width=175, Height=22}
-        llbPersonalData: {Label=[&m] Miscellaneous, Action=actIndivDataItemSelected, Width=175, Height=22}
+        llbPersonalData: {Label=[&m] Testimony, Action=actIndivDataItemSelected, Width=175, Height=22}
         #hide Professional Areas for now as they get replaced by Skills
         llbProfessionalAreas: {Label=[&n] Professional Areas ({0}), Visible=false, Action=actIndivDataItemSelected, Width=175, Height=22}
         #hide Abilities for now as they get replaced by Skills

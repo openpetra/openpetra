@@ -448,7 +448,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         partnerlocation.SiteKey = 0;
                         partnerlocation.LocationKey = location.LocationKey;
                         partnerlocation.PartnerKey = PartnerRow.PartnerKey;
-                        partnerlocation.SendMail = true;
+                        partnerlocation.SendMail = (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON) ? false : true;
                         partnerlocation.DateEffective = DateTime.Now;
                         partnerlocation.LocationType = "HOME";
                         AMainDS.PPartnerLocation.Rows.Add(partnerlocation);

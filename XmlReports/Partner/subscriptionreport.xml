@@ -231,7 +231,8 @@
                 <value function="assign(PartnerClassShort, substring({PartnerClass}, 0,  1))"/>
                 <value function="assign(TelephoneNumber, {TelephonePre})"/>
                 <value function="assign(FaxNumber, {FaxPre})"/>
-                <value function="assign(Field, GetFieldOfPartner({PartnerKey}))"/>
+                <value function="assign(Field, GetFieldOfPartner({PartnerKey}))" condition="ne({param_selection},all current staff)"/>
+                <value function="assign(Field, GetFieldOfPartnerOnDate({PartnerKey},{param_currentstaffdate}))" condition="eq({param_selection},all current staff)"/>
                 <value function="assign(StreetName, {p_street_name_c})"/>
                 <value function="assign(Locality, {p_locality_c})"/>
                 <value function="assign(City, {p_city_c})"/>

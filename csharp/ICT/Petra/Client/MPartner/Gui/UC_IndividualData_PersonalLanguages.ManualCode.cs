@@ -86,8 +86,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.Columns.Clear();
             grdDetails.AddTextColumn("Language", FMainDS.PmPersonLanguage.ColumnLanguageDescription);
             grdDetails.AddTextColumn("Language Level", FMainDS.PmPersonLanguage.ColumnLanguageLevel);
-            grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
-            grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
+            //grdDetails.AddTextColumn("Years Of Experience", FMainDS.PmPersonLanguage.ColumnYearsOfExperience);
+            //grdDetails.AddDateColumn("as of", FMainDS.PmPersonLanguage.ColumnYearsOfExperienceAsOf);
 
             FLanguageCodeDT = (PLanguageTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.LanguageCodeList);
 
@@ -302,29 +302,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 // only set to read only if saving of data was successful
                 SetPrimaryKeyReadOnly(true);
-            }
-        }
-
-        /// <summary>
-        /// react to change in "Years of Experience"
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ProcessYearsOfExperience(System.Object sender, EventArgs e)
-        {
-            // do set date for "Years of Experience as of date" if it is not already set
-            // and value for "Years of Experience" was changed
-            if (txtYearsOfExperience.Text.Length == 0)
-            {
-                dtpYearsOfExperienceAsOf.Text = "";
-            }
-            else
-            {
-                if ((dtpYearsOfExperienceAsOf.Text.Length == 0)
-                    && (txtYearsOfExperience.Text != "99"))
-                {
-                    dtpYearsOfExperienceAsOf.Date = DateTime.Today;
-                }
             }
         }
 

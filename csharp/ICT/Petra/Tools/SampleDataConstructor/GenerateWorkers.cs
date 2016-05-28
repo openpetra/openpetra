@@ -364,7 +364,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                 personLocationRow.LocationKey = familyLocationRow.LocationKey;
                 personLocationRow.SiteKey = familyLocationRow.SiteKey;
                 personLocationRow.LocationType = MPartnerConstants.LOCATIONTYPE_HOME;
-                personLocationRow.SendMail = true;
+                personLocationRow.SendMail = false;
                 AMainDS.PPartnerLocation.Rows.Add(personLocationRow);
             }
         }

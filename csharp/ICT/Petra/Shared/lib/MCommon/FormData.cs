@@ -1702,13 +1702,23 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
-        /// Recipient name
+        /// Recipient name (ShortName: "LastName, FirstName, Title")
         public String RecipientName {
             get; set;
         }
 
-        /// Recipient name (or motivation if recipient key is 0)
+        /// Recipient name ("FirstName LastName")
+        public String RecipFirstLastName {
+            get; set;
+        }
+
+        /// Recipient name (or motivation if recipient key is 0)  (version "LastName, FirstName, Title" for Recipient Name)
         public String RecipientNameOrMotivation {
+            get; set;
+        }
+
+        /// Recipient name (or motivation if recipient key is 0)  (version "FirstName LastName" for Recipient Name)
+        public String RecipFirstLastNameOrMot {
             get; set;
         }
 
