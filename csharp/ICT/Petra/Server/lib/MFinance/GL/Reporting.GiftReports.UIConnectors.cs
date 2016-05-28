@@ -396,13 +396,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " ELSE ''" +
                                    " END AS CommentOne," +
                                    " CASE WHEN" +
-                                   " UPPER(detail.a_comment_one_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_one_type_c) = 'BOTH'" +
+                                   " UPPER(detail.a_comment_two_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_two_type_c) = 'BOTH'" +
                                    " AND '" + ReportType + "' = 'Complete'" +
                                    " THEN detail.a_gift_comment_two_c" +
                                    " ELSE ''" +
                                    " END AS CommentTwo," +
                                    " CASE WHEN" +
-                                   " UPPER(detail.a_comment_one_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_one_type_c) = 'BOTH'" +
+                                   " UPPER(detail.a_comment_three_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_three_type_c) = 'BOTH'" +
                                    " AND '" + ReportType + "' = 'Complete'" +
                                    " THEN detail.a_gift_comment_three_c" +
                                    " ELSE ''" +

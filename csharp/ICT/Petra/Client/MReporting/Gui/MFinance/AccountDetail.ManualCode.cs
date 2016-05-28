@@ -202,11 +202,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             Csv = StringHelper.AddCSV(
                 Csv,
                 "AAccount/SELECT * FROM a_account WHERE " + LedgerFilter + AccountCodeFilter +
-                " AND a_posting_status_l=true AND a_account_active_flag_l=true");
+                " AND a_posting_status_l=true"
+//                + " AND a_account_active_flag_l=true"
+                );
             Csv = StringHelper.AddCSV(
                 Csv,
                 "ACostCentre/SELECT * FROM a_cost_centre WHERE " + LedgerFilter + CostCentreFilter +
-                " AND a_posting_cost_centre_flag_l=true AND a_cost_centre_active_flag_l=true");
+                " AND a_posting_cost_centre_flag_l=true"
+//                + " AND a_cost_centre_active_flag_l=true"
+                );
 
             String CurrencySelected = parameters.Get("param_currency").ToString();
 
