@@ -360,7 +360,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             this.tpgTransactions.Enabled = false;
 
             // get user default
-            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, true);
+            FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 
             // only add this event if the user want a new donor warning (this will still work without the condition)
@@ -939,7 +939,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FNewDonorWarning = mniNewDonorWarning.Checked;
 
             // change user default
-            TUserDefaults.SetDefault(TUserDefaults.FINANCE_NEW_DONOR_WARNING, FNewDonorWarning);
+            TUserDefaults.SetDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, FNewDonorWarning);
         }
 
         // open screen to print the Gift Batch Detail report

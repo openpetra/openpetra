@@ -419,6 +419,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AMotivationDetails">Optional - a MotivationDetails table.  Is required for import validation. </param>
         /// <param name="AMailingTable">Optional - a Mailing table.  Is required for import validation. </param>
         /// <param name="ARecipientField">Optional The recipient field for the gift.  Is required for import validation. </param>
+        /// <param name="ARecipientZeroIsValid">Optional Wether or not the Recipient can be zero. </param>
         /// <returns>True if the validation found no data validation errors, otherwise false.</returns>
         public static bool ValidateGiftDetailManual(object AContext,
             GiftBatchTDSAGiftDetailRow ARow,
@@ -430,7 +431,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
             AMotivationGroupTable AMotivationGroups = null,
             AMotivationDetailTable AMotivationDetails = null,
             PMailingTable AMailingTable = null,
-            Int64 ARecipientField = -1)
+            Int64 ARecipientField = -1,
+            bool ARecipientZeroIsValid = true)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -458,7 +460,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.RecipientKey,
                 new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
                 true, // Must Be Active
-                true,
+                ARecipientZeroIsValid,
                 isImporting ?
                 Catalog.GetString("Recipient key") :
                 "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
@@ -1008,12 +1010,14 @@ namespace Ict.Petra.Shared.MFinance.Validation
         /// <param name="AMethodOfGivingRef">Required for import validation</param>
         /// <param name="AMethodOfPaymentRef">Required for</param>
         /// <param name="AFormLetterCodeTbl">Supplied in import validation</param>
+        /// <param name="ADonorZeroIsValid">Whether or not donor zero is valid</param>
         /// <returns></returns>
         public static bool ValidateGiftManual(object AContext, AGiftRow ARow, Int32 AYear, Int32 APeriod, Control AControl,
             ref TVerificationResultCollection AVerificationResultCollection, TValidationControlsDict AValidationControlsDict,
             AMethodOfGivingTable AMethodOfGivingRef = null,
             AMethodOfPaymentTable AMethodOfPaymentRef = null,
-            PFormTable AFormLetterCodeTbl = null)
+            PFormTable AFormLetterCodeTbl = null,
+            bool ADonorZeroIsValid = false)
         {
             DataColumn ValidationColumn;
             TValidationControlsData ValidationControlsData;
@@ -1039,7 +1043,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 ARow.DonorKey,
                 new TPartnerClass[] { },
                 true, // Must Be Active
-                true,
+                ADonorZeroIsValid,
                 (isImporting) ? String.Empty : "Donor of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext, ValidationColumn, null);
 

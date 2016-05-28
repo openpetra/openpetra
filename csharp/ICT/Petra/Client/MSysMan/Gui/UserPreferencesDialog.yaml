@@ -28,6 +28,9 @@ RootNode:
         tpgFinance: 
             Label: Finance
             Enabled: false
+        tpgGift: 
+            Label: Gift
+            Enabled: false
         tpgEmail:
             Label: Email
             Controls: [ucoEmail]

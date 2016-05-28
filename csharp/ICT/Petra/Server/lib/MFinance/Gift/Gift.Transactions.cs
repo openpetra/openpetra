@@ -1051,6 +1051,47 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Loads a donor's last gift (if it exists) and returns the associated gift details.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ADonorPartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static Boolean DonorHasGiven(Int32 ALedgerNumber,
+            Int64 ADonorPartnerKey)
+        {
+            #region Validate Arguments
+
+            if (ADonorPartnerKey < 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Donor Partnerkey cannot be a negative number!"),
+                        Utilities.GetMethodName(true)));
+            }
+
+            #endregion Validate Arguments
+
+            DataTable GiftTable = null;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    // load latest gift from donor
+                    string Query = "SELECT a_ledger_number_i" +
+                                   " FROM a_gift" +
+                                   " WHERE a_ledger_number_i = " + ALedgerNumber +
+                                   "  AND p_donor_key_n = " + ADonorPartnerKey +
+                                   " LIMIT 1;";
+
+                    GiftTable = DBAccess.GDBAccessObj.SelectDT(Query, AGiftTable.GetTableDBName(), Transaction);
+                });
+
+            return (GiftTable != null) && (GiftTable.Rows.Count > 0);
+        }
+
+        /// <summary>
         /// loads a list of recurring batches for the given ledger
         /// also get the ledger for the base currency etc
         /// TODO: limit to period, limit to batch status, etc

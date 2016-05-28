@@ -85,7 +85,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = false;
         private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
-        private bool FInactiveValuesWarningOnGiftPosting = false;
+
+        //User preferences
+        private bool FDonorZeroIsValid = false;
+        private bool FRecipientZeroIsValid = false;
+        bool FWarnOfInactiveValuesOnPosting = false;
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -216,8 +220,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FLoadAndFilterLogicObject.ActivateFilter();
                 LoadBatchesForCurrentYear();
 
-                FInactiveValuesWarningOnGiftPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING,
-                    true);
+                // read user defaults
+                FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, false);
+                FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, false);
+                FWarnOfInactiveValuesOnPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
 
                 SetInitialFocus();
             }
@@ -1082,7 +1088,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 dlgStatus.Close();
                 LoadDialogVisible = false;
 
-                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow, postingAlreadyConfirmed, FInactiveValuesWarningOnGiftPosting);
+                Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow,
+                    postingAlreadyConfirmed,
+                    FWarnOfInactiveValuesOnPosting,
+                    FDonorZeroIsValid,
+                    FRecipientZeroIsValid);
 
                 if (Success)
                 {
@@ -1144,7 +1154,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string bankCostCentre = FPreviouslySelectedDetailRow.BankCostCentre;
             string bankAccount = FPreviouslySelectedDetailRow.BankAccountCode;
 
-            if (FInactiveValuesWarningOnGiftPosting
+            if (FWarnOfInactiveValuesOnPosting
                 && (!FAccountAndCostCentreLogicObject.AccountIsActive(bankAccount)
                     || !FAccountAndCostCentreLogicObject.CostCentreIsActive(bankCostCentre)))
             {

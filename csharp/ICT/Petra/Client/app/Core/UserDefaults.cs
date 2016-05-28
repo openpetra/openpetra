@@ -338,20 +338,29 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>todoComment</summary>
         public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
 
+        /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
+        public const String FINANCE_GIFT_NEW_DONOR_ALERT = "NewDonorWarning";
+
+        /// <summary>Whether or not the user should be allowed to enter Donor key 0000000000</summary>
+        public const String FINANCE_GIFT_DONOR_ZERO_IS_VALID = "DonorZeroIsValid";
+
+        /// <summary>Whether or not the gift detail comment fields are included when auto-copying the donor's latest gift details</summary>
+        public const String FINANCE_GIFT_AUTO_COPY_INCLUDE_MAILING_CODE = "GiftAutoCopyIncludeMailingCode";
+
+        /// <summary>Whether or not the gift detail comment fields are included when auto-copying the donor's latest gift details</summary>
+        public const String FINANCE_GIFT_AUTO_COPY_INCLUDE_COMMENTS = "SplitGiftCopyIncludeComments";
+
+        /// <summary>Whether or not the user should be allowed to enter Recipient key 0000000000</summary>
+        public const String FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID = "RecipientZeroIsValid";
+
+        /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
+        public const String FINANCE_GIFT_AUTO_SAVE = "AutoSaveGiftScreen";
+
         /// <summary>Whether or not the Gift Batch screen warns of inactive values ALSO on posting</summary>
-        public const String FINANCE_INACTIVE_VALUES_WARNING_ON_GIFT_POSTING = "InactiveValuesWarningOnGiftPosting";
+        public const String FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING = "InactiveValuesWarningOnGiftPosting";
 
         /// <summary>Whether or not the GL Batch screen warns of inactive values ALSO on posting</summary>
-        public const String FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING = "InactiveValuesWarningOnGLPosting";
-
-        /// <summary>Whether or not the user should be alerted when a new gift is from a new donor</summary>
-        public const String FINANCE_NEW_DONOR_WARNING = "NewDonorWarning";
-
-        /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
-        public const String FINANCE_AUTO_SAVE_GIFT_SCREEN = "AutoSaveGiftScreen";
-
-        /// <summary>Whether or not the Gift Batch screen should be auto saved when creating a new gifts or adding a gift detail</summary>
-        public const String FINANCE_AUTO_FILL_COMMENTS_FOR_SPLIT_GIFT = "SplitGiftCopyIncludeComments";
+        public const String FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_POSTING = "InactiveValuesWarningOnGLPosting";
 
         /* Other Finance User Defaults are in StringHelper because they are used in Ict.Common */
 

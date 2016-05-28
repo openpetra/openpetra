@@ -545,7 +545,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     myParentForm.SelectTab(TFrmGLBatch.eGLTabs.Journals);
                 }
 
-                FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_INACTIVE_VALUES_WARNING_ON_GL_POSTING,
+                FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_POSTING,
                     true);
             }
             finally
