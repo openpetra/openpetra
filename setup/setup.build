@@ -94,6 +94,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 <!-- Windows -->
 <target name="buildWindowsStandalone">
   <property name="compileForStandalone" value="true" overwrite="true"/>
+  <call target="packageReports" />
   <call target="generateSolution" unless="${target::has-executed('quickCompile')}"/>
   <property name="CreateDBForPublicInstaller" value="true"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
@@ -260,6 +261,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="PostgreSQL.Version" value="9.2"/>
   <call target="nanttasks"/>
   <call target="minimalGenerateSolution"/>
+  <call target="packageReports" />
   <property name="solution" value="Server"/>
   <call target="quickCompile"/>
   <property name="DBMS.Type" value="postgresql"/>
@@ -279,6 +281,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   <property name="PostgreSQL.Version" value="9.2"/>
   <call target="nanttasks"/>
   <call target="minimalGenerateSolution"/>
+  <call target="packageReports" />
   <property name="solution" value="Server"/>
   <call target="quickCompile"/>
   <property name="DBMS.Type" value="postgresql"/>
@@ -317,6 +320,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
 <target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches">
   <call target="nanttasks"/>
+  <call target="packageReports" />
   <call target="generateSolution"/>
   <call target="translation" unless="${target::has-executed('translation')}"/>
 
@@ -634,5 +638,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </copy>
   </if>
 </target> 
+
+<target name="packageReports">
+       <exec program="${dir.delivery}/bin/PackageReports.exe" commandline="&quot;${dir.root}/XMLReports&quot; &quot;${dir.delivery}&quot;" />
+</target>
 
 </project>
