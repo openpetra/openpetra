@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       >>>> Put your full name or just a shortname here <<<<
+//       TimH
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -28,12 +28,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 
-namespace PackageReports
+namespace Ict.Tools.PackageReports
 {
     class Program
     {
-        static string reportsFolder = @"C:\OpenPetra\Tim\20160127\XmlReports";
-        static string outputFolder = @"C:\OpenPetra\Tim\20160127\delivery";
+        static string reportsFolder = string.Empty;
+        static string outputFolder = string.Empty;
 
         static string sourcetable = "s_report_template";
         static string newtable = "s_report_latest";
@@ -55,7 +55,7 @@ namespace PackageReports
   s_date_modified_d date,
   s_modified_by_c character varying(20),
   s_modification_id_t timestamp without time zone,
-  CONSTRAINT s_report_latest_pk PRIMARY KEY (s_template_id_i));"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
+  CONSTRAINT s_report_latest_pk PRIMARY KEY (s_template_id_i));";
 
         static string updateExistingQuery =
             @"
@@ -63,7 +63,7 @@ UPDATE s_report_template
 SET s_xml_text_c=s_report_latest.s_xml_text_c, s_readonly_l=TRUE
 FROM s_report_latest
 WHERE s_report_template.s_template_id_i = s_report_latest.s_template_id_i
-	and s_report_template.s_report_type_c = s_report_latest.s_report_type_c;"                                                                                                                                                                                                      ;
+	and s_report_template.s_report_type_c = s_report_latest.s_report_type_c;";
 
         static string replaceMissingQuery =
             @"
@@ -86,7 +86,7 @@ LEFT OUTER JOIN s_report_template RT
 ON RL.s_template_id_i = RT.s_template_id_i
 and RL.s_report_type_c = RT.s_report_type_c
 
-WHERE RT.s_template_id_i is null;"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ;
+WHERE RT.s_template_id_i is null;";
 
 
         static void Main(string[] args)
@@ -101,14 +101,14 @@ WHERE RT.s_template_id_i is null;"                                              
             reportsFolder = args[0];
             outputFolder = args[1];
 
-            if (!reportsFolder.EndsWith(@"\"))
+            if (!reportsFolder.EndsWith(Path.DirectorySeparatorChar))
             {
-                reportsFolder = reportsFolder + @"\";
+                reportsFolder = reportsFolder + Path.DirectorySeparatorChar;
             }
 
-            if (!outputFolder.EndsWith(@"\"))
+            if (!outputFolder.EndsWith(Path.DirectorySeparatorChar))
             {
-                outputFolder = outputFolder + @"\";
+                outputFolder = outputFolder + Path.DirectorySeparatorChar;
             }
 
             Console.WriteLine("Taking reports from: {0}", reportsFolder);
@@ -116,7 +116,7 @@ WHERE RT.s_template_id_i is null;"                                              
 
 
             System.IO.DirectoryInfo di = new System.IO.DirectoryInfo(reportsFolder);
-            StreamWriter sw = new StreamWriter(outputFolder + "/" + "allreports.sql", false);
+            StreamWriter sw = new StreamWriter(outputFolder + Path.DirectorySeparatorChar + "allreports.sql", false);
             sw.WriteLine(FileHeader());
 
             foreach (FileInfo fi in di.GetFiles("*.sql"))
