@@ -640,7 +640,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 </target> 
 
 <target name="packageReports">
-       <exec program="${dir.delivery}/bin/Ict.Tools.PackageReports.exe" commandline="&quot;${dir.root}/XMLReports&quot; &quot;${dir.delivery}&quot;" />
+       <exec program="${dir.delivery}/bin/Ict.Tools.PackageReports.exe" commandline="&quot;${dir.root}/XmlReports&quot; &quot;${dir.delivery}&quot;" />
 </target>
 
 </project>

@@ -101,12 +101,12 @@ WHERE RT.s_template_id_i is null;";
             reportsFolder = args[0];
             outputFolder = args[1];
 
-            if (!reportsFolder.EndsWith(Path.DirectorySeparatorChar))
+            if (!reportsFolder.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 reportsFolder = reportsFolder + Path.DirectorySeparatorChar;
             }
 
-            if (!outputFolder.EndsWith(Path.DirectorySeparatorChar))
+            if (!outputFolder.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
                 outputFolder = outputFolder + Path.DirectorySeparatorChar;
             }
