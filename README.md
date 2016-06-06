@@ -1,6 +1,8 @@
 OpenPetra
 =========
 
+[![Join the chat at https://gitter.im/openpetra/openpetra](https://badges.gitter.im/openpetra/openpetra.svg)](https://gitter.im/openpetra/openpetra?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 INTRODUCTION
 ------------
 The goal of OpenPetra is to provide an easy to use software system for the administration of non-profit organisations.
