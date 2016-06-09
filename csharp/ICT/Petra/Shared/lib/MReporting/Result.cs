@@ -1209,7 +1209,7 @@ namespace Ict.Petra.Shared.MReporting
 
                 if (element.display && (element.masterRow == master))
                 {
-                    result ++;
+                    result++;
                 }
             }
 

@@ -79,13 +79,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             chkDefault.Enabled = !chkPrivate.Checked;
             txtDescription.Enabled = !chkReadonly.Checked;
             chkPrivate.Visible = (!chkDefault.Checked && FSelectedRow.Author == FCurrentUser);
-            chkPrivateDefault.Visible = true; // chkPrivate.Checked;
             chkReadonly.Visible = (Control.ModifierKeys == Keys.Control);
             btnRemove.Enabled = !FSelectedRow.Readonly;
 
             lblPrivate.Visible = chkPrivate.Visible;
-            lblPrivateDefault.Visible = chkPrivateDefault.Visible;
             lblReadonly.Visible = chkReadonly.Visible;
+
+            /*
+             * chkPrivateDefault.Visible = chkPrivate.Checked;
+             * lblPrivateDefault.Visible = chkPrivateDefault.Visible;
+             */
         }
 
         private void chkDefaultCheckedChanged(System.Object sender, System.Object e)
