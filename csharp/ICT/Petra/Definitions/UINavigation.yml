@@ -443,7 +443,7 @@ OpenPetra:
                         #IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
                         #LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
                         #DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
-                        TotalGiftPerDonor: {ActionOpenScreen=TFrmTotalGiftPerDonor}
+                        TotalGiftPerDonor: {Label=Total Gifts Per Donor, ActionOpenScreen=TFrmTotalGiftPerDonor}
                         #MethodOfGiving: {ActionOpenScreen=TFrmMethodOfGiving}
                         ShortDonorReport: {ActionOpenScreen=TFrmDonorReportShort}
                         DetailDonorReport: {ActionOpenScreen=TFrmDonorReportDetail}

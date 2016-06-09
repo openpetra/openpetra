@@ -238,10 +238,24 @@
 			<!-- required: the main report level -->
 			<level name="main">
 				<detail>
-					<lowerLevelReport level="Donors" calculation="Select Donors and Totals">
-					</lowerLevelReport>
+					<lowerLevelReport level="DonorLevel"></lowerLevelReport>
 				</detail>
 			</level> <!-- main -->
+			
+			<level name="DonorLevel">
+				<detail>
+					<lowerLevelReport level="Donors" calculation="Select Donors and Totals" ></lowerLevelReport>
+				</detail>
+				<footer space="above">
+					<field whichfield="column 1" pos="0cm" width="5 cm">
+						<value text="Number of Donors: "/>
+						<value function="CountChildRows({{lineId}})"/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+							<value function="getSumLowerReport({{lineId}}, {{param_gift_amount_column}})"/>
+					</field>
+				</footer>
+			</level>
 
 			<level name="Donors" identification="DonorKey">
 				<detail>

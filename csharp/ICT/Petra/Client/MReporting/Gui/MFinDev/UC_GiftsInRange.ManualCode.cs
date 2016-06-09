@@ -73,6 +73,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         }
 
         /// <summary>
+        /// Sets the 'year' values in a control, allowing custom defaults.
+        /// </summary>
+        public int Year
+        {
+            set
+            {
+                txtFromYear.NumberValueInt = value;
+                txtToYear.NumberValueInt = value;
+            }
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -134,6 +146,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void AddRange(object sender, EventArgs e)
         {
+            DateTime ValidDate;
+
             if (string.IsNullOrEmpty(txtFromMonth.Text) || (txtFromMonth.NumberValueInt < 1) || (txtFromMonth.NumberValueInt > 12))
             {
                 MessageBox.Show(Catalog.GetString(" Please enter a number between 1 and 12 for the From Month."), Catalog.GetString("Add Range"));
@@ -151,10 +165,24 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 MessageBox.Show(Catalog.GetString(" Please enter a number for the From Year."), Catalog.GetString("Add Range"));
                 return;
             }
+            else if (DateTime.TryParseExact(((int)txtFromMonth.NumberValueInt).ToString("00") + "/" + ((int)txtFromYear.NumberValueInt).ToString("##00"), new String[] {"MM/yyyy", "MM/yy"}, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.None, out ValidDate)) {
+                txtFromYear.NumberValueInt = ValidDate.Year;
+            }
+            else {
+                MessageBox.Show(Catalog.GetString(" Please enter a valid 2 or 4 digit From Year."), Catalog.GetString("Add Range"));
+                return;
+            }
 
             if (string.IsNullOrEmpty(txtToYear.Text))
             {
                 MessageBox.Show(Catalog.GetString(" Please enter a number for the To Year."), Catalog.GetString("Add Range"));
+                return;
+            }
+            else if (DateTime.TryParseExact(((int)txtToMonth.NumberValueInt).ToString("00") + "/" + ((int)txtToYear.NumberValueInt).ToString("##00"), new String[] {"MM/yyyy", "MM/yy"}, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.None, out ValidDate)) {
+                txtToYear.NumberValueInt = ValidDate.Year;
+            }
+            else {
+                MessageBox.Show(Catalog.GetString(" Please enter a valid 2 or 4 digit To Year."), Catalog.GetString("Add Range"));
                 return;
             }
 

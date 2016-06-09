@@ -409,7 +409,7 @@
 				</detail>
 				<footer space="above">
 					<field whichfield="left 0" pos="0cm" width="5 cm">
-						<value text="Number of Donors:"/><value function="CountChildRows({{lineId}})"/></field>
+						<value text="Number of Donors: "/><value function="CountChildRows({{lineId}})"/></field>
 					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
 						<value function="getSumLower2Report({{lineId}}, {{param_gift_amount_column}})"/>
 					</field>

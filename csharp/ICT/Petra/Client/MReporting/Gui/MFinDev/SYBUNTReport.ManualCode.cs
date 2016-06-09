@@ -179,6 +179,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             rbtAllPartners.Checked = AParameters.Get("param_all_partners").ToBool();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();
 
+            ucoGiftsInRange.Year = DateTime.Now.Year - 1;
+
             string GiftsInRange = AParameters.Get("param_gifts_in_range").ToString();
             string NoGiftsInRange = AParameters.Get("param_nogifts_in_range").ToString();
 
