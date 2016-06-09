@@ -215,12 +215,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     // TODO: store somewhere that the receipt has been printed?
                                     // TODO also store each receipt with the donor in document management, and in contact management?
                                 }
-
-                                // if no recipient exists then just take over data from fields that are already set
-                                GiftRecord.RecipientLocalOrName = GiftRecord.RecipientName;
-                                GiftRecord.RecipLocalOrFirstLastName = GiftRecord.RecipFirstLastName;
-                                GiftRecord.RecipientLocalOrNameOrMotivation = GiftRecord.RecipientNameOrMotivation;
-                                GiftRecord.RecipLocalOrFirstLastNameOrMot = GiftRecord.RecipFirstLastNameOrMot;
                             }
                         }
 
