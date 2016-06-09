@@ -492,7 +492,7 @@ namespace Ict.Petra.Client.App.PetraClient
                         ProcessReminders.StartStandaloneRemindersProcessing();
                     }
 
-                    DataTable CurrencyFormatTable = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+                    DataTable CurrencyFormatTable = TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList);
 
                     StringHelper.CurrencyFormatTable = CurrencyFormatTable;
 

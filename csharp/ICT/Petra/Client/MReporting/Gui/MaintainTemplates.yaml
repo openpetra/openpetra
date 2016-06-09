@@ -26,6 +26,7 @@ RootNode:
         grdTemplateList:
             Dock: Fill
             ActionFocusRow: FocusedRowChanged
+            ActionDoubleClick: ReturnSelected
         grpDetails:
             Width:350
             Controls: [txtDescription,chkDefault,chkPrivate,chkPrivateDefault,chkReadonly]
@@ -43,4 +44,4 @@ RootNode:
             Controls: [btnDuplicate, btnRemove, btnSelect]
         btnDuplicate:
         btnRemove: {Label=Delete }
-        btnSelect:
+        btnSelect: {AcceptButton=true}

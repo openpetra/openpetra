@@ -23,13 +23,14 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using GNU.Gettext;
+//using System.Windows.Forms;
+//using GNU.Gettext;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.Verification;
-using Ict.Petra.Client.MReporting.Gui.MFinance;
-using Ict.Petra.Client.MFinance.Logic;
+//using Ict.Petra.Client.MReporting.Gui.MFinance;
+//using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
@@ -37,6 +38,9 @@ using System.Collections;
 using System.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
+
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 {
@@ -55,7 +59,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
                 FPetraUtilsObject.LoadDefaultSettings();
-                //FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
@@ -116,6 +120,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             // this parameter is added incorrectly by the generated code
             ACalc.RemoveParameter("param_minimum_amount");
             ACalc.AddParameter("param_minimum_amount", this.txtMinimumAmount.NumberValueDecimal);
+
+            // Default value for the maximum number of contacts to retrieve. May add UI for this later.
+            ACalc.AddParameter("param_max_contacts", 3);
+        }
+
+        private void SetControlsManual(TParameterList AParameters)
+        {
+            DateTime dtpStartDateDate = AParameters.Get("param_start_date").ToDate();
+            if ((dtpStartDateDate <= DateTime.MinValue)
+                || (dtpStartDateDate >= DateTime.MaxValue))
+            {
+                dtpStartDateDate = new DateTime(DateTime.Now.Year, 1, 1);
+            }
+            dtpStartDate.Date = dtpStartDateDate;
         }
 
         //
@@ -123,9 +141,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
+            ACurrencyRow CurrencyRow;
             ArrayList reportParam = ACalc.GetParameters().Elems;
 
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
             {
@@ -135,14 +154,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 }
             }
 
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("GiftsOverMinimum", paramsDictionary);
+            DataSet ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet("GiftsOverMinimum", paramsDictionary);
 
             if (this.IsDisposed)
             {
                 return false;
             }
 
-            if (ReportTable == null)
+            if (ReportSet == null)
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
                 return false;
@@ -150,19 +169,52 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
             //
             // I need to get the name of the current ledger..
+            ALedgerRow LedgerDetailsRow = (ALedgerRow)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0];
 
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
-
-            if (LedgerView.Count > 0)
+            //
+            // The ledger's name is stored in its partner record, not in its ledger record. Sigh.
+            if (LedgerDetailsRow.LedgerName == "")
             {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+                DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+                DataView LedgerView = new DataView(LedgerNameTable);
+                LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+
+                if (LedgerView.Count > 0)
+                {
+                    ACalc.AddStringParameter("param_ledger_name", LedgerView[0].Row["LedgerName"].ToString());
+                }
+            }
+            else
+            {
+                ACalc.AddStringParameter("param_ledger_name", LedgerDetailsRow.LedgerName);
             }
 
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "GiftsOverMinimum");
+            switch (ACalc.GetParameters().Get("param_currency").ToString())
+            {
+                case "Base":
+                    ACalc.AddStringParameter("param_currency_code", LedgerDetailsRow.BaseCurrency);
+                    CurrencyRow = (ACurrencyRow)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList).Rows.Find(LedgerDetailsRow.BaseCurrency);
+                    ACalc.AddStringParameter("param_currency_format", CurrencyRow.DisplayFormat);
+                    break;
+                case "International":
+                    ACalc.AddStringParameter("param_currency_code", LedgerDetailsRow.IntlCurrency);
+                    CurrencyRow = (ACurrencyRow)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList).Rows.Find(LedgerDetailsRow.IntlCurrency);
+                    ACalc.AddStringParameter("param_currency_format", CurrencyRow.DisplayFormat);
+                    break;
+                default:
+                    ACalc.AddStringParameter("param_currency_code", "Unknown");
+                    ACalc.AddStringParameter("param_currency_format", "->>>,>>>,>>>,>>9.99");
+                    break;
+            }
+
+            //Uncomment this to log the parameter list:
+            //foreach (Shared.MReporting.TParameter p in reportParam)
+            //{
+            //    TLogWriter.Log(p.name.ToString() + " => " + p.value.ToString());
+            //}
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Donors"], "Donors");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Contacts"], "Contacts");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["GiftsOverMinimum"], "GiftsOverMinimum");
 
             return true;
         }

@@ -90,37 +90,33 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataTable ResultTbl = null;
 
+            FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+
             switch (AReportType)
             {
                 /* GL Reports */
 
                 case "BalanceSheet":
 
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
-
                     ResultTbl = TFinanceReportingWebConnector.BalanceSheetTable(AParameters, FDbAdapter);
                     break;
 
                 case "FieldGifts":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.KeyMinGiftsTable(AParameters, FDbAdapter);
                     break;
 
                 case "HOSA":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.HosaGiftsTable(AParameters, FDbAdapter);
                     break;
 
                 case "Stewardship":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.StewardshipTable(AParameters, FDbAdapter);
                     break;
 
                 case "Fees":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.FeesTable(AParameters, FDbAdapter);
                     break;
@@ -132,31 +128,26 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "IncomeExpense":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.IncomeExpenseTable(AParameters, FDbAdapter);
                     break;
 
                 case "AFO":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.AFOTable(AParameters, FDbAdapter);
                     break;
 
                 case "Executive Summary":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.ExecutiveSummaryTable(AParameters, FDbAdapter);
                     break;
 
                 case "TrialBalance":
-                    FDbAdapter = new TReportingDbAdapter(false);
 
                     ResultTbl = TFinanceReportingWebConnector.TrialBalanceTable(AParameters, FDbAdapter);
                     break;
 
                 case "SurplusDeficit":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.SurplusDeficitTable(AParameters, FDbAdapter);
                     break;
@@ -164,42 +155,37 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 /* Gift Reports */
 
                 case "GiftBatchDetail":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.GiftBatchDetailTable(AParameters, FDbAdapter);
                     break;
 
                 case "RecipientTaxDeductPct":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.RecipientTaxDeductPctTable(AParameters, FDbAdapter);
                     break;
 
                 case "FieldLeaderGiftSummary":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.FieldLeaderGiftSummary(AParameters, FDbAdapter);
                     break;
 
                 case "TotalGiftsThroughField":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.TotalGiftsThroughField(AParameters, FDbAdapter);
                     break;
 
                 case "MotivationResponse":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.MotivationResponse(AParameters, FDbAdapter);
                     break;
 
                 case "DonorGiftsToField":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+
                     ResultTbl = TFinanceReportingWebConnector.DonorGiftsToField(AParameters, FDbAdapter);
                     break;
 
                 case "GiftDestination":
-                    FDbAdapter = new TReportingDbAdapter(false);
+
                     ResultTbl = TFinanceReportingWebConnector.GiftDestination(AParameters, FDbAdapter);
                     break;
 
@@ -211,13 +197,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 /* Financial Development */
 
                 case "SYBUNT":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
-                    ResultTbl = TFinanceReportingWebConnector.SYBUNTTable(AParameters, FDbAdapter);
-                    break;
 
-                case "GiftsOverMinimum":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
-                    ResultTbl = TFinanceReportingWebConnector.GiftsOverMinimum(AParameters, FDbAdapter);
+                    ResultTbl = TFinanceReportingWebConnector.SYBUNTTable(AParameters, FDbAdapter);
                     break;
 
                 default:
@@ -225,17 +206,50 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
             }
 
-            if (FDbAdapter != null)
-            {
-                FDbAdapter.CloseConnection();
+            FDbAdapter.CloseConnection();
 
-                if (FDbAdapter.IsCancelled)
-                {
-                    ResultTbl = null;
-                }
+            if (FDbAdapter.IsCancelled)
+            {
+                ResultTbl = null;
             }
 
             return ResultTbl;
+        }
+
+        /// <summary>Prepare a DataTable for this kind of report, using these parameters.
+        /// The process runs in a new thread, but this thread will stop here and wait
+        /// until the result comes back, or the request is cancelled.
+        /// </summary>
+        [RequireModulePermission("none")]
+        public static DataSet GetReportDataSet(String AReportType, Dictionary<String, TVariant> AParameters)
+        {
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
+            DataSet ResultSet = null;
+
+            FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+
+            switch (AReportType)
+            {
+                /* Financial Development */
+
+                case "GiftsOverMinimum":
+
+                    ResultSet = TFinanceReportingWebConnector.GiftsOverMinimum(AParameters, FDbAdapter);
+                    break;
+
+                default:
+                    TLogging.Log("GetDataSetThread unknown ReportType: " + AReportType);
+                    break;
+            }
+
+            FDbAdapter.CloseConnection();
+
+            if (FDbAdapter.IsCancelled)
+            {
+                ResultSet = null;
+            }
+
+            return ResultSet;
         }
 
         /// <summary>
