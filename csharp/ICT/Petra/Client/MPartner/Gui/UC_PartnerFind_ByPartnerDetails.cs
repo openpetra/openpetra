@@ -1227,7 +1227,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 if (TPartnerMain.MergedPartnerHandling(
                                         (Int64)FCriteriaData.Rows[0]["PartnerKey"],
-                                        out MergedPartnerKey))
+                                        out MergedPartnerKey, this.ParentForm))
                                 {
                                     FCriteriaData.Rows[0]["PartnerKey"] = MergedPartnerKey;
                                     BtnSearch_Click(this, null);
