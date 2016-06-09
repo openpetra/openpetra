@@ -105,7 +105,8 @@ RootNode:
             Stretch: horizontally
             ScrollBars: Vertical
             Validation: true
-        txtDetailReference: {Label=Reference, Validation=true}
+            RequiredField: true
+        txtDetailReference: {Label=Reference, Validation=true, RequiredField=true}
         dtpDetailTransactionDate: {Label=Transaction Date, OnChange=TransDateChanged, Validation=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry, List=UserDefinedList, Stretch=horizontally}
         pnlDetailAmounts:

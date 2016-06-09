@@ -98,8 +98,9 @@ RootNode:
             Multiline: true
             ScrollBars: Vertical
             Validation: true
+            RequiredField: true
             Tooltip: Enter some transaction narrative text.  This is a required field
-        txtDetailReference: {Label=Reference, Validation=true, Tooltip=Enter an optional transaction reference}
+        txtDetailReference: {Label=Reference, Validation=true, Tooltip=Enter a transaction reference, RequiredField=true}
         cmbDetailKeyMinistryKey: {Label=Key Ministry, List=UserDefinedList, Stretch=horizontally}
         pnlDetailAmounts:
             Controls:

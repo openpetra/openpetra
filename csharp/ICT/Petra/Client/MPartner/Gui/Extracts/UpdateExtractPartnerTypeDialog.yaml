@@ -20,11 +20,11 @@ RootNode:
         pnlExtractName:
             Dock: Top
             Controls:
-                Row0: [lblExtractName]
+                Row0: [lblExtractNameAndCreator]
                 Row1: [Empty]
                 Row2: [lblExplanation]
 
-        lblExtractName:
+        lblExtractNameAndCreator: {Height=20, Align=Top, Stretch=horizontally}
            
         Empty:
 

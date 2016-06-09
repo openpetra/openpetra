@@ -122,6 +122,7 @@ RootNode:
             Tooltip: Specifies how a hyperlink is to be put together where the Value of a Partners' Contact Detail record is to be part of it.
             Width: 206
             Visible: false
+            RequiredField: true
         lblLinkFormatTip: 
             Text: Enter the URL that should be launched for the Contact Type ( e.g. http://www.facebook.com/{VALUE} ).
             Width: 215

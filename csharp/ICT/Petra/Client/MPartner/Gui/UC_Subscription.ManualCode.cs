@@ -184,6 +184,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 BuildValidationControlsDict();
             }
+
+            if (this.TopLevelControl.Name.EndsWith("Dialog"))
+            {
+                btnEditIssues.Visible = false;
+            }
         }
 
         /// <summary>

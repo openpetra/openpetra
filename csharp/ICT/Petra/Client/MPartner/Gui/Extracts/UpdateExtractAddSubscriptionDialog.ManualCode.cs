@@ -54,7 +54,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AExtractName"></param>
         public void SetExtractName(String AExtractName)
         {
-            lblExtractName.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Font = new System.Drawing.Font(lblExtractNameAndCreator.Font.FontFamily.Name, 10, System.Drawing.FontStyle.Bold);
         }
 
         private void InitializeManualCode()

@@ -506,7 +506,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             lblDeductibleAccountCode.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             lblDeductibleAccountCode.Size = new System.Drawing.Size(102, 17);
-            lblDeductibleAccountCode.Text = "Tax-Deductible:";
+            lblDeductibleAccountCode.Text = "Tax-Deductible*";
             lblDeductibleAccountCode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             pnlDetails.Controls.Add(lblDeductibleAccountCode);
 

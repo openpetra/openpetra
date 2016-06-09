@@ -22,6 +22,7 @@ RootNode:
             Label: Edit S&upplier
             ActionClick: EditDetails
             Tooltip: Change the details and settings of an existing supplier
+            Image: Edit_Record.ico
             ShortCut: Ctrl+E
             Enabled: cndSelectedSupplier
         actCreateInvoice:
@@ -74,7 +75,7 @@ RootNode:
         grdSuppliers: {ActionDoubleClick=actSupplierTransactions, ActionEnterKeyPressed=actSupplierTransactions}
             Dock: Fill
             Type: Ict.Common.Controls.TSgrdDataGridPaged
-        btnNewSupplier: {Label=New, Width=70}
-        btnEditDetails:
-        btnCreateInvoice: {Width=120}
+        btnNewSupplier: {Width=120}
+        btnEditDetails: {Width=120}
+        btnCreateInvoice: {Width=120, StartNewButtonGroup=true}
         btnCreateCreditNote: {Width=140}

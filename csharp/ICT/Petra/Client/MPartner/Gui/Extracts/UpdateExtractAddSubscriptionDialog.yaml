@@ -18,12 +18,13 @@ RootNode:
         pnlDialogContent:
             Dock: Fill
             Controls:
-                Row0: [lblExtractName]
+                Row0: [lblExtractNameAndCreator]
                 Row1: [ucoSubscription]
                 
-        lblExtractName:
+        lblExtractNameAndCreator:
             Dock: Top
-            
+            Height: 30
+
         ucoSubscription:
             Dock: Fill
             Type: Ict.Petra.Client.MPartner.Gui.TUC_Subscription

@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormType: dialog
     Template: window
-    WindowWidth: 480
-    WindowHeight: 165
+    WindowWidth: 600
+    WindowHeight: 185
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
@@ -13,14 +13,14 @@ RootNode:
     Controls:
         pnlDialogContent:
             Controls:
-                Row0: [lblExtractName]
-                Row1: [Empty]
+                Row0: [lblExtractNameAndCreator]
+                Row1: [lblAction]
                 Row2: [chkUpdateReceiptLetterFrequency, cmbReceiptLetterFrequency]
                 Row3: [chkUpdateReceiptEachGift, chkReceiptEachGift]
                 
-        lblExtractName:
+        lblExtractNameAndCreator: {Height=30, Width=320, Align=Top, Stretch=horizontally, ColSpan=2}
             
-        Empty:
+        lblAction: {Text=Change the Receipt Frequency settings to the values below for all partners in this Extract?, ColSpan=2}
 
         chkUpdateReceiptLetterFrequency: {CheckBoxAttachedLabel=right, ActionClick=OnUpdateReceiptLetterFrequencyChecked}
             Label: Update Receipt Letter Frequency:

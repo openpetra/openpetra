@@ -109,9 +109,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             FPetraUtilsObject.SetStatusBarText(grdDetails,
                 Catalog.GetString("Use the navigation keys to select a transaction.  Double-click to view the details"));
-            FPetraUtilsObject.SetStatusBarText(btnAddTaggedToPayment, Catalog.GetString("Click to pay the tagged items"));
-            FPetraUtilsObject.SetStatusBarText(btnApproveTagged, Catalog.GetString("Click to approve the tagged items"));
-            FPetraUtilsObject.SetStatusBarText(btnPostTagged, Catalog.GetString("Click to post the tagged items"));
             FPetraUtilsObject.SetStatusBarText(btnReloadList, Catalog.GetString("Click to re-load the transactions list"));
             FPetraUtilsObject.SetStatusBarText(btnTagAll, Catalog.GetString("Click to tag all the displayed items"));
             FPetraUtilsObject.SetStatusBarText(btnUntagAll, Catalog.GetString("Click to un-tag all the displayed items"));
@@ -181,6 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
             ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
             ActionEnabledEvent(null, new ActionEventArgs("actAddTaggedToPayment", canPay));
+            ActionEnabledEvent(null, new ActionEventArgs("actRunTagAction", canTag));
             ActionEnabledEvent(null, new ActionEventArgs("actTagAll", canTag));
             ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
 
@@ -189,6 +187,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (canTag)
             {
                 grdDetails.ShowCell(new SourceGrid.Position(grdDetails.Selection.ActivePosition.Row, 0), true);
+            }
+
+            if (canApprove)
+            {
+                btnRunTagAction.Text = "Appro&ve Tagged";
+                FPetraUtilsObject.SetStatusBarText(btnRunTagAction, Catalog.GetString("Click to approve the tagged items"));
+            }
+            else if (canPost)
+            {
+                btnRunTagAction.Text = "&Post Tagged";
+                FPetraUtilsObject.SetStatusBarText(btnRunTagAction, Catalog.GetString("Click to post the tagged items"));
+            }
+            else if (canPay)
+            {
+                btnRunTagAction.Text = "Pa&y Tagged";
+                FPetraUtilsObject.SetStatusBarText(btnRunTagAction, Catalog.GetString("Click to pay the tagged items"));
+            }
+            else
+            {
+                btnRunTagAction.Text = "Pa&y Tagged";
             }
 
             UpdateDisplayedBalance();
@@ -254,6 +272,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FMainDS = TRemote.MFinance.AP.WebConnectors.LoadAApSupplier(ALedgerNumber, APartnerKey);
 
             FSupplierRow = FMainDS.AApSupplier[0];
+
+            txtFilteredBalance.CurrencyCode = FSupplierRow.CurrencyCode;
+            txtSupplierBalance.CurrencyCode = FSupplierRow.CurrencyCode;
+            txtTaggedBalance.CurrencyCode = FSupplierRow.CurrencyCode;
+            lblExcludedItems.Text = string.Format(lblExcludedItems.Text, FSupplierRow.CurrencyCode);
 
             // Get our AP ledger settings and enable/disable the corresponding search option on the filter panel
             TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, ALedgerNumber);
@@ -497,14 +520,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UpdateDisplayedBalance()
         {
             DevAge.ComponentModel.BoundDataView dv = (DevAge.ComponentModel.BoundDataView)grdResult.DataSource;
-            txtFilteredBalance.Text = UpdateBalance(dv.DataView).ToString("n2") + " " + FSupplierRow.CurrencyCode;
+            txtFilteredBalance.NumberValueDecimal = UpdateBalance(dv.DataView);
         }
 
         private void UpdateSupplierBalance()
         {
             DataView dv = new DataView(FPagedDataTable);
 
-            txtSupplierBalance.Text = UpdateBalance(dv).ToString("n2") + " " + FSupplierRow.CurrencyCode;
+            txtSupplierBalance.NumberValueDecimal = UpdateBalance(dv);
         }
 
         private Decimal UpdateBalance(DataView ADataView)
@@ -625,8 +648,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            txtTaggedBalance.Text = TotalSelected.ToString("n2") + " " + FSupplierRow.CurrencyCode;
-            txtTaggedCount.Text = TaggedItemCount.ToString();
+            txtTaggedBalance.NumberValueDecimal = TotalSelected;
+            txtTaggedCount.NumberValueInt = TaggedItemCount;
         }
 
         private void grdResult_Click(object sender, EventArgs e)
@@ -970,6 +993,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             frm.Show();
 
             this.Cursor = Cursors.Default;
+        }
+
+        private void RunTagAction(object sender, EventArgs e)
+        {
+            if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked)
+            {
+                ApproveTaggedDocuments(sender, e);
+            }
+            else if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting")).Checked)
+            {
+                PostTaggedDocuments(sender, e);
+            }
+            else if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying")).Checked)
+            {
+                AddTaggedToPayment(sender, e);
+            }
         }
 
         /// <summary>

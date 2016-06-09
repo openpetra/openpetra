@@ -47,7 +47,7 @@ RootNode:
                 Row1: [chkDetailValidAcquisition, chkDetailRecruitingEffort]
                 Row2: [chkDetailDeletable]
         txtDetailAcquisitionCode: {Label=Acquisition Code, CharacterCasing=Upper}
-        txtDetailAcquisitionDescription: {Width=325, Validation=true}
+        txtDetailAcquisitionDescription: {Width=325, Validation=true, RequiredField=true}
         chkDetailValidAcquisition: {Label=Assignable}
         chkDetailDeletable:
         chkDetailRecruitingEffort: {Label=Recruiting Mission}

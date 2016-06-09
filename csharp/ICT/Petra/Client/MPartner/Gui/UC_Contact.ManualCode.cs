@@ -163,5 +163,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
         }
+
+        /// <summary>
+        /// This is called when the user control is wrapped in an Update dialog.
+        /// It allows us to set the focus on the correct control for the use-case.
+        /// </summary>
+        public void RunOnceOnParentActivationManual()
+        {
+            if (this.TopLevelControl.Name.EndsWith("Dialog"))
+            {
+                txtContactor.Focus();
+            }
+        }
     }
 }

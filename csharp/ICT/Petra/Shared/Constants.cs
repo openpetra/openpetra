@@ -202,6 +202,9 @@ namespace Ict.Petra.Shared
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_CONTACTDETAILSTAB_SHOW_NONCURRENT_TOO = "PartnerEdit_ContactDetails_Show_NonCurrent_Too";
 
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN = "Extracts_PublicModifyRequiresAdmin";
+
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_USERMESSAGE = "USERMESSAGE";
 

@@ -50,7 +50,7 @@ RootNode:
             Controls:
                 Row0: [txtDetailBatchDescription]
                 Row1: [txtDetailBatchControlTotal]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, RequiredField=true}
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Currency, AlwaysHideLabel=true, Width=115, NullValueAllowed=false}
         tbrTabPage: {NoAttribute=true}
         mnuTabPage: {NoAttribute=true}

@@ -53,15 +53,16 @@ RootNode:
                 Row3: [txtEvaluationComments]
                 Row4: [txtEvaluationAction]
                 
-        txtEvaluator: {Label=Reporter, DataField=PmPersonEvaluation.Evaluator, Width=150, Validation=true}
+        txtEvaluator: {Label=Reporter, DataField=PmPersonEvaluation.Evaluator, Width=150, Validation=true, RequiredField=true}
         dtpEvaluationDate: {Label=Report Date, DataField=PmPersonEvaluation.EvaluationDate, Validation=true}
-        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate, Validation=Pair(dtpEvaluationDate)}
+        dtpNextEvalDate: {Label=Next Report Date, DataField=PmPersonEvaluation.NextEvaluationDate, Validation=Pair(dtpEvaluationDate), RequiredField=true}
         cmbEvaluationType: 
             Label: Report Type 
             DataField: PmPersonEvaluation.EvaluationType
             Width: 120
             OptionalValues: [=Semi-Annual, Annual, Leaving]
             Validation: true
+            RequiredField: true
         txtEvaluationComments:
             Label: Comments
             DataField: PmPersonEvaluation.EvaluationComments

@@ -62,9 +62,9 @@ RootNode:
                 Row7: [dtpDateOfIssue]
                 Row8: [dtpDateOfExpiration]
                 
-        txtPassportNumber: {Label=Passport Number, DataField=PmPassportDetails.PassportNumber, Width=180, Validation=true}
+        txtPassportNumber: {Label=Passport Number, DataField=PmPassportDetails.PassportNumber, Width=180, Validation=true, RequiredField=true}
         cmbPassportType: {Label=Type, DataField=PmPassportDetails.PassportDetailsType, List=PassportDetailsTypeList, AllowDbNull=true, Width=200, Validation=true}
-        txtPassportName: {Label=Passport Name, DataField=PmPassportDetails.FullPassportName, Width=300, OnEnter=SuggestPassportName}
+        txtPassportName: {Label=Passport Name, DataField=PmPassportDetails.FullPassportName, Width=300, OnEnter=SuggestPassportName, RequiredField=true}
         btnPassportNameHelp: {NoLabel=true}
             Action: actPassportNameHelp
             Tooltip: Passport Name explained

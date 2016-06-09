@@ -67,6 +67,7 @@ RootNode:
         txtDocumentID:
             Label: Document ID
             DataField: PmDocument.DocumentId
+            RequiredField: true
         txtDocumentAssociatedID:
             Label: Associated Document ID
             DataField: PmDocument.AssocDocId

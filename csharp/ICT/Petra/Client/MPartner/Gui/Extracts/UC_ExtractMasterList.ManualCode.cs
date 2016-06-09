@@ -32,6 +32,7 @@ using Ict.Common.Controls;
 using Ict.Common.Data.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.IO;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonDialogs;
@@ -323,6 +324,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void MaintainExtract(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to Maintain an Extract that you did not create."),
+                    Catalog.GetString("Maintain Extract"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             if (!WarnIfNotSingleSelection(Catalog.GetString("Maintain Extract"))
                 && (GetSelectedDetailRow() != null))
             {
@@ -399,10 +409,29 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void VerifyAndUpdateExtract(System.Object sender, EventArgs e)
         {
+            string title = Catalog.GetString("Verify and Update Extract");
+
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to modify an Extract that you did not create."),
+                    title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             if (!WarnIfNotSingleSelection(Catalog.GetString("Verify and Update Extract"))
                 && (GetSelectedDetailRow() != null))
             {
-                TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), GetSelectedDetailRow().ExtractId);
+                if (MessageBox.Show(
+                        string.Format(Catalog.GetString("Are you sure that you want to update extract {0}?{1}{1}"),
+                            GetSelectedDetailRow().ExtractName, Environment.NewLine) +
+                        string.Format(Catalog.GetString("This extract contains {0} partners.  "), GetSelectedDetailRow().KeyCount) +
+                        Catalog.GetString("Changes to the extract cannot be undone."),
+                        title, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+                {
+                    TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), GetSelectedDetailRow().ExtractId);
+                }
             }
         }
 
@@ -413,6 +442,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void AddSubscription(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to add a subscription to an Extract that you did not create."),
+                    Catalog.GetString("Add Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
             PSubscriptionRow SubscriptionRow = SubscriptionTable.NewRowTyped();
             PPartnerTable PartnersWithExistingSubs = new PPartnerTable();
@@ -423,7 +461,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractAddSubscriptionDialog dialog = new TFrmUpdateExtractAddSubscriptionDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -472,6 +517,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void DeleteSubscription(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to delete a subscription from an Extract that you did not create."),
+                    Catalog.GetString("Delete Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             String PublicationCode;
             Boolean DeleteAllSubscriptions = false;
             Boolean DeleteThisSubscription = false;
@@ -482,7 +536,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractDeleteSubscriptionDialog dialog = new TFrmUpdateExtractDeleteSubscriptionDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -590,6 +651,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void ChangeSubscription(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to change a subscription in an Extract that you did not create."),
+                    Catalog.GetString("Change Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             PSubscriptionTable SubscriptionTable = new PSubscriptionTable();
             PSubscriptionRow SubscriptionRow = SubscriptionTable.NewRowTyped();
             PPartnerTable PartnersWithoutSubs = new PPartnerTable();
@@ -602,7 +672,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractChangeSubscriptionDialog dialog = new TFrmUpdateExtractChangeSubscriptionDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -654,6 +731,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void AddContactLog(object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to add a contact log to an Extract that you did not create."),
+                    Catalog.GetString("Add Contact Log"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             PContactLogTable ContactLogTable = new PContactLogTable();
             PContactLogRow ContactLogRow = ContactLogTable.NewRowTyped();
             PPartnerContactAttributeTable PartnerContactAttributeTable = new PPartnerContactAttributeTable();
@@ -664,7 +750,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractAddContactLogDialog dialog = new TFrmUpdateExtractAddContactLogDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -694,6 +787,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void AddPartnerType(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to add a Partner Type to an Extract that you did not create."),
+                    Catalog.GetString("Add Partner Type"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             String TypeCode;
             String Message;
 
@@ -701,8 +803,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractPartnerTypeDialog dialog = new TFrmUpdateExtractPartnerTypeDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
                 dialog.SetMode(true);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -731,6 +840,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void DeletePartnerType(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString("You need PTNRADMIN permissions to delete a Partner Type from an Extract that you did not create."),
+                    Catalog.GetString("Delete Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             String TypeCode;
             String Message;
 
@@ -738,8 +856,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractPartnerTypeDialog dialog = new TFrmUpdateExtractPartnerTypeDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
                 dialog.SetMode(false);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -768,24 +893,74 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void UpdateSolicitationFlag(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "You need PTNRADMIN permissions to update the solicitation flag in an Extract that you did not create."),
+                    Catalog.GetString("Delete Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             bool NoSolicitations;
 
             if (!WarnIfNotSingleSelection(Catalog.GetString("Update 'No Solicitations' Flag"))
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractSolicitationFlagDialog dialog = new TFrmUpdateExtractSolicitationFlagDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     dialog.GetReturnedParameters(out NoSolicitations);
 
                     // perform update of extract data on server side
+                    int numChanges;
+
                     if (TRemote.MPartner.Partner.WebConnectors.UpdateSolicitationFlag
-                            (GetSelectedDetailRow().ExtractId, NoSolicitations))
+                            (GetSelectedDetailRow().ExtractId, NoSolicitations, out numChanges))
                     {
-                        MessageBox.Show(Catalog.GetString("'No Solicitations' flag successfully updated for all Partners in Extract ") +
-                            GetSelectedDetailRow().ExtractName,
+                        string msg;
+
+                        if (numChanges == 0)
+                        {
+                            msg = string.Format(Catalog.GetString(
+                                    "No changes were made because all the Partners in the extract already had the 'No Solicitations' flag set to {0}"),
+                                NoSolicitations.ToString());
+                        }
+                        else
+                        {
+                            msg = string.Format(Catalog.GetPluralString("'No Solicitations' flag successfully set to {0} for {1} Partner in Extract ",
+                                    "'No Solicitations' flag successfully set to {0} for {1} Partners in Extract ", numChanges) +
+                                GetSelectedDetailRow().ExtractName, NoSolicitations.ToString(), numChanges);
+
+                            int numNoChanges = GetSelectedDetailRow().KeyCount - numChanges;
+
+                            if (numNoChanges > 0)
+                            {
+                                if (numNoChanges == 1)
+                                {
+                                    msg += Catalog.GetString(".  The remaining Partner in the Extract already had the flag set to this value.");
+                                }
+                                else
+                                {
+                                    msg +=
+                                        string.Format(Catalog.GetString(
+                                                ".  The remaining {0} Partners in the Extract already had the flag set to this value."),
+                                            numNoChanges);
+                                }
+                            }
+                        }
+
+                        MessageBox.Show(msg,
                             Catalog.GetString("Update 'No Solicitations' Flag"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);
@@ -809,6 +984,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void UpdateReceiptFrequency(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "You need PTNRADMIN permissions to update a receipt frequency in an Extract that you did not create."),
+                    Catalog.GetString("Delete Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             bool UpdateReceiptLetterFrequency;
             String ReceiptLetterFrequency;
             bool UpdateReceiptEachGift;
@@ -818,7 +1003,14 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractReceiptFrequencyDialog dialog = new TFrmUpdateExtractReceiptFrequencyDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -855,24 +1047,76 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="e"></param>
         public void UpdateEmailGiftStatement(System.Object sender, EventArgs e)
         {
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true)
+                && (UserInfo.GUserInfo.UserID != GetSelectedDetailRow().CreatedBy))
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "You need PTNRADMIN permissions to update an Email gift statement in an Extract that you did not create."),
+                    Catalog.GetString("Delete Subscription"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
             bool EmailGiftStatement;
 
             if (!WarnIfNotSingleSelection(Catalog.GetString("Update Email Gift Statement"))
                 && (GetSelectedDetailRow() != null))
             {
                 TFrmUpdateExtractEmailGiftStatementDialog dialog = new TFrmUpdateExtractEmailGiftStatementDialog(this.FindForm());
-                dialog.SetExtractName(GetSelectedDetailRow().ExtractName);
+                string title = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    title += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractName(title);
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     dialog.GetReturnedParameters(out EmailGiftStatement);
 
                     // perform update of extract data on server side
+                    int numChanges;
+
                     if (TRemote.MPartner.Partner.WebConnectors.UpdateEmailGiftStatement
-                            (GetSelectedDetailRow().ExtractId, EmailGiftStatement))
+                            (GetSelectedDetailRow().ExtractId, EmailGiftStatement, out numChanges))
                     {
-                        MessageBox.Show(Catalog.GetString("Email Gift Statement successfully updated for all Partners in Extract ") +
-                            GetSelectedDetailRow().ExtractName,
+                        string msg;
+
+                        if (numChanges == 0)
+                        {
+                            msg = string.Format(Catalog.GetString(
+                                    "No changes were made because all the Partners in the extract already had the 'Email Gift Statement' flag set to {0}"),
+                                EmailGiftStatement.ToString());
+                        }
+                        else
+                        {
+                            msg =
+                                string.Format(Catalog.GetPluralString(
+                                        "'Email Gift Statement' flag successfully set to {0} for {1} Partner in Extract ",
+                                        "'Email Gift Statement' flag successfully set to {0} for {1} Partners in Extract ", numChanges) +
+                                    GetSelectedDetailRow().ExtractName, EmailGiftStatement.ToString(), numChanges);
+
+                            int numNoChanges = GetSelectedDetailRow().KeyCount - numChanges;
+
+                            if (numNoChanges > 0)
+                            {
+                                if (numNoChanges == 1)
+                                {
+                                    msg += Catalog.GetString(".  The remaining Partner in the Extract already had the flag set to this value.");
+                                }
+                                else
+                                {
+                                    msg +=
+                                        string.Format(Catalog.GetString(
+                                                ".  The remaining {0} Partners in the Extract already had the flag set to this value."),
+                                            numNoChanges);
+                                }
+                            }
+                        }
+
+                        MessageBox.Show(msg,
                             Catalog.GetString("Update Email Gift Statement"),
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information);

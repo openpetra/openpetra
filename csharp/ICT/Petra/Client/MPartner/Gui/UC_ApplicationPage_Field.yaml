@@ -24,7 +24,7 @@ RootNode:
                 Row1: [txtPlacementPerson]
             Dock: Top
               
-        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged, Validation=true, Stretch=horizontally}
+        txtField: {Label=Field, DataField=PmGeneralApplication.GenAppPossSrvUnitKey, Type=PartnerKey, PartnerClass=UNIT, ColSpan=2, OnChange=ProcessApplicationFieldChanged, Validation=true, RequiredField=true, Stretch=horizontally}
         dtpAvailableFrom: {Label=Available from, DataField=PmYearProgramApplication.StartOfCommitment, Validation=true}
         dtpAvailableTo: {Label=Available to, DataField=PmYearProgramApplication.EndOfCommitment, Validation=Pair(dtpAvailableFrom)}
 

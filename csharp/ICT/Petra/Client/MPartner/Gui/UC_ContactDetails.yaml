@@ -130,6 +130,7 @@ RootNode:
             Width: 220
             OnLeave: HandleValueLeave
             OnChange: HandleValueChanged
+            RequiredField: true
 # TODO SHORTCUTS:             Type: Hyperlink
 
         cmbIntlPhonePrefix: {NoLabel=true, List=InternationalPhonePrefixList, ComboBoxWidth=65, Width=68, DataField=PPartnerAttribute.ValueCountry, Validation=true, Visible=false, OnLeave=HandleValueLeave}

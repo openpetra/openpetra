@@ -102,10 +102,13 @@ RootNode:
             Tooltip: Enter a description of the transaction.
         txtFromReference:
             Tooltip: Enter a reference code.
+            RequiredField: true
         cmbFromCostCentreCode: {Label=Cost Centre Code, List=UserDefinedList, ColSpan=2}
             Tooltip: Enter a cost centre code (department or fund).
+            RequiredField: true
         cmbFromAccountCode: {Label=Account Code, List=UserDefinedList, ColSpan=2, OnChange=AccountCodeDetailChanged}
             Tooltip: Enter an account code.
+            RequiredField: true
         rgrDebitCredit:
             ControlsOrientation: horizontal
             OptionalValues: [Debit, =Credit]

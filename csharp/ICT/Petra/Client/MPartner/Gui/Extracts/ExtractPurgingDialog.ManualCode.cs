@@ -48,6 +48,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
     public partial class TFrmExtractPurgingDialog : System.Windows.Forms.Form
     {
         Boolean FPurgingSuccessful;
+        Boolean FRestrictToCurrentClient = false;
 
         private void InitializeManualCode()
         {
@@ -56,6 +57,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                                       (SharedConstants.SYSDEFAULT_PURGEEXTRACTS, "no,365").Split(',')[1];
 
             txtNumberOfDays.NumberValueInt = Convert.ToInt32(NumberOfDays);
+
+            if ((UserInfo.GUserInfo.IsInModule("PTNRADMIN") == false)
+                && (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_MODIFY_PUBLIC_EXTRACTS_REQUIRES_ADMIN, false) == true))
+            {
+                FRestrictToCurrentClient = true;
+                chkAllUsers.Enabled = false;
+                cmbUser.SetSelectedString(UserInfo.GUserInfo.UserID);
+                cmbUser.Enabled = false;
+            }
 
             FPurgingSuccessful = false;
         }
@@ -94,7 +104,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
             else
             {
-                cmbUser.Enabled = true;
+                cmbUser.Enabled = !FRestrictToCurrentClient;
             }
         }
 

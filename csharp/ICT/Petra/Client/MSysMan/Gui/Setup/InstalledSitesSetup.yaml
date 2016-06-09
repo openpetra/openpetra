@@ -28,6 +28,7 @@ RootNode:
         cmbDefaultSite:
             Width: 400
             Validation: true
+            RequiredField: true
 
         lblSites:
             Dock: Top

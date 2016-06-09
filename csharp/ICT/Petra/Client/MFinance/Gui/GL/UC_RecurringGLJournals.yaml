@@ -63,7 +63,7 @@ RootNode:
                 Row1: [cmbDetailSubSystemCode]
                 Row2: [cmbDetailTransactionTypeCode]
                 Row3: [cmbDetailTransactionCurrency]
-        txtDetailJournalDescription: {Label=Journal Description, Width=350}
+        txtDetailJournalDescription: {Label=Journal Description, Width=350, RequiredField=true}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual
