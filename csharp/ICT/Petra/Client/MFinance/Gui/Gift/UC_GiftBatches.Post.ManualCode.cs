@@ -162,6 +162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Check for missing international exchange rate
             bool IsTransactionInIntlCurrency = false;
+            FMyForm.WarnAboutMissingIntlExchangeRate = true;
 
             if (FMyForm.InternationalCurrencyExchangeRate(ACurrentBatchRow, out IsTransactionInIntlCurrency, true) == 0)
             {

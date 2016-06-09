@@ -1595,6 +1595,15 @@ namespace Ict.Common
         /// <returns>boolean value</returns>
         public static Boolean StrToBool(string s)
         {
+            if (string.Compare(s, "yes", true) == 0)
+            {
+                return true;
+            }
+            else if (string.Compare(s, "no", true) == 0)
+            {
+                return false;
+            }
+
             return Convert.ToBoolean(s);
         }
 

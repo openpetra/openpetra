@@ -397,7 +397,7 @@ namespace Ict.Petra.Client.CommonControls
         /// <returns></returns>
         public static DataTable RetrieveCurrencyList()
         {
-            return TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+            return TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList);
         }
 
         /// <summary>

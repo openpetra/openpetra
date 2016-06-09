@@ -629,6 +629,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                     AAddressAddedOrChangedPromotionDT = new PartnerAddressAggregateTDSAddressAddedOrChangedPromotionTable(
                         MPartnerConstants.ADDRESSADDEDORCHANGEDPROMOTION_TABLENAME);
                     AddressAddedOrChangedRow = AAddressAddedOrChangedPromotionDT.NewRowTyped(false);
+                    AddressAddedOrChangedRow.PartnerKey = APartnerKey;
                     AddressAddedOrChangedRow.SiteKey = ALocationPK.SiteKey;
                     AddressAddedOrChangedRow.LocationKey = ALocationPK.LocationKey;
                     AddressAddedOrChangedRow.LocationAdded = true;
@@ -1265,7 +1266,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("Locality", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.Locality;
                     CurrentParameter++;
@@ -1280,7 +1281,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("StreetName", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.StreetName;
                     CurrentParameter++;
@@ -1295,7 +1296,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("City", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.City;
                     CurrentParameter++;
@@ -1310,7 +1311,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("PostalCode", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.PostalCode;
                     CurrentParameter++;
@@ -1325,7 +1326,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("CountryCode", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.CountryCode;
                     CurrentParameter++;
@@ -2635,6 +2636,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             out Boolean APerformPropagation,
             ref TVerificationResultCollection AVerificationResult)
         {
+            PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow AddressAddedOrChangedPromotionDR;
             PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow PropagateLocationDR = null;
 
 //            TLogging.LogAtLevel(9, "PerformLocationFamilyMemberPropagationChecks for LocationKey: " + APartnerLocationRow.LocationKey.ToString() +
@@ -2683,9 +2685,19 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    if (!AAddressAddedPromotionDT[0].AnswerProcessedServerSide)
+                    AddressAddedOrChangedPromotionDR =
+                        (PartnerAddressAggregateTDSAddressAddedOrChangedPromotionRow)AAddressAddedPromotionDT.Rows.Find(
+                            new object[] { APartnerKey, APartnerLocationRow.SiteKey, APartnerLocationRow.LocationKey });
+
+                    if (AddressAddedOrChangedPromotionDR == null)
                     {
-                        AAddressAddedPromotionDT[0].AnswerProcessedServerSide = true;
+                        throw new EOPAppException(String.Format(
+                                "PerformLocationFamilyMemberPropagationChecks: Expected to find record with Partner Key {0} and SiteKey {1} and LocationKey {2} in AAddressAddedPromotionDT, but couldn't find it",
+                                APartnerKey, APartnerLocationRow.SiteKey, APartnerLocationRow.LocationKey));
+                    }
+                    else if (!AddressAddedOrChangedPromotionDR.AnswerProcessedServerSide)
+                    {
+                        AddressAddedOrChangedPromotionDR.AnswerProcessedServerSide = true;
 
                         TLogging.LogAtLevel(9,
                             "PerformLocationFamilyMemberPropagationChecks: Location " + APartnerLocationRow.LocationKey.ToString() +
@@ -2822,8 +2834,8 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
             TSubmitChangesResult ReturnValue;
             PPartnerLocationRow PartnerLocationCheckRow;
             DataView ExistingLocationParametersDV;
-
             PLocationRow ExistingLocationRow;
+            PartnerAddressAggregateTDSSimilarLocationParametersRow ExistingLocationParametersRow;
             Int64 CurrentSiteKey;
             Int64 ExistingSiteKey;
             Int32 CurrentLocationKey;
@@ -2878,16 +2890,31 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                      * re-used instead of creating a new one!
                      */
 
+                    //
                     // Keep a mapping of the initially submitted LocationKey to the newly assigned one
-                    ALocationReUseKeyMapping = new TLocationPK[ALocationReUseKeyMapping.GetLength(0) + 1, 2];
+                    //
+
+                    // 1) Re-create the LocationReUseKeyMappings Array, extending it by one, and taking over the existing LocationReUseKeyMappings
+                    ALocationReUseKeyMapping = TLocationPKCopyHelper.CopyTLocationPKArray(ALocationReUseKeyMapping, 1);
+
+                    // 2) Add our new KeyMapping at the last (=new) Array position
                     ALocationReUseKeyMapping[(ALocationReUseKeyMapping.GetLength(0)) - 1, 0] = new TLocationPK(ALocationRow.SiteKey,
                         (int)ALocationRow.LocationKey);
                     ALocationReUseKeyMapping[(ALocationReUseKeyMapping.GetLength(0)) - 1, 1] = new TLocationPK(ExistingSiteKey, ExistingLocationKey);
                     AReUseSimilarLocation = true;
 
-                    if (!AExistingLocationParametersDT[0].AnswerProcessedServerSide)
+                    ExistingLocationParametersRow = (PartnerAddressAggregateTDSSimilarLocationParametersRow)AExistingLocationParametersDT.Rows.Find(
+                        new object[] { ALocationRow.SiteKey, ALocationRow.LocationKey });
+
+                    if (ExistingLocationParametersRow == null)
                     {
-                        AExistingLocationParametersDT[0].AnswerProcessedServerSide = true;
+                        throw new EOPAppException(String.Format(
+                                "PerformSimilarLocationReUseChecks: Expected to find Location with SiteKey {0} and LocationKey {1} in AExistingLocationParametersDT, but couldn't find it",
+                                ExistingSiteKey, ExistingLocationKey));
+                    }
+                    else if (!ExistingLocationParametersRow.AnswerProcessedServerSide)
+                    {
+                        ExistingLocationParametersRow.AnswerProcessedServerSide = true;
 
                         // Preserve Key of current Location
                         CurrentSiteKey = ALocationRow.SiteKey;

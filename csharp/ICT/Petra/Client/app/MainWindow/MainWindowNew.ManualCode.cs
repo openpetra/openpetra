@@ -327,11 +327,6 @@ namespace Ict.Petra.Client.App.PetraClient
 
                     TLstTasks.ExecuteAction(testActionNode, null);
                 }
-                else
-                {
-                    string startupFolder = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.MODULE_TO_OPEN_AT_STARTUP, "Partner");
-                    lstFolders.SelectFolder(startupFolder);
-                }
             }
         }
 
@@ -818,7 +813,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 ViewTasksAsList(this, null);
             }
 
-            lstFolders.SelectFirstAvailableFolder();
+            string startupFolder = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.MODULE_TO_OPEN_AT_STARTUP, "Partner");
+            lstFolders.SelectFolder(startupFolder);
         }
 
         /// <summary>

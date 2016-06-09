@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,6 +58,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event THookupDataChangeEventHandler HookupDataChange;
+
 
         /// <summary>
         /// Raises Event HookupDataChange.
@@ -117,6 +118,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ShowTab != null)
             {
                 ShowTab(this, e);
+            }
+        }
+
+        /// <summary>
+        /// This Event gets raised when a new Address got added and the Partner has got a Partner Status
+        /// other than 'ACTIVE'.
+        /// </summary>
+        public event EventHandler AddressAddedPartnerNeedsToBecomeActive;
+
+        /// <summary>
+        /// Raises Event AddressAddedPartnerNeedsToBecomeActive.
+        /// </summary>
+        /// <param name="sender">Sender of the Event.</param>
+        /// <param name="e">Event parameters.</param>
+        protected void OnAddressAddedPartnerNeedsToBecomeActive(object sender, EventArgs e)
+        {
+            if (AddressAddedPartnerNeedsToBecomeActive != null)
+            {
+                AddressAddedPartnerNeedsToBecomeActive(sender, e);
             }
         }
 
@@ -248,7 +268,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         ucoPartnerTabSet.HookupDataChange += new THookupDataChangeEventHandler(ucoPartnerTabSet_HookupDataChange);
                         ucoPartnerTabSet.HookupPartnerEditDataChange += new THookupPartnerEditDataChangeEventHandler(
                             ucoPartnerTabSet_HookupPartnerEditDataChange);
-
+                        ucoPartnerTabSet.AddressAddedPartnerNeedsToBecomeActive += UcoPartnerTabSet_AddressAddedPartnerNeedsToBecomeActive;
                         this.ParentForm.Cursor = Cursors.Default;
                     }
 
@@ -348,6 +368,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             OnHookupDataChange(e);
         }
 
+        private void UcoPartnerTabSet_AddressAddedPartnerNeedsToBecomeActive(object sender, EventArgs e)
+        {
+            OnAddressAddedPartnerNeedsToBecomeActive(sender, e);
+        }
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -356,6 +381,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // set the delegate function from the calling System.Object
             ucoPartnerTabSet.InitialiseDelegateIsNewPartner(ADelegateFunction);
+        }
+
+        /// <summary>
+        /// Calls the DataSavedEventFired on certain nested UserControls.
+        /// </summary>
+        /// <param name="ASuccess">True if saving of data went ahead OK, otherwise false.</param>
+        public void DataSavedEventFired(bool ASuccess)
+        {
+            ucoPartnerTabSet.DataSavedEventFired(ASuccess);
         }
 
         /// <summary>
@@ -602,6 +636,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         public void SelectApplication(Int32 AApplicationKey, Int64 ARegistrationOffice)
         {
             ucoPersonnelTabSet.SelectApplication(AApplicationKey, ARegistrationOffice);
+        }
+
+        /// <summary>
+        /// This gets called if the system default value gets changed
+        /// </summary>
+        /// <param name="AName">New text for label, eg County, Canton, Bundesland etc.</param>
+        public void SetLocalisedCountyLabel(string AName)
+        {
+            ucoPartnerTabSet.SetLocalisedCountyLabel(AName);
         }
 
         #endregion

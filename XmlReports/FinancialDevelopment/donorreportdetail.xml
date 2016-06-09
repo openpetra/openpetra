@@ -308,7 +308,11 @@
 					<lowerLevelReport level="DonorLevel" calculation="Select Donors and Totals" ></lowerLevelReport>
 				</detail>
 				<footer space="above">
-					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+          <field whichfield="left 0" pos="0cm" width="5 cm">
+            <value text="Number of Donors:"/>
+            <value function="CountChildRows({{lineId}})"/>
+          </field>
+          <field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
 						<value function="getSumLowerReport({{lineId}}, {{param_gift_amount_column}})"/>
 					</field>
 				</footer>
@@ -332,7 +336,7 @@
 					</lowerLevelReport>
 				</detail>
 				<footer>
-					<field whichfield="column {param_gift_amount_column}" line="above">
+          <field whichfield="column {param_gift_amount_column}" line="above">
 						<value variable="TotalGiven"/>
 					</field>
 				</footer>

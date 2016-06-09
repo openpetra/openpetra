@@ -23,6 +23,7 @@
 //
 
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
@@ -38,6 +39,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
     public partial class TFrmLinkPartnerCostCentreDialog
     {
         private Int32 FLedgerNumber;
+        private Boolean FChangedState = false;
         private DataTable FPartnerCostCentreTbl;
         private DataTable FLocalCostCentres;
         private DataView FLinkedView;
@@ -91,6 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdLinkedCCs.AddTextColumn("Partner Key", FPartnerCostCentreTbl.Columns["PartnerKey"], 90);
             grdLinkedCCs.AddTextColumn("Cost Centre", FPartnerCostCentreTbl.Columns["IsLinked"], 90);
             grdLinkedCCs.AddTextColumn("Reports To", FPartnerCostCentreTbl.Columns["ReportsTo"], 90);
+            grdUnlinkedCCs.Enter += new EventHandler(grdLinkedCCs_Enter);
             grdLinkedCCs.Selection.FocusRowEntered += new SourceGrid.RowEventHandler(grdLinkedCCs_Click);
 
             grdUnlinkedCCs.Columns.Clear();
@@ -106,16 +109,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnUnlink.Text = "\u25BC Unlink";
             btnUnlink.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             btnUnlink.Enabled = false;
+
+            btnRemove.Enabled = false;
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <returns></returns>
-        public void SaveChanges()
+        public bool SaveChanges()
         {
-            TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
-                FLedgerNumber, FPartnerCostCentreTbl);
+            if (FChangedState)
+            {
+                TRemote.MFinance.Setup.WebConnectors.SaveCostCentrePartnerLinks(
+                    FLedgerNumber, FPartnerCostCentreTbl);
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -135,16 +145,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             string NewCCCode = cmbCostCentre.GetSelectedString();
 
-            //
             // I can link to this Cost Centre, IF it's not already linked to someone else!
             FPartnerCostCentreTbl.DefaultView.Sort = ("IsLinked");
 
+            DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
+            Int64 PartnerKey = (Int64)Row["PartnerKey"];
+            string PartnerShortName = Row["ShortName"].ToString();
+
             if (FPartnerCostCentreTbl.DefaultView.Find(NewCCCode) >= 0)
             {
-                MessageBox.Show(String.Format(Catalog.GetString("Error - {0} has already been assigned to a partner."), NewCCCode),
-                    Catalog.GetString("Link Cost Centre"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                if (MessageBox.Show(String.Format(Catalog.GetString(
+                                "Cost Centre - '{0}' has already been assigned to a partner.{1}{1}Do you want to assign it to the following partner as well:{1}{1}'{2} - {3}'?"),
+                            NewCCCode, Environment.NewLine, PartnerKey, PartnerShortName),
+                        Catalog.GetString("Link Cost Centre"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                {
+                    return;
+                }
             }
 
             string ReportsTo = cmbReportsTo.Text;
@@ -157,7 +174,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 return;
             }
 
-            DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
             Row["IsLinked"] = NewCCCode;
             Row["ReportsTo"] = ReportsTo;
 
@@ -166,6 +182,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             btnLink.Enabled = false;
             grdUnlinkedCCs.SelectRowInGrid(-1, false);
+
+            btnOK.Text = "Accept";
+            FChangedState = true;
         }
 
         /// <summary></summary>
@@ -175,12 +194,70 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
 
+            string PartnerKey = Row["PartnerKey"].ToString();
+
             Row["IsLinked"] = '0';
 
             ClearCombos();
 
             btnUnlink.Enabled = false;
             grdLinkedCCs.SelectRowInGrid(-1, false);
+
+            grdUnlinkedCCs.Focus();
+
+            int Counter = 0;
+
+            foreach (DataRowView drv in FUnlinkedView)
+            {
+                Counter++;
+
+                if (drv.Row["PartnerKey"].ToString() == PartnerKey)
+                {
+                    grdUnlinkedCCs.SelectRowInGrid(Counter);
+                    break;
+                }
+            }
+
+            btnOK.Text = "Accept";
+            FChangedState = true;
+        }
+
+        /// <summary></summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RemoveCostCentreType(object sender, EventArgs e)
+        {
+            if ((grdUnlinkedCCs.Rows.Count == 1) || (grdUnlinkedCCs.SelectedDataRows.Length == 0))
+            {
+                return;
+            }
+
+            DataRowView[] UnlinkedsRowToRemoveView = grdUnlinkedCCs.SelectedDataRowsAsDataRowView;
+            List <Int64>CostCentrePartnerTypeRowsToRemove = new List <Int64>();
+
+            foreach (DataRowView drv in UnlinkedsRowToRemoveView)
+            {
+                CostCentrePartnerTypeRowsToRemove.Add((Int64)drv.Row["PartnerKey"]);
+            }
+
+            if (CostCentrePartnerTypeRowsToRemove.Count > 0)
+            {
+                foreach (DataRowView drv in FUnlinkedView)
+                {
+                    if (CostCentrePartnerTypeRowsToRemove.Contains((Int64)drv.Row["PartnerKey"]))
+                    {
+                        drv.Row.Delete();
+                    }
+                }
+            }
+
+            grdUnlinkedCCs.SelectRowInGrid(1, false);
+            grdUnlinkedCCs.Focus();
+
+            btnRemove.Enabled = (grdUnlinkedCCs.Rows.Count > 1);
+
+            btnOK.Text = "Accept";
+            FChangedState = true;
         }
 
         private void ClearCombos(int AWhichCombos = 0)
@@ -221,12 +298,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnLink.Enabled = ValidCostCentre && ValidReportTo;
         }
 
+        private void grdLinkedCCs_Enter(object sender, EventArgs e)
+        {
+            btnRemove.Enabled = false;
+        }
+
         private void grdLinkedCCs_Click(object sender, EventArgs e)
         {
             if (grdLinkedCCs.SelectedDataRows.Length > 0)
             {
                 btnUnlink.Enabled = true;
                 btnLink.Enabled = false;
+                btnRemove.Enabled = false;
 
                 DataRow Row = ((DataRowView)grdLinkedCCs.SelectedDataRows[0]).Row;
                 txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
@@ -246,6 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             btnUnlink.Enabled = false;
             btnLink.Enabled = false;
+            btnRemove.Enabled = false;
 
             grdLinkedCCs.SelectRowInGrid(-1, false);
         }
@@ -256,6 +340,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
                 txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
+
+                btnRemove.Enabled = true;
+            }
+            else
+            {
+                btnRemove.Enabled = false;
             }
         }
 
@@ -266,8 +356,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         public void BtnOK_Click(object sender, EventArgs e)
         {
-            SaveChanges();
-            Close();
+            if (SaveChanges())
+            {
+                Close();
+            }
         }
     }
 }

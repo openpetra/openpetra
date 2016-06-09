@@ -65,7 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             ALedgerRow LedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
-            FCurrencyTable = (ACurrencyTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+            FCurrencyTable = (ACurrencyTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList);
 
             //txtExchangeRate.SetControlProperties(10);
             txtBaseAmount.CurrencyCode = LedgerRow.BaseCurrency;

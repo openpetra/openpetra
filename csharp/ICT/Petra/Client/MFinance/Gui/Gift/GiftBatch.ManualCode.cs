@@ -190,6 +190,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// warn the user that corporate exchange rate is missing
+        /// </summary>
+        public Boolean WarnAboutMissingIntlExchangeRate
+        {
+            set
+            {
+                FWarnAboutMissingIntlExchangeRate = value;
+            }
+        }
+
+        /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
         public void RefreshAll(bool AShowStatusDialogOnLoad = true, bool AIsMessageRefresh = false)
@@ -601,6 +612,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             this.Cursor = Cursors.Default;
                         }
+
+                        //Warn if missing International Exchange Rate
+                        bool isTransactionInIntlCurrency = false;
+                        WarnAboutMissingIntlExchangeRate = true;
+                        InternationalCurrencyExchangeRate(SelectedRow, out isTransactionInIntlCurrency);
                     }
 
                     ucoTransactions.FocusGrid();
@@ -1013,6 +1029,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcRefreshGiftBatches)
             {
                 this.RefreshAll(false, true);
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftPartnerZeroChanged)
+            {
+                Dictionary <string, object>messageItems = ((IFormsMessageSimpleDictionaryInterface)AFormsMessage.MessageObject).MessageItems;
+
+                foreach (KeyValuePair <string, object>kvp in messageItems)
+                {
+                    if (kvp.Key == SharedConstants.SYSDEFAULT_DONORZEROISVALID)
+                    {
+                        FDonorZeroIsValid = Convert.ToBoolean(kvp.Value);
+                    }
+                    else if (kvp.Key == SharedConstants.SYSDEFAULT_RECIPIENTZEROISVALID)
+                    {
+                        FRecipientZeroIsValid = Convert.ToBoolean(kvp.Value);
+                    }
+                }
 
                 MessageProcessed = true;
             }

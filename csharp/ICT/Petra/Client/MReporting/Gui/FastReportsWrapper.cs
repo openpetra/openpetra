@@ -46,6 +46,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MSysMan.Data;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -812,9 +813,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             ACalc.AddParameter("param_ledger_number_i", ALedgerNumber);
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ALedgerTable LedgerTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
-            ACalc.AddParameter("param_currency_name",
-                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(ALedgerNumber, ABatchNumber, true));
+            ACalc.AddParameter("param_currency_name", LedgerTable[0].BaseCurrency);
             return true;
         }
 

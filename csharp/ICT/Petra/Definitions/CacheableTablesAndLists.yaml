@@ -8,7 +8,6 @@ CachedTables:
                 PAddresseeType:
                 PAcquisition: {Comment=how did we get to know this partner, Enum=AcquisitionCodeList}
                 PBusiness: {Enum=BusinessCodeList}
-                ACurrency: {Enum=CurrencyCodeList}
                 PDataLabel:
                 PDataLabelUse:
                 PDataLabelLookupCategory:
@@ -64,8 +63,9 @@ CachedTables:
     Common:
         Common:
             DatabaseTables:
-                PCountry:
+                ACurrency: {Enum=CurrencyCodeList}
                 AFrequency: {Comment="List of Frequencies (e.g. of Mailings, Publications, etc.)"}
+                PCountry:
                 PLanguage: {Enum=LanguageCodeList}
     Personnel:
         Unit:

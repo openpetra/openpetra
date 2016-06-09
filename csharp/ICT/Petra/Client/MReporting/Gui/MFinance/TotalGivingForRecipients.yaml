@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
-    FormTitle: Total giving for selected recipients
+    FormTitle: Historic Donors Per Recipient
     WindowWidth: 680
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance

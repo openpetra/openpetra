@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // We need to set the number of decimal places for the Mailing Cost
             // We check all the ledgers to see which one has the highest number of decimal places.
             ALedgerTable ledgers = TRemote.MFinance.Setup.WebConnectors.GetAvailableLedgers();
-            ACurrencyTable currencyTable = (ACurrencyTable)TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList);
+            ACurrencyTable currencyTable = (ACurrencyTable)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList);
             int numDecimalPlaces = 0;
 
             if (ledgers.Count == 0)

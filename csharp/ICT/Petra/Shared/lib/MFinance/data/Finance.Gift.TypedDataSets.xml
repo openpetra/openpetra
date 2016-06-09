@@ -40,6 +40,7 @@
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
             <CustomField name="CostCentreCode" type="String"/>
+            <CustomField name="Active" type="Boolean"/>
         </Table>
 
         <Table sqltable="a_motivation_group"/>

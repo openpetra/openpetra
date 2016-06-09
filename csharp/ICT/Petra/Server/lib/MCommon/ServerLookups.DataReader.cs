@@ -48,6 +48,7 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
@@ -237,6 +238,14 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             {
                 AResultTable = SGroupAccess.LoadAll(AReadTransaction);
             }
+            else if (ATablename == SSystemDefaultsTable.GetTableDBName())
+            {
+                AResultTable = SSystemDefaultsAccess.LoadAll(AReadTransaction);
+            }
+            else if (ATablename == SSystemDefaultsGuiTable.GetTableDBName())
+            {
+                AResultTable = SSystemDefaultsGuiAccess.LoadAll(AReadTransaction);
+            }
             else
             {
                 throw new Exception("TCommonDataReader.GetData: unknown table " + ATablename);
@@ -272,6 +281,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 {
                     ReturnValue = SaveData(ATablename, ref SubmitTable, out VerificationResult, WriteTransaction);
                 });
+
+            if ((ATablename == SSystemDefaultsTable.GetTableDBName()) && (ReturnValue == TSubmitChangesResult.scrOK))
+            {
+                // Refresh the cache immediately so clients will get the changes
+                TSystemDefaultsCache.GSystemDefaultsCache.ReloadSystemDefaultsTable();
+            }
 
             AVerificationResult = VerificationResult;
 
@@ -440,6 +455,14 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == SGroupTable.GetTableDBName())
                     {
                         SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, AWriteTransaction);
+                    }
+                    else if (ATablename == SSystemDefaultsTable.GetTableDBName())
+                    {
+                        SSystemDefaultsAccess.SubmitChanges((SSystemDefaultsTable)ASubmitTable, AWriteTransaction);
+                    }
+                    else if (ATablename == SSystemDefaultsGuiTable.GetTableDBName())
+                    {
+                        SSystemDefaultsGuiAccess.SubmitChanges((SSystemDefaultsGuiTable)ASubmitTable, AWriteTransaction);
                     }
                     else
                     {

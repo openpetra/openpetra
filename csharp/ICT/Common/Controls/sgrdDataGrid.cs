@@ -1887,9 +1887,9 @@ namespace Ict.Common.Controls
 
             if (ARowNumberInGrid >= this.FixedRows)
             {
-                int column = 0;
+                int column = this.FixedColumns;
 
-                while ((column < this.FixedColumns) && (column < this.Columns.Count - 1) && !this.Columns[column].Visible)
+                while ((column < this.Columns.Count - 1) && !this.Columns[column].Visible)
                 {
                     column++;
                 }

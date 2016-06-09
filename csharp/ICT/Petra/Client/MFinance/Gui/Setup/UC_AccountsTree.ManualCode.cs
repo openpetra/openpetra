@@ -280,7 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }
 
-                AAccountRow ParentRow = ((AccountNodeDetails)AChild.Tag).AccountRow;
+                AAccountRow ParentRow = ((AccountNodeDetails)ANewParent.Tag).AccountRow;
 
                 if (ParentRow.PostingStatus)
                 {

@@ -48,6 +48,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TUC_PartnerAddresses
     {
+        #region Fields
+
         private readonly string StrFoundAddressCannotBeUsedReason1 = Catalog.GetString("The found Address cannot be used because " +
             "the Partner already has an Address record with this address!");
 
@@ -90,6 +92,21 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>The initial row to select when the screen is activated for the first time</summary>
         private int FInitiallySelectedRowNum = 1;
+
+        /// <summary>Used for storing the DataColumn p_partner_location.p_send_mail_l, which gets referenced often.</summary>
+        private DataColumn FSendMailValidationColumn;
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// This Event gets raised when a new Address got added and the Partner has got a Partner Status
+        /// other than 'ACTIVE'.
+        /// </summary>
+        public event EventHandler AddressAddedPartnerNeedsToBecomeActive;
+
+        #endregion
 
         #region Public Methods
 
@@ -297,7 +314,6 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             DataRow TempRow = null;
             PLocationRow LocationRow;
-
             PartnerEditTDSPPartnerLocationRow DeletedPartnerLocation0Row = null;
             PLocationRow DeletedLocation0Row = null;
 
@@ -389,6 +405,52 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FMainDS.PLocation.Rows.Remove(DeletedLocation0Row);
                 }
             }
+        }
+
+        /// <summary>
+        /// Performs a custom data validation that only makes sense to be run when the user is changing data interactively:
+        /// If any PPartnerLocation Row is modified a check is done whether there are multiple mailing addresses in an
+        /// overlapping date range. If so, a Warning gets issued to the user - either when changing away from the Address Tab,
+        /// when changing to the Address Tab, or when data gets saved.
+        /// </summary>
+        /// <param name="ADataValidationProcessingMode">Set to TErrorProcessingMode.Epm_All if data validation errors should be
+        /// shown to the user, otherwise set it to TErrorProcessingMode.Epm_None.</param>
+        /// <returns>True if the validation check identified multiple mailing addresses in overlapping date ranges, otherwise false.
+        /// </returns>
+        public bool ValidateAreMultipleMailingAddressesPresent(TErrorProcessingMode ADataValidationProcessingMode)
+        {
+            TValidationControlsData ValidationControlsData;
+            TScreenVerificationResult VerificationResult = null;
+
+            if (FValidationControlsDict.TryGetValue(FSendMailValidationColumn, out ValidationControlsData))
+            {
+                if (AreAddressesChangedAndMultipleOveralappingMailingAddressesPresent())
+                {
+                    VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
+                            ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_MULTIPLEMAILINGADDRESSES)),
+                        FSendMailValidationColumn, ValidationControlsData.ValidationControl);
+                }
+                else
+                {
+                    VerificationResult = null;
+                }
+
+                // Handle addition/removal to/from TVerificationResultCollection
+                FPetraUtilsObject.VerificationResultCollection.Auto_Add_Or_AddOrRemove(this, VerificationResult, FSendMailValidationColumn);
+            }
+
+            if (ADataValidationProcessingMode != TErrorProcessingMode.Epm_None)
+            {
+                TDataValidation.ProcessAnyDataValidationErrors(false, FPetraUtilsObject.VerificationResultCollection,
+                    this.GetType(), null, false);
+
+                if (VerificationResult != null)
+                {
+                    FPetraUtilsObject.VerificationResultCollection.Remove(VerificationResult);
+                }
+            }
+
+            return true;
         }
 
         #region Callback procedures used for Icon column
@@ -564,6 +626,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Determination of the Grid icons and the 'Best Address' (these calls change certain columns in some rows!)
             Calculations.DeterminePartnerLocationsDateStatus((DataSet)FMainDS);
             BestLocationPK = Calculations.DetermineBestAddress((DataSet)FMainDS);
+
+            if (FMainDS.PPartner[0].RowState != DataRowState.Added)
+            {
+                // Need to make PPartnerLocation Table unchanged again as otherwise it is thought that the user has made
+                // changes to the data, which (s)he hasn't.
+                FMainDS.PPartnerLocation.AcceptChanges();
+            }
 
             grdDetails.Columns.Clear();
             grdDetails.AddImageColumn(@GetAddressKindIconForGridRow);
@@ -922,6 +991,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        /// <summary>
+        /// This gets called if the system default value gets changed
+        /// </summary>
+        /// <param name="AName">New text for label, eg County, Canton, Bundesland etc.</param>
+        public void SetLocalisedCountyLabel(string AName)
+        {
+            lblLocationCounty.Text = AName + ":";
+        }
+
         #endregion
 
         #region Private Methods
@@ -934,6 +1012,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FMainDS.InitVars();
+
+            FSendMailValidationColumn = FMainDS.PPartnerLocation.Columns[PPartnerLocationTable.ColumnSendMailId];
 
             SpecialInitUserControl();
 
@@ -1006,6 +1086,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 throw;
             }
+
             return ReturnValue;
         }
 
@@ -1113,11 +1194,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             RemoveDefaultRecord();
 
-#if TODO
             if (FMainDS.PPartner[0].StatusCode != SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE))
             {
-                // Business Rule: if a new Address is added and the Partner's StatusCode
-                // isn't ACTIVE, set it to ACTIVE automatically.
+                // Business Rule: if a new Address is added and the Partner's StatusCode isn't ACTIVE, set it to
+                // ACTIVE automatically.
                 MessageBox.Show(String.Format(MCommonResourcestrings.StrPartnerStatusChange +
                         " because you have added a new Address!",
                         FMainDS.PPartner[0].StatusCode,
@@ -1125,14 +1205,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MCommonResourcestrings.StrPartnerReActivationTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Note: While the code line below worked in Petra 2.3, in OpenPetra this doesn't work as DataBinding isn't here to
-                // help us anymore! Instead, we will likely need to raise a new Event to which the Partner Edit Form will need to
-                // subscribe and on receiving it the Form will need to call a new Method in UC_PartnerEdit_TopPart.ManualCode.cs that
-                // will need to set the Partner Status ComboBox to 'ACTIVE'...
-                // --> Bug for implementation change: #5092 <--
-                //FMainDS.PPartner[0].StatusCode = SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE);
+                if (AddressAddedPartnerNeedsToBecomeActive != null)
+                {
+                    AddressAddedPartnerNeedsToBecomeActive(this, null);
+                }
             }
-#endif
         }
 
         /// <summary>
@@ -1180,11 +1257,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ADeletionQuestion += String.Format("{0}{0}({1} {2},{0}{3} {4},{0}{5} {6})",
                 Environment.NewLine,
-                lblLocationStreetName.Text,
+                lblLocationStreetName.Text.Replace("&", String.Empty),
                 txtLocationStreetName.Text,
-                lblLocationCity.Text,
+                lblLocationCity.Text.Replace("&", String.Empty),
                 txtLocationCity.Text,
-                lblLocationCountryCode.Text,
+                lblLocationCountryCode.Text.Replace("&", String.Empty),
                 cmbLocationCountryCode.GetSelectedString());
 
             // Keep a copy of the current PartnerLocation record in case the
@@ -1819,6 +1896,147 @@ namespace Ict.Petra.Client.MPartner.Gui
                     && (!UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_ADDRESSCAN)))
                 {
                     btnDelete.Enabled = false;
+                }
+            }
+        }
+
+        private void ValidateDataDetailsManual(PPartnerLocationRow ARow)
+        {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if (!AreAddressesChangedAndMultipleOveralappingMailingAddressesPresent()
+                && (FPetraUtilsObject.VerificationResultCollection.Contains(
+                        FSendMailValidationColumn)))
+            {
+                FPetraUtilsObject.VerificationResultCollection.Remove(FSendMailValidationColumn);
+            }
+        }
+
+        /// <summary>
+        /// Checks if any PPartnerLocation Row is modified and if so performs a check whether there are multiple mailing
+        /// addresses in at least one overlapping date range.
+        /// </summary>
+        /// <returns>True if any PPartnerLocation row is modified and there are multiple maining addresses in at least
+        /// one overlapping date range.</returns>
+        private bool AreAddressesChangedAndMultipleOveralappingMailingAddressesPresent()
+        {
+            bool OverlappingMultipleMailingAddresses = false;
+            PPartnerLocationRow SendMailOuterDR;
+            PPartnerLocationRow SendMailInnerDR;
+            DateTime SendMailOuterDateEffective;
+            DateTime SendMailInnerDateEffective;
+            DateTime SendMailOuterDateGoodUntil;
+            DateTime SendMailInnerDateGoodUntil;
+
+            // Are there any changed PPartnerLocation Rows?
+            if (FMainDS.PPartnerLocation.GetChangesTyped() != null)
+            {
+                // Yes: First identify all PPartnerLocation Rows (changed or not!) that have the Mailing Address ticked
+                // (p_send_mail_l flag = true).
+                var SendMailDataRows = FMainDS.PPartnerLocation.Select(
+                    PPartnerLocationTable.GetSendMailDBName() + " = true");
+
+                // Is there more than one such PPartnerLocation Row?
+                if (SendMailDataRows.Length > 1)
+                {
+                    // Iterate over all such rows
+                    for (int OuterCounter = 0; OuterCounter < SendMailDataRows.Length; OuterCounter++)
+                    {
+                        SendMailOuterDR = (PPartnerLocationRow)SendMailDataRows[OuterCounter];
+
+                        // Iterate again, but ...
+                        for (int InnerCounter = 0; InnerCounter < SendMailDataRows.Length; InnerCounter++)
+                        {
+                            SendMailInnerDR = (PPartnerLocationRow)SendMailDataRows[InnerCounter];
+
+                            // ...only look at all the *other* Rows
+                            if (SendMailOuterDR.LocationKey != SendMailInnerDR.LocationKey)
+                            {
+                                //
+                                // Handle null dates
+                                //
+                                if (SendMailOuterDR.DateEffective != null)
+                                {
+                                    SendMailOuterDateEffective = SendMailOuterDR.DateEffective.Value;
+                                }
+                                else
+                                {
+                                    SendMailOuterDateEffective = DateTime.MinValue;
+                                }
+
+                                if (SendMailInnerDR.DateEffective != null)
+                                {
+                                    SendMailInnerDateEffective = SendMailInnerDR.DateEffective.Value;
+                                }
+                                else
+                                {
+                                    SendMailInnerDateEffective = DateTime.MinValue;
+                                }
+
+                                if (SendMailOuterDR.DateGoodUntil != null)
+                                {
+                                    SendMailOuterDateGoodUntil = SendMailOuterDR.DateGoodUntil.Value;
+                                }
+                                else
+                                {
+                                    SendMailOuterDateGoodUntil = DateTime.MaxValue;
+                                }
+
+                                if (SendMailInnerDR.DateGoodUntil != null)
+                                {
+                                    SendMailInnerDateGoodUntil = SendMailInnerDR.DateGoodUntil.Value;
+                                }
+                                else
+                                {
+                                    SendMailInnerDateGoodUntil = DateTime.MaxValue;
+                                }
+
+                                // Check if the two date ranges overlap. This check is inclusive of the start and end date.
+                                // (Courtesy of http://c2.com/cgi/wiki?TestIfDateRangesOverlap)
+                                if ((SendMailOuterDateEffective <= SendMailInnerDateGoodUntil)
+                                    && (SendMailInnerDateEffective <= SendMailOuterDateGoodUntil))
+                                {
+                                    OverlappingMultipleMailingAddresses = true;
+
+                                    // We are done when one overlapping date range was found
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (OverlappingMultipleMailingAddresses)
+                        {
+                            // We are done when one overlapping date range was found
+                            break;
+                        }
+                    }
+                }
+
+                return OverlappingMultipleMailingAddresses;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets called when the user saved data.
+        /// </summary>
+        /// <param name="ASuccess">True if saving of data went ahead OK, otherwise false.</param>
+        public void DataSavedEventFired(bool ASuccess)
+        {
+            if (!ASuccess)
+            {
+                if (FPetraUtilsObject.VerificationResultCollection.Contains(
+                        FSendMailValidationColumn))
+                {
+                    // Remove Warning about Multiple Mailing Addresses so that it isn't getting raised again after
+                    // the user chose to not go ahead with the saving of data (that Warning would otherwise get brought
+                    // up with every record change in the Address Tab until the reason for the Warning gets addressed, and
+                    // that could easily be too annoying to the user). The user will get the Warning again if (s)he goes
+                    // to another Tab or saves data again!
+                    FPetraUtilsObject.VerificationResultCollection.Remove(FSendMailValidationColumn);
                 }
             }
         }

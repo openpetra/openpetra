@@ -818,6 +818,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     && (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
                             MCommonResourcestrings.StrFormSaveDataAnywayQuestion, this.GetType()) == false))
                 {
+                    FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(false));
+
                     return false;
                 }
 
@@ -1829,7 +1831,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             ucoLowerPart.CurrentModuleTabGroup = FCurrentModuleTabGroup;
             ucoLowerPart.InitiallySelectedTabPage = FInitiallySelectedTabPage;
             ucoLowerPart.InitialiseDelegateIsNewPartner(@IsNewPartner);
-
+            ucoLowerPart.AddressAddedPartnerNeedsToBecomeActive += UcoLowerPart_AddressAddedPartnerNeedsToBecomeActive;
 
             // Hook up EnableDisableOtherScreenParts Event that is fired by ucoPartnerTabSet
             ucoLowerPart.EnableDisableOtherScreenParts += new TEnableDisableScreenPartsEventHandler(
@@ -2017,6 +2019,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniMaintainFoundationDetails.Enabled = false;
                 }
             }
+        }
+
+        private void UcoLowerPart_AddressAddedPartnerNeedsToBecomeActive(object sender, EventArgs e)
+        {
+            ucoUpperPart.SetPartnerStatusToActive();
         }
 
         private void Form_Closed(object sender, EventArgs e)
@@ -2487,10 +2494,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             tbbViewPartnerData.Checked = true;
             tbbViewPersonnelData.Checked = false;
-            tbbViewFinanceData.Checked = false;
+//            tbbViewFinanceData.Checked = false;
             mniViewPartnerData.Checked = true;
             mniViewPersonnelData.Checked = false;
-            mniViewFinanceData.Checked = false;
+//            mniViewFinanceData.Checked = false;
 
             ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
         }
@@ -2514,10 +2521,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     tbbViewPersonnelData.Checked = true;
                     tbbViewPartnerData.Checked = false;
-                    tbbViewFinanceData.Checked = false;
+//                    tbbViewFinanceData.Checked = false;
                     mniViewPersonnelData.Checked = true;
                     mniViewPartnerData.Checked = false;
-                    mniViewFinanceData.Checked = false;
+//                    mniViewFinanceData.Checked = false;
 
                     ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel);
                 }
@@ -3628,7 +3635,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>void</returns>
         private void FormDataSaved(System.Object sender, TDataSavedEventArgs e)
         {
-// TODO            ucoPartnerTabSet.DataSavedEventFired(e.Success);
+            ucoLowerPart.DataSavedEventFired(e.Success);
 
             if (e.Success)
             {
@@ -3762,6 +3769,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
                     }
                 }
+
+                MessageProcessed = true;
+            }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcLocalisedCountyLabelChanged)
+            {
+                string newLabel = ((TFormsMessage.FormsMessageName)AFormsMessage.MessageObject).Name;
+                ucoLowerPart.SetLocalisedCountyLabel(newLabel);
 
                 MessageProcessed = true;
             }

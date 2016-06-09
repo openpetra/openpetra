@@ -658,7 +658,7 @@ namespace Ict.Petra.Client.CommonControls
                 case TListTableEnum.CurrencyCodeList:
 
                     InitialiseUserControl(
-                    TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.CurrencyCodeList),
+                    TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList),
                     ACurrencyTable.GetCurrencyCodeDBName(),
                     ACurrencyTable.GetCurrencyNameDBName(),
                     null);

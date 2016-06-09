@@ -538,28 +538,49 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
+            // Motivation Group code must exist. Group code cannot be Gift if Recipient = 0
             ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnMotivationGroupCodeId];
 
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
-                // Motivation Group code must exist
-                if (!ARow.IsMotivationGroupCodeNull() && (AMotivationGroups != null))
+                if (!ARow.IsMotivationGroupCodeNull())
                 {
-                    AMotivationGroupRow foundRow = (AMotivationGroupRow)AMotivationGroups.Rows.Find(
-                        new object[] { ARow.LedgerNumber, ARow.MotivationGroupCode });
-
-                    VerificationResult = (foundRow == null) ?
-                                         new TScreenVerificationResult(
-                        new TVerificationResult(AContext,
-                            String.Format(Catalog.GetString("Unknown motivation group code '{0}'."),
-                                ARow.MotivationGroupCode),
-                            TResultSeverity.Resv_Critical),
-                        ValidationColumn, ValidationControlsData.ValidationControl)
-                                         : null;
-
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                    if (AMotivationGroups != null)
                     {
-                        VerifResultCollAddedCount++;
+                        VerificationResult = null;
+
+                        AMotivationGroupRow foundRow = (AMotivationGroupRow)AMotivationGroups.Rows.Find(
+                            new object[] { ARow.LedgerNumber, ARow.MotivationGroupCode });
+
+                        if (foundRow == null)
+                        {
+                            VerificationResult = new TScreenVerificationResult(
+                                new TVerificationResult(AContext,
+                                    String.Format(Catalog.GetString("Unknown motivation group code '{0}'."),
+                                        ARow.MotivationGroupCode),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn, ValidationControlsData.ValidationControl);
+
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            {
+                                VerifResultCollAddedCount++;
+                            }
+                        }
+                    }
+
+                    if ((ARow.RecipientKey == 0) && (ARow.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT))
+                    {
+                        VerificationResult = new TScreenVerificationResult(
+                            new TVerificationResult(AContext,
+                                String.Format(Catalog.GetString("Motivation group code cannot be '{0}' when Recipient Key is '0000000000'!"),
+                                    ARow.MotivationGroupCode),
+                                TResultSeverity.Resv_Critical),
+                            ValidationColumn, ValidationControlsData.ValidationControl);
+
+                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                        {
+                            VerifResultCollAddedCount++;
+                        }
                     }
                 }
             }

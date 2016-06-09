@@ -545,6 +545,22 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
+        /// Determine if focus goes to textbox label after find screen closes
+        /// </summary>
+        public bool FocusTextBoxPartAfterFindScreenCloses
+        {
+            get
+            {
+                return this.txtAutoPopulated.FocusTextBoxPartAfterFindScreenCloses;
+            }
+
+            set
+            {
+                this.txtAutoPopulated.FocusTextBoxPartAfterFindScreenCloses = value;
+            }
+        }
+
+        /// <summary>
         /// TextBox Width if the type 'PartnerKey' from the ListTable property is chosen.
         /// </summary>
         public int TextBoxWidth

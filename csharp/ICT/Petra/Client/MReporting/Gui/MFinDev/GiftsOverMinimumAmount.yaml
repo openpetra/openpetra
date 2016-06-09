@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Gifts over Minimum Amount
     WindowWidth: 700
-    WindowHeight: 580
+    WindowHeight: 615
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\giftsoveramount.xml, common.xml]
@@ -48,7 +48,7 @@
             ParameterName: param_detail
         rgrSorting:
             Label: Sort
-            Controls: [rbtSortByPartnerName, rbtSortByDonorKey, rbtSortByAmount]
+            Controls: [rbtSortByPartnerName, rbtSortByDonorKey, rbtSortByAmount, rbtSortByPost]
             ParameterName: param_sort_by
         grpExcludePartners:
             Label: Exclude Partners
@@ -82,6 +82,9 @@
         rbtSortByAmount:
             Label: By Amount
             ParameterValue: Gift Amount
+        rbtSortByPost:
+            Label: By Postal Code
+            ParameterValue: Postal Code
         chkExcludeAnonymousDonors:
             Label: Exclude anonymous Donors
             ParameterName: param_exclude_anonymous_donors

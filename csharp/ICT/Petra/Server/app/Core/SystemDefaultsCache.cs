@@ -166,9 +166,6 @@ namespace Ict.Petra.Server.App.Core
             String ReturnValue;
             SSystemDefaultsRow FoundSystemDefaultsRow;
 
-            // SystemDefault Names are not case sensitive
-            ASystemDefaultName = ASystemDefaultName.ToUpper();
-
             // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
             // FTableCached value!
             lock (FTableCachedLockCookie)
@@ -190,6 +187,8 @@ namespace Ict.Petra.Server.App.Core
                  */
                 FReadWriteLock.AcquireReaderLock(SharedConstants.THREADING_WAIT_INFINITE);
 
+                // FSystemDefaultsDT is not case sensitive so Find will find the first case-insensitive match
+                // The code to save a default handles ensuring that we never add a row with a 'similar' but non-identical primary key
                 FoundSystemDefaultsRow = (SSystemDefaultsRow)FSystemDefaultsDT.Rows.Find(ASystemDefaultName);
 
                 if (FoundSystemDefaultsRow != null)
@@ -254,7 +253,16 @@ namespace Ict.Petra.Server.App.Core
         /// if the specified System Default was not found.</returns>
         public bool GetBooleanDefault(String ASystemDefaultName, bool ADefault)
         {
-            return Convert.ToBoolean(GetSystemDefault(ASystemDefaultName, ADefault.ToString()));
+            string s = GetSystemDefault(ASystemDefaultName, ADefault.ToString());
+
+            if ((string.Compare(s, "no", true) == 0) || (string.Compare(s, Boolean.FalseString, true) == 0))
+            {
+                // 'no' and 'False' are  always false
+                return false;
+            }
+
+            // Otherwise return true, which includes a default value of 'yes'
+            return true;
         }
 
         /// <summary>
@@ -541,20 +549,22 @@ namespace Ict.Petra.Server.App.Core
             Boolean ShouldCommit = false;
             SSystemDefaultsTable SystemDefaultsDT;
 
-            AKey = AKey.ToUpper();
             try
             {
                 TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
                     IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
 
-                SystemDefaultsDT = SSystemDefaultsAccess.LoadByPrimaryKey(AKey, ReadWriteTransaction);
+                SystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadWriteTransaction);
 
-                if (SystemDefaultsDT.Rows.Count > 0)
+                // This will find the row that matches a case-insensitive search of the table primary keys
+                SystemDefaultsDT.CaseSensitive = false;     // It is anyway
+                SSystemDefaultsRow match = (SSystemDefaultsRow)SystemDefaultsDT.Rows.Find(AKey);
+
+                if (match != null)
                 {
                     // I already have this System Default in the DB --> simply update the Value in the DB.
                     // (This will often be the case!)
-                    DataRow SystemDefaultsDR = SystemDefaultsDT[0];
-                    ((SSystemDefaultsRow)SystemDefaultsDR).DefaultValue = AValue;
+                    match.DefaultValue = AValue;
 
                     AAdded = false;
                 }

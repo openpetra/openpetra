@@ -3531,8 +3531,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                               "THEN " + amountFieldName + " ELSE 0 END )as YearTotal2, " +
                               "SUM(CASE WHEN gift.a_date_entered_d BETWEEN '" + period3Start + "' AND '" + period3End + "' " +
                               "THEN " + amountFieldName + " ELSE 0 END )as YearTotal3 " +
-                              "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch AS GiftBatch, PUB_p_partner AS recipient, " +
-                              "PUB_p_partner_type AS RecipientType ";
+                              "FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch AS GiftBatch, PUB_p_partner AS recipient "
+            ;
 
             if (fromExtract)
             {
@@ -3558,8 +3558,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                          " AND gift.a_ledger_number_i = " + LedgerNum +
                          " AND GiftBatch.a_batch_status_c = 'Posted' " +
                          " AND GiftBatch.a_batch_number_i = gift.a_batch_number_i " +
-                         " AND GiftBatch.a_ledger_number_i = " + LedgerNum +
-                         " AND RecipientType.p_partner_key_n = detail.p_recipient_key_n "
+                         " AND GiftBatch.a_ledger_number_i = " + LedgerNum
                          );
 
             if (oneRecipient)
@@ -3567,20 +3566,24 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 String recipientKey = AParameters["param_recipient_key"].ToString();
                 SqlQuery += (" AND recipient.p_partner_key_n = " + recipientKey);
             }
+            else
+            {
+                if (onlySelectedTypes)
+                {
+                    String selectedTypeList = AParameters["param_clbTypes"].ToString();
+                    selectedTypeList = selectedTypeList.Replace(",", "','");
+
+                    SqlQuery +=
+                        (" AND recipient.p_partner_key_n IN (SELECT DISTINCT p_partner_key_n FROM p_partner_type WHERE p_type_code_c IN ('" +
+                         selectedTypeList + "'))");
+                }
+            }
 
             if (onlySelectedFields)
             {
                 String selectedFieldList = AParameters["param_clbFields"].ToString();
                 selectedFieldList = selectedFieldList.Replace('\'', ' ');
                 SqlQuery += (" AND detail.a_recipient_ledger_number_n IN (" + selectedFieldList + ")");
-            }
-
-            if (onlySelectedTypes)
-            {
-                String selectedTypeList = AParameters["param_clbTypes"].ToString();
-                selectedTypeList = selectedTypeList.Replace(",", "','");
-
-                SqlQuery += (" AND RecipientType.p_type_code_c IN ('" + selectedTypeList + "')");
             }
 
             SqlQuery +=
@@ -3611,11 +3614,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    String YearFilter = String.Format(" AND glm.a_year_i in({0},{1})", AYear - 1, AYear);
-                    String PeriodFilter = (APeriodNumber > 1) ?
-                                          String.Format(" AND glmp.a_period_number_i IN ({0},{1})", APeriodNumber - 1, APeriodNumber)
-                                          :
-                                          " AND glmp.a_period_number_i=1";
+                    Int32 ledgerPeriods = ALedger.NumberOfAccountingPeriods;
+                    Int32 budgetYear = (APeriodNumber > ledgerPeriods) ? AYear + 1 : AYear;
+                    Int32 budgetPeriod = (APeriodNumber > ledgerPeriods) ? APeriodNumber - ledgerPeriods : APeriodNumber;
+
+                    String YearFilter = String.Format(" AND glm.a_year_i between {0} AND {1}", AYear - 1, budgetYear);
 
                     AAccountRow AccountRow = (AAccountRow)AAccountAccess.LoadByPrimaryKey(ALedger.LedgerNumber, AAccountCode, Transaction).Rows[0];
                     String AccountFilter = GetReportingAccounts(ALedger.LedgerNumber, AAccountCode, "");
@@ -3624,40 +3627,77 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     CostCentreFilter = " AND glm.a_cost_centre_code_c in ('" + CostCentreFilter.Replace(",",
                         "','") + "') ";
 
-                    String subtractOrAddBase = (AccountRow.DebitCreditIndicator) ?
-                                               "CASE WHEN debit=TRUE THEN Base ELSE 0-Base END"
-                                               :
-                                               "CASE WHEN debit=TRUE THEN 0-Base ELSE Base END";
-
-                    String subtractOrAddLastMonth = (APeriodNumber == 1) ?
-                                                    "CASE WHEN Year=" + AYear + " THEN " + (
+                    String subtractOrAddBase =
                         (AccountRow.DebitCreditIndicator) ?
-                        "CASE WHEN debit=TRUE THEN YearStart ELSE 0-YearStart END"
+                        "CASE WHEN debit=TRUE THEN Base ELSE 0-Base END"
                         :
-                        "CASE WHEN debit=TRUE THEN 0-YearStart ELSE YearStart END") +
-                                                    " END"
-                                                    :
-                                                    "CASE WHEN Year=" + AYear + " AND Period=" +
-                                                    (APeriodNumber - 1) + " THEN " + subtractOrAddBase + " END";
+                        "CASE WHEN debit=TRUE THEN 0-Base ELSE Base END";
+
+                    String subtractOrAddLastMonth =
+                        (APeriodNumber == 1) ?
+                        "CASE WHEN Year=" + AYear + " THEN " +
+                        (
+                            (AccountRow.DebitCreditIndicator) ?
+                            "CASE WHEN debit=TRUE THEN YearStart ELSE 0-YearStart END"
+                            :
+                            "CASE WHEN debit=TRUE THEN 0-YearStart ELSE YearStart END"
+                        ) +
+                        " END"
+                        :
+                        "CASE WHEN Year=" + AYear + " AND Period=" +
+                        (APeriodNumber - 1) + " THEN " + subtractOrAddBase + " END";
 
                     String subtractOrAddThisYear = "CASE WHEN Year=" + AYear + " AND Period=" + APeriodNumber + " THEN " + subtractOrAddBase + " END";
-                    String subtractOrAddLastYear = "CASE WHEN Year=" +
-                                                   (AYear - 1) + " AND Period=" + APeriodNumber + " THEN " + subtractOrAddBase + " END";
-                    String subtractOrAddBudget = "CASE WHEN Year=" + AYear + " AND Period=" + APeriodNumber + " THEN " + (
-                        (AccountRow.DebitCreditIndicator) ?
-                        "CASE WHEN debit=TRUE THEN Budget ELSE 0-Budget END"
+
+                    Int32 yearAgoYear = AYear - 1;
+                    Int32 yearAgoMonth = APeriodNumber;
+                    String yearAgoMonthFilter = "";
+
+                    if (APeriodNumber > ledgerPeriods)
+                    {
+                        yearAgoYear = AYear;
+                        yearAgoMonth = APeriodNumber - ledgerPeriods;
+                        yearAgoMonthFilter = yearAgoMonth.ToString() + ",";
+                    }
+
+                    String PeriodFilter =
+                        (APeriodNumber > 1) ?
+                        String.Format(" AND glmp.a_period_number_i IN ({0}{1},{2})", yearAgoMonthFilter, APeriodNumber - 1, APeriodNumber)
                         :
-                        "CASE WHEN debit=TRUE THEN 0-Budget ELSE Budget END") +
-                                                 " END";
+                        " AND glmp.a_period_number_i=1";
+
+                    String subtractOrAddLastYear =
+                        "CASE WHEN Year=" + yearAgoYear + " AND Period=" + yearAgoMonth +
+                        " THEN " + subtractOrAddBase + " END";
+
+                    String subtractOrAddBudget =
+                        "CASE WHEN Year=" + budgetYear + " AND Period=" + budgetPeriod + " THEN " +
+                        (
+                            (AccountRow.DebitCreditIndicator) ?
+                            "CASE WHEN debit=TRUE THEN Budget ELSE 0-Budget END"
+                            :
+                            "CASE WHEN debit=TRUE THEN 0-Budget ELSE Budget END"
+                        ) +
+                        " END";
+
+                    String subtractOrAddYearStart =
+                        (APeriodNumber > ledgerPeriods) ?
+                        "CASE WHEN Year=" + AYear + " AND Period=" + ledgerPeriods +
+                        " THEN " + subtractOrAddBase + " END"
+                        :
+                        "0";
 
                     String Query =
                         "SELECT sum(" + subtractOrAddLastMonth + ") AS SumLastMonthYtd," +
                         " sum(" + subtractOrAddThisYear + ") AS SumYtd," +
                         " sum(" + subtractOrAddLastYear + ") AS SumLastYear," +
-                        " sum(" + subtractOrAddBudget + ") AS SumBudget" +
+                        " sum(" + subtractOrAddBudget + ") AS SumBudget, " +
+                        " sum(" + subtractOrAddYearStart + ") AS SumOpeningBalance" +
+
                         " FROM" +
-                        " (SELECT DISTINCT a_account.a_account_code_c AS AccountCode, glm.a_cost_centre_code_c AS CostCentreCode, a_account.a_debit_credit_indicator_l AS debit,"
-                        +
+                        " (SELECT DISTINCT a_account.a_account_code_c AS AccountCode, " +
+                        " glm.a_cost_centre_code_c AS CostCentreCode, " +
+                        " a_account.a_debit_credit_indicator_l AS debit," +
                         " glm.a_year_i AS Year," +
                         " glm.a_start_balance_base_n AS YearStart," +
                         " glmp.a_period_number_i AS Period," +
@@ -3676,10 +3716,22 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     if (tempTable.Rows.Count > 0)
                     {
-                        Results[0] = Convert.ToDecimal(tempTable.Rows[0]["SumYtd"]) - Convert.ToDecimal(tempTable.Rows[0]["SumLastMonthYtd"]);
-                        Results[1] = Convert.ToDecimal(tempTable.Rows[0]["SumLastYear"]);
-                        Results[2] = Convert.ToDecimal(tempTable.Rows[0]["SumYtd"]);
-                        Results[3] = Convert.ToDecimal(tempTable.Rows[0]["SumBudget"]);
+                        Decimal sumYtd = 0;
+                        Decimal sumLastMonthYtd = 0;
+                        Decimal sumLastYear = 0;
+                        Decimal sumBudget = 0;
+                        Decimal sumOpeningBalance = 0;
+
+                        Decimal.TryParse((tempTable.Rows[0]["SumYtd"]).ToString(), out sumYtd);
+                        Decimal.TryParse((tempTable.Rows[0]["SumLastMonthYtd"]).ToString(), out sumLastMonthYtd);
+                        Decimal.TryParse((tempTable.Rows[0]["SumLastYear"]).ToString(), out sumLastYear);
+                        Decimal.TryParse((tempTable.Rows[0]["SumBudget"]).ToString(), out sumBudget);
+                        Decimal.TryParse((tempTable.Rows[0]["SumOpeningBalance"]).ToString(), out sumOpeningBalance);
+
+                        Results[0] = sumYtd - sumLastMonthYtd;
+                        Results[1] = sumLastYear;
+                        Results[2] = sumYtd - sumOpeningBalance;
+                        Results[3] = sumBudget;
                     }
 
                     /*

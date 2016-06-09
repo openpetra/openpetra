@@ -221,19 +221,17 @@ namespace Ict.Petra.Shared.MPartner
         BANKACCOUNT
     };
 
-    #region TLocationPK
-
     /// <summary>
-    /// class that combines location key and site key
+    /// Class that holds a combination of SiteKey and LocationKey.
     /// </summary>
     [Serializable()]
-    public class TLocationPK : object
+    public class TLocationPK
     {
         private Int64 FSiteKey;
         private Int32 FLocationKey;
 
         /// <summary>
-        /// the site key
+        /// SiteKey.
         /// </summary>
         public Int64 SiteKey
         {
@@ -249,7 +247,7 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// the location key
+        /// LocationKey.
         /// </summary>
         public Int32 LocationKey
         {
@@ -265,7 +263,7 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// default constructor
+        /// Default Constructor.
         /// </summary>
         public TLocationPK() : base()
         {
@@ -274,10 +272,10 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// constructor
+        /// Constructor.
         /// </summary>
-        /// <param name="ASiteKey">site key</param>
-        /// <param name="ALocationKey">location key</param>
+        /// <param name="ASiteKey">SiteKey.</param>
+        /// <param name="ALocationKey">LocationKey.</param>
         public TLocationPK(Int64 ASiteKey, Int32 ALocationKey) : base()
         {
             FSiteKey = ASiteKey;
@@ -285,7 +283,7 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// returns true if objects are the same
+        /// Returns true if objects are the same.
         /// </summary>
         /// <param name="AObject"></param>
         /// <returns></returns>
@@ -301,7 +299,7 @@ namespace Ict.Petra.Shared.MPartner
         }
 
         /// <summary>
-        /// returns a unique hash code for this object
+        /// Returns a unique hash code for this object.
         /// </summary>
         /// <returns></returns>
         public override int GetHashCode()
@@ -309,5 +307,32 @@ namespace Ict.Petra.Shared.MPartner
             return (int)FSiteKey + FLocationKey;
         }
     }
-    #endregion
+
+    /// <summary>
+    /// Static helper class for creating 'deep copies' of two-dimensional <see cref="TLocationPK" /> arrays.
+    /// </summary>
+    public static class TLocationPKCopyHelper
+    {
+        /// <summary>
+        /// Creates a 'deep' copy (i.e. not just copying of references but a real duplication of data)
+        /// of a two-dimensional <see cref="TLocationPK" /> array, optionally exitending the resulting
+        /// two-dimensional array by a number of empty array items.
+        /// </summary>
+        /// <param name="ASource">Two-dimensionaly <see cref="TLocationPK" /> array to copy from.</param>
+        /// <param name="AExtendArrayByNEmptyItems">Specify the number of array items that you want the resulting array to be
+        /// extended by (default = 0).</param>
+        /// <returns>Deep Copy of <paramref name="ASource"/>, optionally extended by a number of empty array items.</returns>
+        public static TLocationPK[, ] CopyTLocationPKArray(TLocationPK[, ] ASource, int AExtendArrayByNEmptyItems = 0)
+        {
+            TLocationPK[, ] ReturnValue = new TLocationPK[(ASource.Length / 2) + AExtendArrayByNEmptyItems, 2];
+
+            for (int Counter = 0; Counter < ASource.Length / 2; Counter++)
+            {
+                ReturnValue[Counter, 0] = ASource[Counter, 0];
+                ReturnValue[Counter, 1] = ASource[Counter, 1];
+            }
+
+            return ReturnValue;
+        }
+    }
 }

@@ -21,6 +21,7 @@ SELECT a_gift.a_date_entered_d AS DateEntered,
         a_cost_centre.a_cost_centre_name_c AS CostCentreDesc,
         GiftDestination.p_partner_short_name_c AS FieldName,
         Recipient.p_partner_short_name_c AS RecipientName,
+        Recipient.p_partner_short_name_loc_c AS RecipientLocalName,
         Recipient.p_partner_key_n AS RecipientKey,
         a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetailDesc
 FROM a_gift_batch, a_gift, a_gift_detail, a_motivation_detail, a_account, a_cost_centre, p_partner AS GiftDestination, p_partner AS Recipient

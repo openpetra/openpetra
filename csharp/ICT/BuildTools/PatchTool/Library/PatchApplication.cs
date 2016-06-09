@@ -34,6 +34,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Petra.Shared;
 
 namespace Ict.Tools.PatchTool.Library
 {
@@ -466,6 +467,12 @@ namespace Ict.Tools.PatchTool.Library
                         }
                     }
                 }
+
+                //
+                // At this point I should arrange to refresh all the cached tables,
+                // since I don't know what may have changed.
+
+//                TCacheableTablesManager.GCacheableTablesManager.MarkAllCachedTableNeedsRefreshing();
             }
         }
 

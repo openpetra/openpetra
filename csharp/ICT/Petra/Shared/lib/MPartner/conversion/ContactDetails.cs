@@ -661,7 +661,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             string UrlString = (string)APartnerLocationDR["p_url_c"];
             string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
             string CountryCode = GetCountryCode(APartnerLocationDR);
-            string CountryCodeOrig = String.Copy(CountryCode);
+            string CountryCodeOrig = (CountryCode != null ? String.Copy(CountryCode) : CountryCode);
 
             ACurrentFieldEmail.Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 

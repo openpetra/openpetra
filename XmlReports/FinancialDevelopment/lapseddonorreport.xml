@@ -215,10 +215,22 @@
 		<levels>		
 			<level name="main">
 				<detail>
-					<lowerLevelReport level="DonorLevel" calculation="Select Donors"></lowerLevelReport>
-				</detail>
-			</level>
-			
+          <lowerLevelReport level="Report"></lowerLevelReport>
+        </detail>
+      </level>
+
+      <level name="Report">
+        <detail>
+          <lowerLevelReport level="DonorLevel" calculation="Select Donors"></lowerLevelReport>
+        </detail>
+        <footer space="above">
+          <field whichfield="left 0" pos="0cm" width="5 cm">
+            <value text="Number of Donors:"/>
+            <value function="CountChildRows({{lineId}})"/>
+          </field>
+        </footer>
+      </level>
+      
 			<level name="DonorLevel" identification="DonorKey">
 				<detail>
 					<switch>
@@ -227,7 +239,7 @@
 						</case>
 					</switch>
 				</detail>
-			</level>
+      </level>
 
 		</levels>
 		
