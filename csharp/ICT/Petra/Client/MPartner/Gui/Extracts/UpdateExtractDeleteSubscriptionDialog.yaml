@@ -21,4 +21,4 @@ RootNode:
             
         lblAction: {Text=Delete this Subscription for all Partners in this Extract?}
 
-        cmbPublicationCode: {Label=Publication Code, List=PublicationInfoList}
+        cmbPublicationCode: {Label=Publication Code, List=PublicationInfoList, Width=350}

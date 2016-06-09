@@ -110,13 +110,66 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+            string title = Catalog.GetString("Purge Extracts");
+
+            int numDays = txtNumberOfDays.NumberValueInt ?? -1;
+
+            if (numDays == -1)
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "Please enter a value for the 'Number of days'"), title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            if ((chkAllUsers.Checked == false) && (cmbUser.GetSelectedString() == string.Empty))
+            {
+                MessageBox.Show(Catalog.GetString("If 'All Users' is not ticked then you must choose a 'User' from the drop-down list."),
+                    title, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            int numCandidates = TRemote.MPartner.Partner.WebConnectors.PurgeExtractsCount(numDays, chkAllUsers.Checked, cmbUser.GetSelectedString());
+
+            if (numCandidates == 0)
+            {
+                MessageBox.Show(Catalog.GetString("There are no Extracts that match the age and user criteria you have set.  Nothing to delete!"),
+                    title, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            else if (numCandidates > 0)
+            {
+                // Note - if we got a value of -1 for numCandidates, that implies an error, so we don't show the message
+
+                string msg;
+
+                if (chkAllUsers.Checked)
+                {
+                    msg = string.Format(Catalog.GetString("You are about to delete all Extracts that were created more than {0} days ago by any user"),
+                        numDays);
+                }
+                else
+                {
+                    msg = string.Format(Catalog.GetString("You are about to delete all Extracts that were created more than {0} days ago by user: "),
+                        numDays);
+                    msg += cmbUser.GetSelectedString();
+                }
+
+                msg += string.Format(Catalog.GetString(".{0}{0}If you proceed {1} extracts will be deleted.  Do you want to continue?"),
+                    Environment.NewLine, numCandidates);
+
+                if (MessageBox.Show(msg, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return;
+                }
+            }
+
             // delete extracts on the server
             if (TRemote.MPartner.Partner.WebConnectors.PurgeExtracts(Convert.ToInt32(txtNumberOfDays.Text),
                     chkAllUsers.Checked,
                     cmbUser.GetSelectedString()))
             {
                 MessageBox.Show(Catalog.GetString("Purging of extract was successful"),
-                    Catalog.GetString("Purge Extracts"),
+                    title,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 

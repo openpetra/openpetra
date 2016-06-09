@@ -392,6 +392,63 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Get the number of extracts that would be deleted if a purge (delete) operation were executed for specific users and older than x days.
+        /// This method can be used to give the client an idea of how many extract swill get deleted if they proceed with an actual purge.
+        /// </summary>
+        /// <param name="ANumberOfDays"></param>
+        /// <param name="AAllUsers"></param>
+        /// <param name="AUserName"></param>
+        /// <returns>returns the number of extracts that would be deleted or -1 if an error occurred.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Int32 PurgeExtractsCount(int ANumberOfDays, Boolean AAllUsers, String AUserName)
+        {
+            int ReturnValue = -1;
+
+            string WhereStmtUser = "";
+            string WhereStmt = "";
+            string CountStmt = "";
+            DateTime PurgeDate = DateTime.Today.AddDays(0 - ANumberOfDays);
+
+            if (!AAllUsers)
+            {
+                WhereStmtUser = " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                                " = '" + AUserName + "' ";
+            }
+
+            WhereStmt = " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName() +
+                        " < ?" +
+                        " AND ((pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
+                        " IS NULL) OR (" +
+                        " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
+                        " < ?))" +
+                        WhereStmtUser;
+
+            CountStmt = "SELECT count(*) FROM pub_" + MExtractMasterTable.GetTableDBName() +
+                        " WHERE " + WhereStmt;
+
+            OdbcParameter[] parameterArray = new OdbcParameter[2];
+            parameterArray[0] = new OdbcParameter("Date", OdbcType.Date);
+            parameterArray[0].Value = ((object)PurgeDate);
+            parameterArray[1] = new OdbcParameter("Date", OdbcType.Date);
+            parameterArray[1].Value = ((object)PurgeDate);
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    object o = DBAccess.GDBAccessObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
+
+                    if (o != null)
+                    {
+                        ReturnValue = Convert.ToInt32(o);
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// purge (delete) extracts for specific users and older than x days
         /// </summary>
         /// <param name="ANumberOfDays"></param>

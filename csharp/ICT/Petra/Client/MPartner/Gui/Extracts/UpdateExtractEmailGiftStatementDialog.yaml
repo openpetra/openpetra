@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormType: dialog
     Template: window
-    WindowWidth: 650
-    WindowHeight: 150
+    WindowWidth: 750
+    WindowHeight: 210
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
@@ -14,12 +14,17 @@ RootNode:
         pnlDialogContent:
             Controls:
                 Row0: [lblExtractNameAndCreator]
-                Row1: [lblAction]
-                Row2: [chkEmailGiftStatement]
+                Row1: [lblAction1]
+                Row2: [lblAction2]
+                Row3: [lblAction3]
+                Row4: [chkEmailGiftStatement]
                 
         lblExtractNameAndCreator: {Height=30, Align=Top, Stretch=horizontally}
             
-        lblAction: {Text=Change the 'Send Gift Statement by Email' flag to the value below for all partners in this Extract?}
+        lblAction1: {Text=Change the 'Send Gift Statement by Email' flag to the value below for all partners in this Extract?}
+        lblAction2: {Text=- If you tick the box and click OK then all Partners in the Extract will receive gift statements by Email.}
+        lblAction3: {Text=- If you leave the box un-ticked and click OK then none of the Partners in the Extract will receive gift statements by Email.}
 
         chkEmailGiftStatement: {CheckBoxAttachedLabel=right}
             Label: Email Gift Statement
+            Padding: 25,2,2,2
