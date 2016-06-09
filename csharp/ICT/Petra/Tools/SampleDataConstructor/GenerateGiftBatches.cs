@@ -159,7 +159,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                     GiftsPerDate[dateForGift].Add(RecordNode);
 
                     dateForGift = dateForGift.AddMonths(monthStep);
-                } while (monthStep > 0 && dateForGift.Year <= startdate.Year + 3);
+                } while (monthStep > 0 && dateForGift.Year <= DateTime.Now.Year);
 
                 RecordNode = RecordNode.NextSibling;
             }
