@@ -274,7 +274,7 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_COUNTY = "County";
 
         /// <summary>CountryCode</summary>
-        public const String PARTNERIMPORT_COUNTRYCODE = "CountryCode";
+        public const String PARTNERIMPORT_COUNTRYCODE = "Country";
 
         /// <summary>Aquisition</summary>
         public const String PARTNERIMPORT_AQUISITION = "Aquisition";

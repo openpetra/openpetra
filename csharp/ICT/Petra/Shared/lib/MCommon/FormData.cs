@@ -1418,7 +1418,7 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
         ///
-        public String PreferedName {
+        public String PreferredName {
             get; set;
         }
         ///
@@ -1707,8 +1707,18 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Recipient: local name or (if local name is empty) Name (ShortName: "LastName, FirstName, Title")
+        public String RecipientLocalOrName {
+            get; set;
+        }
+
         /// Recipient name ("FirstName LastName")
         public String RecipFirstLastName {
+            get; set;
+        }
+
+        /// Recipient: Local name or (if local name is empty) Name ("FirstName LastName")
+        public String RecipLocalOrFirstLastName {
             get; set;
         }
 
@@ -1717,8 +1727,18 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Recipient: Local name or (if local name is empty) Name (or motivation if recipient key is 0)  (version "LastName, FirstName, Title" for Recipient Name)
+        public String RecipientLocalOrNameOrMotivation {
+            get; set;
+        }
+
         /// Recipient name (or motivation if recipient key is 0)  (version "FirstName LastName" for Recipient Name)
         public String RecipFirstLastNameOrMot {
+            get; set;
+        }
+
+        /// Recipient: Local name or (if local name is empty) Name (or motivation if recipient key is 0)  (version "FirstName LastName" for Recipient Name)
+        public String RecipLocalOrFirstLastNameOrMot {
             get; set;
         }
 

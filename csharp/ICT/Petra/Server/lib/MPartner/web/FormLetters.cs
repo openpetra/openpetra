@@ -366,7 +366,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 PersonFormData.Title = PersonRow.Title;
                                 PersonFormData.Decorations = PersonRow.Decorations;
                                 PersonFormData.MiddleName = PersonRow.MiddleName1;
-                                PersonFormData.PreferedName = PersonRow.PreferedName;
+                                PersonFormData.PreferredName = PersonRow.PreferedName;
                                 PersonFormData.AcademicTitle = PersonRow.AcademicTitle;
                                 PersonFormData.DateOfBirth = PersonRow.DateOfBirth;
                                 PersonFormData.Gender = PersonRow.Gender;
@@ -458,44 +458,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                                 // we need this for later in case we retrieve family members
                                 FamilyKey = PersonRow.FamilyKey;
-
-                                // retrieve Special Needs information
-                                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSpecialNeeds))
-                                {
-                                    PmSpecialNeedTable SpecialNeedTable;
-                                    PmSpecialNeedRow SpecialNeedRow;
-                                    SpecialNeedTable = PmSpecialNeedAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
-
-                                    if (SpecialNeedTable.Count > 0)
-                                    {
-                                        SpecialNeedRow = (PmSpecialNeedRow)SpecialNeedTable.Rows[0];
-                                        PersonFormData.DietaryNeeds = SpecialNeedRow.DietaryComment;
-                                        PersonFormData.MedicalNeeds = SpecialNeedRow.MedicalComment;
-                                        PersonFormData.OtherNeeds = SpecialNeedRow.OtherSpecialNeed;
-                                        PersonFormData.Vegetarian = SpecialNeedRow.VegetarianFlag;
-                                    }
-                                }
-
-                                // retrieve Personal Data information
-                                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.ePersonalData))
-                                {
-                                    PmPersonalDataTable PersonalDataTable;
-                                    PmPersonalDataRow PersonalDataRow;
-                                    PersonalDataTable = PmPersonalDataAccess.LoadViaPPerson(APartnerKey, ReadTransaction);
-
-                                    if (PersonalDataTable.Count > 0)
-                                    {
-                                        PersonalDataRow = (PmPersonalDataRow)PersonalDataTable.Rows[0];
-
-                                        if (!PersonalDataRow.IsBelieverSinceYearNull()
-                                            && (PersonalDataRow.BelieverSinceYear != 0))
-                                        {
-                                            PersonFormData.YearsBeliever = (DateTime.Today.Year - PersonalDataRow.BelieverSinceYear).ToString();
-                                        }
-
-                                        PersonFormData.CommentBeliever = PersonalDataRow.BelieverSinceComment;
-                                    }
-                                }
                             }
                         }
 
