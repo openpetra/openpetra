@@ -1625,10 +1625,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         ///
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="PartnerCostCentreTbl"></param>
+        /// <param name="APartnerCostCentreTbl"></param>
         [RequireModulePermission("FINANCE-1")]
         public static void SaveCostCentrePartnerLinks(
-            Int32 ALedgerNumber, DataTable PartnerCostCentreTbl)
+            Int32 ALedgerNumber, DataTable APartnerCostCentreTbl)
         {
             #region Validate Arguments
 
@@ -1638,7 +1638,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                             "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
-            else if (PartnerCostCentreTbl == null)
+            else if (APartnerCostCentreTbl == null)
             {
                 throw new EFinanceSystemDataObjectNullOrEmptyException(String.Format(Catalog.GetString(
                             "Function:{0} - The Partner Cost Centre table cannot be accessed!"),
@@ -1661,28 +1661,39 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         ACostCentreTable CostCentreTbl = ACostCentreAccess.LoadViaALedger(ALedgerNumber, Transaction);
                         CostCentreTbl.DefaultView.Sort = "a_cost_centre_code_c";
 
-                        foreach (DataRow Row in PartnerCostCentreTbl.Rows)
-                        {
-                            String RowCCCode = Convert.ToString(Row["IsLinked"]);
+                        PPartnerTypeTable PartnerTypeCCToDeleteTbl = null;
 
-                            if (RowCCCode != "0")   // This should be in the LinksTbl - if it's not, I'll add it.
+                        //DataView partnersWithCCType = new DataView(APartnerCostCentreTbl);
+                        //partnersWithCCType.
+
+                        foreach (DataRow Row in APartnerCostCentreTbl.Rows)
+                        {
+                            string rowCCCode = string.Empty;
+                            bool isDeletedRow = (Row.RowState == DataRowState.Deleted);
+
+                            if (!isDeletedRow)
+                            {
+                                rowCCCode = Convert.ToString(Row["IsLinked"]);
+                            }
+
+                            if (!isDeletedRow && (rowCCCode != "0"))   // This should be in the LinksTbl - if it's not, I'll add it.
                             {                       // { AND I probably need to create a CostCentre Row too! }
-                                Int32 CostCentreRowIdx = CostCentreTbl.DefaultView.Find(RowCCCode);
+                                Int32 CostCentreRowIdx = CostCentreTbl.DefaultView.Find(rowCCCode);
 
                                 if (CostCentreRowIdx < 0)       // There's no such Cost Centre - I need to create it now.
                                 {
-                                    ACostCentreRow NewCostCentreRow = CostCentreTbl.NewRowTyped();
-                                    NewCostCentreRow.LedgerNumber = ALedgerNumber;
-                                    NewCostCentreRow.CostCentreCode = RowCCCode;
-                                    NewCostCentreRow.CostCentreToReportTo = Convert.ToString(Row["ReportsTo"]);
-                                    NewCostCentreRow.CostCentreName = Convert.ToString(Row["ShortName"]);
-                                    NewCostCentreRow.PostingCostCentreFlag = true;
-                                    NewCostCentreRow.CostCentreActiveFlag = true;
-                                    CostCentreTbl.Rows.Add(NewCostCentreRow);
+                                    ACostCentreRow newCostCentreRow = CostCentreTbl.NewRowTyped();
+                                    newCostCentreRow.LedgerNumber = ALedgerNumber;
+                                    newCostCentreRow.CostCentreCode = rowCCCode;
+                                    newCostCentreRow.CostCentreToReportTo = Convert.ToString(Row["ReportsTo"]);
+                                    newCostCentreRow.CostCentreName = Convert.ToString(Row["ShortName"]);
+                                    newCostCentreRow.PostingCostCentreFlag = true;
+                                    newCostCentreRow.CostCentreActiveFlag = true;
+                                    CostCentreTbl.Rows.Add(newCostCentreRow);
                                 }
                                 else    // The cost Centre was found, but the match above was case-insensitive.
                                 {       // So I'm going to use the actual name from the table, otherwise it might break the DB Constraint.
-                                    RowCCCode = CostCentreTbl.DefaultView[CostCentreRowIdx].Row["a_cost_centre_code_c"].ToString();
+                                    rowCCCode = CostCentreTbl.DefaultView[CostCentreRowIdx].Row["a_cost_centre_code_c"].ToString();
                                 }
 
                                 Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
@@ -1693,29 +1704,56 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     LinksRow.LedgerNumber = ALedgerNumber;
                                     LinksRow.PartnerKey = Convert.ToInt64(Row["PartnerKey"]);
                                     LinksRow.IltProcessingCentre = 4000000; // This is the ICH ledger number, but apparently anyone cares about it!
-                                    LinksRow.CostCentreCode = RowCCCode;
+                                    LinksRow.CostCentreCode = rowCCCode;
                                     LinksTbl.Rows.Add(LinksRow);
                                 }
                                 else    // If this partner is already linked to a cost centre, it's possible the user has changed the code!
                                 {
                                     AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
-                                    LinksRow.CostCentreCode = RowCCCode;
+                                    LinksRow.CostCentreCode = rowCCCode;
                                 }
                             }
                             else                // This should not be in the LinksTbl - if it is, I'll delete it.
                             {
-                                Int32 RowIdx = LinksTbl.DefaultView.Find(Row["PartnerKey"]);
+                                Int64 partnerKey = (Int64)Row["PartnerKey", isDeletedRow ? DataRowVersion.Original : DataRowVersion.Default];
+                                Int32 RowIdx = LinksTbl.DefaultView.Find(partnerKey);
 
                                 if (RowIdx >= 0)
                                 {
                                     AValidLedgerNumberRow LinksRow = (AValidLedgerNumberRow)LinksTbl.DefaultView[RowIdx].Row;
                                     LinksRow.Delete();
                                 }
+
+                                if (isDeletedRow)
+                                {
+                                    if (PartnerTypeCCToDeleteTbl == null)
+                                    {
+                                        PartnerTypeCCToDeleteTbl = new PPartnerTypeTable();
+                                    }
+
+                                    //Add each row that needs to be deleted
+                                    PartnerTypeCCToDeleteTbl.Merge(PPartnerTypeAccess.LoadByPrimaryKey(partnerKey,
+                                            MPartnerConstants.PARTNERTYPE_COSTCENTRE, Transaction));
+                                }
                             }
                         }
 
                         ACostCentreAccess.SubmitChanges(CostCentreTbl, Transaction);
                         AValidLedgerNumberAccess.SubmitChanges(LinksTbl, Transaction);
+
+                        //Process any partner type CC records that need to be deleted.
+                        if ((PartnerTypeCCToDeleteTbl != null) && (PartnerTypeCCToDeleteTbl.Count > 0))
+                        {
+                            //Make sure the data view does not change in size during iteration
+                            PartnerTypeCCToDeleteTbl.DefaultView.RowStateFilter = DataViewRowState.OriginalRows;
+
+                            foreach (DataRowView drv in PartnerTypeCCToDeleteTbl.DefaultView)
+                            {
+                                drv.Row.Delete();
+                            }
+
+                            PPartnerTypeAccess.SubmitChanges(PartnerTypeCCToDeleteTbl, Transaction);
+                        }
 
                         SubmissionOK = true;
 

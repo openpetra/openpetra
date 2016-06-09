@@ -34,5 +34,7 @@ RootNode:
             Controls: 
                 Row0: [btnLink]
                 Row1: [btnUnlink]
+                Row2: [btnRemove]
         btnLink: {Width=70, ActionClick=LinkCostCentre, Enabled=false;}
         btnUnlink: {Width=70, ActionClick=UnlinkCostCentre, Enabled=false;}
+        btnRemove: {Width=70, ActionClick=RemoveCostCentreType, Enabled=false;}
