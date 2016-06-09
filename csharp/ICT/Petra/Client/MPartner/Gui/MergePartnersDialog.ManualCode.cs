@@ -39,6 +39,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
@@ -249,13 +250,17 @@ namespace Ict.Petra.Client.MPartner.Gui
         // starts the merge process
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
+            // Title for all message boxes
+            string mergePartnersTitle = Catalog.GetString("Merge Partners");
+            string mergeCancelledText = Catalog.GetString("Merge cancelled.");
+
             FFromPartnerKey = Convert.ToInt64(txtMergeFrom.Text);
             FToPartnerKey = Convert.ToInt64(txtMergeTo.Text);
 
             if (CheckPartnersCanBeMerged()
                 && (MessageBox.Show(Catalog.GetString("WARNING: A Partner Merge operation cannot be undone and the From-Partner will be no longer " +
                             "accessible after the Partner Merge operation!") + "\n\n" + Catalog.GetString("Are you sure you want to continue?"),
-                        Catalog.GetString("Merge Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes))
+                        mergePartnersTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes))
             {
                 bool[] Categories = new bool[25];
 
@@ -268,26 +273,28 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FLocationKeys = null;
                 FContactDetails = null;
                 FMainBankingDetailsKey = -1;
+                TFrmExtendedMessageBox msgBox = null;
+                string msg = string.Empty;
                 bool DifferentFamilies = false;
 
                 // open a dialog to select which From Partner's addresses should be merged
                 if (GetSelectedAddresses() == false)
                 {
-                    MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                    MessageBox.Show(mergeCancelledText, mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
                 // open a dialog to select which From Partner's contact details should be merged
                 if (GetSelectedContactDetails() == false)
                 {
-                    MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                    MessageBox.Show(mergeCancelledText, mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
                 // open a dialog to select which bank account should be set to MAIN (if necessary)
                 if (GetMainBankAccount() == false)
                 {
-                    MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                    MessageBox.Show(mergeCancelledText, mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -296,7 +303,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                      || (FFromPartnerClass == TPartnerClass.PERSON))
                     && (GiftDestinationToMerge(out Categories[0]) == false))
                 {
-                    MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                    MessageBox.Show(mergeCancelledText, mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                     return;
                 }
 
@@ -305,14 +312,37 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 using (TProgressDialog dialog = new TProgressDialog(t))
                 {
-                    if ((dialog.ShowDialog() == DialogResult.Cancel) && (WebConnectorResult == true))
+                    if ((dialog.ShowDialog() == DialogResult.Cancel) && (FWebConnectorResult == false))
                     {
-                        MessageBox.Show(Catalog.GetString("Merge cancelled."));
+                        MessageBox.Show(mergeCancelledText, mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
-                    else if (!WebConnectorResult)   // if merge is unsuccessful
+                    else if (FWebConnectorResult == false)   // if merge is unsuccessful
                     {
-                        MessageBox.Show(Catalog.GetString("Merge failed. Please check the Server.log file on the server."));
+                        msg = Catalog.GetString("The merge operation failed");
+
+                        // Anything to display from the verification results?
+                        if (FVerificationResultsOfMerge.Count > 0)
+                        {
+                            for (int i = 0; i < FVerificationResultsOfMerge.Count; i++)
+                            {
+                                if (FVerificationResultsOfMerge[i].ResultSeverity == TResultSeverity.Resv_Critical)
+                                {
+                                    msg += Environment.NewLine;
+                                    msg += FVerificationResultsOfMerge[i].ResultText;
+                                }
+                            }
+
+                            msg += Environment.NewLine;
+                            msg += Catalog.GetString("More information is available in the Server.log file on the server at the date and time shown.");
+                            msg += Environment.NewLine;
+                            msg += Catalog.GetString("You can copy this message to the clipboard by clicking the button below.");
+                        }
+
+                        msgBox = new TFrmExtendedMessageBox(this);
+                        msgBox.ShowDialog(msg, mergePartnersTitle, string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbOK, TFrmExtendedMessageBox.TIcon.embiError);
+
                         dialog.Close();
                         return;
                     }
@@ -323,16 +353,36 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBox.Show(String.Format(Catalog.GetString("Partners were in different families.")) + "\n\n" +
                         Catalog.GetString("FAMILY relations of the From Partner are not taken over to the To Partner!") + "\n\n" +
                         Catalog.GetString("Please check the family relations of the To Partner after completion."),
-                        Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
 
-                MessageBox.Show(String.Format(Catalog.GetString("Merge of Partner {0} ({1}) into {2} ({3}) complete."),
-                        txtMergeFrom.LabelText, FFromPartnerKey, txtMergeTo.LabelText, FToPartnerKey) +
-                    "\n\n" + Catalog.GetString("If necessary, edit the merged Partner to correct any information that may not have been " +
-                        "merged and correct information that may have been overwritten.") + "\n\n" +
-                    Catalog.GetString("Tip: You can use the 'Work with Last Partner' command in the Partner module and the " +
-                        "'Work with Last Person' command in the Personnel module to view and edit the merged Partner."),
-                    Catalog.GetString("Merge Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                msg = String.Format(Catalog.GetString("Merge of Partner {0} ({1}) into {2} ({3}) completed successfully."),
+                    txtMergeFrom.LabelText, FFromPartnerKey, txtMergeTo.LabelText, FToPartnerKey);
+
+                if (FVerificationResultsOfMerge.Count > 0)
+                {
+                    msg += Environment.NewLine;
+
+                    for (int i = 0; i < FVerificationResultsOfMerge.Count; i++)
+                    {
+                        msg += Environment.NewLine;
+                        msg += FVerificationResultsOfMerge[i].ResultText;
+                    }
+
+                    msg += Environment.NewLine;
+                }
+
+                msg += Environment.NewLine;
+                msg += Catalog.GetString("If necessary, edit the merged Partner to correct any information that may not have been " +
+                    "merged and correct information that may have been overwritten.") + Environment.NewLine + Environment.NewLine;
+                msg += Catalog.GetString("Tip: You can use the 'Work with Last Partner' command in the Partner module and the " +
+                    "'Work with Last Person' command in the Personnel module to view and edit the merged Partner.") + Environment.NewLine +
+                       Environment.NewLine;
+                msg += Catalog.GetString("You can copy this message to the clipboard by clicking the button below.");
+
+                msgBox = new TFrmExtendedMessageBox(this);
+                msgBox.ShowDialog(msg, mergePartnersTitle, string.Empty, TFrmExtendedMessageBox.TButtons.embbOK,
+                    TFrmExtendedMessageBox.TIcon.embiInformation);
 
                 this.DialogResult = System.Windows.Forms.DialogResult.OK;
                 this.Close();
@@ -477,12 +527,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             return true;
         }
 
-        private bool WebConnectorResult = true;
+        private bool FWebConnectorResult = true;
+        private TVerificationResultCollection FVerificationResultsOfMerge = null;
 
         private void MergeTwoPartners(bool[] ACategories, ref bool ADifferentFamilies)
         {
-            WebConnectorResult = TRemote.MPartner.Partner.WebConnectors.MergeTwoPartners(FFromPartnerKey, FToPartnerKey, FFromPartnerClass,
-                FToPartnerClass, FSiteKeys, FLocationKeys, FContactDetails, FMainBankingDetailsKey, ACategories, ref ADifferentFamilies);
+            FVerificationResultsOfMerge = new TVerificationResultCollection();
+            FWebConnectorResult = TRemote.MPartner.Partner.WebConnectors.MergeTwoPartners(FFromPartnerKey, FToPartnerKey, FFromPartnerClass,
+                FToPartnerClass, FSiteKeys, FLocationKeys, FContactDetails, FMainBankingDetailsKey, ACategories,
+                ref ADifferentFamilies, ref FVerificationResultsOfMerge);
         }
 
         // check if the two partners can be merged and display any error/warning messages

@@ -23,6 +23,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using Ict.Common;
 
 namespace Ict.Petra.Shared.MPartner
 {
@@ -412,5 +413,158 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary> Acquisition code for partner </summary>
         public const String ACQUISITIONCODE_APPLICANT = "APL";
+
+        /// <summary> Cannot merge these classes </summary>
+        public const string PARTNERMERGE_SELECTED_CLASSES_CANNOT_BE_MERGED = "Selected Partner Classes cannot be merged!";
+
+        #region readonly Fields   (Used for 'constants' whose value can be translated so that they are meaningful to the users in their language)
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GIFT_DESTINATION = Catalog.GetString("{0} change made to Gift Destinations");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GIFT_DESTINATION_PLURAL = Catalog.GetString("{0} changes made to Gift Destinations");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GIFT_INFO = Catalog.GetString("{0} change made to Gift Donor and/or Recipient");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GIFT_INFO_PLURAL = Catalog.GetString("{0} changes made to Gift Donor and/or Recipient");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_ACCOUNTS_PAYABLE = Catalog.GetString("{0} change made to Accounts Payable details");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_ACCOUNTS_PAYABLE_PLURAL = Catalog.GetString("{0} changes made to Accounts Payable details");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GIFT_MOTIVATIONS = Catalog.GetString("{0} change made to Gift Motivations");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GIFT_MOTIVATIONS_PLURAL = Catalog.GetString("{0} changes made to Gift Motivations");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_EXTRACTS = Catalog.GetString("{0} change made to Extracts");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_EXTRACTS_PLURAL = Catalog.GetString("{0} changes made to Extracts");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GREETINGS = Catalog.GetString("{0} change made to Greetings");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GREETINGS_PLURAL = Catalog.GetString("{0} changes made to Greetings");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_CONTACT_LOG_AND_REMINDERS = Catalog.GetString("{0} change made to Contact Log and Reminders");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_CONTACT_LOG_AND_REMINDERS_PLURAL = Catalog.GetString(
+            "{0} changes made to Contact Log and Reminders");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_INTERESTS = Catalog.GetString("{0} change made to Interests");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_INTERESTS_PLURAL = Catalog.GetString("{0} changes made to Interests");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_ADDRESSES = Catalog.GetString("{0} change made to Addresses");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_ADDRESSES_PLURAL = Catalog.GetString("{0} changes made to Addresses");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_PARTNER_TYPES = Catalog.GetString("{0} change made to Partner Types");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_PARTNER_TYPES_PLURAL = Catalog.GetString("{0} changes made to Partner Types");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_SUBSCRIPTIONS = Catalog.GetString("{0} change made to Subscriptions");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_SUBSCRIPTIONS_PLURAL = Catalog.GetString("{0} changes made to Subscriptions");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_APPLICATIONS = Catalog.GetString("{0} change made to Applications");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_APPLICATIONS_PLURAL = Catalog.GetString("{0} changes made to Applications");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_PERSONNEL_DATA = Catalog.GetString("{0} change made to Personnel Data");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_PERSONNEL_DATA_PLURAL = Catalog.GetString("{0} changes made to Personnel Data");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_JOBS = Catalog.GetString("{0} change made to Jobs");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_JOBS_PLURAL = Catalog.GetString("{0} changes made to Jobs");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_PARTNER_CLASS = Catalog.GetString("{0} change made to Partner Class ");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_PARTNER_CLASS_PLURAL = Catalog.GetString("{0} changes made to Partner Class ");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_RELATIONSHIPS = Catalog.GetString("{0} change made to Relationships");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_RELATIONSHIPS_PLURAL = Catalog.GetString("{0} changes made to Relationships");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_BASIC_PARTNER_INFO = Catalog.GetString("{0} change made to Basic Partner Info");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_BASIC_PARTNER_INFO_PLURAL = Catalog.GetString("{0} changes made to Basic Partner Info");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_VENUE = Catalog.GetString("{0} change made to Venue - Buildings, Rooms and Allocations");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_VENUE_PLURAL = Catalog.GetString("{0} changes made to Venue - Buildings, Rooms and Allocations");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_BANK_ACCOUNTS = Catalog.GetString("{0} change made to Bank Accounts");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_BANK_ACCOUNTS_PLURAL = Catalog.GetString("{0} changes made to Bank Accounts");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_TAX_PERCENTAGE = Catalog.GetString("{0} change made to Tax Deductibility Percentage");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_TAX_PERCENTAGE_PLURAL = Catalog.GetString("{0} changes made to Tax Deductibility Percentage");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_LINK_TO_COST_CENTRE = Catalog.GetString("{0} change made to Link to Cost Centre");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_LINK_TO_COST_CENTRE_PLURAL = Catalog.GetString("{0} changes made to Link to Cost Centre");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GRAPHICS = Catalog.GetString("{0} change made to Graphics");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_GRAPHICS_PLURAL = Catalog.GetString("{0} changes made to Graphics");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_CONTACT_DETAILS = Catalog.GetString("{0} change made to Partner Contact Details");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_CONTACT_DETAILS_PLURAL = Catalog.GetString("{0} changes made to Partner Contact Details");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_MERGE_SUCCESSFUL = Catalog.GetString("Merge Partners completed successfully.");
+
+        /// <summary>Partner Merge Topic</summary>
+        public static readonly string PARTNERMERGE_MERGE_CANCELLED = Catalog.GetString("Cancelled by user");
+
+
+        #endregion
     }
 }

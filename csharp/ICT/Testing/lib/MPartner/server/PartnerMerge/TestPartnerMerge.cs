@@ -209,8 +209,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Unit Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -365,8 +366,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -434,8 +436,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -503,8 +506,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -573,8 +577,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -652,8 +657,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -722,8 +728,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.UNIT, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.UNIT, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -791,8 +798,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Church Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -917,8 +925,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the new Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1045,8 +1054,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the new Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1171,8 +1181,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1241,8 +1252,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1320,8 +1332,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1389,8 +1402,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.CHURCH, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.CHURCH, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1458,8 +1472,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Venue Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1583,8 +1598,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1652,8 +1668,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1721,8 +1738,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1791,8 +1809,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1870,8 +1889,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -1940,8 +1960,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.VENUE, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.VENUE, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2009,8 +2030,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Family Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2136,8 +2158,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2263,8 +2286,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2389,8 +2413,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2459,8 +2484,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2538,8 +2564,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2607,8 +2634,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.FAMILY, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.FAMILY, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -2685,8 +2713,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Person Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKey, LocationKey, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.PERSON,
+                TPartnerClass.PERSON,
+                SiteKey,
+                LocationKey,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
@@ -2839,8 +2877,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Person Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKey, LocationKey, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.PERSON,
+                TPartnerClass.PERSON,
+                SiteKey,
+                LocationKey,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
@@ -3014,8 +3062,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Organisation Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.ORGANISATION,
+                TPartnerClass.ORGANISATION,
+                null,
+                null,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
@@ -3137,8 +3195,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.ORGANISATION, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3265,8 +3324,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.ORGANISATION, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3393,8 +3453,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.ORGANISATION, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3520,8 +3581,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.ORGANISATION, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3591,8 +3653,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.ORGANISATION, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3671,8 +3734,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.ORGANISATION, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.ORGANISATION, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3742,8 +3806,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Bank Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.BANK, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -3881,8 +3946,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.ORGANISATION, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -4009,8 +4075,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.CHURCH, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -4078,8 +4145,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.VENUE, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -4147,8 +4215,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.FAMILY, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -4217,8 +4286,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.PERSON, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -4296,8 +4366,9 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Partners!
             //
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
             bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.BANK, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies);
+                TPartnerClass.BANK, TPartnerClass.UNIT, null, null, null, -1, FCategories, ref DifferentFamilies, ref verificationResults);
 
             //
             // Assert
@@ -4371,8 +4442,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Person Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKeys, LocationKeys, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.PERSON,
+                TPartnerClass.PERSON,
+                SiteKeys,
+                LocationKeys,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
@@ -4533,8 +4614,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Person Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKeys, LocationKeys, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.PERSON,
+                TPartnerClass.PERSON,
+                SiteKeys,
+                LocationKeys,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
@@ -4696,8 +4787,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Person Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKeys, LocationKeys, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.PERSON,
+                TPartnerClass.PERSON,
+                SiteKeys,
+                LocationKeys,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
@@ -4853,8 +4954,18 @@ namespace Tests.MPartner.Server.PartnerMerge
             //
             // Act: Merge the two Person Partners!
             //
-            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey, ToPartnerKey,
-                TPartnerClass.PERSON, TPartnerClass.PERSON, SiteKeys, LocationKeys, null, -1, FCategories, ref DifferentFamilies);
+            TVerificationResultCollection verificationResults = new TVerificationResultCollection();
+            bool result = TMergePartnersWebConnector.MergeTwoPartners(FromPartnerKey,
+                ToPartnerKey,
+                TPartnerClass.PERSON,
+                TPartnerClass.PERSON,
+                SiteKeys,
+                LocationKeys,
+                null,
+                -1,
+                FCategories,
+                ref DifferentFamilies,
+                ref verificationResults);
 
             //
             // Assert
