@@ -197,11 +197,11 @@
       <!-- Table is used for p_location add, p_location change and p_partner_location Promotion screens: will hold one record per possible
               screen and change combination and is sent both by the PetraServer and the PetraClient -->
 
+      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
+      <!-- DB table key field -->
       <Field sqltable="p_location" sqlfield="p_site_key_n"/>
       <!-- DB table key field -->
       <Field sqltable="p_location" sqlfield="p_location_key_i"/>
-      <!-- DB table key field -->
-      <Field sqltable="p_partner" sqlfield="p_partner_key_n"/>
       <!-- DB table key field -->
       <CustomField name="LocationChange" type="bool"/>
       <!-- determines for which screen the data is: Location Change -->
@@ -215,6 +215,7 @@
       <!-- Processing Status of the record: only set by the PetraServer -->
       <CustomField name="AnswerProcessedServerSide" type="bool"/>
       <!-- Processing status of the record: only set by the PetraServer -->
+      <PrimaryKey thisFields="PartnerKey,SiteKey,LocationKey"/>
     </CustomTable>
   </DataSet>
 

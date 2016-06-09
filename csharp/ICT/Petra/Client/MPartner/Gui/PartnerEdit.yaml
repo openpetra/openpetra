@@ -143,20 +143,20 @@ RootNode:
             mniMaintainGiftReceipting:
 
         mniView:  {Label=Vie&w}
-            mniViewUpperScreenPart: {Label=&Upper Screen Part}
-                mniViewUpperScreenPartExpanded:
-                mniViewUpperScreenPartCollapsed:            
+#            mniViewUpperScreenPart: {Label=&Upper Screen Part}
+#                mniViewUpperScreenPartExpanded:
+#                mniViewUpperScreenPartCollapsed:
             mniViewPartnerData:
             mniViewPersonnelData:
-            mniViewFinanceData: {Enabled=false}
+#            mniViewFinanceData: {Enabled=false}
         
         mniHelp:
             mniSeparator:
             mniHelpVideoTutorial:
             
     Toolbar:
-        tbbNewPartner: {Label=&New Partner, Action=actNewPartner}
+        tbbNewPartner: {Label=New Partner, Action=actNewPartner}
         tbbSeparator:
-        tbbViewPartnerData: {Action=actViewPartnerData}
-        tbbViewPersonnelData: {Action=actViewPersonnelData}
-        tbbViewFinanceData: {Action=actViewFinanceData, Enabled=false}
+        tbbViewPartnerData: {Label=Partner Data, Action=actViewPartnerData}
+        tbbViewPersonnelData: {Label=Personnel Data, Action=actViewPersonnelData}
+#        tbbViewFinanceData: {Label=Finance Data, Action=actViewFinanceData, Enabled=false}

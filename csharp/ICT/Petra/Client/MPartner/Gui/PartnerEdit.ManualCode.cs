@@ -2494,10 +2494,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             tbbViewPartnerData.Checked = true;
             tbbViewPersonnelData.Checked = false;
-            tbbViewFinanceData.Checked = false;
+//            tbbViewFinanceData.Checked = false;
             mniViewPartnerData.Checked = true;
             mniViewPersonnelData.Checked = false;
-            mniViewFinanceData.Checked = false;
+//            mniViewFinanceData.Checked = false;
 
             ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPartner);
         }
@@ -2521,10 +2521,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                 {
                     tbbViewPersonnelData.Checked = true;
                     tbbViewPartnerData.Checked = false;
-                    tbbViewFinanceData.Checked = false;
+//                    tbbViewFinanceData.Checked = false;
                     mniViewPersonnelData.Checked = true;
                     mniViewPartnerData.Checked = false;
-                    mniViewFinanceData.Checked = false;
+//                    mniViewFinanceData.Checked = false;
 
                     ucoLowerPart.ShowChildUserControl(TPartnerEditScreenLogic.TModuleTabGroupEnum.mtgPersonnel);
                 }
