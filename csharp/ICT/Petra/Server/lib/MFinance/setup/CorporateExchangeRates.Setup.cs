@@ -26,6 +26,7 @@ using System.Data;
 using System.Globalization;
 
 using Ict.Common;
+using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -142,8 +143,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 {
                     // get accounting period for when the exchange rate is effective (if it exists)
                     string Query = "SELECT * FROM a_accounting_period" +
-                                   " WHERE a_accounting_period.a_period_end_date_d >= '" + ADateEffectiveFrom + "'" +
-                                   " AND a_accounting_period.a_period_start_date_d <= '" + ADateEffectiveFrom + "'";
+                                   " WHERE a_accounting_period.a_period_end_date_d >= '" + DataUtilities.DateToSQLString(ADateEffectiveFrom) + "'" +
+                                   " AND a_accounting_period.a_period_start_date_d <= '" + DataUtilities.DateToSQLString(ADateEffectiveFrom) + "'";
 
                     AAccountingPeriodTable AccountingPeriodTable = new AAccountingPeriodTable();
                     DBAccess.GDBAccessObj.SelectDT(AccountingPeriodTable, Query, ReadTransaction);
@@ -159,8 +160,10 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                     // search for batches for the found accounting period
                     string Query2 = "SELECT CASE WHEN EXISTS (" +
                                     "SELECT * FROM a_batch, a_journal, a_ledger" +
-                                    " WHERE a_batch.a_date_effective_d <= '" + AccountingPeriodRow.PeriodEndDate + "'" +
-                                    " AND a_batch.a_date_effective_d >= '" + AccountingPeriodRow.PeriodStartDate + "'" +
+                                    " WHERE a_batch.a_date_effective_d <= '" + DataUtilities.DateToSQLString(
+                        AccountingPeriodRow.PeriodEndDate) + "'" +
+                                    " AND a_batch.a_date_effective_d >= '" + DataUtilities.DateToSQLString(
+                        AccountingPeriodRow.PeriodStartDate) + "'" +
                                     " AND a_journal.a_ledger_number_i = a_batch.a_ledger_number_i" +
                                     " AND a_journal.a_batch_number_i = a_batch.a_batch_number_i" +
                                     " AND a_ledger.a_ledger_number_i = a_batch.a_ledger_number_i" +

@@ -790,34 +790,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out AVerificationResult);
         }
 
-        private string ValidateCorporateExchangeRate(GLBatchTDS ASubmitDS)
-        {
-            List <Int32>CheckedBatches = new List <int>();
-            Int32 BatchWithNoExchangeRate = -1;
-            string ErrorMessage = string.Empty;
-
-            WarnAboutMissingIntlExchangeRate = false;
-
-            if (ASubmitDS.ABatch != null)
-            {
-                foreach (ABatchRow BatchRow in ASubmitDS.ABatch.Rows)
-                {
-                    // if batch hasn't been deleted or already checked
-                    if ((BatchRow.RowState != DataRowState.Deleted) && !CheckedBatches.Contains(BatchRow.BatchNumber))
-                    {
-                        if (GetInternationalCurrencyExchangeRate(BatchRow.DateEffective, out ErrorMessage) == 0)
-                        {
-                            return ErrorMessage;
-                        }
-
-                        BatchWithNoExchangeRate = BatchRow.BatchNumber;
-                    }
-                }
-            }
-
-            return string.Empty;
-        }
-
         private void FPetraUtilsObject_DataSaved(object sender, TDataSavedEventArgs e)
         {
             if (e.Success && FLatestSaveIncludedForex)

@@ -75,6 +75,21 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
+        /// Gets the SQL friendly text for a date formatted as "yyyy-MM-dd"
+        /// </summary>
+        /// <param name="ADateTime">The DataView to search</param>
+        /// <returns>string in format "yyy-MM-dd"</returns>
+        public static string DateToSQLString(DateTime ? ADateTime)
+        {
+            if (ADateTime.HasValue)
+            {
+                return ADateTime.Value.ToString("yyyy-MM-dd");
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets the 0-based index of a row in a DataTable by specifying a DataRowView
         /// </summary>
         /// <param name="ADataTable">The DataTable to search</param>

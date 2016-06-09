@@ -190,6 +190,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// warn the user that corporate exchange rate is missing
+        /// </summary>
+        public Boolean WarnAboutMissingIntlExchangeRate
+        {
+            set
+            {
+                FWarnAboutMissingIntlExchangeRate = value;
+            }
+        }
+
+        /// <summary>
         /// show the actual data of the database after server has changed data
         /// </summary>
         public void RefreshAll(bool AShowStatusDialogOnLoad = true, bool AIsMessageRefresh = false)
@@ -601,6 +612,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         {
                             this.Cursor = Cursors.Default;
                         }
+
+                        //Warn if missing International Exchange Rate
+                        bool isTransactionInIntlCurrency = false;
+                        WarnAboutMissingIntlExchangeRate = true;
+                        InternationalCurrencyExchangeRate(SelectedRow, out isTransactionInIntlCurrency);
                     }
 
                     ucoTransactions.FocusGrid();
