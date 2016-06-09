@@ -54,7 +54,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AExtractName"></param>
         public void SetExtractName(String AExtractName)
         {
-            lblExtractName.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Font = new System.Drawing.Font(lblExtractNameAndCreator.Font.FontFamily.Name, 10, System.Drawing.FontStyle.Bold);
         }
 
         private void InitializeManualCode()
@@ -74,6 +75,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             ucoContactLog.MainDS = FMainDS;
             ucoContactLog.SpecialInitUserControl();
             ucoContactLog.ShowDetails(ContactLogRow);
+            ucoContactLog.Contactor = UserInfo.GUserInfo.UserID;
             FPetraUtilsObject.HasChanges = false;
         }
 
@@ -139,6 +141,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             AMessage = String.Empty;
             return -1;
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            ucoContactLog.RunOnceOnParentActivationManual();
         }
     }
 }

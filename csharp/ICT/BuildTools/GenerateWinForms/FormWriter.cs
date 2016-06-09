@@ -176,10 +176,152 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
         private Dictionary <string, Dictionary <string, string>>FControlProperties = new Dictionary <string, Dictionary <string, string>>();
 
-        private void WriteAllControls()
+        private void WriteAllControls(SortedList <string, TTable>ADataSetTables)
         {
+            int numRequiredFields = 0;
+            TTable table = null;
+            TTable masterTable = null;
+            TTable detailTable = null;
+
+            if (FCodeStorage.HasAttribute("MasterTable"))
+            {
+                if ((ADataSetTables != null) && ADataSetTables.ContainsKey(FCodeStorage.GetAttribute("MasterTable")))
+                {
+                    masterTable = ADataSetTables[FCodeStorage.GetAttribute("MasterTable")];
+                }
+                else
+                {
+                    masterTable = TDataBinding.FPetraXMLStore.GetTable(FCodeStorage.GetAttribute("MasterTable"));
+                }
+            }
+
+            if (FCodeStorage.HasAttribute("DetailTable"))
+            {
+                if ((ADataSetTables != null) && ADataSetTables.ContainsKey(FCodeStorage.GetAttribute("DetailTable")))
+                {
+                    detailTable = ADataSetTables[FCodeStorage.GetAttribute("DetailTable")];
+                }
+                else
+                {
+                    detailTable = TDataBinding.FPetraXMLStore.GetTable(FCodeStorage.GetAttribute("DetailTable"));
+                }
+            }
+
             foreach (string controlName in FControlProperties.Keys)
             {
+                bool useAsteriskNotColon = false;
+
+                if (controlName.StartsWith("lbl") && (CodeStorage.HasAttribute("MasterTable") || CodeStorage.HasAttribute("DetailTable")))
+                {
+                    TTableField field = null;
+                    TControlDef ctrl = FCodeStorage.GetControl(controlName);
+                    TControlDef ctrlParent = FCodeStorage.GetControl(ctrl.parentName);
+
+                    string dataField = string.Empty;
+
+                    if (ctrlParent.HasAttribute("DataField"))
+                    {
+                        dataField = ctrlParent.GetAttribute("DataField");
+
+                        if (dataField.Contains("."))
+                        {
+                            dataField = dataField.Substring(dataField.IndexOf('.') + 1);
+                        }
+                    }
+                    else
+                    {
+                        dataField = controlName.Substring(3);
+
+                        if (dataField.StartsWith("Detail"))
+                        {
+                            dataField = dataField.Substring(6);
+                        }
+                    }
+
+                    if (masterTable != null)
+                    {
+                        string prefix = masterTable.strVariableNameInDataset ?? string.Empty;
+
+                        foreach (TTableField tf in masterTable.grpTableField)
+                        {
+                            if ((dataField == prefix + tf.strNameDotNet) || (dataField == tf.strNameDotNet))
+                            {
+                                field = tf;
+                                table = masterTable;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (detailTable != null)
+                    {
+                        string prefix = detailTable.strVariableNameInDataset ?? string.Empty;
+
+                        foreach (TTableField tf in detailTable.grpTableField)
+                        {
+                            if ((dataField == prefix + tf.strNameDotNet) || (dataField == tf.strNameDotNet))
+                            {
+                                field = tf;
+                                table = detailTable;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (field != null)
+                    {
+                        if (field.bPartOfPrimKey)
+                        {
+                            useAsteriskNotColon = true;
+                        }
+
+                        if (field.bNotNull && (useAsteriskNotColon == false))
+                        {
+                            string fieldType = field.strType.ToLower();
+
+                            if ((fieldType == "varchar") || (fieldType == "text") || (fieldType == "string"))
+                            {
+                                // A text field that is non-NULL can still be an empty string unless it is a foreign key to something
+                                if (table.grpConstraint != null)
+                                {
+                                    foreach (TConstraint c in table.grpConstraint)
+                                    {
+                                        if ((c.strType == "foreignkey") && (c.strThisFields.Contains(field.strName)))
+                                        {
+                                            // Empty String is not allowed because it isn't allowed in the foreign table
+                                            useAsteriskNotColon = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else if ((fieldType != "boolean") && (fieldType != "bit"))
+                            {
+                                // A non-text field that is not NULL, so must have a value.  This includes dates and numbers.
+                                useAsteriskNotColon = true;
+                            }
+                        }
+                    }
+                }
+
+                if (controlName.StartsWith("lbl"))
+                {
+                    // If an attribute for RequiredField is associated with a labelled control it trumps our 'guess'.
+                    TControlDef ctrlDefLabel = FCodeStorage.GetControl(controlName);
+                    TControlDef ctrlDefParent = FCodeStorage.GetControl(ctrlDefLabel.parentName);
+
+                    if (ctrlDefParent.HasAttribute("RequiredField"))
+                    {
+                        useAsteriskNotColon = ctrlDefParent.GetAttribute("RequiredField") == "true";
+                    }
+
+                    // If the parent control is ReadOnly then we never should use an asterisk
+                    if (ctrlDefParent.HasAttribute("ReadOnly") && useAsteriskNotColon)
+                    {
+                        useAsteriskNotColon = ctrlDefParent.GetAttribute("ReadOnly") != "true";
+                    }
+                }
+
                 FTemplate.AddToCodelet("CONTROLINITIALISATION",
                     Environment.NewLine + "//" + Environment.NewLine +
                     "// " + controlName + Environment.NewLine + "//" + Environment.NewLine);
@@ -231,6 +373,30 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         {
                             // do not write AutoSize
                         }
+                        else if ((propertyName == "Text") && useAsteriskNotColon)
+                        {
+                            // A label that uses an asterisk rather than a colon - so we need to change CATALOGI18N, which has already been set
+                            if (FTemplate.FCodelets.ContainsKey("CATALOGI18N"))
+                            {
+                                System.Text.StringBuilder sb = FTemplate.FCodelets["CATALOGI18N"];
+                                int posStart = sb.IndexOf("this." + controlName + ".Text =");
+
+                                if (posStart >= 0)
+                                {
+                                    int posEOL = sb.IndexOf(Environment.NewLine, posStart);
+
+                                    if (posEOL == -1)
+                                    {
+                                        posEOL = sb.Length;
+                                    }
+
+                                    sb.Replace(':', '*', posStart, posEOL - posStart);
+                                }
+                            }
+
+                            // Now replace our attribute for the Designer file
+                            attributes += line.Replace(':', '*');
+                        }
                         else
                         {
                             attributes += line;
@@ -241,6 +407,16 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.AddToCodelet("CONTROLINITIALISATION", attributes);
                 FTemplate.AddToCodelet("CONTROLINITIALISATION", events);
                 FTemplate.AddToCodelet("CONTROLINITIALISATION", addControls);
+
+                if (useAsteriskNotColon)
+                {
+                    numRequiredFields++;
+                }
+            }
+
+            if (numRequiredFields > 0)
+            {
+                TLogging.Log(string.Format("Info: {0} - Number of required fields is {1}", FCodeStorage.FClassName, numRequiredFields.ToString()));
             }
         }
 
@@ -1646,7 +1822,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
             }
 
-            WriteAllControls();
+            WriteAllControls(DataSetTables);
 
             FinishUpInitialisingControls();
 

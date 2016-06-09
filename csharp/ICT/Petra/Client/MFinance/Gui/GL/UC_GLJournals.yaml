@@ -74,7 +74,7 @@ RootNode:
                 Row3: [dtpDetailDateEffective]
                 Row4: [cmbDetailTransactionCurrency, btnGetSetExchangeRate]
                 Row5: [txtDetailExchangeRateToBase]
-        txtDetailJournalDescription: {Label=Journal Description, Width=350}
+        txtDetailJournalDescription: {Label=Journal Description, Width=350, RequiredField=true}
         # SubSystemCode: the user can only select GL, but the system can generate eg. AP journals or GR journals
         cmbDetailSubSystemCode: {Label=Sub System, ReadOnly=true}
         # transaction type depends on the ledger and the selected sub system; see BeforeShowDetailsManual

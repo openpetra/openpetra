@@ -142,12 +142,18 @@ namespace GenerateI18N
                 if (designerLine.Contains("Text = \""))
                 {
                     bool trailingColon = false;
+                    bool trailingAsterisk = false;
                     string content = designerLine.Substring(
                         designerLine.IndexOf("\"") + 1, designerLine.LastIndexOf("\"") - designerLine.IndexOf("\"") - 1);
 
                     if (content.EndsWith(":"))
                     {
                         trailingColon = true;
+                        content = content.Substring(0, content.Length - 1);
+                    }
+                    else if (content.EndsWith("*"))
+                    {
+                        trailingAsterisk = true;
                         content = content.Substring(0, content.Length - 1);
                     }
 
@@ -158,7 +164,8 @@ namespace GenerateI18N
                         {
                             writer.WriteLine(identation +
                                 designerLine.Substring(0, designerLine.IndexOf(" = ")).Trim() +
-                                " = Catalog.GetString(\"" + content + "\")" + (trailingColon ? " + \":\"" : string.Empty) + ";");
+                                " = Catalog.GetString(\"" + content + "\")" +
+                                (trailingColon ? " + \":\"" : trailingAsterisk ? " + \"*\"" : string.Empty) + ";");
 
                             ADbHelpTranslationWriter.WriteLine("Catalog.GetString(\"" + content + "\");");
                         }

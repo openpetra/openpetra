@@ -81,6 +81,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FRequireApprovalBeforePosting = FMainForm.RequireApprovalBeforePosting;
             Control rbtForApproval = FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval");
             rbtForApproval.Enabled = FRequireApprovalBeforePosting;
+
+            txtFilteredBalance.CurrencyCode = FMainForm.LedgerCurrency;
+            txtInvoiceBalance.CurrencyCode = FMainForm.LedgerCurrency;
+            txtTaggedBalance.CurrencyCode = FMainForm.LedgerCurrency;
+
+            lblExcludedItems.Text = string.Format(lblExcludedItems.Text, FMainForm.LedgerCurrency);
         }
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -121,9 +127,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFrmPetraUtils utils = FMainForm.GetPetraUtilsObject();
             utils.SetStatusBarText(grdInvoices, Catalog.GetString("Double-click an invoice to see full details"));
-            utils.SetStatusBarText(btnApproveTagged, Catalog.GetString("Click to approve all the tagged items"));
-            utils.SetStatusBarText(btnPayTagged, Catalog.GetString("Click to pay or part pay all the tagged items"));
-            utils.SetStatusBarText(btnPostTagged, Catalog.GetString("Click to post all the tagged items"));
             utils.SetStatusBarText(btnReverseTagged, Catalog.GetString("Click to reverse the tagged items that have already been posted"));
             utils.SetStatusBarText(btnTagAll, Catalog.GetString("Click to tag all the displayed items"));
             utils.SetStatusBarText(btnUntagAll, Catalog.GetString("Click to un-tag all the displayed items"));
@@ -521,14 +524,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void UpdateDisplayedBalance()
         {
             DevAge.ComponentModel.BoundDataView dv = (DevAge.ComponentModel.BoundDataView)grdInvoices.DataSource;
-            txtFilteredBalance.Text = UpdateBalance(dv.DataView).ToString("n2") + " " + FMainForm.LedgerCurrency;
+            txtFilteredBalance.NumberValueDecimal = UpdateBalance(dv.DataView);
         }
 
         private void UpdateInvoiceBalance()
         {
             DataView dv = new DataView(FInvoiceTable);
 
-            txtInvoiceBalance.Text = UpdateBalance(dv).ToString("n2") + " " + FMainForm.LedgerCurrency;
+            txtInvoiceBalance.NumberValueDecimal = UpdateBalance(dv);
         }
 
         private Decimal UpdateBalance(DataView ADataView)
@@ -587,8 +590,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            txtTaggedBalance.Text = TotalSelected.ToString("n2") + " " + FMainForm.LedgerCurrency;
-            txtTaggedCount.Text = TaggedItemCount.ToString();
+            txtTaggedBalance.NumberValueDecimal = TotalSelected;
+            txtTaggedCount.NumberValueInt = TaggedItemCount;
         }
 
         private void grdResult_Click(object sender, EventArgs e)
@@ -668,42 +671,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
-        ///// <summary>
-        ///// Tag all postable rows
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //public void TagAllPostable(object sender, EventArgs e)
-        //{
-        //    foreach (DataRow Row in grdInvoices.PagedDataTable.Rows)
-        //    {
-        //        if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + Row["DocumentStatus"].ToString()) < 0)
-        //        {
-        //            Row["Selected"] = true;
-        //        }
-        //    }
-
-        //    RefreshSumTagged(null, null);
-        //}
-
-        ///// <summary>
-        ///// Tag all payable rows
-        ///// </summary>
-        ///// <param name="sender"></param>
-        ///// <param name="e"></param>
-        //public void TagAllPayable(object sender, EventArgs e)
-        //{
-        //    foreach (DataRow Row in grdInvoices.PagedDataTable.Rows)
-        //    {
-        //        if ("|POSTED|PARTPAID|".IndexOf("|" + Row["DocumentStatus"].ToString()) >= 0)
-        //        {
-        //            Row["Selected"] = true;
-        //        }
-        //    }
-
-        //    RefreshSumTagged(null, null);
-        //}
-
         /// <summary>
         /// Untag all rows
         /// </summary>
@@ -740,6 +707,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             RefreshSumTagged(null, null);
+        }
+
+        private void RunTagAction(object sender, EventArgs e)
+        {
+            if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked)
+            {
+                ApproveAllTagged(sender, e);
+            }
+            else if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPosting")).Checked)
+            {
+                PostAllTagged(sender, e);
+            }
+            else if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForPaying")).Checked)
+            {
+                PayAllTagged(sender, e);
+            }
         }
 
         /// <summary>
@@ -1096,10 +1079,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ActionEnabledEvent(null, new ActionEventArgs("actTagAll", canTag));
                 ActionEnabledEvent(null, new ActionEventArgs("actUntagAll", canTag));
                 ActionEnabledEvent(null, new ActionEventArgs("actOpenSelectedInvoice", gotRows));
-                ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
-                ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
+                ActionEnabledEvent(null, new ActionEventArgs("actRunTagAction", canTag));
                 ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
-                ActionEnabledEvent(null, new ActionEventArgs("actPayTagged", canPay));
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
 
                 FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actOpenSelected", gotRows));
@@ -1111,12 +1092,38 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 grdInvoices.Columns[0].Visible = canTag;
 
+                btnTagAll.Visible = canTag;
+                btnUntagAll.Visible = canTag;
+                btnRunTagAction.Visible = canTag;
+                btnDeleteTagged.Visible = canTag;
+                btnReverseTagged.Visible = canTag;
+
                 if (canTag)
                 {
                     grdInvoices.ShowCell(new SourceGrid.Position(grdInvoices.Selection.ActivePosition.Row, 0), true);
                 }
 
                 UpdateDisplayedBalance();
+
+                if (canApprove)
+                {
+                    btnRunTagAction.Text = "Appro&ve Tagged";
+                    FPetraUtilsObject.SetStatusBarText(btnRunTagAction, Catalog.GetString("Click to approve all the tagged items"));
+                }
+                else if (canPost)
+                {
+                    btnRunTagAction.Text = "&Post Tagged";
+                    FPetraUtilsObject.SetStatusBarText(btnRunTagAction, Catalog.GetString("Click to post all the tagged items"));
+                }
+                else if (canPay)
+                {
+                    btnRunTagAction.Text = "Pa&y Tagged";
+                    FPetraUtilsObject.SetStatusBarText(btnRunTagAction, Catalog.GetString("Click to pay or part pay all the tagged items"));
+                }
+                else
+                {
+                    btnRunTagAction.Text = "Pa&y Tagged";
+                }
             }
         }
 

@@ -15,8 +15,8 @@ RootNode:
             Controls:
                 Row0: [lblIntroduction]
                 Row1: [txtNumberOfDays]
-                Row2: [cmbUser]
-                Row3: [chkAllUsers]
+                Row2: [chkAllUsers]
+                Row3: [cmbUser]
                 
         lblIntroduction: {Label=Purge Extracts that are}
         txtNumberOfDays: {Label=Days old, Format=Integer}

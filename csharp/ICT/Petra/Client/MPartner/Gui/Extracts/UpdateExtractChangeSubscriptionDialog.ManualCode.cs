@@ -61,7 +61,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public void SetExtractName(String AExtractName)
         {
             ExtractName = AExtractName;
-            lblExtractName.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Font = new System.Drawing.Font(lblExtractNameAndCreator.Font.FontFamily.Name, 10, System.Drawing.FontStyle.Bold);
         }
 
         private void InitializeManualCode()
@@ -622,7 +623,9 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             TValidationControlsData ValidationControlsData;
             TValidationControlsData ValidationControlsData2;
             TVerificationResult VerificationResult = null;
-            bool NoClearingOfVerificationResult = false;
+
+            string reasonEndedErrorSuffix = Catalog.GetString("  Please un-check the 'Reason Ended' box or set an appropriate 'Subscription Status'.");
+            string dateEndedErrorSuffix = Catalog.GetString("  Please un-check the 'Date Ended' box or set an appropriate 'Subscription Status'.");
 
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
@@ -648,8 +651,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             if (FPetraUtilsObject.ValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 if ((!ARow.IsSubscriptionStatusNull())
-                    && ((ARow.SubscriptionStatus == "CANCELLED")
-                        || (ARow.SubscriptionStatus == "EXPIRED")))
+                    && ((ARow.SubscriptionStatus == MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED)
+                        || (ARow.SubscriptionStatus == MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED)))
                 {
                     if (ARow.IsReasonSubsCancelledCodeNull()
                         || (ARow.ReasonSubsCancelledCode == String.Empty))
@@ -657,72 +660,41 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDMANDATORY_WHEN_EXPIRED)),
                             ValidationColumn, ValidationControlsData.ValidationControl);
+                        VerificationResult.OverrideResultText(VerificationResult.ResultText +
+                            Catalog.GetString("  Please check the 'Reason Ended' box and choose one of the available reasons."));
                     }
                     else if (ARow.IsDateCancelledNull())
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDMANDATORY_WHEN_EXPIRED)),
                             ValidationColumn, ValidationControlsData.ValidationControl);
+                        VerificationResult.OverrideResultText(VerificationResult.ResultText +
+                            Catalog.GetString("  Please check the 'Date Ended' box and enter a relevant date."));
                     }
                 }
                 else
                 {
                     // if 'SubscriptionStatus' is not CANCELLED or EXPIRED then 'Reason Ended' and 'End Date' must NOT be set
-                    if (chkChangeReasonSubsCancelledCode.Checked)
-                    {
-                        if ((ARow.IsReasonSubsCancelledCodeNull())
-                            || (ARow.ReasonSubsCancelledCode == String.Empty))
-                        {
-                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
-                        }
-                    }
-                    else if (!chkChangeReasonSubsCancelledCode.Checked)
-                    {
-                        if (ARow.SubscriptionStatus != String.Empty)
-                        {
-                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
-
-                            VerificationResult.OverrideResultText(Catalog.GetString(
-                                    "Reason Ended must be cleared when a Subscription is made active."));
-
-                            NoClearingOfVerificationResult = true;
-                        }
-                    }
-
+                    // Note: - if Subscription Status was not checked then it will have a value 'PERMANENT'
+                    //   So this code runs and checks that reason and date are not set when subscription status is not checked
+                    // Note also: the server code takes care of ensuring that Reason and Date are forced to NULL when
+                    //   Subscription Status is not CANCELLED or EXPIRED.
+                    //   This means that the user does not have to explicitly set them to NULL in the GUI.
+                    // So all we have to do here is make sure the user did not explicitly set them when they should be un-set
                     if ((!ARow.IsReasonSubsCancelledCodeNull())
                         && (ARow.ReasonSubsCancelledCode != String.Empty))
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_REASONENDEDSET_WHEN_ACTIVE)),
                             ValidationColumn, ValidationControlsData.ValidationControl);
+                        VerificationResult.OverrideResultText(VerificationResult.ResultText + reasonEndedErrorSuffix);
                     }
                     else if (!ARow.IsDateCancelledNull())
                     {
                         VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
                                 ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE)),
                             ValidationColumn, ValidationControlsData.ValidationControl);
-                    }
-                    else if (!chkChangeDateCancelled.Checked)
-                    {
-                        if (ARow.SubscriptionStatus != String.Empty)
-                        {
-                            VerificationResult = new TScreenVerificationResult(new TVerificationResult(this,
-                                    ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_SUBSCRIPTION_DATEENDEDSET_WHEN_ACTIVE)),
-                                ValidationColumn, ValidationControlsData.ValidationControl);
-
-                            VerificationResult.OverrideResultText(Catalog.GetString("Date Ended must be cleared when a Subscription is made active."));
-                        }
-                    }
-                    else
-                    {
-                        if (!NoClearingOfVerificationResult)
-                        {
-                            VerificationResult = null;
-                        }
+                        VerificationResult.OverrideResultText(VerificationResult.ResultText + dateEndedErrorSuffix);
                     }
                 }
 

@@ -30,7 +30,7 @@ RootNode:
             Controls: [pnlFamily, pnlPerson, pnlChurch, pnlOrganisation, pnlUnit, pnlBank, pnlVenue]
             Margin: 0
             Height: 22
-            Width: 540
+            Width: 560
         pnlClassSpecificDetails:
             Controls: [pnlFamily2ndLine, pnlPerson2ndLine, pnlOther2ndLine]
             Margin: 0
@@ -137,7 +137,7 @@ RootNode:
 
         txtFamilyFirstName:
             NoLabel: true
-            Width: 160
+            Width: 172
             DataField: PFamily.FirstName            
         txtFamilyFamilyName:
             NoLabel: true
@@ -181,7 +181,7 @@ RootNode:
         txtPersonMiddleName:
             NoLabel: true
             DataField: PPerson.MiddleName1
-            Width: 30
+            Width: 50
         txtPersonFamilyName:
             NoLabel: true
             DataField: PPerson.FamilyName

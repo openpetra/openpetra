@@ -392,6 +392,63 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Get the number of extracts that would be deleted if a purge (delete) operation were executed for specific users and older than x days.
+        /// This method can be used to give the client an idea of how many extract swill get deleted if they proceed with an actual purge.
+        /// </summary>
+        /// <param name="ANumberOfDays"></param>
+        /// <param name="AAllUsers"></param>
+        /// <param name="AUserName"></param>
+        /// <returns>returns the number of extracts that would be deleted or -1 if an error occurred.</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Int32 PurgeExtractsCount(int ANumberOfDays, Boolean AAllUsers, String AUserName)
+        {
+            int ReturnValue = -1;
+
+            string WhereStmtUser = "";
+            string WhereStmt = "";
+            string CountStmt = "";
+            DateTime PurgeDate = DateTime.Today.AddDays(0 - ANumberOfDays);
+
+            if (!AAllUsers)
+            {
+                WhereStmtUser = " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                                " = '" + AUserName + "' ";
+            }
+
+            WhereStmt = " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateCreatedDBName() +
+                        " < ?" +
+                        " AND ((pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
+                        " IS NULL) OR (" +
+                        " pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetDateModifiedDBName() +
+                        " < ?))" +
+                        WhereStmtUser;
+
+            CountStmt = "SELECT count(*) FROM pub_" + MExtractMasterTable.GetTableDBName() +
+                        " WHERE " + WhereStmt;
+
+            OdbcParameter[] parameterArray = new OdbcParameter[2];
+            parameterArray[0] = new OdbcParameter("Date", OdbcType.Date);
+            parameterArray[0].Value = ((object)PurgeDate);
+            parameterArray[1] = new OdbcParameter("Date", OdbcType.Date);
+            parameterArray[1].Value = ((object)PurgeDate);
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref Transaction,
+                delegate
+                {
+                    object o = DBAccess.GDBAccessObj.ExecuteScalar(CountStmt, Transaction, parameterArray);
+
+                    if (o != null)
+                    {
+                        ReturnValue = Convert.ToInt32(o);
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// purge (delete) extracts for specific users and older than x days
         /// </summary>
         /// <param name="ANumberOfDays"></param>
@@ -755,12 +812,35 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                                 Transaction);
                             SubscriptionRow = (PSubscriptionRow)SubscriptionTable.Rows[0];
 
-                            // change field contents
+                            // ----- change field contents
+
+                            // Start with Cancelled/date and then subscription status because they are linked...
+                            if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsCancelledCodeDBName()))
+                            {
+                                SubscriptionRow.ReasonSubsCancelledCode = SubscriptionRowTemplate.ReasonSubsCancelledCode;
+                            }
+
+                            if (AFieldsToChange.Contains(PSubscriptionTable.GetDateCancelledDBName()))
+                            {
+                                SubscriptionRow.DateCancelled = SubscriptionRowTemplate.DateCancelled;
+                            }
+
                             if (AFieldsToChange.Contains(PSubscriptionTable.GetSubscriptionStatusDBName()))
                             {
                                 SubscriptionRow.SubscriptionStatus = SubscriptionRowTemplate.SubscriptionStatus;
+
+                                // It is the server's job to ensure that these dependencies are null if status is not Expired or Cancelled
+                                // The CLIENT has the responsibility to ensure that these are SET when the status IS Expired or Cancelled.
+                                // But setting these here means that the client does not have to explicitly include these in AFieldsToChange.
+                                if ((SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_EXPIRED)
+                                    && (SubscriptionRow.SubscriptionStatus != MPartnerConstants.SUBSCRIPTIONS_STATUS_CANCELLED))
+                                {
+                                    SubscriptionRow.SetReasonSubsCancelledCodeNull();
+                                    SubscriptionRow.SetDateCancelledNull();
+                                }
                             }
 
+                            // Now do the remaining fields in the list
                             if (AFieldsToChange.Contains(PSubscriptionTable.GetGratisSubscriptionDBName()))
                             {
                                 SubscriptionRow.GratisSubscription = SubscriptionRowTemplate.GratisSubscription;
@@ -779,11 +859,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsGivenCodeDBName()))
                             {
                                 SubscriptionRow.ReasonSubsGivenCode = SubscriptionRowTemplate.ReasonSubsGivenCode;
-                            }
-
-                            if (AFieldsToChange.Contains(PSubscriptionTable.GetReasonSubsCancelledCodeDBName()))
-                            {
-                                SubscriptionRow.ReasonSubsCancelledCode = SubscriptionRowTemplate.ReasonSubsCancelledCode;
                             }
 
                             if (AFieldsToChange.Contains(PSubscriptionTable.GetGiftFromKeyDBName()))
@@ -809,11 +884,6 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             if (AFieldsToChange.Contains(PSubscriptionTable.GetDateNoticeSentDBName()))
                             {
                                 SubscriptionRow.DateNoticeSent = SubscriptionRowTemplate.DateNoticeSent;
-                            }
-
-                            if (AFieldsToChange.Contains(PSubscriptionTable.GetDateCancelledDBName()))
-                            {
-                                SubscriptionRow.DateCancelled = SubscriptionRowTemplate.DateCancelled;
                             }
 
                             if (AFieldsToChange.Contains(PSubscriptionTable.GetNumberIssuesReceivedDBName()))
@@ -953,11 +1023,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AExtractId"></param>
         /// <param name="ANoSolicitations"></param>
+        /// <param name="ARowsAffected"></param>
         /// <returns>true if update was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean UpdateSolicitationFlag(int AExtractId, Boolean ANoSolicitations)
+        public static Boolean UpdateSolicitationFlag(int AExtractId, Boolean ANoSolicitations, out int ARowsAffected)
         {
             Boolean ResultValue = true;
+            int nRowsAffected = 0;
             String NoSolicitationsValue;
 
             if (ANoSolicitations)
@@ -985,13 +1057,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " SET " + PPartnerTable.GetNoSolicitationsDBName() + " = " + NoSolicitationsValue +
                               " WHERE " + PPartnerTable.GetPartnerKeyDBName() +
                               " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
-                              " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
+                              " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
+                              " AND " + PPartnerTable.GetNoSolicitationsDBName() + " <> " + NoSolicitationsValue;
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
 
+            ARowsAffected = nRowsAffected;
             return ResultValue;
         }
 
@@ -1000,11 +1074,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AExtractId"></param>
         /// <param name="AEmailGiftStatement"></param>
+        /// <param name="ARowsAffected"></param>
         /// <returns>true if update was successful</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean UpdateEmailGiftStatement(int AExtractId, Boolean AEmailGiftStatement)
+        public static Boolean UpdateEmailGiftStatement(int AExtractId, Boolean AEmailGiftStatement, out int ARowsAffected)
         {
             Boolean ResultValue = true;
+            int nRowsAffected = 0;
             String EmailGiftStatementValue;
 
             if (AEmailGiftStatement)
@@ -1032,13 +1108,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                               " SET " + PPartnerTable.GetEmailGiftStatementDBName() + " = " + EmailGiftStatementValue +
                               " WHERE " + PPartnerTable.GetPartnerKeyDBName() +
                               " IN (SELECT " + MExtractTable.GetPartnerKeyDBName() + " FROM pub_" + MExtractTable.GetTableDBName() +
-                              " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")";
+                              " WHERE " + MExtractTable.GetExtractIdDBName() + " = " + AExtractId + ")" +
+                              " AND " + PPartnerTable.GetEmailGiftStatementDBName() + " <> " + EmailGiftStatementValue;
 
-                    DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
+                    nRowsAffected = DBAccess.GDBAccessObj.ExecuteNonQuery(SqlStmt, Transaction);
 
                     SubmissionOK = true;
                 });
 
+            ARowsAffected = nRowsAffected;
             return ResultValue;
         }
 

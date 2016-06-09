@@ -204,7 +204,7 @@ namespace Ict.Petra.Server.MReporting
             if (calcResult.SavePrecalculation(masterRow, rptLevel.strCondition, strId))
             {
                 // only write log if something was actually saved.
-                TLogging.Log("preparing " + strId, TLoggingType.ToStatusBar);
+                TLogging.Log("Preparing " + strId, TLoggingType.ToStatusBar);
             }
 
             if (Parameters.Get("CancelReportCalculation").ToBool() == true)
@@ -222,7 +222,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (Parameters.Exists("param_sortby_columns"))
                 {
-                    TLogging.Log("sorting...", TLoggingType.ToStatusBar);
+                    TLogging.Log("Sorting...", TLoggingType.ToStatusBar);
 
                     Boolean SortMultipleLevels = false;
 
@@ -236,7 +236,13 @@ namespace Ict.Petra.Server.MReporting
                     calcResult.GetResults().Sort(Parameters.Get("param_sortby_columns").ToString(), SortMultipleLevels);
                 }
 
-                TLogging.Log("finished", TLoggingType.ToStatusBar);
+                TLogging.Log("Finished", TLoggingType.ToStatusBar);
+            }
+
+            //// Reset the row display parameter ready for the next level
+            if (Parameters.Exists("DONTDISPLAYROW") && Parameters.Get("DONTDISPLAYROW").ToBool())
+            {
+                Parameters.Add("DONTDISPLAYROW", false);
             }
 
             return thisRunningCode;
@@ -479,7 +485,7 @@ namespace Ict.Petra.Server.MReporting
 
                 if (rptCalculation == null)
                 {
-                    TLogging.Log("calculation not found:" + rptLowerLevel.strCalculation);
+                    TLogging.Log("Calculation not found:" + rptLowerLevel.strCalculation);
                     return;
                 }
 
@@ -1219,7 +1225,7 @@ namespace Ict.Petra.Server.MReporting
                 }
                 catch (Exception e)
                 {
-                    TLogging.Log("problem while calling " + ANamespaceClassAndMethodName);
+                    TLogging.Log("Problem while calling " + ANamespaceClassAndMethodName);
                     TLogging.Log(e.ToString());
                     return null;
                 }
@@ -1398,7 +1404,7 @@ namespace Ict.Petra.Server.MReporting
 
             if (rptCalculation == null)
             {
-                TLogging.Log("calculation " + calculation + " could not be found.");
+                TLogging.Log("Calculation " + calculation + " could not be found.");
                 return ReturnValue;
             }
 

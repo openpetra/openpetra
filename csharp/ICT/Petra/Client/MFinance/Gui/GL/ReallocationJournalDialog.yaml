@@ -113,6 +113,7 @@ RootNode:
             Tooltip: Enter a description of the transaction.
         txtFromReference:
             Tooltip: Enter a reference code.
+            RequiredField: true
         rbtFromAmountOption: {Label=Amount}
         rbtFromPercentageOption: {Label=Percentage, OnChange=FromAmountPercentageChanged}
         txtFromTransactionAmount: {NoLabel=true}

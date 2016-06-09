@@ -92,9 +92,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
             base.SetControlProperties(writer, ctrl);
 
-            // stretch at design time, but do not align to the right
-            writer.SetControlProperty(ctrl, "Anchor",
-                "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)))");
+            TControlDef parentCtrl = writer.FCodeStorage.GetControl(ctrl.parentName);
+
+            // We need to over-ride any Anchor requests in the YAML to anchor an attached label to anything other than top-left
+            // But pure label controls can be anchored to, say, left-top-right
+            if ((ctrl.controlName.Substring(ctrl.controlTypePrefix.Length) == parentCtrl.controlName.Substring(parentCtrl.controlTypePrefix.Length))
+                || ((ctrl.HasAttribute("Dock") == false) && (ctrl.HasAttribute("Align") == false)))
+            {
+                // stretch at design time, but do not align to the right
+                writer.SetControlProperty(ctrl, "Anchor",
+                    "((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)))");
+            }
 
             string labelText = "";
 

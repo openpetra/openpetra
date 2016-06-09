@@ -26,8 +26,8 @@ RootNode:
                 Row3: [txtPlacementPerson]
             Dock: Top
               
-        txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged, Validation=true, Stretch=horizontally}
-        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT, Validation=true, Stretch=horizontally}
+        txtEvent: {Label=Event, DataField=PmShortTermApplication.StConfirmedOption, Type=Event, OnChange=ProcessApplicationEventChanged, Validation=true, Stretch=horizontally, RequiredField=true}
+        txtFieldCharged: {Label=Field Charged, DataField=PmShortTermApplication.StFieldCharged, Type=PartnerKey, PartnerClass=UNIT, Validation=true, Stretch=horizontally, RequiredField=true}
 
         cmbApplicationType: {Label=Application Type, List=EventApplicationTypeList, DataField=PmGeneralApplication.AppTypeName, Validation=true, Stretch=horizontally}
         cmbContact1: {Label=Organization Contact 1, List=ContactList, DataField=PmGeneralApplication.GenContact1, Width=500, AllowDbNull=true}

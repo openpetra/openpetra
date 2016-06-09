@@ -130,20 +130,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 if (ParameterName == "Gift this year")
                 {
                     ACalc.AddParameter("ColumnCaption", dtpEndDate.Date.Value.Year.ToString(), Counter);
+                    ACalc.AddParameter("param_gift_amount_column", Counter);
                 }
                 else if (ParameterName == "Gift year - 1")
                 {
                     ACalc.AddParameter("ColumnCaption", (dtpEndDate.Date.Value.Year - 1).ToString(), Counter);
+                    ACalc.AddParameter("param_gift_amount_column1", Counter);
                 }
                 else if (ParameterName == "Gift year - 2")
                 {
                     ACalc.AddParameter("ColumnCaption", (dtpEndDate.Date.Value.Year - 2).ToString(), Counter);
+                    ACalc.AddParameter("param_gift_amount_column2", Counter);
                 }
             }
         }
 
         private void SetControlsManual(TParameterList AParameters)
         {
+            DateTime dtpStartDateDate = AParameters.Get("param_start_date").ToDate();
+
+            if ((dtpStartDateDate <= DateTime.MinValue)
+                || (dtpStartDateDate >= DateTime.MaxValue))
+            {
+                dtpStartDateDate = new DateTime(DateTime.Now.Year, 1, 1);
+            }
+
+            dtpStartDate.Date = dtpStartDateDate;
+
             rbtExtract.Checked = AParameters.Get("param_extract").ToBool();
             rbtAllPartners.Checked = AParameters.Get("param_all_partners").ToBool();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();

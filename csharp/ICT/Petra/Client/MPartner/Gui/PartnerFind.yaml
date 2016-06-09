@@ -2,7 +2,7 @@ RootNode:
     BaseYaml: ../../CommonForms/PetraForm.yaml
     FormType: navigation
     Template: windowFind
-    FormTitle: Partner Find OpenPetra.org
+    FormTitle: Partner Find
     ClassName: TPartnerFindScreen
     Namespace: Ict.Petra.Client.MPartner.Gui
     WindowWidth: 740

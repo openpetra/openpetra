@@ -133,6 +133,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void SetControlsManual(TParameterList AParameters)
         {
+            DateTime dtpStartDateDate = AParameters.Get("param_start_date").ToDate();
+
+            if ((dtpStartDateDate <= DateTime.MinValue)
+                || (dtpStartDateDate >= DateTime.MaxValue))
+            {
+                dtpStartDateDate = new DateTime(DateTime.Now.Year, 1, 1);
+            }
+
+            dtpStartDate.Date = dtpStartDateDate;
             rbtExtract.Checked = AParameters.Get("param_extract").ToBool();
             rbtAllPartners.Checked = AParameters.Get("param_all_partners").ToBool();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();

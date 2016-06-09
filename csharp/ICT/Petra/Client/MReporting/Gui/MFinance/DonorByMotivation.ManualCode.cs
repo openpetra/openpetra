@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // set the delegate that is needed before and after LoadSettings has been run
             FPetraUtilsObject.DelegateLoadSettingsStarting = @LoadSettingsStarting;
             FPetraUtilsObject.DelegateLoadSettingsFinished = @LoadSettingsFinished;
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         private void InitializeMotivationGroupList()

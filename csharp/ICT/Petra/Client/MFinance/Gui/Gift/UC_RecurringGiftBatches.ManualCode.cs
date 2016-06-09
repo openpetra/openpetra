@@ -272,7 +272,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                 }
 
-                ShowDetails(nCurrentRowIndex);
+                SelectRowInGrid(nCurrentRowIndex);
 
                 UpdateRecordNumberDisplay();
 

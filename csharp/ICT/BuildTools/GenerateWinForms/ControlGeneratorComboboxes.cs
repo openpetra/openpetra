@@ -116,9 +116,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     writer.SetControlProperty(ctrl, "AllowDbNull", ctrl.GetAttribute("AllowDbNull"));
                 }
 
-                if (ctrl.HasAttribute("NullValueDesciption"))
+                if (ctrl.HasAttribute("NullValueDescription"))
                 {
-                    writer.SetControlProperty(ctrl, "NullValueDesciption", "\"" + ctrl.GetAttribute("NullValueDesciption") + "\"");
+                    writer.SetControlProperty(ctrl, "NullValueDescription", "\"" + ctrl.GetAttribute("NullValueDescription") + "\"");
                 }
             }
             else

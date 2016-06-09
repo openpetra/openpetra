@@ -129,7 +129,7 @@ RootNode:
         
 		#GIFT-Level Controls
         # Bound
-        txtDetailDonorKey: {Label=D&onor, Type=PartnerKey, Width=350, Unbound=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
+        txtDetailDonorKey: {Label=D&onor, Type=PartnerKey, Width=350, Unbound=true, RequiredField=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         txtDetailReference: {Label=Re&ference, Width=170}

@@ -274,13 +274,13 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     DBAccess.GDBAccessObj.ExecuteNonQuery(
                                         "UPDATE a_general_ledger_master_period SET " +
-                                        " a_actual_intl_n = a_actual_intl_n + " + discrepency +
+                                        " a_actual_intl_n = a_actual_intl_n + " + discrepency.ToString(CultureInfo.InvariantCulture) +
                                         " WHERE a_glm_sequence_i = " + glmSequence +
                                         " AND a_period_number_i >= " + transactionPeriod, Transaction);
 
                                     DBAccess.GDBAccessObj.ExecuteNonQuery(
                                         "UPDATE a_general_ledger_master SET " +
-                                        " a_ytd_actual_intl_n = a_ytd_actual_intl_n + " + discrepency +
+                                        " a_ytd_actual_intl_n = a_ytd_actual_intl_n + " + discrepency.ToString(CultureInfo.InvariantCulture) +
                                         " WHERE a_glm_sequence_i = " + glmSequence, Transaction);
 
 //                                  TLogging.Log("Discrepency for CostCentre " + costCentreCode + " Account " + accountCode + " is " + discrepency);

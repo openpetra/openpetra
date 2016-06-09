@@ -890,15 +890,19 @@ namespace Ict.Petra.Server.MReporting.MFinDev
             situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
                 FooterHeader, FooterDescription, FooterColumns);
 
-            FooterColumns[2] = new TVariant("Number of Top-Donors:");
-            FooterColumns[3] = new TVariant(NumberOfRows, "-#,##0;#,##0");
+            FooterColumns[2] = new TVariant("Grand Total for selection:");
+            FooterColumns[3] = new TVariant(ATotalAmount, "-#,##0.00;#,##0.00");
 
             situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
                 FooterHeader, FooterDescription, FooterColumns);
 
-            FooterColumns[2] = new TVariant("Grand Total for selection:");
-            FooterColumns[3] = new TVariant(ATotalAmount, "-#,##0.00;#,##0.00");
+            FooterColumns[2] = new TVariant("");
+            FooterColumns[3] = new TVariant("");
 
+            situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
+                FooterHeader, FooterDescription, FooterColumns);
+
+            FooterColumns[2] = new TVariant("Number of Top Donors: " + NumberOfRows.ToString());
             situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
                 FooterHeader, FooterDescription, FooterColumns);
 

@@ -409,8 +409,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// <summary>
             /// I've made this public because the ExchangeRate property is now a string.
             /// </summary>
-            public decimal mExchangeRate = 1.0m;
-            private int intStatus;
+            public decimal mExchangeRate = 0m;
+            private int intStatus = IS_NOT_INITIALIZED;
 
             private void SetRateAndStatus(decimal ANewExchangeRate, DateTime AeffectiveDate)
             {
@@ -424,16 +424,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else
                 {
-                    if (mExchangeRate == 1.0m)
-                    {
-                        intStatus = IS_NOT_INITIALIZED;
-                        mDoRevaluation = false;
-                    }
-                    else
-                    {
-                        intStatus = DO_REVALUATION;
-                        mDoRevaluation = true;
-                    }
+                    intStatus = DO_REVALUATION;
+                    mDoRevaluation = true;
                 }
             }
 
@@ -505,7 +497,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 get
                 {
-                    return (mDoRevaluation) ? mExchangeRate.ToString("G6") : "";
+                    return (mDoRevaluation) ? mExchangeRate.ToString("0.000000") : "";
                 }
             }
 

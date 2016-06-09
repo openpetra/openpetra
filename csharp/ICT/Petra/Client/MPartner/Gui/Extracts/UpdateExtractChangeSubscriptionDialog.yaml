@@ -17,11 +17,11 @@ RootNode:
     Controls:
         pnlDialogContent:
             Controls: 
-                Row0: [lblExtractName]
+                Row0: [lblExtractNameAndCreator]
                 Row1: [pnlDetailsLeft, pnlDetailsRight]
             Dock: Fill
 
-        lblExtractName:
+        lblExtractNameAndCreator: {Align=Top, Stretch=horizontally, Height=20}
         pnlDetailsLeft:
             Controls: [grpSubscription, grpMisc]
         pnlDetailsRight:
@@ -78,11 +78,13 @@ RootNode:
 
         txtPSubscriptionNumberComplimentary: {Format=Integer}
             Label: Complimentar&y
+            RequiredField: false
         txtPSubscriptionPublicationCopies: {Format=Integer}
             Label: &Copies
         cmbPSubscriptionReasonSubsGivenCode: {List=ReasonSubscriptionGivenList}
             Label: Reason &Given
             Width: 370
+            RequiredField: false
         cmbPSubscriptionReasonSubsCancelledCode: {List=ReasonSubscriptionCancelledList}
             Label: Reason Ended
             Width: 370
@@ -99,6 +101,7 @@ RootNode:
 
         dtpPSubscriptionStartDate:
             Label: S&tart Date
+            RequiredField: false
         dtpPSubscriptionExpiryDate:
             Label: E&xpiry Date
         dtpPSubscriptionSubscriptionRenewalDate:
@@ -116,6 +119,7 @@ RootNode:
 
         txtPSubscriptionNumberIssuesReceived: {Format=Integer, Width=60}
             Label: Issues Received
+            RequiredField: false
         dtpPSubscriptionFirstIssue:
             Label: Fi&rst Issue Sent
         dtpPSubscriptionLastIssue:

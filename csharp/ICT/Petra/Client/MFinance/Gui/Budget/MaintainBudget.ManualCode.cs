@@ -205,6 +205,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 ABudgetTable.GetCostCentreCodeDBName(),
                 ABudgetTable.GetAccountCodeDBName());
 
+            MyDataView.RowFilter = RowFilter;
+
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
 
             FFilterAndFindObject.FilterPanelControls.SetBaseFilter(RowFilter, true);

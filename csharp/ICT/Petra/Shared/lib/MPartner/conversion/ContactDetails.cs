@@ -78,6 +78,16 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// <summary>Possible prefix that denotes that a Skype ID is to follow.</summary>
         private const String PREFIX_SKYPE2 = "Skype";
 
+        private const String CONT_DETAIL_MIGRATION_LOG_PREFIX = "Contact Details ";
+
+        private const String LOG_PREF_INFO = "[INFO";
+
+        private const String LOG_PREF_ADVICE = "[ADVICE";
+
+        private const String LOG_PREF_WARN = "[WARNING";
+
+        private const String LOG_PREF_CHECK = "[CHECK";
+
         /// <summary>
         /// Holds the p_partner.p_partner_class_c information of each Partner.
         /// </summary>
@@ -87,6 +97,18 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// Holds the p_partner_location records of each Partner.
         /// </summary>
         private static SortedList <long, DataTable>FPartnerLocationRecords = null;
+
+        #region Variables for gathering PartnerKey information for various Warnings
+
+        private static SortedSet <string>FWarnings100Collector = new SortedSet <string>();
+        private static SortedSet <string>FWarnings110Collector = new SortedSet <string>();
+        private static SortedSet <string>FWarnings310CollectorFieldCurrentPartnerKeys = new SortedSet <string>();
+        private static SortedSet <string>FWarnings310CollectorFieldNonCurrentPartnerKeys = new SortedSet <string>();
+        private static SortedSet <string>FFWarnings310CollectorNonFieldCurrentPartnerKeys = new SortedSet <string>();
+        private static SortedSet <string>FFWarnings310CollectorNonFieldNonCurrentPartnerKeys = new SortedSet <string>();
+        private static SortedSet <string>FWarnings400Collector = new SortedSet <string>();
+
+        #endregion
 
         /// <summary>
         /// we split all partner locations by modulo of the partner key, to improve the speed of the search
@@ -588,6 +610,88 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             {
                                 PPARecords.Add(PPARecordsSingleLocation[SingleLocCounter]);
                             }
+                            else if (PPARecordsSingleLocation[SingleLocCounter].Primary)
+                            {
+                                var PPARecordsContainsQueryList = PPARecordsContainsQuery.ToList();
+
+                                foreach (var ListItem in PPARecordsContainsQueryList)
+                                {
+                                    if (((ListItem.AttributeType == PPARecordsSingleLocation[SingleLocCounter].AttributeType)
+                                         && (ListItem.Value == PPARecordsSingleLocation[SingleLocCounter].Value))
+                                        && !ListItem.Primary)
+                                    {
+                                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-100" +
+                                            String.Format(
+                                                "]: Primary {2} NOT SET for PartnerKey {0}: Based on the data we have we believe it is likely that the {2} '{1}' should become the Primary {2} of this Partner, but human decision is needed on that.",
+                                                PartnerKey, PPARecordsSingleLocation[SingleLocCounter].Value,
+                                                PPARecordsSingleLocation[SingleLocCounter].AttributeType));
+
+                                        FWarnings100Collector.Add(PartnerKey.ToString());
+
+                                        //ListItem.Primary = true;
+                                        // // Primary items must be Current, too
+                                        //ListItem.Current = true;
+                                        // // Set comment to empty, too, as it might have contained 'In Petra 2.x this Contact Detail was set to become effective on...'
+                                        //ListItem.Comment = String.Empty;
+
+                                        break;
+                                    }
+                                }
+
+                                if (PPARecordsSingleLocation[SingleLocCounter].WithinOrganisation)
+                                {
+                                    var PPARecordsContainsQueryList2 = PPARecordsContainsQuery.ToList();
+
+                                    foreach (var ListItem in PPARecordsContainsQueryList2)
+                                    {
+                                        if (((ListItem.AttributeType == PPARecordsSingleLocation[SingleLocCounter].AttributeType)
+                                             && (ListItem.Value == PPARecordsSingleLocation[SingleLocCounter].Value))
+                                            && !ListItem.WithinOrganisation)
+                                        {
+                                            TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-100" +
+                                                String.Format(
+                                                    "]: Within-Organisation E-mail NOT SET for PartnerKey {0}: Based on the data we have we believe it is likely that the E-Mail address '{1}' should become the Within-Organisation E-mail of this Partner, but human decision is needed on that.",
+                                                    PartnerKey, PPARecordsSingleLocation[SingleLocCounter].Value));
+
+                                            FWarnings100Collector.Add(PartnerKey.ToString());
+
+                                            //ListItem.Primary = true;
+                                            // // Primary items must be Current, too
+                                            //ListItem.Current = true;
+                                            // // Set comment to empty, too, as it might have contained 'In Petra 2.x this Contact Detail was set to become effective on...'
+                                            //ListItem.Comment = String.Empty;
+
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            else if (PPARecordsSingleLocation[SingleLocCounter].Current)
+                            {
+                                var PPARecordsContainsQueryList3 = PPARecordsContainsQuery.ToList();
+
+                                foreach (var ListItem in PPARecordsContainsQueryList3)
+                                {
+                                    if (((ListItem.AttributeType == PPARecordsSingleLocation[SingleLocCounter].AttributeType)
+                                         && (ListItem.Value == PPARecordsSingleLocation[SingleLocCounter].Value))
+                                        && !ListItem.Current)
+                                    {
+                                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-110" +
+                                            String.Format(
+                                                "]: Non-Current {2} for PartnerKey {0}: Based on the data we have we believe it is likely that the {2} '{1}' should become Current, but human decision is needed on that.",
+                                                PartnerKey, PPARecordsSingleLocation[SingleLocCounter].Value,
+                                                PPARecordsSingleLocation[SingleLocCounter].AttributeType));
+
+                                        FWarnings110Collector.Add(PartnerKey.ToString());
+
+                                        //ListItem.Current = true;
+                                        // // Set comment to empty, too, as it might have contained 'In Petra 2.x this Contact Detail was set to become effective on...'
+                                        //ListItem.Comment = String.Empty;
+
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -633,12 +737,101 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             // ... and kindly ask .NET's Garbage Collector to really get it out of memory, if it's convenient.
             GC.Collect(0, GCCollectionMode.Optimized);
 
+            CustomLoggingOfPartnerKeysForWarning();
+
             return RowCounter;
         }
 
         #endregion
 
         #region Private Methods
+
+        /// <summary>
+        /// Puts PartnerKeys that were collected for various Warnings into separate files and logs an overview
+        /// about those Warnings to a file, pointing to the invididual files.
+        /// </summary>
+        private static void CustomLoggingOfPartnerKeysForWarning()
+        {
+            Assembly asm = Assembly.GetCallingAssembly();
+            String ExePath = Path.GetDirectoryName(new Uri(asm.EscapedCodeBase).LocalPath);
+            string FulldumpPath = ExePath + Path.DirectorySeparatorChar + TAppSettingsManager.GetValue("fulldumpPath", "fulldump");
+            string StatisticsPath = FulldumpPath + Path.DirectorySeparatorChar + "statistics";
+
+            // Create the 'statistics' sub-directory if it isn't there yet (doesn't throw an error if it exists already!)
+            System.IO.Directory.CreateDirectory(StatisticsPath);
+
+            string PartnerKeysWherePrimaryWasntSetFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                             "Warning CHECK-100 - PrimaryNotSet" + ".txt";
+            string PartnerKeysWhereCurrentWasntSetFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                             "Warning CHECK-110 - CurrentNotSet" + ".txt";
+
+            string FieldCurrentPartnerKeysAffectedByWarningFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                                      "Warning CHECK-310 - FieldCurrentPartnerKeys" + ".txt";
+            string FieldNonCurrentPartnerKeysAffectedByWarningFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                                         "Warning CHECK-310 - FieldNonCurrentPartnerKeys" + ".txt";
+            string NonFieldCurrentPartnerKeysAffectedByWarningFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                                         "Warning CHECK-310 - NonFieldCurrentPartnerKeys" + ".txt";
+            string NonFieldNonCurrentPartnerKeysAffectedByWarningFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                                            "Warning CHECK-310 - NonFieldNonCurrentPartnerKeys" + ".txt";
+
+            string PartnerKeysWhereEmailSeemsNotToBeValidFileName = StatisticsPath + Path.DirectorySeparatorChar +
+                                                                    "Warning CHECK-400 - EmailSeemsNotToBeValid" + ".txt";
+
+            System.IO.File.WriteAllLines(PartnerKeysWherePrimaryWasntSetFileName, FWarnings100Collector.ToArray());
+            System.IO.File.WriteAllLines(PartnerKeysWhereCurrentWasntSetFileName, FWarnings110Collector.ToArray());
+
+            System.IO.File.WriteAllLines(FieldCurrentPartnerKeysAffectedByWarningFileName, FWarnings310CollectorFieldCurrentPartnerKeys.ToArray());
+            System.IO.File.WriteAllLines(FieldNonCurrentPartnerKeysAffectedByWarningFileName, FWarnings310CollectorFieldNonCurrentPartnerKeys.ToArray());
+
+            System.IO.File.WriteAllLines(NonFieldCurrentPartnerKeysAffectedByWarningFileName,
+                FFWarnings310CollectorNonFieldCurrentPartnerKeys.ToArray());
+            System.IO.File.WriteAllLines(NonFieldNonCurrentPartnerKeysAffectedByWarningFileName,
+                FFWarnings310CollectorNonFieldNonCurrentPartnerKeys.ToArray());
+
+            System.IO.File.WriteAllLines(PartnerKeysWhereEmailSeemsNotToBeValidFileName, FWarnings400Collector.ToArray());
+
+
+            // Build a string that contains and overview that we will write to a file
+            string StatisticFileLines =
+                "PartnerKeys Affected By Warnings - Statistics" + Environment.NewLine +
+                "=============================================" + Environment.NewLine + Environment.NewLine +
+                String.Format("* Warning 'CHECK-100': Number of Contact Details that weren't set to Primary/Within Organisation: {0}",
+                    FWarnings100Collector.Count) + Environment.NewLine +
+                "  -> Found in file '" + PartnerKeysWherePrimaryWasntSetFileName + "'" + Environment.NewLine + Environment.NewLine +
+                String.Format("* Warning 'CHECK-110': Number of Contact Details that weren't set to Current: {0}",
+                    FWarnings110Collector.Count) + Environment.NewLine +
+                "  -> Found in file '" + PartnerKeysWhereCurrentWasntSetFileName + "'" + Environment.NewLine + Environment.NewLine +
+                String.Format("* Warning 'CHECK-310': Number of Current Partners whose PartnerKeys start with {0}: {1}",
+                    35,
+                    FWarnings310CollectorFieldCurrentPartnerKeys.Count) + Environment.NewLine +
+                "  -> Found in file '" + FieldCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
+                String.Format("* Warning 'CHECK-310': Number of non-Current Contact Details whose PartnerKeys start with {0}: {1}",
+                    35,
+                    FWarnings310CollectorFieldNonCurrentPartnerKeys.Count) + Environment.NewLine +
+                "  -> Found in file '" + FieldNonCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
+                String.Format("* Warning 'CHECK-310': Number of Current Contact Details whose PartnerKeys don't start with {0}: {1}",
+                    35,
+                    FFWarnings310CollectorNonFieldCurrentPartnerKeys.Count) + Environment.NewLine +
+                "  -> Found in file '" + NonFieldCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
+                String.Format(
+                    "* Warning 'CHECK-310': Number of non-Current Contact Details whose PartnerKeys don't start with {0}: {1}",
+                    35,
+                    FFWarnings310CollectorNonFieldNonCurrentPartnerKeys.Count + Environment.NewLine +
+                    "  -> Found in file '" + NonFieldNonCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
+                    Environment.NewLine +
+                    String.Format("* Warning 'WARNING-400': Number of E-Mail Contact Details where the E-Mail seems not to be valid: {0}",
+                        FWarnings400Collector.Count) + Environment.NewLine +
+                    "  -> Found in file '" + PartnerKeysWhereEmailSeemsNotToBeValidFileName + "'");
+
+            // Write the string to a file
+            using (var StatisticsFile = new System.IO.StreamWriter(StatisticsPath + Path.DirectorySeparatorChar +
+                       "PartnerKeys Affected By Warnings - Statistics.txt"))
+            {
+                StatisticsFile.WriteLine(StatisticFileLines);
+
+                StatisticsFile.Close();
+            }
+        }
 
         private static List <PPartnerAttributeRecord>ConstructPPartnerAttributeRecords(
             Int64 APartnerKey, DataRow APartnerLocationDR, string ACurrentFieldEmail)
@@ -653,6 +846,9 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             bool AnyEmailSetAsWithinOrganisation = false;
             bool IsAnEmailAddressInAWrongField = false;
             bool IsHoldingASkypeID = false;
+
+            List <Tuple <string, string>>SplitValues;
+            bool SplitValuesContainOnlyDefaultType;
             // Variables that hold record information
             string TelephoneNumberString = (string)APartnerLocationDR["p_telephone_number_c"];
             string FaxNumberString = (string)APartnerLocationDR["p_fax_number_c"];
@@ -682,9 +878,24 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 if (EmailAddressString != FEmptyStringIndicator)
                 {
                     EmailAddressString = EmailAddressString.Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
+                    bool LogRemark = false;
+                    bool LogWarning = false;
 
-                    // Do not yet split up email addresses that could seperated by a semi colon!
+                    // Do not yet split up email addresses that could be seperated by a colon or semi colon...
                     PPARecordEmail = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
+
+                    string[] EmailAddresses = StringHelper.SplitEmailAddresses(EmailAddressString);
+
+                    if (EmailAddresses.Length > 1)
+                    {
+                        // ...but log the fact that we didn't do that if there are multiple email addresses!
+                        LogRemark = true;
+                    }
+
+                    if (TStringChecks.ValidateEmail(EmailAddressString, true) != null)
+                    {
+                        LogWarning = true;
+                    }
 
                     IsHoldingASkypeID = IsStringHoldingASkypeID(EmailAddressString);
 
@@ -700,6 +911,27 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             ref PPARecordEmail,
                             ref AnyEmailSetAsPrimary,
                             ref AnyEmailSetAsWithinOrganisation);
+
+                        if (LogRemark)
+                        {
+                            TLogging.Log(String.Format(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_INFO + "-410" +
+                                    "]: Email Address '{1}' for PartnerKey {0} contained {2} E-mail Addresses. However, we didn't split those up " +
+                                    "but migrated them as a single E-Mail Contact Detail record (for compatibility reasons). (Cont.Detail Record Current: {3})",
+                                    APartnerKey, EmailAddressString, EmailAddresses.Length, PPARecordEmail.Current));
+                        }
+
+                        if (LogWarning)
+                        {
+                            TLogging.Log(String.Format(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_WARN + "-400" +
+                                    ((EmailAddresses.Length ==
+                                      1) ?
+                                     "]: Email Address '{1}' for PartnerKey {0} seems not to be a valid E-mail Address! (Cont.Detail Record Current: {2})"
+                                     :
+                                     "]: Email Address '{1}' seems to contain at least one invalid E-mail Address! (Cont.Detail Record Current: {2})"),
+                                    APartnerKey, EmailAddressString, PPARecordEmail.Current));
+
+                            FWarnings400Collector.Add(APartnerKey.ToString());
+                        }
                     }
                     else
                     {
@@ -713,12 +945,21 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 // Set data parts that depend on certain conditions
                 if (TelephoneNumberString != FEmptyStringIndicator)
                 {
+                    PPARecord = null;
+
                     // There could be a number of phone numbers seperated by a semi colon. We need to split these up and add them seperately.
                     string[] TelephoneNumbers = TelephoneNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    SplitValues = EmtpySplitValuesList(TelephoneNumbers);
 
                     for (int i = 0; i < TelephoneNumbers.Length; i++)
                     {
                         string TelephoneNumber = TelephoneNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!;
+
+                        if (TelephoneNumber == String.Empty)
+                        {
+                            // If value is empty after trimming don't process it (ie. if it was only made up of space/TAB characters)
+                            continue;
+                        }
 
                         PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
@@ -729,9 +970,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             && (!IsHoldingASkypeID))
                         {
                             TelephoneNumber = RemoveInternationalCodeFromTelephoneNumber(TelephoneNumber,
-                                ref CountryCode,
-                                ATTR_TYPE_PHONE,
-                                APartnerKey);
+                                ref CountryCode, ATTR_TYPE_PHONE, APartnerKey, PPARecord);
                         }
 
                         PPARecord.Value = TelephoneNumber;
@@ -754,6 +993,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                 //                                "Made Telephone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
                                 //                                TelephoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                             }
+
+                            SplitValues.Add(new Tuple <string, string>(BuildTypeWithPrimaryPrefix("Phone", PPARecord.Primary), PPARecord.Value));
                         }
                         else
                         {
@@ -765,15 +1006,35 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                     IsBestAddr,
                                     ref PPARecord,
                                     ref AnyEmailSetAsPrimary,
-                                    ref AnyEmailSetAsWithinOrganisation);
+                                    ref AnyEmailSetAsWithinOrganisation,
+                                    "Telephone Number");
+
+                                SplitValues.Add(new Tuple <string, string>(
+                                        BuildTypeWithPrimaryPrefix("E-Mail (!)", PPARecord.Primary), PPARecord.Value));
                             }
-                            else
+                            else if (IsHoldingASkypeID)
                             {
                                 SpecialSkypeIDProcessing(ref PPARecord);
+
+                                SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                             }
                         }
 
                         PPARecordList.Add(PPARecord);
+                    }
+
+                    if (PPARecord != null)
+                    {
+                        // Detect if there was more than one Contact Detail processed -> write out log message if this is the case
+                        if (SplitValues.Count > 1)
+                        {
+                            TLogging.Log(String.Format(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_INFO + "-501" +
+                                    "]: Telephone Number '" + TelephoneNumberString +
+                                    "' held more than one item and hence got split into the " +
+                                    "following {0}Contact Details: " + BuildSplitValuesListStr(SplitValues,
+                                        "Phone", out SplitValuesContainOnlyDefaultType) + " (Cont.Detail Record Current: {1})",
+                                    SplitValuesContainOnlyDefaultType ? "Phone " : "", PPARecord.Current));
+                        }
                     }
                 }
 
@@ -785,15 +1046,26 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
             if (FaxNumberString != FEmptyStringIndicator)
             {
+                PPARecord = null;
+
                 // There could be a number of fax numbers seperated by a semi colon. We need to split these up and add them seperately.
                 string[] FaxNumbers = FaxNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                SplitValues = EmtpySplitValuesList(FaxNumbers);
 
                 for (int i = 0; i < FaxNumbers.Length; i++)
                 {
                     string FaxNumber = FaxNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
+                    if (FaxNumber == String.Empty)
+                    {
+                        // If value is empty after trimming don't process it (ie. if it was only made up of space/TAB characters)
+                        continue;
+                    }
+
                     IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(FaxNumber, true) == null;
                     IsHoldingASkypeID = IsStringHoldingASkypeID(FaxNumber);
+
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                     if ((!IsAnEmailAddressInAWrongField)
                         && (!IsHoldingASkypeID))
@@ -801,14 +1073,19 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         // In case the CountryCode variable got set to something else above: set it up again.
                         CountryCode = CountryCodeOrig;
 
-                        FaxNumber = RemoveInternationalCodeFromTelephoneNumber(FaxNumber, ref CountryCode, ATTR_TYPE_FAX, APartnerKey);
+                        FaxNumber = RemoveInternationalCodeFromTelephoneNumber(FaxNumber, ref CountryCode, ATTR_TYPE_FAX, APartnerKey,
+                            PPARecord);
                     }
-
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                     PPARecord.Value = FaxNumber;
                     PPARecord.ValueCountry = CountryCode;
                     PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_FAX, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
+
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
+                    {
+                        SplitValues.Add(new Tuple <string, string>(BuildTypeWithPrimaryPrefix("Fax", PPARecord.Primary), PPARecord.Value));
+                    }
 
                     if (IsAnEmailAddressInAWrongField)
                     {
@@ -818,28 +1095,59 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             IsBestAddr,
                             ref PPARecord,
                             ref AnyEmailSetAsPrimary,
-                            ref AnyEmailSetAsWithinOrganisation);
+                            ref AnyEmailSetAsWithinOrganisation,
+                            "Fax Number");
+
+                        SplitValues.Add(new Tuple <string,
+                                                   string>(BuildTypeWithPrimaryPrefix("E-Mail (!)", PPARecord.Primary), PPARecord.Value));
                     }
                     else if (IsHoldingASkypeID)
                     {
                         SpecialSkypeIDProcessing(ref PPARecord);
+
+                        SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                     }
 
                     PPARecordList.Add(PPARecord);
+                }
+
+                if (PPARecord != null)
+                {
+                    // Detect if there was more than one Contact Detail processed -> write out log message if this is the case
+                    if (SplitValues.Count > 1)
+                    {
+                        TLogging.Log(String.Format(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_INFO + "-502" +
+                                "]: Fax Number '" + FaxNumberString +
+                                "' held more than one item and hence got split into the " +
+                                "following {0}Contact Details: " + BuildSplitValuesListStr(SplitValues,
+                                    "Fax", out SplitValuesContainOnlyDefaultType) + " (Cont.Detail Record Current: {1})",
+                                SplitValuesContainOnlyDefaultType ? "Fax " : "", PPARecord.Current));
+                    }
                 }
             }
 
             if (MobileNumberString != FEmptyStringIndicator)
             {
+                PPARecord = null;
+
                 // There could be a number of mobile numbers seperated by a semi colon. We need to split these up and add them seperately.
                 string[] MobileNumbers = MobileNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                SplitValues = EmtpySplitValuesList(MobileNumbers);
 
                 for (int i = 0; i < MobileNumbers.Length; i++)
                 {
                     string MobileNumber = MobileNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
+                    if (MobileNumber == String.Empty)
+                    {
+                        // If value is empty after trimming don't process it (ie. if it was only made up of space/TAB characters)
+                        continue;
+                    }
+
                     IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(MobileNumber, true) == null;
                     IsHoldingASkypeID = IsStringHoldingASkypeID(MobileNumber);
+
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                     if ((!IsAnEmailAddressInAWrongField)
                         && (!IsHoldingASkypeID))
@@ -847,14 +1155,19 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         // In case the CountryCode variable got set to something else above: set it up again.
                         CountryCode = CountryCodeOrig;
 
-                        MobileNumber = RemoveInternationalCodeFromTelephoneNumber(MobileNumber, ref CountryCode, ATTR_TYPE_MOBILE_PHONE, APartnerKey);
+                        MobileNumber = RemoveInternationalCodeFromTelephoneNumber(MobileNumber, ref CountryCode, ATTR_TYPE_MOBILE_PHONE, APartnerKey,
+                            PPARecord);
                     }
-
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                     PPARecord.Value = MobileNumber;
                     PPARecord.ValueCountry = CountryCode;
                     PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_MOBILE_PHONE, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
+
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
+                    {
+                        SplitValues.Add(new Tuple <string, string>(BuildTypeWithPrimaryPrefix("Mobile Phone", PPARecord.Primary), PPARecord.Value));
+                    }
 
                     if (!IsAnEmailAddressInAWrongField)
                     {
@@ -883,29 +1196,60 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                 IsBestAddr,
                                 ref PPARecord,
                                 ref AnyEmailSetAsPrimary,
-                                ref AnyEmailSetAsWithinOrganisation);
+                                ref AnyEmailSetAsWithinOrganisation,
+                                "Mobile Number");
+
+                            SplitValues.Add(new Tuple <string,
+                                                       string>(BuildTypeWithPrimaryPrefix("E-Mail (!)", PPARecord.Primary), PPARecord.Value));
                         }
                         else if (IsHoldingASkypeID)
                         {
                             SpecialSkypeIDProcessing(ref PPARecord);
+
+                            SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                         }
                     }
 
                     PPARecordList.Add(PPARecord);
                 }
+
+                if (PPARecord != null)
+                {
+                    // Detect if there was more than one Contact Detail processed -> write out log message if this is the case
+                    if (SplitValues.Count > 1)
+                    {
+                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_INFO + "-503" +
+                            String.Format("]: Mobile Phone Number '" + MobileNumberString +
+                                "' held more than one item and hence got split into the " +
+                                "following {0}Contact Details: " + BuildSplitValuesListStr(SplitValues,
+                                    "Mobile Phone", out SplitValuesContainOnlyDefaultType) + " (Cont.Detail Record Current: {1})",
+                                SplitValuesContainOnlyDefaultType ? "Mobile Phone " : "", PPARecord.Current));
+                    }
+                }
             }
 
             if (AlternatePhoneNumberString != FEmptyStringIndicator)
             {
+                PPARecord = null;
+
                 // There could be a number of mobile numbers seperated by a semi colon. We need to split these up and add them seperately.
                 string[] AlternatePhoneNumbers = AlternatePhoneNumberString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                SplitValues = EmtpySplitValuesList(AlternatePhoneNumbers);
 
                 for (int i = 0; i < AlternatePhoneNumbers.Length; i++)
                 {
                     string AlternatePhoneNumber = AlternatePhoneNumbers[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
+                    if (AlternatePhoneNumber == String.Empty)
+                    {
+                        // If value is empty after trimming don't process it (ie. if it was only made up of space/TAB characters)
+                        continue;
+                    }
+
                     IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(AlternatePhoneNumber, true) == null;
                     IsHoldingASkypeID = IsStringHoldingASkypeID(AlternatePhoneNumber);
+
+                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                     if ((!IsAnEmailAddressInAWrongField)
                         && (!IsHoldingASkypeID))
@@ -914,12 +1258,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         CountryCode = CountryCodeOrig;
 
                         AlternatePhoneNumber = RemoveInternationalCodeFromTelephoneNumber(AlternatePhoneNumber,
-                            ref CountryCode,
-                            ATTR_TYPE_PHONE,
-                            APartnerKey);
+                            ref CountryCode, ATTR_TYPE_PHONE, APartnerKey, PPARecord);
                     }
-
-                    PPARecord = GetNewPPartnerAttributeRecord(APartnerKey, APartnerLocationDR);
 
                     PPARecord.Value = AlternatePhoneNumber;
                     PPARecord.ValueCountry = CountryCode;
@@ -942,6 +1282,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             //                            "Made ALTERNATE Phone Number '{0}' the 'Primary Phone' (PartnerKey: {1}, LocationKey: {2})",
                             //                            AlternatePhoneNumber, APartnerKey, APartnerLocationDR["p_location_key_i"]));
                         }
+
+                        SplitValues.Add(new Tuple <string, string>(BuildTypeWithPrimaryPrefix("Phone", PPARecord.Primary), PPARecord.Value));
                     }
                     else
                     {
@@ -953,26 +1295,55 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                 IsBestAddr,
                                 ref PPARecord,
                                 ref AnyEmailSetAsPrimary,
-                                ref AnyEmailSetAsWithinOrganisation);
+                                ref AnyEmailSetAsWithinOrganisation,
+                                "Alternate Number");
+
+                            SplitValues.Add(new Tuple <string, string>(
+                                    BuildTypeWithPrimaryPrefix("E-Mail (!)", PPARecord.Primary), PPARecord.Value));
                         }
                         else if (IsHoldingASkypeID)
                         {
                             SpecialSkypeIDProcessing(ref PPARecord);
+
+                            SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                         }
                     }
 
                     PPARecordList.Add(PPARecord);
                 }
+
+                if (PPARecord != null)
+                {
+                    // Detect if there was more than one Contact Detail processed -> write out log message if this is the case
+                    if (SplitValues.Count > 1)
+                    {
+                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_INFO + "-504" +
+                            String.Format("]: Alternate Phone Number '" + AlternatePhoneNumberString +
+                                "' held more than one item and hence got split into the " +
+                                "following {0}Contact Details: " + BuildSplitValuesListStr(SplitValues,
+                                    "Phone", out SplitValuesContainOnlyDefaultType) + " (Cont.Detail Record Current: {1})",
+                                SplitValuesContainOnlyDefaultType ? "Phone " : "", PPARecord.Current));
+                    }
+                }
             }
 
             if (UrlString != FEmptyStringIndicator)
             {
+                PPARecord = null;
+
                 // There could be a number of urls seperated by a semi colon. We need to split these up and add them seperately.
                 string[] Urls = UrlString.Split(new char[] { ';', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                SplitValues = EmtpySplitValuesList(Urls);
 
                 for (int i = 0; i < Urls.Length; i++)
                 {
                     string Url = Urls[i].Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
+
+                    if (Url == String.Empty)
+                    {
+                        // If value is empty after trimming don't process it (ie. if it was only made up of space/TAB characters)
+                        continue;
+                    }
 
                     IsAnEmailAddressInAWrongField = TStringChecks.ValidateEmail(Url, true) == null;
                     IsHoldingASkypeID = IsStringHoldingASkypeID(Url);
@@ -982,6 +1353,12 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     PPARecord.Value = Url;
                     PPARecord.AttributeType = GetAttributeType(ATTR_TYPE_WEBSITE, IsAnEmailAddressInAWrongField, IsHoldingASkypeID);
 
+                    if ((!IsAnEmailAddressInAWrongField)
+                        && (!IsHoldingASkypeID))
+                    {
+                        SplitValues.Add(new Tuple <string, string>(BuildTypeWithPrimaryPrefix("Web Site", PPARecord.Primary), PPARecord.Value));
+                    }
+
                     if (IsAnEmailAddressInAWrongField)
                     {
                         SpecialEmailProcessing(Url,
@@ -990,14 +1367,34 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             IsBestAddr,
                             ref PPARecord,
                             ref AnyEmailSetAsPrimary,
-                            ref AnyEmailSetAsWithinOrganisation);
+                            ref AnyEmailSetAsWithinOrganisation,
+                            "Web Site/URL");
+
+                        SplitValues.Add(new Tuple <string, string>(
+                                BuildTypeWithPrimaryPrefix("E-Mail (!)", PPARecord.Primary), PPARecord.Value));
                     }
                     else if (IsHoldingASkypeID)
                     {
                         SpecialSkypeIDProcessing(ref PPARecord);
+
+                        SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                     }
 
                     PPARecordList.Add(PPARecord);
+                }
+
+                if (PPARecord != null)
+                {
+                    // Detect if there was more than one Contact Detail processed -> write out log message if this is the case
+                    if (SplitValues.Count > 1)
+                    {
+                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_INFO + "-505" +
+                            String.Format("]: Web Site (URL) '" + UrlString +
+                                "' held more than one item and hence got split into the " +
+                                "following {0}Contact Details: " + BuildSplitValuesListStr(SplitValues,
+                                    "Web Site", out SplitValuesContainOnlyDefaultType) + " (Cont.Detail Record Current: {1})",
+                                SplitValuesContainOnlyDefaultType ? "Web Site " : "", PPARecord.Current));
+                    }
                 }
             }
 
@@ -1010,21 +1407,59 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             return ReturnValue;
         }
 
+        private static List <Tuple <string, string>>EmtpySplitValuesList(string[] AValueArray)
+        {
+            return new List <Tuple <string, string>>(AValueArray.Length);
+        }
+
         private static void SpecialEmailProcessing(string AEmailAddressString, string ACurrentFieldEmail, Int64 APartnerKey,
-            bool AIsBestAddr, ref PPartnerAttributeRecord APPARecord, ref bool AAnyEmailSetAsPrimary, ref bool AAnyEmailSetAsWithinOrganisation)
+            bool AIsBestAddr, ref PPartnerAttributeRecord APPARecord, ref bool AAnyEmailSetAsPrimary, ref bool AAnyEmailSetAsWithinOrganisation,
+            string AOriginatingField = null)
         {
             string PartnerClass;
+            bool PrimaryEmailBecauseOfCurrentFieldEmail = (!string.IsNullOrEmpty(ACurrentFieldEmail)
+                                                           && (ACurrentFieldEmail == AEmailAddressString));
+            bool PotentiallyFlagUpAdditionalWarning = false;
 
-            // if the predetermined current field email address
-            // or if there is no current field email and this is the best current address
-            if ((!string.IsNullOrEmpty(ACurrentFieldEmail) && (ACurrentFieldEmail == AEmailAddressString))
+            // If this is the predetermined current field email address...
+            PrimaryEmailBecauseOfCurrentFieldEmail = (!string.IsNullOrEmpty(ACurrentFieldEmail)
+                                                      && (ACurrentFieldEmail == AEmailAddressString));
+
+            // ...or if there is no current field email but this is the Best Address and it is Current...
+            if (PrimaryEmailBecauseOfCurrentFieldEmail
                 || ((string.IsNullOrEmpty(ACurrentFieldEmail)) && (AIsBestAddr) && (APPARecord.Current)))
             {
-                // Mark this Contact Detail as being 'Primary' - but only if the Contact Detail is current!
+                // ...then make this E-mail Contact Detail the 'Primary E-Mail'
                 if (!AAnyEmailSetAsPrimary)
                 {
                     APPARecord.Primary = true;
                     AAnyEmailSetAsPrimary = true;
+
+                    if (AOriginatingField != null)
+                    {
+                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_ADVICE + "-230" +
+                            String.Format("]: The E-Mail Address '{1}' of Partner {0} " +
+                                "was set as the Primary E-Mail address of this Partner; however, it wasn't taken from the 'E-Mail' field " +
+                                "of the Partner's Address, but from the '{2}' field (the 'E-Mail' field held no e-mail address). " +
+                                "(Cont.Detail Record Current: true)", APartnerKey, APPARecord.Value, AOriginatingField));
+                    }
+                }
+
+                if (PrimaryEmailBecauseOfCurrentFieldEmail
+                    && (!APPARecord.Current))
+                {
+                    APPARecord.Current = true;
+
+                    PotentiallyFlagUpAdditionalWarning = true;
+
+                    TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-200" +
+                        String.Format("]: The E-Mail Address '{1}' of Partner {0} " +
+                            "was set as the Primary E-Mail address of this Partner because a Current Field E-Mail address exists, although " +
+                            "the E-Mail address was also contained in an Address that isn't current. (This should be the right thing to do, " +
+                            "but please check.) (Cont.Detail Record Current: {2})", APartnerKey, APPARecord.Value, APPARecord.Current));
+
+                    // Set comment to empty, too, as it might have contained 'In Petra 2.x this Contact Detail was set to become effective on...'
+                    APPARecord.Comment = String.Empty;
                 }
 
                 // Mark this Contact Detail as being 'WithinOrganisation' as it has an 'organisation-internal' e-mail-address!
@@ -1039,6 +1474,17 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             {
                                 APPARecord.WithinOrganisation = true;
                                 AAnyEmailSetAsWithinOrganisation = true;
+                            }
+
+                            if (PotentiallyFlagUpAdditionalWarning)
+                            {
+                                TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-210" +
+                                    String.Format("]: The E-Mail Address '{1}' of Partner {0} " +
+                                        "was set as the 'Within Organsiation' E-Mail address of this Partner, too, because a Current Field E-Mail address exists, although "
+                                        +
+                                        "the E-Mail address was also contained in an Address that isn't current. (This should be the right thing to do, "
+                                        +
+                                        "but please check.) (Cont.Detail Record Current: {2})", APartnerKey, APPARecord.Value, APPARecord.Current));
                             }
 
                             //                                    TLogging.Log(String.Format(
@@ -1056,12 +1502,12 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         {
             if (APPARecord.Value.StartsWith(PREFIX_SKYPE1, true, CultureInfo.InvariantCulture))
             {
-                APPARecord.Value = APPARecord.Value.Substring(PREFIX_SKYPE1.Length + 1).Trim();  // Trim removes any spaces between the position of the prefix and the Skype ID
+                APPARecord.Value = APPARecord.Value.Substring(PREFIX_SKYPE1.Length).Trim();  // Trim removes any spaces between the position of the prefix and the Skype ID
                 APPARecord.ValueCountry = String.Empty;
             }
             else if (APPARecord.Value.StartsWith(PREFIX_SKYPE2, true, CultureInfo.InvariantCulture))
             {
-                APPARecord.Value = APPARecord.Value.Substring(PREFIX_SKYPE2.Length + 1).Trim();  // Trim removes any spaces between the position of the prefix and the Skype ID
+                APPARecord.Value = APPARecord.Value.Substring(PREFIX_SKYPE2.Length).Trim();  // Trim removes any spaces between the position of the prefix and the Skype ID
                 APPARecord.ValueCountry = String.Empty;
             }
             else
@@ -1103,6 +1549,53 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             return ATTR_TYPE_PHONE;
         }
 
+        private static string BuildSplitValuesListStr(List <Tuple <string, string>>ASplitValues, string ADefaultType,
+            out bool AContainsOnlyDefaultType)
+        {
+            string ReturnValue = String.Empty;
+            string Postfix;
+
+            AContainsOnlyDefaultType = true;
+
+            foreach (var SplittedValue in ASplitValues)
+            {
+                if (!((SplittedValue.Item1 == ADefaultType)
+                      || (SplittedValue.Item1 == "Primary " + ADefaultType)))
+                {
+                    AContainsOnlyDefaultType = false;
+
+                    break;
+                }
+            }
+
+            foreach (var SplittedValue in ASplitValues)
+            {
+                Postfix = String.Empty;
+
+                if (!AContainsOnlyDefaultType)
+                {
+                    ReturnValue += SplittedValue.Item1 + ": ";
+                }
+                else
+                {
+                    Postfix = (SplittedValue.Item1 == "Primary " + ADefaultType) ?
+                              " (" + "Primary " + ADefaultType + ")" : String.Empty;
+                }
+
+                ReturnValue += "'" + SplittedValue.Item2 + "'" + Postfix + "; ";
+            }
+
+            // Strip off last Separator
+            ReturnValue = ReturnValue.Substring(0, ReturnValue.Length - 2);
+
+            return ReturnValue;
+        }
+
+        private static string BuildTypeWithPrimaryPrefix(string AType, bool AIsPrimary)
+        {
+            return AIsPrimary ? "Primary " + AType : AType;
+        }
+
         /// <summary>
         /// Returns the Country Code as set in the p_partner_location Row. (If that did not exist in p_location
         /// then this will be null. (This may be changed later in RemoveInternationalCodeFromTelephoneNumber.)
@@ -1118,9 +1611,9 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         // This removes the international calling code from the start of a phone/fax/mobile number.
         // It also ensures that the p_partner_attribute country code is correct.
         private static string RemoveInternationalCodeFromTelephoneNumber(string ATelephoneNumber, ref string ACountryCode,
-            string AAttributeType, Int64 APartnerKey)
+            string AAttributeType, Int64 APartnerKey, PPartnerAttributeRecord APPARecord)
         {
-            const string CheckIntlAccessCodeWarningStr = "Please check International Access Code for {0} '{1}' for partner {2}.";
+            const string CheckIntlAccessCodeWarningStr = "]: Please check International Access Code for {0} '{1}' for Partner {2}.";
 
             string ReturnValue = null;
             string TelephoneNumberOrig = String.Copy(ATelephoneNumber);
@@ -1137,10 +1630,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 // (Telephone Number gets returned unchanged.)
                 ACountryCode = null;
 
-                TLogging.Log(string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
+                TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_WARN + "-990" +
+                    string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
                         Catalog.GetString(" Country Code could not get interpreted hence the " +
-                            "International Access Code could not be determined: it got set to nothing"), AAttributeType,
-                        TelephoneNumberOrig, APartnerKey));
+                            "International Access Code could not be determined: it got set to nothing (Cont.Detail Record Current: {3})"),
+                        AAttributeType, TelephoneNumberOrig, APartnerKey, APPARecord.Current));
 
                 return TelephoneNumberOrig;
             }
@@ -1227,10 +1721,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                             ReturnValue = ATelephoneNumber.Substring(1 + InternatTelephoneCode.Length);
 
                             DetectAndLogIfMulitpleCountriesHaveSameIntlAccessCode(Row, AAttributeType, APartnerKey,
-                                TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr));
+                                TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr), APPARecord);
 
                             DetectAndLogExtraDigitAfterInternatTelephoneCode(ATelephoneNumber, InternatTelephoneCode,
-                                1, AAttributeType, APartnerKey, TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr));
+                                1, AAttributeType, APartnerKey, TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr),
+                                APPARecord);
 
                             Found = true;
                             break;
@@ -1244,11 +1739,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                 FSiteInternatAccessCode.Length + InternatTelephoneCode.Length);
 
                             DetectAndLogIfMulitpleCountriesHaveSameIntlAccessCode(Row, AAttributeType, APartnerKey,
-                                TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr));
+                                TelephoneNumberOrig, Catalog.GetString(CheckIntlAccessCodeWarningStr), APPARecord);
 
                             DetectAndLogExtraDigitAfterInternatTelephoneCode(ATelephoneNumber, InternatTelephoneCode,
                                 FSiteInternatAccessCode.Length, AAttributeType, APartnerKey, TelephoneNumberOrig,
-                                Catalog.GetString(CheckIntlAccessCodeWarningStr));
+                                Catalog.GetString(CheckIntlAccessCodeWarningStr), APPARecord);
 
                             Found = true;
                             break;
@@ -1260,10 +1755,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         ACountryCode = null;
                         ReturnValue = TelephoneNumberOrig;
 
-                        TLogging.Log(string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
-                                Catalog.GetString("  No country could be found for (what got recognised as) the International Access Code. " +
-                                    "Because of that the International Access Code could not be determined: it got set to nothing"),
-                                AAttributeType, TelephoneNumberOrig, APartnerKey));
+                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-300" +
+                            string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
+                                Catalog.GetString(" No country could be found for (what got recognised as) the International Access Code. " +
+                                    "Because of that the International Access Code could not be determined: it got set to nothing. (Cont.Detail Record Current: {3})"),
+                                AAttributeType, TelephoneNumberOrig, APartnerKey, APPARecord.Current));
                     }
                 }
                 else
@@ -1275,11 +1771,37 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     {
                         // If this is the case we issue a warning to the user as we can't be totally sure that the phone number is
                         // really inside the Country of the ACountryCode...
-                        TLogging.Log(string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
+                        TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-310" +
+                            string.Format(Catalog.GetString(CheckIntlAccessCodeWarningStr) +
                                 Catalog.GetString(" Telephone Number doesn't start with an International Access Code " +
                                     "and the Country of the Address that it is recorded against ({3}) isn't the Site's Country ({4}) - " +
-                                    "please check whether the International Access Code that was assigned is indeed correct."), AAttributeType,
-                                TelephoneNumberOrig, APartnerKey, ACountryCode, FSiteCountryCode));
+                                    "please check whether the International Access Code that was assigned is indeed correct. (Cont.Detail Record Current: {5})"),
+                                AAttributeType,
+                                TelephoneNumberOrig, APartnerKey, ACountryCode, FSiteCountryCode, APPARecord.Current));
+
+                        // TODO: Make hard-coded number '35' (first two digits of a PartnerKey for Switzerland) variable!
+                        if (!APartnerKey.ToString().StartsWith("35", StringComparison.InvariantCulture))
+                        {
+                            if (APPARecord.Current)
+                            {
+                                FFWarnings310CollectorNonFieldCurrentPartnerKeys.Add(APartnerKey.ToString());
+                            }
+                            else
+                            {
+                                FFWarnings310CollectorNonFieldNonCurrentPartnerKeys.Add(APartnerKey.ToString());
+                            }
+                        }
+                        else
+                        {
+                            if (APPARecord.Current)
+                            {
+                                FWarnings310CollectorFieldCurrentPartnerKeys.Add(APartnerKey.ToString());
+                            }
+                            else
+                            {
+                                FWarnings310CollectorFieldNonCurrentPartnerKeys.Add(APartnerKey.ToString());
+                            }
+                        }
                     }
                 }
             }
@@ -1295,17 +1817,19 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         }
 
         private static void DetectAndLogExtraDigitAfterInternatTelephoneCode(string ATelephoneNumber, string AInternatTelephoneCode,
-            int APrefixDenominatorLength, string AAttributeType, Int64 APartnerKey, string ATelephoneNumberOrig, string AGenericWarningString)
+            int APrefixDenominatorLength, string AAttributeType, Int64 APartnerKey, string ATelephoneNumberOrig, string AGenericWarningString,
+            PPartnerAttributeRecord APPARecord)
         {
             char ExtraDigitCheckChar = ATelephoneNumber[APrefixDenominatorLength + AInternatTelephoneCode.Length];
 
             if ((ExtraDigitCheckChar >= '0')
                 && (ExtraDigitCheckChar <= '9'))
             {
-                TLogging.Log(string.Format(Catalog.GetString(AGenericWarningString) +
+                TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-320" +
+                    string.Format(Catalog.GetString(AGenericWarningString) +
                         Catalog.GetString(" What got recognised as the International Access Code +{3} is immediately followed by a number, {4}. " +
-                            "Because of that we can't be totally sure of the International Access Code that we recognised: please check it manually."),
-                        AAttributeType, ATelephoneNumberOrig, APartnerKey, AInternatTelephoneCode, ExtraDigitCheckChar));
+                            "Because of that we can't be totally sure of the International Access Code that we recognised: please check it manually. (Cont.Detail Record Current: {5})"),
+                        AAttributeType, ATelephoneNumberOrig, APartnerKey, AInternatTelephoneCode, ExtraDigitCheckChar, APPARecord.Current));
             }
         }
 
@@ -1462,7 +1986,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         }
 
         private static void DetectAndLogIfMulitpleCountriesHaveSameIntlAccessCode(DataRow ACountryRow,
-            string AAttributeType, Int64 APartnerKey, string ATelephoneNumberOrig, string AGenericWarningString)
+            string AAttributeType, Int64 APartnerKey, string ATelephoneNumberOrig, string AGenericWarningString,
+            PPartnerAttributeRecord APPARecord)
         {
             const string MultipleMatchingCountriesWarningStr = " Multiple countries ({3}) have the same International Access Code {4}. " +
                                                                "Out of those, the country {5} (Country Code '{6}') got chosen.";
@@ -1471,10 +1996,13 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
             if (MultipleMatchingCoutries != String.Empty)
             {
-                TLogging.Log(string.Format(AGenericWarningString + Catalog.GetString(MultipleMatchingCountriesWarningStr),
+                TLogging.Log(CONT_DETAIL_MIGRATION_LOG_PREFIX + LOG_PREF_CHECK + "-330" +
+                    string.Format(AGenericWarningString + Catalog.GetString(MultipleMatchingCountriesWarningStr) +
+                        " (Cont.Detail Record Current: {7})",
                         AAttributeType, ATelephoneNumberOrig, APartnerKey, MultipleMatchingCoutries,
                         ACountryRow["p_internat_telephone_code_i"].ToString(),
-                        ACountryRow["p_country_name_c"].ToString(), ACountryRow["p_country_code_c"].ToString()));
+                        ACountryRow["p_country_name_c"].ToString(), ACountryRow["p_country_code_c"].ToString(),
+                        APPARecord.Current));
             }
         }
 
@@ -1521,6 +2049,9 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 GoodUntilDate = ((DateTime)APartnerLocationDR["p_date_good_until_d"]);
             }
 
+//            TLogging.Log(String.Format("Effective and GoodUntil Dates for Partner {0}: {1} = {2}; {3} = {4}",
+//                APartnerKey, "Effective", EffectiveDate ?? DateTime.MinValue, "GoodUntil", GoodUntilDate ?? DateTime.MinValue));
+
             if ((Icon == 3)                                                     // 'Expired Address'
                 && (GoodUntilDate.HasValue))
             {
@@ -1531,7 +2062,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             {
                 CommentStr = Catalog.GetString(
                     String.Format("In Petra 2.x this Contact Detail was set to become effective on {0}. " +
-                        "Please set this Contact Detail record to 'Valid' on, or after, this date!",
+                        "Please set this Contact Detail record to 'Current' on, or after, this date!",
                         StringHelper.DateToLocalizedString(EffectiveDate)));
             }
 

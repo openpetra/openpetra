@@ -4,8 +4,8 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
     FormType: dialog
     Template: window
-    WindowWidth: 290
-    WindowHeight: 145
+    WindowWidth: 640
+    WindowHeight: 210
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
@@ -13,13 +13,18 @@ RootNode:
     Controls:
         pnlDialogContent:
             Controls:
-                Row0: [lblExtractName]
-                Row1: [Empty]
-                Row2: [chkNoSolicitations]
+                Row0: [lblExtractNameAndCreator]
+                Row1: [lblAction1]
+                Row2: [lblAction2]
+                Row3: [lblAction3]
+                Row4: [chkNoSolicitations]
                 
-        lblExtractName:
+        lblExtractNameAndCreator: {Height=30, Align=Top, Stretch=horizontally}
             
-        Empty:
+        lblAction1: {Text=Change the 'No Solicitations' flag to the value below for all partners in this Extract?}
+        lblAction2: {Text=- If you tick the box and click OK then all Partners in the Extract will be set to 'No Solicitations'.}
+        lblAction3: {Text=- If you leave the box un-ticked and click OK then all Partners in the Extract will allow solicitations.}
 
         chkNoSolicitations: {CheckBoxAttachedLabel=right}
-            Label: No Solicitations?
+            Label: No Solicitations
+            Padding: 25,2,2,2

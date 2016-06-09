@@ -283,7 +283,7 @@ namespace Ict.Petra.Client.CommonControls
         private String FNotSetValue;
         private String FNotSetDisplay;
         private Boolean FAllowDbNull = false;
-        private string FNullValueDesciption = ApplWideResourcestrings.StrUndefined;
+        private string FNullValueDescription = ApplWideResourcestrings.StrUndefined;
 
         // Constants used in non-unique tables
         private const string NonUniqueSortMember = "NonUniqueSortMember";
@@ -397,11 +397,11 @@ namespace Ict.Petra.Client.CommonControls
         /// <value>
         /// The null value desciption.
         /// </value>
-        public string NullValueDesciption
+        public string NullValueDescription
         {
             set
             {
-                FNullValueDesciption = value;
+                FNullValueDescription = value;
             }
         }
 
@@ -1203,7 +1203,7 @@ namespace Ict.Petra.Client.CommonControls
 
                     if (ADescDBName != null)
                     {
-                        Dr[ADescDBName] = FNullValueDesciption;
+                        Dr[ADescDBName] = FNullValueDescription;
                     }
                 }
                 else

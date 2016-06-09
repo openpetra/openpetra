@@ -2727,7 +2727,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             string[] Columns =
             {
-                "ThisMonth", "ActualYTD", "Budget", "PriorYTD"
+                "ThisMonth", "Budget", "ActualYTD", "BudgetYTD", "PriorYTD"
             };
 
             foreach (string Column in Columns)
@@ -2766,6 +2766,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ResultRow[IncomeExpense[i, 0] + "PriorYTD"] = ActualsAndBudget[1];
                         ResultRow[IncomeExpense[i, 0] + "ActualYTD"] = ActualsAndBudget[2];
                         ResultRow[IncomeExpense[i, 0] + "Budget"] = ActualsAndBudget[3];
+                        ResultRow[IncomeExpense[i, 0] + "BudgetYTD"] = ActualsAndBudget[4];
                     }
 
                     /* Personnel Costs */
@@ -2822,6 +2823,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     decimal TotalPersonnelCostsPriorYTD = ActualsAndBudget[1];
                     decimal TotalPersonnelCostsActualYTD = ActualsAndBudget[2];
                     decimal TotalPersonnelCostsBudget = ActualsAndBudget[3];
+                    decimal TotalPersonnelCostsBudgetYTD = ActualsAndBudget[4];
 
                     if (Convert.ToInt32(ResultRow["PersonnelThisMonth"]) != 0)
                     {
@@ -2832,6 +2834,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         ResultRow["PersonnelCostsActualYTD"] = TotalPersonnelCostsActualYTD / Convert.ToInt32(ResultRow["PersonnelActualYTD"]);
                         ResultRow["PersonnelCostsBudget"] = TotalPersonnelCostsBudget / Convert.ToInt32(ResultRow["PersonnelActualYTD"]);
+                        ResultRow["PersonnelCostsBudgetYTD"] = TotalPersonnelCostsBudgetYTD / Convert.ToInt32(ResultRow["PersonnelActualYTD"]);
                     }
 
                     if (Convert.ToInt32(ResultRow["PersonnelPriorYTD"]) != 0)
@@ -2847,6 +2850,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     decimal TotalSupportIncomePriorYTD = ActualsAndBudget[1];
                     decimal TotalSupportIncomeActualYTD = ActualsAndBudget[2];
                     decimal TotalSupportIncomeBudget = ActualsAndBudget[3];
+                    decimal TotalSupportIncomeBudgetYTD = ActualsAndBudget[4];
 
                     ActualsAndBudget = GetActualsAndBudget(DbAdapter,
                         LedgerRow, MFinanceConstants.SUPPORT_GIFTS_FOREIGN, StandardSummaryCostCentre, EndPeriod, Year);        // 1100S
@@ -2855,6 +2859,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     TotalSupportIncomePriorYTD += ActualsAndBudget[1];
                     TotalSupportIncomeActualYTD += ActualsAndBudget[2];
                     TotalSupportIncomeBudget += ActualsAndBudget[3];
+                    TotalSupportIncomeBudgetYTD += ActualsAndBudget[4];
 
                     ResultRow["SupportIncomeThisMonth"] = TotalPersonnelCostsThisMonth != 0 ?
                                                           (TotalSupportIncomeThisMonth / TotalPersonnelCostsThisMonth) : 0;
@@ -2864,6 +2869,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                           (TotalSupportIncomeActualYTD / TotalPersonnelCostsActualYTD) : 0;
                     ResultRow["SupportIncomeBudget"] = TotalPersonnelCostsBudget != 0 ?
                                                        (TotalSupportIncomeBudget / TotalPersonnelCostsBudget) : 0;
+                    ResultRow["SupportIncomeBudgetYTD"] = TotalPersonnelCostsBudgetYTD != 0 ?
+                                                          (TotalSupportIncomeBudgetYTD / TotalPersonnelCostsBudgetYTD) : 0;
 
                     /* Bank */
                     string[, ] Bank =
@@ -2890,6 +2897,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ResultRow[Bank[i, 0] + "PriorYTD"] = ActualsAndBudget[1] * Multiplier;
                         ResultRow[Bank[i, 0] + "ActualYTD"] = ActualsAndBudget[2] * Multiplier;
                         ResultRow[Bank[i, 0] + "Budget"] = ActualsAndBudget[3] * Multiplier;
+                        ResultRow[Bank[i, 0] + "BudgetYTD"] = ActualsAndBudget[4] * Multiplier;
                     }
 
                     /* ACCOUNTS PAYABLE */
@@ -2946,6 +2954,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     ResultRow["GiftsForOtherFieldsPriorYTD"] = ActualsAndBudget[1];
                     ResultRow["GiftsForOtherFieldsActualYTD"] = ActualsAndBudget[2];
                     ResultRow["GiftsForOtherFieldsBudget"] = ActualsAndBudget[3];
+                    ResultRow["GiftsForOtherFieldsBudgetYTD"] = ActualsAndBudget[4];
 
                     /* NUMBER OF PERSONNEL ON OTHER FIELDS */
                     PersonnelCount = 0;
@@ -3607,7 +3616,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         private static Decimal[] GetActualsAndBudget(TReportingDbAdapter DbAdapter,
             ALedgerRow ALedger, string AAccountCode, string ACostCentreCode, int APeriodNumber, int AYear)
         {
-            decimal[] Results = new decimal[4];
+            decimal[] Results = new decimal[5];
 
             TDBTransaction Transaction = null;
             DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
@@ -3712,6 +3721,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         AccountFilter +
                         CostCentreFilter +
                         ") AS AllGlm";
+
                     DataTable tempTable = DbAdapter.RunQuery(Query, "ExecSummary", Transaction);
 
                     if (tempTable.Rows.Count > 0)
@@ -3732,6 +3742,56 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Results[1] = sumLastYear;
                         Results[2] = sumYtd - sumOpeningBalance;
                         Results[3] = sumBudget;
+                    }
+
+                    //Get BudgetYTD. The budget figures in the glmp are different to the actuals, as they are simply per period amounts
+                    String subtractOrAddBudgetYTD =
+                        "CASE WHEN Year=" + budgetYear + " AND Period<=" + budgetPeriod + " THEN " +
+                        (
+                            (AccountRow.DebitCreditIndicator) ?
+                            "CASE WHEN debit=TRUE THEN Budget ELSE 0-Budget END"
+                            :
+                            "CASE WHEN debit=TRUE THEN 0-Budget ELSE Budget END"
+                        ) +
+                        " END";
+
+                    String YearFilter2 = String.Format(" AND glm.a_year_i = {0}", budgetYear);
+                    String PeriodFilter2 =
+                        (APeriodNumber > 1) ?
+                        String.Format(" AND glmp.a_period_number_i between 1 AND {0}", budgetPeriod)
+                        :
+                        " AND glmp.a_period_number_i=1";
+
+                    String Query2 =
+                        "SELECT sum(" + subtractOrAddBudgetYTD + ") AS SumBudgetYTD" +
+                        " FROM" +
+                        " (SELECT DISTINCT a_account.a_account_code_c AS AccountCode, " +
+                        " glm.a_cost_centre_code_c AS CostCentreCode, " +
+                        " a_account.a_debit_credit_indicator_l AS debit," +
+                        " glm.a_year_i AS Year," +
+                        " glm.a_start_balance_base_n AS YearStart," +
+                        " glmp.a_period_number_i AS Period," +
+                        " glmp.a_actual_base_n AS Base, glmp.a_budget_base_n AS Budget" +
+                        " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account" +
+                        " WHERE glm.a_glm_sequence_i=glmp.a_glm_sequence_i" +
+                        " AND glm.a_account_code_c=a_account.a_account_code_c" +
+                        " AND a_account.a_ledger_number_i=" + ALedger.LedgerNumber +
+                        " AND glm.a_ledger_number_i=" + ALedger.LedgerNumber +
+                        YearFilter2 +
+                        PeriodFilter2 +
+                        AccountFilter +
+                        CostCentreFilter +
+                        ") AS AllGlm";
+
+                    DataTable tempTable2 = DbAdapter.RunQuery(Query2, "ExecSummary2", Transaction);
+
+                    if (tempTable2.Rows.Count > 0)
+                    {
+                        Decimal sumBudgetYTD = 0;
+
+                        Decimal.TryParse((tempTable2.Rows[0]["SumBudgetYTD"]).ToString(), out sumBudgetYTD);
+
+                        Results[4] = sumBudgetYTD;
                     }
 
                     /*

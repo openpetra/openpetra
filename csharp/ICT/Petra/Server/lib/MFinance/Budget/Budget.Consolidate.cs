@@ -22,29 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
-using System.Xml;
-using System.IO;
-using GNU.Gettext;
-using Ict.Common;
-using Ict.Common.IO;
 using Ict.Common.DB;
-using Ict.Common.Verification;
-using Ict.Common.Data;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MCommon.Data.Access;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.MFinance.GL.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 {
@@ -57,7 +44,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// Main Budget tables dataset
         /// </summary>
         private static BudgetTDS FBudgetTDS = null;
-        private static GLPostingTDS GLPostingDS = null;
+        private static GLPostingTDS FGLPostingDS = null;
 
         /// <summary>
         /// load budgets
@@ -114,26 +101,26 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     // Accept row changes here so that the Client gets 'unmodified' rows
                     FBudgetTDS.AcceptChanges();
 
-                    GLPostingDS = new GLPostingTDS();
-                    AAccountAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, Transaction);
-                    AAccountHierarchyDetailAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, Transaction);
-                    ACostCentreAccess.LoadViaALedger(GLPostingDS, ALedgerNumber, Transaction);
-                    ALedgerAccess.LoadByPrimaryKey(GLPostingDS, ALedgerNumber, Transaction);
+                    FGLPostingDS = new GLPostingTDS();
+                    AAccountAccess.LoadViaALedger(FGLPostingDS, ALedgerNumber, Transaction);
+                    AAccountHierarchyDetailAccess.LoadViaALedger(FGLPostingDS, ALedgerNumber, Transaction);
+                    ACostCentreAccess.LoadViaALedger(FGLPostingDS, ALedgerNumber, Transaction);
+                    ALedgerAccess.LoadByPrimaryKey(FGLPostingDS, ALedgerNumber, Transaction);
 
                     // get the glm sequences for this year and next year
                     for (int i = 0; i <= 1; i++)
                     {
-                        int Year = GLPostingDS.ALedger[0].CurrentFinancialYear + i;
+                        int Year = FGLPostingDS.ALedger[0].CurrentFinancialYear + i;
 
-                        AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.NewRowTyped(false);
+                        AGeneralLedgerMasterRow TemplateRow = (AGeneralLedgerMasterRow)FGLPostingDS.AGeneralLedgerMaster.NewRowTyped(false);
 
                         TemplateRow.LedgerNumber = ALedgerNumber;
                         TemplateRow.Year = Year;
 
-                        GLPostingDS.AGeneralLedgerMaster.Merge(AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow, Transaction));
+                        FGLPostingDS.AGeneralLedgerMaster.Merge(AGeneralLedgerMasterAccess.LoadUsingTemplate(TemplateRow, Transaction));
                     }
 
-                    string sqlLoadGlmperiodForThisAndNextYear =
+                    string sqlLoadGLMPeriodForThisAndNextYear =
                         string.Format("SELECT {0}.* FROM PUB_{0}, PUB_{1} WHERE {0}.a_glm_sequence_i = {1}.a_glm_sequence_i AND " +
                             "{2}=? AND ({3} = ? OR {3} = ?)",
                             AGeneralLedgerMasterPeriodTable.GetTableDBName(),
@@ -141,14 +128,14 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
                             AGeneralLedgerMasterTable.GetYearDBName());
 
-                    DBAccess.GDBAccessObj.Select(GLPostingDS,
-                        sqlLoadGlmperiodForThisAndNextYear,
-                        GLPostingDS.AGeneralLedgerMasterPeriod.TableName,
+                    DBAccess.GDBAccessObj.Select(FGLPostingDS,
+                        sqlLoadGLMPeriodForThisAndNextYear,
+                        FGLPostingDS.AGeneralLedgerMasterPeriod.TableName,
                         Transaction,
                         parameters.ToArray());
                 });
 
-            GLPostingDS.AcceptChanges();
+            FGLPostingDS.AcceptChanges();
 
             return true;
         }
@@ -161,10 +148,10 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         [RequireModulePermission("FINANCE-3")]
         public static void ConsolidateBudgets(Int32 ALedgerNumber, bool AConsolidateAll)
         {
-            TDBTransaction transaction = null;
+            TDBTransaction Transaction = null;
             Boolean SubmissionOK = false;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOK,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOK,
                 delegate
                 {
                     ALedgerRow LedgerRow = FBudgetTDS.ALedger[0];
@@ -177,7 +164,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                             BudgetRow.BudgetStatus = false;
                         }
 
-                        foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in GLPostingDS.AGeneralLedgerMaster.Rows)
+                        foreach (AGeneralLedgerMasterRow GeneralLedgerMasterRow in FGLPostingDS.AGeneralLedgerMaster.Rows)
                         {
                             for (int Period = 1; Period <= LedgerRow.NumberOfAccountingPeriods; Period++)
                             {
@@ -214,30 +201,20 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         }
                     }
 
-                    FinishConsolidateBudget(transaction);
+                    /*Consolidate_Budget*/
+                    foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
+                    {
+                        BudgetRow.BudgetStatus = true;
+                    }
 
+                    ABudgetAccess.SubmitChanges(FBudgetTDS.ABudget, Transaction);
 
-                    GLPostingDS.ThrowAwayAfterSubmitChanges = true;
-                    GLPostingTDSAccess.SubmitChanges(GLPostingDS);
-                    GLPostingDS.Clear();
+                    FGLPostingDS.ThrowAwayAfterSubmitChanges = true;
+                    GLPostingTDSAccess.SubmitChanges(FGLPostingDS);
+                    FGLPostingDS.Clear();
+
                     SubmissionOK = true;
-                }); // Get NewOrExisting AutoTransaction
-        } // Consolidate Budgets
-
-        /// <summary>
-        /// Complete the Budget consolidation process
-        /// </summary>
-        /// <param name="ATransaction"></param>
-        private static void FinishConsolidateBudget(
-            TDBTransaction ATransaction)
-        {
-            /*Consolidate_Budget*/
-            foreach (ABudgetRow BudgetRow in FBudgetTDS.ABudget.Rows)
-            {
-                BudgetRow.BudgetStatus = true;
-            }
-
-            ABudgetAccess.SubmitChanges(FBudgetTDS.ABudget, ATransaction);
+                });
         }
 
         /// <summary>
@@ -302,25 +279,25 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             // get the current budget value for each GLM Period, and unpost that budget
 
-            GLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
+            FGLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
                 AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
                 AGeneralLedgerMasterTable.GetYearDBName(),
                 AGeneralLedgerMasterTable.GetAccountCodeDBName(),
                 AGeneralLedgerMasterTable.GetCostCentreCodeDBName());
 
-            int glmIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(
+            int glmIndex = FGLPostingDS.AGeneralLedgerMaster.DefaultView.Find(
                 new object[] { ALedgerNumber, ABudgetRow.Year, ABudgetRow.AccountCode, ABudgetRow.CostCentreCode });
 
             if (glmIndex != -1)
             {
-                AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.DefaultView[glmIndex].Row;
+                AGeneralLedgerMasterRow glmRow = (AGeneralLedgerMasterRow)FGLPostingDS.AGeneralLedgerMaster.DefaultView[glmIndex].Row;
 
                 List <ABudgetPeriodRow>budgetPeriods = new List <ABudgetPeriodRow>();
 
-                for (int Period = 1; Period <= GLPostingDS.ALedger[0].NumberOfAccountingPeriods; Period++)
+                for (int Period = 1; Period <= FGLPostingDS.ALedger[0].NumberOfAccountingPeriods; Period++)
                 {
                     AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
-                        (AGeneralLedgerMasterPeriodRow)GLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
+                        (AGeneralLedgerMasterPeriodRow)FGLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
                             new object[] { glmRow.GlmSequence, Period });
 
                     ABudgetPeriodRow budgetPeriodRow = FBudgetTDS.ABudgetPeriod.NewRowTyped(true);
@@ -347,13 +324,13 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// </summary>
         private static void PostBudget(int ALedgerNumber, ABudgetRow ABudgetRow, List <ABudgetPeriodRow>ABudgetPeriodRows)
         {
-            GLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
+            FGLPostingDS.AGeneralLedgerMaster.DefaultView.Sort = String.Format("{0},{1},{2},{3}",
                 AGeneralLedgerMasterTable.GetLedgerNumberDBName(),
                 AGeneralLedgerMasterTable.GetYearDBName(),
                 AGeneralLedgerMasterTable.GetAccountCodeDBName(),
                 AGeneralLedgerMasterTable.GetCostCentreCodeDBName());
 
-            int glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] {
+            int glmRowIndex = FGLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] {
                     ALedgerNumber,
                     ABudgetRow.Year,
                     ABudgetRow.AccountCode,
@@ -362,12 +339,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (glmRowIndex == -1)
             {
-                TGLPosting.CreateGLMYear(ref GLPostingDS,
+                TGLPosting.CreateGLMYear(ref FGLPostingDS,
                     ALedgerNumber,
                     ABudgetRow.Year,
                     ABudgetRow.AccountCode,
                     ABudgetRow.CostCentreCode);
-                glmRowIndex = GLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] {
+                glmRowIndex = FGLPostingDS.AGeneralLedgerMaster.DefaultView.Find(new object[] {
                         ALedgerNumber,
                         ABudgetRow.Year,
                         ABudgetRow.AccountCode,
@@ -375,7 +352,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     });
             }
 
-            int GLMSequence = ((AGeneralLedgerMasterRow)GLPostingDS.AGeneralLedgerMaster.DefaultView[glmRowIndex].Row).GlmSequence;
+            int GLMSequence = ((AGeneralLedgerMasterRow)FGLPostingDS.AGeneralLedgerMaster.DefaultView[glmRowIndex].Row).GlmSequence;
 
             /* Update totals for the General Ledger Master period record. */
             foreach (ABudgetPeriodRow BPR in ABudgetPeriodRows)
@@ -393,7 +370,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         private static void AddBudgetValue(int AGLMSequence, int APeriodNumber, decimal APeriodAmount)
         {
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
-                (AGeneralLedgerMasterPeriodRow)GLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
+                (AGeneralLedgerMasterPeriodRow)FGLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(
                     new object[] { AGLMSequence, APeriodNumber });
 
             if (GeneralLedgerMasterPeriodRow != null)
@@ -415,7 +392,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         private static void ClearAllBudgetValues(int AGLMSequence, int APeriodNumber)
         {
             AGeneralLedgerMasterPeriodRow GeneralLedgerMasterPeriodRow =
-                (AGeneralLedgerMasterPeriodRow)GLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
+                (AGeneralLedgerMasterPeriodRow)FGLPostingDS.AGeneralLedgerMasterPeriod.Rows.Find(new object[] { AGLMSequence, APeriodNumber });
 
             if (GeneralLedgerMasterPeriodRow != null)
             {

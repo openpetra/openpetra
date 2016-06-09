@@ -68,6 +68,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             ACalc.AddParameter("param_currency", "base");
             ACalc.AddParameter("param_depth", "standard");
 
+            // Needed to add an extra report level to the XML file without "System.Exception: TRowComparer: Sorting of multilevel is not allowed."
+            // Unfortunately, it also means that the footer is sorted into the report body if the primary sort is by First Name.
+            ACalc.AddParameter("param_sort_multiple_levels", "true");
+
             String CountryCode = "*";
 
             if (chkOnlyFromCountry.Checked)
@@ -81,6 +85,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
 
             ACalc.AddParameter("param_country_code", CountryCode);
+
+            int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+
+            for (int Counter = 0; Counter <= MaxColumns; ++Counter)
+            {
+                String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
+
+                if (ColumnName == "Total Given")
+                {
+                    ACalc.AddParameter("param_gift_amount_column", Counter);
+                }
+            }
         }
 
         private void SetControlsManual(TParameterList AParameters)
@@ -92,6 +108,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 cmbCountry.SetSelectedString(CountryCode);
             }
+
+            uco_Selection.StartDate = new DateTime(DateTime.Now.Year, 1, 1);
+            uco_Selection.EndDate = DateTime.Now;
         }
     }
 }

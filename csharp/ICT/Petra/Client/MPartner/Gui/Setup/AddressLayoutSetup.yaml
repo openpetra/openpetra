@@ -54,7 +54,7 @@ RootNode:
                 Row1: [cmbDetailAddressLayoutCode]
                 Row2: [txtDetailAddressBlockText]
                 Row3: [pnlInsert]
-        txtDetailAddressBlockText: {Label=Address Layout, Multiline=true, Height=150, Width=500, ScrollBars=Both, WordWrap=false, Stretch=horizontally}
+        txtDetailAddressBlockText: {Label=Address Layout, Multiline=true, Height=150, Width=500, ScrollBars=Both, WordWrap=false, Stretch=horizontally, RequiredField=true}
         cmbDetailCountryCode: {List=CountryList}
         cmbDetailAddressLayoutCode: {Label=Layout, List=AddressLayoutCodeList}
         pnlInsert:

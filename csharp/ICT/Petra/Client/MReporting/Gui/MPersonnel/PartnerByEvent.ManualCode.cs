@@ -71,6 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
 
             ucoChkFilter.ShowFamiliesOnly(false);
+            ucoChkFilter.ShowPersonsOnly(false);
 
             // enable autofind in list for first character (so the user can press character to find list entry)
             // from Sep 2015 this is handled automatically by the code generator

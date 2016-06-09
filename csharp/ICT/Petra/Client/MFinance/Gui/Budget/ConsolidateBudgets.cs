@@ -22,33 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
-using System.Collections;
-using System.ComponentModel;
-using System.IO;
 using System.Windows.Forms;
-using System.Data;
-using System.Threading;
-using Ict.Petra.Shared;
-using System.Resources;
-using System.Collections.Specialized;
-using GNU.Gettext;
 using Ict.Common;
-using Ict.Common.Data;
-using Ict.Common.DB;
-using Ict.Common.IO;
-using Ict.Common.Verification;
-using Ict.Common.Remoting.Client;
-using Ict.Common.Remoting.Shared;
-using Ict.Petra.Client.App.Core;
-using Ict.Common.Controls;
-using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Shared.MFinance.GL.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.Interfaces.MFinance;
-using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Budget
 {
@@ -64,42 +41,65 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         /// <param name="ALedgerNumber"></param>
         public static void ConsolidateBudgets(Form AParentWindow, Int32 ALedgerNumber)         //, TVerificationResultCollection AVerificationResult = null)            /// <param name="AVerificationResult"></param>
         {
-            string msg = string.Empty;
+            string Msg = string.Empty;
 
-            //msg = "You can either consolidate all of your budgets";
-            //msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
-            msg += "Do you want to consolidate all of your budgets?";
+            Msg = "You can either consolidate all of your budgets";
+            Msg += " or just those that have changed since the last consolidation." + "\n\r\n\r";
+            Msg += "Do you want to consolidate all of your budgets?";
 
-            bool ConsolidateAll =
-                (MessageBox.Show(msg, "Consolidate Budgets", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2,
-                     MessageBoxOptions.DefaultDesktopOnly, false) == DialogResult.Yes);
+            DialogResult DlgRes;
 
-            //TODO: call code on the server. To be completed with Timo.
+            DlgRes = MessageBox.Show(Msg,
+                "Consolidate Budgets",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button2,
+                MessageBoxOptions.DefaultDesktopOnly,
+                false);
+
+            if (DlgRes == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            bool ConsolidateAll = (DlgRes == DialogResult.Yes);
+
+            TFrmStatusDialog DlgStatus = null;
 
             try
             {
-                if (ConsolidateAll)
-                {
-                    Cursor.Current = Cursors.WaitCursor;
+                Cursor.Current = Cursors.WaitCursor;
 
-                    TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
+                DlgStatus = new TFrmStatusDialog(AParentWindow);
 
-                    TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, true);
+                DlgStatus.Show();
+                DlgStatus.Heading = Catalog.GetString("Consolidating Budgets");
 
-                    MessageBox.Show("Budget Consolidation Complete.", "Consolidate Budgets");
+                DlgStatus.CurrentStatus = Catalog.GetString("Loading budget data...");
+                TRemote.MFinance.Budget.WebConnectors.LoadBudgetForConsolidate(ALedgerNumber);
 
-                    Cursor.Current = Cursors.Default;
-                }
+                DlgStatus.CurrentStatus = Catalog.GetString("Consolidating" + (ConsolidateAll ? " all " : " changed ") + "budget data...");
+                TRemote.MFinance.Budget.WebConnectors.ConsolidateBudgets(ALedgerNumber, ConsolidateAll);
+
+                DlgStatus.Close();
+                DlgStatus = null;
+
+                MessageBox.Show("Budget Consolidation Complete.", "Consolidate Budgets");
             }
-            catch (InvalidOperationException ex)
+            catch (Exception ex)
             {
-                Cursor.Current = Cursors.Default;
-                MessageBox.Show(ex.Message);
-            }
-            catch (Exception)
-            {
-                Cursor.Current = Cursors.Default;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+
+                if (DlgStatus != null)
+                {
+                    DlgStatus.Close();
+                    DlgStatus = null;
+                }
             }
         }
     }

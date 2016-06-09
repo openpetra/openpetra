@@ -277,6 +277,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         ACalculator.AddParameter("param_real_year", dtpEndDate.Date.Value.Year);
                     }
                 }
+                else
+                {
+                    FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                            Catalog.GetString("Date format problem"),
+                            Catalog.GetString("Please check the date entry."),
+                            TResultSeverity.Resv_Critical));
+                }
             }
             else if (rbtBreakdown.Checked)
             {
@@ -729,6 +736,36 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         public string GetInternationalCurrency()
         {
             return FLedgerRow.IntlCurrency;
+        }
+
+        /// <summary>
+        /// Get and set the control's StartDate property, to allow setting custom defaults
+        /// </summary>
+        public DateTime StartDate
+        {
+            get
+            {
+                return (DateTime)dtpStartDate.Date;
+            }
+            set
+            {
+                dtpStartDate.Date = value;
+            }
+        }
+
+        /// <summary>
+        /// Get and set the control's EndDate property, to allow setting custom defaults
+        /// </summary>
+        public DateTime EndDate
+        {
+            get
+            {
+                return (DateTime)dtpEndDate.Date;
+            }
+            set
+            {
+                dtpEndDate.Date = value;
+            }
         }
     }
 }

@@ -214,7 +214,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                   "AND p_partner_key_n=" + PartnerKey + " " +
                                   "ORDER BY Date DESC";
                 FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
-                FPagedDataSetObject.FindParameters.FSearchName = "Transactions";
+                FPagedDataSetObject.FindParameters.FSearchName = "ATransactions";
             }
             else
             {
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                       "AND PUB_a_ap_document.p_partner_key_n = PUB_p_partner.p_partner_key_n " +
                                       "ORDER BY PUB_a_ap_document.a_ap_number_i DESC";
                     FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
-                    FPagedDataSetObject.FindParameters.FSearchName = "Invoices";
+                    FPagedDataSetObject.FindParameters.FSearchName = "AInvoices";
                 }
                 else
                 {
@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
                                 "ORDER BY PartnerShortName";
 
                     FPagedDataSetObject.FindParameters = new TPagedDataSet.TAsyncFindParameters(SqlQuery);
-                    FPagedDataSetObject.FindParameters.FSearchName = "Suppliers";
+                    FPagedDataSetObject.FindParameters.FSearchName = "ASuppliers";
                 }
             }
 

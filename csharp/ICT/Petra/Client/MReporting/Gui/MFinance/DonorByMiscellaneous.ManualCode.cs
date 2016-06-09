@@ -43,6 +43,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
         private void InitializeManualCode()
         {
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

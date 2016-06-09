@@ -250,6 +250,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 sptTransactions.TabStop = false;
 
                 SetupTextBoxMenuItems();
+
+                txtDetailDonorKey.PartnerClass = "DONOR";
                 txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
                 //Event fires when the recipient key is changed and the new partner has a different Partner Class
@@ -2277,6 +2279,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
+                }
+
+                if (chkDetailActive.Checked.Equals(null))
+                {
+                    giftRow.SetActiveNull();
+                }
+                else
+                {
+                    giftRow.Active = chkDetailActive.Checked;
                 }
 
                 if (txtDetailReference.Text.Length == 0)

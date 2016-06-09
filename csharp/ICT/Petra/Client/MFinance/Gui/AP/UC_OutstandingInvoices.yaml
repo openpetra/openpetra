@@ -14,15 +14,8 @@ RootNode:
         actOpenSelectedInvoice:
             Enabled: cndCanOpen
             ActionClick: OpenSelectedInvoice
-        actApproveTagged:
-            Enabled: cndCanPost
-            ActionClick: ApproveAllTagged
-        actPostTagged:
-            Enabled: cndCanPost
-            ActionClick: PostAllTagged
-        actPayTagged:
-            Enabled: cndCanPay
-            ActionClick: PayAllTagged
+        actRunTagAction:
+            ActionClick: RunTagAction
         actReverseTagged:
             Enabled: cndCanReverse
             ActionClick: ReverseAllTagged
@@ -39,19 +32,16 @@ RootNode:
             Controls: [pnlFilterAndFind, grdInvoices]
             Dock: Fill
         pnlButtons:
-            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnPayTagged, btnReverseTagged, btnDeleteTagged]
+            Controls: [btnTagAll, btnUntagAll, btnRunTagAction, btnReverseTagged, btnDeleteTagged]
             ControlsOrientation: horizontal
             Dock:Bottom
         btnTagAll: {Label=Tag all}
             Action: actTagAll
         btnUntagAll: {Label=&Untag all}
             Action: actUntagAll
-        btnApproveTagged: {Label=Appro&ve Tagged}
-            Action: actApproveTagged
-        btnPostTagged: {Label=Post Tagged}
-            Action: actPostTagged
-        btnPayTagged: {Label=Pay Tagged}
-            Action: actPayTagged
+        btnRunTagAction: {Label=Pay Tagged}
+            Action: actRunTagAction
+            Width: 120
         btnReverseTagged: {Label=Reverse Tagged}
             Action: actReverseTagged
         btnDeleteTagged: {Label=Delete Tagged, Width=115}
@@ -100,15 +90,17 @@ RootNode:
         pnlOutstandingTotals:
             Controls: [grpOutstandingTotals]
             Padding: 5,10,5,5
-            Height: 90
+            Height: 105
             Dock: Bottom
         grpOutstandingTotals:
             Controls:
                 Row0: [txtInvoiceBalance, txtFilteredBalance]
                 Row1: [txtTaggedBalance, txtTaggedCount]
-            Height: 70
+                Row2: [lblExcludedItems]
+            Height: 90
             Dock: Top
-        txtInvoiceBalance: {Label=All outstanding invoices, ReadOnly=true}
-        txtFilteredBalance: {Label=Displayed invoices, ReadOnly=true}
-        txtTaggedBalance: {Label=Tagged invoices, ReadOnly=true}
-        txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40}
+        txtInvoiceBalance: {Label=All outstanding invoices, ReadOnly=true, Format=Currency}
+        txtFilteredBalance: {Label=Displayed invoices, ReadOnly=true, Format=Currency}
+        txtTaggedBalance: {Label=Tagged invoices, ReadOnly=true, Format=Currency}
+        txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40, Format=Integer}
+        lblExcludedItems: {Text=Outstanding totals do not include invoices written in a non-{0} currency, ColSpan=2}

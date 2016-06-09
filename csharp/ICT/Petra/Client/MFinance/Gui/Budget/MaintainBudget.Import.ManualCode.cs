@@ -101,7 +101,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFDialog, FullPath, ExportPath);
 
             OFDialog.Title = Catalog.GetString("Import budget(s) from CSV file");
-            OFDialog.Filter = Catalog.GetString("Delimited Files(*.csv) | *.csv | Text Files(*.txt) | *.txt");
+            OFDialog.Filter = Catalog.GetString("Delimited Files(*.csv)|*.csv|Text Files(*.txt)|*.txt|All Types|*.csv;*.txt");
+
             String ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
             // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()

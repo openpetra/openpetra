@@ -50,7 +50,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AExtractName"></param>
         public void SetExtractName(String AExtractName)
         {
-            lblExtractName.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Text = Catalog.GetString("Extract Name: ") + AExtractName;
+            lblExtractNameAndCreator.Font = new System.Drawing.Font(lblExtractNameAndCreator.Font.FontFamily.Name, 10, System.Drawing.FontStyle.Bold);
         }
 
         private void InitializeManualCode()
@@ -103,14 +104,50 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (MessageBox.Show(Catalog.GetString("Are you sure that you want to update Receipt Frequency data" +
-                        "\r\nfor all partners in the extract?"),
-                    Catalog.GetString("Update Receipt Frequency?"),
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+            string title = Catalog.GetString("Update Receipt Frequency");
+
+            if ((chkUpdateReceiptEachGift.Checked == false) && (chkUpdateReceiptLetterFrequency.Checked == false))
             {
-                this.DialogResult = System.Windows.Forms.DialogResult.OK;
-                this.Close();
+                if (MessageBox.Show(Catalog.GetString("You have not selected any changes to make.  Do you want to make a change to Gift Receipting?"),
+                        title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+            }
+            else
+            {
+                // Work out what the changes mean
+                string msg = Catalog.GetString(
+                    "Are you sure that you want to make the following changes to the Receipt Frequency settings for all partners in the extract?");
+                msg += Environment.NewLine;
+
+                if (chkUpdateReceiptLetterFrequency.Checked)
+                {
+                    msg += Environment.NewLine;
+
+                    if (cmbReceiptLetterFrequency.GetSelectedString() == string.Empty)
+                    {
+                        msg += Catalog.GetString("  Receipt frequency => Partners will not receive receipts");
+                    }
+                    else
+                    {
+                        msg += string.Format(Catalog.GetString("  Receipt frequency => {0}"), cmbReceiptLetterFrequency.GetSelectedString());
+                    }
+                }
+
+                if (chkUpdateReceiptEachGift.Checked)
+                {
+                    msg += Environment.NewLine;
+                    msg += Catalog.GetString("  Receipt each gift => ") +
+                           (chkReceiptEachGift.Checked ? Catalog.GetString("yes") : Catalog.GetString("no"));
+                }
+
+                if (MessageBox.Show(msg, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                    this.Close();
+                }
             }
         }
 

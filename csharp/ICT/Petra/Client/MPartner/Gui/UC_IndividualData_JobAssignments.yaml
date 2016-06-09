@@ -77,6 +77,7 @@ RootNode:
             Label: To Date
             DataField: PmJobAssignment.ToDate
             Validation: Pair(dtpFromDate)
+            RequiredField: true
         
         txtUnitKey:
             DataField: PmJobAssignment.UnitKey
@@ -84,6 +85,7 @@ RootNode:
             PartnerClass: UNIT
             ColSpan: 2
             Validation: true
+            RequiredField: true
         
         cmbPositionName:
             Label: Position/Role
@@ -91,6 +93,7 @@ RootNode:
             DataField: PmJobAssignment.PositionName
             ColSpan: 2
             Validation: true
+            RequiredField: true
         
         chkAssistantTo:
             Label: Assistant to selected Position

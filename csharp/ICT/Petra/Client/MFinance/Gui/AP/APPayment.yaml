@@ -8,7 +8,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: window
-    WindowWidth: 770
+    WindowWidth: 800
     WindowHeight: 600
     Actions:
         actMakePayment: {Label=&Make Payment, ActionClick=MakePayment}

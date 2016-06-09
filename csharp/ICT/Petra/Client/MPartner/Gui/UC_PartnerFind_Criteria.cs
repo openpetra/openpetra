@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
@@ -43,6 +44,7 @@ using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -281,6 +283,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         FCurrentWorkerFamOnlySelection = true;
 
+                        if (FWorkerFamPreferred)
+                        {
+                            SelectFamilyAndActivePartnerStatus(true);  // part of fixing Bug #5002
+                        }
+
                         /* this ensures that the checkbox is visible if needed */
                         /* and disabled if needed */
                         /* and checked if needed */
@@ -302,6 +309,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                         HandlePartnerClassGui();
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Selects 'FAMILY' as the Partner Class and optionally sets the PartnerStatus to 'ACTIVE'
+        /// </summary>
+        /// <param name="ASetPartnerStatusToActive">Set to true to set the PartnerStatus to 'ACTIVE' in addition
+        /// (Partner Status is left as it was if this is false).</param>
+        private void SelectFamilyAndActivePartnerStatus(bool ASetPartnerStatusToActive)
+        {
+            // Select 'FAMILY'
+            cmbPartnerClass.SelectedValue = "FAMILY";
+
+            if (ASetPartnerStatusToActive)
+            {
+                this.PartnerStatus = "ACTIVE";
             }
         }
 
@@ -347,6 +370,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             String RestrictedClasses = "";
 
             Boolean WorkerFamOnly = false;
+            Boolean SysDefaultAllowPERSONPartnersAsDonors = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS,
+                true);
             DataRow PartnerClassDataRow;
 
             TmpString = ARestrictedPartnerClasses[0];
@@ -366,6 +391,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerClassDataRow = FPartnerClassDataTable.NewRow();
                 PartnerClassDataRow["PartnerClass"] = "*";
                 FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                // Please note that the just added record might get deleted later in this Method
+                // (--> see 'FPartnerClassDataTable.Rows[0].Delete();' below...!
             }
 
             foreach (String eachPart in ARestrictedPartnerClasses)
@@ -385,6 +413,69 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     // Set the flag, so combo box handler knows this is the case
                     FWorkerFamOnly = true;
+                }
+                else if (eachPart == "DONOR")
+                {
+                    if (AAllPartnerClasses)
+                    {
+                        // First add all possible Partner Classes as available Partner Classes
+                        InsertDefaultPartnerClassComboBox();
+
+                        // If special System Default is false: remove 'PERSON' from the list of available Partner Classes!
+                        if (!SysDefaultAllowPERSONPartnersAsDonors)
+                        {
+                            DataRow PersonRow = FPartnerClassDataTable.Rows.Find("PERSON");
+
+                            if (PersonRow != null)
+                            {
+                                PersonRow.Delete();
+                            }
+                            else
+                            {
+                                throw new EOPAppException(
+                                    "Expected PERSON to be in FPartnerClassDataTable after calling InsertDefaultPartnerClassComboBox() but it isn't");
+                            }
+
+                            RestrictedClasses = "CHURCH,FAMILY,ORGANISATION,BANK,UNIT,VENUE"; // = every Partner Class except for PERSON!
+                        }
+                        else
+                        {
+                            RestrictedClasses = "CHURCH,PERSON,FAMILY,ORGANISATION,BANK,UNIT,VENUE"; // = every Partner Class
+                        }
+                    }
+                    else
+                    {
+                        // If special System Default is false...
+                        if (!SysDefaultAllowPERSONPartnersAsDonors)
+                        {
+                            // ...ensure that only 'FAMILY' is in the list of available Partner Classes
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "FAMILY";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            // Only 'FAMILY' will be allowable then
+                            FDefaultPartnerClass = "FAMILY";
+                        }
+                        else
+                        {
+                            // ... otherwise add *, PERSON and FAMILY
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "*";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "PERSON";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "FAMILY";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            FDefaultPartnerClass = "*";
+                        }
+                    }
+
+                    continue;
                 }
                 else
                 {
@@ -424,6 +515,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FDefaultPartnerClass = RestrictedClasses.TrimEnd(',');
             }
 
+            if (CountUniqueRestrictedClasses(FDefaultPartnerClass) == 1)
+            {
+                if ((SysDefaultAllowPERSONPartnersAsDonors && (TmpString != "DONOR"))
+                    || (!SysDefaultAllowPERSONPartnersAsDonors))
+                {
+                    // If we ended up with only one unique Restricted Class then remove the '*' record again (got added earlier in
+                    // this Method) as it would give the user the wrong impression that multiple Partner Classes might get searched
+                    // (but first make sure we are indeed deleting THAT record - just for sanity reasons) - part of fixing Bug #5255!
+                    if (FPartnerClassDataTable.Rows[0][0].ToString() == "*")
+                    {
+                        FPartnerClassDataTable.Rows[0].Delete();
+                    }
+                }
+            }
+
             if (!FDontRecordCurrentWorkerFamOnlySelection)
             {
                 MessageBox.Show("Before updating WORKERFAMONLY column...");
@@ -444,6 +550,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             FFindCriteriaDataTable.Rows[0]["PartnerClass"] = FDefaultPartnerClass;
+        }
+
+        /// <summary>
+        /// Counts and returns the number of unique Restricted Classes.
+        /// </summary>
+        /// <param name="ARestrictedClasses">String containing the Restricted Classes separated by ','.</param>
+        /// <returns>Number of unique Restricted Classes strings.</returns>
+        private int CountUniqueRestrictedClasses(string ARestrictedClasses)
+        {
+            SortedSet <string>UniqueRestrictedClasses = new SortedSet <string>();
+
+            // Iterate over all Restricted Classes strings
+            foreach (string s in ARestrictedClasses.Split(new char[] { ',' }))
+            {
+                // Add each Restriced Class to UniqueRestrictedClasses (However, a SortedSet will not store duplicates
+                // and at the same time not throw an error on adding a duplicate - we utilise both capabilities here!)
+                UniqueRestrictedClasses.Add(s);
+            }
+
+            return UniqueRestrictedClasses.Count;
         }
 
         /// <summary>
@@ -1348,7 +1474,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                             // Set Partner Class to Family or Person, depending on what the previous value was
                             // Need to change it twice to get a selected value changed event
                             cmbPartnerClass.SelectedIndex = -1;
-                            cmbPartnerClass.SelectedValue = FPreviouslySelectedPartnerClass;
+
+                            if (!FWorkerFamPreferred)
+                            {
+                                cmbPartnerClass.SelectedValue = FPreviouslySelectedPartnerClass;
+                            }
+                            else
+                            {
+                                cmbPartnerClass.SelectedValue = "FAMILY";  // part of fixing Bug #5002
+                            }
 
                             if (cmbPartnerClass.SelectedValue == null)
                             {
@@ -1399,8 +1533,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                         break;
 
                     default:
-                        cmbPartnerClass.SelectedIndex = 1;
-                        cmbPartnerClass.SelectedIndex = 0;
+
+                        if (!FWorkerFamPreferred)
+                        {
+                            cmbPartnerClass.SelectedIndex = 1;
+                            cmbPartnerClass.SelectedIndex = 0;
+                        }
+                        else  // part of fixing Bug #5002
+                        {
+                            cmbPartnerClass.SelectedIndex = 0;
+
+                            SelectFamilyAndActivePartnerStatus(false);
+                        }
+
                         break;
                 }
 

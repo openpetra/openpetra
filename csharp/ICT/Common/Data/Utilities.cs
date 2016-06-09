@@ -597,7 +597,7 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// copy all values from one row to the other; must have the same columns
+        /// Copy all values from one row to the other.  Only copies columns with matching column names.
         /// </summary>
         /// <param name="ASourceRow"></param>
         /// <param name="ADestinationRow"></param>
@@ -609,13 +609,21 @@ namespace Ict.Common.Data
 
                 if (ADestinationRow.Table.Columns.Contains(columnName))
                 {
-                    ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = ASourceRow[col];
+                    object data1 = ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal];
+                    object data2 = ASourceRow[col];
+
+                    // Only copy if different - that way the destination row RowState can remain 'Unchanged'.
+                    if (!data1.Equals(data2))
+                    {
+                        ADestinationRow[ADestinationRow.Table.Columns[columnName].Ordinal] = data2;
+                    }
                 }
             }
         }
 
         /// <summary>
-        /// copy all values from one row to the other; must have the same columns; omit Primary Key Columns
+        /// Copy all values from one row to the other; omit Primary Key Columns
+        /// Only copies columns with matching column names
         /// </summary>
         /// <param name="ASourceRow"></param>
         /// <param name="ADestinationRow"></param>

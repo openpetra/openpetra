@@ -61,6 +61,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             }
 
             ucoChkFilter.ShowFamiliesOnly(false);
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         private void grdCommitmentStatusChoices_InitialiseData(TFrmPetraReportingUtils FPetraUtilsObject)

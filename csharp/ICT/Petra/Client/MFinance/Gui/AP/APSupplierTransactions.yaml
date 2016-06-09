@@ -6,7 +6,7 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
     FormType: browse
     Template: windowFind
-    WindowWidth: 895
+    WindowWidth: 950
     WindowHeight: 700
     Actions:
         actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice, Image=New_Record.ico, Tooltip=Create a new invoice relating to the current supplier}        
@@ -20,6 +20,7 @@ RootNode:
         actAddTaggedToPayment: {Label=Pa&y Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment, Tooltip=Pay or part-pay all the tagged invoices}
         #actTagPayable: {ActionClick=TagAllPayable}
         #actTagPostable: {ActionClick=TagAllPostable}
+        actRunTagAction: {ActionClick=RunTagAction}
         actTagAll: {Label=&Tag All, ActionClick=TagAll, Tooltip=Tag all the rows in the grid}
         actUntagAll: {Label=&Untag All, ActionClick=UntagAll, Tooltip=Untag all the rows in the grid}
         actReloadList: {ActionClick=DoRefreshButton}
@@ -48,34 +49,36 @@ RootNode:
         txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
         txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         pnlButtons:
-            Controls: [btnTagAll, btnUntagAll, btnApproveTagged, btnPostTagged, btnAddTaggedToPayment, btnReverseSelected, btnDeleteSelected]
+            Controls: [btnNewInvoice, btnNewCreditNote, btnTagAll, btnUntagAll, btnRunTagAction, btnReverseSelected, btnDeleteSelected]
             ControlsOrientation: horizontal
             Dock:Bottom
         pnlOutstandingTotals:
             Controls: [grpOutstandingTotals]
             Padding: 5,10,5,5
-            Height: 90
+            Height: 105
             Dock: Bottom
         grpOutstandingTotals:
             Controls:
                 Row0: [txtSupplierBalance, txtFilteredBalance]
                 Row1: [txtTaggedBalance, txtTaggedCount]
-            Height: 70
+                Row2: [lblExcludedItems]
+            Height: 90
             Dock: Top
         #btnTagApprovable: {Label=Tag all Appro&vable}
         #btnTagPostable: {Label=Tag all P&ostable}
         #btnTagPayable: {Label=Tag all Paya&ble}
-        btnTagAll:
+        btnNewInvoice:
+        btnNewCreditNote:
+        btnTagAll: {StartNewButtonGroup=true}
         btnUntagAll:
-        btnApproveTagged:
-        btnPostTagged:
-        btnAddTaggedToPayment:
-        btnReverseSelected:
+        btnRunTagAction: {Width=120}
+        btnReverseSelected: {StartNewButtonGroup=true}
         btnDeleteSelected: {Width=120}
-        txtSupplierBalance: {Label=All outstanding transactions, ReadOnly=true}
-        txtFilteredBalance: {Label=Displayed transactions, ReadOnly=true}
-        txtTaggedBalance: {Label=Tagged transactions, ReadOnly=true}
-        txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40}
+        txtSupplierBalance: {Label=All outstanding transactions, ReadOnly=true, Format=Currency}
+        txtFilteredBalance: {Label=Displayed transactions, ReadOnly=true, Format=Currency}
+        txtTaggedBalance: {Label=Tagged transactions, ReadOnly=true, Format=Currency}
+        txtTaggedCount: {Label=Tagged items, ReadOnly=true, Width=40, Format=Integer}
+        lblExcludedItems: {Text=Outstanding totals do not include transactions written in a non-{0} currency, ColSpan=2}
         btnReloadList: {Label=Reload List}
         pnlGrid: 
             Dock: Fill
@@ -163,8 +166,8 @@ RootNode:
             mniPostTagged:
             mniAddTaggedToPayment:
     Toolbar:
-        tbbNewInvoice:
-        tbbNewCreditNote:
+        #tbbNewInvoice:
+        #tbbNewCreditNote:
         #tbbSeparator: {Label=-}
         #tbbOpenSelected:
         #tbbReverseSelected:

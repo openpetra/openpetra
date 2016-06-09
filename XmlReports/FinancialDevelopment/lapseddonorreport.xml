@@ -161,7 +161,7 @@
 				<caption><value text="Gift Date"/></caption>
 				<query>
 					<queryDetail><value variable="GiftDate"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			
@@ -170,7 +170,7 @@
 				<caption><value text="Donor Key"/></caption>
 				<query>
 					<queryDetail><value variable="DonorKey"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Donor Name" 
@@ -178,7 +178,7 @@
 				<caption><value text="Donor Name"/></caption>
 				<query>
 					<queryDetail><value variable="ShortName"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Partner Class" 
@@ -186,51 +186,60 @@
 				<caption><value text="Partner Class"/></caption>
 				<query>
 					<queryDetail><value variable="PartnerClass"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift this year" returnsFormat="currency" returns="amount">
 				<!--caption><value text="Gift this year"/></caption-->
 				<query>
 					<queryDetail><value variable="TotalYear_0"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift year - 1" returnsFormat="currency" returns="amount">
 				<!--caption><value text="Gift year - 1"/></caption-->
 				<query>
 					<queryDetail><value variable="TotalYear_1"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 			<calculation id="Gift year - 2" returnsFormat="currency" returns="amount">
 				<!--caption><value text="Gift year - 2"/></caption-->
 				<query>
 					<queryDetail><value variable="TotalYear_2"/>
-					</queryDetail>                                          
+					</queryDetail>
 				</query>
 			</calculation>
 		</calculations>
 
-		<levels>		
+		<levels>
 			<level name="main">
 				<detail>
-          <lowerLevelReport level="Report"></lowerLevelReport>
-        </detail>
-      </level>
+					<lowerLevelReport level="Report"></lowerLevelReport>
+				</detail>
+			</level>
 
-      <level name="Report">
-        <detail>
-          <lowerLevelReport level="DonorLevel" calculation="Select Donors"></lowerLevelReport>
-        </detail>
-        <footer space="above">
-          <field whichfield="left 0" pos="0cm" width="5 cm">
-            <value text="Number of Donors:"/>
-            <value function="CountChildRows({{lineId}})"/>
-          </field>
-        </footer>
-      </level>
-      
+			<level name="Report">
+				<detail>
+					<lowerLevelReport level="DonorLevel" calculation="Select Donors"></lowerLevelReport>
+				</detail>
+				<footer space="above">
+					<field whichfield="column 1" pos="0cm" width="5 cm">
+						<value text="Number of Donors: "/>
+						<value function="CountChildRows({{lineId}})"/>
+					</field>
+					<field whichfield="column {param_gift_amount_column}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {{param_gift_amount_column}})"/>
+					</field>
+					<field whichfield="column {param_gift_amount_column1}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {{param_gift_amount_column1}})"/>
+					</field>
+					<field whichfield="column {param_gift_amount_column2}" pos="indented" line="above">
+						<value function="getSumLowerReport({{lineId}}, {{param_gift_amount_column2}})"/>
+					</field>
+				</footer>
+			</level>
+			
 			<level name="DonorLevel" identification="DonorKey">
 				<detail>
 					<switch>
@@ -239,7 +248,7 @@
 						</case>
 					</switch>
 				</detail>
-      </level>
+			</level>
 
 		</levels>
 		

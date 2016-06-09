@@ -328,16 +328,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="APartnerKey">The current partner to be checked</param>
         /// <param name="AMergedIntoPartnerKey">If the partner is merged the merged partner key.
         /// If the partner is not merged: -1</param>
+        /// <param name="AParentForm">Parent Form.</param>
         /// <returns>True if the user wants to work with the merged partner, otherwise false.</returns>
         public static bool MergedPartnerHandling(Int64 APartnerKey,
-            out Int64 AMergedIntoPartnerKey)
+            out Int64 AMergedIntoPartnerKey, Form AParentForm)
         {
             bool ReturnValue = false;
 
             AMergedIntoPartnerKey = -1;
 
-            // TODO MergedPartnerHandling
-#if TODO
             bool IsMergedPartner;
             string MergedPartnerPartnerShortName;
             string MergedIntoPartnerShortName;
@@ -358,7 +357,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (IsMergedPartner)
             {
                 // Open the 'Merged Partner Info' Dialog
-                using (TPartnerMergedPartnerInfoDialog MergedPartnerInfoDialog = new TPartnerMergedPartnerInfoDialog())
+                using (TPartnerMergedPartnerInfoDialog MergedPartnerInfoDialog = new TPartnerMergedPartnerInfoDialog(AParentForm))
                 {
                     MergedPartnerInfoDialog.SetParameters(APartnerKey,
                         MergedPartnerPartnerShortName,
@@ -379,7 +378,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
             }
-#endif
+
             return ReturnValue;
         }
 
@@ -435,7 +434,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey))
+            if (MergedPartnerHandling(LastPartnerKey, out MergedPartnerKey, AParentForm))
             {
                 // work with the merged partner
                 LastPartnerKey = MergedPartnerKey;

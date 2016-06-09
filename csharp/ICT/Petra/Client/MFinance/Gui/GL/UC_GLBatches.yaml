@@ -86,7 +86,7 @@ RootNode:
                 Row0: [txtDetailBatchDescription]
                 Row1: [txtDetailBatchControlTotal]
                 Row2: [dtpDetailDateEffective, lblValidDateRange]
-        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true}
+        txtDetailBatchDescription: {Label=Batch Description, Width=350, ColSpan=2, Validation=true, RequiredField=true}
         txtDetailBatchControlTotal: {Label=Batch Hash Total, Format=Currency, AlwaysHideLabel=true, Width=115, NullValueAllowed=false}
         lblValidDateRange: {Width=300}
         dtpDetailDateEffective: {Label=Effective Date, OnChange=UpdateBatchPeriod, Validation = true}
