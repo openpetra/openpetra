@@ -124,10 +124,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     " ORDER BY a_batch_period_i",
                                     "temp", Transaction);
 
-                                if (tempTbl == null || tempTbl.Rows.Count == 0)
+                                if ((tempTbl == null) || (tempTbl.Rows.Count == 0))
                                 {
                                     continue;
                                 }
+
                                 Int32 transactionPeriod = Convert.ToInt32(tempTbl.Rows[0]["a_batch_period_i"]);
                                 Int32 transactionYear = Convert.ToInt32(tempTbl.Rows[0]["a_batch_year_i"]);
 
