@@ -46,6 +46,7 @@ using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -88,20 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             {
                 FLedgerNumber = value;
 
-                LoadBudgets();
-
-                //TFinanceControls.InitialiseAvailableFinancialYearsList(ref cmbDetailYear, FLedgerNumber, true);
-
-                //TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
-
-                // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-                //TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+                FBudgetDS = TRemote.MFinance.Budget.WebConnectors.LoadAllBudgetsForExport(FLedgerNumber);
             }
-        }
-
-        private void LoadBudgets()
-        {
-            FBudgetDS = TRemote.MFinance.Budget.WebConnectors.LoadAllBudgets(FLedgerNumber);
         }
 
         const String sSpace = "[SPACE]";
@@ -249,9 +238,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             string[] delims = new string[1];
             delims[0] = ConvertDelimiter(cmbDelimiter.GetSelectedString(), false);
 
+            TFrmStatusDialog dlgStatus = null;
+
             try
             {
                 this.Cursor = Cursors.WaitCursor;
+
+                dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
+
+                dlgStatus.Show();
+                dlgStatus.Heading = Catalog.GetString("Exporting Budgets");
+                dlgStatus.CurrentStatus = Catalog.GetString("Exporting budget data for this year and next...");
 
                 budgetCount = TRemote.MFinance.Budget.WebConnectors.ExportBudgets(FLedgerNumber,
                     FExportFileName,
@@ -259,6 +256,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     ref fileContents,
                     ref FBudgetDS,
                     out AMessages);
+
+                dlgStatus.Close();
+                dlgStatus = null;
 
                 this.Cursor = Cursors.Default;
 
@@ -306,6 +306,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             finally
             {
                 this.Cursor = Cursors.Default;
+
+                if (dlgStatus != null)
+                {
+                    dlgStatus.Close();
+                    dlgStatus = null;
+                }
             }
 
             bool ShowExportedFileInExplorer = false;

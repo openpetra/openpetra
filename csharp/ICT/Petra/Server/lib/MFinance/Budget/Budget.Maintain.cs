@@ -70,7 +70,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static BudgetTDS LoadAllBudgets(Int32 ALedgerNumber)
+        public static BudgetTDS LoadAllBudgetsForExport(Int32 ALedgerNumber)
         {
             #region Validate Arguments
 
@@ -107,15 +107,29 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                         #endregion Validate Data
 
-                        //Load all by Ledger but none may exist
-                        ABudgetAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
-                        ABudgetRevisionAccess.LoadViaALedger(MainDS, ALedgerNumber, Transaction);
+                        int CurrentFinancialYear = MainDS.ALedger[0].CurrentFinancialYear;
+                        int NextFinancialYear = CurrentFinancialYear + 1;
 
+                        //Load all by Ledger but none may exist
                         ABudgetTable BudgetTable = new ABudgetTable();
                         ABudgetRow TemplateRow = (ABudgetRow)BudgetTable.NewRow();
-                        TemplateRow.LedgerNumber = ALedgerNumber;
 
-                        ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Transaction);
+                        TemplateRow.LedgerNumber = ALedgerNumber;
+                        TemplateRow.Year = CurrentFinancialYear;
+
+                        StringCollection Operators = StringHelper.InitStrArr(new string[] { "=", "<=" });
+                        StringCollection OrderList = new StringCollection();
+
+                        OrderList.Add("ORDER BY");
+                        OrderList.Add(ABudgetTable.GetCostCentreCodeDBName() + " ASC");
+                        OrderList.Add(ABudgetTable.GetAccountCodeDBName() + " ASC");
+                        OrderList.Add(ABudgetTable.GetYearDBName() + " DESC");
+
+                        ABudgetAccess.LoadUsingTemplate(MainDS, TemplateRow, Operators, null, Transaction, OrderList, 0, 0);
+                        ABudgetPeriodAccess.LoadViaABudgetTemplate(MainDS, TemplateRow, Operators, null, Transaction, OrderList, 0, 0);
+
+                        ABudgetRevisionAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, CurrentFinancialYear, 0, Transaction);
+                        ABudgetRevisionAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, NextFinancialYear, 0, Transaction);
                     });
 
                 // Accept row changes here so that the Client gets 'unmodified' rows
@@ -756,10 +770,12 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             //Check Budget Year
+            ABudgetYearStringUpper = ABudgetYearStringUpper.Trim();
+
             if ((ABudgetYearStringUpper != MFinanceConstants.BUDGET_YEAR_THIS.ToUpper())
                 && (ABudgetYearStringUpper != MFinanceConstants.BUDGET_YEAR_NEXT.ToUpper()))
             {
-                VerificationMessage += String.Format(Catalog.GetString(" Budget Year: '{0}' should be '{1}' or '{2}'."),
+                VerificationMessage += String.Format(Catalog.GetString(" Budget Year: '{0}' must be exactly '{1}' or '{2}'."),
                     ABudgetYearStringUpper,
                     MFinanceConstants.BUDGET_YEAR_THIS,
                     MFinanceConstants.BUDGET_YEAR_NEXT);
