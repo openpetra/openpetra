@@ -48,6 +48,7 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Server.MConference.Data.Access;
@@ -280,6 +281,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                 {
                     ReturnValue = SaveData(ATablename, ref SubmitTable, out VerificationResult, WriteTransaction);
                 });
+
+            if ((ATablename == SSystemDefaultsTable.GetTableDBName()) && (ReturnValue == TSubmitChangesResult.scrOK))
+            {
+                // Refresh the cache immediately so clients will get the changes
+                TSystemDefaultsCache.GSystemDefaultsCache.ReloadSystemDefaultsTable();
+            }
 
             AVerificationResult = VerificationResult;
 
