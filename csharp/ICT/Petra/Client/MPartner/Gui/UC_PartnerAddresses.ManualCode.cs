@@ -991,6 +991,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
         }
 
+        /// <summary>
+        /// This gets called if the system default value gets changed
+        /// </summary>
+        /// <param name="AName">New text for label, eg County, Canton, Bundesland etc.</param>
+        public void SetLocalisedCountyLabel(string AName)
+        {
+            lblLocationCounty.Text = AName + ":";
+        }
+
         #endregion
 
         #region Private Methods

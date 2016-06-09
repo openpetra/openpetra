@@ -1123,7 +1123,7 @@ namespace Ict.Common.Printing
             FEv.Graphics.TranslateTransform(0, 0);
 
             // first page? then we should store some settings
-            if (CurrentPageNr == 0)
+            if ((CurrentPageNr == 0) && (ASender != null))
             {
                 if (FMarginType == eMarginType.ePrintableArea)
                 {
@@ -1200,16 +1200,30 @@ namespace Ict.Common.Printing
                 }
             }
 
-            CurrentPageNr++;
-
             if (AEv.PageSettings.PrinterSettings.PrintRange == PrintRange.SomePages)
             {
-                if (AEv.PageSettings.PrinterSettings.FromPage > CurrentPageNr)
+                // Do we need to skip some pages at the start??
+                if ((ASender != null) && (CurrentPageNr < AEv.PageSettings.PrinterSettings.FromPage - 1))
                 {
-                    CurrentPageNr = AEv.PageSettings.PrinterSettings.FromPage;
-                    CurrentDocumentNr = AEv.PageSettings.PrinterSettings.FromPage;
+                    // We are going to make recursive calls to this method to 'print' the pages we need to skip.
+                    // But we don't want to call this paragraph of code again when we come back.
+                    // We coming in here the first time because ASender is not null and there are pages to skip
+                    // While skipping, ASender will be null so we won't come back
+                    // After skipping, while printing real pages again, ASender will be non-null but the page number will be 'too high'
+                    PrintingMode = ePrintingMode.eDoSimulate;
+
+                    while (CurrentPageNr < AEv.PageSettings.PrinterSettings.FromPage - 1)
+                    {
+                        PrintPage(null, FEv);
+                    }
+
+                    // Now restore the real print mode. Now we are ready to continue with the first piece of paper and with real printing.
+                    // All the TPrinterState properties will be correct because we haven't pushed/popped anything onto the stack.
+                    PrintingMode = ePrintingMode.eDoPrint;
                 }
             }
+
+            CurrentPageNr++;
 
             CurrentYPos = FTopMargin;
             CurrentXPos = FLeftMargin;

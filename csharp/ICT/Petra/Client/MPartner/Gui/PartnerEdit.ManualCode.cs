@@ -3772,6 +3772,13 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 MessageProcessed = true;
             }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcLocalisedCountyLabelChanged)
+            {
+                string newLabel = ((TFormsMessage.FormsMessageName)AFormsMessage.MessageObject).Name;
+                ucoLowerPart.SetLocalisedCountyLabel(newLabel);
+
+                MessageProcessed = true;
+            }
 
             return MessageProcessed;
         }

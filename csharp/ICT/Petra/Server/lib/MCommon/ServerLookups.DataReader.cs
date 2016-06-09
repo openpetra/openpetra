@@ -237,6 +237,14 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             {
                 AResultTable = SGroupAccess.LoadAll(AReadTransaction);
             }
+            else if (ATablename == SSystemDefaultsTable.GetTableDBName())
+            {
+                AResultTable = SSystemDefaultsAccess.LoadAll(AReadTransaction);
+            }
+            else if (ATablename == SSystemDefaultsGuiTable.GetTableDBName())
+            {
+                AResultTable = SSystemDefaultsGuiAccess.LoadAll(AReadTransaction);
+            }
             else
             {
                 throw new Exception("TCommonDataReader.GetData: unknown table " + ATablename);
@@ -440,6 +448,14 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     else if (ATablename == SGroupTable.GetTableDBName())
                     {
                         SGroupAccess.SubmitChanges((SGroupTable)ASubmitTable, AWriteTransaction);
+                    }
+                    else if (ATablename == SSystemDefaultsTable.GetTableDBName())
+                    {
+                        SSystemDefaultsAccess.SubmitChanges((SSystemDefaultsTable)ASubmitTable, AWriteTransaction);
+                    }
+                    else if (ATablename == SSystemDefaultsGuiTable.GetTableDBName())
+                    {
+                        SSystemDefaultsGuiAccess.SubmitChanges((SSystemDefaultsGuiTable)ASubmitTable, AWriteTransaction);
                     }
                     else
                     {

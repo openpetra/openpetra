@@ -30,6 +30,8 @@ namespace Ict.Common.Verification
     /// </summary>
     public class CommonResourcestrings
     {
+        #region Titles
+
         /// <summary>Generic indication of invalid data.</summary>
         public static readonly string StrInvalidDataTitle = Catalog.GetString("Invalid Data");
 
@@ -51,9 +53,17 @@ namespace Ict.Common.Verification
         /// <summary>Generic indication of an invalid string.</summary>
         public static readonly string StrInvalidStringEntered = Catalog.GetString("Invalid value entered.");
 
+        #endregion
 
-//        /// <summary>todoComment</summary>
-//        public static readonly string StrErrorTheCodeIsNoLongerActive = Catalog.GetString(
-//            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
+        #region Message content texts
+
+        /// <summary>Generic message for a setting that cannot be empty.</summary>
+        public static readonly string StrSettingCannotBeEmpty = Catalog.GetString("The value for this setting cannot be empty text.");
+
+        #endregion
+
+        //        /// <summary>todoComment</summary>
+        //        public static readonly string StrErrorTheCodeIsNoLongerActive = Catalog.GetString(
+        //            "The code '{0}' is no longer active.\r\nDo you still want to use it?");
     }
 }

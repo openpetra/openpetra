@@ -129,6 +129,18 @@ namespace Ict.Petra.Client.CommonForms
     }
 
     /// <summary>
+    /// Interface for a 'data-only Class' that holds data in a simple dictionary of objects indexed by a string.
+    /// </summary>
+    public interface IFormsMessageSimpleDictionaryInterface : IFormsMessageClassInterface
+    {
+        /// <summary></summary>
+        Dictionary <string, object>MessageItems
+        {
+            get;
+        }
+    }
+
+    /// <summary>
     /// Specifies the MessageClass of a <see cref="TFormsMessage"></see>.
     /// </summary>
     /// <description>
@@ -178,7 +190,13 @@ namespace Ict.Petra.Client.CommonForms
         mcRefreshGiftBatches,
 
         /// <summary>A change has been made which requires the GL Batches screen to be refreshed.</summary>
-        mcRefreshGLBatches
+        mcRefreshGLBatches,
+
+        /// <summary>A change has been made to the system setting for Localised County Label.</summary>
+        mcLocalisedCountyLabelChanged,
+
+        /// <summary>A change has been made to the system setting for Partner key of zero behaviour</summary>
+        mcGiftPartnerZeroChanged
     }
 
     /// <summary>
@@ -307,7 +325,8 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>
         /// Allows setting of Data for 'Form Messages' of MessageClass
-        /// <see cref="TFormsMessageClassEnum.mcExtractCreated"></see>,
+        /// <see cref="TFormsMessageClassEnum.mcExtractCreated"></see> or
+        /// <see cref="TFormsMessageClassEnum.mcLocalisedCountyLabelChanged"></see>,
         /// </summary>
         /// <param name="AName">Data Name in the 'Forms Message'.</param>
         public void SetMessageDataName(string AName)
@@ -315,6 +334,7 @@ namespace Ict.Petra.Client.CommonForms
             switch (FMessageClass)
             {
                 case TFormsMessageClassEnum.mcExtractCreated:
+                case TFormsMessageClassEnum.mcLocalisedCountyLabelChanged:
 
                     FMessageObject = new FormsMessageName(AName);
                     break;
@@ -408,6 +428,24 @@ namespace Ict.Petra.Client.CommonForms
                 default:
                     throw new ApplicationException(
                     "Method 'SetMessageDataAccounts' must not be called for MessageClass '" +
+                    Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
+            }
+        }
+
+        /// <summary>
+        /// Allows setting of simple dictionary data for 'Form Messages'.
+        /// </summary>
+        public void SetMessageDataSimpleDictionary(Dictionary <string, object>ADictionary)
+        {
+            switch (FMessageClass)
+            {
+                case TFormsMessageClassEnum.mcGiftPartnerZeroChanged:
+                    FMessageObject = new FormsMessageSimpleDictionary(ADictionary);
+                    break;
+
+                default:
+                    throw new ApplicationException(
+                    "Method 'SetMessageDataSimpleDictionary' must not be called for MessageClass '" +
                     Enum.GetName(typeof(TFormsMessageClassEnum), FMessageClass) + "'");
             }
         }
@@ -603,6 +641,35 @@ namespace Ict.Petra.Client.CommonForms
                 get
                 {
                     return FUnitHierarchyChanges;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Holds Data for 'Form Messages' in the form of a simple dictionary of objects indexed by a string.
+        /// </summary>
+        public struct FormsMessageSimpleDictionary : IFormsMessageSimpleDictionaryInterface
+        {
+            Dictionary <string, object>FSimpleDictionary;
+
+            /// <summary>
+            /// Constructor that initializes internal fields which can be
+            /// read out by using the Properties of this Class.
+            /// </summary>
+            /// <param name="ASimpleDictionary">A Dictionary containing the data to be passed in the message.</param>
+            public FormsMessageSimpleDictionary(Dictionary <string, object>ASimpleDictionary)
+            {
+                FSimpleDictionary = ASimpleDictionary;
+            }
+
+            /// <summary>
+            /// Gets the Dictionary of data items
+            /// </summary>
+            public Dictionary <string, object>MessageItems
+            {
+                get
+                {
+                    return FSimpleDictionary;
                 }
             }
         }

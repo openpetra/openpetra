@@ -1,0 +1,86 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    FormTitle: Maintain System Settings
+    Namespace: Ict.Petra.Client.MSysMan.Gui.Setup
+    DetailTable: SSystemDefaults
+    UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.Interfaces.MSysMan,Ict.Petra.Shared.MSysMan.Validation]
+    FormType: edit
+    Template: windowMaintainTable
+    WindowWidth: 660
+    WindowHeight: 700
+    Actions:
+    Controls:
+        pnlContent:
+            Controls: [sptContent]
+            Dock: Fill
+        sptContent:
+            SplitterOrientation: Horizontal
+            SplitterDistance: 375
+            #Height: 500
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlTop
+            Panel2: pnlBottom
+
+        pnlTop:
+            Dock: Fill
+            Controls: [pnlClass, pnlGrid]
+            BackColor: System.Drawing.SystemColors.Control
+        pnlBottom:
+            Dock: Fill
+            Controls: [pnlDetails]
+            BackColor: System.Drawing.SystemColors.Control
+
+        pnlClass:
+            Dock: Top
+            Controls: [cmbClass]
+        pnlGrid:
+            Dock: Fill
+            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+        pnlFilterAndFind:
+            ExpandedWidth: 175
+            FilterControls: [txtDetailDefaultCodeLocal, txtDetailDefaultDescription, Column:ReadOnly]
+            FindControls: [txtDetailDefaultCodeLocal, txtDetailDefaultDescription, Column:ReadOnly]
+        pnlButtons:
+            Dock: Bottom
+            ControlsOrientation: horizontal
+        grdDetails:
+            Dock: Fill
+            Columns: [DetailDefaultCode, DetailDefaultCodeLocal, DetailDefaultValue, DetailReadOnly]
+            SortOrder: DetailDefaultCodeLocal ASC
+            CustomColumns:
+                DetailDefaultCode: {Label=Setting}
+                DetailDefaultCodeLocal: {Label=Setting}
+                DetailDefaultValue: {Label=Value}
+                DetailReadOnly: {Label=Read Only, Type=Boolean}
+        cmbClass: {Label=Show System Settings for, OnChange=OnSettingsClassChange, SuppressChangeDetection=true}
+
+        pnlDetails:
+            Dock: Fill
+            Padding: 5,2,5,2
+            Controls: [grpDetails, pnlValues]
+        grpDetails:
+            Dock: Top
+            NoLabel: true
+            Controls:
+                Row0: [pnlRow0]
+                Row1: [txtDetailDefaultDescription]
+                Row2: [pnlRow2]
+        pnlValues:
+            Dock: Fill
+
+        pnlRow0:
+            Controls: [txtDetailDefaultCodeLocal, txtDetailDefaultCodeIntl]
+            ControlsOrientation: horizontal
+            Stretch: horizontally
+            Padding: 0,-4,0,-4
+        pnlRow2:
+            Controls: [txtDetailDefaultCode]
+            Stretch: horizontally
+            Padding: 0,-4,0,-4
+
+        txtDetailDefaultCodeLocal: {NoLabel=true, Stretch=horizontally, ReadOnly=true}
+        txtDetailDefaultCodeIntl: {NoLabel=true, Width=300, Align=Right, ReadOnly=true, TextAlign=Right}
+        txtDetailDefaultDescription: {NoLabel=true, Multiline=true, Height=45, Stretch=horizontally, ReadOnly=true}
+            Padding: 0,-4,0,-4
+        txtDetailDefaultCode: {NoLabel=true, Width=300, Dock=Right, ReadOnly=true, TextAlign=Right}

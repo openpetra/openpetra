@@ -1016,6 +1016,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 MessageProcessed = true;
             }
+            else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcGiftPartnerZeroChanged)
+            {
+                Dictionary <string, object>messageItems = ((IFormsMessageSimpleDictionaryInterface)AFormsMessage.MessageObject).MessageItems;
+
+                foreach (KeyValuePair <string, object>kvp in messageItems)
+                {
+                    if (kvp.Key == SharedConstants.SYSDEFAULT_DONORZEROISVALID)
+                    {
+                        FDonorZeroIsValid = Convert.ToBoolean(kvp.Value);
+                    }
+                    else if (kvp.Key == SharedConstants.SYSDEFAULT_RECIPIENTZEROISVALID)
+                    {
+                        FRecipientZeroIsValid = Convert.ToBoolean(kvp.Value);
+                    }
+                }
+
+                MessageProcessed = true;
+            }
 
             return MessageProcessed;
         }

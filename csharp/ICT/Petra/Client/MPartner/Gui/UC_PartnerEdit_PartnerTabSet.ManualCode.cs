@@ -961,6 +961,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             FUcoContacts.SelectContactLogID(AContactLogID);
         }
 
+        /// <summary>
+        /// This gets called if the system default value gets changed
+        /// </summary>
+        /// <param name="AName">New text for label, eg County, Canton, Bundesland etc.</param>
+        public void SetLocalisedCountyLabel(string AName)
+        {
+            if (FUcoAddresses != null)
+            {
+                FUcoAddresses.SetLocalisedCountyLabel(AName);
+            }
+        }
+
         #endregion
 
         #region Private Methods

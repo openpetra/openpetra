@@ -1389,6 +1389,31 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// This returns a boolean value based on the Selected Index where index 0 is 'no', index 1 is 'yes' and any other index is '?'
+        /// </summary>
+        /// <returns>'yes', 'no' or '?'</returns>
+        public string GetSelectedYesNo()
+        {
+            if (Items.Count > 2)
+            {
+                return "?";
+            }
+
+            switch (SelectedIndex)
+            {
+                case 0:
+                    return "no";
+
+                case 1:
+                    return "yes";
+
+                case -1:
+                default:
+                    return "?";
+            }
+        }
+
+        /// <summary>
         /// get the display string for the selected value
         /// </summary>
         public string GetSelectedDisplayString()
@@ -1537,6 +1562,41 @@ namespace Ict.Common.Controls
             SelectedIndex = NewSelectedIndex;
 
             return true;
+        }
+
+        /// <summary>
+        /// Sets the selected index based on a case-insensitive boolean input string
+        /// </summary>
+        /// <param name="AYesNoOrQuestionMark">'no' corresponds to index 0, 'yes' corresponds to index 1 and '?' corresponds to index -1</param>
+        public void SetSelectedYesNo(string AYesNoOrQuestionMark)
+        {
+            int index;
+
+            switch (AYesNoOrQuestionMark.ToLower())
+            {
+                case "yes":
+                    index = 1;
+                    break;
+
+                case "no":
+                    index = 0;
+                    break;
+
+                case "?":
+                default:
+                    index = -1;
+                    break;
+            }
+
+            if (index < Items.Count)
+            {
+                if ((index == -1) && (SelectedIndex > 0))
+                {
+                    SelectedIndex = 0;
+                }
+
+                SelectedIndex = index;
+            }
         }
 
         /// <summary>
