@@ -260,6 +260,11 @@ namespace Ict.Common.Controls
         protected bool FAutomaticallyUpdateDataSource;
 
         /// <summary>
+        /// TodoComment
+        /// </summary>
+        protected bool FFocusTextBoxPartAfterFindScreenCloses = true;
+
+        /// <summary>
         /// This property determines whether the button resizes to the text length or not.
         ///
         /// </summary>
@@ -680,6 +685,22 @@ namespace Ict.Common.Controls
             {
                 this.txtTextBox.BorderStyle = value;
                 RelocateLabel();
+            }
+        }
+
+        /// <summary>
+        /// This Property determines whether the textbox label receives focus after the Partner Find Screen closes
+        /// </summary>
+        public bool FocusTextBoxPartAfterFindScreenCloses
+        {
+            get
+            {
+                return FFocusTextBoxPartAfterFindScreenCloses;
+            }
+
+            set
+            {
+                FFocusTextBoxPartAfterFindScreenCloses = value;
             }
         }
 
@@ -1160,7 +1181,11 @@ namespace Ict.Common.Controls
                                 this.lblLabel.Text = mLabelStringNew;
                             }
 
-                            this.txtTextBox.Focus();
+                            if (FFocusTextBoxPartAfterFindScreenCloses)
+                            {
+                                this.txtTextBox.Focus();
+                            }
+
                             this.txtTextBox.Modified = true;
                         }
                         else

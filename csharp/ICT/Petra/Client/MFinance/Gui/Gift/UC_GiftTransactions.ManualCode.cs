@@ -832,6 +832,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             String APartnerShortName,
             bool AValidSelection)
         {
+            if (!FAutoPopulatingGift)
+            {
+                //This gets set to false when autopopulating gift
+                txtDetailDonorKey.FocusTextBoxPartAfterFindScreenCloses = true;
+            }
+
             if (FAutoPopulatingGift)
             {
                 return;
@@ -1421,6 +1427,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                    txtDetailDonorKey.FocusTextBoxPartAfterFindScreenCloses = false;
                     txtDetailGiftTransactionAmount.Focus();
                 }
 
