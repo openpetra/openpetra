@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, berndr
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -759,6 +759,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             int NumColumns = 7;
             int ChildRow = 1;
+            int NumberOfRows = 0;
             situation.GetResults().Clear();
 
             for (int Counter = 0; Counter < Table.Rows.Count; ++Counter)
@@ -853,6 +854,7 @@ namespace Ict.Petra.Server.MReporting.MFinDev
                         Header, Description, Columns);
 
                     TotalForSelection += CurrentAmount;
+                    NumberOfRows++;
                 }
                 else
                 {
@@ -884,6 +886,12 @@ namespace Ict.Petra.Server.MReporting.MFinDev
 
             FooterColumns[2] = new TVariant("Total for this level:");
             FooterColumns[3] = new TVariant(TotalForSelection, "-#,##0.00;#,##0.00");
+
+            situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
+                FooterHeader, FooterDescription, FooterColumns);
+
+            FooterColumns[2] = new TVariant("Number of Top-Donors:");
+            FooterColumns[3] = new TVariant(NumberOfRows, "-#,##0;#,##0");
 
             situation.GetResults().AddRow(0, ChildRow++, true, 2, "", "", false,
                 FooterHeader, FooterDescription, FooterColumns);

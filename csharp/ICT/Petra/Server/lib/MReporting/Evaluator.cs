@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1162,6 +1162,10 @@ namespace Ict.Petra.Server.MReporting
             else if (f == "HasChildRows".ToLower())
             {
                 ReturnValue = new TVariant(Results.HasChildRows(this.LineId));
+            }
+            else if (f == "CountChildRows".ToLower())
+            {
+                ReturnValue = new TVariant(Results.CountChildRows(this.LineId));
             }
             else if (f == "HasChildColumns".ToLower())
             {

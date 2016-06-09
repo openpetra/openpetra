@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1192,6 +1192,28 @@ namespace Ict.Petra.Shared.MReporting
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// This function counts the children row of the master row
+        /// </summary>
+        public int CountChildRows(int master)
+        {
+            int counter = 0;
+            int result = 0;
+
+            while (counter < results.Count)
+            {
+                TResult element = (TResult)results[counter];
+                counter++;
+
+                if (element.display && (element.masterRow == master))
+                {
+                    result ++;
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
