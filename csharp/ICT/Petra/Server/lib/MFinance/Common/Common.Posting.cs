@@ -2312,7 +2312,8 @@ namespace Ict.Petra.Server.MFinance.Common
                     {
                         "param_ledger_number_i=" + ALedgerNumber,
                         "param_batch_number_i=" + batchNumber,
-                        "param_ledger_name=\"" + ledgerName + "\""
+                        "param_ledger_name=\"" + ledgerName + "\"",
+                        "param_sortby=\"Transaction\""
                     };
 
                     String paramStr = String.Join(",", Params);

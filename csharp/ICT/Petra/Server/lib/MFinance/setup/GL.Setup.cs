@@ -2397,6 +2397,69 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                         }
 
                         AInspectDS.ASuspenseAccount.DefaultView.RowFilter = "";
+                    } // Suspense Account
+
+                    //
+                    // If the user has changed the AccountType, the DebitCreditIndicator must be correctly set,
+                    // and if this is changed, any existing GLM and GLMP records must change sign!
+
+                    if (acc.RowState == DataRowState.Modified)
+                    {
+                        String previousAccType = acc[AAccountTable.ColumnAccountTypeId, DataRowVersion.Original].ToString();
+
+                        if (acc.AccountType != previousAccType)
+                        {
+                            Boolean prevDebitCredit = Convert.ToBoolean(acc[AAccountTable.ColumnDebitCreditIndicatorId, DataRowVersion.Original]);
+
+                            switch (acc.AccountType)
+                            {
+                                case "Expense":
+                                case "Asset":
+                                    acc.DebitCreditIndicator = true;
+                                    break;
+
+                                case "Income":
+                                case "Liability":
+                                case "Equity":
+                                    acc.DebitCreditIndicator = false;
+                                    break;
+                            }
+
+                            if (acc.DebitCreditIndicator != prevDebitCredit)
+                            {
+                                TDBTransaction transaction = null;
+                                Boolean submitThis = true;
+                                DBAccess.SimpleAutoTransactionWrapper("AccountTypeCorrection", out transaction, ref submitThis,
+                                    delegate
+                                    {
+                                        String query =
+                                            "UPDATE a_general_ledger_master set " +
+                                            " a_closing_period_actual_base_n = - a_closing_period_actual_base_n, " +
+                                            " a_start_balance_base_n = - a_start_balance_base_n, " +
+                                            " a_ytd_actual_intl_n = - a_ytd_actual_intl_n, " +
+                                            " a_closing_period_actual_intl_n = - a_closing_period_actual_intl_n, " +
+                                            " a_start_balance_intl_n = - a_start_balance_intl_n, " +
+                                            " a_ytd_actual_foreign_n = - a_ytd_actual_foreign_n, " +
+                                            " a_start_balance_foreign_n = - a_start_balance_foreign_n " +
+                                            " WHERE a_ledger_number_i = " + ALedgerNumber +
+                                            " AND a_account_code_c = '" + acc.AccountCode + "'";
+                                        DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
+
+                                        query =
+                                            "UPDATE a_general_ledger_master_period a set " +
+                                            " a_actual_base_n = - a_actual_base_n, " +
+                                            " a_budget_base_n = - a_budget_base_n, " +
+                                            " a_actual_intl_n = - a_actual_intl_n, " +
+                                            " a_budget_intl_n = - a_budget_intl_n, " +
+                                            " a_actual_foreign_n = - a_actual_foreign_n " +
+                                            " where exists (select 1 from a_general_ledger_master b " +
+                                            " where a.a_glm_sequence_i = b.a_glm_sequence_i " +
+                                            " AND a_ledger_number_i = " + ALedgerNumber +
+                                            " AND a_account_code_c = '" + acc.AccountCode + "')";
+                                        DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
+                                    });
+                            }
+                        }
                     }
                 }
             }

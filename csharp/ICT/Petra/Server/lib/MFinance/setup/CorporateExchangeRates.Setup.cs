@@ -68,16 +68,16 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
             }
 
             TDBTransaction Transaction = null;
-            bool SubmissionOK = false;
+            bool SubmissionOK = true;
             CorporateExchangeSetupTDS InspectDS = AInspectDS;
 
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref Transaction, ref SubmissionOK,
                 delegate
                 {
-                    foreach (ACorporateExchangeRateRow Row in InspectDS.ACorporateExchangeRate.Rows)
+                    foreach (ACorporateExchangeRateRow xchangeRateRow in InspectDS.ACorporateExchangeRate.Rows)
                     {
-                        if ((Row.RowState == DataRowState.Modified) || (Row.RowState == DataRowState.Added))
+                        if ((xchangeRateRow.RowState == DataRowState.Modified) || (xchangeRateRow.RowState == DataRowState.Added))
                         {
                             // should only be -1 if no exchange rates were modified or created
                             if (TransactionsChanged == -1)
@@ -85,25 +85,221 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 TransactionsChanged = 0;
                             }
 
+                            String rateOfExchangeStr = xchangeRateRow.RateOfExchange.ToString(
+                                CultureInfo.InvariantCulture);
                             // update international amounts for all gl transaction using modified or new exchange rate
                             string Query = "UPDATE a_transaction SET a_amount_in_intl_currency_n = " +
-                                           "(a_amount_in_base_currency_n / " + Row.RateOfExchange.ToString(CultureInfo.InvariantCulture) + ")" +
+                                           "ROUND (a_amount_in_base_currency_n / " + rateOfExchangeStr + ", 2)" +
                                            " FROM a_ledger" +
-                                           " WHERE EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + Row.DateEffectiveFrom.Month +
-                                           " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + Row.DateEffectiveFrom.Year +
+                                           " WHERE EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " +
+                                           xchangeRateRow.DateEffectiveFrom.Month +
+                                           " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Year +
                                            " AND a_ledger.a_ledger_number_i = a_transaction.a_ledger_number_i" +
-                                           " AND a_ledger.a_base_currency_c = '" + Row.FromCurrencyCode + "'" +
-                                           " AND a_ledger.a_intl_currency_c = '" + Row.ToCurrencyCode + "'";
+                                           " AND a_ledger.a_base_currency_c = '" + xchangeRateRow.FromCurrencyCode + "'" +
+                                           " AND a_ledger.a_intl_currency_c = '" + xchangeRateRow.ToCurrencyCode + "'";
 
                             TransactionsChanged += DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
                         }
+
+                        if (TransactionsChanged > 0)
+                        {
+                            //
+                            // I also need to correct entries in GLM and GLMP after modifying these transactions:
+                            DataTable ledgerTbl = DBAccess.GDBAccessObj.SelectDT(
+                                "SELECT * FROM a_ledger WHERE " +
+                                " a_ledger.a_base_currency_c = '" + xchangeRateRow.FromCurrencyCode + "'" +
+                                " AND a_ledger.a_intl_currency_c = '" + xchangeRateRow.ToCurrencyCode + "'",
+                                "a_ledger", Transaction);
+
+                            foreach (DataRow ledgerRow in ledgerTbl.Rows)
+                            {
+                                Int32 ledgerNumber = Convert.ToInt32(ledgerRow["a_ledger_number_i"]);
+                                DataTable tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                    "SELECT DISTINCT a_batch.a_batch_period_i, a_batch.a_batch_year_i FROM" +
+                                    " a_batch, a_transaction, a_ledger WHERE" +
+                                    " EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Month +
+                                    " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Year +
+                                    " AND a_transaction.a_ledger_number_i =" + ledgerNumber +
+                                    " AND a_batch.a_batch_number_i = a_transaction.a_batch_number_i " +
+                                    " ORDER BY a_batch_period_i",
+                                    "temp", Transaction);
+
+                                if (tempTbl == null || tempTbl.Rows.Count == 0)
+                                {
+                                    continue;
+                                }
+                                Int32 transactionPeriod = Convert.ToInt32(tempTbl.Rows[0]["a_batch_period_i"]);
+                                Int32 transactionYear = Convert.ToInt32(tempTbl.Rows[0]["a_batch_year_i"]);
+
+                                DataTable glmTbl = DBAccess.GDBAccessObj.SelectDT(
+                                    "SELECT * from a_general_ledger_master" +
+                                    " WHERE a_ledger_number_i = " + ledgerNumber +
+                                    " AND a_year_i = " + transactionYear,
+                                    "temp", Transaction);
+                                Boolean seemsToWorkOk = true;
+
+//                              TLogging.Log("GLM correction: ");
+                                Int32 glmSequence = 0;
+                                String accountCode = "";
+                                String costCentreCode = "";
+                                String problem = "";
+
+                                foreach (DataRow glmRow in glmTbl.Rows)
+                                {
+                                    glmSequence = Convert.ToInt32(glmRow["a_glm_sequence_i"]);
+                                    accountCode = glmRow["a_account_code_c"].ToString();
+                                    costCentreCode = glmRow["a_cost_centre_code_c"].ToString();
+
+                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                        "SELECT sum(a_amount_in_intl_currency_n) AS debit_total FROM a_transaction WHERE " +
+                                        " EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Month +
+                                        " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Year +
+                                        " AND a_account_code_c = '" + accountCode + "'" +
+                                        " AND a_cost_centre_code_c = '" + costCentreCode + "'" +
+                                        " AND a_debit_credit_indicator_l", "temp", Transaction);
+
+                                    Boolean hasDebitTransactions = (
+                                        tempTbl != null
+                                        && tempTbl.Rows[0]["debit_total"].GetType() != typeof(System.DBNull)
+                                        );
+                                    Decimal debitTotal = 0;
+
+                                    if (hasDebitTransactions)
+                                    {
+                                        seemsToWorkOk = (tempTbl.Rows.Count == 1);
+
+                                        if (!seemsToWorkOk)
+                                        {
+                                            problem = "DebitTotal";
+                                            break;
+                                        }
+
+                                        debitTotal = Convert.ToDecimal(tempTbl.Rows[0]["debit_total"]);
+                                    }
+
+                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                        "SELECT sum(a_amount_in_intl_currency_n) AS credit_total FROM a_transaction WHERE " +
+                                        " EXTRACT(MONTH FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Month +
+                                        " AND EXTRACT(YEAR FROM a_transaction.a_transaction_date_d) = " + xchangeRateRow.DateEffectiveFrom.Year +
+                                        " AND a_account_code_c = '" + accountCode + "'" +
+                                        " AND a_cost_centre_code_c = '" + costCentreCode + "'" +
+                                        " AND NOT a_debit_credit_indicator_l", "temp", Transaction);
+
+                                    Boolean hasCreditTransactions = (
+                                        tempTbl != null
+                                        && tempTbl.Rows[0]["credit_total"].GetType() != typeof(System.DBNull)
+                                        );
+                                    Decimal creditTotal = 0;
+
+                                    if (hasCreditTransactions)
+                                    {
+                                        seemsToWorkOk = (tempTbl.Rows.Count == 1);
+
+                                        if (!seemsToWorkOk)
+                                        {
+                                            problem = "CreditTotal";
+                                            break;
+                                        }
+
+                                        creditTotal = Convert.ToDecimal(tempTbl.Rows[0]["credit_total"]);
+                                    }
+
+                                    if (!hasDebitTransactions && !hasCreditTransactions)
+                                    {
+//                                      TLogging.Log("CostCentre " + costCentreCode + " Account " + accountCode + " - no transactions.");
+                                        continue;
+                                    }
+
+                                    Decimal lastMonthBalance = 0;
+
+                                    if (transactionPeriod > 1)
+                                    {
+                                        tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                            "SELECT a_actual_intl_n as last_month_balance " +
+                                            " FROM a_general_ledger_master_period WHERE " +
+                                            " a_glm_sequence_i = " + glmSequence + " AND a_period_number_i = " + (transactionPeriod - 1),
+                                            "temp", Transaction);
+                                        seemsToWorkOk = (tempTbl.Rows.Count == 1);
+
+                                        if (!seemsToWorkOk)
+                                        {
+                                            problem = "lastMonthBalance";
+                                            break;
+                                        }
+
+                                        lastMonthBalance = Convert.ToDecimal(tempTbl.Rows[0]["last_month_balance"]);
+                                    }
+                                    else
+                                    {
+                                        lastMonthBalance = Convert.ToInt32(glmRow["a_start_balance_intl_n"]);
+                                    }
+
+                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                        "SELECT a_actual_intl_n as this_month_balance " +
+                                        " FROM  a_general_ledger_master_period WHERE " +
+                                        " a_glm_sequence_i = " + glmSequence + " AND a_period_number_i = " + transactionPeriod,
+                                        "temp", Transaction);
+
+                                    seemsToWorkOk = (tempTbl.Rows.Count == 1);
+
+                                    if (!seemsToWorkOk)
+                                    {
+                                        problem = "thisMonthBalance";
+                                        break;
+                                    }
+
+                                    Decimal thisMonthBalance = Convert.ToDecimal(tempTbl.Rows[0]["this_month_balance"]);
+
+                                    tempTbl = DBAccess.GDBAccessObj.SelectDT(
+                                        "SELECT a_debit_credit_indicator_l AS debit_indicator FROM " +
+                                        " a_account WHERE a_account_code_c = '" + accountCode + "'",
+                                        "temp", Transaction);
+                                    seemsToWorkOk = (tempTbl.Rows.Count == 1);
+
+                                    if (!seemsToWorkOk)
+                                    {
+                                        problem = "debitCreditIndicator";
+                                        break;
+                                    }
+
+                                    Boolean debitCreditIndicator = Convert.ToBoolean(tempTbl.Rows[0]["debit_indicator"]);
+
+                                    Decimal newPeriodBalance = (debitCreditIndicator) ?
+                                                               lastMonthBalance + debitTotal - creditTotal
+                                                               :
+                                                               lastMonthBalance - debitTotal + creditTotal;
+
+                                    Decimal discrepency = newPeriodBalance - thisMonthBalance;
+
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                                        "UPDATE a_general_ledger_master_period SET " +
+                                        " a_actual_intl_n = a_actual_intl_n + " + discrepency +
+                                        " WHERE a_glm_sequence_i = " + glmSequence +
+                                        " AND a_period_number_i >= " + transactionPeriod, Transaction);
+
+                                    DBAccess.GDBAccessObj.ExecuteNonQuery(
+                                        "UPDATE a_general_ledger_master SET " +
+                                        " a_ytd_actual_intl_n = a_ytd_actual_intl_n + " + discrepency +
+                                        " WHERE a_glm_sequence_i = " + glmSequence, Transaction);
+
+//                                  TLogging.Log("Discrepency for CostCentre " + costCentreCode + " Account " + accountCode + " is " + discrepency);
+                                } // foreach glmRow
+
+                                if (!seemsToWorkOk)
+                                {
+                                    TLogging.Log("SaveCorporateExchangeSetupTDS: unable to read " + problem + " for CostCentre " + costCentreCode +
+                                        " Account " + accountCode);
+                                    SubmissionOK = false;
+                                }
+                            } // foreach ledgerRow
+
+                        } // if TransactionsChanged
+
                     }
 
                     // save changes to exchange rates
                     ACorporateExchangeRateAccess.SubmitChanges(InspectDS.ACorporateExchangeRate, Transaction);
-
-                    SubmissionOK = true;
-                });
+                }); // GetNewOrExistingAutoTransaction
 
             TSubmitChangesResult SubmissionResult;
 
