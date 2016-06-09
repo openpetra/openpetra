@@ -30,6 +30,7 @@
             <CustomField name="DonorName" type="String"/>
             <CustomField name="DonorClass" type="String"/>
             <CustomField name="DateEntered" type="DateTime"/>
+            <CustomField name="Active" type="Boolean"/>
             <CustomField name="RecipientDescription" type="String"/>
             <CustomField name="RecipientField" type="Int64"/>
             <CustomField name="RecipientKeyMinistry" type="String"/>
@@ -40,7 +41,6 @@
             <CustomField name="MethodOfPaymentCode" type="String"/>
             <CustomField name="AccountCode" type="String"/>
             <CustomField name="CostCentreCode" type="String"/>
-            <CustomField name="Active" type="Boolean"/>
         </Table>
 
         <Table sqltable="a_motivation_group"/>

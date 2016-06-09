@@ -307,7 +307,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                         ARecipientKey,
                         ACurrentDetailRow.RecipientLedgerNumber,
-                        ACurrentDetailRow.DateEntered,
+                        DateTime.Now,
                         AMotivationGroup,
                         AMotivationDetail,
                         out partnerIsMissingLink);
@@ -364,7 +364,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (APartnerKey > 0)
             {
                 RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey,
-                    ACurrentDetailRow.DateEntered);
+                    DateTime.Now);
             }
 
             ARecipientKeyChangingFlag = true;
@@ -464,7 +464,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                     ACurrentDetailRow.RecipientKey,
                     ACurrentDetailRow.RecipientLedgerNumber,
-                    ACurrentDetailRow.DateEntered,
+                    DateTime.Now,
                     ACurrentDetailRow.MotivationGroupCode,
                     ACurrentDetailRow.MotivationDetailCode,
                     out partnerIsMissingLink);
@@ -932,7 +932,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 string newCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ARow.LedgerNumber,
                     ARow.RecipientKey,
                     ARow.RecipientLedgerNumber,
-                    ARow.DateEntered,
+                    DateTime.Now,
                     ARow.MotivationGroupCode,
                     ARow.MotivationDetailCode,
                     out PartnerIsMissingLink);

@@ -140,6 +140,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     newRow.MethodOfPaymentCode = CurrentRecurringGiftRow.MethodOfPaymentCode;
                     newRow.MethodOfGivingCode = CurrentRecurringGiftRow.MethodOfGivingCode;
                     newRow.DonorKey = CurrentRecurringGiftRow.DonorKey;
+                    newRow.DateEntered = DateTime.Now;
 
                     if (CopyDetails)
                     {

@@ -2279,6 +2279,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     giftRow.MethodOfPaymentCode = cmbDetailMethodOfPaymentCode.GetSelectedString();
                 }
 
+                if (chkDetailActive.Checked.Equals(null))
+                {
+                    giftRow.SetActiveNull();
+                }
+                else
+                {
+                    giftRow.Active = chkDetailActive.Checked;
+                }
+
                 if (txtDetailReference.Text.Length == 0)
                 {
                     giftRow.SetReferenceNull();

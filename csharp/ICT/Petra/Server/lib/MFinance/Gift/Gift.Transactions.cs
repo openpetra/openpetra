@@ -3533,6 +3533,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 giftDetail.MethodOfGivingCode = giftRow.MethodOfGivingCode;
                 giftDetail.MethodOfPaymentCode = giftRow.MethodOfPaymentCode;
                 giftDetail.Active = giftRow.Active;
+                giftDetail.DateEntered = DateTime.Now;
 
                 AMotivationDetailRow motivationDetailRow = (AMotivationDetailRow)MainDS.AMotivationDetail.Rows.Find(
                     new object[] { ALedgerNumber, giftDetail.MotivationGroupCode, giftDetail.MotivationDetailCode });
@@ -3573,7 +3574,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             RetrieveCostCentreCodeForRecipient(ALedgerNumber,
                                 giftDetail.RecipientKey,
                                 giftDetail.RecipientLedgerNumber,
-                                giftDetail.DateEntered,
+                                DateTime.Now,
                                 motivationDetailRow.MotivationGroupCode,
                                 motivationDetailRow.MotivationDetailCode,
                                 out partnerIsMissingLink,
