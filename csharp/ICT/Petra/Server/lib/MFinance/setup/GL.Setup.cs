@@ -2434,13 +2434,15 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                     {
                                         String query =
                                             "UPDATE a_general_ledger_master set " +
-                                            " a_closing_period_actual_base_n = - a_closing_period_actual_base_n, " +
                                             " a_start_balance_base_n = - a_start_balance_base_n, " +
-                                            " a_ytd_actual_intl_n = - a_ytd_actual_intl_n, " +
-                                            " a_closing_period_actual_intl_n = - a_closing_period_actual_intl_n, " +
+                                            " a_start_balance_foreign_n = - a_start_balance_foreign_n, " +
                                             " a_start_balance_intl_n = - a_start_balance_intl_n, " +
+                                            " a_ytd_actual_base_n = - a_ytd_actual_base_n, " +
                                             " a_ytd_actual_foreign_n = - a_ytd_actual_foreign_n, " +
-                                            " a_start_balance_foreign_n = - a_start_balance_foreign_n " +
+                                            " a_ytd_actual_intl_n = - a_ytd_actual_intl_n, " +
+                                            " a_closing_period_actual_base_n = - a_closing_period_actual_base_n, " +
+                                            // " a_closing_period_actual_foreign_n = - a_closing_period_actual_foreign_n, " + !We don't have one of these!
+                                            " a_closing_period_actual_intl_n = - a_closing_period_actual_intl_n " +
                                             " WHERE a_ledger_number_i = " + ALedgerNumber +
                                             " AND a_account_code_c = '" + acc.AccountCode + "'";
                                         DBAccess.GDBAccessObj.ExecuteNonQuery(query, transaction);
