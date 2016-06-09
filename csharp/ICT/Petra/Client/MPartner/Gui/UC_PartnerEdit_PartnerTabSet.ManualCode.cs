@@ -1020,6 +1020,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     FUcoAddresses.PartnerEditUIConnector = FPartnerEditUIConnector;
                     FUcoAddresses.HookupDataChange += new THookupPartnerEditDataChangeEventHandler(Uco_HookupDataChange);
+                    FUcoAddresses.AddressAddedPartnerNeedsToBecomeActive += FUcoAddresses_AddressAddedPartnerNeedsToBecomeActive;
 
                     FUcoAddresses.SpecialInitUserControl();
 
