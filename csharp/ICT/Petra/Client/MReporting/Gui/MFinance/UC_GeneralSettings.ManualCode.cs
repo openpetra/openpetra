@@ -280,9 +280,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 else
                 {
                     FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
-                        Catalog.GetString("Date format problem"),
-                        Catalog.GetString("Please check the date entry."),
-                        TResultSeverity.Resv_Critical));
+                            Catalog.GetString("Date format problem"),
+                            Catalog.GetString("Please check the date entry."),
+                            TResultSeverity.Resv_Critical));
                 }
             }
             else if (rbtBreakdown.Checked)

@@ -165,10 +165,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 MessageBox.Show(Catalog.GetString(" Please enter a number for the From Year."), Catalog.GetString("Add Range"));
                 return;
             }
-            else if (DateTime.TryParseExact(((int)txtFromMonth.NumberValueInt).ToString("00") + "/" + ((int)txtFromYear.NumberValueInt).ToString("##00"), new String[] {"MM/yyyy", "MM/yy"}, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.None, out ValidDate)) {
+            else if (DateTime.TryParseExact(((int)txtFromMonth.NumberValueInt).ToString("00") + "/" +
+                         ((int)txtFromYear.NumberValueInt).ToString("##00"),
+                         new String[] { "MM/yyyy",
+                                        "MM/yy" }, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.None,
+                         out ValidDate))
+            {
                 txtFromYear.NumberValueInt = ValidDate.Year;
             }
-            else {
+            else
+            {
                 MessageBox.Show(Catalog.GetString(" Please enter a valid 2 or 4 digit From Year."), Catalog.GetString("Add Range"));
                 return;
             }
@@ -178,10 +184,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 MessageBox.Show(Catalog.GetString(" Please enter a number for the To Year."), Catalog.GetString("Add Range"));
                 return;
             }
-            else if (DateTime.TryParseExact(((int)txtToMonth.NumberValueInt).ToString("00") + "/" + ((int)txtToYear.NumberValueInt).ToString("##00"), new String[] {"MM/yyyy", "MM/yy"}, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.None, out ValidDate)) {
+            else if (DateTime.TryParseExact(((int)txtToMonth.NumberValueInt).ToString("00") + "/" + ((int)txtToYear.NumberValueInt).ToString("##00"),
+                         new String[] { "MM/yyyy",
+                                        "MM/yy" }, System.Globalization.CultureInfo.CurrentCulture, System.Globalization.DateTimeStyles.None,
+                         out ValidDate))
+            {
                 txtToYear.NumberValueInt = ValidDate.Year;
             }
-            else {
+            else
+            {
                 MessageBox.Show(Catalog.GetString(" Please enter a valid 2 or 4 digit To Year."), Catalog.GetString("Add Range"));
                 return;
             }

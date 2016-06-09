@@ -198,7 +198,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
 
             dtpStartDate.Date = dtpStartDateDate;
-            
+
             rbtExtract.Checked = AParameters.Get("param_extract").ToBool();
             rbtAllPartners.Checked = AParameters.Get("param_all_partners").ToBool();
             txtExtract.Text = AParameters.Get("param_extract_name").ToString();

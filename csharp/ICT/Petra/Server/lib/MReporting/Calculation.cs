@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MReporting
 
                 TLogging.Log("Finished", TLoggingType.ToStatusBar);
             }
-            
+
             //// Reset the row display parameter ready for the next level
             if (Parameters.Exists("DONTDISPLAYROW") && Parameters.Get("DONTDISPLAYROW").ToBool())
             {

@@ -428,8 +428,11 @@ namespace Ict.Petra.Server.MReporting
 
             foreach (TResult element in children)
             {
-                // If the row won't be displayed (e.g. filtered out by IsLapsedDonor() using DONTDISPLAYROW parameter) then don't bother adding it up. 
-                if (!element.display) continue;
+                // If the row won't be displayed (e.g. filtered out by IsLapsedDonor() using DONTDISPLAYROW parameter) then don't bother adding it up.
+                if (!element.display)
+                {
+                    continue;
+                }
 
                 if ((element.column != null) && (!element.column[column].IsZeroOrNull()))
                 {

@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             ACalc.AddParameter("param_country_code", CountryCode);
 
             int MaxColumns = ACalc.GetParameters().Get("MaxDisplayColumns").ToInt();
+
             for (int Counter = 0; Counter <= MaxColumns; ++Counter)
             {
                 String ColumnName = ACalc.GetParameters().Get("param_calculation", Counter, 0).ToString();
@@ -96,7 +97,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                     ACalc.AddParameter("param_gift_amount_column", Counter);
                 }
             }
-
         }
 
         private void SetControlsManual(TParameterList AParameters)
