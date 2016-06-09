@@ -552,6 +552,18 @@ namespace Ict.Petra.Shared
                  "The Partner Key specified is not linked to a Cost Centre.")
         ]
         public const String ERR_PARTNER_MUST_BE_CC = "PARTN.00057V";
+
+        /// <summary>'Mailing Address' should only be set on one Address --- Non-critical.</summary>
+        [ErrCodeAttribute("'Mailing Address' should only be set on one Address",
+             ErrorMessageText =
+                 "Only one of the Addresses valid for a particular date should be set as the Mailing Address (indicated by envelope icon in column 2 of Address list).\r\n\r\n"
+                 +
+                 "Please edit the Addresses in a way that there is only one Address with a check in the 'Mailing Address' tick box in any overlapping date range.\r\n"
+                 +
+                 "If this isn't done, it is not clear what the Partner's 'Best Address' is for use in reports, letters, etc..",
+             ErrorMessageTitle = "Multiple Mailing Addresses In Overlapping Date Range")]
+        public const String ERR_MULTIPLEMAILINGADDRESSES = "PARTN.00058N";
+
         #region Subscriptions
 
         /// <summary>Subscription Status Mandatory.</summary>

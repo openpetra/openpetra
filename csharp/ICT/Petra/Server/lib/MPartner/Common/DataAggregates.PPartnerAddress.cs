@@ -1265,7 +1265,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("Locality", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.Locality;
                     CurrentParameter++;
@@ -1280,7 +1280,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("StreetName", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.StreetName;
                     CurrentParameter++;
@@ -1295,7 +1295,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("City", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.City;
                     CurrentParameter++;
@@ -1310,7 +1310,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("PostalCode", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.PostalCode;
                     CurrentParameter++;
@@ -1325,7 +1325,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 }
                 else
                 {
-                    sqlLoadSimilarAddresses += " = ?";
+                    sqlLoadSimilarAddresses += " LIKE ?";
                     parameters[CurrentParameter] = new OdbcParameter("CountryCode", OdbcType.VarChar);
                     parameters[CurrentParameter].Value = ALocationRow.CountryCode;
                     CurrentParameter++;

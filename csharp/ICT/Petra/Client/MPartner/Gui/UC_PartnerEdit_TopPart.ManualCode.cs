@@ -335,6 +335,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             FPetraUtilsObject.SetStatusBarText(txtGiftDestination, AGiftDestination);
         }
 
+        /// <summary>
+        /// Sets the Partner's PartnerStatus to 'ACTIVE'.
+        /// </summary>
+        public void SetPartnerStatusToActive()
+        {
+            cmbPartnerStatus.SetSelectedString(SharedTypes.StdPartnerStatusCodeEnumToString(TStdPartnerStatusCode.spscACTIVE));
+        }
+
         #endregion
 
         #region Private Methods

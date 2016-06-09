@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -108,6 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TPartnerEditTabPageEnum FInitiallySelectedTabPage = TPartnerEditTabPageEnum.petpDefault;
 
         private TPartnerEditTabPageEnum FCurrentlySelectedTabPage;
+        private TPartnerEditTabPageEnum FPreviouslySelectedTabPage = TPartnerEditTabPageEnum.petpDefault;
 
         private String FPartnerClass;
 
@@ -127,6 +128,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         /// <summary>todoComment</summary>
         public event TEnableDisableScreenPartsEventHandler EnableDisableOtherScreenParts;
+
+        /// <summary>
+        /// This Event gets raised when a new Address got added and the Partner has got a Partner Status
+        /// other than 'ACTIVE'.
+        /// </summary>
+        public event EventHandler AddressAddedPartnerNeedsToBecomeActive;
 
         #endregion
 
@@ -171,6 +178,18 @@ namespace Ict.Petra.Client.MPartner.Gui
             set
             {
                 FCurrentlySelectedTabPage = value;
+            }
+        }
+
+        /// <summary>
+        /// Calls the DataSavedEventFired on certain nested UserControls.
+        /// </summary>
+        /// <param name="ASuccess">True if saving of data went ahead OK, otherwise false.</param>
+        public void DataSavedEventFired(bool ASuccess)
+        {
+            if (FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucAddresses))
+            {
+                FUcoAddresses.DataSavedEventFired(ASuccess);
             }
         }
 
@@ -234,6 +253,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (FTabPageEvent == null)
             {
                 FTabPageEvent += this.TabPageEventHandler;
+            }
+        }
+
+        private void FUcoAddresses_AddressAddedPartnerNeedsToBecomeActive(object sender, EventArgs e)
+        {
+            if (AddressAddedPartnerNeedsToBecomeActive != null)
+            {
+                AddressAddedPartnerNeedsToBecomeActive(sender, e);
             }
         }
 
@@ -334,6 +361,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             FUserControlInitialised = true;
 
             tabPartners.Selecting += new TabControlCancelEventHandler(TabSelectionChanging);
+            tabPartners.Deselecting += new TabControlCancelEventHandler(TabSelectionChanging);
 
             // We must switch to the selected TabPage only once the the 'Shown' Event of the Form has been run
             // to make sure that the TabControl does not show the selected TabPage leftmost, but at its' correct
@@ -491,6 +519,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     (TUC_PartnerAddresses)FTabSetup[TDynamicLoadableUserControls.dlucAddresses];
 
                 if (!UCPartnerAddresses.ValidateAllData(false, ADataValidationProcessingMode, AValidateSpecificControl))
+                {
+                    ReturnValue = false;
+                }
+
+                if (((tabPartners.SelectedTab == tpgAddresses)
+                     || (FPreviouslySelectedTabPage == TPartnerEditTabPageEnum.petpAddresses)
+                     || (ADataValidationProcessingMode == TErrorProcessingMode.Epm_None))
+                    && (!UCPartnerAddresses.ValidateAreMultipleMailingAddressesPresent(ADataValidationProcessingMode)))
                 {
                     ReturnValue = false;
                 }
@@ -1464,69 +1500,85 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         void TabSelectionChanging(object sender, TabControlCancelEventArgs e)
         {
-            FPetraUtilsObject.VerificationResultCollection.Clear();
-
-            if (!ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
+            if (e.Action == TabControlAction.Selecting)
             {
-                e.Cancel = true;
+                FPetraUtilsObject.VerificationResultCollection.Clear();
 
-                FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                if (!ValidateAllData(TErrorProcessingMode.Epm_All, FCurrentUserControl))
+                {
+                    e.Cancel = true;
+
+                    FPetraUtilsObject.VerificationResultCollection.FocusOnFirstErrorControlRequested = true;
+                }
+            }
+            else
+            {
+                FPreviouslySelectedTabPage = TabPageToTabPageEnum(e.TabPage);
             }
         }
 
         private void SetCurrentlySelectedTabPage(TabPage ATabPage)
         {
+            FCurrentlySelectedTabPage = TabPageToTabPageEnum(ATabPage);
+        }
+
+        private TPartnerEditTabPageEnum TabPageToTabPageEnum(TabPage ATabPage)
+        {
             if (ATabPage == tpgAddresses)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpAddresses;
+                return TPartnerEditTabPageEnum.petpAddresses;
             }
             else if (ATabPage == tpgContactDetails)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContactDetails;
+                return TPartnerEditTabPageEnum.petpContactDetails;
             }
             else if (ATabPage == tpgPartnerDetails)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpDetails;
+                return TPartnerEditTabPageEnum.petpDetails;
             }
             else if (ATabPage == tpgFoundationDetails)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFoundationDetails;
+                return TPartnerEditTabPageEnum.petpFoundationDetails;
             }
             else if (ATabPage == tpgSubscriptions)
             {
-                CurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpSubscriptions;
+                return TPartnerEditTabPageEnum.petpSubscriptions;
             }
             else if (ATabPage == tpgPartnerTypes)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerTypes;
+                return TPartnerEditTabPageEnum.petpPartnerTypes;
             }
             else if (ATabPage == tpgPartnerRelationships)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpPartnerRelationships;
+                return TPartnerEditTabPageEnum.petpPartnerRelationships;
             }
             else if (ATabPage == tpgFamilyMembers)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFamilyMembers;
+                return TPartnerEditTabPageEnum.petpFamilyMembers;
             }
             else if (ATabPage == tpgNotes)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpNotes;
+                return TPartnerEditTabPageEnum.petpNotes;
             }
             else if (ATabPage == tpgOfficeSpecific)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpOfficeSpecific;
+                return TPartnerEditTabPageEnum.petpOfficeSpecific;
             }
             else if (ATabPage == tpgFinanceDetails)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpFinanceDetails;
+                return TPartnerEditTabPageEnum.petpFinanceDetails;
             }
             else if (ATabPage == tpgInterests)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpInterests;
+                return TPartnerEditTabPageEnum.petpInterests;
             }
             else if (ATabPage == tpgContacts)
             {
-                FCurrentlySelectedTabPage = TPartnerEditTabPageEnum.petpContacts;
+                return TPartnerEditTabPageEnum.petpContacts;
+            }
+            else  // fallback: Default
+            {
+                return TPartnerEditTabPageEnum.petpDefault;
             }
         }
 
