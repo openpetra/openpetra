@@ -242,6 +242,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             {
                 DonorExclude += "AND Donor.p_anonymous_donor_l = 0 ";
             }
+
             if (AParameters["param_exclude_no_solicitations"].ToBool())
             {
                 DonorExclude += "AND Donor.p_no_solicitations_l = 0 ";
@@ -249,23 +250,28 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (!AParameters["param_all_motivation_groups"].ToBool())
             {
-                MotivationQuery += String.Format("AND a_gift_detail.a_motivation_group_code_c IN ({0}) ", AParameters["param_motivation_group_quotes"]);
-            }
-            if (!AParameters["param_all_motivation_details"].ToBool())
-            {
-                MotivationQuery += String.Format("AND (a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c) IN ({0}) ", AParameters["param_motivation_group_detail_pairs"]);
+                MotivationQuery += String.Format("AND a_gift_detail.a_motivation_group_code_c IN ({0}) ",
+                    AParameters["param_motivation_group_quotes"]);
             }
 
-            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+            if (!AParameters["param_all_motivation_details"].ToBool())
+            {
+                MotivationQuery += String.Format("AND (a_gift_detail.a_motivation_group_code_c, a_gift_detail.a_motivation_detail_code_c) IN ({0}) ",
+                    AParameters["param_motivation_group_detail_pairs"]);
+            }
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
                 TEnforceIsolationLevel.eilMinimum,
                 ref Transaction,
                 delegate
                 {
-                    String Query = @"
+                    String Query =
+                        @"
                         WITH Details AS (
-                            SELECT 
+                            SELECT
                                 a_gift.p_donor_key_n AS DonorKey
-                                -- We need to join to Donor to check p_anonymous_donor_l and p_no_solicitations_l for the query, so we may as well pull Name etc. 
+                                -- We need to join to Donor to check p_anonymous_donor_l and p_no_solicitations_l for the query, so we may as well pull Name etc.
                                 -- at the same time, to avoid doing a second Donor query later. But we'll consolidate this duplicated data into another DataTable
                                 -- to return it to the client.
                                 , Donor.p_partner_short_name_c AS DonorName
@@ -278,19 +284,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 , a_motivation_group.a_motivation_group_description_c AS MotivationGroupDescription
                                 , a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetailDescription
                                 , a_gift_detail.p_recipient_key_n AS RecipientKey
-                                , a_gift_detail." + CurrencyField + @" AS GiftAmount
-                                , sum(a_gift_detail." + CurrencyField + @") OVER (PARTITION BY a_gift.p_donor_key_n) AS TotalAmount
-                            FROM 
+                                , a_gift_detail."
+                        + CurrencyField + @" AS GiftAmount
+                                , sum(a_gift_detail."                                                             + CurrencyField +
+                        @") OVER (PARTITION BY a_gift.p_donor_key_n) AS TotalAmount
+                            FROM
                                 a_gift
-                            INNER JOIN 
+                            INNER JOIN
                                 p_partner AS Donor
                             ON
                                 (Donor.p_partner_key_n = a_gift.p_donor_key_n)
-                            INNER JOIN 
+                            INNER JOIN
                                 a_gift_detail
                             USING
                                 (a_ledger_number_i, a_batch_number_i, a_gift_transaction_number_i)
-                            INNER JOIN 
+                            INNER JOIN
                                 a_motivation_group
                             USING
                                 (a_ledger_number_i, a_motivation_group_code_c)
@@ -299,16 +307,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             USING
                                 (a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c)
                             WHERE
-                                a_gift.a_ledger_number_i = " + LedgerNumber + @"
-                                AND a_gift.a_date_entered_d BETWEEN '" + StartDate + "' AND '" + EndDate + @"'
+                                a_gift.a_ledger_number_i = "
+                        + LedgerNumber + @"
+                                AND a_gift.a_date_entered_d BETWEEN '"                                              + StartDate + "' AND '" +
+                        EndDate +
+                        @"'
                                 -- I hope a_dont_report_l gets converted to a_report_l to avoid this horrible double negative:
                                 AND a_motivation_detail.a_dont_report_l = False
-                                " + MotivationQuery + DonorExclude + @"
+                                "
+                        + MotivationQuery + DonorExclude +
+                        @"
                                 -- For OM Germany, exclude donors 99000000 and 27002909 (SHKI and anonymous UNBEKANNT)
-                                AND NOT ((a_gift.a_ledger_number_i = 27 OR a_gift.a_ledger_number_i = 90 OR a_gift.a_ledger_number_i = 99) 
+                                AND NOT ((a_gift.a_ledger_number_i = 27 OR a_gift.a_ledger_number_i = 90 OR a_gift.a_ledger_number_i = 99)
                                     AND (a_gift.p_donor_key_n = 99000000 OR a_gift.p_donor_key_n = 27002909))
                         )
-                        SELECT 
+                        SELECT
                             Details.*
                             , Recipient.p_partner_short_name_c AS RecipientName
                         FROM
@@ -317,16 +330,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             p_partner AS Recipient
                         ON
                             (Recipient.p_partner_key_n = Details.RecipientKey)
-                        WHERE 
-                            TotalAmount >= " + MinimumAmount + @"
+                        WHERE
+                            TotalAmount >= "
+                        + MinimumAmount +
+                        @"
                         ORDER BY
                             Details.DonorName
                         ;
-                    ";
+                    "                                                                                                                                        ;
 #if DEBUG
                     TLogging.Log(Query);
 #endif
-                    
+
                     Gifts = DbAdapter.RunQuery(Query, "GiftsOverMinimum", Transaction);
 #if DEBUG
                     TLogging.Log("Query finished");
@@ -343,25 +358,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Donors.Columns.Add("PostalCode", typeof(String));
                     Donors.Columns.Add("Phone", typeof(String));
                     Donors.Columns.Add("Email", typeof(String));
+
                     // Having copied the distinct names and totals from Gifts to Donors, we no longer need to pass their duplicated data back to the client
-                    foreach (String col in new String[] {"DonorName", "DonorClass", "ReceiptFrequency", "TotalAmount"})
+                    foreach (String col in new String[] { "DonorName", "DonorClass", "ReceiptFrequency", "TotalAmount" })
                     {
                         Gifts.Columns.Remove(col);
                     }
 
                     PLocationTable Address;
                     String Country, EmailAddress, PhoneNumber, FaxNumber;
-                    List<String> DonorList = new List<string>();
+                    List <String>DonorList = new List <string>();
 
 #if DEBUG
                     TLogging.Log("Processing addresses");
 #endif
+
                     foreach (DataRow Donor in Donors.Rows)
                     {
                         DonorList.Add(Donor[DONOR_KEY].ToString());
+
                         if (TAddressTools.GetBestAddress((Int64)Donor[DONOR_KEY], out Address, out Country, Transaction))
                         {
-                            Donor[DONOR_ADDR] = Calculations.DetermineLocationString(Address[0], Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                            Donor[DONOR_ADDR] =
+                                Calculations.DetermineLocationString(Address[0], Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
                             Donor[DONOR_POSTCODE] = Address[0]["p_postal_code_c"];
                         }
                         else
@@ -369,49 +388,59 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             Donor[DONOR_ADDR] = "";
                             Donor[DONOR_POSTCODE] = "";
                         }
-                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax((Int64)Donor[DONOR_KEY], out PhoneNumber, out EmailAddress, out FaxNumber); 
+
+                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax((Int64)Donor[DONOR_KEY], out PhoneNumber, out EmailAddress,
+                            out FaxNumber);
                         Donor[DONOR_PHONE] = PhoneNumber;
                         Donor[DONOR_EMAIL] = EmailAddress;
                     }
+
                     if (DonorList.Count == 0)
                     {
                         DonorList.Add("null");
                     }
+
 #if DEBUG
-                    TLogging.Log("Addresses finished");
+                    TLogging.Log(
+                        "Addresses finished");
 #endif
 
                     // Get the most recent contacts with each donor
-                    Query = @"
+                    Query =
+                        @"
                         WITH Contacts AS (
-	                        SELECT 
+	                        SELECT
 		                        row_number() OVER (PARTITION BY p_partner_contact.p_partner_key_n ORDER BY s_contact_date_d DESC, s_contact_time_i DESC) AS RowID
 		                        , p_partner_contact.p_partner_key_n AS DonorKey
 		                        , p_contact_log.p_contactor_c AS Contactor
 		                        , p_contact_log.s_contact_date_d AS ContactDate
 		                        , p_contact_log.s_contact_time_i AS ContactTime
-		                        , p_contact_log.s_contact_time_i * '1 second'::interval AS Time 
+		                        , p_contact_log.s_contact_time_i * '1 second'::interval AS Time
 		                        , p_contact_log.p_contact_code_c AS ContactCode
 		                        , p_contact_log.p_contact_comment_c AS Comment
-	                        FROM 
+	                        FROM
 		                        p_partner_contact
-	                        INNER JOIN 
+	                        INNER JOIN
 		                        p_contact_log
-	                        USING 
+	                        USING
 		                        (p_contact_log_id_i)
 	                        WHERE
-		                        p_partner_key_n in (" + String.Join(",", DonorList) + @")
+		                        p_partner_key_n in ("
+                        + String.Join(",",
+                            DonorList) +
+                        @")
 	                        ORDER BY
 		                        DonorKey,
 		                        RowID
                         )
                         SELECT
 	                        *
-                        FROM 
+                        FROM
 	                        Contacts
                         WHERE
-	                        Contacts.RowID <= " + AParameters["param_max_contacts"] + @";
-                    ";
+	                        Contacts.RowID <= "
+                        + AParameters["param_max_contacts"] + @";
+                    "                                                                   ;
 #if DEBUG
                     TLogging.Log(Query);
 #endif
@@ -420,7 +449,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 #if DEBUG
                     TLogging.Log("Query finished");
 #endif
-
 
                     if (DbAdapter.IsCancelled)
                     {

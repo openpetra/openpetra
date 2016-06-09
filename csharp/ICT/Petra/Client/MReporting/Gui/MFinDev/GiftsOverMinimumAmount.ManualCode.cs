@@ -128,11 +128,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private void SetControlsManual(TParameterList AParameters)
         {
             DateTime dtpStartDateDate = AParameters.Get("param_start_date").ToDate();
+
             if ((dtpStartDateDate <= DateTime.MinValue)
                 || (dtpStartDateDate >= DateTime.MaxValue))
             {
                 dtpStartDateDate = new DateTime(DateTime.Now.Year, 1, 1);
             }
+
             dtpStartDate.Date = dtpStartDateDate;
         }
 
@@ -144,7 +146,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             ACurrencyRow CurrencyRow;
             ArrayList reportParam = ACalc.GetParameters().Elems;
 
-            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string, TVariant>();
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
             {
@@ -169,7 +171,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
             //
             // I need to get the name of the current ledger..
-            ALedgerRow LedgerDetailsRow = (ALedgerRow)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber).Rows[0];
+            ALedgerRow LedgerDetailsRow = (ALedgerRow)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                FLedgerNumber).Rows[0];
 
             //
             // The ledger's name is stored in its partner record, not in its ledger record. Sigh.
@@ -193,14 +196,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             {
                 case "Base":
                     ACalc.AddStringParameter("param_currency_code", LedgerDetailsRow.BaseCurrency);
-                    CurrencyRow = (ACurrencyRow)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList).Rows.Find(LedgerDetailsRow.BaseCurrency);
+                    CurrencyRow = (ACurrencyRow)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList).Rows.Find(
+                    LedgerDetailsRow.BaseCurrency);
                     ACalc.AddStringParameter("param_currency_format", CurrencyRow.DisplayFormat);
                     break;
+
                 case "International":
                     ACalc.AddStringParameter("param_currency_code", LedgerDetailsRow.IntlCurrency);
-                    CurrencyRow = (ACurrencyRow)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList).Rows.Find(LedgerDetailsRow.IntlCurrency);
+                    CurrencyRow = (ACurrencyRow)TDataCache.TMCommon.GetCacheableCommonTable(TCacheableCommonTablesEnum.CurrencyCodeList).Rows.Find(
+                    LedgerDetailsRow.IntlCurrency);
                     ACalc.AddStringParameter("param_currency_format", CurrencyRow.DisplayFormat);
                     break;
+
                 default:
                     ACalc.AddStringParameter("param_currency_code", "Unknown");
                     ACalc.AddStringParameter("param_currency_format", "->>>,>>>,>>>,>>9.99");

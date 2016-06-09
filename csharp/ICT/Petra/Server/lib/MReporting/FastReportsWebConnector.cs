@@ -221,7 +221,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// until the result comes back, or the request is cancelled.
         /// </summary>
         [RequireModulePermission("none")]
-        public static DataSet GetReportDataSet(String AReportType, Dictionary<String, TVariant> AParameters)
+        public static DataSet GetReportDataSet(String AReportType, Dictionary <String, TVariant>AParameters)
         {
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataSet ResultSet = null;
