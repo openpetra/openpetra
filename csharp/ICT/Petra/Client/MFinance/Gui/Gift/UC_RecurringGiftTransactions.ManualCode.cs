@@ -250,6 +250,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 sptTransactions.TabStop = false;
 
                 SetupTextBoxMenuItems();
+
+                txtDetailDonorKey.PartnerClass = "DONOR";
                 txtDetailRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
 
                 //Event fires when the recipient key is changed and the new partner has a different Partner Class

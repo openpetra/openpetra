@@ -44,6 +44,7 @@ using Ict.Petra.Client.MPartner;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -369,6 +370,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             String RestrictedClasses = "";
 
             Boolean WorkerFamOnly = false;
+            Boolean SysDefaultAllowPERSONPartnersAsDonors = TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS,
+                true);
             DataRow PartnerClassDataRow;
 
             TmpString = ARestrictedPartnerClasses[0];
@@ -411,6 +414,69 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // Set the flag, so combo box handler knows this is the case
                     FWorkerFamOnly = true;
                 }
+                else if (eachPart == "DONOR")
+                {
+                    if (AAllPartnerClasses)
+                    {
+                        // First add all possible Partner Classes as available Partner Classes
+                        InsertDefaultPartnerClassComboBox();
+
+                        // If special System Default is false: remove 'PERSON' from the list of available Partner Classes!
+                        if (!SysDefaultAllowPERSONPartnersAsDonors)
+                        {
+                            DataRow PersonRow = FPartnerClassDataTable.Rows.Find("PERSON");
+
+                            if (PersonRow != null)
+                            {
+                                PersonRow.Delete();
+                            }
+                            else
+                            {
+                                throw new EOPAppException(
+                                    "Expected PERSON to be in FPartnerClassDataTable after calling InsertDefaultPartnerClassComboBox() but it isn't");
+                            }
+
+                            RestrictedClasses = "CHURCH,FAMILY,ORGANISATION,BANK,UNIT,VENUE"; // = every Partner Class except for PERSON!
+                        }
+                        else
+                        {
+                            RestrictedClasses = "CHURCH,PERSON,FAMILY,ORGANISATION,BANK,UNIT,VENUE"; // = every Partner Class
+                        }
+                    }
+                    else
+                    {
+                        // If special System Default is false...
+                        if (!SysDefaultAllowPERSONPartnersAsDonors)
+                        {
+                            // ...ensure that only 'FAMILY' is in the list of available Partner Classes
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "FAMILY";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            // Only 'FAMILY' will be allowable then
+                            FDefaultPartnerClass = "FAMILY";
+                        }
+                        else
+                        {
+                            // ... otherwise add *, PERSON and FAMILY
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "*";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "PERSON";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            PartnerClassDataRow = FPartnerClassDataTable.NewRow();
+                            PartnerClassDataRow["PartnerClass"] = "FAMILY";
+                            FPartnerClassDataTable.Rows.Add(PartnerClassDataRow);
+
+                            FDefaultPartnerClass = "*";
+                        }
+                    }
+
+                    continue;
+                }
                 else
                 {
                     if ((AAllPartnerClasses)
@@ -451,12 +517,16 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (CountUniqueRestrictedClasses(FDefaultPartnerClass) == 1)
             {
-                // If we ended up with only one unique Restricted Class then remove the '*' record again (got added earlier in
-                // this Method) as it would give the user the wrong impression that multiple Partner Classes might get searched
-                // (but first make sure we are indeed deleting THAT record - just for sanity reasons) - part of fixing Bug #5255!
-                if (FPartnerClassDataTable.Rows[0][0].ToString() == "*")
+                if ((SysDefaultAllowPERSONPartnersAsDonors && (TmpString != "DONOR"))
+                    || (!SysDefaultAllowPERSONPartnersAsDonors))
                 {
-                    FPartnerClassDataTable.Rows[0].Delete();
+                    // If we ended up with only one unique Restricted Class then remove the '*' record again (got added earlier in
+                    // this Method) as it would give the user the wrong impression that multiple Partner Classes might get searched
+                    // (but first make sure we are indeed deleting THAT record - just for sanity reasons) - part of fixing Bug #5255!
+                    if (FPartnerClassDataTable.Rows[0][0].ToString() == "*")
+                    {
+                        FPartnerClassDataTable.Rows[0].Delete();
+                    }
                 }
             }
 

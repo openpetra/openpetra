@@ -182,6 +182,9 @@ namespace Ict.Petra.Shared
         public const String SYSDEFAULT_RECIPIENTZEROISVALID = "RecipientZeroIsValid";
 
         /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_ALLOWPERSONPARTNERSASDONORS = "AllowPERSONPartnersAsDonors";
+
+        /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_DEVELOPERSONLY = "DevelopersOnly";
 
         /// <summary>System Defaults</summary>
