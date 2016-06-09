@@ -285,8 +285,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 , a_motivation_detail.a_motivation_detail_desc_c AS MotivationDetailDescription
                                 , a_gift_detail.p_recipient_key_n AS RecipientKey
                                 , a_gift_detail."
-                        + CurrencyField + @" AS GiftAmount
-                                , sum(a_gift_detail."                                                             + CurrencyField +
+                        +
+                        CurrencyField + @" AS GiftAmount
+                                , sum(a_gift_detail."                                                           + CurrencyField +
                         @") OVER (PARTITION BY a_gift.p_donor_key_n) AS TotalAmount
                             FROM
                                 a_gift
@@ -308,14 +309,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 (a_ledger_number_i, a_motivation_group_code_c, a_motivation_detail_code_c)
                             WHERE
                                 a_gift.a_ledger_number_i = "
-                        + LedgerNumber + @"
-                                AND a_gift.a_date_entered_d BETWEEN '"                                              + StartDate + "' AND '" +
+                        +
+                        LedgerNumber + @"
+                                AND a_gift.a_date_entered_d BETWEEN '"                                            + StartDate + "' AND '" +
                         EndDate +
                         @"'
                                 -- I hope a_dont_report_l gets converted to a_report_l to avoid this horrible double negative:
                                 AND a_motivation_detail.a_dont_report_l = False
                                 "
-                        + MotivationQuery + DonorExclude +
+                        +
+                        MotivationQuery + DonorExclude +
                         @"
                                 -- For OM Germany, exclude donors 99000000 and 27002909 (SHKI and anonymous UNBEKANNT)
                                 AND NOT ((a_gift.a_ledger_number_i = 27 OR a_gift.a_ledger_number_i = 90 OR a_gift.a_ledger_number_i = 99)
@@ -332,7 +335,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             (Recipient.p_partner_key_n = Details.RecipientKey)
                         WHERE
                             TotalAmount >= "
-                        + MinimumAmount +
+                        +
+                        MinimumAmount +
                         @"
                         ORDER BY
                             Details.DonorName
@@ -426,7 +430,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 		                        (p_contact_log_id_i)
 	                        WHERE
 		                        p_partner_key_n in ("
-                        + String.Join(",",
+                        +
+                        String.Join(",",
                             DonorList) +
                         @")
 	                        ORDER BY
@@ -439,8 +444,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                        Contacts
                         WHERE
 	                        Contacts.RowID <= "
-                        + AParameters["param_max_contacts"] + @";
-                    "                                                                   ;
+                        +
+                        AParameters["param_max_contacts"] + @";
+                    "                                                                 ;
 #if DEBUG
                     TLogging.Log(Query);
 #endif
