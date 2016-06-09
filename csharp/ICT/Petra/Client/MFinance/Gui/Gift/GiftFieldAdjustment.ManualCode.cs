@@ -56,7 +56,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void InitializeManualCode()
         {
             lblDateLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            txtRecipientKey.PartnerClass = "WORKER,FAMILY";
+
+            txtRecipientKey.PartnerClass = "WORKER,FAMILY";  // Part of fixing Bug #5255
+            txtOldFieldKey.PartnerClass = "UNIT";  // fixes Bug #4088
         }
 
         private void RecipientKeyChanged(Int64 APartnerKey, String APartnerShortName, bool AValidSelection)
@@ -347,8 +349,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (txtRecipientKey.CurrentPartnerClass != TPartnerClass.FAMILY)
             {
-                MessageBox.Show(Catalog.GetString("The Recipient must be a valid Family partner."));
+                MessageBox.Show(Catalog.GetString("The Recipient must be a valid FAMILY Partner."));
                 txtRecipientKey.Focus();
+                return false;
+            }
+
+            if (txtOldFieldKey.CurrentPartnerClass != TPartnerClass.UNIT)
+            {
+                MessageBox.Show(Catalog.GetString("The Old Field must be a valid UNIT Partner."));
+                txtOldFieldKey.Focus();
                 return false;
             }
 

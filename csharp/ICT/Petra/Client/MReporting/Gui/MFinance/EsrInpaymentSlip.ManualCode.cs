@@ -55,6 +55,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     {
         private void RunOnceOnActivationManual()
         {
+            txtRecipientKey.PartnerClass = "WORKER,UNIT,FAMILY";
+
             FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
         }
 

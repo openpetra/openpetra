@@ -1127,11 +1127,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 /*
                  * When a "Recipient" button has been pressed to bring up this screen, the
-                 * ARestrictToPartnerClasses is "WORKER-FAM,UNIT".  When we find this to be the
-                 * case, put 'Recipient Find' in the title.
-                 * NOTE: this isn't a very robust solution...
+                 * ARestrictToPartnerClasses starts with "WORKER-FAM,UNIT" or it is "WORKER-FAM,FAMILY".
+                 * When we find this to be the case, put 'Recipient Find' in the title.
+                 * NOTE: We could try to come up with a more robust solution at some point...
                  */
-                if ((FRestrictToPartnerClasses[0].ToUpper() == "WORKER-FAM") && (FRestrictToPartnerClasses[1].ToUpper() == "UNIT"))
+                if ((FRestrictToPartnerClasses[0].ToUpper() == "WORKER-FAM")
+                    && ((FRestrictToPartnerClasses[1].ToUpper() == "UNIT")
+                        || (FRestrictToPartnerClasses[1].ToUpper() == "FAMILY"))) // '... == FAMILY' = part of fixing Bug #5255
                 {
                     this.Text = StrTitleRecipient + StrTitleLastPart;
                 }
