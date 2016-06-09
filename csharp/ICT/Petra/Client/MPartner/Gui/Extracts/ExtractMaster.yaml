@@ -74,8 +74,8 @@ RootNode:
             mniCreatePartnerByRelationshipExtract: {Label=Partner by Relationship, Action=actCreatePartnerByRelationshipExtract}
             mniCreatePartnerByContactLogExtract: {Label=Partner by Contact Log, Action=actCreatePartnerByContactLogExtract}
             mniSeparator:
-            mniCreateFamilyMembersExtract: {Label=Family Members Extract, Action=actCreateFamilyMembersExtract}
-            mniCreateFamilyExtractForPersons: {Label=Family Extract for Persons, Action=actCreateFamilyExtractForPersons}
+            mniCreateFamilyMembersExtract: {Label=Persons in Families in Selected Extract, Action=actCreateFamilyMembersExtract}
+            mniCreateFamilyExtractForPersons: {Label=Families of Persons in Selected Extract, Action=actCreateFamilyExtractForPersons}
             mniSeparator:
             mniCreatePartnerByEventExtract: {Label=Partner by Event, Action=actCreatePartnerByEventExtract}
             mniCreatePartnerByEventRoleExtract: {Label=Partner by Event Role, Action=actCreatePartnerByEventRoleExtract}

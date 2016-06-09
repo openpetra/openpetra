@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             txtMinGiftAmount.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
             txtMaxGiftAmount.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

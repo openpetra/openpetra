@@ -50,6 +50,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             addressSettings.Add("param_families_only", false);
             addressSettings.Add("param_exclude_no_solicitations", true);
             ucoChkFilter.SetControls(addressSettings);
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         /// <summary>

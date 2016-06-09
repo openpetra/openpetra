@@ -269,6 +269,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             FApplicationDS.PmGeneralApplication.Rows.Add(GeneralAppRowCopy);
             FApplicationDS.PmShortTermApplication.Rows.Add(EventAppRowCopy);
 
+            // The row in the data set will be 'Added', which means that some of our validation will not give the correct result.
+            FApplicationDS.PmGeneralApplication.AcceptChanges();
+            FApplicationDS.PmShortTermApplication.AcceptChanges();
+
             ucoEvent.ShowDetails(GeneralAppRowCopy);
             ucoApplicant.ShowDetails(GeneralAppRowCopy);
             ucoTravel.ShowDetails(GeneralAppRowCopy);

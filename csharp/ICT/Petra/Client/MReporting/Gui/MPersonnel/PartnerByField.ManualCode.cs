@@ -84,6 +84,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
             }
+
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         private void LoadListData()

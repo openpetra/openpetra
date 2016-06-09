@@ -229,6 +229,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             FApplicationDS.PmGeneralApplication.Rows.Add(GeneralAppRowCopy);
             FApplicationDS.PmYearProgramApplication.Rows.Add(FieldAppRowCopy);
 
+            // The row in the data set will be 'Added', which means that some of our validation will not give the correct result.
+            FApplicationDS.PmGeneralApplication.AcceptChanges();
+            FApplicationDS.PmYearProgramApplication.AcceptChanges();
+
             ucoField.ShowDetails(GeneralAppRowCopy);
             ucoApplicant.ShowDetails(GeneralAppRowCopy);
         }

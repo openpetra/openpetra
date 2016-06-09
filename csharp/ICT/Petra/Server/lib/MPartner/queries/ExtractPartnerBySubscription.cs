@@ -102,6 +102,10 @@ namespace Ict.Petra.Server.MPartner.queries
                 {
                     Value = AParameters.Get("param_active").ToBool()
                 });
+            ASQLParameterList.Add(new OdbcParameter("param_persons_only", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_persons_only").ToBool()
+                });
             ASQLParameterList.Add(new OdbcParameter("param_families_only", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_families_only").ToBool()

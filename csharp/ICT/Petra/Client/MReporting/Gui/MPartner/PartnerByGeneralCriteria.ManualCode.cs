@@ -46,6 +46,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             }
 
             ucoChkFilter.ShowFamiliesOnly(false);
+            ucoChkFilter.ShowPersonsOnly(false);
             ucoAddress.ShowCountyStateField(true);
             ucoAddress.ShowAddressDateFields(true);
 

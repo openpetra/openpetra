@@ -58,6 +58,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             ACalc.AddParameter("param_active", this.chkActivePartners.Checked);
             ACalc.AddParameter("param_mailing_addresses_only", this.chkMailingAddressesOnly.Checked);
+            ACalc.AddParameter("param_persons_only", this.chkPersonsOnly.Checked);
             ACalc.AddParameter("param_families_only", this.chkFamiliesOnly.Checked);
             ACalc.AddParameter("param_exclude_no_solicitations", this.chkExcludeNoSolicitations.Checked);
         }
@@ -70,6 +71,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             chkActivePartners.Checked = AParameters.Get("param_active").ToBool();
             chkMailingAddressesOnly.Checked = AParameters.Get("param_mailing_addresses_only").ToBool();
+            chkPersonsOnly.Checked = AParameters.Get("param_persons_only").ToBool();
             chkFamiliesOnly.Checked = AParameters.Get("param_families_only").ToBool();
             chkExcludeNoSolicitations.Checked = AParameters.Get("param_exclude_no_solicitations").ToBool();
         }
@@ -90,11 +92,41 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
+        /// hide/show tick box for "Families Only"
+        /// </summary>
+        public void ShowPersonsOnly(bool AShow)
+        {
+            chkPersonsOnly.Visible = AShow;
+
+            if (AShow == false)
+            {
+                int adjustment = chkFamiliesOnly.Top - chkPersonsOnly.Top;
+                chkFamiliesOnly.Top -= adjustment;
+                chkExcludeNoSolicitations.Top -= adjustment;
+            }
+        }
+
+        /// <summary>
         /// hide/show tick box for "Mailing Addresses Only"
         /// </summary>
         public void ShowMailingAddressesOnly(bool AShow)
         {
             chkMailingAddressesOnly.Visible = AShow;
+        }
+
+        private void OnChangePersons(object sender, EventArgs e)
+        {
+            chkFamiliesOnly.Enabled = chkPersonsOnly.Checked == false;
+        }
+
+        private void OnChangeFamilies(object sender, EventArgs e)
+        {
+            if (!chkPersonsOnly.Visible)
+            {
+                return;
+            }
+
+            chkPersonsOnly.Enabled = chkFamiliesOnly.Checked == false;
         }
     }
 }

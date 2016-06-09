@@ -12,10 +12,12 @@ RootNode:
             Controls:
                 Row0: [chkActivePartners]
                 Row1: [chkMailingAddressesOnly]
-                Row2: [chkFamiliesOnly]
-                Row3: [chkExcludeNoSolicitations]
+                Row2: [chkPersonsOnly]
+                Row3: [chkFamiliesOnly]
+                Row4: [chkExcludeNoSolicitations]
 
         chkActivePartners: {Label=Active Partners Only, CheckBoxAttachedLabel=right,ParameterName=param_active}
         chkMailingAddressesOnly: {Label=Current Mailing Addresses Only, CheckBoxAttachedLabel=right, ParameterName=param_mailing_addresses_only}
-        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_families_only}
+        chkPersonsOnly: {Label=Persons Only, CheckBoxAttachedLabel=right, ParameterName=param_persons_only, OnChange=OnChangePersons}
+        chkFamiliesOnly: {Label=Families Only, CheckBoxAttachedLabel=right, ParameterName=param_families_only, OnChange=OnChangeFamilies}
         chkExcludeNoSolicitations: {Label=Exclude 'No Solicitations', CheckBoxAttachedLabel=right, ParameterName=param_exclude_no_solicitations}

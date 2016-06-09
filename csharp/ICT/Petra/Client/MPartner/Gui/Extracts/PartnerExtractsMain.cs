@@ -245,7 +245,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AParentForm"></param>
         public static void FamilyExtractForPersons(Form AParentForm)
         {
-            CreateFamilyMembersExtract(AParentForm, null);
+            CreateFamilyExtractForPersons(AParentForm, null);
         }
 
         /// <summary>
@@ -282,12 +282,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             else
             {
                 // inform user what this extract is about and what will happen
-                MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
-                        "A new Extract will be created that will contain all Families of the Persons" +
-                        " that exist in the selected Extract."),
-                    Catalog.GetString("Generate Family Extract for Persons"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                if (MessageBox.Show(Catalog.GetString("Please select an existing Extract with the Find Screen that follows.\r\n\r\n" +
+                            "A new Extract will be created that will contain all Families of the Persons" +
+                            " that exist in the selected Extract."),
+                        Catalog.GetString("Generate Family Extract for Persons"),
+                        MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Information) == DialogResult.Cancel)
+                {
+                    return;
+                }
 
                 // let the user select base extract
                 ExtractFindDialog.ShowDialog(true);

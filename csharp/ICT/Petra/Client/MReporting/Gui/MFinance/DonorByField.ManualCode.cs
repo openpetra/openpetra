@@ -72,6 +72,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // manually fix tab order
             pnlMiddle.TabIndex = 1;
             pnlFilter.TabIndex = 0;
+
+            // Hide Persons only
+            ucoChkFilter.ShowPersonsOnly(false);
         }
 
         private void LoadListData()
