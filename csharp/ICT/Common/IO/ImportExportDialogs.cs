@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,17 +118,27 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="ADialogTitle"></param>
+        /// <param name="ADefaultExtension"></param> 
         /// <returns></returns>
-        public static bool ExportWithDialog(XmlDocument doc, string ADialogTitle)
+        public static bool ExportWithDialog(XmlDocument doc, string ADialogTitle, string ADefaultExtension = "yml")
         {
-            // TODO: TExcel excel = new TExcel();
             // TODO: openoffice
             // See also http://sourceforge.net/apps/mediawiki/openpetraorg/index.php?title=Data_liberation
             SaveFileDialog DialogSave = new SaveFileDialog();
 
-            DialogSave.DefaultExt = "yml";
             DialogSave.Filter = Catalog.GetString(
-                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
+                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Excel file (*.xlsx)|*.xlsx|Spreadsheet file (*.csv)|*.csv");
+            DialogSave.DefaultExt = ADefaultExtension;
+            string[] filterLines = DialogSave.Filter.Split(new char[] {'|'});
+
+            for (int count = 0; count < filterLines.Length; count++)
+            {
+                if (count % 2 == 1 && filterLines[count] == "*." + ADefaultExtension)
+                {
+                    DialogSave.FilterIndex = count/2+1;
+                }
+            }
+
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;
@@ -140,10 +150,6 @@ namespace Ict.Common.IO
                     doc.Save(DialogSave.FileName);
                     return true;
                 }
-                else if (DialogSave.FileName.ToLower().EndsWith("ext"))
-                {
-                    return false;
-                }
                 else if (DialogSave.FileName.ToLower().EndsWith("csv"))
                 {
                     return TCsv2Xml.Xml2Csv(doc, DialogSave.FileName);
@@ -151,6 +157,19 @@ namespace Ict.Common.IO
                 else if (DialogSave.FileName.ToLower().EndsWith("yml"))
                 {
                     return TYml2Xml.Xml2Yml(doc, DialogSave.FileName);
+                }
+                else if (DialogSave.FileName.ToLower().EndsWith("xlsx"))
+                {
+                    using (FileStream fs = new FileStream(DialogSave.FileName, FileMode.Create))
+                    {
+                        if (TCsv2Xml.Xml2ExcelStream(doc, fs, false))
+                        {
+                            fs.Close();
+                            return true;
+                        }
+                    }
+
+                    return false;
                 }
             }
 
