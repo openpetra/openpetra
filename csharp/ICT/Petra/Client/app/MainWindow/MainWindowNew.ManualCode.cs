@@ -814,7 +814,11 @@ namespace Ict.Petra.Client.App.PetraClient
             }
 
             string startupFolder = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.MODULE_TO_OPEN_AT_STARTUP, "Partner");
-            lstFolders.SelectFolder(startupFolder);
+
+            if (!lstFolders.SelectFolder(startupFolder))
+            {
+                lstFolders.SelectFirstAvailableFolder();
+            }
         }
 
         /// <summary>
