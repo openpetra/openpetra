@@ -234,7 +234,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 #if DEBUG
             foreach (String key in AParameters.Keys)
             {
-                TLogging.Log(key + " => " + AParameters[key].ToString());
+                TLogWriter.Log(key + " => " + AParameters[key].ToString());
             }
 #endif
 
@@ -343,20 +343,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ;
                     "                                                                                                                                        ;
 #if DEBUG
-                    TLogging.Log(Query);
+                    TLogWriter.Log(Query);
 #endif
 
                     Gifts = DbAdapter.RunQuery(Query, "GiftsOverMinimum", Transaction);
 #if DEBUG
-                    TLogging.Log("Query finished");
+                    TLogWriter.Log("Query finished");
 #endif
 
-                    // Get the donors' addresses
+                    // Get the donors' addresses. Thought about using enum instead of const, but enums 1) have to be declared right at the top in the class declaration where
+                    // it's easy to forget to add an item and 2) have to be cast to back int before use in array index, making the use uglier than constants.
                     const int DONOR_KEY = 0;
                     const int DONOR_ADDR = 5;
                     const int DONOR_POSTCODE = 6;
-                    const int DONOR_PHONE = 7;
-                    const int DONOR_EMAIL = 8;
+                    //const int DONOR_PHONE = 7;
+                    //const int DONOR_EMAIL = 8;
                     Donors = Gifts.DefaultView.ToTable("Donors", true, "DonorKey", "DonorName", "DonorClass", "ReceiptFrequency", "TotalAmount");
                     Donors.Columns.Add("Address", typeof(String));
                     Donors.Columns.Add("PostalCode", typeof(String));
@@ -369,10 +370,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Gifts.Columns.Remove(col);
                     }
 
-                    PLocationTable Address;
-                    String Country, EmailAddress, PhoneNumber, FaxNumber;
-                    List <String>DonorList = new List <string>();
+#if DEBUG
+                    TLogWriter.Log("Getting donor addresses");
+#endif
+                    DataTable DonorAddresses = TAddressTools.GetBestAddressForPartners(Donors, 0, Transaction);
+                    DataRow[] AddressRows;
+                    DataRow Addr;
+#if DEBUG
+                    TLogWriter.Log("Finished");
+#endif
 
+                    //String EmailAddress, PhoneNumber, FaxNumber;
+                    List <String>DonorList = new List <string>();
 #if DEBUG
                     TLogging.Log("Processing addresses");
 #endif
@@ -381,11 +390,23 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         DonorList.Add(Donor[DONOR_KEY].ToString());
 
-                        if (TAddressTools.GetBestAddress((Int64)Donor[DONOR_KEY], out Address, out Country, Transaction))
+                        AddressRows = DonorAddresses.Select("p_partner_key_n = " + Donor[DONOR_KEY]);
+
+                        if (AddressRows.Length > 0)
                         {
-                            Donor[DONOR_ADDR] =
-                                Calculations.DetermineLocationString(Address[0], Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
-                            Donor[DONOR_POSTCODE] = Address[0]["p_postal_code_c"];
+                            Addr = AddressRows[0];
+                            Donor[DONOR_ADDR] = Calculations.DetermineLocationString(Addr["p_building_1_c"].ToString(),
+                                Addr["p_building_2_c"].ToString(),
+                                Addr["p_locality_c"].ToString(),
+                                Addr["p_street_name_c"].ToString(),
+                                Addr["p_address_3_c"].ToString(),
+                                Addr["p_suburb_c"].ToString(),
+                                Addr["p_city_c"].ToString(),
+                                Addr["p_county_c"].ToString(),
+                                Addr["p_postal_code_c"].ToString(),
+                                Addr["p_country_code_c"].ToString(),
+                                Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                            Donor[DONOR_POSTCODE] = Addr["p_postal_code_c"];
                         }
                         else
                         {
@@ -393,10 +414,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             Donor[DONOR_POSTCODE] = "";
                         }
 
-                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax((Int64)Donor[DONOR_KEY], out PhoneNumber, out EmailAddress,
-                            out FaxNumber);
-                        Donor[DONOR_PHONE] = PhoneNumber;
-                        Donor[DONOR_EMAIL] = EmailAddress;
+                        // Phone and email were not required after all (https://tracker.openpetra.org/view.php?id=4955) and they seriously slow down the
+                        // report. If they are reinstated, it should be as a single SQL query for all donors (similar to TAddressTools.GetBestAddressForPartners
+                        // above), and not iterating hundreds of separate queries as it was here.
+                        //TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax((Int64)Donor[DONOR_KEY], out PhoneNumber, out EmailAddress,
+                        //    out FaxNumber);
+                        //Donor[DONOR_PHONE] = PhoneNumber;
+                        //Donor[DONOR_EMAIL] = EmailAddress;
                     }
 
                     if (DonorList.Count == 0)
@@ -413,47 +437,47 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Query =
                         @"
                         WITH Contacts AS (
-	                        SELECT
-		                        row_number() OVER (PARTITION BY p_partner_contact.p_partner_key_n ORDER BY s_contact_date_d DESC, s_contact_time_i DESC) AS RowID
-		                        , p_partner_contact.p_partner_key_n AS DonorKey
-		                        , p_contact_log.p_contactor_c AS Contactor
-		                        , p_contact_log.s_contact_date_d AS ContactDate
-		                        , p_contact_log.s_contact_time_i AS ContactTime
-		                        , p_contact_log.s_contact_time_i * '1 second'::interval AS Time
-		                        , p_contact_log.p_contact_code_c AS ContactCode
-		                        , p_contact_log.p_contact_comment_c AS Comment
-	                        FROM
-		                        p_partner_contact
-	                        INNER JOIN
-		                        p_contact_log
-	                        USING
-		                        (p_contact_log_id_i)
-	                        WHERE
-		                        p_partner_key_n in ("
+                            SELECT
+                                row_number() OVER (PARTITION BY p_partner_contact.p_partner_key_n ORDER BY s_contact_date_d DESC, s_contact_time_i DESC) AS RowID
+                                , p_partner_contact.p_partner_key_n AS DonorKey
+                                , p_contact_log.p_contactor_c AS Contactor
+                                , p_contact_log.s_contact_date_d AS ContactDate
+                                , p_contact_log.s_contact_time_i AS ContactTime
+                                , p_contact_log.s_contact_time_i * '1 second'::interval AS Time
+                                , p_contact_log.p_contact_code_c AS ContactCode
+                                , p_contact_log.p_contact_comment_c AS Comment
+                            FROM
+                                p_partner_contact
+                            INNER JOIN
+                                p_contact_log
+                            USING
+                                (p_contact_log_id_i)
+                            WHERE
+                                p_partner_key_n in ("
                         +
                         String.Join(",",
                             DonorList) +
                         @")
-	                        ORDER BY
-		                        DonorKey,
-		                        RowID
+                            ORDER BY
+                                DonorKey,
+                                RowID
                         )
                         SELECT
-	                        *
+                            *
                         FROM
-	                        Contacts
+                            Contacts
                         WHERE
-	                        Contacts.RowID <= "
+                            Contacts.RowID <= "
                         +
                         AParameters["param_max_contacts"] + @";
                     "                                                                 ;
 #if DEBUG
-                    TLogging.Log(Query);
+                    TLogWriter.Log(Query);
 #endif
 
                     Contacts = DbAdapter.RunQuery(Query, "Contacts", Transaction);
 #if DEBUG
-                    TLogging.Log("Query finished");
+                    TLogWriter.Log("Query finished");
 #endif
 
                     if (DbAdapter.IsCancelled)
