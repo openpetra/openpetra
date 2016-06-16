@@ -72,7 +72,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         public bool CancelBatch(AGiftBatchRow ACurrentBatchRow)
         {
-            //Assign default value(s)
             bool CancellationSuccessful = false;
 
             string CancelMessage = string.Empty;
@@ -107,54 +106,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
 
-                //Normally need to set the message parameters before the delete is performed if requiring any of the row values
                 CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
-                    ACurrentBatchRow.BatchNumber);
+                    CurrentBatchNo);
 
                 FMyForm.GetBatchControl().UndoModifiedBatchRow(ACurrentBatchRow, true);
 
-                //Load all journals for current Batch
                 //clear any transactions currently being editied in the Transaction Tab
                 FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
+                //Load all data for current Batch
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, CurrentBatchNo));
+
                 //Delete transactions
-                DataView GiftDV = new DataView(FMainDS.AGift);
-                DataView GiftDetailDV = new DataView(FMainDS.AGiftDetail);
-
-                GiftDV.AllowDelete = true;
-                GiftDetailDV.AllowDelete = true;
-
-                GiftDV.RowFilter = String.Format("{0}={1}",
-                    AGiftTable.GetBatchNumberDBName(),
-                    CurrentBatchNo);
-
-                GiftDV.Sort = AGiftTable.GetGiftTransactionNumberDBName() + " DESC";
-
-                GiftDetailDV.RowFilter = String.Format("{0}={1}",
-                    AGiftDetailTable.GetBatchNumberDBName(),
-                    CurrentBatchNo);
-
-                GiftDetailDV.Sort = String.Format("{0} DESC, {1} DESC",
-                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                    AGiftDetailTable.GetDetailNumberDBName());
-
-                foreach (DataRowView drv in GiftDetailDV)
-                {
-                    AGiftDetailRow gdr = (AGiftDetailRow)drv.Row;
-
-                    // if the gift detail being cancelled is a reversed gift
-                    if (gdr.ModifiedDetail && !string.IsNullOrEmpty(gdr.ModifiedDetailKey))
-                    {
-                        ModifiedDetailKeys.Add(gdr.ModifiedDetailKey);
-                    }
-
-                    gdr.Delete();
-                }
-
-                for (int i = 0; i < GiftDV.Count; i++)
-                {
-                    GiftDV.Delete(i);
-                }
+                FMyForm.GetTransactionsControl().DeleteCurrentBatchGiftData(CurrentBatchNo, ref ModifiedDetailKeys);
 
                 //Batch is only cancelled and never deleted
                 ACurrentBatchRow.BatchTotal = 0;

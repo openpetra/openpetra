@@ -83,7 +83,7 @@ namespace Tests.MFinance.Server.Gift
             String motivationGroup = SMTH;
             String motivationDetail = KMIN;
 
-            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetailForPartner(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
             Assert.IsFalse(partnerKeyIsValid, "Check if partnerKey=0 does not exist");
@@ -103,7 +103,7 @@ namespace Tests.MFinance.Server.Gift
             String motivationGroup = SMTH;
             String motivationDetail = KMIN;
 
-            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetailForPartner(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
             Assert.IsFalse(partnerKeyIsValid, "Check if partnerKey=1234567 does not exist");
@@ -122,7 +122,7 @@ namespace Tests.MFinance.Server.Gift
             String motivationGroup = SMTH;
             String motivationDetail = SUPT;
 
-            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetailForPartner(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
             Assert.IsTrue(partnerKeyIsValid, "Check if partnerKey=" + partnerKey.ToString() + "  does not exist");
@@ -141,7 +141,7 @@ namespace Tests.MFinance.Server.Gift
             String motivationGroup = SMTH;
             String motivationDetail = "Incorrect";
 
-            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetailForPartner(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
             Assert.IsTrue(partnerKeyIsValid, String.Format("PartnerKey {0} was created but does not exist!", partnerKey));
@@ -163,7 +163,7 @@ namespace Tests.MFinance.Server.Gift
             String motivationGroup = SMTH;
             String motivationDetail = KMIN;
 
-            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetail(
+            partnerKeyIsValid = TGuiTools.GetMotivationGroupAndDetailForPartner(
                 partnerKey, ref motivationGroup, ref motivationDetail);
 
             Assert.IsTrue(partnerKeyIsValid, String.Format("PartnerKey {0} was created but does not exist!", partnerKey));

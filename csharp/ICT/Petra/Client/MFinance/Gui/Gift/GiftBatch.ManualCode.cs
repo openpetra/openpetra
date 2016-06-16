@@ -400,7 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
 
                 case (int)eGiftTabs.Transactions:
-                    ucoTransactions.ReconcileKeyMinistryFromCombo();
+                    ucoTransactions.ReconcileFloatingTextboxesFromCombos();
                     ucoTransactions.MniFilterFind_Click(sender, e);
                     break;
             }

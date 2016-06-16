@@ -69,7 +69,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         ///                               Output: value depending on APartnerKey. </param>
         /// <returns>true if parther key is valid</returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Boolean GetMotivationGroupAndDetail(Int64 APartnerKey,
+        public static Boolean GetMotivationGroupAndDetailForPartner(Int64 APartnerKey,
             ref String AMotivationGroup,
             ref String AMotivationDetail)
         {
@@ -77,8 +77,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (APartnerKey != 0)
             {
-                string MotivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
-                string MotivationDetail = AMotivationDetail;
+                string motivationGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
+                string motivationDetail = AMotivationDetail;
 
                 TDBTransaction readTransaction = null;
 
@@ -103,7 +103,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
                             {
                                 // AND KEY-MIN
-
                                 bool KeyMinFound = false;
 
                                 // first check if a motivation detail is linked to this potential key min
@@ -117,8 +116,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     {
                                         if (Row.MotivationStatus)
                                         {
-                                            MotivationGroup = MotivationDetailTable[0].MotivationGroupCode;
-                                            MotivationDetail = MotivationDetailTable[0].MotivationDetailCode;
+                                            motivationGroup = MotivationDetailTable[0].MotivationGroupCode;
+                                            motivationDetail = MotivationDetailTable[0].MotivationDetailCode;
 
                                             KeyMinFound = true;
                                             break;
@@ -141,18 +140,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                                         if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
                                         {
-                                            MotivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                                            motivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
                                         }
                                         else
                                         {
-                                            MotivationDetail =
+                                            motivationDetail =
                                                 TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
                                                     MFinanceConstants.GROUP_DETAIL_FIELD);
 
                                             // if system default is empty then set to FIELD
-                                            if (string.IsNullOrEmpty(MotivationDetail))
+                                            if (string.IsNullOrEmpty(motivationDetail))
                                             {
-                                                MotivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
+                                                motivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
                                             }
                                         }
                                     }
@@ -160,13 +159,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             }
                             else
                             {
-                                MotivationDetail = MFinanceConstants.GROUP_DETAIL_SUPPORT;
+                                motivationDetail = MFinanceConstants.GROUP_DETAIL_SUPPORT;
                             }
                         }
                     });
 
-                AMotivationGroup = MotivationGroup;
-                AMotivationDetail = MotivationDetail;
+                AMotivationGroup = motivationGroup;
+                AMotivationDetail = motivationDetail;
             }
 
             return PartnerKeyIsValid;

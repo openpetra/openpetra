@@ -676,7 +676,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
 
                             if (VerificationResult == null)
                             {
-                                string Message = string.Empty;;
+                                string Message = string.Empty;
 
                                 if (ARow.RecipientKey == 0)
                                 {

@@ -1770,7 +1770,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             String MotivGroup = "GIFT";
             String MotivDetail = "UNDESIG";
-            TGuiTools.GetMotivationGroupAndDetail(RecipientKey, ref MotivGroup, ref MotivDetail);
+            TGuiTools.GetMotivationGroupAndDetailForPartner(RecipientKey, ref MotivGroup, ref MotivDetail);
 
             ExchangeFieldsInEsrTransaction(ref DonorKey, ref RecipientKey,
                 ref MotivGroup, ref MotivDetail,

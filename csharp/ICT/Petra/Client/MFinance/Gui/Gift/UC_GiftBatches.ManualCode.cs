@@ -792,7 +792,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
             {
-                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
+                ((TFrmGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment();
             }
         }
 

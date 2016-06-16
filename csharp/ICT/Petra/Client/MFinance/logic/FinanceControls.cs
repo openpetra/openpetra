@@ -32,6 +32,7 @@ using Ict.Common.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -757,7 +758,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="AActiveOnly"></param>
-        public static void ChangeFilterMotivationGroupList(ref TCmbAutoPopulated AControl, bool AActiveOnly)
+        public static void ChangeMotivationGroupListFilter(ref TCmbAutoPopulated AControl, bool AActiveOnly)
         {
             if (AActiveOnly)
             {
@@ -779,9 +780,9 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ALedgerNumber,
             bool AActiveOnly)
         {
-            DataTable detailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
+            DataTable DetailTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.MotivationList, ALedgerNumber);
 
-            AControl.InitialiseUserControl(detailTable,
+            AControl.InitialiseUserControl(DetailTable,
                 AMotivationDetailTable.GetMotivationDetailCodeDBName(),
                 AMotivationDetailTable.GetMotivationDetailDescDBName(),
                 null);
@@ -802,18 +803,50 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         /// <param name="AControl"></param>
         /// <param name="AMotivationGroup"></param>
-        public static void ChangeFilterMotivationDetailList(ref TCmbAutoPopulated AControl, String AMotivationGroup)
+        /// <param name="ASelectedIndexAfterFilter">
+        /// -2 = do not select any, let default be selected which is last item in list
+        /// -1 = set combobox blank
+        /// 0 = first item in list
+        /// 0+ = any item after first up to the length of the list
+        /// </param>
+        /// <param name="APetraUtilsObject">Allows user to suppress changes</param>
+        public static void ChangeMotivationDetailListFilter(ref TCmbAutoPopulated AControl,
+            String AMotivationGroup,
+            Int32 ASelectedIndexAfterFilter = -2,
+            TFrmPetraEditUtils APetraUtilsObject = null)
         {
-            string newFilter = String.Empty;
+            string NewFilter = String.Empty;
+            bool AlreadySuppressingChanges = APetraUtilsObject != null && APetraUtilsObject.SuppressChangeDetection;
 
-            if ((AControl.Filter != null) && AControl.Filter.StartsWith(AMotivationDetailTable.GetMotivationStatusDBName() + " = true"))
+            try
             {
-                newFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And ";
+                if ((APetraUtilsObject != null) && !AlreadySuppressingChanges)
+                {
+                    APetraUtilsObject.SuppressChangeDetection = true;
+                }
+
+                if ((AControl.Filter != null) && AControl.Filter.StartsWith(AMotivationDetailTable.GetMotivationStatusDBName() + " = true"))
+                {
+                    NewFilter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And ";
+                }
+
+                NewFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
+
+                AControl.Filter = NewFilter;
+
+                //Select an item in the list. If this is not done the last item is automatically selected
+                if ((ASelectedIndexAfterFilter > -2) && (ASelectedIndexAfterFilter < AControl.Count))
+                {
+                    AControl.SelectedIndex = ASelectedIndexAfterFilter;
+                }
             }
-
-            newFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
-
-            AControl.Filter = newFilter;
+            finally
+            {
+                if ((APetraUtilsObject != null) && !AlreadySuppressingChanges)
+                {
+                    APetraUtilsObject.SuppressChangeDetection = false;
+                }
+            }
         }
 
         /// <summary>
@@ -854,7 +887,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (AActiveOnly)
             {
-                AControl.Filter = AMethodOfGivingTable.GetActiveDBName() + " = true";
+                AControl.Filter = AMethodOfGivingTable.GetActiveDBName() + " = true Or " + AMethodOfGivingTable.GetMethodOfGivingCodeDBName() +
+                                  " = ''";
             }
             else
             {
@@ -883,7 +917,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             if (AActiveOnly)
             {
-                AControl.Filter = AMethodOfPaymentTable.GetActiveDBName() + " = true";
+                AControl.Filter = AMethodOfPaymentTable.GetActiveDBName() + " = true Or " + AMethodOfPaymentTable.GetMethodOfPaymentCodeDBName() +
+                                  " = ''";
             }
             else
             {

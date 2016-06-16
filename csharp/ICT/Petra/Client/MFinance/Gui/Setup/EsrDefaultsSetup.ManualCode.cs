@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
         {
             String motivationGroup = cmbMotivGroup.GetSelectedString();
 
-            TFinanceControls.ChangeFilterMotivationDetailList(ref cmbMotivDetail, motivationGroup);
+            TFinanceControls.ChangeMotivationDetailListFilter(ref cmbMotivDetail, motivationGroup);
 
             if (FsuppressChangeEvent == 0)
             {

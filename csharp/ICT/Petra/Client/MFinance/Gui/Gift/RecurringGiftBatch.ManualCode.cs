@@ -302,7 +302,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     break;
 
                 case (int)eGiftTabs.Transactions:
-                    ucoRecurringTransactions.ReconcileKeyMinistryFromCombo();
+                    ucoRecurringTransactions.ReconcileFloatingTextboxesFromCombos();
                     ucoRecurringTransactions.MniFilterFind_Click(sender, e);
                     break;
             }
