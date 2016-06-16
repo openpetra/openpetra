@@ -47,6 +47,10 @@ namespace Ict.Tools.DevelopersAssistantUpdater
                 return;
             }
 
+            string logPath = string.Empty;
+            string logMsg = string.Empty;
+            string msg = string.Empty;
+
             // This application is running in delivery\bin which is the same folder location as the source for the copy
             // The target location is specified in the first command line argument.
             // We use the target filename to work out what we are updating
@@ -60,6 +64,7 @@ namespace Ict.Tools.DevelopersAssistantUpdater
             if (targetFilename.EndsWith(".DevelopersAssistant"))
             {
                 sourcePath = myPath.Replace("Updater.exe", ".exe");
+                logPath = myPath.Replace(".exe", ".log");
             }
             else
             {
@@ -75,13 +80,60 @@ namespace Ict.Tools.DevelopersAssistantUpdater
             {
                 File.Copy(sourcePath, targetPath, true);
                 success = true;
+
+                // Also we try and copy the pdb file.  This is not totally necessary, but if the user deletes the build folder eventually
+                //  the application won't be able to find the pdb file any more.
+                File.Copy(sourcePath.Replace(".exe", ".pdb"), targetFilename.Replace(".exe", ".pdb"), true);
+            }
+            catch (Exception e)
+            {
+                logMsg = "An exception occurred while attempting to copy the ";
+
+                if (success)
+                {
+                    logMsg += "application file.";
+                }
+                else
+                {
+                    logMsg += "PDB file.";
+                }
+
+                logMsg += string.Format("{0}{0}{1}", Environment.NewLine, e.Message);
+            }
+
+            try
+            {
+                using (StreamWriter sw = new StreamWriter(logPath, true))
+                {
+                    msg = string.Format("{0}{0}-----------------------------------------------------", Environment.NewLine);
+                    sw.WriteLine(msg);
+                    msg = string.Format("{0}  {1}", DateTime.Now.ToShortDateString(), DateTime.Now.ToLongTimeString());
+                    sw.WriteLine(msg);
+                    msg = string.Format("Copying {0}{1}to {2}", sourcePath, Environment.NewLine, targetPath);
+                    sw.WriteLine(msg);
+                    msg = string.Format("Success: {0}", success.ToString());
+                    sw.WriteLine(msg);
+
+                    if (success && (logMsg.Length == 0))
+                    {
+                        msg = "The PDB file was also successfully copied.";
+                        sw.WriteLine(msg);
+                    }
+
+                    if (logMsg.Length > 0)
+                    {
+                        sw.Write(logMsg);
+                    }
+
+                    sw.Close();
+                }
             }
             catch (Exception)
             {
             }
 
             // For the OPDA we can append a command line parameter that will display a success/fail message
-            string msg = "\"/M:Update";
+            msg = "\"/M:Update";
             msg += (success) ? "Success\"" : "Fail\"";
 
             // Launch the target application with any parameters

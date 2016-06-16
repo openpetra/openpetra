@@ -95,7 +95,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.btnGenerateWinform = new System.Windows.Forms.Button();
-            this.txtYAMLPath = new System.Windows.Forms.TextBox();
+            this.cboYAMLHistory = new System.Windows.Forms.ComboBox();
             this.label2 = new System.Windows.Forms.Label();
             this.DatabasePage = new System.Windows.Forms.TabPage();
             this.lblBranchLocation = new System.Windows.Forms.Label();
@@ -166,6 +166,31 @@ namespace Ict.Tools.DevelopersAssistant
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.mainToolStrip = new System.Windows.Forms.ToolStrip();
+            this.tbbGenerateSolutionFullCompile = new System.Windows.Forms.ToolStripButton();
+            this.tbbGenerateSolutionMinCompile = new System.Windows.Forms.ToolStripButton();
+            this.tbbGenerateWinForms = new System.Windows.Forms.ToolStripButton();
+            this.tbbGenerateGlue = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbbUncrustify = new System.Windows.Forms.ToolStripButton();
+            this.tbbRunAllTests = new System.Windows.Forms.ToolStripButton();
+            this.tbbRunMainNavigationScreensTests = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbbSourceHistoryLog = new System.Windows.Forms.ToolStripSplitButton();
+            this.tbbSourceHistoryAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbbSourceHistoryFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbbShowSourceDifferences = new System.Windows.Forms.ToolStripSplitButton();
+            this.tbbShowSourceDifferencesAllMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbbShowSourceDifferencesFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tbbCommitSourceChanges = new System.Windows.Forms.ToolStripButton();
+            this.tbbShelveSourceChanges = new System.Windows.Forms.ToolStripButton();
+            this.tbbUnshelveSourceChanges = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbbMergeSourceFromTrunk = new System.Windows.Forms.ToolStripButton();
+            this.tbbCreateNewSourceBranch = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.tbbCreateDatabase = new System.Windows.Forms.ToolStripButton();
+            this.tbbDatabaseContent = new System.Windows.Forms.ToolStripButton();
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
@@ -180,6 +205,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox3.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.statusStrip.SuspendLayout();
+            this.mainToolStrip.SuspendLayout();
             this.SuspendLayout();
             //
             // tabControl
@@ -189,7 +215,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.tabControl.Controls.Add(this.OutputPage);
             this.tabControl.Controls.Add(this.ExternalPage);
             this.tabControl.Controls.Add(this.OptionsPage);
-            this.tabControl.Location = new System.Drawing.Point(12, 12);
+            this.tabControl.Location = new System.Drawing.Point(12, 44);
             this.tabControl.Name = "tabControl";
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(741, 482);
@@ -404,7 +430,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.grpSingle.Controls.Add(this.label4);
             this.grpSingle.Controls.Add(this.label3);
             this.grpSingle.Controls.Add(this.btnGenerateWinform);
-            this.grpSingle.Controls.Add(this.txtYAMLPath);
+            this.grpSingle.Controls.Add(this.cboYAMLHistory);
             this.grpSingle.Controls.Add(this.label2);
             this.grpSingle.Font = new System.Drawing.Font("Microsoft Sans Serif",
                 8.25F,
@@ -687,16 +713,15 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnGenerateWinform.UseVisualStyleBackColor = true;
             this.btnGenerateWinform.Click += new System.EventHandler(this.btnGenerateWinform_Click);
             //
-            // txtYAMLPath
+            // cboYAMLHistory
             //
-            this.txtYAMLPath.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
-                                                      System.Windows.Forms.AnchorStyles.Right)));
-            this.txtYAMLPath.Location = new System.Drawing.Point(9, 99);
-            this.txtYAMLPath.Name = "txtYAMLPath";
-            this.txtYAMLPath.ReadOnly = true;
-            this.txtYAMLPath.Size = new System.Drawing.Size(375, 20);
-            this.txtYAMLPath.TabIndex = 6;
+            this.cboYAMLHistory.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboYAMLHistory.FormattingEnabled = true;
+            this.cboYAMLHistory.Location = new System.Drawing.Point(7, 99);
+            this.cboYAMLHistory.Name = "cboYAMLHistory";
+            this.cboYAMLHistory.Size = new System.Drawing.Size(377, 21);
+            this.cboYAMLHistory.TabIndex = 26;
+            this.cboYAMLHistory.SelectedIndexChanged += new System.EventHandler(this.cboYAMLHistory_SelectedIndexChanged);
             //
             // label2
             //
@@ -866,7 +891,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.btnDatabase.Anchor =
                 ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDatabase.Location = new System.Drawing.Point(523, 363);
+            this.btnDatabase.Location = new System.Drawing.Point(523, 364);
             this.btnDatabase.Name = "btnDatabase";
             this.btnDatabase.Size = new System.Drawing.Size(32, 23);
             this.btnDatabase.TabIndex = 5;
@@ -879,15 +904,15 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.cboDatabase.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboDatabase.FormattingEnabled = true;
-            this.cboDatabase.Location = new System.Drawing.Point(268, 365);
+            this.cboDatabase.Location = new System.Drawing.Point(258, 365);
             this.cboDatabase.Name = "cboDatabase";
-            this.cboDatabase.Size = new System.Drawing.Size(249, 21);
+            this.cboDatabase.Size = new System.Drawing.Size(259, 21);
             this.cboDatabase.TabIndex = 4;
             //
             // label7
             //
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(168, 368);
+            this.label7.Location = new System.Drawing.Point(168, 369);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(85, 13);
             this.label7.TabIndex = 3;
@@ -1411,7 +1436,7 @@ namespace Ict.Tools.DevelopersAssistant
                     this.toolStripProgressBar,
                     this.toolStripStatusLabel
                 });
-            this.statusStrip.Location = new System.Drawing.Point(0, 500);
+            this.statusStrip.Location = new System.Drawing.Point(0, 530);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(765, 22);
             this.statusStrip.TabIndex = 1;
@@ -1431,11 +1456,291 @@ namespace Ict.Tools.DevelopersAssistant
             this.toolStripStatusLabel.Size = new System.Drawing.Size(39, 17);
             this.toolStripStatusLabel.Text = "Ready";
             //
+            // mainToolStrip
+            //
+            this.mainToolStrip.AutoSize = false;
+            this.mainToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                    this.tbbGenerateSolutionFullCompile,
+                    this.tbbGenerateSolutionMinCompile,
+                    this.tbbGenerateWinForms,
+                    this.tbbGenerateGlue,
+                    this.toolStripSeparator1,
+                    this.tbbUncrustify,
+                    this.tbbRunAllTests,
+                    this.tbbRunMainNavigationScreensTests,
+                    this.toolStripSeparator2,
+                    this.tbbSourceHistoryLog,
+                    this.tbbShowSourceDifferences,
+                    this.tbbCommitSourceChanges,
+                    this.tbbShelveSourceChanges,
+                    this.tbbUnshelveSourceChanges,
+                    this.toolStripSeparator4,
+                    this.tbbMergeSourceFromTrunk,
+                    this.tbbCreateNewSourceBranch,
+                    this.toolStripSeparator3,
+                    this.tbbCreateDatabase,
+                    this.tbbDatabaseContent
+                });
+            this.mainToolStrip.Location = new System.Drawing.Point(0, 0);
+            this.mainToolStrip.Name = "mainToolStrip";
+            this.mainToolStrip.Size = new System.Drawing.Size(765, 41);
+            this.mainToolStrip.TabIndex = 2;
+            this.mainToolStrip.Text = "toolStrip1";
+            //
+            // tbbGenerateSolutionFullCompile
+            //
+            this.tbbGenerateSolutionFullCompile.AutoSize = false;
+            this.tbbGenerateSolutionFullCompile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbGenerateSolutionFullCompile.Image = ((System.Drawing.Image)(resources.GetObject("tbbGenerateSolutionFullCompile.Image")));
+            this.tbbGenerateSolutionFullCompile.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbGenerateSolutionFullCompile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbGenerateSolutionFullCompile.Name = "tbbGenerateSolutionFullCompile";
+            this.tbbGenerateSolutionFullCompile.Size = new System.Drawing.Size(39, 38);
+            this.tbbGenerateSolutionFullCompile.Text = "Generate Solution with Full Compile";
+            this.tbbGenerateSolutionFullCompile.Click += new System.EventHandler(this.tbbGenerateSolutionFullCompile_Click);
+            //
+            // tbbGenerateSolutionMinCompile
+            //
+            this.tbbGenerateSolutionMinCompile.AutoSize = false;
+            this.tbbGenerateSolutionMinCompile.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbGenerateSolutionMinCompile.Image = ((System.Drawing.Image)(resources.GetObject("tbbGenerateSolutionMinCompile.Image")));
+            this.tbbGenerateSolutionMinCompile.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbGenerateSolutionMinCompile.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbGenerateSolutionMinCompile.Name = "tbbGenerateSolutionMinCompile";
+            this.tbbGenerateSolutionMinCompile.Size = new System.Drawing.Size(39, 38);
+            this.tbbGenerateSolutionMinCompile.Text = "Generate Solution with Minimal Compile";
+            this.tbbGenerateSolutionMinCompile.Click += new System.EventHandler(this.tbbGenerateSolutionMinCompile_Click);
+            //
+            // tbbGenerateWinForms
+            //
+            this.tbbGenerateWinForms.AutoSize = false;
+            this.tbbGenerateWinForms.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbGenerateWinForms.Image = ((System.Drawing.Image)(resources.GetObject("tbbGenerateWinForms.Image")));
+            this.tbbGenerateWinForms.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbGenerateWinForms.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbGenerateWinForms.Name = "tbbGenerateWinForms";
+            this.tbbGenerateWinForms.Size = new System.Drawing.Size(39, 38);
+            this.tbbGenerateWinForms.Text = "Generate All the Windows Forms";
+            this.tbbGenerateWinForms.Click += new System.EventHandler(this.tbbGenerateWinForms_Click);
+            //
+            // tbbGenerateGlue
+            //
+            this.tbbGenerateGlue.AutoSize = false;
+            this.tbbGenerateGlue.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbGenerateGlue.Image = ((System.Drawing.Image)(resources.GetObject("tbbGenerateGlue.Image")));
+            this.tbbGenerateGlue.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbGenerateGlue.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbGenerateGlue.Name = "tbbGenerateGlue";
+            this.tbbGenerateGlue.Size = new System.Drawing.Size(39, 38);
+            this.tbbGenerateGlue.Text = "Generate the Glue";
+            this.tbbGenerateGlue.Click += new System.EventHandler(this.tbbGenerateGlue_Click);
+            //
+            // toolStripSeparator1
+            //
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 41);
+            //
+            // tbbUncrustify
+            //
+            this.tbbUncrustify.AutoSize = false;
+            this.tbbUncrustify.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbUncrustify.Image = ((System.Drawing.Image)(resources.GetObject("tbbUncrustify.Image")));
+            this.tbbUncrustify.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbUncrustify.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbUncrustify.Name = "tbbUncrustify";
+            this.tbbUncrustify.Size = new System.Drawing.Size(39, 38);
+            this.tbbUncrustify.Text = "Uncrustify the Source Code";
+            this.tbbUncrustify.Click += new System.EventHandler(this.tbbUncrustify_Click);
+            //
+            // tbbRunAllTests
+            //
+            this.tbbRunAllTests.AutoSize = false;
+            this.tbbRunAllTests.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbRunAllTests.Image = ((System.Drawing.Image)(resources.GetObject("tbbRunAllTests.Image")));
+            this.tbbRunAllTests.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbRunAllTests.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbRunAllTests.Name = "tbbRunAllTests";
+            this.tbbRunAllTests.Size = new System.Drawing.Size(39, 38);
+            this.tbbRunAllTests.Text = "Run All Tests";
+            this.tbbRunAllTests.Click += new System.EventHandler(this.tbbRunAllTests_Click);
+            //
+            // tbbRunMainNavigationScreensTests
+            //
+            this.tbbRunMainNavigationScreensTests.AutoSize = false;
+            this.tbbRunMainNavigationScreensTests.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbRunMainNavigationScreensTests.Image = ((System.Drawing.Image)(resources.GetObject("tbbRunMainNavigationScreensTests.Image")));
+            this.tbbRunMainNavigationScreensTests.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbRunMainNavigationScreensTests.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbRunMainNavigationScreensTests.Name = "tbbRunMainNavigationScreensTests";
+            this.tbbRunMainNavigationScreensTests.Size = new System.Drawing.Size(39, 38);
+            this.tbbRunMainNavigationScreensTests.Text = "Run All Main Menu Tests";
+            this.tbbRunMainNavigationScreensTests.Click += new System.EventHandler(this.tbbRunMainNavigationScreensTests_Click);
+            //
+            // toolStripSeparator2
+            //
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 41);
+            //
+            // tbbSourceHistoryLog
+            //
+            this.tbbSourceHistoryLog.AutoSize = false;
+            this.tbbSourceHistoryLog.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbSourceHistoryLog.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                    this.tbbSourceHistoryAllMenuItem,
+                    this.tbbSourceHistoryFileMenuItem
+                });
+            this.tbbSourceHistoryLog.Image = ((System.Drawing.Image)(resources.GetObject("tbbSourceHistoryLog.Image")));
+            this.tbbSourceHistoryLog.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbSourceHistoryLog.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbSourceHistoryLog.Name = "tbbSourceHistoryLog";
+            this.tbbSourceHistoryLog.Size = new System.Drawing.Size(51, 38);
+            this.tbbSourceHistoryLog.Text = "View History Log";
+            this.tbbSourceHistoryLog.ButtonClick += new System.EventHandler(this.tbbSourceHistoryLog_ButtonClick);
+            //
+            // tbbSourceHistoryAllMenuItem
+            //
+            this.tbbSourceHistoryAllMenuItem.Name = "tbbSourceHistoryAllMenuItem";
+            this.tbbSourceHistoryAllMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.tbbSourceHistoryAllMenuItem.Text = "History for &All Files";
+            this.tbbSourceHistoryAllMenuItem.Click += new System.EventHandler(this.tbbSourceHistoryAllMenuItem_Click);
+            //
+            // tbbSourceHistoryFileMenuItem
+            //
+            this.tbbSourceHistoryFileMenuItem.Name = "tbbSourceHistoryFileMenuItem";
+            this.tbbSourceHistoryFileMenuItem.Size = new System.Drawing.Size(207, 22);
+            this.tbbSourceHistoryFileMenuItem.Text = "History for a Single &File ...";
+            this.tbbSourceHistoryFileMenuItem.Click += new System.EventHandler(this.tbbSourceHistoryFileMenuItem_Click);
+            //
+            // tbbShowSourceDifferences
+            //
+            this.tbbShowSourceDifferences.AutoSize = false;
+            this.tbbShowSourceDifferences.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbShowSourceDifferences.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                    this.tbbShowSourceDifferencesAllMenuItem,
+                    this.tbbShowSourceDifferencesFileMenuItem
+                });
+            this.tbbShowSourceDifferences.Image = ((System.Drawing.Image)(resources.GetObject("tbbShowSourceDifferences.Image")));
+            this.tbbShowSourceDifferences.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbShowSourceDifferences.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbShowSourceDifferences.Name = "tbbShowSourceDifferences";
+            this.tbbShowSourceDifferences.Size = new System.Drawing.Size(51, 38);
+            this.tbbShowSourceDifferences.Text = "Show Source Differences";
+            this.tbbShowSourceDifferences.ButtonClick += new System.EventHandler(this.tbbShowSourceDifferences_ButtonClick);
+            //
+            // tbbShowSourceDifferencesAllMenuItem
+            //
+            this.tbbShowSourceDifferencesAllMenuItem.Name = "tbbShowSourceDifferencesAllMenuItem";
+            this.tbbShowSourceDifferencesAllMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.tbbShowSourceDifferencesAllMenuItem.Text = "Show &All Differences";
+            this.tbbShowSourceDifferencesAllMenuItem.Click += new System.EventHandler(this.tbbShowSourceDifferencesAllMenuItem_Click);
+            //
+            // tbbShowSourceDifferencesFileMenuItem
+            //
+            this.tbbShowSourceDifferencesFileMenuItem.Name = "tbbShowSourceDifferencesFileMenuItem";
+            this.tbbShowSourceDifferencesFileMenuItem.Size = new System.Drawing.Size(216, 22);
+            this.tbbShowSourceDifferencesFileMenuItem.Text = "Differences for a Single &File";
+            this.tbbShowSourceDifferencesFileMenuItem.Click += new System.EventHandler(this.tbbShowSourceDifferencesFileMenuItem_Click);
+            //
+            // tbbCommitSourceChanges
+            //
+            this.tbbCommitSourceChanges.AutoSize = false;
+            this.tbbCommitSourceChanges.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbCommitSourceChanges.Image = ((System.Drawing.Image)(resources.GetObject("tbbCommitSourceChanges.Image")));
+            this.tbbCommitSourceChanges.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbCommitSourceChanges.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbCommitSourceChanges.Name = "tbbCommitSourceChanges";
+            this.tbbCommitSourceChanges.Size = new System.Drawing.Size(39, 38);
+            this.tbbCommitSourceChanges.Text = "Commit Source Changes";
+            this.tbbCommitSourceChanges.Click += new System.EventHandler(this.tbbCommitSourceChanges_Click);
+            //
+            // tbbShelveSourceChanges
+            //
+            this.tbbShelveSourceChanges.AutoSize = false;
+            this.tbbShelveSourceChanges.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbShelveSourceChanges.Image = ((System.Drawing.Image)(resources.GetObject("tbbShelveSourceChanges.Image")));
+            this.tbbShelveSourceChanges.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbShelveSourceChanges.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbShelveSourceChanges.Name = "tbbShelveSourceChanges";
+            this.tbbShelveSourceChanges.Size = new System.Drawing.Size(39, 38);
+            this.tbbShelveSourceChanges.Text = "Shelve Source Changes";
+            this.tbbShelveSourceChanges.Click += new System.EventHandler(this.tbbShelveSourceChanges_Click);
+            //
+            // tbbUnshelveSourceChanges
+            //
+            this.tbbUnshelveSourceChanges.AutoSize = false;
+            this.tbbUnshelveSourceChanges.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbUnshelveSourceChanges.Image = ((System.Drawing.Image)(resources.GetObject("tbbUnshelveSourceChanges.Image")));
+            this.tbbUnshelveSourceChanges.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbUnshelveSourceChanges.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbUnshelveSourceChanges.Name = "tbbUnshelveSourceChanges";
+            this.tbbUnshelveSourceChanges.Size = new System.Drawing.Size(39, 38);
+            this.tbbUnshelveSourceChanges.Text = "Unshelve Source Changes";
+            this.tbbUnshelveSourceChanges.Click += new System.EventHandler(this.tbbUnshelveSourceChanges_Click);
+            //
+            // toolStripSeparator4
+            //
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 41);
+            //
+            // tbbMergeSourceFromTrunk
+            //
+            this.tbbMergeSourceFromTrunk.AutoSize = false;
+            this.tbbMergeSourceFromTrunk.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbMergeSourceFromTrunk.Image = ((System.Drawing.Image)(resources.GetObject("tbbMergeSourceFromTrunk.Image")));
+            this.tbbMergeSourceFromTrunk.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbMergeSourceFromTrunk.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbMergeSourceFromTrunk.Name = "tbbMergeSourceFromTrunk";
+            this.tbbMergeSourceFromTrunk.Size = new System.Drawing.Size(39, 38);
+            this.tbbMergeSourceFromTrunk.Text = "Merge Source From Trunk";
+            this.tbbMergeSourceFromTrunk.Click += new System.EventHandler(this.tbbMergeSourceFromTrunk_Click);
+            //
+            // tbbCreateNewSourceBranch
+            //
+            this.tbbCreateNewSourceBranch.AutoSize = false;
+            this.tbbCreateNewSourceBranch.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbCreateNewSourceBranch.Image = ((System.Drawing.Image)(resources.GetObject("tbbCreateNewSourceBranch.Image")));
+            this.tbbCreateNewSourceBranch.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbCreateNewSourceBranch.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbCreateNewSourceBranch.Name = "tbbCreateNewSourceBranch";
+            this.tbbCreateNewSourceBranch.Size = new System.Drawing.Size(39, 38);
+            this.tbbCreateNewSourceBranch.Text = "Create New Source Branch";
+            this.tbbCreateNewSourceBranch.Click += new System.EventHandler(this.tbbCreateNewSourceBranch_Click);
+            //
+            // toolStripSeparator3
+            //
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 41);
+            //
+            // tbbCreateDatabase
+            //
+            this.tbbCreateDatabase.AutoSize = false;
+            this.tbbCreateDatabase.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbCreateDatabase.Image = ((System.Drawing.Image)(resources.GetObject("tbbCreateDatabase.Image")));
+            this.tbbCreateDatabase.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbCreateDatabase.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbCreateDatabase.Name = "tbbCreateDatabase";
+            this.tbbCreateDatabase.Size = new System.Drawing.Size(39, 38);
+            this.tbbCreateDatabase.Text = "Create a New Database";
+            this.tbbCreateDatabase.Click += new System.EventHandler(this.tbbCreateDatabase_Click);
+            //
+            // tbbDatabaseContent
+            //
+            this.tbbDatabaseContent.AutoSize = false;
+            this.tbbDatabaseContent.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.tbbDatabaseContent.Image = ((System.Drawing.Image)(resources.GetObject("tbbDatabaseContent.Image")));
+            this.tbbDatabaseContent.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.tbbDatabaseContent.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.tbbDatabaseContent.Name = "tbbDatabaseContent";
+            this.tbbDatabaseContent.Size = new System.Drawing.Size(39, 38);
+            this.tbbDatabaseContent.Text = "Reset the Database Content";
+            this.tbbDatabaseContent.Click += new System.EventHandler(this.tbbDatabaseContent_Click);
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(765, 522);
+            this.ClientSize = new System.Drawing.Size(765, 552);
+            this.Controls.Add(this.mainToolStrip);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
@@ -1471,6 +1776,8 @@ namespace Ict.Tools.DevelopersAssistant
             this.groupBox1.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
+            this.mainToolStrip.ResumeLayout(false);
+            this.mainToolStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
         }
@@ -1492,7 +1799,7 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Button btnGenerateWinform;
-        private System.Windows.Forms.TextBox txtYAMLPath;
+        private System.Windows.Forms.ComboBox cboYAMLHistory;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button btnMiscellaneous;
         private System.Windows.Forms.LinkLabel linkLabelRestartServer;
@@ -1589,5 +1896,30 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.Button btnPromoteFavouriteBuild;
         private System.Windows.Forms.LinkLabel linkSuggestedLinksUpdates;
         private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.ToolStrip mainToolStrip;
+        private System.Windows.Forms.ToolStripButton tbbGenerateSolutionFullCompile;
+        private System.Windows.Forms.ToolStripButton tbbGenerateSolutionMinCompile;
+        private System.Windows.Forms.ToolStripButton tbbGenerateWinForms;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripButton tbbUncrustify;
+        private System.Windows.Forms.ToolStripButton tbbRunAllTests;
+        private System.Windows.Forms.ToolStripButton tbbRunMainNavigationScreensTests;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton tbbCommitSourceChanges;
+        private System.Windows.Forms.ToolStripButton tbbShelveSourceChanges;
+        private System.Windows.Forms.ToolStripButton tbbUnshelveSourceChanges;
+        private System.Windows.Forms.ToolStripButton tbbMergeSourceFromTrunk;
+        private System.Windows.Forms.ToolStripButton tbbCreateNewSourceBranch;
+        private System.Windows.Forms.ToolStripButton tbbGenerateGlue;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
+        private System.Windows.Forms.ToolStripButton tbbCreateDatabase;
+        private System.Windows.Forms.ToolStripButton tbbDatabaseContent;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
+        private System.Windows.Forms.ToolStripSplitButton tbbSourceHistoryLog;
+        private System.Windows.Forms.ToolStripMenuItem tbbSourceHistoryAllMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tbbSourceHistoryFileMenuItem;
+        private System.Windows.Forms.ToolStripSplitButton tbbShowSourceDifferences;
+        private System.Windows.Forms.ToolStripMenuItem tbbShowSourceDifferencesAllMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tbbShowSourceDifferencesFileMenuItem;
     }
 }
