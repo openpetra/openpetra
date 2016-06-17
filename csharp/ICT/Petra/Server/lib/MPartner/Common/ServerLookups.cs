@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -291,13 +291,17 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         }
 
         /// <summary>Is this Recipient, if of type CC, linked?</summary>
-        /// <param name="ALedgerNumber"></param>
+        /// <param name="ALedgerNumber">The ledger where the partner should be linked to a cost center.
+        /// This can be overwritten by the parameter LedgerForPartnerCCLinks in the config file</param>
         /// <param name="APartnerKey"></param>
         /// <returns>True if this is a valid key to a partner of type CC
         /// that is linked (in the specified ledger)</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey)
         {
+            // For multi ledger setups, the partners are sometimes only linked in one ledger
+            ALedgerNumber = TAppSettingsManager.GetInt32("LedgerForPartnerCCLinks", ALedgerNumber);
+
             bool PartnerAndLinksCombinationIsValid = true;
             int NumPartnerWithTypeCostCentre = 0;
             int NumPartnerLinks = 0;
