@@ -722,7 +722,7 @@ namespace Ict.Common.IO
             ReplacePlaceHolder(APlaceholder, AValue, "");
         }
 
-        // returns true if at least one occurance was replaced
+        // returns true if at least one occurrence was replaced
         private Boolean DoReplacePlaceHolder(string APlaceholder, string AValue)
         {
             if (AValue.Length != 0)

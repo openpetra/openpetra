@@ -238,11 +238,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 string CheckboxText = string.Empty;
 
-                                // only show checkbox if there is at least one more occurance of this error
+                                // only show checkbox if there is at least one more occurrence of this error
                                 if (NeedRecipientLedgerNumber.Rows.Count - count > 0)
                                 {
                                     CheckboxText = string.Format(
-                                        Catalog.GetString("Do this for all further occurances ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
+                                        Catalog.GetString("Do this for all further occurrences ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
                                 }
 
                                 TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
@@ -464,20 +464,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
                     // then the import will have failed and we need to alert the user
-                    if (NeedRecipientLedgerNumber.Rows.Count > 0)
+                    int numberOfMissingGiftDestinations = NeedRecipientLedgerNumber.Rows.Count;
+
+                    if (numberOfMissingGiftDestinations > 0)
                     {
-                        bool OfferToRunImportAgain = true;
+                        bool offerToRunImportAgain = true;
+                        int currentMissingGiftDestinationNo = 1;
 
                         // for each gift in which the recipient needs a Git Destination
                         foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
                         {
+                            //Lookup the partner shortname
+                            string partnerShortName = string.Empty;
+                            TPartnerClass partnerClass;
+
+                            if (TServerLookup.TMPartner.GetPartnerShortName(Row.RecipientKey, out partnerShortName, out partnerClass))
+                            {
+                                Row.RecipientDescription = partnerShortName;
+                            }
+
                             if (MessageBox.Show(string.Format(
                                         Catalog.GetString(
-                                            "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
-                                        Row.RecipientDescription, Row.RecipientKey) +
+                                            "Error: {0:0000} of {1:0000} - Recipient '{2}' ({3}) has no Gift Destination assigned."),
+                                        currentMissingGiftDestinationNo, numberOfMissingGiftDestinations, Row.RecipientDescription,
+                                        Row.RecipientKey) +
                                     "\n\n" +
                                     Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
-                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                                    Catalog.GetString("Gift Import Cancelled"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                                 == DialogResult.Yes)
                             {
                                 // allow the user to assign a Gift Destingation
@@ -486,12 +499,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             }
                             else
                             {
-                                OfferToRunImportAgain = false;
+                                offerToRunImportAgain = false;
                             }
+
+                            currentMissingGiftDestinationNo++;
                         }
 
                         // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
-                        if (OfferToRunImportAgain
+                        if (offerToRunImportAgain
                             && (MessageBox.Show(Catalog.GetString("Would you like to import these Gift Transactions again?"),
                                     Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                                     MessageBoxDefaultButton.Button1)

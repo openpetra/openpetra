@@ -1562,7 +1562,7 @@ namespace Ict.Petra.Client.CommonControls
                 OnFindNextClicked(sender, e);
             };
 
-            tipGeneral.SetToolTip(btnFindNext, "Click to find the next occurance\r\nin the search direction");
+            tipGeneral.SetToolTip(btnFindNext, "Click to find the next occurrence\r\nin the search direction");
 
             rbtFindDirUp.Top = 14;
             rbtFindDirUp.Left = 10;

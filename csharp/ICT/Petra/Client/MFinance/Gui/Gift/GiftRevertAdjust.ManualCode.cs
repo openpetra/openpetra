@@ -613,9 +613,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                             "recorded for the gift detail to be adjusted ({5} ({6})).{7}Do you want to continue to use the original "
                                             +
                                             "gift destination of {5} ({6}) for the adjusted gift?"),
-                                        RecipientName, GiftDetailRow.RecipientKey.ToString("0000000000"),
-                                        dtpEffectiveDate.Date.Value.ToString("dd-MMM-yyyy"), NewFieldShortName, RecipientLedgerNumber,
-                                        OldFieldShortName, GiftDetailRow.RecipientLedgerNumber, "\r\n\r\n"),
+                                        RecipientName,
+                                        GiftDetailRow.RecipientKey.ToString("0000000000"),
+                                        dtpEffectiveDate.Date.Value.ToString("dd-MMM-yyyy"),
+                                        NewFieldShortName,
+                                        RecipientLedgerNumber,
+                                        OldFieldShortName,
+                                        GiftDetailRow.RecipientLedgerNumber,
+                                        "\r\n\r\n"),
                                     Catalog.GetString("Adjust Gift"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                                     MessageBoxDefaultButton.Button2)
                                 == DialogResult.Yes)

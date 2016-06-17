@@ -120,7 +120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private List <Int64>FNewDonorsList = new List <long>();
 
         // used for ValidateGiftDestinationThread
-        private string FPartnerShortName = "";
+        private string FPartnerShortName = string.Empty;
         private delegate void SimpleDelegate();
 
         #endregion private fields

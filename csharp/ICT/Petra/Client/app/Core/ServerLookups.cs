@@ -27,11 +27,14 @@ using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.Data;
+
+using Ict.Petra.Client.App.Core.RemoteObjects;
+
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Client.App.Core.RemoteObjects;
+
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -209,6 +212,15 @@ namespace Ict.Petra.Client.App.Core
             public static Boolean PartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey)
             {
                 return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerOfTypeCCIsLinked(ALedgerNumber, APartnerKey);
+            }
+
+            /// <summary>Is Partner of type CC linked?</summary>
+            /// <param name="APartnerKey"></param>
+            /// <param name="AGiftDate"></param>
+            /// <returns>True if this is a valid key of a partner of type CC that's linked</returns>
+            public static Boolean PartnerHasCurrentGiftDestination(Int64 APartnerKey, DateTime ? AGiftDate)
+            {
+                return TRemote.MPartner.Partner.ServerLookups.WebConnectors.PartnerHasCurrentGiftDestination(APartnerKey, AGiftDate);
             }
 
             /// <summary>

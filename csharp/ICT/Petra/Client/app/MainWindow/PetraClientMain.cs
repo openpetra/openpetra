@@ -681,6 +681,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TSharedPartnerValidationHelper.PartnerHasActiveStatusDelegate = @TServerLookup.TMPartner.PartnerHasActiveStatus;
             TSharedPartnerValidationHelper.PartnerIsLinkedToCCDelegate = @TServerLookup.TMPartner.PartnerIsLinkedToCC;
             TSharedPartnerValidationHelper.PartnerOfTypeCCIsLinkedDelegate = @TServerLookup.TMPartner.PartnerOfTypeCCIsLinked;
+            TSharedPartnerValidationHelper.PartnerHasCurrentGiftDestinationDelegate = @TServerLookup.TMPartner.PartnerHasCurrentGiftDestination;
             TSharedFinanceValidationHelper.GetValidPostingDateRangeDelegate = @TServerLookup.TMFinance.GetCurrentPostingRangeDates;
             TSharedFinanceValidationHelper.GetValidPeriodDatesDelegate = @TServerLookup.TMFinance.GetCurrentPeriodDates;
 

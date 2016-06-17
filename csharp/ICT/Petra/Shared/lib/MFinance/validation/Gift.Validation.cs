@@ -28,13 +28,14 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Validation;
 
 namespace Ict.Petra.Shared.MFinance.Validation
 {
@@ -447,7 +448,8 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 return true;
             }
 
-            bool isImporting = AContext.ToString().Contains("Importing");
+            bool ImportInProcess = AContext.ToString().Contains("Importing");
+
             ValidationContext = String.Format("Batch no. {0}, gift no. {1}, detail no. {2}",
                 ARow.BatchNumber,
                 ARow.GiftTransactionNumber,
@@ -461,7 +463,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 new TPartnerClass[] { TPartnerClass.FAMILY, TPartnerClass.UNIT },
                 true, // Must Be Active
                 ARecipientZeroIsValid,
-                isImporting ? Catalog.GetString("Recipient key") : "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
+                ImportInProcess ? Catalog.GetString("Recipient key") : "Recipient of " + THelper.NiceValueDescription(ValidationContext.ToString()),
                 AContext,
                 ValidationColumn,
                 null);
@@ -505,7 +507,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
             {
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsNonZeroDecimal(ARow.GiftTransactionAmount,
-                    ValidationControlsData.ValidationControlLabel + (isImporting ? String.Empty : " of " + ValidationContext),
+                    ValidationControlsData.ValidationControlLabel + (ImportInProcess ? String.Empty : " of " + ValidationContext),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                 // Handle addition/removal to/from TVerificationResultCollection
@@ -595,7 +597,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
             {
                 VerificationResult = null;
 
-                if (!isImporting)
+                if (!ImportInProcess)
                 {
                     // NOTE AlanP Oct 2014.  This gets checked by standard validation so may no longer be necessary?
                     //  (There was a bug in standard validation where NULL and empty string checks did not quite work as they should ...
@@ -606,7 +608,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     if (ARow.IsMotivationDetailCodeNull() || (ARow.MotivationDetailCode == String.Empty))
                     {
                         VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.MotivationDetailCode,
-                            (isImporting ? ValidationControlsData.ValidationControlLabel : "Motivation Detail code " + ValidationContext),
+                            (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Motivation Detail code " + ValidationContext),
                             AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                         // Handle addition/removal to/from TVerificationResultCollection
@@ -720,73 +722,53 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 }
             }
 
-            // Cost Centre Code must exist and be active.  Only required for importing because the GUI does this for us otherwise.
-            if (isImporting && (ACostCentres != null) && !ARow.IsCostCentreCodeNull())
+            //Validation checks only done on importing
+            if (ImportInProcess)
             {
-                ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCostCentreCodeId];
+                //Below is done during import of the transactions and the RecipientLedgerNumber is looked-up then
 
-                if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                //The Recipient must have a valid Gift Destination
+                //ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnRecipientKeyId];
+                //ValidationContext = String.Format("Recipient {0} - '{1}' (import batch:{2} transaction:{3} detail:{4}",
+                //    ARow.RecipientKey,
+                //    ARow.RecipientDescription,
+                //    ARow.BatchNumber,
+                //    ARow.GiftTransactionNumber,
+                //    ARow.DetailNumber);
+
+                //if ((ARow.RecipientKey > 0) && ValidPartner)
+                //{
+                //    VerificationResult = (TScreenVerificationResult)TSharedPartnerValidation_Partner.IsValidRecipientGiftDestination(
+                //        ARow.RecipientKey,
+                //        ARow.DateEntered,
+                //        THelper.NiceValueDescription(ValidationContext.ToString()),
+                //        AContext,
+                //        ValidationColumn,
+                //        null);
+
+                //    // Handle addition/removal to/from TVerificationResultCollection
+                //    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                //    {
+                //        VerifResultCollAddedCount++;
+                //    }
+                //}
+
+                // Cost Centre Code must exist and be active.  Only required for importing because the GUI does this for us otherwise.
+                if ((ACostCentres != null) && !ARow.IsCostCentreCodeNull())
                 {
-                    // We even need to check that the code exists!
-                    DataRow foundRow = ACostCentres.Rows.Find(new object[] { ARow.LedgerNumber, ARow.CostCentreCode });
-
-                    VerificationResult = (foundRow == null) ?
-                                         new TScreenVerificationResult(AContext,
-                        ValidationColumn,
-                        String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
-                        ValidationControlsData.ValidationControl,
-                        TResultSeverity.Resv_Critical)
-                                         : null;
-
-                    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
-                    {
-                        VerifResultCollAddedCount++;
-                    }
-
-                    if (VerificationResult == null)
-                    {
-                        VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
-                            ACostCentres,
-                            ARow.CostCentreCode.ToString(),
-                            ACostCentreTable.GetCostCentreActiveFlagDBName(),
-                            AContext,
-                            ValidationColumn,
-                            ValidationControlsData.ValidationControl);
-
-                        // Handle addition/removal to/from TVerificationResultCollection
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
-                        {
-                            VerifResultCollAddedCount++;
-                        }
-                    }
-                }
-            }
-
-            // Account Code must exist and be active.  Only required for importing because the GUI does this for us otherwise.
-            if (isImporting && (AAccounts != null) && !ARow.IsAccountCodeNull())
-            {
-                DataColumn[] ValidationColumns = new DataColumn[] {
-                    ARow.Table.Columns[AGiftDetailTable.ColumnAccountCodeId], ARow.Table.Columns[AGiftDetailTable.ColumnTaxDeductibleAccountCodeId]
-                };
-                string[] AccountCodes = new string[] {
-                    ARow.AccountCode, ARow.TaxDeductibleAccountCode
-                };
-
-                for (int i = 0; i < 2; i++)
-                {
-                    ValidationColumn = ValidationColumns[i];
+                    ValidationColumn = ARow.Table.Columns[AGiftDetailTable.ColumnCostCentreCodeId];
 
                     if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
                     {
                         // We even need to check that the code exists!
-                        DataRow foundRow = AAccounts.Rows.Find(new object[] { ARow.LedgerNumber, AccountCodes[i] });
+                        DataRow foundRow = ACostCentres.Rows.Find(new object[] { ARow.LedgerNumber, ARow.CostCentreCode });
 
                         VerificationResult = (foundRow == null) ?
-                                             new TScreenVerificationResult(
-                            new TVerificationResult(AContext,
-                                String.Format(Catalog.GetString("Unknown account code '{0}'."), AccountCodes[i]),
-                                TResultSeverity.Resv_Critical),
-                            ValidationColumn, ValidationControlsData.ValidationControl)
+                                             new TScreenVerificationResult(AContext,
+                            ValidationColumn,
+                            String.Format(Catalog.GetString("Unknown cost centre code '{0}'."), ARow.CostCentreCode),
+                            ValidationControlsData.ValidationControl,
+                            TResultSeverity.Resv_Critical)
                                              : null;
 
                         if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
@@ -797,9 +779,9 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         if (VerificationResult == null)
                         {
                             VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
-                                AAccounts,
-                                AccountCodes[i],
-                                AAccountTable.GetAccountActiveFlagDBName(),
+                                ACostCentres,
+                                ARow.CostCentreCode.ToString(),
+                                ACostCentreTable.GetCostCentreActiveFlagDBName(),
                                 AContext,
                                 ValidationColumn,
                                 ValidationControlsData.ValidationControl);
@@ -808,6 +790,59 @@ namespace Ict.Petra.Shared.MFinance.Validation
                             if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
                             {
                                 VerifResultCollAddedCount++;
+                            }
+                        }
+                    }
+                }
+
+                // Account Code must exist and be active.  Only required for importing because the GUI does this for us otherwise.
+                if ((AAccounts != null) && !ARow.IsAccountCodeNull())
+                {
+                    DataColumn[] ValidationColumns = new DataColumn[] {
+                        ARow.Table.Columns[AGiftDetailTable.ColumnAccountCodeId],
+                        ARow.Table.Columns[AGiftDetailTable.ColumnTaxDeductibleAccountCodeId]
+                    };
+                    string[] AccountCodes = new string[] {
+                        ARow.AccountCode, ARow.TaxDeductibleAccountCode
+                    };
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        ValidationColumn = ValidationColumns[i];
+
+                        if (AValidationControlsDict.TryGetValue(ValidationColumn, out ValidationControlsData))
+                        {
+                            // We even need to check that the code exists!
+                            DataRow foundRow = AAccounts.Rows.Find(new object[] { ARow.LedgerNumber, AccountCodes[i] });
+
+                            VerificationResult = (foundRow == null) ?
+                                                 new TScreenVerificationResult(
+                                new TVerificationResult(AContext,
+                                    String.Format(Catalog.GetString("Unknown account code '{0}'."), AccountCodes[i]),
+                                    TResultSeverity.Resv_Critical),
+                                ValidationColumn, ValidationControlsData.ValidationControl)
+                                                 : null;
+
+                            if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                            {
+                                VerifResultCollAddedCount++;
+                            }
+
+                            if (VerificationResult == null)
+                            {
+                                VerificationResult = (TScreenVerificationResult)TStringChecks.ValidateValueIsActive(ARow.LedgerNumber,
+                                    AAccounts,
+                                    AccountCodes[i],
+                                    AAccountTable.GetAccountActiveFlagDBName(),
+                                    AContext,
+                                    ValidationColumn,
+                                    ValidationControlsData.ValidationControl);
+
+                                // Handle addition/removal to/from TVerificationResultCollection
+                                if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
+                                {
+                                    VerifResultCollAddedCount++;
+                                }
                             }
                         }
                     }
@@ -852,7 +887,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (!ARow.IsGiftCommentOneNull() && (ARow.GiftCommentOne != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentOneType,
-                        (isImporting ? ValidationControlsData.ValidationControlLabel : "Comment 1 type " + ValidationContext),
+                        (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Comment 1 type " + ValidationContext),
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
@@ -899,7 +934,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (!ARow.IsGiftCommentTwoNull() && (ARow.GiftCommentTwo != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentTwoType,
-                        (isImporting ? ValidationControlsData.ValidationControlLabel : "Comment 2 type " + ValidationContext),
+                        (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Comment 2 type " + ValidationContext),
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection
@@ -946,7 +981,7 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 if (!ARow.IsGiftCommentThreeNull() && (ARow.GiftCommentThree != String.Empty))
                 {
                     VerificationResult = (TScreenVerificationResult)TGeneralChecks.ValueMustNotBeNullOrEmptyString(ARow.CommentThreeType,
-                        (isImporting ? ValidationControlsData.ValidationControlLabel : "Comment 3 type " + ValidationContext),
+                        (ImportInProcess ? ValidationControlsData.ValidationControlLabel : "Comment 3 type " + ValidationContext),
                         AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
                     // Handle addition/removal to/from TVerificationResultCollection

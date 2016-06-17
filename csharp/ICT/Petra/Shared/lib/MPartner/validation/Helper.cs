@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+
 using Ict.Petra.Shared;
 
 namespace Ict.Petra.Shared.MPartner.Validation
@@ -55,6 +56,12 @@ namespace Ict.Petra.Shared.MPartner.Validation
         /// <returns></returns>
         public delegate Boolean TPartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey);
 
+        /// <summary>Delegate to determine Partner has a valid gift destination</summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <returns></returns>
+        public delegate Boolean TPartnerHasCurrentGiftDestination(Int64 APartnerKey, DateTime ? AGiftDate);
+
         /// <summary>
         /// Reference to the Delegate for invoking the verification of the existence of a Partner.
         /// </summary>
@@ -65,6 +72,8 @@ namespace Ict.Petra.Shared.MPartner.Validation
         private static TPartnerIsLinkedToCC FDelegatePartnerIsLinkedToCC;
 
         private static TPartnerOfTypeCCIsLinked FDelegatePartnerOfTypeCCIsLinked;
+
+        private static TPartnerHasCurrentGiftDestination FDelegatePartnerHasCurrentGiftDestination;
 
         /// <summary>
         /// This property is used to provide a function which invokes the verification of the existence of a Partner.
@@ -123,6 +132,21 @@ namespace Ict.Petra.Shared.MPartner.Validation
             set
             {
                 FDelegatePartnerOfTypeCCIsLinked = value;
+            }
+        }
+
+        /// <summary>
+        /// A function must be provided before the helper function is called.
+        /// </summary>
+        public static TPartnerHasCurrentGiftDestination PartnerHasCurrentGiftDestinationDelegate
+        {
+            get
+            {
+                return FDelegatePartnerHasCurrentGiftDestination;
+            }
+            set
+            {
+                FDelegatePartnerHasCurrentGiftDestination = value;
             }
         }
 
@@ -198,6 +222,22 @@ namespace Ict.Petra.Shared.MPartner.Validation
             else
             {
                 throw new InvalidOperationException("Delegate 'PartnerOfTypeCCIsLinked' must be initialised before calling this Method");
+            }
+        }
+
+        /// <summary>Attempts to call a delegate...</summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <returns></returns>
+        public static Boolean PartnerHasCurrentGiftDestination(Int64 APartnerKey, DateTime ? AGiftDate)
+        {
+            if (FDelegatePartnerHasCurrentGiftDestination != null)
+            {
+                return FDelegatePartnerHasCurrentGiftDestination(APartnerKey, AGiftDate);
+            }
+            else
+            {
+                throw new InvalidOperationException("Delegate 'PartnerHasCurrentGiftDestination' must be initialised before calling this Method");
             }
         }
     }

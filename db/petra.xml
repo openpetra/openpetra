@@ -4251,7 +4251,7 @@
                 descr="The date when this match was recently applied; useful for purging old entries"
                 format="99/99/9999"
                 label="Date"
-                help="last occurance of this match"
+                help="last occurrence of this match"
                 notnull="yes"
                 initial="TODAY"/>
     <tablefield name="a_ledger_number_i"

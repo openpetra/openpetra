@@ -292,6 +292,11 @@ namespace Ict.Petra.Shared
              ErrorMessageText = "The Recipient's Field is 0 and so cannot have the Motivation Group Code 'Gift.'")]
         public const String ERR_RECIPIENT_FIELD_MOTIVATION_GROUP = "PARTN.00999V";
 
+        /// <summary>The Recipient's Gift Destination is missing or invalid.</summary>
+        [ErrCodeAttribute("Invalid Gift Destination for Recipient.",
+             ErrorMessageText = "The Recipient's Gift Destination is missing or invalid.")]
+        public const String ERR_RECIPIENT_GIFT_DESTINATION_INVALID = "PARTN.00997V";
+
         /// <summary>Partner Status MERGED must not be assigned.</summary>
         [ErrCodeAttribute("Partner Status MERGED must not be assigned",
              ErrorMessageText = "The Partner Status cannot be set to 'MERGED' by the user - this Partner Status\r\n" +

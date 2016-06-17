@@ -1066,11 +1066,14 @@ namespace Ict.Petra.Server.MFinance.Gift
                                     int messageCountBeforeValidate = preParseMessageCount;
 
                                     TPartnerClass recipientClass;
+
                                     string partnerShortName;
                                     TPartnerServerLookups.GetPartnerShortName(giftDetails.RecipientKey, out partnerShortName, out recipientClass);
+
                                     GiftBatchTDSAGiftDetailRow Row = (GiftBatchTDSAGiftDetailRow)giftDetails;
                                     Row.RecipientClass = recipientClass.ToString();
                                     Row.RecipientDescription = partnerShortName;
+                                    Row.DateEntered = gift.DateEntered;
 
                                     // Do our standard validation on this gift
                                     AGiftValidation.Validate(this, gift, ref Messages, EmptyControlsDict);
@@ -1164,7 +1167,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                                 // We gave up before the end
                                 Messages.Add(new TVerificationResult(MCommonConstants.StrImportInformation,
                                         Catalog.GetString(
-                                            "Stopped reading the file after generating more than 100 messages.  The file may contian more errors beyond the ones listed here."),
+                                            "Stopped reading the file after generating more than 100 messages.  The file may contain more errors in addition to the ones listed here."),
                                         TResultSeverity.Resv_Info));
                             }
 
@@ -1194,7 +1197,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                             Catalog.GetString("Saving all data into the database"),
                             100);
 
-                        //Finally save pending changes (the last number is updated !)
+                        //Finally save pending changes (the last number is updated!)
                         ImportMessage = Catalog.GetString("Saving gift batch");
                         AGiftBatchAccess.SubmitChanges(FMainDS.AGiftBatch, Transaction);
                         FMainDS.AGiftBatch.AcceptChanges();
@@ -1516,32 +1519,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                     null, ARowNumber, AMessages, null);
             }
 
-            // RecipientLedgerNumber is always calculated, not imported.
-            // This call could throw an exception, but I'm not allowing any panic here.
-            try
-            {
-                AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
-                    AGiftDetails.RecipientKey, AGiftBatch.GlEffectiveDate);
-            }
-            catch (Exception ex)
-            {
-                AMessages.Add(new TVerificationResult("Fund not found for recipient", ex.Message,
-                        TResultSeverity.Resv_Critical));
-            }
-
-            // I feel that I shouldn't need to do this here, since it's been done already...
-            ANeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
-
-            // If the gift has a recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
-            if ((AGiftDetails.RecipientLedgerNumber == 0)
-                && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
-                && (ANeedRecipientLedgerNumber.DefaultView.Find(AGiftDetails.RecipientKey) == -1)
-                )
-            {
-//                ((GiftBatchTDSAGiftDetailRow)AGiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
-                ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftDetails.ItemArray.Clone());
-            }
-
             decimal currentGiftAmount =
                 TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Gift amount"),
                     FMainDS.AGiftDetail.ColumnGiftTransactionAmount, ARowNumber, AMessages, null);
@@ -1567,6 +1544,22 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages, null).ToUpper();
             AGiftDetails.MotivationDetailCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation detail"),
                 FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper();
+
+            //Always lookup the RecipientLedgerNumber
+            AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(AGiftDetails.RecipientKey,
+                AGiftBatch.GlEffectiveDate);
+
+            // I feel that I shouldn't need to do this here, since it's been done already...
+            ANeedRecipientLedgerNumber.DefaultView.Sort = AGiftDetailTable.GetRecipientKeyDBName();
+
+            // If the gift has a recipient with no Gift Destination then the import will fail. Gift is added to a table and returned to client.
+            if ((AGiftDetails.RecipientLedgerNumber == 0)
+                && (AGiftDetails.MotivationGroupCode == MFinanceConstants.MOTIVATION_GROUP_GIFT)
+                && (ANeedRecipientLedgerNumber.DefaultView.Find(AGiftDetails.RecipientKey) == -1)
+                )
+            {
+                ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftDetails.ItemArray.Clone());
+            }
 
             if (HasExtraColumns) // I'm not actually importing this - the information is thrown away:
             {
@@ -1726,9 +1719,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             )
         {
             String Field = AImportLine.Substring(0, 3);
-
             Int32 FunctionType = 0;
-
             Boolean isNumeric = Int32.TryParse(Field, out FunctionType);
 
             Int64 DonorKey;
@@ -1768,7 +1759,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftsBatchRow.BatchTotal += Amount;
             AGiftsRow.LastDetailNumber = 1;
 
-            String MotivGroup = "GIFT";
+            String MotivGroup = MFinanceConstants.MOTIVATION_GROUP_GIFT;
             String MotivDetail = "UNDESIG";
             TGuiTools.GetMotivationGroupAndDetailForPartner(RecipientKey, ref MotivGroup, ref MotivDetail);
 
@@ -1799,17 +1790,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             }
 
             // RecipientLedgerNumber is always calculated, not imported.
-            // This call could throw an exception, but I'm not allowing any panic here.
-            try
-            {
-                AGiftsDetailsRow.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
-                    AGiftsDetailsRow.RecipientKey, AGiftsBatchRow.GlEffectiveDate);
-            }
-            catch (Exception ex)
-            {
-                AMessages.Add(new TVerificationResult("Fund not found for recipient", ex.Message,
-                        TResultSeverity.Resv_Critical));
-            }
+            AGiftsDetailsRow.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(
+                AGiftsDetailsRow.RecipientKey, AGiftsBatchRow.GlEffectiveDate);
 
             AGiftsDetailsRow.MotivationGroupCode = MotivGroup;
             AGiftsDetailsRow.MotivationDetailCode = MotivDetail;
@@ -1855,7 +1837,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftsDetailsRow.TaxDeductibleAccountCode = NewTaxDeductibleAccountCode;
 
             // I feel that I shouldn't need to do this here, since it's been done already...
-            ANeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
+            ANeedRecipientLedgerNumber.DefaultView.Sort = AGiftDetailTable.GetRecipientKeyDBName();
 
             // If the gift has a recipient with no Gift Destination then the import will fail. Gift detail is added to a table and returned to client.
             if ((AGiftsDetailsRow.RecipientLedgerNumber == 0)
@@ -1863,11 +1845,11 @@ namespace Ict.Petra.Server.MFinance.Gift
                 && (ANeedRecipientLedgerNumber.DefaultView.Find(RecipientKey) == -1)
                 )
             {
-//                ((GiftBatchTDSAGiftDetailRow)AgiftDetails).RecipientDescription = "Fault: RecipientLedger Not known";
                 ANeedRecipientLedgerNumber.Rows.Add((object[])AGiftsDetailsRow.ItemArray.Clone());
             }
 
             FMainDS.AGiftDetail.Rows.Add(AGiftsDetailsRow);
+
             return true;
         } // Parse Esr Transaction Line
 
