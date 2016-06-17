@@ -16,12 +16,12 @@ RootNode:
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
         actDeleteAll: {Label=Delete All, ActionClick=DeleteAllGifts}
-        actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
+        actAdjustGift: {Label=Ad&just Gift, ActionClick=AdjustGift}
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
-        actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
+        actReverseGiftDetail: {Label=Re&verse Gift Detail, ActionClick=ReverseGiftDetail}
         actReverseGiftBatch: {Label=Reverse Gift &Batch, ActionClick=ReverseGiftBatch}
         actImportTransactions: {Label=&Import Transactions From File, ActionClick=ImportTransactionsFromFile}
-        actImportFromClipboard: {Label=I&mport Transactions From Clipboard, ActionClick=ImportTransactionsFromClipboard}
+        actImportFromClipboard: {Label=Import &Transactions From Clipboard, ActionClick=ImportTransactionsFromClipboard}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
@@ -133,7 +133,7 @@ RootNode:
         txtDetailDonorKey: {Label=D&onor, Type=PartnerKey, Width=350, Unbound=true, RequiredField=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
-        txtDetailReference: {Label=Re&ference, Width=170}
+        txtDetailReference: {Label=Reference, Width=170}
         cmbDetailReceiptLetterCode:
             Label: Letter Code
             OptionalValues: [NO*RECET]
@@ -145,7 +145,7 @@ RootNode:
 		#GIFT DETAIL-Level Controls
         # Bound
         txtDetailRecipientKey: {Label=Reci&pient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
-        cmbDetailMotivationGroupCode: {Label=Moti&vation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
+        cmbDetailMotivationGroupCode: {Label=&Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
         txtDetailMotivationDetailCode: {Label=Motivation Detail}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
@@ -187,7 +187,7 @@ RootNode:
     Menu:
         mniTransactions:
             Label: &Gift Transaction
-            mniAdjustGift: {Label=&Adjust Gift, Action=actAdjustGift}
+            mniAdjustGift: {Label=Ad&just Gift, Action=actAdjustGift}
             mniReverseGiftBatch: {Label=Reverse Gift &Batch, Action=actReverseGiftBatch}
             mniReverseGift: {Label=Reverse &Gift, Action=actReverseGift}
             mniReverseGiftDetail: {Label=Re&verse Gift Detail, Action=actReverseGiftDetail}

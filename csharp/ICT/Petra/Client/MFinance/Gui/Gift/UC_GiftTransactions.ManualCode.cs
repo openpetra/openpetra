@@ -206,53 +206,77 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         private bool ProcessCmdKeyManual(ref Message msg, Keys keyData)
         {
-            if (keyData == (Keys.A | Keys.Alt))
+            //ALT Key Combinations for setting focus
+
+            //Find Donor Dialog
+            if (keyData == (Keys.O | Keys.Alt))
             {
-                txtDetailGiftTransactionAmount.Focus();
+                txtDetailDonorKey.PerformButtonClick();
                 return true;
             }
 
-            if (keyData == (Keys.M | Keys.Alt))
+            //Find Recipient Dialog
+            if (keyData == (Keys.P | Keys.Alt))
             {
-                bool comment1 = txtDetailGiftCommentOne.Focused;
-                bool comment2 = txtDetailGiftCommentTwo.Focused;
-                bool comment3 = txtDetailGiftCommentThree.Focused;
-
-                if (!comment1 && !comment2 && !comment3)
-                {
-                    txtDetailGiftCommentOne.Focus();
-                    return true;
-                }
-
-                if (comment1)
-                {
-                    txtDetailGiftCommentTwo.Focus();
-                    return true;
-                }
-
-                if (comment2)
-                {
-                    txtDetailGiftCommentThree.Focus();
-                    return true;
-                }
-
-                if (comment3)
-                {
-                    txtDetailGiftCommentOne.Focus();
-                    return true;
-                }
+                txtDetailRecipientKey.PerformButtonClick();
+                return true;
             }
 
-            if (keyData == (Keys.V | Keys.Alt))
+            //Key Ministries
+            if (keyData == (Keys.K | Keys.Alt))
+            {
+                if (!pnlDetails.ContainsFocus && pnlDetails.CanFocus)
+                {
+                    pnlDetails.Focus();
+
+                    if (cmbKeyMinistries.CanFocus)
+                    {
+                        cmbKeyMinistries.Focus();
+                    }
+                }
+                else if (cmbKeyMinistries.CanFocus)
+                {
+                    cmbKeyMinistries.Focus();
+                }
+
+                return true;
+            }
+
+            //Motivation Group Code
+            if (keyData == (Keys.M | Keys.Alt))
             {
                 cmbDetailMotivationGroupCode.Focus();
                 return true;
             }
 
-            if (keyData == (Keys.D | Keys.Alt))
+            //Comment 1
+            if (keyData == (Keys.D1 | Keys.Alt))
             {
-                txtDetailDonorKey.PerformButtonClick();
-                return true;
+                if (txtDetailGiftCommentOne.CanFocus)
+                {
+                    txtDetailGiftCommentOne.Focus();
+                    return true;
+                }
+            }
+
+            //Comment 2
+            if (keyData == (Keys.D2 | Keys.Alt))
+            {
+                if (txtDetailGiftCommentTwo.CanFocus)
+                {
+                    txtDetailGiftCommentTwo.Focus();
+                    return true;
+                }
+            }
+
+            //Comment 3
+            if (keyData == (Keys.D3 | Keys.Alt))
+            {
+                if (txtDetailGiftCommentThree.CanFocus)
+                {
+                    txtDetailGiftCommentThree.Focus();
+                    return true;
+                }
             }
 
             return false;

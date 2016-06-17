@@ -242,7 +242,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         cmbDetailMotivationGroupCode.GetSelectedString(),
                         cmbMotivationDetailCode.GetSelectedString());
 
-                    cmbKeyMinistries.Clear();
+                    ClearKeyMinistries();
                     mniRecipientHistory.Enabled = false;
                 }
             }
@@ -589,7 +589,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
 
-                    cmbKeyMinistries.Clear();
+                    ClearKeyMinistries();
                     cmbMotivationDetailCode.Clear();
                     mniRecipientHistory.Enabled = false;
                     btnDeleteAll.Enabled = btnDelete.Enabled;

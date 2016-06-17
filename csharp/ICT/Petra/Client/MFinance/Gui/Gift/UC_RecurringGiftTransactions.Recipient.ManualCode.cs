@@ -342,7 +342,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void PopulateKeyMinistry(Int64 APartnerKey, bool AMotivationDetailChangedFlag)
         {
-            cmbKeyMinistries.Clear();
+            ClearKeyMinistries();
 
             if (APartnerKey == 0)
             {
@@ -350,11 +350,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (APartnerKey == 0)
                 {
+                    cmbKeyMinistries.Enabled = false;
                     return;
                 }
             }
 
             GetRecipientData(APartnerKey, AMotivationDetailChangedFlag);
+        }
+
+        private void ClearKeyMinistries()
+        {
+            cmbKeyMinistries.SelectedIndex = -1;
+            cmbKeyMinistries.Clear();
         }
 
         #endregion control handling
@@ -393,7 +400,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (!AMotivationDetailChangedFlag && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
             {
                 txtDetailRecipientLedgerNumber.Text = FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString();
-                cmbKeyMinistries.Clear();
+                ClearKeyMinistries();
                 cmbKeyMinistries.Enabled = false;
             }
             // if Unit Recipient

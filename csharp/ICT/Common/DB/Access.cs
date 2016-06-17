@@ -1565,8 +1565,7 @@ namespace Ict.Common.DB
         /// </returns>
         public string GetDBConnectionIdentifier()
         {
-            return 
-                ((TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE) ? " (Conn.Identifier: " + ConnectionIdentifier + ")" : String.Empty) +
+            return ((TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE) ? " (Conn.Identifier: " + ConnectionIdentifier + ")" : String.Empty) +
                    (FConnectionName != String.Empty ? String.Format(" (Connection Name: {0})", FConnectionName) : "");
         }
 
@@ -1618,10 +1617,10 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// Returns information about the current Thread and the current AppDomain that can be useful 
+        /// Returns information about the current Thread and the current AppDomain that can be useful
         /// for logging/debugging of DB Connection Establishment and DB Disconnection.
         /// </summary>
-        /// <returns>Information about the current Thread and the current AppDomain in form of a 
+        /// <returns>Information about the current Thread and the current AppDomain in form of a
         /// formatted string.</returns>
         public static string GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection()
         {
