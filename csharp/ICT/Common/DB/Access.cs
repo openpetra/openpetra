@@ -71,16 +71,19 @@ namespace Ict.Common.DB
     /// </summary>
     public class DBAccess
     {
-        /// <summary>DebugLevel for logging the SQL code from DB queries</summary>
+        /// <summary>DebugLevel for logging of detailed DB Establishing/DB Disconnection information.</summary>
+        public const Int32 DB_DEBUGLEVEL_DETAILED_CONN_INFO = 2;
+
+        /// <summary>DebugLevel for logging the SQL code from DB queries.</summary>
         public const Int32 DB_DEBUGLEVEL_QUERY = 3;
 
-        /// <summary>DebugLevel for logging the SQL code from DB queries</summary>
+        /// <summary>DebugLevel for logging information about DB Transactions.</summary>
         public const Int32 DB_DEBUGLEVEL_TRANSACTION = 10;
 
-        /// <summary>DebugLevel for logging results from DB queries: is 6 (was 4 before)</summary>
+        /// <summary>DebugLevel for logging results from DB queries: is 6 (was 4 before).</summary>
         public const Int32 DB_DEBUGLEVEL_RESULT = 6;
 
-        /// <summary>DebugLevel for tracing (very verbose log output): is 10 (was 4 before)</summary>
+        /// <summary>DebugLevel for tracing (very verbose log output): is 10 (was 4 before).</summary>
         public const Int32 DB_DEBUGLEVEL_TRACE = 10;
 
         /// <summary>DebugLevel for dumping stacktraces when Thread-safe access to the TDataBase Class is requested/released (extremely verbose log output): is 11</summary>
@@ -1271,7 +1274,7 @@ namespace Ict.Common.DB
                     TLogging.Log("    Connecting to database " + ADataBaseType +
                         GetDBConnectionIdentifierInternal() + ": " +
                         TDBConnection.GetConnectionStringWithHiddenPwd(FConnectionString) + " " +
-                        GetThreadAndAppDomainCallInfo());
+                        GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection());
 
                     FSqlConnection.Open();
                     FDataBaseRDBMS.InitConnection(FSqlConnection);
@@ -1562,7 +1565,8 @@ namespace Ict.Common.DB
         /// </returns>
         public string GetDBConnectionIdentifier()
         {
-            return " (Conn.Identifier: " + ConnectionIdentifier + ")" +
+            return 
+                ((TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE) ? " (Conn.Identifier: " + ConnectionIdentifier + ")" : String.Empty) +
                    (FConnectionName != String.Empty ? String.Format(" (Connection Name: {0})", FConnectionName) : "");
         }
 
@@ -1573,10 +1577,9 @@ namespace Ict.Common.DB
         /// DebugLevel is set.</returns>
         private string GetDBConnectionIdentifierInternal()
         {
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO)
             {
-                return " (Conn.Identifier: " + ConnectionIdentifier + ")" +
-                       (FConnectionName != String.Empty ? String.Format(" (Connection Name: {0})", FConnectionName) : "");
+                return GetDBConnectionIdentifier();
             }
 
             return String.Empty;
@@ -1614,9 +1617,15 @@ namespace Ict.Common.DB
             }
         }
 
-        private string GetThreadAndAppDomainCallInfo()
+        /// <summary>
+        /// Returns information about the current Thread and the current AppDomain that can be useful 
+        /// for logging/debugging of DB Connection Establishment and DB Disconnection.
+        /// </summary>
+        /// <returns>Information about the current Thread and the current AppDomain in form of a 
+        /// formatted string.</returns>
+        public static string GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection()
         {
-            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO)
             {
                 return String.Format(StrThreadAndAppDomainCallInfo, ThreadingHelper.GetCurrentThreadIdentifier(),
                     AppDomain.CurrentDomain.FriendlyName);
