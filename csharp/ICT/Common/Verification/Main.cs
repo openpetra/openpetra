@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -984,7 +984,9 @@ namespace Ict.Common.Verification
 
                 if (ARestrictToTypeWhichRaisesError != null)
                 {
-                    if ((si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError) || (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD))
+                    if (((si.ResultContext != null)
+                         && (si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError))
+                        || (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD))
                     {
                         IncludeVerificationResult = true;
                     }
