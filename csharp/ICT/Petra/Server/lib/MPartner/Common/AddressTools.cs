@@ -138,6 +138,7 @@ namespace Ict.Petra.Server.MPartner.Common
         public static DataTable GetBestAddressForPartners(String DonorList, TDBTransaction ATransaction)
         {
             DataTable ResultTable = new DataTable();
+
             string Query = TDataBase.ReadSqlFile("Partner.CommonAddressTools.GetBestAddress.sql");
 
             Query = Query.Replace("{DonorList}", DonorList);

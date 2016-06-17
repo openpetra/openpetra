@@ -55,12 +55,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (taxDeductible)
                 {
                     UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
-
-                    AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
-                    TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-
-                    txtTaxDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.TaxDeductibleAmount;
-                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.NonDeductibleAmount;
+                    ReconcileTaxDeductibleAmounts(FPreviouslySelectedDetailRow);
                 }
                 else
                 {
@@ -234,9 +229,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             ARow.TaxDeductiblePct = txtDeductiblePercentage.NumberValueDecimal.Value;
 
-            ARow.TaxDeductibleAmount = txtTaxDeductAmount.NumberValueDecimal.Value;
-
-            ARow.NonDeductibleAmount = txtNonDeductAmount.NumberValueDecimal.Value;
+            ReconcileTaxDeductibleAmounts(ARow);
 
             if (txtDeductibleAccount.Text.Length == 0)
             {
@@ -245,6 +238,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 ARow.TaxDeductibleAccountCode = txtDeductibleAccount.Text;
+            }
+        }
+
+        private void ReconcileTaxDeductibleAmounts(GiftBatchTDSAGiftDetailRow ARow)
+        {
+            AGiftDetailRow GDR = (AGiftDetailRow)ARow;
+
+            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref GDR);
+
+            if ((txtTaxDeductAmount.NumberValueDecimal != ARow.TaxDeductibleAmount)
+                || (txtNonDeductAmount.NumberValueDecimal != ARow.NonDeductibleAmount))
+            {
+                txtTaxDeductAmount.NumberValueDecimal = ARow.TaxDeductibleAmount;
+                txtNonDeductAmount.NumberValueDecimal = ARow.NonDeductibleAmount;
             }
         }
 
@@ -330,7 +337,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ValidateTaxDeductiblePct(GiftBatchTDSAGiftDetailRow ARow, ref TVerificationResultCollection AVerificationResultCollection)
         {
+            int PreValidationResultCount = AVerificationResultCollection.Count;
+
             TSharedFinanceValidation_Gift.ValidateTaxDeductiblePct(this, ARow, ref AVerificationResultCollection, FValidationControlsDict);
+
+            //No validation errors occurred
+            if (PreValidationResultCount == AVerificationResultCollection.Count)
+            {
+                ReconcileTaxDeductibleAmounts(ARow);
+            }
         }
 
         #endregion data validation

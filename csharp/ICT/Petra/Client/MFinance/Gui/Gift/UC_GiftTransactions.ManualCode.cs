@@ -96,6 +96,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         //Flags
         private bool FShowStatusDialogOnLoadFlag = true;
         private bool FInEditModeFlag = false;
+        private bool FInBeginEditModeFlag = false;
         private bool FActiveOnlyFlag = true;
         private bool FGiftSelectedForDeletionFlag = false;
         private bool FSuppressListChangedFlag = false;
@@ -553,9 +554,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void HideFloatingTextBoxes(out bool ADoTaxUpdate)
         {
+            ADoTaxUpdate = false;
+
             if (FloatingTextboxesAreVisible())
             {
-                //Motivation Detail is populted, just filter it
+                //Motivation Detail is populated, just filter it
                 ApplyMotivationDetailCodeFilter(out ADoTaxUpdate);
                 //Repopulate the keymin combo
                 PopulateKeyMinistry(0, false);
@@ -567,10 +570,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailRecipientKeyMinistry.Visible = false;
                 txtDetailMotivationDetailCode.Visible = false;
             }
-            else
-            {
-                ADoTaxUpdate = false;
-            }
         }
 
         /// <summary>
@@ -580,8 +579,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool AShowGiftDetail,
             bool AReadComboValue = false)
         {
-            ResetMotivationDetailCodeFilter(AShowGiftDetail);
-
             // Always enabled initially. Combobox may be disabled later once populated.
             cmbKeyMinistries.Enabled = true;
             cmbMotivationDetailCode.Enabled = true;
@@ -1008,6 +1005,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool DisableSave = (FBatchRow.RowState == DataRowState.Unchanged && !FPetraUtilsObject.HasChanges);
 
             FInEditModeFlag = true;
+            FInBeginEditModeFlag = true;
 
             //Make sure we are not in SuppressChanges mode
             FPetraUtilsObject.SuppressChangeDetection = false;
@@ -1025,6 +1023,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FPetraUtilsObject.DisableSaveButton();
             }
+
+            FInBeginEditModeFlag = false;
         }
 
         private void EndEditMode(object sender, EventArgs e)

@@ -336,7 +336,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
-                    if (!FPetraUtilsObject.SuppressChangeDetection || FRecipientKeyChangedInProcess)
+                    if (!FInBeginEditModeFlag && (!FPetraUtilsObject.SuppressChangeDetection || FRecipientKeyChangedInProcess))
                     {
                         if (chkDetailTaxDeductible.Checked != motivationDetail.TaxDeductible)
                         {

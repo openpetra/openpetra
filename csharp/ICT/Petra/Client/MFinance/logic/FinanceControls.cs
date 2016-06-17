@@ -815,7 +815,14 @@ namespace Ict.Petra.Client.MFinance.Logic
             Int32 ASelectedIndexAfterFilter = -2,
             TFrmPetraEditUtils APetraUtilsObject = null)
         {
-            string NewFilter = String.Empty;
+            if (AControl == null)
+            {
+                return;
+            }
+
+            string CurrentFilter = AControl.Filter;
+            string NewFilter = string.Empty;
+
             bool AlreadySuppressingChanges = APetraUtilsObject != null && APetraUtilsObject.SuppressChangeDetection;
 
             try
@@ -832,7 +839,10 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 NewFilter += AMotivationDetailTable.GetMotivationGroupCodeDBName() + " = '" + AMotivationGroup + "'";
 
-                AControl.Filter = NewFilter;
+                if ((CurrentFilter == null) || (NewFilter != CurrentFilter))
+                {
+                    AControl.Filter = NewFilter;
+                }
 
                 //Select an item in the list. If this is not done the last item is automatically selected
                 if ((ASelectedIndexAfterFilter > -2) && (ASelectedIndexAfterFilter < AControl.Count))

@@ -110,20 +110,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 delegate
                 {
                     string Query = "SELECT a_gift_detail.*" +
-
                                    " FROM a_gift_detail, a_gift_batch, a_gift" +
-
                                    " WHERE a_gift_detail.p_recipient_key_n = " + ARecipientKey +
-                                   " AND a_gift_detail.a_tax_deductible_pct_n <> " + ANewPct +
-                                   " AND a_gift_detail.a_modified_detail_l <> true" +
-                                   " AND a_gift_detail.a_tax_deductible_l = true" +
-                                   " AND a_gift_batch.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
-                                   " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i" +
-                                   " AND a_gift_batch.a_batch_status_c = 'Unposted'" +
-                                   " AND a_gift.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
-                                   " AND a_gift.a_batch_number_i = a_gift_detail.a_batch_number_i" +
-                                   " AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
-                                   " AND a_gift.a_date_entered_d >= '" + ADateFrom.ToString("yyyy-MM-dd") + "'";
+                                   "   AND a_gift_detail.a_tax_deductible_pct_n <> " + ANewPct +
+                                   "   AND a_gift_detail.a_modified_detail_l <> true" +
+                                   "   AND a_gift_detail.a_tax_deductible_l = true" +
+                                   "   AND a_gift_batch.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
+                                   "   AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i" +
+                                   "   AND a_gift_batch.a_batch_status_c = 'Unposted'" +
+                                   "   AND a_gift.a_ledger_number_i = a_gift_detail.a_ledger_number_i" +
+                                   "   AND a_gift.a_batch_number_i = a_gift_detail.a_batch_number_i" +
+                                   "   AND a_gift.a_gift_transaction_number_i = a_gift_detail.a_gift_transaction_number_i" +
+                                   "   AND a_gift.a_date_entered_d >= '" + ADateFrom.ToString("yyyy-MM-dd") + "'";
 
                     AGiftDetailTable Table = new AGiftDetailTable();
 

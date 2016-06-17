@@ -472,11 +472,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         if (taxDeductible)
                         {
                             //In case the tax percentage has changed or null values in amount fields
-                            AGiftDetailRow giftDetails = (AGiftDetailRow)giftDetailRow;
-                            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);
-
-                            txtTaxDeductAmount.NumberValueDecimal = giftDetailRow.TaxDeductibleAmount;
-                            txtNonDeductAmount.NumberValueDecimal = giftDetailRow.NonDeductibleAmount;
+                            ReconcileTaxDeductibleAmounts(giftDetailRow);
                         }
                         else
                         {

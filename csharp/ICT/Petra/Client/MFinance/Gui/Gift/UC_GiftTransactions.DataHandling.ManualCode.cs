@@ -993,7 +993,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
+        /// Update tax deductibility amounts when the gift amount or the tax deductible percentage has changed
         /// </summary>
         private void UpdateTaxDeductibilityAmounts(object sender, EventArgs e)
         {
