@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -732,7 +732,7 @@ namespace Ict.Petra.Shared
 
         /// <summary>Password missing.</summary>
         [ErrCodeAttribute("Invalid password.",
-             ErrorMessageText = "Your password must have at least {0} characters, and must contain at least one digit and one letter.",
+             ErrorMessageText = "The password must have at least {0} characters, and must contain at least one digit and one letter.",
              ErrorMessageTitle = "Invalid password")]
         public const String ERR_INVALID_PASSWORD = "SYS.00002V";
 

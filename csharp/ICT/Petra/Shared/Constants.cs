@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -254,6 +254,9 @@ namespace Ict.Petra.Shared
         /// Used in XML Reports messaging between Server and Client.
         /// </summary>
         public const String NO_PARALLEL_EXECUTION_OF_XML_REPORTS_PREFIX = "###NO_PARALLEL_XMLREPORTS###";
+
+        /// <summary>this message is returned by the server after successful login, if the user is required to change the password</summary>
+        public const String LOGINMUSTCHANGEPASSWORD = "LOGINMUSTCHANGEPASSWORD";
 
         #region readonly Fields   (Used for 'constants' whose value can be translated so that they are meaningful to the users in their language)
 

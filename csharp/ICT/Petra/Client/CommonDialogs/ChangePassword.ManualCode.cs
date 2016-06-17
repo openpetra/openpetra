@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, peters
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -50,11 +50,13 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <summary>
         /// the username of the user that this password is for
         /// </summary>
-        public string UserName { get; set; }
+        public string UserName {
+            get; set;
+        }
         /// <summary>
         /// the old password. directly after login, we still have the password, the user does not need to enter it again
         /// </summary>
-        public string OldPassword { 
+        public string OldPassword {
             set
             {
                 if (value.Length > 0)
@@ -69,7 +71,9 @@ namespace Ict.Petra.Client.CommonDialogs
         /// <summary>
         /// do we want to enforce the change of the password
         /// </summary>
-        public bool PasswordNeedsChanged { get; set; }
+        public bool PasswordNeedsChanged {
+            get; set;
+        }
 
         private void RunOnceOnActivationManual()
         {
@@ -94,10 +98,10 @@ namespace Ict.Petra.Client.CommonDialogs
                 return;
             }
 
-            if (txtNewPassword.Text == this.txtOldPassword.Text && this.PasswordNeedsChanged)
+            if ((txtNewPassword.Text == this.txtOldPassword.Text) && this.PasswordNeedsChanged)
             {
                 MessageBox.Show(String.Format(Catalog.GetString(
-                        "This password is the same as your old password! Please enter a new password."), UserName),
+                            "This password is the same as your old password! Please enter a new password."), UserName),
                     MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -125,7 +129,7 @@ namespace Ict.Petra.Client.CommonDialogs
             }
 
             MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}."), UserName),
-                            MessageTitle);
+                MessageTitle);
             this.DialogResult = DialogResult.OK;
         }
     }
