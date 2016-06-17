@@ -70,7 +70,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool ADontRecordNewDataValidationRun = true);
     }
 
-    public partial class TUC_RecurringGiftBatches : IUC_RecurringGiftBatches
+    public partial class TUC_RecurringGiftBatches : IUC_RecurringGiftBatches, IBoundImageEvaluator
     {
         private Int32 FLedgerNumber;
 
@@ -446,6 +446,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
+
+            // Add red triangle to inactive accounts
+            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn, "CostCentre", BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn, "AccountCode", BoundGridImage.DisplayImageEnum.Inactive);
         }
 
         /// <summary>
@@ -956,5 +960,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Cursor = Cursors.Default;
             }
         }
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(string AContext, DataRowView ADataRowView)
+        {
+            ARecurringGiftBatchRow row = (ARecurringGiftBatchRow)ADataRowView.Row;
+
+            switch (AContext)
+            {
+                case "AccountCode":
+                    return !FAccountAndCostCentreLogicObject.AccountIsActive(row.BankAccountCode);
+
+                case "CostCentre":
+                    return !FAccountAndCostCentreLogicObject.CostCentreIsActive(row.BankCostCentre);
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

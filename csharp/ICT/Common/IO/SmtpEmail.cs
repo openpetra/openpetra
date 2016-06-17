@@ -26,6 +26,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mail;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Net.Security;
 using Ict.Common;
@@ -50,6 +51,9 @@ namespace Ict.Common.IO
     /// </summary>
     public class TSmtpSender
     {
+        /// <summary>todoComment</summary>
+        public static readonly String EMAIL_USER_LOGIN_NAME = "IUSROPEMAIL";
+
         private SmtpClient FSmtpClient;
 
         /// <summary>
@@ -156,6 +160,8 @@ namespace Ict.Common.IO
         {
             //Set up SMTP client
             String EmailDirectory = "";
+            String LoginUsername = null;
+            String LoginPassword = null;
 
             FErrorStatus = "";
 
@@ -164,12 +170,22 @@ namespace Ict.Common.IO
                 EmailDirectory = TAppSettingsManager.GetValue("OutputEMLToDirectory");
             }
 
+            if (TAppSettingsManager.GetBoolean("SmtpRequireCredentials", false) == true)
+            {
+                // We give the client the details of the fixed OP Email user.
+                // This is NOT retrieved from the config file but is stored in code.
+                // The password is converted from a byte array (rather than being compiled into this DLL as plain Unicode text).
+                // The username and password are stored in different DLL's. (Not brilliant security but a start.)
+                LoginUsername = EMAIL_USER_LOGIN_NAME;
+                LoginPassword = Encoding.ASCII.GetString(PasswordHelper.EmailUserPassword);
+            }
+
             Initialise(
                 TAppSettingsManager.GetValue("SmtpHost"),
                 TAppSettingsManager.GetInt16("SmtpPort", 25),
                 TAppSettingsManager.GetBoolean("SmtpEnableSsl", false),
-                null,
-                null,
+                LoginUsername,
+                LoginPassword,
                 EmailDirectory);
         }
 

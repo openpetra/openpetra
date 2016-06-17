@@ -512,6 +512,21 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Adds an image annotation to the cells in the specified column of the grid.
+        /// </summary>
+        /// <param name="ACallerForm">The form or user control that is hosting the grid</param>
+        /// <param name="AImageColumnIndex">The column index that will display the optional annotation</param>
+        /// <param name="AColumnContext">An arbitrary context string that identifies the column when more than one column is annotated</param>
+        /// <param name="AImageEnum">The image selected from one of the available enumerated items</param>
+        public void AddAnnotationImage(IBoundImageEvaluator ACallerForm,
+            int AImageColumnIndex,
+            string AColumnContext,
+            BoundGridImage.DisplayImageEnum AImageEnum)
+        {
+            this.Columns[AImageColumnIndex].DataCell.Model.AddModel(new BoundGridImage(ACallerForm, AColumnContext, AImageEnum));
+        }
+
         /*
          * Custom properties follow
          */

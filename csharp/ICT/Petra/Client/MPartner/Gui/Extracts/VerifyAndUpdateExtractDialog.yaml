@@ -1,0 +1,37 @@
+RootNode:
+    BaseYaml: ../../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Verify and Update Extract
+    Namespace: Ict.Petra.Client.MPartner.Gui.Extracts
+    FormType: dialog
+    Template: window
+    WindowWidth: 650
+    WindowHeight: 230
+    
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
+    Controls:
+        pnlDialogContent:
+            Controls:
+                Row0: [lblExtractNameAndCreator]
+                Row1: [lblAction1]
+                Row2: [lblAction2]
+                Row3: [lblAction3]
+                
+        lblExtractNameAndCreator: {Height=30, Align=Top, Stretch=horizontally}
+            
+        lblAction1:
+            Width: 600
+            Height: 40
+            Stretch: horizontally
+            Text: Are you sure that you want to update all the Partner address and location information contained in extract 'ZZZ'?
+        lblAction2:
+            Width: 600
+            Height: 40
+            Stretch: horizontally
+            Text: This extract contains ZZZ partners.  Some Partners may be removed if, for example, they have an address that is no longer valid.
+        lblAction3:
+            Text: Changes to the extract cannot be undone.
+        btnOK: {Label=Yes}
+        btnCancel: {Label=No}
+

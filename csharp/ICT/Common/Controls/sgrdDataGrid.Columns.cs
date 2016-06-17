@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using DevAge.Drawing;
@@ -274,6 +276,111 @@ namespace Ict.Common.Controls
             return FDataCellSelected;
         }
     }
+    #endregion
+
+    #region BoundImage
+
+    /// <summary>
+    /// An interface for dealing with SourceGrid images in columns
+    /// </summary>
+    public interface IBoundImageEvaluator
+    {
+        /// <summary>
+        /// This method gets called to determine whether the grid cell should have an image displayed or not
+        /// </summary>
+        /// <param name="AContext">The invocation context that was used in the <see cref="BoundGridImage"/> constructor</param>
+        /// <param name="ADataRowView">The row containing the cell that will get the image</param>
+        /// <returns>True if an image should be displayed</returns>
+        bool EvaluateBoundImage(string AContext, DataRowView ADataRowView);
+    }
+
+    /// <summary>
+    /// Class that encapsulates code dealing with data bound images in grid cells
+    /// </summary>
+    public class BoundGridImage : IImage
+    {
+        /// <summary>
+        /// Available bound images
+        /// </summary>
+        public enum DisplayImageEnum
+        {
+            /// <summary>
+            /// The image for an inactive item
+            /// </summary>
+            Inactive
+        };
+
+        // Local copies of constructor parameters
+        private IBoundImageEvaluator FCallerForm;
+        private string FCallerContext;
+        private DisplayImageEnum FDisplayImageEnum;
+
+        // The actual image to display
+        private System.Drawing.Image FDisplayImage = null;
+
+        /// <summary>
+        /// Main Constructor
+        /// </summary>
+        /// <param name="ACallerForm">A reference to the caller form.  Usually use 'this'.  It must implement the <see cref="IBoundImageEvaluator"/> interface.</param>
+        /// <param name="AContext">A string that identifies the column context.  Can be empty text if the grid only has one column with an image.</param>
+        /// <param name="AImageEnum">One of the available images that can be displayed.</param>
+        public BoundGridImage(IBoundImageEvaluator ACallerForm, String AContext, DisplayImageEnum AImageEnum)
+        {
+            FCallerForm = ACallerForm;
+            FCallerContext = AContext;
+            FDisplayImageEnum = AImageEnum;
+
+            string path = TAppSettingsManager.GetValue("Resource.Dir", string.Empty, true);
+
+            if (path.Length > 0)
+            {
+                string filename = string.Empty;
+
+                try
+                {
+                    switch (FDisplayImageEnum)
+                    {
+                        // At present we only have the Inactive triangle but if there are more images later add them to this switch statement
+
+                        case DisplayImageEnum.Inactive:
+                            filename = "RedTriangle.png";
+                            break;
+                    }
+
+                    FDisplayImage = System.Drawing.Image.FromFile(Path.Combine(path, filename));
+                }
+                catch (FileNotFoundException)
+                {
+                    TLogging.Log(string.Format("Could not find the file {0} in folder {1}", filename, path));
+                }
+                catch (Exception ex)
+                {
+                    TLogging.Log(string.Format("Error opening resource file {0}: {1}", filename, ex.Message));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Implementation of the required IImage method
+        /// </summary>
+        /// <param name="cellContext">The cell for which an image is desired</param>
+        /// <returns>The image, or null for no image</returns>
+        public System.Drawing.Image GetImage(CellContext cellContext)
+        {
+            SourceGrid.DataGrid grid = (SourceGrid.DataGrid)cellContext.Grid;
+            DataRowView row = (DataRowView)grid.Rows.IndexToDataSourceRow(cellContext.Position.Row);
+
+            if (FCallerForm.EvaluateBoundImage(FCallerContext, row))
+            {
+                // The caller wants the image to be displayed
+                return FDisplayImage;
+            }
+
+            // No image displayed
+            return null;
+        }
+    }
+
     #endregion
 
     #region TToolTipModel

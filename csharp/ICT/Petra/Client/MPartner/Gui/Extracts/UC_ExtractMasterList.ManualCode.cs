@@ -425,14 +425,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             if (!WarnIfNotSingleSelection(msgTitle) && (GetSelectedDetailRow() != null))
             {
-                if (MessageBox.Show(
-                        string.Format(Catalog.GetString(
-                                "Are you sure that you want to update all the Partner address and location information contained in extract '{0}'?{1}{1}"),
-                            GetSelectedDetailRow().ExtractName, Environment.NewLine) +
-                        string.Format(Catalog.GetString("This extract contains {0} partners.  "), GetSelectedDetailRow().KeyCount) +
-                        Catalog.GetString("Some Partners may be removed if, for example, they have an address that is no longer valid.  ") +
-                        Catalog.GetString("Changes to the extract cannot be undone."),
-                        msgTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
+                TFrmVerifyAndUpdateExtractDialog dialog = new TFrmVerifyAndUpdateExtractDialog(FPetraUtilsObject.GetForm());
+                string extractTitle = GetSelectedDetailRow().ExtractName;
+
+                if (GetSelectedDetailRow().IsCreatedByNull() == false)
+                {
+                    extractTitle += string.Format(" - (Created by {0})", GetSelectedDetailRow().CreatedBy);
+                }
+
+                dialog.SetExtractNameAndDetails(extractTitle, GetSelectedDetailRow().ExtractName, GetSelectedDetailRow().KeyCount);
+
+                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     TFrmExtractMaster.VerifyAndUpdateExtract(FindForm(), GetSelectedDetailRow().ExtractId);
                 }

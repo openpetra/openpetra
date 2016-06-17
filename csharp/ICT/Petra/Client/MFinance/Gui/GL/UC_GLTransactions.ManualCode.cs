@@ -50,7 +50,7 @@ using SourceGrid;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    public partial class TUC_GLTransactions
+    public partial class TUC_GLTransactions : IBoundImageEvaluator
     {
         private bool FLoadCompleted = false;
         private Int32 FLedgerNumber = -1;
@@ -1352,6 +1352,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
             grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
 
+            // Add red triangle to inactive accounts
+            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn, "CostCentre", BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn, "AccountCode", BoundGridImage.DisplayImageEnum.Inactive);
+
             //Prepare Analysis attributes grid to highlight inactive analysis codes
             // Create a cell view for special conditions
             SourceGrid.Cells.Views.Cell strikeoutCell2 = new SourceGrid.Cells.Views.Cell();
@@ -2380,5 +2384,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(string AContext, DataRowView ADataRowView)
+        {
+            ATransactionRow row = (ATransactionRow)ADataRowView.Row;
+
+            switch (AContext)
+            {
+                case "AccountCode":
+                    return !AccountIsActive(row.AccountCode);
+
+                case "CostCentre":
+                    return !CostCentreIsActive(row.CostCentreCode);
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }
