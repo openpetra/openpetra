@@ -1189,7 +1189,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            TFrmSettingsLoad SettingsDialog = new TFrmSettingsLoad(FStoredSettings);
+            // a bit cumbersome but this is a current way to find out if dialog is called to produce report or extract
+            Boolean CalledFromExtract = false;
+            ToolStrip tbrMain = (ToolStrip)(this.FWinForm.Controls.Find("tbrMain", false)[0]);
+            ToolStripItem[] CancelBtns = tbrMain.Items.Find("tbbGenerateExtract", true);
+
+            if (CancelBtns.Length > 0)
+            {
+                if (CancelBtns[0].Visible)
+                {
+                    CalledFromExtract = true;
+                }
+            }
+
+            TFrmSettingsLoad SettingsDialog = new TFrmSettingsLoad(FStoredSettings, CalledFromExtract);
 
             if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
