@@ -1847,9 +1847,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             if (CanImport)
             {
-                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+                try
+                {
+                    PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+                    Res = TSubmitChangesResult.scrOK;
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogException(ex, "ImportExport.WebConnectors_CommitChanges");
+                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                }
+            }
 
-                Res = TSubmitChangesResult.scrOK;
+            if (CanImport && (Res == TSubmitChangesResult.scrError))
+            {
+                // We got an exception!
+                string msg = Catalog.GetString("A server error occurred during import of {0} {1}.  ");
+                msg += Catalog.GetString("More information is available in the server log file.  No data was imported for this row.");
+
+                AddVerificationResult(
+                    ref ReferenceResults,
+                    String.Format(msg,
+                        ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
+                        ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName),
+                    TResultSeverity.Resv_Critical);
             }
 
             if (((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass == "")

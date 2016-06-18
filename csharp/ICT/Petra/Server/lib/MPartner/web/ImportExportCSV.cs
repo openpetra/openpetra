@@ -215,7 +215,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     // we have an existing family partner record
                     IsNewRecord = false;
-                    newPartner.ItemArray = PartnerTable.Rows[0].ItemArray;
+                    newPartner.ItemArray = (object[])PartnerTable.Rows[0].ItemArray.Clone();
                     newPartner.AcceptChanges();
                 }
                 else
@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if (FamilyTable.Count > 0)
                 {
                     // we have an existing family partner record
-                    newFamily.ItemArray = FamilyTable.Rows[0].ItemArray;
+                    newFamily.ItemArray = (object[])FamilyTable.Rows[0].ItemArray.Clone();
                     newFamily.AcceptChanges();
                 }
             }
@@ -435,7 +435,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     // we have an existing person partner record
                     IsNewRecord = false;
-                    newPartner.ItemArray = PartnerTable.Rows[0].ItemArray;
+                    newPartner.ItemArray = (object[])PartnerTable.Rows[0].ItemArray.Clone();
                     newPartner.AcceptChanges();
                 }
                 else
@@ -473,7 +473,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 if (PersonTable.Count > 0)
                 {
                     // we have an existing person partner record
-                    newPerson.ItemArray = PersonTable.Rows[0].ItemArray;
+                    newPerson.ItemArray = (object[])PersonTable.Rows[0].ItemArray.Clone();
                     newPerson.AcceptChanges();
                 }
             }
@@ -625,7 +625,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     IsNewApplication = false;
 
                     // we have an existing application for this event, now find the general application record for it
-                    ShortTermRow.ItemArray = ShortTermTable.Rows[0].ItemArray;
+                    ShortTermRow.ItemArray = (object[])ShortTermTable.Rows[0].ItemArray.Clone();
 
                     GenAppTable = PmGeneralApplicationAccess.LoadByPrimaryKey(APartnerKey,
                         ShortTermRow.ApplicationKey,
@@ -634,7 +634,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (GenAppTable.Count > 0)
                     {
-                        GenAppRow.ItemArray = GenAppTable.Rows[0].ItemArray;
+                        GenAppRow.ItemArray = (object[])GenAppTable.Rows[0].ItemArray.Clone();
                     }
                     else
                     {
@@ -803,7 +803,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     IsNewRecord = false;
                     // we have an existing passport record
-                    NewRow.ItemArray = PassportTable.Rows[0].ItemArray;
+                    NewRow.ItemArray = (object[])PassportTable.Rows[0].ItemArray.Clone();
                 }
                 else
                 {
@@ -859,7 +859,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     IsNewRecord = false;
                     // we have an existing special needs record
-                    NewRow.ItemArray = SpecialNeedTable.Rows[0].ItemArray;
+                    NewRow.ItemArray = (object[])SpecialNeedTable.Rows[0].ItemArray.Clone();
                 }
                 else
                 {
@@ -1049,7 +1049,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             newRow.PartnerClass = APartnerClass;
             newRow.InputPartnerKey = 0;
             newRow.OutputPartnerKey = APartnerKey;
-            newRow.ImportStatus = string.Empty;
+            newRow.ImportStatus = "N";
+            newRow.PartnerShortName = string.Empty;
             newRow.ImportID = string.Empty;
 
             if (AIsFromFile)
@@ -1067,6 +1068,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     // American spelling
                     newRow.ImportID = ANode.Attributes["EnrollmentID"].Value;
+                }
+
+                if ((ANode.Attributes["FirstName"] != null) && (ANode.Attributes["FamilyName"] != null))
+                {
+                    string title = string.Empty;
+
+                    if (ANode.Attributes["Title"] != null)
+                    {
+                        title = ANode.Attributes["Title"].Value;
+                    }
+
+                    newRow.PartnerShortName =
+                        Calculations.DeterminePartnerShortName(ANode.Attributes["FamilyName"].Value, title, ANode.Attributes["FirstName"].Value);
                 }
 
                 long key;

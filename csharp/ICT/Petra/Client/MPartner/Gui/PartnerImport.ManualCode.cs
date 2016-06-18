@@ -1363,6 +1363,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
+            DoFinishOptions();
+
             // restore dataset so import can be restarted from scratch
             FMainDS.Clear();
             FMainDS.Merge(FMainDSBackup.Copy());
@@ -2508,15 +2510,22 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                 }
 
-                MessageBox.Show(ResultString, Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            else
-            {
-                // new record has been created, now load the next record
-                if (StepAfterImport)
+                if (ResultString.Length > 0)
                 {
-                    NextRecord();
+                    MessageBox.Show(ResultString, Catalog.GetString("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+
+                if (gotOutputRow)
+                {
+                    // Set the import status to Error
+                    outputDataRow.ImportStatus = "E";
+                }
+            }
+
+            // new record has been created, now load the next record
+            if (StepAfterImport)
+            {
+                NextRecord();
             }
 
             return NewPartnerKey;
@@ -2761,7 +2770,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
                     }
 
-                    if ((row.ImportStatus == string.Empty) || (row.ImportStatus == "E"))
+                    if ((row.ImportStatus == "N") || (row.ImportStatus == "E"))
                     {
                         // The row was skipped, the import was stopped, or there was an error
                         wasImported = "no";
@@ -2810,7 +2819,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     continue;
                 }
 
-                if ((outputDataRow.ImportStatus == string.Empty) || (outputDataRow.ImportStatus == "E") || (outputDataRow.OutputPartnerKey <= 0))
+                if ((outputDataRow.ImportStatus == "N") || (outputDataRow.ImportStatus == "E") || (outputDataRow.OutputPartnerKey <= 0))
                 {
                     badRows++;
                 }
