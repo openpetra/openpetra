@@ -1054,126 +1054,57 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void SetupExtraGridFunctionality()
         {
-            DataTable TempTbl1 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
 
-            if ((TempTbl1 == null) || (TempTbl1.Rows.Count == 0))
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreListTable, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            if ((CostCentreListTable == null) || (CostCentreListTable.Rows.Count == 0))
             {
                 FCostCentreList = null;
             }
             else
             {
-                FCostCentreList = (ACostCentreTable)TempTbl1;
+                FCostCentreList = (ACostCentreTable)CostCentreListTable;
             }
 
-            DataTable TempTbl2 = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
 
-            if ((TempTbl2 == null) || (TempTbl2.Rows.Count == 0))
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountListTable, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            if ((AccountListTable == null) || (AccountListTable.Rows.Count == 0))
             {
                 FAccountList = null;
             }
             else
             {
-                FAccountList = (AAccountTable)TempTbl2;
+                FAccountList = (AAccountTable)AccountListTable;
             }
-
-            //Prepare grid to highlight inactive accounts/cost centres
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                if (itemRow != null)
-                {
-                    DataRowView row = (DataRowView)itemRow;
-                    string accountCode = row[ARecurringTransactionTable.ColumnAccountCodeId].ToString();
-                    return !AccountIsActive(accountCode);
-                }
-                else
-                {
-                    return false;
-                }
-            };
-
-            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                if (itemRow != null)
-                {
-                    DataRowView row = (DataRowView)itemRow;
-                    string costCentreCode = row[ARecurringTransactionTable.ColumnCostCentreCodeId].ToString();
-                    return !CostCentreIsActive(costCentreCode);
-                }
-                else
-                {
-                    return false;
-                }
-            };
 
             //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 1;
             int indexOfAccountCodeDataColumn = 2;
 
-            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
-
             // Add red triangle to inactive accounts
             grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn, "CostCentre", BoundGridImage.DisplayImageEnum.Inactive);
             grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn, "AccountCode", BoundGridImage.DisplayImageEnum.Inactive);
 
-            //Prepare Analysis attributes grid to highlight inactive analysis codes
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell2 = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell2.Font = new System.Drawing.Font(grdAnalAttributes.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAnalysisCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
-            conditionAnalysisCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
-            {
-                if (itemRow2 != null)
-                {
-                    DataRowView row2 = (DataRowView)itemRow2;
-                    string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                    return !FAnalysisAttributesLogic.AnalysisCodeIsActive(cmbDetailAccountCode.GetSelectedString(),
-                        FCacheDS.AAnalysisAttribute,
-                        analysisCode);
-                }
-                else
-                {
-                    return false;
-                }
-            };
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAnalysisAttributeValueActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
-            conditionAnalysisAttributeValueActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
-            {
-                if (itemRow2 != null)
-                {
-                    DataRowView row2 = (DataRowView)itemRow2;
-                    string analysisCode = row2[ARecurringTransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                    string analysisAttributeValue = row2[ARecurringTransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
-                    return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues,
-                        FCacheDS.AFreeformAnalysis,
-                        analysisCode,
-                        analysisAttributeValue);
-                }
-                else
-                {
-                    return false;
-                }
-            };
-
-            //Add conditions to columns
+            //Add conditions to columns of Analysis Attributes grid
             int indexOfAnalysisCodeColumn = 0;
             int indexOfAnalysisAttributeValueColumn = 1;
 
-            grdAnalAttributes.Columns[indexOfAnalysisCodeColumn].Conditions.Add(conditionAnalysisCodeActive);
-            grdAnalAttributes.Columns[indexOfAnalysisAttributeValueColumn].Conditions.Add(conditionAnalysisAttributeValueActive);
+            // Add red triangle to inactive analysis type codes and their values
+            grdAnalAttributes.AddAnnotationImage(this, indexOfAnalysisCodeColumn, "AnalysisTypeCode", BoundGridImage.DisplayImageEnum.Inactive);
+            grdAnalAttributes.AddAnnotationImage(this,
+                indexOfAnalysisAttributeValueColumn,
+                "AnalysisAttributeValue",
+                BoundGridImage.DisplayImageEnum.Inactive);
         }
 
         private bool AccountIsActive(string AAccountCode = "")
@@ -2037,15 +1968,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>True if the image should be displayed in the current context</returns>
         public bool EvaluateBoundImage(string AContext, DataRowView ADataRowView)
         {
-            ARecurringTransactionRow row = (ARecurringTransactionRow)ADataRowView.Row;
-
             switch (AContext)
             {
                 case "AccountCode":
+                    ARecurringTransactionRow row = (ARecurringTransactionRow)ADataRowView.Row;
                     return !AccountIsActive(row.AccountCode);
 
                 case "CostCentre":
-                    return !CostCentreIsActive(row.CostCentreCode);
+                    ARecurringTransactionRow row2 = (ARecurringTransactionRow)ADataRowView.Row;
+                    return !CostCentreIsActive(row2.CostCentreCode);
+
+                case "AnalysisTypeCode":
+                    ARecurringTransAnalAttribRow row3 = (ARecurringTransAnalAttribRow)ADataRowView.Row;
+                    return !FAnalysisAttributesLogic.AnalysisCodeIsActive(cmbDetailAccountCode.GetSelectedString(),
+                    FCacheDS.AAnalysisAttribute,
+                    row3.AnalysisTypeCode);
+
+                case "AnalysisAttributeValue":
+                    ARecurringTransAnalAttribRow row4 = (ARecurringTransAnalAttribRow)ADataRowView.Row;
+                    return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues,
+                    FCacheDS.AFreeformAnalysis,
+                    row4.AnalysisTypeCode,
+                    row4.AnalysisAttributeValue);
             }
 
             return false;

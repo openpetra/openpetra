@@ -36,7 +36,6 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Client.CommonControls;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -417,35 +416,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetupExtraGridFunctionality()
         {
-            //Prepare grid to highlight inactive accounts/cost centres
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string accountCode = row[ARecurringGiftBatchTable.ColumnBankAccountCodeId].ToString();
-                return !FAccountAndCostCentreLogicObject.AccountIsActive(accountCode);
-            };
-
-            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string costCentreCode = row[ARecurringGiftBatchTable.ColumnBankCostCentreId].ToString();
-                return !FAccountAndCostCentreLogicObject.CostCentreIsActive(costCentreCode);
-            };
-
             //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 5;
             int indexOfAccountCodeDataColumn = 6;
-
-            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
 
             // Add red triangle to inactive accounts
             grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn, "CostCentre", BoundGridImage.DisplayImageEnum.Inactive);
