@@ -58,6 +58,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private static Int32 FLocationKey = -1;
         private static TVerificationResultCollection ResultsCol;
         private static String ResultsContext;
+        private static Int32 FMostRecentImportID = 0;
 
         private static void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
         {
@@ -111,6 +112,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             ResultsContext = "CSV Import Family";
                             PartnerKey = CreateNewFamily(ANode, FamilyForPerson, out LocationKey, ref ResultDS, ReadTransaction);
                             CreateSpecialTypes(ANode, PartnerKey, "SpecialTypeFamily_", ref ResultDS, ReadTransaction);
+                            CreateOutputData(ANode, PartnerKey, MPartnerConstants.PARTNERCLASS_FAMILY,
+                                (PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY), ref ResultDS);
                         }
 
                         if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
@@ -124,6 +127,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                             CreateContacts(ANode, PersonKey, ref ResultDS, "_2", ReadTransaction);
                             CreatePassport(ANode, PersonKey, ref ResultDS, ReadTransaction);
                             CreateSpecialNeeds(ANode, PersonKey, ref ResultDS, ReadTransaction);
+                            CreateOutputData(ANode, PersonKey, PartnerClass, true, ref ResultDS);
                         }
 
                         ANode = ANode.NextSibling;
@@ -1031,5 +1035,53 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             return "";
         }
+
+        #region Output CSV Data
+
+        private static void CreateOutputData(XmlNode ANode,
+            Int64 APartnerKey,
+            string APartnerClass,
+            bool AIsFromFile,
+            ref PartnerImportExportTDS AMainDS)
+        {
+            PartnerImportExportTDSOutputDataRow newRow = AMainDS.OutputData.NewRowTyped();
+
+            newRow.IsFromFile = AIsFromFile;
+            newRow.PartnerClass = APartnerClass;
+            newRow.OutputPartnerKey = APartnerKey;
+            newRow.ImportStatus = "";
+
+            if (ANode.Attributes["EnrollmentID"] != null)
+            {
+                newRow.ImportID = ANode.Attributes["EnrollmentID"].Value;
+            }
+            else
+            {
+                FMostRecentImportID++;
+                newRow.ImportID = "OPIID" + FMostRecentImportID.ToString();
+            }
+
+            if (AIsFromFile)
+            {
+                if (APartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                {
+                    if ((ANode.Attributes["FamilyPartnerKey"] != null) && (ANode.Attributes["FamilyPartnerKey"].Value.Length > 0))
+                    {
+                        newRow.InputPartnerKey = Convert.ToInt64(ANode.Attributes["FamilyPartnerKey"].Value);
+                    }
+                }
+                else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    if ((ANode.Attributes["PersonPartnerKey"] != null) && (ANode.Attributes["PersonPartnerKey"].Value.Length > 0))
+                    {
+                        newRow.InputPartnerKey = Convert.ToInt64(ANode.Attributes["PersonPartnerKey"].Value);
+                    }
+                }
+            }
+
+            AMainDS.OutputData.Rows.Add(newRow);
+        }
+
+        #endregion
     }
 }

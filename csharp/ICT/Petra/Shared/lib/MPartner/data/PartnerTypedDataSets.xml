@@ -511,7 +511,17 @@
     <Table sqltable="um_job_qualification"/>
     <Table sqltable="pc_building"/>
     <Table sqltable="pc_room"/>
-  </DataSet>
+    <!-- Custom table that holds import process information about each file row -->
+    <CustomTable name="OutputData">
+      <CustomField name="ImportID" type="string"/>
+      <CustomField name="IsFromFile" type="bool"/>
+      <CustomField name="InputPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="OutputPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="PartnerClass" type="string"/>
+      <CustomField name="PartnerShortName" type="string"/>
+      <CustomField name="ImportStatus" type="string"/>
+    </CustomTable>
+    </DataSet>
 
   <DataSet name="ExtractTDS">
     <Table sqltable="m_extract_master"/>

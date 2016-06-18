@@ -670,6 +670,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 true),
                             FTotalNumberOfRecords));
                     SaveLogFile();
+                    DoFinishOptions();
                     SetControlsIdle();
 
                     FMainDS.Clear();
@@ -1813,6 +1814,17 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             PartnerImportExportTDS NewPartnerDS = new PartnerImportExportTDS();
+            PartnerImportExportTDSOutputDataRow outputDataRow = null;
+            bool gotOutputRow = false;
+
+            FMainDS.OutputData.DefaultView.RowFilter = string.Format("{0}={1}",
+                PartnerImportExportTDSOutputDataTable.GetOutputPartnerKeyDBName(), APartnerRow.PartnerKey);
+
+            if (FMainDS.OutputData.DefaultView.Count > 0)
+            {
+                outputDataRow = (PartnerImportExportTDSOutputDataRow)FMainDS.OutputData.DefaultView[0].Row;
+                gotOutputRow = true;
+            }
 
             NewPartnerDS.PPartner.ImportRow(APartnerRow);
             Int64 OrigPartnerKey = APartnerRow.PartnerKey;
@@ -1852,6 +1864,21 @@ namespace Ict.Petra.Client.MPartner.Gui
                 NewPartnerDS.PPartner[0].PartnerKey = NewPartnerKey;
             }
 
+            if (gotOutputRow)
+            {
+                PPartnerRow newPartner = NewPartnerDS.PPartner[0];
+                outputDataRow.OutputPartnerKey = newPartner.PartnerKey;
+
+                if (UpdateExistingRecord)
+                {
+                    outputDataRow.ImportStatus = "U";       // Updated
+                }
+                else
+                {
+                    outputDataRow.ImportStatus = "A";       // Added
+                }
+            }
+
             if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_CHURCH)
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PChurch, FMainDS.PChurch,
@@ -1873,20 +1900,44 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 ImportRecordsByPartnerKey(NewPartnerDS.PFamily, FMainDS.PFamily,
                     PFamilyTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
+
+                if (gotOutputRow)
+                {
+                    PFamilyRow newFamily = (PFamilyRow)NewPartnerDS.PFamily.Rows[0];
+                    outputDataRow.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName,
+                        newFamily.Title,
+                        newFamily.FirstName);
+                }
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
                 ImportRecordsByPartnerKey(NewPartnerDS.PPerson, FMainDS.PPerson,
                     PPersonTable.GetPartnerKeyDBName(), OrigPartnerKey, NewPartnerKey, UpdateExistingRecord);
                 NewPartnerDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}", PPersonTable.GetPartnerKeyDBName(), NewPartnerKey);
-                Int64 RelatedFamilyKey = ((PPersonRow)NewPartnerDS.PPerson.DefaultView[0].Row).FamilyKey;
+                PPersonRow newPerson = (PPersonRow)NewPartnerDS.PPerson.DefaultView[0].Row;
+
+                if (gotOutputRow)
+                {
+                    outputDataRow.PartnerShortName = Calculations.DeterminePartnerShortName(newPerson.FamilyName,
+                        newPerson.Title,
+                        newPerson.FirstName);
+                }
 
                 // If there's an associated PFamily record that I've not imported yet, I could try to do that now,
                 // but it's problematic because it might end up getting imported twice.
                 // Anyway, I should not come to here because the family should have been imported first.
+                Int64 RelatedFamilyKey = newPerson.FamilyKey;
+
                 if (RelatedFamilyKey < 0) // There's a related family that's not been imported
                 {
                     AddStatus("Import Problem: PPerson record with no related PFamily.");
+
+                    if (gotOutputRow)
+                    {
+                        outputDataRow.OutputPartnerKey = 0;
+                        outputDataRow.ImportStatus = "E";       // Error
+                    }
+
                     return 0;
                 }
             }
@@ -2071,6 +2122,115 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             CreateOrUpdatePartner(FCurrentPartner, true);
+        }
+
+        private void DoFinishOptions()
+        {
+            if (string.Compare(Path.GetExtension(txtFilename.Text), ".csv", true) != 0)
+            {
+                // We only have options when the file format was CSV
+                return;
+            }
+
+            // Show the Finish Options dialog
+            TFrmPartnerImportFinishOptionsDialog dialog = new TFrmPartnerImportFinishOptionsDialog(this);
+
+            // CSV File
+            string outputCSVPath = Path.Combine(
+                Path.GetDirectoryName(Path.GetFullPath(txtFilename.Text)),
+                Path.GetFileNameWithoutExtension(Path.GetFullPath(txtFilename.Text)) + "-out.csv");
+
+            //Extracts
+            string suggestedName = Path.GetFileNameWithoutExtension(txtFilename.Text);
+            string suggestedDescription = "Imported on " + DateTime.Today.ToShortDateString() + " at " + DateTime.Now.ToShortTimeString();
+
+            dialog.SetParameters(suggestedName, suggestedDescription, outputCSVPath);
+            dialog.StartPosition = FormStartPosition.CenterParent;
+
+            if (dialog.ShowDialog() == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            // Is there something to do?
+            bool createCSVFile, createExtract, includeFamiliesInFile, includeImportIDsInFile;
+            string extractName, extractDescription, csvOutFilePath;
+            dialog.GetResults(out createCSVFile, out includeFamiliesInFile, out includeImportIDsInFile, out csvOutFilePath,
+                out createExtract, out extractName, out extractDescription);
+
+            if ((createCSVFile == false) && (createExtract == false))
+            {
+                // Nothing to do
+                return;
+            }
+
+            if (createCSVFile)
+            {
+                CreateOutputCSVFile(csvOutFilePath, includeFamiliesInFile, includeImportIDsInFile);
+            }
+
+            if (createExtract)
+            {
+                CreateOutputExtract(extractName, extractDescription);
+            }
+
+            string msgTitle = Catalog.GetString("Import Options");
+
+            MessageBox.Show(Catalog.GetString(
+                    "The selected Finish Actions have been completed."), msgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        /// <summary>
+        /// Call this method to check if the extract name already exists
+        /// </summary>
+        /// <param name="AExtractName"></param>
+        /// <returns>True of the name does not exist</returns>
+        public bool ValidateExtractName(string AExtractName)
+        {
+            return TRemote.MPartner.Partner.WebConnectors.ExtractExists(AExtractName) == false;
+        }
+
+        private void CreateOutputCSVFile(string APath, bool AIncludeFamiliesOfPersons, bool AIncludeImportIDs)
+        {
+            using (StreamWriter sw = new StreamWriter(APath))
+            {
+                string header = string.Empty;
+
+                if (AIncludeImportIDs)
+                {
+                    header += "\"EnrollmentID\";";
+                }
+
+                header += "\"PartnerClass\";\"PartnerKey\";\"PartnerShortName\";\"ImportStatus\"";
+                sw.WriteLine(header);
+
+                for (int i = 0; i < FMainDS.OutputData.Rows.Count; i++)
+                {
+                    PartnerImportExportTDSOutputDataRow row = (PartnerImportExportTDSOutputDataRow)FMainDS.OutputData.Rows[i];
+
+                    if ((row.IsFromFile == false) && (AIncludeFamiliesOfPersons == false))
+                    {
+                        continue;
+                    }
+
+                    string outText = string.Empty;
+
+                    if (AIncludeImportIDs)
+                    {
+                        outText += string.Format("\"{0}\";", row.ImportID);
+                    }
+
+                    outText += string.Format("\"{0}\";\"{1}\";\"{2}\";\"{3}\"", row.PartnerClass, row.OutputPartnerKey.ToString(
+                            "0000000000"), row.PartnerShortName, row.ImportStatus);
+                    sw.WriteLine(outText);
+                }
+
+                sw.Close();
+            }
+        }
+
+        private void CreateOutputExtract(string AExtractName, string AExtractDescription)
+        {
         }
     }
 }
