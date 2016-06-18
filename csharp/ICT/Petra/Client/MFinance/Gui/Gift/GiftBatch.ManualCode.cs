@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
 
@@ -173,8 +174,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
-                //Enable below if want code to run before standard Save() is executed
+                //Enable below if want code to run before and after standard Save() is executed
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(FPetraUtilsObject_DataSavingValidated);
             }
         }
 
@@ -228,10 +230,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction)
         {
-            GetDataFromControls();
+            if (AAction != TExtraGiftBatchChecks.GiftBatchAction.CANCELLING)
+            {
+                GetDataFromControls();
 
-            // first alert the user to any recipients who are Ex-Workers
-            if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+                // first alert the user to any recipients who are Ex-Workers
+                if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
+                {
+                    return SaveChanges();
+                }
+            }
+            else
             {
                 return SaveChanges();
             }
@@ -262,6 +271,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FNewDonorWarning)
             {
                 FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
+            }
+        }
+
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
+        {
+            //Check if the user has made a Bank Cost Centre or Account Code inactive
+            // on saving
+            bool ActionConfirmed = false;
+
+            if (!ucoBatches.AllowInactiveFieldValues(ref ActionConfirmed, false))
+            {
+                e.Cancel = true;
             }
         }
 

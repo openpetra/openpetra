@@ -574,6 +574,15 @@ namespace {#NAMESPACE}
 
 		if (ValidateAllData(false, TErrorProcessingMode.Epm_All))
 		{
+			// Fire the DataSavingValidated event, which is the last chance to cancel the save
+			System.ComponentModel.CancelEventArgs eCancel = new System.ComponentModel.CancelEventArgs(false);
+			FPetraUtilsObject.OnDataSavingValidated(this, eCancel);
+
+			if (eCancel.Cancel == true)
+			{
+				return false;
+			}
+
 			foreach (DataTable InspectDT in FMainDS.Tables)
 			{
 				foreach (DataRow InspectDR in InspectDT.Rows)

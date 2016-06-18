@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
@@ -85,6 +86,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = false;
         private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
+
+        //List of all batches and whether or not the user has been warned of the presence
+        // of inactive fields on saving.
+        private Dictionary <int, bool>FUnpostedBatchesVerifiedOnSavingDict = new Dictionary <int, bool>();
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -238,20 +243,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void RefreshAllData(bool AShowStatusDialogOnLoad = true, bool AIsMessageRefresh = false)
         {
-            TFrmGiftBatch myParentForm = (TFrmGiftBatch)ParentForm;
+            TFrmGiftBatch MyParentForm = (TFrmGiftBatch)ParentForm;
 
             // Remember our current row position
-            int nCurrentRowIndex = GetSelectedRowIndex();
-            int nCurrentBatchNumber = -1;
+            int CurrentRowIndex = GetSelectedRowIndex();
+            int CurrentBatchNumber = -1;
 
-            if ((myParentForm != null) && (myParentForm.InitialBatchNumber > 0))
+            if ((MyParentForm != null) && (MyParentForm.InitialBatchNumber > 0))
             {
-                nCurrentBatchNumber = myParentForm.InitialBatchNumber;
-                myParentForm.InitialBatchNumber = -1;
+                CurrentBatchNumber = MyParentForm.InitialBatchNumber;
+                MyParentForm.InitialBatchNumber = -1;
             }
             else if (AIsMessageRefresh)
             {
-                if (FPetraUtilsObject.HasChanges && !myParentForm.SaveChanges())
+                if (FPetraUtilsObject.HasChanges && !MyParentForm.SaveChanges())
                 {
                     string msg = String.Format(Catalog.GetString("A validation error has occured on the Gift Batches" +
                             " form while trying to refresh.{0}{0}" +
@@ -263,26 +268,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
-                nCurrentBatchNumber = 1;
+                CurrentBatchNumber = 1;
             }
             else if (FPreviouslySelectedDetailRow != null)
             {
-                nCurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                CurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
-            TFrmGiftBatch parentForm = (TFrmGiftBatch)ParentForm;
+            TFrmGiftBatch PntForm = (TFrmGiftBatch)ParentForm;
             Cursor prevCursor = null;
 
-            if (parentForm != null)
+            if (PntForm != null)
             {
-                prevCursor = parentForm.Cursor;
+                prevCursor = PntForm.Cursor;
             }
             else
             {
                 prevCursor = this.Cursor;
             }
 
-            parentForm.Cursor = Cursors.WaitCursor;
+            PntForm.Cursor = Cursors.WaitCursor;
 
             if ((FMainDS != null) && (FMainDS.AGiftBatch != null))
             {
@@ -301,25 +306,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Now we can select the gift batch we had before (if it still exists on the grid)
                 for (int i = 0; (i < FMainDS.AGiftBatch.Rows.Count); i++)
                 {
-                    if (FMainDS.AGiftBatch[i].BatchNumber == nCurrentBatchNumber)
+                    if (FMainDS.AGiftBatch[i].BatchNumber == CurrentBatchNumber)
                     {
                         DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
                         Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.AGiftBatch, i) + 1;
 
-                        nCurrentRowIndex = RowNumberGrid;
+                        CurrentRowIndex = RowNumberGrid;
                         break;
                     }
                 }
 
-                ShowDetails(nCurrentRowIndex);
+                ShowDetails(CurrentRowIndex);
 
                 UpdateRecordNumberDisplay();
 
-                TUC_GiftTransactions TransactionForm = parentForm.GetTransactionsControl();
+                TUC_GiftTransactions TransactionForm = PntForm.GetTransactionsControl();
 
                 if (TransactionForm != null)
                 {
-                    parentForm.EnableTransactions(grdDetails.Rows.Count > 1);
+                    PntForm.EnableTransactions(grdDetails.Rows.Count > 1);
 
                     // if the batch number = -1 then this is not a valid instance of TUC_GiftTransactions and we do not need to refresh
                     if (TransactionForm.FBatchNumber != -1)
@@ -336,7 +341,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             finally
             {
                 FPetraUtilsObject.EnableDataChangedEvent();
-                parentForm.Cursor = prevCursor;
+                PntForm.Cursor = prevCursor;
             }
         }
 
@@ -377,6 +382,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void CheckBeforeSaving()
         {
+            UpdateUnpostedBatchDictionary();
             UpdateBatchPeriod(null, null);
         }
 
@@ -850,11 +856,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Hash total special case in view of the textbox handling
             ParseHashTotal(ARow);
 
-            //Check if the user has made a Bank Cost Centre or Account Code inactive
-            //this was removed because of speed issues!
-            //TODO: Revisit this
-            //RefreshBankCostCentreAndAccountCodes();
-
             TSharedFinanceValidation_Gift.ValidateGiftBatchManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, FAccountTable, FCostCentreTable);
         }
@@ -931,29 +932,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return RowPos + 1;
         }
 
-        private bool AllowInactiveFieldValues(ref bool APostingConfirmed)
+        /// <summary>
+        /// Check for inactive field values
+        /// </summary>
+        /// <param name="AActionConfirmed"></param>
+        /// <param name="AInPosting"></param>
+        /// <returns></returns>
+        public bool AllowInactiveFieldValues(ref bool AActionConfirmed, bool AInPosting = true)
         {
+            int CurrentBatch = FPreviouslySelectedDetailRow.BatchNumber;
+            bool BatchVerified = false;
+            bool BatchExistsInDict = FUnpostedBatchesVerifiedOnSavingDict.TryGetValue(CurrentBatch, out BatchVerified);
+
+            //Check if the user has already been warned before saving
+            if (!AInPosting
+                && ((BatchExistsInDict && BatchVerified) || !BatchExistsInDict))
+            {
+                return true;
+            }
+
             //Check for inactive Bank Cost Centre & Account
             string BankCostCentre = FPreviouslySelectedDetailRow.BankCostCentre;
             string BankAccount = FPreviouslySelectedDetailRow.BankAccountCode;
 
-            if (FWarnOfInactiveValuesOnPosting
-                && (!FAccountAndCostCentreLogicObject.AccountIsActive(BankAccount)
-                    || !FAccountAndCostCentreLogicObject.CostCentreIsActive(BankCostCentre)))
+            if ((!FAccountAndCostCentreLogicObject.AccountIsActive(BankAccount)
+                 || !FAccountAndCostCentreLogicObject.CostCentreIsActive(BankCostCentre)))
             {
+                bool showMsg = false;
                 string msg =
-                    string.Format(Catalog.GetString(
-                            "Gift batch {0} has an inactive bank cost centre and/or account!{1}{1}Do you want to continue posting batch {0} ?"),
-                        FPreviouslySelectedDetailRow.BatchNumber,
-                        Environment.NewLine);
+                    string.Format(Catalog.GetString("Gift Batch {0} has an inactive Cost Centre and/or Bank Account!\n\n"),
+                        FPreviouslySelectedDetailRow.BatchNumber);
+                string msgTitle = string.Empty;
 
-                if (MessageBox.Show(msg, Catalog.GetString("Post Gift Batch"), MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning) != DialogResult.Yes)
+                if (!AInPosting)
+                {
+                    FUnpostedBatchesVerifiedOnSavingDict[CurrentBatch] = true;
+                    msg += Catalog.GetString("(You will only be warned about this once when saving)\n\n");
+                    msg += Catalog.GetString("Do you still want to continue saving the batch?");
+                    msgTitle = Catalog.GetString("Save Gift Batch");
+                    showMsg = true;
+                }
+                else if (AInPosting && FWarnOfInactiveValuesOnPosting)
+                {
+                    msg += Catalog.GetString("Do you want to continue posting?");
+                    msgTitle = Catalog.GetString("Post Gift Batch");
+                    showMsg = true;
+                }
+
+                if (showMsg && (MessageBox.Show(msg, msgTitle, MessageBoxButtons.YesNo,
+                                    MessageBoxIcon.Warning) != DialogResult.Yes))
                 {
                     return false;
                 }
 
-                APostingConfirmed = true;
+                AActionConfirmed = AInPosting;
             }
 
             return true;
@@ -1023,7 +1055,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                if (dtpDetailGlEffectiveDate.ValidDate(false))
+                if ((dtpDetailGlEffectiveDate.Date != null) && dtpDetailGlEffectiveDate.ValidDate(false))
                 {
                     ActualDateValue = dtpDetailGlEffectiveDate.Date.Value;
 
@@ -1172,7 +1204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 dlgStatus.CurrentStatus = Catalog.GetString("Checking for inactive values...");
 
-                if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed))
+                if (!AllowInactiveFieldValues(ref postingAlreadyConfirmed, true))
                 {
                     dlgStatus.Close();
                     LoadDialogVisible = false;
@@ -1273,14 +1305,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             int CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
 
-            // load all data for batch
-            LoadAllBatchData(FSelectedBatchNumber);
-
             FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow);
 
             SelectRowInGrid(CurrentlySelectedRow);
 
             UpdateRecordNumberDisplay();
+        }
+
+        /// <summary>
+        /// Update the dictionary that stores all unposted batches
+        ///  and whether or not they have been warned about inactive
+        ///   fields
+        /// </summary>
+        /// <param name="ABatchNumberToExclude"></param>
+        public void UpdateUnpostedBatchDictionary(int ABatchNumberToExclude = 0)
+        {
+            if (ABatchNumberToExclude > 0)
+            {
+                FUnpostedBatchesVerifiedOnSavingDict.Remove(ABatchNumberToExclude);
+            }
+
+            DataView BatchDV = new DataView(FMainDS.AGiftBatch);
+
+            //Just want unposted batches
+            BatchDV.RowFilter = string.Format("{0}='{1}'",
+                AGiftBatchTable.GetBatchStatusDBName(),
+                MFinanceConstants.BATCH_UNPOSTED);
+
+            foreach (DataRowView bRV in BatchDV)
+            {
+                AGiftBatchRow br = (AGiftBatchRow)bRV.Row;
+
+                int currentBatch = br.BatchNumber;
+
+                if ((currentBatch != ABatchNumberToExclude) && !FUnpostedBatchesVerifiedOnSavingDict.ContainsKey(currentBatch))
+                {
+                    FUnpostedBatchesVerifiedOnSavingDict.Add(br.BatchNumber, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Select a specified row in the gift batch grid
+        /// </summary>
+        /// <param name="ABatchRow"></param>
+        public void SelectRowInBatchGrid(int ABatchRow)
+        {
+            SelectRowInGrid(ABatchRow);
         }
 
         #region BoundImage interface implementation

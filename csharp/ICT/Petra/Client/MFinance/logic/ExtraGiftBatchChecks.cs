@@ -477,65 +477,33 @@ namespace Ict.Petra.Client.MFinance.Logic
             {
                 if (AAction == GiftBatchAction.SAVING)
                 {
+                    Msg += Environment.NewLine + Environment.NewLine;
                     Msg += Catalog.GetString("Do you want to continue with saving anyway?");
                 }
                 else
                 {
-                    // singular
-                    if (ExWorkerGifts == 1)
+                    Msg += Catalog.GetString("Changed gift(s) will need to be saved before ");
+
+                    if (AAction == GiftBatchAction.NEWBATCH)
                     {
-                        if (AAction == GiftBatchAction.POSTING)
-                        {
-                            Msg += Catalog.GetString("This gift will need to be saved before this batch can be posted.");
-                        }
-                        else if (AAction == GiftBatchAction.NEWBATCH)
-                        {
-                            Msg += Catalog.GetString("This gift will need to be saved before a new batch can be created.");
-                        }
-                        else if (AAction == GiftBatchAction.CANCELLING)
-                        {
-                            Msg += Catalog.GetString("This gift will need to be saved before this batch can be cancelled.");
-                        }
-                        else if (AAction == GiftBatchAction.SUBMITTING)
-                        {
-                            Msg += Catalog.GetString("This gift will need to be saved before this batch can be submitted.");
-                        }
-                        else if (AAction == GiftBatchAction.DELETING)
-                        {
-                            Msg += Catalog.GetString("This gift will need to be saved before this batch can be deleted.");
-                        }
+                        Msg += Catalog.GetString("a new batch can be created.");
                     }
-                    // plural
-                    else
+                    else //POSTING, CANCELLING, SUBMITTING, DELETING
                     {
-                        if (AAction == GiftBatchAction.POSTING)
-                        {
-                            Msg += Catalog.GetString("These gifts will need to be saved before this batch can be posted.");
-                        }
-                        else if (AAction == GiftBatchAction.NEWBATCH)
-                        {
-                            Msg += Catalog.GetString("These gifts will need to be saved before a new batch can be created.");
-                        }
-                        else if (AAction == GiftBatchAction.CANCELLING)
-                        {
-                            Msg += Catalog.GetString("These gifts will need to be saved before this batch can be cancelled.");
-                        }
-                        else if (AAction == GiftBatchAction.SUBMITTING)
-                        {
-                            Msg += Catalog.GetString("These gifts will need to be saved before this batch can be submitted.");
-                        }
-                        else if (AAction == GiftBatchAction.DELETING)
-                        {
-                            Msg += Catalog.GetString("These gifts will need to be saved before this batch can be deleted.");
-                        }
+                        Msg += Catalog.GetString("this batch continues with " + AAction.ToString().ToLower());
                     }
 
-                    Msg += " " + Catalog.GetString("Do you want to continue?");
+                    Msg += Environment.NewLine + Environment.NewLine;
+                    Msg += Catalog.GetString("Do you want to continue?");
                 }
 
-                if (MessageBox.Show(
-                        Msg, string.Format(Catalog.GetString("{0} Warning"), ExWorkerSpecialType), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
-                    == DialogResult.No)
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(APetraUtilsObject.GetForm());
+
+                if (extendedMessageBox.ShowDialog(Msg,
+                        Catalog.GetString("Ex-Workers Found"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbYesNo,
+                        TFrmExtendedMessageBox.TIcon.embiWarning)
+                    == TFrmExtendedMessageBox.TResult.embrNo)
                 {
                     return false;
                 }

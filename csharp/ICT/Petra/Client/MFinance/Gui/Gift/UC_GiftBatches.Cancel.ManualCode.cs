@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int CurrentBatchNo = ACurrentBatchRow.BatchNumber;
 
             CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch number: {0}?"),
-                ACurrentBatchRow.BatchNumber);
+                CurrentBatchNo);
 
             if ((MessageBox.Show(CancelMessage,
                      "Cancel Batch",
@@ -105,6 +105,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
+
+                FMyForm.EnsureGiftDataPresent(FLedgerNumber, CurrentBatchNo);
 
                 CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
                     CurrentBatchNo);
@@ -127,8 +129,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FPetraUtilsObject.SetChangedFlag();
 
+                //Don't run an inactive fields check on this batch
+                FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
+
                 // save first
-                if (FMyForm.SaveChanges())
+                if (FMyForm.SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.CANCELLING))
                 {
                     if (ModifiedDetailKeys.Count > 0)
                     {

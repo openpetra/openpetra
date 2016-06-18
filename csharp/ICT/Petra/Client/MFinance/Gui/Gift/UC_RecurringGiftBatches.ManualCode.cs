@@ -814,9 +814,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 string msg =
                     string.Format(Catalog.GetString(
-                            "Recurring Gift batch {0} has an inactive bank cost centre and/or account!{1}{1}Do you want to continue submitting batch {0} ?"),
-                        FPreviouslySelectedDetailRow.BatchNumber,
-                        Environment.NewLine);
+                            "Recurring Gift Batch {0} has an inactive Cost Centre and/or Bank Account!\n\nDo you want to continue submitting the batch?"),
+                        FPreviouslySelectedDetailRow.BatchNumber);
 
                 if (MessageBox.Show(msg, Catalog.GetString("Submit Gift Batch"), MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning) != DialogResult.Yes)
