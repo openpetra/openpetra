@@ -25,7 +25,7 @@ OpenPetra:
             # Module
             PartnerMain: {SkipThisLevel=true}
                 # Sub Module
-                CreateEdit: {Label=Create/Edit, Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
+                PartnerCreateEdit: {Label=Create/Edit, Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
                     SearchBoxes: [Partner]
                     MaintainExistingPartners: {Label=Maintain Existing Partners}
                         #ChangeAddress:
@@ -87,32 +87,40 @@ OpenPetra:
                         SubscriptionReport: {Label=Subscription Report, Description=Create Report of selected Partners and their Subscriptions, ActionOpenScreen=TFrmSubscriptionReport}
                         LocalPartnerDataReport: {Label=Local Partner Data, Description=Create Report of Local Partner Data for selected Partners, ActionOpenScreen=TFrmLocalPartnerDataReport}
            
-                ImportExport: {Label=Import/Export, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, DontShowNestedTasksAsLinks=true}  #Permissions are OR'ed
-                    Import:
+                PartnerImportExport: {Label=Import/Export, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, DontShowNestedTasksAsLinks=true}  #Permissions are OR'ed
+                    PartnerImport: {Label=Import}
                         ImportPartners: {Label=Import Partners, Description=Import Partners from a file, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerImport}
-                    Export:
+                    PartnerExport: {Label=Export}
                          ExportSinglePartnerToPetra: {Label=Export Single Partner to Petra, Description=Export a single Partner for import into a Petra system, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerExport}
                          ExportSinglePartnerToOpenpetra: {Label=Export Single Partner to OpenPetra, Description=Export a single Partner for import into an OpenPetra system, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerExport}
                          ExportPartnersFromExtractToPetra: {Label=Export from Extract to Petra, Description=Export Partners from an extract for import into a Petra system, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerExport}
                          ExportPartnersFromExtractToOpenpetra: {Label=Export from Extract to OpenPetra, Description=Export Partners from an extract for import into an OpenPetra system, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerExport}
 #                        ExportPartners: {ActionClick=TPartnerMain.ExportPartners, Description=Create a file for importing into another OpenPetra database}
                 #MailingSubscriptions: {Label=Mailing&&Subscriptions, Icon=mail.ico}
-                Administration: {Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
-                    Addresses: {Label=Addresses}
+                PartnerAdministration: {Label=Administration, Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true}
+                    PartnerAddresses: {Label=Addresses}
                         DuplicateAddressCheck: {ActionOpenScreen=TFrmDuplicateAddressCheck, Label=Duplicate Address Check, Description=Search addresses for possible duplicates}
-                    ContactLogs: {Label=Contact Logs}
+                    PartnerContactLogs: {Label=Contact Logs}
                         FindAndDeleteContactLogs: {Label=Find and Delete Contact Logs, ActionOpenScreen=TFrmPartnerContacts, Description=Maintain Contact Logs of Partners}
                     MergePartners: {Label=Merge Partners}
                         MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartnersDialog}
                     Subscriptions: {Label=Subscriptions}
                         CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
-                FormLetters: {Label=Form Letters, Namespace=Ict.Petra.Client.MPartner.Gui, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, DontShowNestedTasksAsLinks=true} #Permissions are OR'ed
-                    FormLetterSetup: {Label=Form Letter Setup}
+                PartnerSetup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true, Label=Setup}
+                    Address:  
+                        AddresseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
+                        LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
+                        InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
+                        PostcodeRanges: {Label=Postcode Ranges, Description=Maintain Postcode Ranges, ActionOpenScreen=TFrmPostcodeRangeSetup}
+                        PostcodeRegions: {Label=Postcode Regions, Description=Maintain Postcode Regions, ActionOpenScreen=TFrmPostcodeRegionSetup}
+                    ContactLogs: {Label=Contact Logs}
+                        ContactLogMethods: {Label=Contact Log Methods, Description=Maintain Contact Log Methods, ActionOpenScreen=TFrmContactMethodSetup}   
+                        ContactLogAttributesAndDetails: {Label=Contact Log Attributes and Details, Description=Maintain Contact Log Attributes and Details, ActionOpenScreen=TFrmContactAttributeSetup}     
+                    PartnerFormLetterSetup: {Label=Form Letter Setup}
                         AddressLayoutCodes: {Label=Address Layout Codes, Description=Maintain Address Layout Codes, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
                         AddressLayouts: {Label=Address Layouts, Description=Maintain Address Layouts, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmAddressLayoutSetup}
                         LetterFormalities: {Label=Letter Formalities, Description=Maintain Letter Formalities, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmFormalitySetup}
-                PartnerSetup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, PermissionsRequired=PTNRUSER, DontShowNestedTasksAsLinks=true, Label=Setup}
-                    General:           
+                    PartnerGeneral: {Label=General}
                         Country:       {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Countries, Description=Maintain Countries, PermissionsRequired=PTNRADMIN, ActionOpenScreen=TFrmCountrySetup}              
                         Language:      {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Language Codes, Description=Maintain Language Codes, ActionOpenScreen=TFrmLanguageCodeSetup}              
                         Frequency:     {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=Frequencies, Description=Maintain Receipting/Publication Frequencies, ActionOpenScreen=TFrmFrequencySetup}              
@@ -127,26 +135,8 @@ OpenPetra:
                         Relationship:  {Label=Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup} 
                         PartnerContactCategoriesAndTypes: {Label=Partner Contact Categories and Types, Description=Maintain Partner Contact Categories and Types, ActionOpenScreen=TFrmContactCategoriesAndTypesSetup}   
                         InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
-                        Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}   
-                    Subscription: 
-                        Publications: {Label=Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
-                        PublicationCosts: {Label=Publication Costs, Description=Maintain Publication Costs, ActionOpenScreen=TFrmPublicationCostSetup}
-                        ReasonSubscriptionGiven: {Label=Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
-                        ReasonSubscriptionCancelled: {Label=Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup}   
-                                                 
-                    Address:  
-                        AddresseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}
-                        LocationTypes: {Label=Location Types, Description=Maintain Location Types, ActionOpenScreen=TFrmLocationTypeSetup}
-                        InternationalPostalTypes: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Label=International Postal Types, Description=Maintain International Postal Types, ActionOpenScreen=TFrmInternationalPostalTypeSetup}
-                        PostcodeRanges: {Label=Postcode Ranges, Description=Maintain Postcode Ranges, ActionOpenScreen=TFrmPostcodeRangeSetup}
-                        PostcodeRegions: {Label=Postcode Regions, Description=Maintain Postcode Regions, ActionOpenScreen=TFrmPostcodeRegionSetup}
-                    ContactLogs: {Label=Contact Logs}
-                        ContactLogMethods: {Label=Contact Log Methods, Description=Maintain Contact Log Methods, ActionOpenScreen=TFrmContactMethodSetup}   
-                        ContactLogAttributesAndDetails: {Label=Contact Log Attributes and Details, Description=Maintain Contact Log Attributes and Details, ActionOpenScreen=TFrmContactAttributeSetup}
-                        
-                    Mailing:
-                        Mailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup, RunAsModalDialog=false}
-                    LocalData: {Label=Local Data}
+                        Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}	
+                    PartnerLocalData: {Label=Local Data}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         LocalDataOptions: {Label=Local Data Options, Description=Maintain Local Data Options, ActionOpenScreen=TFrmLocalDataOptionsSetup}
                         LocalDataFields: {Label=Local Partner Data Fields, Description=Maintain Local Partner Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPartnerDataFieldSetup}
@@ -157,6 +147,13 @@ OpenPetra:
                         LocalDataFieldOrderOrganisation: {Label=Field Order for Organisation, Description=Maintain Field Order for Organisation, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Organisation}
                         LocalDataFieldOrderUnit: {Label=Field Order for Unit, Description=Maintain Field Order for Unit, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Unit}
                         LocalDataFieldOrderVenue: {Label=Field Order for Venue, Description=Maintain Field Order for Venue, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Venue}
+                    PartnerMailing: {Label=Mailing}
+                        PartnerMailings: {Label=Mailings, Description=Maintain Mailings, ActionOpenScreen=TFrmMailingSetup, RunAsModalDialog=false}   
+                    Subscription: 
+                        Publications: {Label=Publications, Description=Maintain Publications, ActionOpenScreen=TFrmPublicationSetup}
+                        PublicationCosts: {Label=Publication Costs, Description=Maintain Publication Costs, ActionOpenScreen=TFrmPublicationCostSetup}
+                        ReasonSubscriptionGiven: {Label=Reason Subscription Given List, Description=Maintain Reason Subscription Given List, ActionOpenScreen=TFrmReasonSubscriptionGivenSetup}   
+                        ReasonSubscriptionCancelled: {Label=Reason Subscription Cancelled List, Description=Maintain Reason Subscription Cancelled List, ActionOpenScreen=TFrmReasonSubscriptionCancelledSetup} 
             #MoreFunctions:
                 #SetupPartnerModule:
         # DependsOnLedger means that this department will be displayed for each available ledger, with the appropriate LedgerNumber
@@ -222,7 +219,7 @@ OpenPetra:
                         DonorRecipientHistory: {Label=Donor/Recipient History, Description=Gift history for a Donor and/or Recipient, ActionOpenScreen=TFrmDonorRecipientHistory}
                         #PrintSingleReceipt:
                         ReceiptControl:{ActionOpenScreen=TFrmReceiptControl}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
+                    FinanceReports: {Label=Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         RecipientGiftStatement: {Description=Create RGS using selected Report Type, ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {Description=Create DGS using specified criteria, ActionOpenScreen=TFrmDonorGiftStatement}
                         DonorGiftsToFieldsReport: {Description=Create Report of Donor Giving to selected Fields, ActionOpenScreen=TFrmDonorGiftsToFieldsReport}
@@ -249,7 +246,7 @@ OpenPetra:
                     AccountsPayable: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                         Suppliers: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
                         OutstandingInvoices: {Description=Manage payments, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
-                    Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
+                    APReports: {Label=Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
                         CurrentAccountsPayable: {Description="Invoices payable today, or on a specified date", ActionOpenScreen=TFrmAP_CurrentPayable}
@@ -298,16 +295,14 @@ OpenPetra:
                     Currencies:
                         CurrencyList: {Description=Maintain Currency List, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
                         CurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
+                    FinanceFormLetterSetup: {Label=Form Letter / Receipt Setup}
+                        AddressLayoutCodes: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
+                        AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
+                        LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
                     Other:
                         MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving, PermissionsRequired=FINANCE-3}
                         MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment, PermissionsRequired=FINANCE-3}
                         EmailDestinations: {Description=Maintain Email Destinations, ActionOpenScreen=TFrmEmailDestinationSetup, PermissionsRequired=FINANCE-3}
-                FinanceFormLetters: {Label="Form Letters / Receipt Setup", DontShowNestedTasksAsLinks=true}
-                    FormLetterSetup:
-                        FormDesign: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Description=Maintain Printable Form Designs, ActionOpenScreen=TFrmFormDesignSetup, Context=Finance}
-                        AddressLayoutCodes: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
-                        AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
-                        LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
                 CreateDeleteLedger: {DontShowNestedTasksAsLinks=true, Label=Create/Delete Ledger}
                     CreateNewLedger: {Label=Create New Ledger}
                         #LedgerSetupShepherd:
@@ -318,27 +313,27 @@ OpenPetra:
             # Module
             Main: {SkipThisLevel=true}
                 # Sub Module
-                CreateEdit: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPartner.Gui, Label=Create/Edit} 
+                PersonnelCreateEdit: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPartner.Gui, Label=Create/Edit} 
                     SearchBoxes: [Partner]
                     MaintainExistingPersonnel:
                         FindPERSONPartner: {Label=Find a Person, ActionClick=TPartnerMain.FindPartnerOfClassPERSON, Description=Search for and work with a Person}
                         WorkWithLastPERSON: {Label=Work with Last Person, ActionClick=TPartnerMain.OpenLastUsedPartnerEditScreenPersonnelModule, Description=Open last Person worked with}
-                    CreateNewPerson:
-                        AddNewPerson: {ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
-                Applications: {Label=Applications, Namespace=Ict.Petra.Client.MPersonnel.Gui, DontShowNestedTasksAsLinks=true}
+                    PersonnelCreateNewPerson: {Label=Create New Person}
+                        PersonnelAddNewPerson: {Label=Add New Person, ActionClick=TPartnerMain.NewPartner_Person, Description=Create a new Partner of Class PERSON}
+                PersonnelApplications: {Label=Applications, Namespace=Ict.Petra.Client.MPersonnel.Gui, DontShowNestedTasksAsLinks=true}
                     BrowseApplications: {Label=Browse Applications}
                         BrowseShortTerm: {Label: Short-Term Applications, ActionOpenScreen=TFrmShortTermApplications, Description=Browse Short-Term Applications by Event}
                         BrowseLongTerm: {Label: Long-Term Applications, ActionOpenScreen=TFrmLongTermApplications, Description=Browse Long-Term Applications}
                 PersonnelExtracts: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, DontShowNestedTasksAsLinks=true, Label=Extracts}
-                    MaintainAndUpdateExtracts: {Label=Maintain and Update Extracts}
-                        ExtractMasterList: {Label=Extract Master List, Description=Access and Maintain/Update Extracts here, ActionOpenScreen=TFrmExtractMaster}
+                    PersonnelMaintainAndUpdateExtracts: {Label=Maintain and Update Extracts}
+                        PersonnelExtractMasterList: {Label=Extract Master List, Description=Access and Maintain/Update Extracts here, ActionOpenScreen=TFrmExtractMaster}
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extracts}
                         PartnerByEvent: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event, Description=Create Extract of Partners with specific application status for selected event, ActionClick=TPersonnelMain.PartnerByEventExtract}
                         PartnerByEventRole: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Event Role, Description=Create Extract of Partners with specific role at selected event, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
                         PartnerByCommitment: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Commitment, Description=Create Extract of Partners with selected Commitment Status, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Namespace=Ict.Petra.Client.MPersonnel.Gui, Label=Partner by Field, Description=Create Extract of Partners received/sent by selected Fields, ActionClick=TPersonnelMain.PartnerByFieldExtract}
                 PersonnelReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel, DontShowNestedTasksAsLinks=true, Label=Reports}  # Icon=Print.ico
-                    PersonnelReports:
+                    PersonnelReports: {Label=Reports}
                         ProgressReport: {Description=Create a Progress Report for selected Personnel, ActionOpenScreen=TFrmProgressReport}
                         PreviousExperienceReport: {Description=Create Report of Previous Experience for selected Personnel, ActionOpenScreen=TFrmPreviousExperienceReport}
                         StartOfCommitmentReport: {Label=Start of Commitment Report, Description=Create Report with Start of Commitment dates for selected Personnel, ActionOpenScreen=TFrmStartOfCommitmentReport}
@@ -354,22 +349,30 @@ OpenPetra:
                         OutreachOptions: {Description=Create Report of Events for selected Year/Code, ActionOpenScreen=TFrmOutreachOptions}
                         UnitHierarchyReport: {Description=View Hierarchy for selected Units, ActionOpenScreen=TFrmUnitHierarchy}
                         LocalPersonnelDataReport: {Description=Create Report with Local Data for selected Personnel, ActionOpenScreen=TFrmLocalPersonnelDataReport}
-                    ShortTermerReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
+                    PersonnelShortTermerReports: {Label=Short Termer Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel.ShortTerm}
                         FurtherShortTermerReports: {Description=Select a Report from the list of options, Namespace=Ict.Petra.Client.MPersonnel.Gui, ActionClick=TPersonnelMain.ShortTermerReports}
                         AbilitiesReport: {Description=Create Report of Skills of participants in a selected Event, ActionOpenScreen=TFrmAbilitiesReport}
                         EventEmergencyContactReport: {Description=Create Report with Emergency Contact Details for participants in a selected Event, ActionOpenScreen=TFrmEmergContInfReport}
                         LanguagesReport: {Description=Create Report of Languages spoken by participants in a selected Event, ActionOpenScreen=TFrmLanguagesReport}
-                CalebExport: {Label=Caleb Export, DontShowNestedTasksAsLinks=true}
+                PersonnelCalebExport: {Label=Caleb Export, DontShowNestedTasksAsLinks=true}
                         CalebExport: {Label=Caleb Export, Description=Export Partner/Personnel/Finance Data to Caleb, Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
                 PersonnelAdministration: {Label=Administration, DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MPersonnel.Gui}
                     ConvertApplications: {Label=Convert Applications}
                         ConvertApplicationsToPreviousExperience: {Label: Convert/Remove Previous Experience, ActionOpenScreen=TFrmConvertApplicationsToPreviousExperience, Description=Convert/remove Applications to/from Previous Experience}
-                PersonnelFormLetters: {Label=Form Letters, Namespace=Ict.Petra.Client.MPersonnel.Gui, DontShowNestedTasksAsLinks=true}
-                    FormLetterSetup: {Label=Form Letter Setup}
+                PersonnelSetup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, DontShowNestedTasksAsLinks=true, Label=Setup}
+                    PersonnelApplication: {Label=Application}
+                        ApplicantStatus: {Label=Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
+                        ApplicationType: {Label=Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
+                        ArrivalDeparturePoint: {Label=Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
+                        Country_EventPreferenceLevel: {Label=Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
+                        EventRole: {Label=Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
+                        OrganisationContact: {Label=Organisation Contacts, Description=Maintain Organisation Contacts, ActionOpenScreen=TFrmOrganisationContactSetup}
+                        TransportType: {Label=Transport Types, Description=Maintain Transport Types, ActionOpenScreen=TFrmTransportTypeSetup}
+                    PersonnelFormLetterSetup: {Label=Form Letter Setup}
+                        FormDesign: {Namespace=Ict.Petra.Client.MCommon.Gui.Setup, Description=Maintain Printable Form Designs, ActionOpenScreen=TFrmFormDesignSetup, Context=Personnel}
                         AddressLayoutCodes: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
                         AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
-                        LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}
-                PersonnelSetup: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, DontShowNestedTasksAsLinks=true, Label=Setup}
+                        LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup}						
                     General:
                         DocumentTypeCategory: {Label=Document Type Categories, Description=Maintain Document Type Categories, ActionOpenScreen=TFrmDocumentTypeCategorySetup}
                         DocumentType: {Label=Document Types, Description=Maintain Document Types, ActionOpenScreen=TFrmDocumentTypeSetup}
@@ -381,24 +384,14 @@ OpenPetra:
                         SkillCategory: {Label=Skill Categories, Description=Maintain Skill Categories, ActionOpenScreen=TFrmSkillCategorySetup}
                         SkillLevel: {Label=Skill Levels, Description=Maintain Skill Levels, ActionOpenScreen=TFrmSkillLevelSetup}
                         UnitHierarchy: {Label=Unit Hierarchy, Description=Maintain Unit Hierarchy, ActionOpenScreen=TFrmUnitHierarchy}
-                    Application:
-                        ApplicantStatus: {Label=Applicant Statuses, Description=Maintain Applicant Statuses, ActionOpenScreen=TFrmApplicantStatusSetup} 						
-                        ApplicationType: {Label=Application Types, Description=Maintain Application Types, ActionOpenScreen=TFrmApplicationTypeSetup}
-                        ArrivalDeparturePoint: {Label=Arrival and Departure Points, Description=Maintain Arrival and Departure Points, ActionOpenScreen=TFrmArrivalDeparturePointSetup}
-                        Country_EventPreferenceLevel: {Label=Country/Event Preference Levels, Description=Maintain Country/Event Preference Levels, ActionOpenScreen=TFrmCountry_EventLevelSetup}
-                        EventRole: {Label=Event Roles, Description=Maintain Event Roles, ActionOpenScreen=TFrmEventRoleSetup}
-                        OrganisationContact: {Label=Organisation Contacts, Description=Maintain Organisation Contacts, ActionOpenScreen=TFrmOrganisationContactSetup}
-                        TransportType: {Label=Transport Types, Description=Maintain Transport Types, ActionOpenScreen=TFrmTransportTypeSetup}
-                    LocalData: {Label=Local Data}
+                    PersonnelLocalData: {Label=Local Data}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List Names, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionListNameSetup}
                         LocalDataOptions: {Label=Local Data Options, Description=Maintain Local Data Options, Namespace=Ict.Petra.Client.MPartner.Gui.Setup, ActionOpenScreen=TFrmLocalDataOptionsSetup}
                         #LocalApplicationDataFields: {Label=Local Application Data Fields, Description=Maintain Local Application Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalApplicationDataFieldSetup}
                         LocalPersonnelDataFields: {Label=Local Personnel Data Fields, Description=Maintain Local Personnel Data Fields, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalPersonnelDataFieldSetup}
                         #LocalDataFieldOrderLongTermApp: {Label=Field Order for Long Term Applications, Description=Maintain Field Order for Long Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=LongTermApp}
                         #LocalDataFieldOrderShortTermApp: {Label=Field Order for Short Term Applications, Description=Maintain Field Order for Short Term Applications, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=ShortTermApp}
-                        LocalDataFieldOrderPersonnel: {Label=Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}
-                        
-                        
+                        LocalDataFieldOrderPersonnel: {Label=Field Order for Personnel, Description=Maintain Field Order for Personnel, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmLocalDataFieldOrderSetup, Context=Personnel}                      
         #ConferenceManagement: {Icon=conference.ico, PermissionsRequired=CONFERENCE, DependsOnConference=true}
         #    Main: {SkipThisLevel=true}
         #        Conference: {Namespace=Ict.Petra.Client.MConference.Gui, DontShowNestedTasksAsLinks=true}
@@ -447,7 +440,7 @@ OpenPetra:
         FinancialDevelopment: {Icon=develope.ico, Namespace=Ict.Petra.Client.MFinDev.Gui, Label=Financial Development, DependsOnLedger=true, PermissionsRequired=DEVUSER}
             Main: {SkipThisLevel=true}
                 FinDevReports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinDev, DontShowNestedTasksAsLinks=true, Label=Reports}  # Icon=Print.ico
-                    Reports:
+                    FDReports: {Label=Reports}
                         #IncomeByFund: {ActionOpenScreen=TFrmFDIncomeByFund}
                         #LocalIncomeSplit: {ActionOpenScreen=TFrmIncomeLocalSplit}
                         #DonorsPerRecipient: {ActionOpenScreen=TFrmDonorsPerRecipient}
