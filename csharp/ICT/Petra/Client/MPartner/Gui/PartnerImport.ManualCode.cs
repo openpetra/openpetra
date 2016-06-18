@@ -436,13 +436,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             String Msg = "";
 
             DataRowView[] UserSelectedRecord = grdMatchingRecords.SelectedDataRowsAsDataRowView;
-            btnUseSelectedAddress.Enabled = false;
+            //btnUseSelectedAddress.Enabled = false;
             btnUseSelectedPerson.Enabled = false;
             btnCreateNewPartner.Enabled = true;
 
             if (UserSelectedRecord.GetLength(0) > 0)
             {
-                btnUseSelectedAddress.Enabled = true;
+                //btnUseSelectedAddress.Enabled = true;
                 Msg = "Use this existing partner's address";
                 UserSelectedRow = (PartnerFindTDSSearchResultRow)UserSelectedRecord[0].Row;
                 UserSelLocationKey = UserSelectedRow.LocationKey;
@@ -506,6 +506,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             System.Int64 PartnerKey = 0;
             string PartnerShortName;
             TPartnerClass? PartnerClass;
+            String RestrictToPartnerClass = "";
             TLocationPK ResultLocationPK;
 
             // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
@@ -514,8 +515,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // delegate IS defined
                 try
                 {
+                    if (FCurrentPartner != null)
+                    {
+                        RestrictToPartnerClass = FCurrentPartner.PartnerClass.ToString();
+
+                        if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                        {
+                            // for PERSON records we also allow FAMILY as the user can add the person to a different family
+                            RestrictToPartnerClass += "," + MPartnerConstants.PARTNERCLASS_FAMILY;
+                        }
+                    }
+
                     TCommonScreensForwarding.OpenPartnerFindScreen.Invoke
-                        ((FCurrentPartner != null ? FCurrentPartner.PartnerClass.ToString() : ""),
+                        (RestrictToPartnerClass,
                         out PartnerKey,
                         out PartnerShortName,
                         out PartnerClass,
@@ -632,7 +644,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             btnSkip.Enabled = false;
             btnUseSelectedPerson.Enabled = false;
             btnCreateNewPartner.Enabled = false;
-            btnUseSelectedAddress.Enabled = false;
+            //btnUseSelectedAddress.Enabled = false;
             btnUseSelectedFamily.Enabled = false;
             btnFindOtherPartner.Enabled = false;
 
@@ -780,7 +792,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // TODO: should use getBestAddress?
                 grdMatchingRecords.Columns.Clear();
                 grdMatchingRecords.Enabled = true;
-                btnUseSelectedAddress.Enabled = false;
+                //btnUseSelectedAddress.Enabled = false;
                 btnUseSelectedPerson.Enabled = false;
                 btnCreateNewPartner.Enabled = true;
                 btnUseSelectedFamily.Enabled = false;
@@ -1403,6 +1415,425 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void AddPartnerForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            AImportPartnerDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+            PPartnerRow ImportedPartnerRow = (PPartnerRow)AImportPartnerDS.PPartner.DefaultView[0].Row;
+            String ImportedPartnerClass = ImportedPartnerRow.PartnerClass;
+
+            AExistingPartnerDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerTable.GetPartnerKeyDBName(), AExistingPartnerKey);
+
+            PPartnerRow ExistingPartnerRow = (PPartnerRow)AExistingPartnerDS.PPartner.DefaultView[0].Row;
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_AQUISITION))
+            {
+                ExistingPartnerRow.AcquisitionCode = ImportedPartnerRow.AcquisitionCode;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
+            {
+                ExistingPartnerRow.AddresseeTypeCode = ImportedPartnerRow.AddresseeTypeCode;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_LANGUAGE))
+            {
+                ExistingPartnerRow.LanguageCode = ImportedPartnerRow.LanguageCode;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_NOTES))
+            {
+                ExistingPartnerRow.Comment = ImportedPartnerRow.Comment;
+            }
+
+            ExistingPartnerRow.PartnerKey = AImportPartnerKey;
+
+            // make sure we update FCurrentPartner if row is changed
+            if (FCurrentPartner == ImportedPartnerRow)
+            {
+                FCurrentPartner = ExistingPartnerRow;
+            }
+
+            if (ImportedPartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                AImportPartnerDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}",
+                    PPersonTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+                PPersonRow ImportedPersonRow = (PPersonRow)AImportPartnerDS.PPerson.DefaultView[0].Row;
+
+                AExistingPartnerDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}",
+                    PPersonTable.GetPartnerKeyDBName(), AExistingPartnerKey);
+
+                PPersonRow ExistingPersonRow = (PPersonRow)AExistingPartnerDS.PPerson.DefaultView[0].Row;
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+                {
+                    ExistingPersonRow.FamilyName = ImportedPersonRow.FamilyName;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
+                {
+                    ExistingPersonRow.MaritalStatus = ImportedPersonRow.MaritalStatus;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_GENDER))
+                {
+                    ExistingPersonRow.Gender = ImportedPersonRow.Gender;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+                {
+                    ExistingPersonRow.FirstName = ImportedPersonRow.FirstName;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE))
+                {
+                    ExistingPersonRow.Title = ImportedPersonRow.Title;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH))
+                {
+                    ExistingPersonRow.DateOfBirth = ImportedPersonRow.DateOfBirth;
+                }
+
+                ExistingPersonRow.PartnerKey = AImportPartnerKey;
+
+                // make sure we update FCurrentPerson if row is changed
+                if (FCurrentPerson == ImportedPersonRow)
+                {
+                    FCurrentPerson = ExistingPersonRow;
+                }
+
+                AImportPartnerDS.PPerson.Rows.Remove(ImportedPersonRow);
+                AImportPartnerDS.PPerson.ImportRow(ExistingPersonRow);
+            }
+
+            if (ImportedPartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                AImportPartnerDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}",
+                    PFamilyTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+                PFamilyRow ImportedFamilyRow = (PFamilyRow)AImportPartnerDS.PFamily.DefaultView[0].Row;
+
+                AExistingPartnerDS.PFamily.DefaultView.RowFilter = String.Format("{0}={1}",
+                    PFamilyTable.GetPartnerKeyDBName(), AExistingPartnerKey);
+
+                PFamilyRow ExistingFamilyRow = (PFamilyRow)AExistingPartnerDS.PFamily.DefaultView[0].Row;
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+                {
+                    ExistingFamilyRow.FamilyName = ImportedFamilyRow.FamilyName;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MARITALSTATUS))
+                {
+                    ExistingFamilyRow.MaritalStatus = ImportedFamilyRow.MaritalStatus;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+                {
+                    ExistingFamilyRow.FirstName = ImportedFamilyRow.FirstName;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE))
+                {
+                    ExistingFamilyRow.Title = ImportedFamilyRow.Title;
+                }
+
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_NOTESFAMILY))
+                {
+                    ExistingPartnerRow.Comment = ImportedPartnerRow.Comment;
+                }
+
+                ExistingFamilyRow.PartnerKey = AImportPartnerKey;
+
+                AImportPartnerDS.PFamily.Rows.Remove(ImportedFamilyRow);
+                AImportPartnerDS.PFamily.ImportRow(ExistingFamilyRow);
+            }
+
+            //TODO: cover other partner types?
+
+            // move partner record at the end in case it is still needed to access it before that
+            AImportPartnerDS.PPartner.Rows.Remove(ImportedPartnerRow);
+            AImportPartnerDS.PPartner.ImportRow(ExistingPartnerRow);
+        }
+
+        private void AddShortTermAppForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            // Import short term application record for an already existing person: use retrieved data from db, update it with import data and exchange it with the one to import
+            AImportPartnerDS.PmShortTermApplication.DefaultView.RowFilter = String.Format("{0}={1}",
+                PmShortTermApplicationTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+            if (!FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EVENTKEY)
+                || (AImportPartnerDS.PmShortTermApplication.DefaultView.Count == 0))
+            {
+                return;
+            }
+
+            // for a csv file there is just one short term application row per person
+            PmShortTermApplicationRow ImportedShortTermRow = (PmShortTermApplicationRow)AImportPartnerDS.PmShortTermApplication.DefaultView[0].Row;
+
+            // now we need to find the general application that belongs to the short term application
+            AImportPartnerDS.PmGeneralApplication.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                PmGeneralApplicationTable.GetPartnerKeyDBName(), ImportedShortTermRow.PartnerKey,
+                PmGeneralApplicationTable.GetApplicationKeyDBName(), ImportedShortTermRow.ApplicationKey,
+                PmGeneralApplicationTable.GetRegistrationOfficeDBName(), ImportedShortTermRow.RegistrationOffice);
+
+            PmGeneralApplicationRow ImportedGenAppRow = (PmGeneralApplicationRow)AImportPartnerDS.PmGeneralApplication.DefaultView[0].Row;
+
+
+            AExistingPartnerDS.PmShortTermApplication.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                PmShortTermApplicationTable.GetPartnerKeyDBName(), AExistingPartnerKey,
+                PmShortTermApplicationTable.GetStConfirmedOptionDBName(), ImportedShortTermRow.StConfirmedOption);
+
+            if (AExistingPartnerDS.PmShortTermApplication.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            PmShortTermApplicationRow ExistingShortTermRow = (PmShortTermApplicationRow)AExistingPartnerDS.PmShortTermApplication.DefaultView[0].Row;
+
+            // now we need to find the general application that belongs to the short term application
+            AExistingPartnerDS.PmGeneralApplication.DefaultView.RowFilter = String.Format("{0}={1} AND {2}={3} AND {4}={5}",
+                PmGeneralApplicationTable.GetPartnerKeyDBName(), ExistingShortTermRow.PartnerKey,
+                PmGeneralApplicationTable.GetApplicationKeyDBName(), ExistingShortTermRow.ApplicationKey,
+                PmGeneralApplicationTable.GetRegistrationOfficeDBName(), ExistingShortTermRow.RegistrationOffice);
+
+            PmGeneralApplicationRow ExistingGenAppRow = (PmGeneralApplicationRow)AExistingPartnerDS.PmGeneralApplication.DefaultView[0].Row;
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ARRIVALDATE))
+            {
+                ExistingShortTermRow.Arrival = ImportedShortTermRow.Arrival;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ARRIVALTIME))
+            {
+                ExistingShortTermRow.ArrivalHour = ImportedShortTermRow.ArrivalHour;
+                ExistingShortTermRow.ArrivalMinute = ImportedShortTermRow.ArrivalMinute;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE))
+            {
+                ExistingShortTermRow.Departure = ImportedShortTermRow.Departure;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DEPARTURETIME))
+            {
+                ExistingShortTermRow.DepartureHour = ImportedShortTermRow.DepartureHour;
+                ExistingShortTermRow.DepartureMinute = ImportedShortTermRow.DepartureMinute;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EVENTROLE))
+            {
+                ExistingShortTermRow.OutreachRole = ImportedShortTermRow.OutreachRole;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPDATE))
+            {
+                ExistingShortTermRow.StAppDate = ImportedShortTermRow.StAppDate;
+                ExistingGenAppRow.GenAppDate = ImportedGenAppRow.GenAppDate;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPSTATUS))
+            {
+                ExistingGenAppRow.GenApplicationStatus = ImportedGenAppRow.GenApplicationStatus;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPTYPE))
+            {
+                ExistingGenAppRow.AppTypeName = ImportedGenAppRow.AppTypeName;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD))
+            {
+                ExistingShortTermRow.StFieldCharged = ImportedShortTermRow.StFieldCharged;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPCOMMENTS))
+            {
+                ExistingGenAppRow.Comment = ImportedGenAppRow.Comment;
+            }
+
+            ExistingGenAppRow.PartnerKey = AImportPartnerKey;
+            ExistingShortTermRow.PartnerKey = AImportPartnerKey;
+
+            AImportPartnerDS.PmShortTermApplication.Rows.Remove(ImportedShortTermRow);
+            AImportPartnerDS.PmGeneralApplication.Rows.Remove(ImportedGenAppRow);
+
+            AImportPartnerDS.PmGeneralApplication.ImportRow(ExistingGenAppRow);
+            AImportPartnerDS.PmShortTermApplication.ImportRow(ExistingShortTermRow);
+        }
+
+        private void AddSpecialTypeForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            // Import special type record for an already existing partner: use retrieved data from db, update it with import data and exchange it with the one to import
+            AImportPartnerDS.PPartnerType.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerTypeTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+            foreach (DataRowView rv in AImportPartnerDS.PPartnerType.DefaultView)
+            {
+                PPartnerTypeRow ImportedRow = (PPartnerTypeRow)rv.Row;
+
+                AExistingPartnerDS.PPartnerType.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}'",
+                    PPartnerTypeTable.GetPartnerKeyDBName(), AExistingPartnerKey,
+                    PPartnerTypeTable.GetTypeCodeDBName(), ImportedRow.TypeCode);
+
+                if (AExistingPartnerDS.PPartnerType.DefaultView.Count > 0)
+                {
+                    PPartnerTypeRow ExistingRow = (PPartnerTypeRow)AExistingPartnerDS.PPartnerType.DefaultView[0].Row;
+
+                    ExistingRow.PartnerKey = AImportPartnerKey;
+
+                    AImportPartnerDS.PPartnerType.Rows.Remove(ImportedRow);
+                    AImportPartnerDS.PPartnerType.ImportRow(ExistingRow);
+                }
+            }
+        }
+
+        private void AddSubscriptionForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            //TODOWBxxx
+        }
+
+        private void AddContactForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            //TODOWBxxx
+        }
+
+        private void AddPassportForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            // Import passport record for an already existing person: use retrieved data from db, update it with import data and exchange it with the one to import
+            AImportPartnerDS.PmPassportDetails.DefaultView.RowFilter = String.Format("{0}={1}",
+                PmPassportDetailsTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+            if (!FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER)
+                || (AImportPartnerDS.PmPassportDetails.DefaultView.Count == 0))
+            {
+                return;
+            }
+
+            PmPassportDetailsRow ImportedRow = (PmPassportDetailsRow)AImportPartnerDS.PmPassportDetails.DefaultView[0].Row;
+
+            AExistingPartnerDS.PmPassportDetails.DefaultView.RowFilter = String.Format("{0}={1} AND {2}='{3}'",
+                PmPassportDetailsTable.GetPartnerKeyDBName(), AExistingPartnerKey,
+                PmPassportDetailsTable.GetPassportNumberDBName(), ImportedRow.PassportNumber);
+
+            if (AExistingPartnerDS.PmPassportDetails.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            PmPassportDetailsRow ExistingRow = (PmPassportDetailsRow)AExistingPartnerDS.PmPassportDetails.DefaultView[0].Row;
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNAME))
+            {
+                ExistingRow.FullPassportName = ImportedRow.FullPassportName;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE))
+            {
+                ExistingRow.PassportDetailsType = ImportedRow.PassportDetailsType;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH))
+            {
+                ExistingRow.PlaceOfBirth = ImportedRow.PlaceOfBirth;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY))
+            {
+                ExistingRow.PassportNationalityCode = ImportedRow.PassportNationalityCode;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE))
+            {
+                ExistingRow.PlaceOfIssue = ImportedRow.PlaceOfIssue;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE))
+            {
+                ExistingRow.CountryOfIssue = ImportedRow.CountryOfIssue;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE))
+            {
+                ExistingRow.DateOfIssue = ImportedRow.DateOfIssue;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION))
+            {
+                ExistingRow.DateOfExpiration = ImportedRow.DateOfExpiration;
+            }
+
+            ExistingRow.PartnerKey = AImportPartnerKey;
+
+            AImportPartnerDS.PmPassportDetails.Rows.Remove(ImportedRow);
+            AImportPartnerDS.PmPassportDetails.ImportRow(ExistingRow);
+        }
+
+        private void AddSpecialNeedsForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            // Import special needs record for an already existing person: use retrieved data from db, update it with import data and exchange it with the one to import
+
+            AImportPartnerDS.PmSpecialNeed.DefaultView.RowFilter = String.Format("{0}={1}",
+                PmSpecialNeedTable.GetPartnerKeyDBName(), AImportPartnerKey);
+
+            if (AImportPartnerDS.PmSpecialNeed.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            PmSpecialNeedRow ImportedRow = (PmSpecialNeedRow)AImportPartnerDS.PmSpecialNeed.DefaultView[0].Row;
+
+            AExistingPartnerDS.PmSpecialNeed.DefaultView.RowFilter = String.Format("{0}={1}",
+                PmSpecialNeedTable.GetPartnerKeyDBName(), AExistingPartnerKey);
+
+            if (AExistingPartnerDS.PmSpecialNeed.DefaultView.Count == 0)
+            {
+                return;
+            }
+
+            PmSpecialNeedRow ExistingRow = (PmSpecialNeedRow)AExistingPartnerDS.PmSpecialNeed.DefaultView[0].Row;
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS))
+            {
+                ExistingRow.MedicalComment = ImportedRow.MedicalComment;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_VEGETARIAN))
+            {
+                ExistingRow.VegetarianFlag = ImportedRow.VegetarianFlag;
+            }
+
+            ExistingRow.PartnerKey = AImportPartnerKey;
+
+            AImportPartnerDS.PmSpecialNeed.Rows.Remove(ImportedRow);
+            AImportPartnerDS.PmSpecialNeed.ImportRow(ExistingRow);
+        }
+
         private void ImportRecordsByPartnerKey(DataTable ADestTable,
             DataTable ASourceTable,
             String AKeyDbName,
@@ -1826,13 +2257,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                 gotOutputRow = true;
             }
 
-            NewPartnerDS.PPartner.ImportRow(APartnerRow);
             Int64 OrigPartnerKey = APartnerRow.PartnerKey;
             Int64 NewPartnerKey = OrigPartnerKey;
             bool UpdateExistingRecord = false;
 
             // If the import file had a negative PartnerKey, I need to create a new one here,
             // and use it on all the dependent tables.
+
+            if ((Path.GetExtension(FFileName) == ".csv")
+                && (ExistingPartnerKey > 0)
+                && (OrigPartnerKey < 0))
+            {
+                // If csv import file did not have a partner key and we want to update an existing partner
+                // then we need to retrieve existing data for that partner in order to determine which records
+                // have to be added/updated.
+                PartnerImportExportTDS ExistingPartnerTDS = TRemote.MPartner.ImportExport.WebConnectors.ReadPartnerDataForCSV(ExistingPartnerKey,
+                    FCSVColumns);
+                AddPartnerForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddShortTermAppForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddSpecialTypeForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddSubscriptionForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddContactForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddPassportForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddSpecialNeedsForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+            }
 
             if (ExistingPartnerKey > 0)  // This ExistingPartnerKey has been set by the UseSelectedPerson button.
             {
@@ -1849,6 +2297,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
+            NewPartnerDS.PPartner.ImportRow(APartnerRow);
+
             if (UpdateExistingRecord)
             {
                 NewPartnerDS.PPartner[0].PartnerKey = UserSelectedRow.PartnerKey;
@@ -1857,7 +2307,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 NewPartnerDS.PPartner[0].ModificationId = UserSelectedRow.ModificationId;
 
 // if I leave in the following line then any data for PPartner records does not get into db
-                NewPartnerDS.PPartner[0].AcceptChanges(); // This should reset the RowState, allowing me to Update rather than Add //TODOWBxxx???
+                //NewPartnerDS.PPartner[0].AcceptChanges(); // This should reset the RowState, allowing me to Update rather than Add //TODOWBxxx???
             }
             else
             {

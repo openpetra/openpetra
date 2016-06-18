@@ -83,6 +83,136 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
         /// <summary>
+        /// read data from db for partner with given key according to csv columns needed
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerImportExportTDS ReadPartnerDataForCSV(Int64 APartnerKey, List <String>ACSVColumns)
+        {
+            TDBTransaction ReadTransaction = null;
+
+            PartnerImportExportTDS MainDS = new PartnerImportExportTDS();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    // read PPartner record
+                    MainDS.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+
+                    // read Partner specific record
+                    if ((MainDS.PPartner != null)
+                        && (MainDS.PPartner.Count > 0))
+                    {
+                        switch (MainDS.PPartner[0].PartnerClass)
+                        {
+                            case MPartnerConstants.PARTNERCLASS_FAMILY:
+                                MainDS.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_PERSON:
+                                MainDS.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_UNIT:
+                                MainDS.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_ORGANISATION:
+                                MainDS.Merge(POrganisationAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_CHURCH:
+                                MainDS.Merge(PChurchAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_BANK:
+                                MainDS.Merge(PBankAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_VENUE:
+                                MainDS.Merge(PVenueAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            default:
+                                // this should not happen
+                                break;
+                        }
+                    }
+
+                    // read addresses
+                    MainDS.Merge(PLocationAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+                    MainDS.Merge(PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+
+                    // read contact details
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EMAIL)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PHONE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MOBILEPHONE))
+                    {
+                        MainDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+                    }
+
+                    // for FAMILY ("SpecialTypeFamily_x") and other Partner Classes ("SpecialType_x"):
+                    // read special types in any case (checking for criteria would take too much runtime)
+                    MainDS.Merge(PPartnerTypeAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+
+                    // read special needs (for PERSON)
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS))
+                    {
+                        MainDS.Merge(PmSpecialNeedAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
+                    }
+
+                    // read application (for PERSON)
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EVENTKEY)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ARRIVALDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ARRIVALTIME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DEPARTURETIME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EVENTROLE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPSTATUS)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPTYPE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPCOMMENTS))
+                    {
+                        MainDS.Merge(PmGeneralApplicationAccess.LoadViaPPersonPartnerKey(APartnerKey, ReadTransaction));
+                        MainDS.Merge(PmShortTermApplicationAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
+                    }
+
+                    // read contact logs
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTCODE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTTIME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTOR)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTNOTES)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTATTR)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL))
+                    {
+                        MainDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, ReadTransaction));
+                    }
+
+                    // read passports (for PERSON)
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNAME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION))
+                    {
+                        MainDS.Merge(PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
+                    }
+                });
+
+            MainDS.AcceptChanges();
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// This imports partners from a CSV file
         /// </summary>
         [RequireModulePermission("PTNRUSER")]

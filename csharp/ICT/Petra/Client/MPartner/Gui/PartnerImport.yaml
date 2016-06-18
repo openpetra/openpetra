@@ -10,7 +10,7 @@ RootNode:
         actCancelImport: {ActionClick=CancelImport, InitiallyEnabled=false}
         actCreateNewPartner: {ActionClick=CreateNewPartner}
         actSkip: {ActionClick=SkipRecord}
-        actUseSelectedAddress: {ActionClick=UseSelectedAddress, InitiallyEnabled=false}
+        #actUseSelectedAddress: {ActionClick=UseSelectedAddress, InitiallyEnabled=false}
         actUseSelectedPerson: {ActionClick=UseSelectedPerson, InitiallyEnabled=false}
         actUseSelectedFamily: {ActionClick=UseSelectedFamily, InitiallyEnabled=false}
         actFindOtherPartner: {ActionClick=FindOtherPartner, InitiallyEnabled=false} 
@@ -23,7 +23,7 @@ RootNode:
                 Row2: [txtHint]
         pnlInfo:
             Stretch: horizontally
-            Width: 530
+            Width: 520
             Controls:
                 Row0: [txtFilename]
                 Row1: [txtPartnerInfo]
@@ -83,9 +83,10 @@ RootNode:
                 Row1: [btnSkip]
                 Row2: [btnUseSelectedPerson]
                 Row3: [btnCreateNewPartner]
-                Row4: [btnUseSelectedAddress]
-                Row5: [btnUseSelectedFamily]
-                Row6: [btnFindOtherPartner]
+                #Row4: [btnUseSelectedAddress]
+                Row4: [btnUseSelectedFamily]
+                Row5: [btnFindOtherPartner]
+                Row6: [chkReplaceAddress]
 
         btnSelectFile: {ActionClick=OpenFile}
             Label: Select File...
@@ -101,19 +102,20 @@ RootNode:
             Text: Take action for each partner
             Multiline: true
             Height: 30
-            Width: 140
+            Width: 130
         btnSkip: {Label=Skip Partner, Enabled=false}
             Width: 130
         btnUseSelectedPerson: {Label=Update Partner, Enabled=false}
             Width: 130
         btnCreateNewPartner: {Label=Create Partner, Enabled=false}
             Width: 130
-        btnUseSelectedAddress: {Label=Re-use address, Enabled=false}
-            Width: 130
+        #btnUseSelectedAddress: {Label=Re-use address, Enabled=false}
+        #    Width: 130
         btnUseSelectedFamily: {Label=Add to Family, Enabled=false}
             Width: 130
         btnFindOtherPartner: {Label=Find other Partner..., Enabled=false}
             Width: 130
-        chkSemiAutomatic: {Label=Automatic Import, Help="Partners will be imported automatically, unless user intervention is required.", CheckBoxAttachedLabel=right}
+        chkSemiAutomatic: {Label=Automatic Import, Tooltip="Partners will be imported automatically, unless user intervention is required.", CheckBoxAttachedLabel=right}
+        chkReplaceAddress: {Label=Replace Address, Tooltip="Replace Address of existing Partner with imported one. If unticked: Add Address.", CheckBoxAttachedLabel=right}
 
         Empty:
