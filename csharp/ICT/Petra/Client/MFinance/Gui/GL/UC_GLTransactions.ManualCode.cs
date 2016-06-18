@@ -1327,19 +1327,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             int indexOfAccountCodeDataColumn = 3;
 
             // Add red triangle to inactive accounts
-            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn, "CostCentre", BoundGridImage.DisplayImageEnum.Inactive);
-            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn, "AccountCode", BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.CostCentreCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.AccountCode, BoundGridImage.DisplayImageEnum.Inactive);
 
             //Add conditions to columns of Analysis Attributes grid
             int indexOfAnalysisCodeColumn = 0;
             int indexOfAnalysisAttributeValueColumn = 1;
 
             // Add red triangle to inactive analysis type codes and their values
-            grdAnalAttributes.AddAnnotationImage(this, indexOfAnalysisCodeColumn, "AnalysisTypeCode", BoundGridImage.DisplayImageEnum.Inactive);
-            grdAnalAttributes.AddAnnotationImage(this,
-                indexOfAnalysisAttributeValueColumn,
-                "AnalysisAttributeValue",
-                BoundGridImage.DisplayImageEnum.Inactive);
+            grdAnalAttributes.AddAnnotationImage(this, indexOfAnalysisCodeColumn,
+                BoundGridImage.AnnotationContextEnum.AnalysisTypeCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdAnalAttributes.AddAnnotationImage(this, indexOfAnalysisAttributeValueColumn,
+                BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue, BoundGridImage.DisplayImageEnum.Inactive);
         }
 
         private bool AccountIsActive(string AAccountCode = "")
@@ -2328,25 +2329,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
         /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
         /// <returns>True if the image should be displayed in the current context</returns>
-        public bool EvaluateBoundImage(string AContext, DataRowView ADataRowView)
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
         {
             switch (AContext)
             {
-                case "AccountCode":
+                case BoundGridImage.AnnotationContextEnum.AccountCode:
                     ATransactionRow row = (ATransactionRow)ADataRowView.Row;
                     return !AccountIsActive(row.AccountCode);
 
-                case "CostCentre":
+                case BoundGridImage.AnnotationContextEnum.CostCentreCode:
                     ATransactionRow row2 = (ATransactionRow)ADataRowView.Row;
                     return !CostCentreIsActive(row2.CostCentreCode);
 
-                case "AnalysisTypeCode":
+                case BoundGridImage.AnnotationContextEnum.AnalysisTypeCode:
                     ATransAnalAttribRow row3 = (ATransAnalAttribRow)ADataRowView.Row;
                     return !FAnalysisAttributesLogic.AnalysisCodeIsActive(cmbDetailAccountCode.GetSelectedString(),
                     FCacheDS.AAnalysisAttribute,
                     row3.AnalysisTypeCode);
 
-                case "AnalysisAttributeValue":
+                case BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue:
                     ATransAnalAttribRow row4 = (ATransAnalAttribRow)ADataRowView.Row;
                     return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues,
                     FCacheDS.AFreeformAnalysis,

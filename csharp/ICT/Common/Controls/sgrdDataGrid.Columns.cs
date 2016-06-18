@@ -291,7 +291,7 @@ namespace Ict.Common.Controls
         /// <param name="AContext">The invocation context that was used in the <see cref="BoundGridImage"/> constructor</param>
         /// <param name="ADataRowView">The row containing the cell that will get the image</param>
         /// <returns>True if an image should be displayed</returns>
-        bool EvaluateBoundImage(string AContext, DataRowView ADataRowView);
+        bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView);
     }
 
     /// <summary>
@@ -310,9 +310,27 @@ namespace Ict.Common.Controls
             Inactive
         };
 
+        /// <summary>
+        /// Available annotation contexts
+        /// </summary>
+        public enum AnnotationContextEnum
+        {
+            /// <summary> The Account Code context </summary>
+            AccountCode,
+
+            /// <summary> The Coste Centre context </summary>
+            CostCentreCode,
+
+            /// <summary> The Analaysis Type context </summary>
+            AnalysisTypeCode,
+
+            /// <summary> The Ananlysis Attribute Value context </summary>
+            AnalysisAttributeValue
+        };
+
         // Local copies of constructor parameters
         private IBoundImageEvaluator FCallerForm;
-        private string FCallerContext;
+        private AnnotationContextEnum FCallerContext;
         private DisplayImageEnum FDisplayImageEnum;
 
         // The actual image to display
@@ -324,7 +342,7 @@ namespace Ict.Common.Controls
         /// <param name="ACallerForm">A reference to the caller form.  Usually use 'this'.  It must implement the <see cref="IBoundImageEvaluator"/> interface.</param>
         /// <param name="AContext">A string that identifies the column context.  Can be empty text if the grid only has one column with an image.</param>
         /// <param name="AImageEnum">One of the available images that can be displayed.</param>
-        public BoundGridImage(IBoundImageEvaluator ACallerForm, String AContext, DisplayImageEnum AImageEnum)
+        public BoundGridImage(IBoundImageEvaluator ACallerForm, AnnotationContextEnum AContext, DisplayImageEnum AImageEnum)
         {
             FCallerForm = ACallerForm;
             FCallerContext = AContext;
@@ -445,6 +463,72 @@ namespace Ict.Common.Controls
             }
 
             return ReturnValue;
+        }
+    }
+
+    /// <summary>
+    /// Class that handles tool tips for cells with a bound annotation image
+    /// </summary>
+    public class BoundImageToolTipModel : SourceGrid.Cells.Models.IToolTipText
+    {
+        // Local copies of constructor parameters
+        private IBoundImageEvaluator FCallerForm;
+        private BoundGridImage.AnnotationContextEnum FCallerContext;
+        private BoundGridImage.DisplayImageEnum FImageEnum;
+
+        /// <summary>
+        /// Main Constructor
+        /// </summary>
+        /// <param name="ACallerForm">A reference to the caller form.  Usually use 'this'.  It must implement the <see cref="IBoundImageEvaluator"/> interface.</param>
+        /// <param name="AContext">A string that identifies the column context.  Can be empty text if the grid only has one column with an image.</param>
+        /// <param name="AImageEnum">One of the available images that can be displayed.</param>
+        public BoundImageToolTipModel(IBoundImageEvaluator ACallerForm,
+            BoundGridImage.AnnotationContextEnum AContext,
+            BoundGridImage.DisplayImageEnum AImageEnum)
+        {
+            FCallerForm = ACallerForm;
+            FCallerContext = AContext;
+            FImageEnum = AImageEnum;
+        }
+
+        /// <summary>
+        /// Implementation of the required IToolTipText method
+        /// </summary>
+        /// <param name="cellContext">The cell for which an tool tip is desired</param>
+        /// <returns>The text, which may be an empty string</returns>
+        public string GetToolTipText(SourceGrid.CellContext cellContext)
+        {
+            SourceGrid.DataGrid grid = (SourceGrid.DataGrid)cellContext.Grid;
+            DataRowView row = (DataRowView)grid.Rows.IndexToDataSourceRow(cellContext.Position.Row);
+
+            if (row != null)
+            {
+                if (FCallerForm.EvaluateBoundImage(FCallerContext, row))
+                {
+                    // There is an image in this row/column
+                    if (FImageEnum == BoundGridImage.DisplayImageEnum.Inactive)
+                    {
+                        if (FCallerContext == BoundGridImage.AnnotationContextEnum.CostCentreCode)
+                        {
+                            return Catalog.GetString("This Cost Centre code is no longer active");
+                        }
+                        else if (FCallerContext == BoundGridImage.AnnotationContextEnum.AccountCode)
+                        {
+                            return Catalog.GetString("This Bank Account code is no longer active");
+                        }
+                        else if (FCallerContext == BoundGridImage.AnnotationContextEnum.AnalysisTypeCode)
+                        {
+                            return Catalog.GetString("This Analysis Attribute type is no longer active");
+                        }
+                        else if (FCallerContext == BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue)
+                        {
+                            return Catalog.GetString("This Analysis Attribute value is no longer active");
+                        }
+                    }
+                }
+            }
+
+            return string.Empty;
         }
     }
     #endregion

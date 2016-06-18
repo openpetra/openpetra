@@ -254,7 +254,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     AddStatus(String.Format("Reading {0}\r\n", Path.GetFileName(FFileName)));
 
-                    if (Path.GetExtension(FFileName) == ".yml")
+                    if (Path.GetExtension(FFileName).ToLower() == ".yml")
                     {
                         TYml2Xml yml = new TYml2Xml(FFileName);
                         AddStatus(Catalog.GetString("Parsing file. Please wait...\r\n"));
@@ -266,7 +266,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // provisionally enable "Automatic Import"
                     chkSemiAutomatic.Enabled = true;
 
-                    if (Path.GetExtension(FFileName) == ".csv")
+                    if (Path.GetExtension(FFileName).ToLower() == ".csv")
                     {
                         btnUseSelectedFamily.Show();
                         btnFindOtherPartner.Show();
@@ -297,7 +297,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                             try
                             {
                                 SaveUserDefaults(dlgSeparator);
-                                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, dlgSeparator.SelectedSeparator);
+                                FSelectedSeparator = dlgSeparator.SelectedSeparator;
+                                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, FSelectedSeparator);
                                 FFileContent = TXMLParser.XmlToString(doc);
                                 GetImportIDHeaderText(doc);
                                 FillCSVColumnList(doc);
@@ -323,7 +324,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             return;
                         }
                     }
-                    else if (Path.GetExtension(FFileName) == ".ext")
+                    else if (Path.GetExtension(FFileName).ToLower() == ".ext")
                     {
                         btnUseSelectedFamily.Hide();
                         btnFindOtherPartner.Hide();
@@ -391,7 +392,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void LoadDataSet(ref TVerificationResultCollection AVerificationResult, Int64 AOldPartnerKey = -1, Int64 ANewPartnerKey = -1)
         {
-            if (Path.GetExtension(FFileName) == ".yml")
+            if (Path.GetExtension(FFileName).ToLower() == ".yml")
             {
                 if ((AOldPartnerKey != -1) && (ANewPartnerKey != -1))
                 {
@@ -403,7 +404,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportPartnersFromYml(FFileContent, out AVerificationResult);
             }
 
-            if (Path.GetExtension(FFileName) == ".csv")
+            if (Path.GetExtension(FFileName).ToLower() == ".csv")
             {
                 if ((AOldPartnerKey != -1) && (ANewPartnerKey != -1))
                 {
@@ -414,7 +415,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(FFileContent, out AVerificationResult);
             }
-            else if (Path.GetExtension(FFileName) == ".ext")
+            else if (Path.GetExtension(FFileName).ToLower() == ".ext")
             {
                 if ((AOldPartnerKey != -1) && (ANewPartnerKey != -1))
                 {
@@ -463,7 +464,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 UserSelectedRow = (PartnerFindTDSSearchResultRow)UserSelectedRecord[0].Row;
                 UserSelLocationKey = UserSelectedRow.LocationKey;
 
-                if (Path.GetExtension(FFileName) == ".csv")
+                if (Path.GetExtension(FFileName).ToLower() == ".csv")
                 {
                     if ((UserSelectedRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                         && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
@@ -602,6 +603,17 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
+            if (Path.GetExtension(FFileName).ToLower() == ".csv")
+            {
+                // Get the Finish options by displaying the dialog.  If the user Cancels we can just return.
+                if (GetFinishOptions(out FCreateCSVFile, out FIncludeFamiliesInCSV, out FCsvOutFilePath,
+                        out FCreateExtract, out FExtractName, out FExtractDescription, out FIncludeFamiliesInExtract) == false)
+                {
+                    // User clicked Cancel
+                    return;
+                }
+            }
+
             btnStartImport.Enabled = false;
             btnCancelImport.Enabled = true;
 
@@ -700,7 +712,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 true),
                             FTotalNumberOfRecords));
                     SaveLogFile();
-                    DoFinishOptions();
+                    DoFinishOptions(false);
                     SetControlsIdle();
 
                     FMainDS.Clear();
@@ -815,7 +827,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnCreateNewPartner.Enabled = true;
                 btnUseSelectedFamily.Enabled = false;
 
-                if (Path.GetExtension(FFileName) != ".csv")
+                if (Path.GetExtension(FFileName).ToLower() != ".csv")
                 {
                     btnFindOtherPartner.Enabled = false;
                 }
@@ -1324,11 +1336,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             MatchingPartnersExplanation = "";
 
-            if (Path.GetExtension(FFileName) == ".csv")
+            if (Path.GetExtension(FFileName).ToLower() == ".csv")
             {
                 result.SearchResult.Merge(PerformSearchForMatchingPartners(FCurrentPartner, BestLocation, out MatchingPartnersExplanation));
             }
-            else if (Path.GetExtension(FFileName) == ".ext")
+            else if (Path.GetExtension(FFileName).ToLower() == ".ext")
             {
                 // Try to find an existing partner (either with partner key or location data) and set the partner key
                 // Or if the address is found, the location record can be shared.
@@ -1364,7 +1376,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
-            DoFinishOptions();
+            DoFinishOptions(true);
 
             // restore dataset so import can be restarted from scratch
             FMainDS.Clear();
@@ -2280,7 +2292,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool gotOutputRow = false;
 
             FMainDS.OutputData.DefaultView.RowFilter = string.Format("{0}={1}",
-                PartnerImportExportTDSOutputDataTable.GetOutputPartnerKeyDBName(), APartnerRow.PartnerKey);
+                APartnerRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON ?
+                PartnerImportExportTDSOutputDataTable.GetOutputPersonPartnerKeyDBName() :
+                PartnerImportExportTDSOutputDataTable.GetOutputFamilyPartnerKeyDBName(),
+                APartnerRow.PartnerKey);
 
             if (FMainDS.OutputData.DefaultView.Count > 0)
             {
@@ -2295,7 +2310,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // If the import file had a negative PartnerKey, I need to create a new one here,
             // and use it on all the dependent tables.
 
-            if ((Path.GetExtension(FFileName) == ".csv")
+            if ((Path.GetExtension(FFileName).ToLower() == ".csv")
                 && (ExistingPartnerKey > 0)
                 && (OrigPartnerKey < 0))
             {
@@ -2348,9 +2363,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (gotOutputRow)
             {
-                PPartnerRow newPartner = NewPartnerDS.PPartner[0];
-                outputDataRow.OutputPartnerKey = newPartner.PartnerKey;
-
                 if (UpdateExistingRecord)
                 {
                     outputDataRow.ImportStatus = "U";       // Updated
@@ -2389,6 +2401,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     outputDataRow.PartnerShortName = Calculations.DeterminePartnerShortName(newFamily.FamilyName,
                         newFamily.Title,
                         newFamily.FirstName);
+                    outputDataRow.OutputFamilyPartnerKey = newFamily.PartnerKey;
                 }
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
@@ -2403,6 +2416,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     outputDataRow.PartnerShortName = Calculations.DeterminePartnerShortName(newPerson.FamilyName,
                         newPerson.Title,
                         newPerson.FirstName);
+                    outputDataRow.OutputPersonPartnerKey = newPerson.PartnerKey;
                 }
 
                 // If there's an associated PFamily record that I've not imported yet, I could try to do that now,
@@ -2416,11 +2430,14 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     if (gotOutputRow)
                     {
-                        outputDataRow.OutputPartnerKey = 0;
                         outputDataRow.ImportStatus = "E";       // Error
                     }
 
                     return 0;
+                }
+                else if (gotOutputRow)
+                {
+                    outputDataRow.OutputFamilyPartnerKey = RelatedFamilyKey;
                 }
             }
             else if (NewPartnerDS.PPartner[0].PartnerClass == MPartnerConstants.PARTNERCLASS_ORGANISATION)
@@ -2642,13 +2659,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void DoFinishOptions()
+        private bool FCreateCSVFile, FIncludeFamiliesInCSV, FCreateExtract, FIncludeFamiliesInExtract;
+        private string FCsvOutFilePath, FExtractName, FExtractDescription;
+        private string FSelectedSeparator = ",";
+
+        private bool GetFinishOptions(out bool ACreateCSVFile, out bool AIncludeFamiliesInCSV, out string ACsvOutFilePath,
+            out bool ACreateExtract, out string AExtractName, out string AExtractDescription, out bool AIncludeFamiliesInExtract)
         {
-            if (string.Compare(Path.GetExtension(txtFilename.Text), ".csv", true) != 0)
-            {
-                // We only have options when the file format was CSV
-                return;
-            }
+            ACreateCSVFile = AIncludeFamiliesInCSV = ACreateExtract = AIncludeFamiliesInExtract = false;
+            ACsvOutFilePath = AExtractName = AExtractDescription = string.Empty;
 
             // Show the Finish Options dialog
             TFrmPartnerImportFinishOptionsDialog dialog = new TFrmPartnerImportFinishOptionsDialog(this);
@@ -2667,38 +2686,50 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (dialog.ShowDialog() == DialogResult.Cancel)
             {
+                return false;
+            }
+
+            // Get the dialog settings?
+            dialog.GetResults(out ACreateCSVFile, out AIncludeFamiliesInCSV, out ACsvOutFilePath,
+                out ACreateExtract, out AExtractName, out AExtractDescription, out AIncludeFamiliesInExtract);
+
+            return true;
+        }
+
+        private void DoFinishOptions(bool AStopped)
+        {
+            if (string.Compare(Path.GetExtension(txtFilename.Text), ".csv", true) != 0)
+            {
+                // We only have options when the file format was CSV
                 return;
             }
 
-            // Is there something to do?
-            bool createCSVFile, createExtract, includeFamiliesInCSV, includeFamiliesInExtract;
-            string extractName, extractDescription, csvOutFilePath;
-            dialog.GetResults(out createCSVFile, out includeFamiliesInCSV, out csvOutFilePath,
-                out createExtract, out extractName, out extractDescription, out includeFamiliesInExtract);
-
-            if ((createCSVFile == false) && (createExtract == false))
+            if ((FCreateCSVFile == false) && (FCreateExtract == false))
             {
                 // Nothing to do
+                string msgNothing = AStopped ? Catalog.GetString("The Import was stopped.") : Catalog.GetString("The Import was completed.");
+                msgNothing += Catalog.GetString("  Please review the messages to see which rows were successfully imported.");
+                MessageBox.Show(msgNothing, Catalog.GetString("Import Partners"), MessageBoxButtons.OK);
                 return;
             }
 
             string msgTitle = Catalog.GetString("Import Options");
             string msg = Catalog.GetString("The selected Finish Actions have been completed.");
 
-            if (createCSVFile)
+            if (FCreateCSVFile)
             {
                 int numLines, numImports;
-                CreateOutputCSVFile(csvOutFilePath, includeFamiliesInCSV, out numLines, out numImports);
+                CreateOutputCSVFile(FCsvOutFilePath, FIncludeFamiliesInCSV, out numLines, out numImports);
                 msg += string.Format(Catalog.GetString(
                         "{0}  - An output CSV file containing {1} entries was created at{0}      '{2}'{0}    {3} entries were successfully imported"),
-                    Environment.NewLine, numLines, csvOutFilePath, numImports);
+                    Environment.NewLine, numLines, FCsvOutFilePath, numImports);
             }
 
-            if (createExtract)
+            if (FCreateExtract)
             {
                 int keyCount;
 
-                if (CreateOutputExtract(extractName, extractDescription, includeFamiliesInExtract, out keyCount))
+                if (CreateOutputExtract(FExtractName, FExtractDescription, FIncludeFamiliesInExtract, out keyCount))
                 {
                     msg += string.Format(Catalog.GetString("{0}  - An extract was created containing {1} keys"), Environment.NewLine, keyCount);
                 }
@@ -2730,11 +2761,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (gotImportIDs)
                 {
-                    header += string.Format("\"{0}\";", FImportIDHeaderText);
+                    header += string.Format("\"{0}\"{1}", FImportIDHeaderText, FSelectedSeparator);
                 }
 
-                header += string.Format("\"{0}\";\"{1}\";\"{2}\";\"PartnerShortName\";\"ImportStatus\";\"{3}\"",
+                header += string.Format("\"{0}\"{1}\"{2}\"{1}\"{3}\"{1}\"PartnerShortName\"{1}\"ImportStatus\"{1}\"{4}\"",
                     MPartnerConstants.PARTNERIMPORT_PARTNERCLASS,
+                    FSelectedSeparator,
                     MPartnerConstants.PARTNERIMPORT_FAMILYPARTNERKEY,
                     MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY,
                     MPartnerConstants.PARTNERIMPORT_RECORDIMPORTED);
@@ -2757,25 +2789,26 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     if (gotImportIDs)
                     {
-                        outText += string.Format("\"{0}\";", row.ImportID);
+                        outText += string.Format("\"{0}\"{1}", row.ImportID, FSelectedSeparator);
                     }
 
                     string familyKey = string.Empty;
                     string personKey = string.Empty;
                     string wasImported = string.Empty;
 
-                    if (row.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    if ((row.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY) || (row.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
                     {
-                        if (row.OutputPartnerKey > 0)
+                        if (row.OutputFamilyPartnerKey > 0)
                         {
-                            familyKey = row.OutputPartnerKey.ToString("0000000000");
+                            familyKey = row.OutputFamilyPartnerKey.ToString("0000000000");
                         }
                     }
-                    else if (row.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+
+                    if (row.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        if (row.OutputPartnerKey > 0)
+                        if (row.OutputPersonPartnerKey > 0)
                         {
-                            personKey = row.OutputPartnerKey.ToString("0000000000");
+                            personKey = row.OutputPersonPartnerKey.ToString("0000000000");
                         }
                     }
 
@@ -2790,8 +2823,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         ARowsImportedCount++;
                     }
 
-                    outText += string.Format("\"{0}\";\"{1}\";\"{2}\";\"{3}\";\"{4}\";\"{5}\"",
+                    outText += string.Format("\"{0}\"{1}\"{2}\"{1}\"{3}\"{1}\"{4}\"{1}\"{5}\"{1}\"{6}\"",
                         row.PartnerClass,
+                        FSelectedSeparator,
                         familyKey,
                         personKey,
                         row.PartnerShortName,
@@ -2828,14 +2862,26 @@ namespace Ict.Petra.Client.MPartner.Gui
                     continue;
                 }
 
-                if ((outputDataRow.ImportStatus == "N") || (outputDataRow.ImportStatus == "E") || (outputDataRow.OutputPartnerKey <= 0))
+                if ((outputDataRow.ImportStatus == "N")
+                    || (outputDataRow.ImportStatus == "E")
+                    || ((outputDataRow.OutputFamilyPartnerKey <= 0) && (outputDataRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY))
+                    || ((outputDataRow.OutputPersonPartnerKey <= 0) && (outputDataRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)))
                 {
                     badRows++;
                 }
                 else
                 {
                     DataRow dr = table.NewRow();
-                    dr[0] = outputDataRow.OutputPartnerKey;
+
+                    if (outputDataRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    {
+                        dr[0] = outputDataRow.OutputFamilyPartnerKey;
+                    }
+                    else
+                    {
+                        dr[0] = outputDataRow.OutputPersonPartnerKey;
+                    }
+
                     table.Rows.Add(dr);
                 }
             }

@@ -516,12 +516,13 @@
       <CustomField name="ImportID" type="string"/>
       <CustomField name="IsFromFile" type="bool"/>
       <CustomField name="InputPartnerKey" type="Int64" initial="0"/>
-      <CustomField name="OutputPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="OutputPersonPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="OutputFamilyPartnerKey" type="Int64" initial="0"/>
       <CustomField name="PartnerClass" type="string"/>
       <CustomField name="PartnerShortName" type="string"/>
       <CustomField name="ImportStatus" type="string"/>
     </CustomTable>
-    </DataSet>
+  </DataSet>
 
   <DataSet name="ExtractTDS">
     <Table sqltable="m_extract_master"/>

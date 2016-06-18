@@ -521,10 +521,15 @@ namespace Ict.Common.Controls
         /// <param name="AImageEnum">The image selected from one of the available enumerated items</param>
         public void AddAnnotationImage(IBoundImageEvaluator ACallerForm,
             int AImageColumnIndex,
-            string AColumnContext,
+            BoundGridImage.AnnotationContextEnum AColumnContext,
             BoundGridImage.DisplayImageEnum AImageEnum)
         {
+            // Add a model for the image
             this.Columns[AImageColumnIndex].DataCell.Model.AddModel(new BoundGridImage(ACallerForm, AColumnContext, AImageEnum));
+
+            // Add a standard SourceGrid tool tip for the bound image
+            this.Columns[AImageColumnIndex].DataCell.AddController(SourceGrid.Cells.Controllers.ToolTipText.Default);
+            this.Columns[AImageColumnIndex].DataCell.Model.AddModel(new BoundImageToolTipModel(ACallerForm, AColumnContext, AImageEnum));
         }
 
         /*

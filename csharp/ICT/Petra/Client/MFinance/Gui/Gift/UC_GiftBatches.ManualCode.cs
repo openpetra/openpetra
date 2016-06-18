@@ -503,8 +503,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             int indexOfAccountCodeDataColumn = 8;
 
             // Add red triangle to inactive accounts
-            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn, "CostCentre", BoundGridImage.DisplayImageEnum.Inactive);
-            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn, "AccountCode", BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.CostCentreCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.AccountCode, BoundGridImage.DisplayImageEnum.Inactive);
         }
 
         /// <summary>
@@ -1289,16 +1291,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
         /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
         /// <returns>True if the image should be displayed in the current context</returns>
-        public bool EvaluateBoundImage(string AContext, DataRowView ADataRowView)
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
         {
             AGiftBatchRow row = (AGiftBatchRow)ADataRowView.Row;
 
             switch (AContext)
             {
-                case "AccountCode":
+                case BoundGridImage.AnnotationContextEnum.AccountCode:
                     return !FAccountAndCostCentreLogicObject.AccountIsActive(row.BankAccountCode);
 
-                case "CostCentre":
+                case BoundGridImage.AnnotationContextEnum.CostCentreCode:
                     return !FAccountAndCostCentreLogicObject.CostCentreIsActive(row.BankCostCentre);
             }
 

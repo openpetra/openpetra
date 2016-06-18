@@ -29,6 +29,7 @@ using System.Data;
 using System.Xml;
 
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MPartner.Conversion;
@@ -182,6 +183,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         catch (System.FormatException)
                         {
                             AddVerificationResult("Bad number format in PersonPartnerKey: " + strPartnerKey);
+                        }
+                        catch (EOPAppException)
+                        {
+                            AddVerificationResult(string.Format("There is no matching Family key for the specified Person Partner key {0}",
+                                    strPersonKey) +
+                                "  Did you enter the key correctly?");
                         }
                     }
                 }
@@ -1047,11 +1054,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             newRow.IsFromFile = AIsFromFile;
             newRow.PartnerClass = APartnerClass;
-            newRow.InputPartnerKey = 0;
-            newRow.OutputPartnerKey = APartnerKey;
             newRow.ImportStatus = "N";
             newRow.PartnerShortName = string.Empty;
             newRow.ImportID = string.Empty;
+
+            if (APartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+            {
+                newRow.OutputFamilyPartnerKey = APartnerKey;
+            }
+            else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                newRow.OutputPersonPartnerKey = APartnerKey;
+            }
 
             if (AIsFromFile)
             {
