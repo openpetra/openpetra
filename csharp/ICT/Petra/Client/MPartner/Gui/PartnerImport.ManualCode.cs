@@ -845,7 +845,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     // For any partner class OTHER THAN Person, I only want to see matching records of the same class.
                     if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        result.SearchResult.DefaultView.RowFilter = String.Empty;
+                        // For Person we allow to show Person and Family (as people could add a person to a different family)
+                        result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}' OR {2} = '{3}'",
+                            PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
+                            MPartnerConstants.PARTNERCLASS_PERSON,
+                            PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
+                            MPartnerConstants.PARTNERCLASS_FAMILY);
                     }
                     else
                     {
@@ -1441,32 +1446,35 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PPartnerRow ExistingPartnerRow = (PPartnerRow)AExistingPartnerDS.PPartner.DefaultView[0].Row;
 
+            // At this point we can't remove and add any partner row, so we need ot make sure we update the existing one
+            // (as other parts of the code rely on the order of records in the Parnter Table)
+            // Therefore we copy the imported values to a temporary row, then update the imported row with values
+            // from the existing (db) one. Then we need to call AcceptChanges so we can start fresh. And finally we
+            // move the values of the temporary row into the imported one so they get saved to the db.
+            PPartnerRow ImportedPartnerRowCopy = AImportPartnerDS.PPartner.NewRowTyped(false);
+            ImportedPartnerRowCopy.ItemArray = (object[])ImportedPartnerRow.ItemArray.Clone();
+
+            ImportedPartnerRow.ItemArray = (object[])ExistingPartnerRow.ItemArray.Clone();
+            ImportedPartnerRow.AcceptChanges();
+
             if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
-                ExistingPartnerRow.AcquisitionCode = ImportedPartnerRow.AcquisitionCode;
+                ImportedPartnerRow.AcquisitionCode = ImportedPartnerRowCopy.AcquisitionCode;
             }
 
             if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE))
             {
-                ExistingPartnerRow.AddresseeTypeCode = ImportedPartnerRow.AddresseeTypeCode;
+                ImportedPartnerRow.AddresseeTypeCode = ImportedPartnerRowCopy.AddresseeTypeCode;
             }
 
             if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_LANGUAGE))
             {
-                ExistingPartnerRow.LanguageCode = ImportedPartnerRow.LanguageCode;
+                ImportedPartnerRow.LanguageCode = ImportedPartnerRowCopy.LanguageCode;
             }
 
             if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_NOTES))
             {
-                ExistingPartnerRow.Comment = ImportedPartnerRow.Comment;
-            }
-
-            ExistingPartnerRow.PartnerKey = AImportPartnerKey;
-
-            // make sure we update FCurrentPartner if row is changed
-            if (FCurrentPartner == ImportedPartnerRow)
-            {
-                FCurrentPartner = ExistingPartnerRow;
+                ImportedPartnerRow.Comment = ImportedPartnerRowCopy.Comment;
             }
 
             if (ImportedPartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
@@ -1557,7 +1565,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_NOTESFAMILY))
                 {
-                    ExistingPartnerRow.Comment = ImportedPartnerRow.Comment;
+                    ImportedPartnerRow.Comment = ImportedPartnerRowCopy.Comment;
                 }
 
                 ExistingFamilyRow.PartnerKey = AImportPartnerKey;
@@ -1567,10 +1575,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             //TODO: cover other partner types?
+        }
 
-            // move partner record at the end in case it is still needed to access it before that
-            AImportPartnerDS.PPartner.Rows.Remove(ImportedPartnerRow);
-            AImportPartnerDS.PPartner.ImportRow(ExistingPartnerRow);
+        private void AddAddressForCSVPartnerUpdate(Int64 AImportPartnerKey,
+            Int64 AExistingPartnerKey,
+            ref PartnerImportExportTDS AImportPartnerDS,
+            PartnerImportExportTDS AExistingPartnerDS)
+        {
+            //TODOWBxxx
         }
 
         private void AddShortTermAppForCSVPartnerUpdate(Int64 AImportPartnerKey,
@@ -1924,11 +1936,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         if (!importingAlready) // This row is not already on my list
                         {
                             ANewPartnerDS.PLocation.ImportRow(NewLocation);
-                            ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
-                            // Set the PartnerKey for the new Row
-                            int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
-                            ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;
                         }
+
+                        //TODOWBxxx: is it ok that I took this out of the if statement above?
+                        ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
+                        // Set the PartnerKey for the new Row
+                        int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
+                        ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;
                     }
                 }
             }
@@ -2284,6 +2298,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerImportExportTDS ExistingPartnerTDS = TRemote.MPartner.ImportExport.WebConnectors.ReadPartnerDataForCSV(ExistingPartnerKey,
                     FCSVColumns);
                 AddPartnerForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
+                AddAddressForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
                 AddShortTermAppForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
                 AddSpecialTypeForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
                 AddSubscriptionForCSVPartnerUpdate(OrigPartnerKey, ExistingPartnerKey, ref FMainDS, ExistingPartnerTDS);
