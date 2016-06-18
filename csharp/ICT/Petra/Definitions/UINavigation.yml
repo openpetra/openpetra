@@ -266,6 +266,8 @@ OpenPetra:
                 CalebExport: {Label=Caleb Export, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-3, DontShowNestedTasksAsLinks=true} #Permissions are OR'ed
                         CalebExport: {Label=Caleb Export, Description=Export Partner/Personnel/Finance Data to Caleb, Namespace=Ict.Petra.Client.MSysMan.Gui, ActionOpenScreen=TFrmIntranetExportDialog}
                 LedgerSetup:  {Namespace=Ict.Petra.Client.MFinance.Gui.Setup, DontShowNestedTasksAsLinks=true, Label=Ledger Setup}
+                    AccountsPayable:
+                        APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
                     GeneralLedgerSetup:
                         LedgerSettings: {Description="Maintain General Ledger Settings", ActionOpenScreen=TFrmLedgerSettingsDialog}
                         ManageCostCentres: {Description=Maintain Cost Centres and modify their hierarchy, ActionOpenScreen=TFrmGLCostCentreHierarchy}
@@ -274,27 +276,25 @@ OpenPetra:
                       # We shouldn't allow users to edit Cost Centre Types, but a non-OM application might want to...
                       # CostCentreTypes: {Description=Maintain Cost Centres Types, ActionOpenScreen=TFrmSetupCostCentreTypes}
                         AnalysisTypesAndValues: {Label=Analysis Types and Values, Description=Maintain Analysis Types and Values, ActionOpenScreen=TFrmSetupAnalysisTypes, PermissionsRequired=FINANCE-3}
-                    Other:
-                        Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
-                        FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
-                        #ChangeNumberOfForwardingPeriods:
                     GiftReceipting: {Namespace=Ict.Petra.Client.MFinance.Gui.Setup}
                         MotivationGroup: {Description=Maintain Motivation Groups, ActionOpenScreen=Gift.TFrmMotivationGroupSetup}
                         MotivationDetails: {Description="Maintain Motivation Details to which donations can be assigned", ActionOpenScreen=Gift.TFrmGiftMotivationSetup}                        
                         AdminGrantsPayable: {Description=Maintain payable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsPayable}
                         AdminGrantsReceivable: {Description=Maintain receivable Administration Grants, ActionOpenScreen=TFrmSetupAdminGrantsReceivable}
                         EsrDefaults: {Label=ESR Defaults, Description=Maintain Motivation Types for ESR Partner Keys, ActionOpenScreen=Gift.TFrmEsrDefaultsSetup}
-                    AccountsPayable:
-                        APSettings: {Description="Maintain Accounts Payable Settings", ActionOpenScreen=TFrmLedgerSettingsDialog, InitialTab=AP}
+                    Other:
+                        Calendar: {Description="Maintain Accounting Periods", ActionOpenScreen=TFrmSetupAccountingPeriod}
+                        FinanceModuleSubsystems: {Description="Enable/Disable Finance Module Subsystems", ActionOpenScreen=TFrmGLEnableSubsystems}
+                        #ChangeNumberOfForwardingPeriods:
         FinanceSystem: {Icon=finance_setup.ico, Namespace=Ict.Petra.Client.MFinance.Gui.Setup, Label="Finance System Administration", PermissionsRequired="FINANCE-1"}
             General: {SkipThisLevel=true}
                 CLSetup: {Label="Finance Setup (Cross-Ledger)", DontShowNestedTasksAsLinks=true}
-                    ExchangeRates:
-                        CorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
-                        DailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
                     Currencies:
                         CurrencyList: {Description=Maintain Currency List, Namespace=Ict.Petra.Client.MCommon.Gui.Setup, ActionOpenScreen=TFrmCurrencySetup, PermissionsRequired=FINANCE-3}
                         CurrencyLanguages: {Description=Maintain Currency Languages, ActionOpenScreen=TFrmCurrencyLanguageSetup, PermissionsRequired=FINANCE-3}
+                    ExchangeRates:
+                        CorporateExchangeRates: {Description=Maintain Corporate Exchange Rates, ActionOpenScreen=TFrmSetupCorporateExchangeRate}
+                        DailyExchangeRates: {Description=Maintain Daily Exchange Rates, ActionOpenScreen=TFrmSetupDailyExchangeRate}
                     FinanceFormLetterSetup: {Label=Form Letter / Receipt Setup}
                         AddressLayoutCodes: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup}
                         AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup}
