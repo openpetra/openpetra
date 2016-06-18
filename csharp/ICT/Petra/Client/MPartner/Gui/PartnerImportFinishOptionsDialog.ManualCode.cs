@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using GNU.Gettext;
 
 using Ict.Common;
+using Ict.Common.IO;
 
 
 namespace Ict.Petra.Client.MPartner.Gui
@@ -36,13 +37,25 @@ namespace Ict.Petra.Client.MPartner.Gui
     {
         private void InitializeManualCode()
         {
-            chkIncludeImportID.Checked = true;
+            pnlExtract.TabIndex = pnlOutputFile.TabIndex + 10;
         }
 
         private void chkWriteOutputFile_CheckedChanged(object sender, EventArgs e)
         {
-            chkIncludeFamilies.Enabled = chkWriteOutputFile.Checked;
-            chkIncludeImportID.Enabled = chkWriteOutputFile.Checked;
+            bool enable = chkWriteOutputFile.Checked;
+
+            chkIncludeFamiliesInCSV.Enabled = enable;
+            txtOutputFileName.Enabled = enable;
+            btnBrowse.Enabled = enable;
+        }
+
+        private void chkCreateExtract_CheckedChanged(object sender, EventArgs e)
+        {
+            bool enable = chkCreateExtract.Checked;
+
+            chkIncludeFamiliesInExtract.Enabled = enable;
+            txtExtractName.Enabled = enable;
+            txtExtractDescription.Enabled = enable;
         }
 
         /// <summary>
@@ -62,21 +75,21 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Gets the values of the controls in the dialog
         /// </summary>
         public void GetResults(out bool ADoCreateCSVFile,
-            out bool AIncludeFamilies,
-            out bool AIncludeImportIDs,
+            out bool AIncludeFamiliesInCSV,
             out string AOutCSVPath,
             out bool ADoCreateExtract,
             out string AExtractName,
-            out string AExtractDescription)
+            out string AExtractDescription,
+            out bool AIncludeFamiliesInExtract)
         {
             ADoCreateCSVFile = chkWriteOutputFile.Checked;
-            AIncludeFamilies = ADoCreateCSVFile && chkIncludeFamilies.Checked;
-            AIncludeImportIDs = ADoCreateCSVFile && chkIncludeImportID.Checked;
+            AIncludeFamiliesInCSV = ADoCreateCSVFile && chkIncludeFamiliesInCSV.Checked;
             AOutCSVPath = txtOutputFileName.Text;
 
             ADoCreateExtract = chkCreateExtract.Checked;
             AExtractName = ADoCreateExtract ? txtExtractName.Text : string.Empty;
             AExtractDescription = ADoCreateExtract ? txtExtractDescription.Text : string.Empty;
+            AIncludeFamiliesInExtract = ADoCreateExtract && chkIncludeFamiliesInExtract.Checked;
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -84,10 +97,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             SaveFileDialog dialog = new SaveFileDialog();
 
             dialog.InitialDirectory = Path.GetDirectoryName(txtOutputFileName.Text);
-            dialog.FileName = Path.GetFileNameWithoutExtension(txtOutputFileName.Text);
+            dialog.FileName = Path.GetFileName(txtOutputFileName.Text);
             dialog.Filter = "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*";
             dialog.RestoreDirectory = true;
             dialog.CheckPathExists = true;
+
+            TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(txtOutputFileName.Text));
 
             if (dialog.ShowDialog() == DialogResult.Cancel)
             {

@@ -58,7 +58,6 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         private static Int32 FLocationKey = -1;
         private static TVerificationResultCollection ResultsCol;
         private static String ResultsContext;
-        private static Int32 FMostRecentImportID = 0;
 
         private static void AddVerificationResult(String AResultText, TResultSeverity ASeverity)
         {
@@ -1048,33 +1047,48 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
             newRow.IsFromFile = AIsFromFile;
             newRow.PartnerClass = APartnerClass;
+            newRow.InputPartnerKey = 0;
             newRow.OutputPartnerKey = APartnerKey;
-            newRow.ImportStatus = "";
-
-            if (ANode.Attributes["EnrollmentID"] != null)
-            {
-                newRow.ImportID = ANode.Attributes["EnrollmentID"].Value;
-            }
-            else
-            {
-                FMostRecentImportID++;
-                newRow.ImportID = "OPIID" + FMostRecentImportID.ToString();
-            }
+            newRow.ImportStatus = string.Empty;
+            newRow.ImportID = string.Empty;
 
             if (AIsFromFile)
             {
+                if (ANode.Attributes["ImportID"] != null)
+                {
+                    newRow.ImportID = ANode.Attributes["ImportID"].Value;
+                }
+                else if (ANode.Attributes["EnrolmentID"] != null)
+                {
+                    // British spelling
+                    newRow.ImportID = ANode.Attributes["EnrolmentID"].Value;
+                }
+                else if (ANode.Attributes["EnrollmentID"] != null)
+                {
+                    // American spelling
+                    newRow.ImportID = ANode.Attributes["EnrollmentID"].Value;
+                }
+
+                long key;
+
                 if (APartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
                 {
                     if ((ANode.Attributes["FamilyPartnerKey"] != null) && (ANode.Attributes["FamilyPartnerKey"].Value.Length > 0))
                     {
-                        newRow.InputPartnerKey = Convert.ToInt64(ANode.Attributes["FamilyPartnerKey"].Value);
+                        if (Int64.TryParse(ANode.Attributes["FamilyPartnerKey"].Value, out key))
+                        {
+                            newRow.InputPartnerKey = key;
+                        }
                     }
                 }
                 else if (APartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                 {
                     if ((ANode.Attributes["PersonPartnerKey"] != null) && (ANode.Attributes["PersonPartnerKey"].Value.Length > 0))
                     {
-                        newRow.InputPartnerKey = Convert.ToInt64(ANode.Attributes["PersonPartnerKey"].Value);
+                        if (Int64.TryParse(ANode.Attributes["PersonPartnerKey"].Value, out key))
+                        {
+                            newRow.InputPartnerKey = key;
+                        }
                     }
                 }
             }

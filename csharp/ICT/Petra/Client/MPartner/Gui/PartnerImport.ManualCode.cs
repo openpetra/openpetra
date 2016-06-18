@@ -28,6 +28,7 @@ using System;
 using System.Xml;
 using System.Data;
 using System.Text.RegularExpressions;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Specialized;
@@ -104,6 +105,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         Calculations.TOverallContactSettings FPartnersOverallContactSettings;
         string FFileName = string.Empty;
         string FFileContent = string.Empty;
+        string FImportIDHeaderText = string.Empty;
 
         private void AddStatus(String ANewStuff)
         {
@@ -272,6 +274,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         // select separator, make sure there is a header line with the column captions/names
                         TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
+                        dlgSeparator.StartPosition = FormStartPosition.CenterParent;
+                        LoadUserDefaults(dlgSeparator);
+
                         Boolean fileCanOpen = dlgSeparator.OpenCsvFile(FFileName);
 
                         if (!fileCanOpen)
@@ -287,8 +292,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                         {
                             try
                             {
+                                SaveUserDefaults(dlgSeparator);
                                 XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, dlgSeparator.SelectedSeparator);
                                 FFileContent = TXMLParser.XmlToString(doc);
+                                GetImportIDHeaderText(doc);
                                 FillCSVColumnList(doc);
 
                                 LoadDataSet(ref VerificationResult);
@@ -305,6 +312,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                         else
                         {
                             AddStatus(String.Format("\r\nImport of file {0} cancelled!\r\n", Path.GetFileName(FFileName)));
+
+                            // We always save the defaults even if cancelled because the user usually wants to see them again
+                            SaveUserDefaults(dlgSeparator);
 
                             return;
                         }
@@ -2574,6 +2584,31 @@ namespace Ict.Petra.Client.MPartner.Gui
             CreateOrUpdatePartner(FCurrentPartner, true);
         }
 
+        #region Output Options
+
+        private void GetImportIDHeaderText(XmlDocument ADoc)
+        {
+            XmlNode node = ADoc.SelectSingleNode("//Element");
+
+            if (node != null)
+            {
+                if (node.Attributes["ImportID"] != null)
+                {
+                    FImportIDHeaderText = "ImportID";
+                }
+                else if (node.Attributes["EnrolmentID"] != null)
+                {
+                    // British spelling
+                    FImportIDHeaderText = "EnrolmentID";
+                }
+                else if (node.Attributes["EnrollmentID"] != null)
+                {
+                    // American spelling
+                    FImportIDHeaderText = "EnrollmentID";
+                }
+            }
+        }
+
         private void DoFinishOptions()
         {
             if (string.Compare(Path.GetExtension(txtFilename.Text), ".csv", true) != 0)
@@ -2603,10 +2638,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // Is there something to do?
-            bool createCSVFile, createExtract, includeFamiliesInFile, includeImportIDsInFile;
+            bool createCSVFile, createExtract, includeFamiliesInCSV, includeFamiliesInExtract;
             string extractName, extractDescription, csvOutFilePath;
-            dialog.GetResults(out createCSVFile, out includeFamiliesInFile, out includeImportIDsInFile, out csvOutFilePath,
-                out createExtract, out extractName, out extractDescription);
+            dialog.GetResults(out createCSVFile, out includeFamiliesInCSV, out csvOutFilePath,
+                out createExtract, out extractName, out extractDescription, out includeFamiliesInExtract);
 
             if ((createCSVFile == false) && (createExtract == false))
             {
@@ -2614,20 +2649,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                 return;
             }
 
+            string msgTitle = Catalog.GetString("Import Options");
+            string msg = Catalog.GetString("The selected Finish Actions have been completed.");
+
             if (createCSVFile)
             {
-                CreateOutputCSVFile(csvOutFilePath, includeFamiliesInFile, includeImportIDsInFile);
+                int numLines, numImports;
+                CreateOutputCSVFile(csvOutFilePath, includeFamiliesInCSV, out numLines, out numImports);
+                msg += string.Format(Catalog.GetString(
+                        "{0}  - An output CSV file containing {1} entries was created at{0}      '{2}'{0}    {3} entries were successfully imported"),
+                    Environment.NewLine, numLines, csvOutFilePath, numImports);
             }
 
             if (createExtract)
             {
-                CreateOutputExtract(extractName, extractDescription);
+                int keyCount;
+
+                if (CreateOutputExtract(extractName, extractDescription, includeFamiliesInExtract, out keyCount))
+                {
+                    msg += string.Format(Catalog.GetString("{0}  - An extract was created containing {1} keys"), Environment.NewLine, keyCount);
+                }
+                else
+                {
+                    msg += string.Format(Catalog.GetString("{0}  - The server failed to create the extract"), Environment.NewLine);
+                }
             }
 
-            string msgTitle = Catalog.GetString("Import Options");
-
-            MessageBox.Show(Catalog.GetString(
-                    "The selected Finish Actions have been completed."), msgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(msg, msgTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         /// <summary>
@@ -2640,19 +2688,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             return TRemote.MPartner.Partner.WebConnectors.ExtractExists(AExtractName) == false;
         }
 
-        private void CreateOutputCSVFile(string APath, bool AIncludeFamiliesOfPersons, bool AIncludeImportIDs)
+        private void CreateOutputCSVFile(string APath, bool AIncludeFamiliesOfPersons, out int ALinesWrittenCount, out int ARowsImportedCount)
         {
             using (StreamWriter sw = new StreamWriter(APath))
             {
+                bool gotImportIDs = FImportIDHeaderText.Length > 0;
                 string header = string.Empty;
 
-                if (AIncludeImportIDs)
+                if (gotImportIDs)
                 {
-                    header += "\"EnrollmentID\";";
+                    header += string.Format("\"{0}\";", FImportIDHeaderText);
                 }
 
-                header += "\"PartnerClass\";\"PartnerKey\";\"PartnerShortName\";\"ImportStatus\"";
+                header += string.Format("\"{0}\";\"{1}\";\"{2}\";\"PartnerShortName\";\"ImportStatus\";\"{3}\"",
+                    MPartnerConstants.PARTNERIMPORT_PARTNERCLASS,
+                    MPartnerConstants.PARTNERIMPORT_FAMILYPARTNERKEY,
+                    MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY,
+                    MPartnerConstants.PARTNERIMPORT_RECORDIMPORTED);
                 sw.WriteLine(header);
+
+                ALinesWrittenCount = 0;
+                ARowsImportedCount = 0;
 
                 for (int i = 0; i < FMainDS.OutputData.Rows.Count; i++)
                 {
@@ -2660,27 +2716,171 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     if ((row.IsFromFile == false) && (AIncludeFamiliesOfPersons == false))
                     {
+                        // The row was not part of the original file, so will be a new FAMILY for a PERSON
                         continue;
                     }
 
                     string outText = string.Empty;
 
-                    if (AIncludeImportIDs)
+                    if (gotImportIDs)
                     {
                         outText += string.Format("\"{0}\";", row.ImportID);
                     }
 
-                    outText += string.Format("\"{0}\";\"{1}\";\"{2}\";\"{3}\"", row.PartnerClass, row.OutputPartnerKey.ToString(
-                            "0000000000"), row.PartnerShortName, row.ImportStatus);
+                    string familyKey = string.Empty;
+                    string personKey = string.Empty;
+                    string wasImported = string.Empty;
+
+                    if (row.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                    {
+                        if (row.OutputPartnerKey > 0)
+                        {
+                            familyKey = row.OutputPartnerKey.ToString("0000000000");
+                        }
+                    }
+                    else if (row.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                    {
+                        if (row.OutputPartnerKey > 0)
+                        {
+                            personKey = row.OutputPartnerKey.ToString("0000000000");
+                        }
+                    }
+
+                    if ((row.ImportStatus == string.Empty) || (row.ImportStatus == "E"))
+                    {
+                        // The row was skipped, the import was stopped, or there was an error
+                        wasImported = "no";
+                    }
+                    else
+                    {
+                        wasImported = "yes";
+                        ARowsImportedCount++;
+                    }
+
+                    outText += string.Format("\"{0}\";\"{1}\";\"{2}\";\"{3}\";\"{4}\";\"{5}\"",
+                        row.PartnerClass,
+                        familyKey,
+                        personKey,
+                        row.PartnerShortName,
+                        row.ImportStatus,
+                        wasImported);
+
                     sw.WriteLine(outText);
+                    ALinesWrittenCount++;
                 }
 
                 sw.Close();
             }
         }
 
-        private void CreateOutputExtract(string AExtractName, string AExtractDescription)
+        private bool CreateOutputExtract(string AExtractName, string AExtractDescription, bool AIncludeFamiliesOfPersons, out int AKeyCount)
         {
+            AKeyCount = 0;
+
+            int extractID = -1;
+            int keyCountInExtract = -1;
+            List <long>ignoredKeysList = null;
+
+            DataTable table = new DataTable();
+            table.Columns.Add("Key", typeof(System.Int64));
+
+            int badRows = 0;
+
+            for (int i = 0; i < FMainDS.OutputData.Rows.Count; i++)
+            {
+                PartnerImportExportTDSOutputDataRow outputDataRow = (PartnerImportExportTDSOutputDataRow)FMainDS.OutputData.Rows[i];
+
+                if ((outputDataRow.IsFromFile == false) && (AIncludeFamiliesOfPersons == false))
+                {
+                    continue;
+                }
+
+                if ((outputDataRow.ImportStatus == string.Empty) || (outputDataRow.ImportStatus == "E") || (outputDataRow.OutputPartnerKey <= 0))
+                {
+                    badRows++;
+                }
+                else
+                {
+                    DataRow dr = table.NewRow();
+                    dr[0] = outputDataRow.OutputPartnerKey;
+                    table.Rows.Add(dr);
+                }
+            }
+
+            if (badRows > 0)
+            {
+                string msg = string.Format(Catalog.GetPluralString(
+                        "{0} row could not be imported.", "{0} rows could not be imported.", badRows), badRows);
+                msg += Catalog.GetString(" Do you want to create an extract that only contains the successfully imported rows?");
+
+                if (MessageBox.Show(msg, Catalog.GetString(""), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                        MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return false;
+                }
+            }
+
+            if (TRemote.MPartner.Partner.WebConnectors.CreateNewExtractFromPartnerKeys(ref extractID, AExtractName, AExtractDescription,
+                    table, 0, false, false, false, out keyCountInExtract, out ignoredKeysList))
+            {
+                AKeyCount = keyCountInExtract;
+                return true;
+            }
+
+            return false;
         }
+
+        private void LoadUserDefaults(TDlgSelectCSVSeparator ADialog)
+        {
+            // Start with separator and number format
+            CultureInfo myCulture = CultureInfo.CurrentCulture;;
+
+            string defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_EUROPEAN;
+
+            if (myCulture.TextInfo.CultureName.EndsWith("-US"))
+            {
+                defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+            }
+
+            string impOptions = TUserDefaults.GetStringDefault("Imp Options", defaultImpOptions);
+
+            if (impOptions.Length > 0)
+            {
+                ADialog.SelectedSeparator = impOptions.Substring(0, 1);
+            }
+
+            if (impOptions.Length > 1)
+            {
+                ADialog.NumberFormat = impOptions.Substring(1);
+            }
+
+            // Now do date format
+            string dateFormat = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+
+            // mdy and dmy have been the old default settings in Petra 2.x
+            if (dateFormat.ToLower() == "mdy")
+            {
+                dateFormat = "MM/dd/yyyy";
+            }
+
+            if (dateFormat.ToLower() == "dmy")
+            {
+                dateFormat = "dd/MM/yyyy";
+            }
+
+            ADialog.DateFormat = dateFormat;
+        }
+
+        private void SaveUserDefaults(TDlgSelectCSVSeparator ADialog)
+        {
+            string impOptions = ADialog.SelectedSeparator;
+
+            impOptions += ADialog.NumberFormat;
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+            TUserDefaults.SetDefault("Imp Date", ADialog.DateFormat);
+            TUserDefaults.SaveChangedUserDefaults();
+        }
+
+        #endregion
     }
 }

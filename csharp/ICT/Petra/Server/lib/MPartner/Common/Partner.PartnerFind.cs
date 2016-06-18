@@ -1423,23 +1423,45 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             Int64 NewPartnerKey = 0;
             DataTable FullFindResultDT = new PartnerFindTDSSearchResultTable();
             DataTable FilteredResultDT = new PartnerFindTDSSearchResultTable();
+            DataRow fallbackRow = null;
+            TLocationPK bestLocationPK = null;
+
+            string partnerKeyDBname = PartnerFindTDSSearchResultTable.GetPartnerKeyDBName();
+            string locationKeyDBName = PartnerFindTDSSearchResultTable.GetLocationKeyDBName();
+            string siteKeyDBname = PartnerFindTDSSearchResultTable.GetSiteKeyDBName();
 
             // Request all found Partners from FPagedDataSetObject
             FullFindResultDT = FPagedDataSetObject.GetAllData();
 
-            FullFindResultDT.DefaultView.Sort = "p_partner_key_n ASC";
+            // Sort by PartnerKey so we get duplicates together
+            FullFindResultDT.DefaultView.Sort = partnerKeyDBname + " ASC";
 
             foreach (DataRowView rv in FullFindResultDT.DefaultView)
             {
-                NewPartnerKey = (Int64)rv.Row["p_partner_key_n"];
+                DataRow row = rv.Row;
+                NewPartnerKey = Convert.ToInt64(row[partnerKeyDBname]);
 
                 if (NewPartnerKey != CurrentPartnerKey)
                 {
-                    //TODOWBxxx: determine best address from given location table and add that one to FilteredResultDT
-                    //Calculations.DetermineBestAddress(...)
-                    //Find record with best address and add it to FilteredResultDT
+                    // We have moved on to the next partner
+                    if (fallbackRow != null)
+                    {
+                        // Not sure if/how this can happen but we didn't save anything  for the previous partner
+                        // We must save something so we save the row we kept as a fallback.  It is not the 'best' address however.
+                        FilteredResultDT.ImportRow(fallbackRow);
+                    }
+
+                    // Find the best address for the new partner
+                    bestLocationPK = ServerCalculations.DetermineBestAddress(NewPartnerKey);
                     CurrentPartnerKey = NewPartnerKey;
-                    FilteredResultDT.ImportRow(rv.Row); // temporary
+                }
+
+                // Is this row the same as the Best Address? If so its the one we import and we no longer need a fallback
+                if ((bestLocationPK.LocationKey == Convert.ToInt32(row[locationKeyDBName]))
+                    && (bestLocationPK.SiteKey == Convert.ToInt64(row[siteKeyDBname])))
+                {
+                    FilteredResultDT.ImportRow(row);
+                    fallbackRow = null;
                 }
             }
 
