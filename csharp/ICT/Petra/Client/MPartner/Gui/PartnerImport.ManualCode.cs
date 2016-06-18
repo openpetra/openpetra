@@ -268,6 +268,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                     if (Path.GetExtension(FFileName) == ".csv")
                     {
+                        btnUseSelectedFamily.Show();
+                        btnFindOtherPartner.Show();
+                        chkReplaceAddress.Show();
+
                         // disable "Automatic Import" for .csv files
                         chkSemiAutomatic.Checked = false;
                         chkSemiAutomatic.Enabled = false;
@@ -321,6 +325,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
                     else if (Path.GetExtension(FFileName) == ".ext")
                     {
+                        btnUseSelectedFamily.Hide();
+                        btnFindOtherPartner.Hide();
+                        chkReplaceAddress.Checked = false;
+                        chkReplaceAddress.Hide();
+
                         StreamReader sr = new StreamReader(FFileName, true);
 
                         FFileContent = sr.ReadToEnd().Replace("\r", "");
@@ -443,8 +452,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void OnMatchingRecordSelChange(Object sender, MouseEventArgs e)
         {
-            String Msg = "";
-
             DataRowView[] UserSelectedRecord = grdMatchingRecords.SelectedDataRowsAsDataRowView;
             //btnUseSelectedAddress.Enabled = false;
             btnUseSelectedPerson.Enabled = false;
@@ -453,33 +460,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (UserSelectedRecord.GetLength(0) > 0)
             {
                 //btnUseSelectedAddress.Enabled = true;
-                Msg = "Use this existing partner's address";
                 UserSelectedRow = (PartnerFindTDSSearchResultRow)UserSelectedRecord[0].Row;
                 UserSelLocationKey = UserSelectedRow.LocationKey;
 
-                if ((UserSelectedRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
-                    && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                if (Path.GetExtension(FFileName) == ".csv")
                 {
-                    Msg += ", add Person to this Family";
-                    btnUseSelectedFamily.Enabled = true;
-                }
-                else
-                {
-                    btnUseSelectedFamily.Enabled = false;
-                }
+                    if ((UserSelectedRow.PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY)
+                        && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                    {
+                        btnUseSelectedFamily.Enabled = true;
+                    }
+                    else
+                    {
+                        btnUseSelectedFamily.Enabled = false;
+                    }
 
-                if (UserSelectedRow.PartnerKey == FoundPartnerMatchingKey)
+                    // if (UserSelectedRow.PartnerKey == FoundPartnerMatchingKey)
+                    if (UserSelectedRow.PartnerClass == FCurrentPartner.PartnerClass)
+                    {
+                        btnUseSelectedPerson.Enabled = true;
+                    }
+                }
+                else if (Path.GetExtension(FFileName) == ".ext")
                 {
                     btnUseSelectedPerson.Enabled = true;
-                    Msg += ", or update the existing partner";
+                    btnCreateNewPartner.Enabled = false;
                 }
             }
-
-            //TODOWB: this can probably go
-            //if (Path.GetExtension(FFileName) != ".csv")
-            //{
-            //    txtHint.Text = Msg;
-            //}
         }
 
         private void UseSelectedFamily(Object sender, EventArgs e)
@@ -497,7 +504,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void UseSelectedPerson(Object sender, EventArgs e)
         {
             AddStatus("<Update existing Partner>" + Environment.NewLine);
-            ExistingPartnerKey = FoundPartnerMatchingKey;
+            //ExistingPartnerKey = FoundPartnerMatchingKey; //TODOWBxxx
+            ExistingPartnerKey = UserSelectedRow.PartnerKey;
 
             if (UserSelectedRow.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
             {
@@ -862,10 +870,16 @@ namespace Ict.Petra.Client.MPartner.Gui
                     grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
 
                     grdMatchingRecords.AutoResizeGrid();
+
+                    if (Path.GetExtension(FFileName) == ".ext")
+                    {
+                        btnUseSelectedPerson.Enabled = true;
+                        btnFindOtherPartner.Enabled = false;
+                    }
                 }
                 else
                 {
-                    btnCreateNewPartner.Enabled = false;
+                    btnCreateNewPartner.Enabled = true;
                     btnCreateNewPartner.Focus();
                 }
 
@@ -1326,19 +1340,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // if partner key is given then search for exactly that Partner
                         result = TRemote.MPartner.Partner.WebConnectors.FindPartners(FCurrentPartner.PartnerKey, true);
                     }
-
-                    //TODOWB: only look for partner key now
-                    //else if (BestLocation != null)
-                    //{
-                    //    // in this case look for matching location data
-                    //    result =
-                    //        TRemote.MPartner.Partner.WebConnectors.FindPartners(
-                    //            "",
-                    //            Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName,
-                    //                eShortNameFormat.eOnlySurname),
-                    //            BestLocation.City,
-                    //            String.Empty);
-                    //}
                 }
 
                 if (result.SearchResult.DefaultView.Count > 0)
@@ -1925,6 +1926,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 (ExistingLocation.StreetName == NewLocation.StreetName)
                                 && (ExistingLocation.Locality == NewLocation.Locality)
                                 && (ExistingLocation.Address3 == NewLocation.Address3)
+                                && (ExistingLocation.County == NewLocation.County)
                                 && (ExistingLocation.City == NewLocation.City)
                                 && (ExistingLocation.CountryCode == NewLocation.CountryCode)
                                 && (ExistingLocation.PostalCode == NewLocation.PostalCode)
@@ -1941,8 +1943,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         }
 
                         //TODOWBxxx: is it ok that I took this out of the if statement above?
+                        // if location already exists: make sure we point the partner location record to the existing location
+                        PartnerLocationRow.SiteKey = NewLocation.SiteKey;
+                        PartnerLocationRow.LocationKey = NewLocation.LocationKey;
                         ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
-                        // Set the PartnerKey for the new Row
+                        // Set the PartnerKey for the new Row (TODOWBxxx: why does this have to be set after ImportRow?)
                         int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
                         ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;
                     }
@@ -2495,7 +2500,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             AddBankingDetails(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
 
             TVerificationResultCollection VerificationResult;
-            bool CommitRes = TRemote.MPartner.ImportExport.WebConnectors.CommitChanges(NewPartnerDS, out VerificationResult);
+            bool CommitRes = TRemote.MPartner.ImportExport.WebConnectors.CommitChanges(NewPartnerDS,
+                chkReplaceAddress.Checked,
+                0,
+                UserSelLocationKey,
+                out VerificationResult);
             AddStatus(FormatVerificationResult("Save Partner: ", VerificationResult));
 
             if (!CommitRes)

@@ -546,70 +546,139 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// </summary>
         /// <param name="MainDS"></param>
         /// <param name="PartnerRow"></param>
+        /// <param name="AReplaceAddress"></param>
+        /// <param name="ASiteKeyToBeReplaced"></param>
+        /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         private static void CheckAddresses(PartnerImportExportTDS MainDS,
             PPartnerRow PartnerRow,
+            Boolean AReplaceAddress,
+            Int64 ASiteKeyToBeReplaced,
+            Int32 ALocationKeyToBeReplaced,
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
         {
-            PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, Transaction);
+            Boolean AddressIsReplaced = false;
 
-            if (LocationTable.Rows.Count == 0)
+            if (AReplaceAddress)
             {
-                return;
-            }
+                // this case is for csv files only and we should only have one import address
 
-            for (int ImportPartnerLocationRowIdx = 0; ImportPartnerLocationRowIdx < MainDS.PPartnerLocation.Rows.Count; )
-            {
-                PPartnerLocationRow ImportPartnerLocationRow = (PPartnerLocationRow)MainDS.PPartnerLocation[ImportPartnerLocationRowIdx];
-                MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}",
-                    PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
-                bool RowRemoved = false;
+                PLocationTable LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKeyToBeReplaced, ALocationKeyToBeReplaced, Transaction);
 
-                if (MainDS.PLocation.DefaultView.Count > 0)
+                if ((LocationTable.Rows.Count > 0)
+                    && (MainDS.PPartnerLocation.Rows.Count == 1)
+                    && (MainDS.PLocation.Rows.Count == 1))
                 {
-                    PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
+                    String ExistingAddress = Calculations.DetermineLocationString(LocationTable[0],
+                        Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                    String NewAddress = Calculations.DetermineLocationString(MainDS.PLocation[0],
+                        Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
 
-                    // Now I want to find out whether this row exists in my database.
-                    foreach (PLocationRow DbLocationRow in LocationTable.Rows)
+                    // now we need to find out if this address is also used by other partners
+                    // (if used by other partners we need to create a new one, if not then we can just modify this one)
+                    PPartnerLocationTable PartnerLocationTable = PPartnerLocationAccess.LoadViaPLocation(LocationTable[0].SiteKey,
+                        LocationTable[0].LocationKey,
+                        Transaction);
+
+                    if (PartnerLocationTable.Count == 1)
                     {
-                        if (
-                            (DbLocationRow.StreetName == ImportLocationRow.StreetName)
-                            && (DbLocationRow.Locality == ImportLocationRow.Locality)
-                            && (DbLocationRow.Address3 == ImportLocationRow.Address3)
-                            && (DbLocationRow.City == ImportLocationRow.City)
-                            && (DbLocationRow.CountryCode == ImportLocationRow.CountryCode)
-                            && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
-                            )
-                        {
-                            String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
-                                Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                        // save imported values to temporary location row
+                        PLocationRow ImportedLocationRow = MainDS.PLocation[0];
+                        PLocationRow ImportedLocationRowCopy = MainDS.PLocation.NewRowTyped(false);
+                        ImportedLocationRowCopy.ItemArray = (object[])ImportedLocationRow.ItemArray.Clone();
 
-                            MainDS.PLocation.Rows.Remove(ImportLocationRow);
+                        // now initialize imported row with values from db and reset RowState (with AcceptChanges) so that is it not Added
+                        ImportedLocationRow.ItemArray = (object[])LocationTable[0].ItemArray.Clone();
+                        ImportedLocationRow.AcceptChanges();
 
-                            //TODOWBxxx
-                            // check if partner with this location key already exists in database
-                            if (PPartnerLocationAccess.Exists(PartnerRow.PartnerKey, 0, DbLocationRow.LocationKey, Transaction))
-                            {
-                                MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
-                                RowRemoved = true;
-                            }
-                            else
-                            {
-                                ((PPartnerLocationRow)MainDS.PPartnerLocation.Rows[ImportPartnerLocationRowIdx]).LocationKey =
-                                    DbLocationRow.LocationKey;
-                            }
+                        // copy imported values into row (does not affect RowState), but keep location key from db
+                        ImportedLocationRow.ItemArray = (object[])ImportedLocationRowCopy.ItemArray.Clone();
+                        ImportedLocationRow.SiteKey = ASiteKeyToBeReplaced;
+                        ImportedLocationRow.LocationKey = ALocationKeyToBeReplaced;
 
-                            AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
-                            break;  // If there's already a duplicate in the database, I can't fix that here...
-                        }
+                        // remove partner location as the one in db already points to the right location
+                        MainDS.PPartnerLocation.Rows.RemoveAt(0);
+
+                        AddressIsReplaced = true;
+                        AddVerificationResult(ref ReferenceResults,
+                            "Existing address (" + ExistingAddress + ") replaced with: " + NewAddress,
+                            TResultSeverity.Resv_Status);
+                    }
+                    else if (PartnerLocationTable.Count > 1)
+                    {
+                        // remove partner location for this partner and add the address as a new one (further down in the code of this method)
+                        PPartnerLocationAccess.DeleteByPrimaryKey(PartnerRow.PartnerKey,
+                            LocationTable[0].SiteKey,
+                            LocationTable[0].LocationKey,
+                            Transaction);
                     }
                 }
+            }
 
-                if (!RowRemoved)
+            // if address should not be replaced or if replacing did not work continue here anyways so we can definitely import some address data
+            if (!AddressIsReplaced)
+            {
+                PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, Transaction);
+
+                if (LocationTable.Rows.Count == 0)
                 {
-                    ImportPartnerLocationRowIdx++; // There is no auto-increment on the "for" loop.
+                    return;
+                }
+
+                for (int ImportPartnerLocationRowIdx = 0; ImportPartnerLocationRowIdx < MainDS.PPartnerLocation.Rows.Count; )
+                {
+                    PPartnerLocationRow ImportPartnerLocationRow = (PPartnerLocationRow)MainDS.PPartnerLocation[ImportPartnerLocationRowIdx];
+                    MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}",
+                        PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
+                    bool RowRemoved = false;
+
+                    if (MainDS.PLocation.DefaultView.Count > 0)
+                    {
+                        PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
+
+                        // Now I want to find out whether this row exists in my database.
+                        foreach (PLocationRow DbLocationRow in LocationTable.Rows)
+                        {
+                            if (
+                                (DbLocationRow.StreetName == ImportLocationRow.StreetName)
+                                && (DbLocationRow.Locality == ImportLocationRow.Locality)
+                                && (DbLocationRow.Address3 == ImportLocationRow.Address3)
+                                && (DbLocationRow.County == ImportLocationRow.County)
+                                && (DbLocationRow.City == ImportLocationRow.City)
+                                && (DbLocationRow.CountryCode == ImportLocationRow.CountryCode)
+                                && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
+                                )
+                            {
+                                String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
+                                    Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+
+                                MainDS.PLocation.Rows.Remove(ImportLocationRow);
+
+                                //TODOWBxxx
+                                // check if partner with this location key already exists in database
+                                if (PPartnerLocationAccess.Exists(PartnerRow.PartnerKey, 0, DbLocationRow.LocationKey, Transaction))
+                                {
+                                    MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+                                    RowRemoved = true;
+                                }
+                                else
+                                {
+                                    ((PPartnerLocationRow)MainDS.PPartnerLocation.Rows[ImportPartnerLocationRowIdx]).LocationKey =
+                                        DbLocationRow.LocationKey;
+                                }
+
+                                AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
+                                break;  // If there's already a duplicate in the database, I can't fix that here...
+                            }
+                        }
+                    }
+
+                    if (!RowRemoved)
+                    {
+                        ImportPartnerLocationRowIdx++; // There is no auto-increment on the "for" loop.
+                    }
                 }
             }
         }
@@ -1760,10 +1829,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// or in some cases substitute a known value in the reference.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AReplaceAddress"></param>
+        /// <param name="ASiteKeyToBeReplaced"></param>
+        /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         /// <returns>false if this data can't be imported.</returns>
         private static bool CheckReferencedTables(PartnerImportExportTDS MainDS,
+            Boolean AReplaceAddress,
+            Int64 ASiteKeyToBeReplaced,
+            Int32 ALocationKeyToBeReplaced,
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
         {
@@ -1785,7 +1860,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckBusiness(MainDS, ref ReferenceResults, Transaction);
             CheckLanguage(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAcquisitionCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
-            CheckAddresses(MainDS, PartnerRow, ref ReferenceResults, Transaction);
+            CheckAddresses(MainDS, PartnerRow, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced, ref ReferenceResults, Transaction);
             CheckAddresseeTypeCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAbilityArea(MainDS, ref ReferenceResults, Transaction);
             CheckPartnerInterest(MainDS, ref ReferenceResults, Transaction);
@@ -1817,10 +1892,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// and supllies values to index tables.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AReplaceAddress"></param>
+        /// <param name="ASiteKeyToBeReplaced"></param>
+        /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>true if no error</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean CommitChanges(PartnerImportExportTDS MainDS, out TVerificationResultCollection AVerificationResult)
+        public static Boolean CommitChanges(PartnerImportExportTDS MainDS,
+            Boolean AReplaceAddress,
+            Int64 ASiteKeyToBeReplaced,
+            Int32 ALocationKeyToBeReplaced,
+            out TVerificationResultCollection AVerificationResult)
         {
             TVerificationResultCollection ReferenceResults = new TVerificationResultCollection();
 
@@ -1837,7 +1919,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     if (CanImport)
                     {
-                        CanImport = CheckReferencedTables(MainDS, ref ReferenceResults, Transaction);
+                        CanImport =
+                            CheckReferencedTables(MainDS, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced, ref ReferenceResults,
+                                Transaction);
                     }
 
                     SubmissionOK = true;
