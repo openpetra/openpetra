@@ -339,8 +339,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             TransactionInIntlCurrency = (batch.CurrencyCode == ledgerTable[0].IntlCurrency);
 
-                            foreach (ARecurringGiftRow recGift in MainRecurringDS.ARecurringGift.Rows)
+                            DataView giftDV = new DataView(MainRecurringDS.ARecurringGift);
+                            giftDV.Sort = string.Format("{0} ASC", ARecurringGiftTable.GetGiftTransactionNumberDBName());
+
+                            foreach (DataRowView giftRV in giftDV)
                             {
+                                ARecurringGiftRow recGift = (ARecurringGiftRow)giftRV.Row;
+
                                 if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
                                 {
                                     //Look if there is a detail which is in the donation period (else continue)
@@ -370,8 +375,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     gift.BatchNumber = batch.BatchNumber;
                                     gift.GiftTransactionNumber = ++batch.LastGiftNumber;
                                     gift.DonorKey = recGift.DonorKey;
-                                    gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
                                     gift.DateEntered = AEffectiveDate;
+                                    gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
 
                                     if (gift.MethodOfGivingCode.Length == 0)
                                     {
@@ -388,13 +393,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     gift.Reference = recGift.Reference;
                                     gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
 
-
                                     MainDS.AGift.Rows.Add(gift);
-                                    //TODO (not here, but in the client or while posting) Check for Ex-OM Partner
-                                    //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
 
-                                    foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
+                                    DataView giftDetailDV = new DataView(MainRecurringDS.ARecurringGiftDetail);
+                                    giftDetailDV.Sort = string.Format("{0} ASC, {1} ASC",
+                                        ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                        ARecurringGiftDetailTable.GetDetailNumberDBName());
+
+                                    foreach (DataRowView detailRV in giftDetailDV)
                                     {
+                                        ARecurringGiftDetailRow recGiftDetail = (ARecurringGiftDetailRow)detailRV.Row;
+
                                         //decimal amtIntl = 0M;
                                         decimal amtBase = 0M;
                                         decimal amtTrans = 0M;
@@ -412,23 +421,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             detail.DetailNumber = ++gift.LastDetailNumber;
 
                                             amtTrans = recGiftDetail.GiftAmount;
-                                            detail.GiftTransactionAmount = amtTrans;
-                                            batchTotal += amtTrans;
                                             amtBase = GLRoutines.Divide((decimal)amtTrans, AExchangeRateToBase);
+                                            detail.GiftTransactionAmount = amtTrans;
                                             detail.GiftAmount = amtBase;
-
-                                            if (!TransactionInIntlCurrency)
-                                            {
-                                                detail.GiftAmountIntl = GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
-                                            }
-                                            else
-                                            {
-                                                detail.GiftAmountIntl = amtTrans;
-                                            }
+                                            detail.GiftAmountIntl =
+                                                TransactionInIntlCurrency ? amtTrans : GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
+                                            batchTotal += amtTrans;
 
                                             detail.RecipientKey = recGiftDetail.RecipientKey;
                                             detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
-
                                             detail.ChargeFlag = recGiftDetail.ChargeFlag;
                                             detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
                                             detail.TaxDeductible = recGiftDetail.TaxDeductible;

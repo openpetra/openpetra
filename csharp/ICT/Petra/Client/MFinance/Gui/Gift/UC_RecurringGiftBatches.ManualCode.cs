@@ -869,8 +869,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SubmitBatch(System.Object sender, System.EventArgs e)
         {
             bool Success = false;
-
             bool LoadDialogVisible = false;
+            bool CancelledDueToExWorker = false;
+
+            if (!((TFrmRecurringGiftBatch)ParentForm).SaveChangesForSubmitting(FMainDS.ARecurringGiftDetail, out CancelledDueToExWorker))
+            {
+                string msg = string.Empty;
+
+                if (CancelledDueToExWorker)
+                {
+                    msg = Catalog.GetString("Saving of recurring gift batch cancelled due to Ex-Worker recipient(s) in gift(s)!");
+                }
+                else
+                {
+                    msg = Catalog.GetString("Error in trying to save prior to submitting current recurring gift batch!");
+                }
+
+                MessageBox.Show(msg, Catalog.GetString("Submit Recurring Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
 
             if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
