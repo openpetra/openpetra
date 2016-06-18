@@ -166,7 +166,10 @@ namespace Ict.Petra.Shared.MPartner
         eReverseLastnameInitialsOnly,
 
         /// firstname lastname
-        eReverseWithoutTitle
+        eReverseWithoutTitle,
+
+        /// lastname, firstname (just remove title field)
+        eJustRemoveTitle
     };
 
     /// <summary>

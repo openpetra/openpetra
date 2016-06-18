@@ -174,6 +174,15 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         }
 
         /// <summary>
+        /// modify search result: filter each result partner for best address only
+        /// </summary>
+        /// <returns>DataTable with filtered result</returns>
+        public DataTable FilterResultByBestAddress()
+        {
+            return FPartnerFind.FilterResultByBestAddress();
+        }
+
+        /// <summary>
         /// Checks if a search result contains a given partner
         /// </summary>
         /// <param name="APartnerKey">Partner key of partner</param>

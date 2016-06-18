@@ -250,29 +250,35 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>PartnerKey</summary>
         public const String PARTNERIMPORT_PARTNERKEY = "PartnerKey";
 
+        /// <summary>FamilyPartnerKey</summary>
+        public const String PARTNERIMPORT_FAMILYPARTNERKEY = "FamilyPartnerKey";
+
+        /// <summary>PersonPartnerKey</summary>
+        public const String PARTNERIMPORT_PERSONPARTNERKEY = "PersonPartnerKey";
+
         /// <summary>FamilyName</summary>
         public const String PARTNERIMPORT_FAMILYNAME = "FamilyName";
 
         /// <summary>MaritalStatus</summary>
         public const String PARTNERIMPORT_MARITALSTATUS = "MaritalStatus";
 
-        /// <summary>StreetName</summary>
-        public const String PARTNERIMPORT_STREETNAME = "StreetName";
+        /// <summary>Address1</summary>
+        public const String PARTNERIMPORT_ADDRESS1 = "Address1";
 
-        /// <summary>Locality</summary>
-        public const String PARTNERIMPORT_LOCALITY = "Locality";
+        /// <summary>Street</summary>
+        public const String PARTNERIMPORT_STREET = "Street";
 
         /// <summary>Address3</summary>
-        public const String PARTNERIMPORT_ADDRESS = "Address3";
+        public const String PARTNERIMPORT_ADDRESS3 = "Address3";
 
-        /// <summary>PostalCode</summary>
-        public const String PARTNERIMPORT_POSTALCODE = "PostalCode";
+        /// <summary>PostCode</summary>
+        public const String PARTNERIMPORT_POSTCODE = "PostCode";
 
         /// <summary>City</summary>
         public const String PARTNERIMPORT_CITY = "City";
 
         /// <summary>County</summary>
-        public const String PARTNERIMPORT_COUNTY = "County";
+        public const String PARTNERIMPORT_COUNTY = "County_State";
 
         /// <summary>CountryCode</summary>
         public const String PARTNERIMPORT_COUNTRYCODE = "Country";
@@ -338,6 +344,9 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_EVENTROLE = "EventRole";
 
         /// <summary>AppStatus</summary>
+        public const String PARTNERIMPORT_APPDATE = "ApplicationDate";
+
+        /// <summary>AppStatus</summary>
         public const String PARTNERIMPORT_APPSTATUS = "AppStatus";
 
         /// <summary>AppType</summary>
@@ -376,6 +385,9 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>PassportNumber</summary>
         public const String PARTNERIMPORT_PASSPORTNUMBER = "PassportNumber";
 
+        /// <summary>PassportName</summary>
+        public const String PARTNERIMPORT_PASSPORTNAME = "PassportName";
+
         /// <summary>PassportType</summary>
         public const String PARTNERIMPORT_PASSPORTTYPE = "PassportType";
 
@@ -396,9 +408,6 @@ namespace Ict.Petra.Shared.MPartner
 
         /// <summary>PassportDateOfExpiration</summary>
         public const String PARTNERIMPORT_PASSPORTDATEOFEXPIRATION = "PassportDateOfExpiration";
-
-        /// <summary>FamilyPartnerKey</summary>
-        public const String PARTNERIMPORT_FAMILYPARTNERKEY = "FamilyPartnerKey";
 
         /// <summary>RecordImported</summary>
         public const String PARTNERIMPORT_RECORDIMPORTED = "RecordImported";

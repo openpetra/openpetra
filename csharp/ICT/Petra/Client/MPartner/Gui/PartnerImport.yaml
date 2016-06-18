@@ -4,7 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: browse
     WindowWidth: 710
-    WindowHeight: 600
+    WindowHeight: 620
     Actions:
         actStartImport: {ActionClick=StartImport, InitiallyEnabled=false}
         actCancelImport: {ActionClick=CancelImport, InitiallyEnabled=false}
@@ -13,6 +13,7 @@ RootNode:
         actUseSelectedAddress: {ActionClick=UseSelectedAddress, InitiallyEnabled=false}
         actUseSelectedPerson: {ActionClick=UseSelectedPerson, InitiallyEnabled=false}
         actUseSelectedFamily: {ActionClick=UseSelectedFamily, InitiallyEnabled=false}
+        actFindOtherPartner: {ActionClick=FindOtherPartner, InitiallyEnabled=false} 
     Controls:
         pnlContent:
             Dock: Fill
@@ -22,18 +23,18 @@ RootNode:
                 Row2: [txtHint]
         pnlInfo:
             Stretch: horizontally
-            Width: 545
+            Width: 530
             Controls:
                 Row0: [txtFilename]
                 Row1: [txtPartnerInfo]
             
-        txtFilename: {ReadOnly=true, Width=440}
+        txtFilename: {ReadOnly=true, Width=410}
             Stretch: horizontally
         txtPartnerInfo:
             Multiline: true
             ReadOnly: true
-            Width: 440
-            Height: 350
+            Width: 410
+            Height: 370
             Stretch: horizontally
             Label: Import Status
             ScrollBars: Vertical
@@ -50,19 +51,19 @@ RootNode:
 
         pnlActions:
             Stretch: horizontally
-            Width: 155
+            Width: 170
             Controls: 
                 Row0: [grpStepOne]
                 Row1: [grpStepTwo]
                 Row2: [grpStepThree]
 
         grpStepOne:
-            Width: 135
+            Width: 150
             Align: right
             Label: Step 1
             Controls: [btnSelectFile]
         grpStepTwo:
-            Width: 135
+            Width: 150
             Align: right
             Label: Step 2
             Controls:
@@ -71,7 +72,7 @@ RootNode:
                 Row2: [btnCancelImport]
             Enabled: false
         grpStepThree:
-            Width: 135
+            Width: 150
             Align: right
             Label: Step 3
             Multiline: true
@@ -84,30 +85,35 @@ RootNode:
                 Row3: [btnCreateNewPartner]
                 Row4: [btnUseSelectedAddress]
                 Row5: [btnUseSelectedFamily]
+                Row6: [btnFindOtherPartner]
 
         btnSelectFile: {ActionClick=OpenFile}
+            Label: Select File...
+            Width: 130
 
         btnStartImport:
-            Width: 95
+            Width: 130
         btnCancelImport:
             Label: Stop Import
-            Width: 95
+            Width: 130
         
         lblThree:
             Text: Take action for each partner
             Multiline: true
             Height: 30
-            Width: 125
+            Width: 140
         btnSkip: {Label=Skip Partner, Enabled=false}
-            Width: 115
+            Width: 130
         btnUseSelectedPerson: {Label=Update Partner, Enabled=false}
-            Width: 115
+            Width: 130
         btnCreateNewPartner: {Label=Create Partner, Enabled=false}
-            Width: 115
+            Width: 130
         btnUseSelectedAddress: {Label=Re-use address, Enabled=false}
-            Width: 115
+            Width: 130
         btnUseSelectedFamily: {Label=Add to Family, Enabled=false}
-            Width: 115
+            Width: 130
+        btnFindOtherPartner: {Label=Find other Partner..., Enabled=false}
+            Width: 130
         chkSemiAutomatic: {Label=Automatic Import, Help="Partners will be imported automatically, unless user intervention is required.", CheckBoxAttachedLabel=right}
 
         Empty:

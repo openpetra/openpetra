@@ -27,12 +27,14 @@
 using System;
 using System.Xml;
 using System.Data;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.IO;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MPartner;
@@ -42,15 +44,21 @@ using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Shared.MHospitality.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using System.Collections.Generic;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
     public partial class TFrmPartnerImport
     {
+        /// <summary>The Proxy System.Object of the Serverside UIConnector for finding matching partners</summary>
+        private IPartnerUIConnectorsPartnerFind FPartnerFindObject;
+
         /// <summary>
         /// todoComment
         /// </summary>
@@ -70,6 +78,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void InitializeManualCode()
         {
+            FPartnerFindObject = TRemote.MPartner.Partner.UIConnectors.PartnerFind();
+
             chkSemiAutomatic.Checked = false;
             chkSemiAutomatic.Width = 126;
             FPetraUtilsObject.SetStatusBarText(chkSemiAutomatic, Catalog.GetString(
@@ -81,6 +91,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         PartnerImportExportTDS FMainDS = null;
         PartnerImportExportTDS FMainDSBackup = new PartnerImportExportTDS();
         PPartnerRow FCurrentPartner;
+        PPersonRow FCurrentPerson;
+        String FMatchingPartnersExplanation;
+        List <String>FCSVColumns = new List <String>();
         Int32 FCurrentNumberOfRecord = 0;
         Int32 FTotalNumberOfRecords = 0;
         Int64 FoundPartnerMatchingKey = -1;
@@ -130,6 +143,77 @@ namespace Ict.Petra.Client.MPartner.Gui
             return Res;
         }
 
+        private void CheckAndAddToCSVColumnList(XmlDocument ADoc, String AHeaderText)
+        {
+            if (ADoc.NameTable.Get(AHeaderText) == AHeaderText)
+            {
+                FCSVColumns.Add(AHeaderText);
+            }
+        }
+
+        private void FillCSVColumnList(XmlDocument ADoc)
+        {
+            FCSVColumns = new List <String>();
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PARTNERCLASS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PARTNERKEY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_FAMILYPARTNERKEY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PERSONPARTNERKEY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_FAMILYNAME);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_MARITALSTATUS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_STREET);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ADDRESS1);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ADDRESS3);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_POSTCODE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CITY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_COUNTY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_COUNTRYCODE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_AQUISITION);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_GENDER);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ADDRESSEE_TYPE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_LANGUAGE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_OMERFIELD);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_FIRSTNAME);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_EMAIL);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PHONE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_MOBILEPHONE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_TITLE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_VEGETARIAN);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_DEPARTURETIME);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_APPDATE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_APPSTATUS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_APPTYPE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PREVIOUSATTENDANCE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_APPCOMMENTS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_NOTES);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_NOTESFAMILY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTCODE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTDATE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTTIME);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTOR);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTNOTES);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTATTR);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTNAME);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_RECORDIMPORTED);
+        }
+
         /// <summary>
         /// Display File open dialog box and read file into memory
         /// </summary>
@@ -148,7 +232,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             DialogOpen.Filter =
                 Catalog.GetString(
-                    "All supported formats|*.yml;*.csv;*.ext|Text file (*.yml)|*.yml|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|.csv");
+                    "All supported formats|*.csv;*.ext|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|.csv");
+            // For now: don't show yml file format any longer --> needs to be determined if/how helpful this is for future use
+            // "All supported formats|*.yml;*.csv;*.ext|Text file (*.yml)|*.yml|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|.csv");
             DialogOpen.FilterIndex = 1;
 
             DialogOpen.RestoreDirectory = true;
@@ -175,8 +261,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                         LoadDataSet(ref VerificationResult);
                     }
 
+                    // provisionally enable "Automatic Import"
+                    chkSemiAutomatic.Enabled = true;
+
                     if (Path.GetExtension(FFileName) == ".csv")
                     {
+                        // disable "Automatic Import" for .csv files
+                        chkSemiAutomatic.Checked = false;
+                        chkSemiAutomatic.Enabled = false;
+
                         // select separator, make sure there is a header line with the column captions/names
                         TDlgSelectCSVSeparator dlgSeparator = new TDlgSelectCSVSeparator(true);
                         Boolean fileCanOpen = dlgSeparator.OpenCsvFile(FFileName);
@@ -196,6 +289,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, dlgSeparator.SelectedSeparator);
                                 FFileContent = TXMLParser.XmlToString(doc);
+                                FillCSVColumnList(doc);
 
                                 LoadDataSet(ref VerificationResult);
                             }
@@ -371,7 +465,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            txtHint.Text = Msg;
+            //TODOWB: this can probably go
+            //if (Path.GetExtension(FFileName) != ".csv")
+            //{
+            //    txtHint.Text = Msg;
+            //}
         }
 
         private void UseSelectedFamily(Object sender, EventArgs e)
@@ -401,6 +499,66 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             CreateOrUpdatePartner(FCurrentPartner, true);
+        }
+
+        private void FindOtherPartner(Object sender, EventArgs e)
+        {
+            System.Int64 PartnerKey = 0;
+            string PartnerShortName;
+            TPartnerClass? PartnerClass;
+            TLocationPK ResultLocationPK;
+
+            // If the delegate is defined, the host form will launch a Modal Partner Find screen for us
+            if (TCommonScreensForwarding.OpenPartnerFindScreen != null)
+            {
+                // delegate IS defined
+                try
+                {
+                    TCommonScreensForwarding.OpenPartnerFindScreen.Invoke
+                        ((FCurrentPartner != null ? FCurrentPartner.PartnerClass.ToString() : ""),
+                        out PartnerKey,
+                        out PartnerShortName,
+                        out PartnerClass,
+                        out ResultLocationPK,
+                        this);
+
+                    if (PartnerKey != -1)
+                    {
+                        DataTable result = new DataTable();
+                        PartnerFindTDSSearchCriteriaTable CriteriaTable = new PartnerFindTDSSearchCriteriaTable();
+                        PartnerFindTDSSearchCriteriaRow CriteriaRow;
+                        int TotalRecords;
+                        short TotalPages;
+                        short PageSize = 50;
+
+                        // if partner key is given then search for exactly that Partner
+                        CriteriaTable.Rows.Clear();
+                        CriteriaRow = CriteriaTable.NewRowTyped();
+                        CriteriaRow.ExactPartnerKeyMatch = true;
+                        CriteriaRow.PartnerKey = PartnerKey;
+                        CriteriaRow.PartnerClass = (PartnerClass.HasValue ? PartnerClass.ToString() : "*");
+                        CriteriaRow.LocationKey = ResultLocationPK.LocationKey.ToString();
+                        CriteriaTable.Rows.Add(CriteriaRow);
+
+                        FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                        FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                        result = FPartnerFindObject.FilterResultByBestAddress();
+
+                        //if (TotalRecords > 0)
+                        {
+                            ((DevAge.ComponentModel.BoundDataView)grdMatchingRecords.DataSource).DataTable.Merge(result);
+                        }
+
+                        // Refresh DataGrid to show the added partner record
+                        grdMatchingRecords.Refresh();
+                    }
+                }
+                catch (Exception exp)
+                {
+                    throw new EOPAppException("Exception occured while calling PartnerFindScreen Delegate!", exp);
+                }
+                // end try
+            }
         }
 
         private void StartImport(Object sender, EventArgs e)
@@ -476,6 +634,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             btnCreateNewPartner.Enabled = false;
             btnUseSelectedAddress.Enabled = false;
             btnUseSelectedFamily.Enabled = false;
+            btnFindOtherPartner.Enabled = false;
 
             grpStepThree.Enabled = false;
 
@@ -528,6 +687,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                 do
                 {
                     FCurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
+
+                    if ((FCurrentPartner != null)
+                        && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                    {
+                        // I need to get the Person linked to this Partner and set it as the current person
+                        FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}",
+                            PPersonTable.GetPartnerKeyDBName(), FCurrentPartner.PartnerKey);
+                        FCurrentPerson = (PPersonRow)FMainDS.PPerson.DefaultView[0].Row;
+                    }
+                    else
+                    {
+                        FCurrentPerson = null;
+                    }
 
                     if (FImportedUnits.Contains(FCurrentPartner.PartnerKey))
                     {
@@ -612,114 +784,105 @@ namespace Ict.Petra.Client.MPartner.Gui
                 btnCreateNewPartner.Enabled = true;
                 btnUseSelectedFamily.Enabled = false;
 
+                if (Path.GetExtension(FFileName) != ".csv")
+                {
+                    btnFindOtherPartner.Enabled = false;
+                }
+                else
+                {
+                    btnFindOtherPartner.Enabled = true;
+
+                    if ((FCurrentPartner == null) || (FCurrentPartner.PartnerKey > 0))
+                    {
+                        // if there is a partner key in the import file then we currently won't allow the user to update a different partner
+                        btnFindOtherPartner.Enabled = false;
+                    }
+                }
 
                 bool FoundPartnerInDatabase = false;
                 bool FoundPossiblePartnersInDatabase = false;
 
-                PartnerFindTDS result = new PartnerFindTDS();
+                // retrieve data set with matching partner records
+                PartnerFindTDS result = FindMatchingPartners(BestLocation, out FMatchingPartnersExplanation);
+                txtHint.Text = FMatchingPartnersExplanation;
 
-                // Try to find an existing partner (either with partner key or location data) and set the partner key
-                // Or if the address is found, the location record can be shared.
-                if ((FCurrentPartner.PartnerKey > 0)
-                    || (BestLocation != null))
+                if (result.SearchResult.DefaultView.Count > 0)
                 {
-                    if (FCurrentPartner.PartnerKey > 0)
+                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass);
+                    grdMatchingRecords.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), result.SearchResult.ColumnPartnerKey);
+                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Partner Name"), result.SearchResult.ColumnPartnerShortName);
+                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName);
+                    grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity);
+                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Post Code"), result.SearchResult.ColumnPostalCode);
+                    grdMatchingRecords.SelectionMode = SourceGrid.GridSelectionMode.Row;
+
+                    result.SearchResult.DefaultView.AllowNew = false;
+
+                    //
+                    // For any partner class OTHER THAN Person, I only want to see matching records of the same class.
+                    if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                     {
-                        // if partner key is given then search for exactly that Partner
-                        result = TRemote.MPartner.Partner.WebConnectors.FindPartners(FCurrentPartner.PartnerKey, true);
-                    }
-                    else if (BestLocation != null)
-                    {
-                        // in this case look for matching location data
-                        result =
-                            TRemote.MPartner.Partner.WebConnectors.FindPartners(
-                                "",
-                                Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName,
-                                    eShortNameFormat.eOnlySurname),
-                                BestLocation.City,
-                                String.Empty);
-                    }
-
-                    if (result.SearchResult.DefaultView.Count > 0)
-                    {
-                        grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass);
-                        grdMatchingRecords.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), result.SearchResult.ColumnPartnerKey);
-                        grdMatchingRecords.AddTextColumn(Catalog.GetString("Partner Name"), result.SearchResult.ColumnPartnerShortName);
-                        grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName);
-                        grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity);
-                        grdMatchingRecords.AddTextColumn(Catalog.GetString("Post Code"), result.SearchResult.ColumnPostalCode);
-                        grdMatchingRecords.SelectionMode = SourceGrid.GridSelectionMode.Row;
-
-                        result.SearchResult.DefaultView.AllowNew = false;
-
-                        //
-                        // For any partner class OTHER THAN Person, I only want to see matching records of the same class.
-                        if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
-                        {
-                            result.SearchResult.DefaultView.RowFilter = String.Empty;
-                        }
-                        else
-                        {
-                            result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                                PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
-                                FCurrentPartner.PartnerClass);
-                        }
-
-                        grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
-                        txtHint.Text = "Create a new partner, or select an existing match for addtional options.";
-
-                        grdMatchingRecords.AutoResizeGrid();
+                        result.SearchResult.DefaultView.RowFilter = String.Empty;
                     }
                     else
                     {
-                        btnCreateNewPartner.Enabled = false;
-                        btnCreateNewPartner.Focus();
-                        txtHint.Text = "Select \"Create Partner\" to import this partner.";
+                        result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                            PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
+                            FCurrentPartner.PartnerClass);
                     }
 
-                    FoundPartnerMatchingKey = -1;
-                    FoundPossiblePartnersInDatabase = result.SearchResult.Rows.Count != 0;
+                    grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
 
-                    // Check if the partner to import matches completely one of the search results
-                    foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
+                    grdMatchingRecords.AutoResizeGrid();
+                }
+                else
+                {
+                    btnCreateNewPartner.Enabled = false;
+                    btnCreateNewPartner.Focus();
+                }
+
+                FoundPartnerMatchingKey = -1;
+                FoundPossiblePartnersInDatabase = result.SearchResult.Rows.Count != 0;
+
+                // Check if the partner to import matches completely one of the search results
+                foreach (PartnerFindTDSSearchResultRow row in result.SearchResult.Rows)
+                {
+                    // first check if address and name match (in case there may not be a partner key in import file)
+                    if ((row.StreetName == BestLocation.StreetName)
+                        && (row.City == BestLocation.City)
+                        && (row.PostalCode == BestLocation.PostalCode)
+                        && (row.PartnerClass == FCurrentPartner.PartnerClass)
+                        && (row.PartnerShortName == FCurrentPartner.PartnerShortName))
                     {
-                        // first check if address and name match (in case there may not be a partner key in import file)
-                        if ((row.StreetName == BestLocation.StreetName)
-                            && (row.City == BestLocation.City)
-                            && (row.PostalCode == BestLocation.PostalCode)
-                            && (row.PartnerClass == FCurrentPartner.PartnerClass)
-                            && (row.PartnerShortName == FCurrentPartner.PartnerShortName))
-                        {
-                            FoundPartnerInDatabase = true;
-                            FoundPartnerMatchingKey = row.PartnerKey;
-                            break;
-                        }
-
-                        // now check if key (and class) of partner to import exists in db
-                        if ((row.PartnerClass == FCurrentPartner.PartnerClass)
-                            && (row.PartnerKey == FCurrentPartner.PartnerKey))
-                        {
-                            FoundPartnerInDatabase = true;
-                            FoundPartnerMatchingKey = row.PartnerKey;
-                            break;
-                        }
+                        FoundPartnerInDatabase = true;
+                        FoundPartnerMatchingKey = row.PartnerKey;
+                        break;
                     }
 
-                    if (FoundPartnerInDatabase)
+                    // now check if key (and class) of partner to import exists in db
+                    if ((row.PartnerClass == FCurrentPartner.PartnerClass)
+                        && (row.PartnerKey == FCurrentPartner.PartnerKey))
                     {
-                        // Now I want to pre-select this item...
-                        int MatchRow;
+                        FoundPartnerInDatabase = true;
+                        FoundPartnerMatchingKey = row.PartnerKey;
+                        break;
+                    }
+                }
 
-                        for (MatchRow = 0; MatchRow < result.SearchResult.DefaultView.Count; MatchRow++)
+                if (FoundPartnerInDatabase)
+                {
+                    // Now I want to pre-select this item...
+                    int MatchRow;
+
+                    for (MatchRow = 0; MatchRow < result.SearchResult.DefaultView.Count; MatchRow++)
+                    {
+                        PartnerFindTDSSearchResultRow Row = (PartnerFindTDSSearchResultRow)result.SearchResult.DefaultView[MatchRow].Row;
+
+                        if (Row.PartnerKey == FoundPartnerMatchingKey)
                         {
-                            PartnerFindTDSSearchResultRow Row = (PartnerFindTDSSearchResultRow)result.SearchResult.DefaultView[MatchRow].Row;
-
-                            if (Row.PartnerKey == FoundPartnerMatchingKey)
-                            {
-                                grdMatchingRecords.SelectRowInGrid(MatchRow + 1);
-                                OnMatchingRecordSelChange(null, null);
-                                break;
-                            }
+                            grdMatchingRecords.SelectRowInGrid(MatchRow + 1);
+                            OnMatchingRecordSelChange(null, null);
+                            break;
                         }
                     }
                 }
@@ -763,6 +926,404 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.Cursor = Cursors.Default;
             }
+        }
+
+        /// <summary>
+        /// Return a string that can be used for SQL search with special characters (e.g. Umlaute) replaced by wildcards
+        /// </summary>
+        /// <param name="AOriginalString"></param>
+        /// <returns>returns string that replaces special characters (e.g. Umlaute) with wildcards for use in SQL search</returns>
+        private String AssembleMatchString(String AOriginalString)
+        {
+            String MatchString = AOriginalString;
+
+            MatchString = MatchString.Replace("ö", "%");
+            MatchString = MatchString.Replace("Ö", "%");
+            MatchString = MatchString.Replace("ü", "%");
+            MatchString = MatchString.Replace("Ü", "%");
+            MatchString = MatchString.Replace("ä", "%");
+            MatchString = MatchString.Replace("Ä", "%");
+            MatchString = MatchString.Replace("ß", "%");
+
+            MatchString = MatchString.Replace("oe", "%");
+            MatchString = MatchString.Replace("ue", "%");
+            MatchString = MatchString.Replace("ae", "%");
+            MatchString = MatchString.Replace("ss", "%");
+
+            return MatchString;
+        }
+
+        /// <summary>
+        /// Return a string that can be used for SQL search for matching street names
+        /// </summary>
+        /// <param name="AOriginalString"></param>
+        /// <returns>returns a string that can be used for SQL search for matching street names</returns>
+        private String AssembleMatchStringStreet(String AOriginalString)
+        {
+            String MatchString = AssembleMatchString(AOriginalString);
+
+            if (Regex.IsMatch(MatchString, "-strasse", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, "-strasse", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, "-straße", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, "-straße", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, " strasse", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, " strasse", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, " straße", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, " straße", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, "strasse", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, " strasse", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, "straße", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, "straße", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, "-str.", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, "-str.", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, " str.", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, " str.", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            if (Regex.IsMatch(MatchString, "str.", RegexOptions.IgnoreCase))
+            {
+                return Regex.Replace(MatchString, "str.", "%str%", RegexOptions.IgnoreCase);
+            }
+
+            return MatchString;
+        }
+
+        /// <summary>
+        /// Find results for possible matching partners for records given in csv file
+        /// </summary>
+        /// <param name="ACurrentPartner"></param>
+        /// <param name="ABestLocation"></param>
+        /// <param name="AMatchingPartnersExplanation"></param>
+        /// <returns>returns data table with results</returns>
+        private DataTable PerformSearchForMatchingPartners(PPartnerRow ACurrentPartner,
+            PLocationRow ABestLocation,
+            out String AMatchingPartnersExplanation)
+        {
+            DataTable result = new DataTable();
+            DataTable result2 = new DataTable();
+            PartnerFindTDSSearchCriteriaTable CriteriaTable = new PartnerFindTDSSearchCriteriaTable();
+            PartnerFindTDSSearchCriteriaRow CriteriaRow;
+            int TotalRecords;
+            short TotalPages;
+            short PageSize = 50;
+
+            // Match options: BEGINS, ENDS, CONTAINS, EXACT
+
+            // initialize explanation
+            AMatchingPartnersExplanation = "";
+
+            // if there is a person partner key given then search for that record
+            if (ACurrentPartner.PartnerKey > 0)
+            {
+                // if partner key is given then search for exactly that Partner
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+                CriteriaRow.ExactPartnerKeyMatch = true;
+                CriteriaRow.PartnerKey = ACurrentPartner.PartnerKey;
+                CriteriaRow.PartnerClass = "*";
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                result = FPartnerFindObject.FilterResultByBestAddress();
+
+                if (TotalRecords > 0)
+                {
+                    // we found a partner with the given key
+                    AMatchingPartnersExplanation = Catalog.GetString("Partner already found with given Partner Key");
+                    return result;
+                }
+            }
+
+            // find matching partners if a family key is given
+            if ((ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                && (FCurrentPerson != null)
+                && (FCurrentPerson.FamilyKey > 0))
+            {
+                // if we are importing a person then check if we can find somebody with family key, DOB and name
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH)
+                    && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                    && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                    && !FCurrentPerson.IsDateOfBirthNull())
+                {
+                    CriteriaTable.Rows.Clear();
+                    CriteriaRow = CriteriaTable.NewRowTyped();
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                    CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                            ACurrentPartner.PartnerShortName), eShortNameFormat.eJustRemoveTitle);
+                    CriteriaRow.PartnerNameMatch = "BEGINS";
+                    CriteriaRow.DateOfBirth = FCurrentPerson.DateOfBirth.Value;
+                    CriteriaRow.FamilyKey = FCurrentPerson.FamilyKey;
+                    CriteriaTable.Rows.Add(CriteriaRow);
+
+                    FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                    FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                    result = FPartnerFindObject.FilterResultByBestAddress();
+
+                    if (TotalRecords > 0)
+                    {
+                        // we found a partner with the given key
+                        AMatchingPartnersExplanation = Catalog.GetString("Person found in Family with given Family Partner Key. " +
+                            "The person found matches name and date of birth.");
+                        return result;
+                    }
+                }
+
+                // next omit DOB, but check for family key and name
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                    && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+                {
+                    CriteriaTable.Rows.Clear();
+                    CriteriaRow = CriteriaTable.NewRowTyped();
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                    CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                            ACurrentPartner.PartnerShortName), eShortNameFormat.eJustRemoveTitle);
+                    CriteriaRow.PartnerNameMatch = "BEGINS";
+                    CriteriaRow.FamilyKey = FCurrentPerson.FamilyKey;
+                    CriteriaTable.Rows.Add(CriteriaRow);
+
+                    FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                    FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                    result = FPartnerFindObject.FilterResultByBestAddress();
+
+                    if (TotalRecords > 0)
+                    {
+                        // we found a partner with the given key
+                        AMatchingPartnersExplanation = Catalog.GetString("Person found in Family with given Family Partner Key. " +
+                            "The person found matches the given name.");
+                        return result;
+                    }
+                }
+
+                // next omit DOB and name, but check for family key (in both Family and Person record)
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+                CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+                CriteriaRow.FamilyKey = FCurrentPerson.FamilyKey;
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                result = FPartnerFindObject.FilterResultByBestAddress();
+
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+                CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
+                CriteriaRow.ExactPartnerKeyMatch = true;
+                CriteriaRow.PartnerKey = FCurrentPerson.FamilyKey;
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                result2 = FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+
+                // now combine the two results
+                result.Merge(result2);
+                TotalRecords = result.Rows.Count;
+
+                if (TotalRecords > 0)
+                {
+                    // we found a family with given key and persons with that family key
+                    AMatchingPartnersExplanation = Catalog.GetString("List shows Family and Person Records of the Family with the given " +
+                        "Partner Key. Please make your selection..");
+                    return result;
+                }
+            }
+
+            // find matching partners independent of family key
+            if (ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+            {
+                // if we are importing a person then check if we can find somebody with DOB and name
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DATEOFBIRTH)
+                    && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                    && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                    && (FCurrentPerson != null)
+                    && !FCurrentPerson.IsDateOfBirthNull())
+                {
+                    CriteriaTable.Rows.Clear();
+                    CriteriaRow = CriteriaTable.NewRowTyped();
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                    CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                            ACurrentPartner.PartnerShortName), eShortNameFormat.eJustRemoveTitle);
+                    CriteriaRow.PartnerNameMatch = "BEGINS";
+                    CriteriaRow.DateOfBirth = FCurrentPerson.DateOfBirth.Value;
+                    CriteriaTable.Rows.Add(CriteriaRow);
+
+                    FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                    FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                    result = FPartnerFindObject.FilterResultByBestAddress();
+
+                    if (TotalRecords > 0)
+                    {
+                        // we found a partner with the given key
+                        AMatchingPartnersExplanation = Catalog.GetString("Person found with given name and date of birth.");
+                        return result;
+                    }
+                }
+            }
+
+            /* If  nobody could be found yet then the import program checks for name and address matches */
+            /* This is done for any type of partner */
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_POSTCODE)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CITY)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ADDRESS1)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_STREET)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ADDRESS3))
+            {
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+
+                // For any partner class OTHER THAN Person, I only want to see matching records of the same class. For Persons we can include Family records.
+                // !!! It is important to set the PartnerClass Search Criteria if we don't only search for PartnerKey
+                if (ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY + "," + MPartnerConstants.PARTNERCLASS_PERSON;
+                }
+                else
+                {
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                }
+
+                CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                        ACurrentPartner.PartnerShortName), eShortNameFormat.eJustRemoveTitle);
+                CriteriaRow.PartnerNameMatch = "BEGINS";
+                CriteriaRow.PostCode = ABestLocation.PostalCode;
+                CriteriaRow.City = AssembleMatchString(ABestLocation.City);
+                CriteriaRow.Address1 = AssembleMatchString(ABestLocation.Locality);
+                CriteriaRow.Address2 = AssembleMatchString(ABestLocation.StreetName);
+                CriteriaRow.Address3 = AssembleMatchString(ABestLocation.Address3);
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                result = FPartnerFindObject.FilterResultByBestAddress();
+
+                if (TotalRecords > 0)
+                {
+                    // we found a partner with the given key
+                    AMatchingPartnersExplanation = Catalog.GetString("Partners found with given name and address.");
+                    return result;
+                }
+            }
+
+            /* If  nobody could be found yet then the import program checks for name only */
+            /* This is done for any type of partner */
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                && FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+            {
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+
+                // For any partner class OTHER THAN Person, I only want to see matching records of the same class. For Persons we can include Family records.
+                // !!! It is important to set the PartnerClass Search Criteria if we don't only search for PartnerKey
+                if (ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY + "," + MPartnerConstants.PARTNERCLASS_PERSON;
+                }
+                else
+                {
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                }
+
+                CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                        ACurrentPartner.PartnerShortName), eShortNameFormat.eJustRemoveTitle);
+                CriteriaRow.PartnerNameMatch = "BEGINS";
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                result = FPartnerFindObject.FilterResultByBestAddress();
+
+                if (TotalRecords > 0)
+                {
+                    // we found a partner with the given key
+                    AMatchingPartnersExplanation = Catalog.GetString("Partners found with given name.");
+                    return result;
+                }
+
+                /* If the first name is just an initial (in which case one of the characters is a "." */
+                /* then check for first names that start with the characters of the imported initial */
+                //TODOWB
+
+                /* If nothing found yet then check if there is an abbreviated first name in the database. */
+                /* This would find "J. Jansen" in the database if "Jan Jansen" is in the import file */
+                //TODOWB
+            }
+
+            return result;
+        }
+
+        private PartnerFindTDS FindMatchingPartners(PLocationRow BestLocation, out String MatchingPartnersExplanation)
+        {
+            PartnerFindTDS result = new PartnerFindTDS();
+
+            MatchingPartnersExplanation = "";
+
+            if (Path.GetExtension(FFileName) == ".csv")
+            {
+                result.SearchResult.Merge(PerformSearchForMatchingPartners(FCurrentPartner, BestLocation, out MatchingPartnersExplanation));
+            }
+            else if (Path.GetExtension(FFileName) == ".ext")
+            {
+                // Try to find an existing partner (either with partner key or location data) and set the partner key
+                // Or if the address is found, the location record can be shared.
+                if ((FCurrentPartner.PartnerKey > 0)
+                    || (BestLocation != null))
+                {
+                    if (FCurrentPartner.PartnerKey > 0)
+                    {
+                        // if partner key is given then search for exactly that Partner
+                        result = TRemote.MPartner.Partner.WebConnectors.FindPartners(FCurrentPartner.PartnerKey, true);
+                    }
+
+                    //TODOWB: only look for partner key now
+                    //else if (BestLocation != null)
+                    //{
+                    //    // in this case look for matching location data
+                    //    result =
+                    //        TRemote.MPartner.Partner.WebConnectors.FindPartners(
+                    //            "",
+                    //            Ict.Petra.Shared.MPartner.Calculations.FormatShortName(FCurrentPartner.PartnerShortName,
+                    //                eShortNameFormat.eOnlySurname),
+                    //            BestLocation.City,
+                    //            String.Empty);
+                    //}
+                }
+
+                if (result.SearchResult.DefaultView.Count > 0)
+                {
+                    MatchingPartnersExplanation = "Partner already found with given Partner Key. Select \"Update Partner\" to import.";
+                }
+                else
+                {
+                    MatchingPartnersExplanation = "Partner not found. Select \"Create Partner\" to import this partner.";
+                }
+            }
+
+            return result;
         }
 
         private void CancelImport(Object sender, EventArgs e)
@@ -830,7 +1391,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 if (AUpdateExistingRecord)
                 {
                     rv.Row[AKeyDbName] = ANewPartnerKey;
-                    rv.Row.AcceptChanges(); // This removes the RowState: Added
+                    //rv.Row.AcceptChanges(); // This removes the RowState: Added //TODOWBxxx?
                 }
                 else
                 {
@@ -896,7 +1457,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     foreach (DataRowView NewLocationRv in FMainDS.PLocation.DefaultView)
                     {
                         PLocationRow NewLocation = (PLocationRow)NewLocationRv.Row;
-                        // Check address already being imported, comparing StreetName and PostalCode
+                        // Check address already being imported, comparing StreetName, City, PostalCode etc.
                         // If I'm already importing it, I'll ignore this row.
                         // (The address may still be already in the database.)
 
@@ -905,8 +1466,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                             PLocationRow ExistingLocation = (PLocationRow)plrv.Row;
 
                             if (
-                                (ExistingLocation.Locality == NewLocation.Locality)
-                                && (ExistingLocation.StreetName == NewLocation.StreetName)
+                                (ExistingLocation.StreetName == NewLocation.StreetName)
+                                && (ExistingLocation.Locality == NewLocation.Locality)
+                                && (ExistingLocation.Address3 == NewLocation.Address3)
+                                && (ExistingLocation.City == NewLocation.City)
+                                && (ExistingLocation.CountryCode == NewLocation.CountryCode)
                                 && (ExistingLocation.PostalCode == NewLocation.PostalCode)
                                 )
                             {
@@ -921,7 +1485,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
                             // Set the PartnerKey for the new Row
                             int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
-                            ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;;
+                            ANewPartnerDS.PPartnerLocation[NewRow].PartnerKey = ANewPartnerKey;
                         }
                     }
                 }
@@ -1281,7 +1845,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 NewPartnerDS.PPartner[0].ModificationId = UserSelectedRow.ModificationId;
 
 // if I leave in the following line then any data for PPartner records does not get into db
-//TODOWB                NewPartnerDS.PPartner[0].AcceptChanges(); // This should reset the RowState, allowing me to Update rather than Add
+                NewPartnerDS.PPartner[0].AcceptChanges(); // This should reset the RowState, allowing me to Update rather than Add //TODOWBxxx???
             }
             else
             {
@@ -1481,6 +2045,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                     Int64 NewPartnerKey = TRemote.MPartner.Partner.WebConnectors.NewPartnerKey(-1);
                     LoadDataSet(ref VerificationResult, FCurrentPartner.PartnerKey, NewPartnerKey);
                     FCurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
+
+                    if ((FCurrentPartner != null)
+                        && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                    {
+                        // I need to get the Person linked to this Partner and set it as the current person
+                        FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}",
+                            PPersonTable.GetPartnerKeyDBName(), FCurrentPartner.PartnerKey);
+                        FCurrentPerson = (PPersonRow)FMainDS.PPerson.DefaultView[0].Row;
+                    }
+                    else
+                    {
+                        FCurrentPerson = null;
+                    }
                 }
             }
 

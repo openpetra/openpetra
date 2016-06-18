@@ -447,7 +447,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         if (
                             (DbLocationRow.StreetName == ImportLocationRow.StreetName)
                             && (DbLocationRow.Locality == ImportLocationRow.Locality)
+                            && (DbLocationRow.Address3 == ImportLocationRow.Address3)
                             && (DbLocationRow.City == ImportLocationRow.City)
+                            && (DbLocationRow.CountryCode == ImportLocationRow.CountryCode)
                             && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
                             )
                         {
@@ -455,10 +457,21 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
 
                             MainDS.PLocation.Rows.Remove(ImportLocationRow);
-                            MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+
+                            //TODOWBxxx
+                            // check if partner with this location key already exists in database
+                            if (PPartnerLocationAccess.Exists(PartnerRow.PartnerKey, 0, DbLocationRow.LocationKey, Transaction))
+                            {
+                                MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+                                RowRemoved = true;
+                            }
+                            else
+                            {
+                                ((PPartnerLocationRow)MainDS.PPartnerLocation.Rows[ImportPartnerLocationRowIdx]).LocationKey =
+                                    DbLocationRow.LocationKey;
+                            }
 
                             AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
-                            RowRemoved = true;
                             break;  // If there's already a duplicate in the database, I can't fix that here...
                         }
                     }
@@ -1405,7 +1418,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     if (DbPassport.PassportNumber == ImportPassport.PassportNumber) // This simple match ought to be unique
                     {   // These rows are the same passport. I want my imported data to overwrite the data in the database.
-                        ImportPassport.AcceptChanges(); // This should cause the passport to be updated rather then added.
+                        //TODOWBxxx ImportPassport.AcceptChanges(); // This should cause the passport to be updated rather then added.
                         ImportPassport.DateCreated = DbPassport.DateCreated;
                         ImportPassport.CreatedBy = DbPassport.CreatedBy;
                         ImportPassport.ModificationId = DbPassport.ModificationId; // The trick only works if I have this magic password.

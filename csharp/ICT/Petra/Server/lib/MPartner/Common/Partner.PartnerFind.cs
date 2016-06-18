@@ -144,6 +144,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     || (CriteriaRow["PartnerClass"].ToString() == "*")))
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_person.p_family_key_n", Environment.NewLine);
+                sb.AppendFormat("{0},{1}", "PUB.p_person.p_date_of_birth_d", Environment.NewLine);
             }
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_location_type_c", Environment.NewLine);
@@ -745,6 +746,33 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 BuildContactDetailsExtraCriteria(PhoneNumberIsSearchedFor, ref CriteriaRow, ref CustomWhereCriteria,
                     ref InternalParameters);
+            }
+
+            // this is only relevant for Person searches
+            if ((CriteriaRow["DateOfBirth"]).ToString().Length > 0)
+            {
+                // Searched DB Field: 'p_date_of_birth_d'
+
+                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
+                    PPersonTable.GetTableDBName(), PPersonTable.GetDateOfBirthDBName());
+
+                OdbcParameter miParam = new OdbcParameter("DateOfBirth", OdbcType.Date, 16);
+                miParam.Value = CriteriaRow["DateOfBirth"];
+                InternalParameters.Add(miParam);
+            }
+
+            // this is only relevant for Person searches
+            if (((CriteriaRow["FamilyKey"]).ToString().Length > 0)
+                && ((Int64)(CriteriaRow["FamilyKey"]) != 0))
+            {
+                // Searched DB Field: 'p_family_key_n'
+
+                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
+                    PPersonTable.GetTableDBName(), PPersonTable.GetFamilyKeyDBName());
+
+                OdbcParameter miParam = new OdbcParameter("FamilyKey", OdbcType.Decimal, 10);
+                miParam.Value = (object)CriteriaRow["FamilyKey"];
+                InternalParameters.Add(miParam);
             }
 
             #region Partner Status
@@ -1383,6 +1411,39 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// modify search result: filter each result partner for best address only
+        /// </summary>
+        /// <returns>DataTable with filtered result</returns>
+        public DataTable FilterResultByBestAddress()
+        {
+            Int64 CurrentPartnerKey = 0;
+            Int64 NewPartnerKey = 0;
+            DataTable FullFindResultDT = new PartnerFindTDSSearchResultTable();
+            DataTable FilteredResultDT = new PartnerFindTDSSearchResultTable();
+
+            // Request all found Partners from FPagedDataSetObject
+            FullFindResultDT = FPagedDataSetObject.GetAllData();
+
+            FullFindResultDT.DefaultView.Sort = "p_partner_key_n ASC";
+
+            foreach (DataRowView rv in FullFindResultDT.DefaultView)
+            {
+                NewPartnerKey = (Int64)rv.Row["p_partner_key_n"];
+
+                if (NewPartnerKey != CurrentPartnerKey)
+                {
+                    //TODOWBxxx: determine best address from given location table and add that one to FilteredResultDT
+                    //Calculations.DetermineBestAddress(...)
+                    //Find record with best address and add it to FilteredResultDT
+                    CurrentPartnerKey = NewPartnerKey;
+                    FilteredResultDT.ImportRow(rv.Row); // temporary
+                }
+            }
+
+            return FilteredResultDT;
         }
 
         /// <summary>
