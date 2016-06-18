@@ -103,7 +103,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         {
                             PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY;
 
+                            // if the import line contains an event then this will need to be for a person
+                            if (ANode.Attributes[MPartnerConstants.PARTNERIMPORT_EVENTKEY] != null)
+                            {
+                                PartnerClass = MPartnerConstants.PARTNERCLASS_PERSON;
+                            }
+
                             //TODOWB: if partner class is not set then check if for example a value is set for column "EventPartnerKey" in which case we can assume it is a Person that is imported
+                            // there may be other fields that hint for using Person
                         }
 
                         if ((PartnerClass == MPartnerConstants.PARTNERCLASS_FAMILY) || (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
