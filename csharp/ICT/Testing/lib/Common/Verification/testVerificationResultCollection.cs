@@ -116,11 +116,11 @@ namespace Ict.Common.Verification.Testing
 
             res = new TVerificationResult(null, "test", TResultSeverity.Resv_Noncritical);
             coll.AddAndIgnoreNullValue(res);
-            Assert.AreEqual(1, coll.Count, "there should one verification result");
+            Assert.AreEqual(1, coll.Count, "there should be one verification result");
 
             res = new TVerificationResult(null, "test", TResultSeverity.Resv_Noncritical);
             coll.Add(res);
-            Assert.AreEqual(2, coll.Count, "there should 2 verification results");
+            Assert.AreEqual(2, coll.Count, "there should be 2 verification results");
 
             Exception caught = null;
 
@@ -153,11 +153,11 @@ namespace Ict.Common.Verification.Testing
             res = new TVerificationResult(null, "test2", TResultSeverity.Resv_Noncritical);
             coll2.Add(res);
 
-            Assert.AreEqual(2, coll2.Count, "there should two verification results in the coll2 collection");
-            Assert.AreEqual(0, coll.Count, "there should no verification results in the coll collection");
+            Assert.AreEqual(2, coll2.Count, "there should be two verification results in the coll2 collection");
+            Assert.AreEqual(0, coll.Count, "there should be no verification results in the coll collection");
 
             coll.AddCollection(coll2);
-            Assert.AreEqual(2, coll.Count, "there should two verification results in the coll collection after the adding of coll2");
+            Assert.AreEqual(2, coll.Count, "there should be two verification results in the coll collection after the adding of coll2");
 
             Assert.AreEqual("test1", coll[0].ResultText, "added result text should be test1");
             Assert.AreEqual("test2", coll[1].ResultText, "added result text should be test2");
@@ -168,7 +168,7 @@ namespace Ict.Common.Verification.Testing
             res = new TVerificationResult(null, "test4", TResultSeverity.Resv_Noncritical);
             coll2.Add(res);
             coll.AddCollection(coll2);
-            Assert.AreEqual(4, coll.Count, "there should four verification results in the coll collection after the adding of coll2 another time");
+            Assert.AreEqual(4, coll.Count, "there should be four verification results in the coll collection after the adding of coll2 another time");
             Assert.AreEqual("test3", coll[2].ResultText, "added result text should be test3");
             Assert.AreEqual("test4", coll[3].ResultText, "added result text should be test4");
         }
