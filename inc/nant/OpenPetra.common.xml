@@ -411,7 +411,7 @@
     </if>
     <if test="${not file::exists(search.NUnitConsole)}">
         <!-- this is the location of NUnit with the Fedora/CentOS packages -->
-        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit-console.exe"/>
+        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit3-console.exe"/>
     </if>
     <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
     <if test="${not file::exists(external.NUnitConsole)}">

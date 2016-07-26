@@ -117,10 +117,9 @@ namespace Tests.Common.Controls
         /// Testing the Icon Cache Class - trowing of EIconNotInCacheException.
         /// </summary>
         [Test]
-        [ExpectedException(typeof(EIconNotInCacheException))]
         public void TryRetrievingIconThatsNotInCache()
         {
-            TIconCache.IconCache.GetIcon("not in existance...!", TIconCache.TIconSize.is32by32);
+            Assert.Throws<EIconNotInCacheException>(() => TIconCache.IconCache.GetIcon("not in existance...!", TIconCache.TIconSize.is32by32));
         }
     }
 }
