@@ -101,7 +101,7 @@ namespace Ict.Petra.Shared.MSysMan.Validation
 
             if (regex.Match(APassword).Success == false)
             {
-                VerificationResult = new TVerificationResult("\nPassword quality check.",
+                VerificationResult = new TVerificationResult("Password Quality Check",
                     ErrorCodes.GetErrorInfo(PetraErrorCodes.ERR_INVALID_PASSWORD, new string[] { "8" }));
 
                 return false;

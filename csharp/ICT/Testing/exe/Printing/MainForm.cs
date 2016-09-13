@@ -206,8 +206,7 @@ namespace Tests.Common.Printing
 
                 TPetraIdentity PetraIdentity = new TPetraIdentity(
                     "TESTUSER", "", "", "", "", DateTime.MinValue,
-                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
-                    false);
+                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
 
                 UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
@@ -237,8 +236,7 @@ namespace Tests.Common.Printing
 
                 TPetraIdentity PetraIdentity = new TPetraIdentity(
                     "TESTUSER", "", "", "", "", DateTime.MinValue,
-                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
-                    false);
+                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
 
                 UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 

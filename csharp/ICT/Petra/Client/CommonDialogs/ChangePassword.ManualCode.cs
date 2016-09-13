@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop, peters
+//       timop, peters, christiank
 //
 // Copyright 2004-2016 by OM International
 //
@@ -77,59 +77,90 @@ namespace Ict.Petra.Client.CommonDialogs
 
         private void RunOnceOnActivationManual()
         {
-            lblChangePassword.Visible = PasswordNeedsChanged;
+            if (PasswordNeedsChanged)
+            {
+                this.Text = Catalog.GetString("Password Change Required");
+            }
+            else
+            {
+                lblChangePassword.Visible = false;
+            }
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            string MessageTitle = Catalog.GetString("Set Password");
-            string ErrorMessage = String.Format(Catalog.GetString("There was a problem setting the password for user {0}."), UserName);
+            TVerificationResultCollection VerificationResultCollection;
 
-            if (txtOldPassword.Visible && !TRemote.MSysMan.Maintenance.WebConnectors.PasswordAuthentication(UserName, this.txtOldPassword.Text))
+            // Client-side checks
+            if (txtOldPassword.Text.Length == 0)
             {
-                MessageBox.Show(Catalog.GetString("Incorrect password entered."),
-                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString("You must enter the current password."),
+                    CommonDialogsResourcestrings.StrChangePasswordTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtOldPassword.Focus();
+
+                return;
+            }
+
+            if (txtNewPassword.Text.Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("You must enter a new password."),
+                    CommonDialogsResourcestrings.StrChangePasswordTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtNewPassword.Focus();
+
+                return;
+            }
+
+            if (txtNewPassword2.Text.Length == 0)
+            {
+                MessageBox.Show(Catalog.GetString("You must repeat the new password."),
+                    CommonDialogsResourcestrings.StrChangePasswordTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtNewPassword2.Focus();
+
+                return;
             }
 
             if (txtNewPassword.Text != txtNewPassword2.Text)
             {
-                MessageBox.Show(Catalog.GetString("Passwords do not match! Please try again..."),
-                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(Catalog.GetString("The new password and the repeated new password are not identical! Please enter them again."),
+                    CommonDialogsResourcestrings.StrChangePasswordTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                txtNewPassword.Focus();
+                txtNewPassword.SelectAll();
+
                 return;
             }
 
-            if ((txtNewPassword.Text == this.txtOldPassword.Text) && this.PasswordNeedsChanged)
+            try
             {
-                MessageBox.Show(String.Format(Catalog.GetString(
-                            "This password is the same as your old password! Please enter a new password."), UserName),
-                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                this.Cursor = Cursors.WaitCursor;
+                Application.DoEvents();  // give Windows a chance to update the Cursor
+
+                // Request the setting of the new password (incl. server-side checks)
+                if (!TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(UserName, txtNewPassword.Text,
+                        txtOldPassword.Text, PasswordNeedsChanged, out VerificationResultCollection))
+                {
+                    MessageBox.Show(String.Format(CommonDialogsResourcestrings.StrChangePasswordError, UserName) +
+                        Environment.NewLine + Environment.NewLine +
+                        VerificationResultCollection.BuildVerificationResultString(),
+                        CommonDialogsResourcestrings.StrChangePasswordTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    txtNewPassword.Focus();
+                    txtNewPassword.SelectAll();
+
+                    return;
+                }
+
+                MessageBox.Show(String.Format(Catalog.GetString(CommonDialogsResourcestrings.StrChangePasswordSuccess), UserName),
+                    CommonDialogsResourcestrings.StrChangePasswordTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            TVerificationResultCollection VerificationResultCollection;
-            TVerificationResult VerificationResult;
-
-            if (!TSharedSysManValidation.CheckPasswordQuality(txtNewPassword.Text, out VerificationResult))
+            finally
             {
-                MessageBox.Show(ErrorMessage + Environment.NewLine + Environment.NewLine +
-                    VerificationResult.ResultText,
-                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+                this.Cursor = Cursors.Default;
             }
 
-            if (!TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(UserName, txtNewPassword.Text,
-                    txtOldPassword.Text,
-                    PasswordNeedsChanged,
-                    out VerificationResultCollection))
-            {
-                MessageBox.Show(ErrorMessage + Environment.NewLine + Environment.NewLine +
-                    VerificationResultCollection.BuildVerificationResultString(),
-                    MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}."), UserName),
-                MessageTitle);
             this.DialogResult = DialogResult.OK;
         }
     }

@@ -340,30 +340,30 @@
                 descr=""
                 format="X(50)"
                 label="Email Address"
-                help="Enter the Email Address of this person"/>
+                help="Enter the Email Address of this user"/>
     <tablefield name="s_first_name_c"
                 type="varchar"
                 descr=""
                 format="X(32)"
                 label="Personal Name"
-                help="Enter the Personal Name"/>
+                help="Enter the Personal Name of this user"/>
     <tablefield name="s_last_name_c"
                 type="varchar"
                 descr=""
                 format="X(32)"
                 label="Family Name"
-                help="Enter the Family Name"/>
+                help="Enter the Family Name of this user"/>
     <tablefield name="s_password_hash_c"
                 type="varchar"
-                descr="The .NET hash value of the user&apos;s salted password"
+                descr="Hash value of the user&apos;s Salted password"
                 format="X(32)"/>
     <tablefield name="s_password_salt_c"
                 type="varchar"
-                descr="The salt value used to hide the password even more (cannot recognise 2 same passwords)"
+                descr="The Salt value used for hashing the password (two identical passwords will not yield the same Hash value with different Salt values)"
                 format="X(32)"/>
     <tablefield name="s_password_needs_change_l"
                 type="bit"
-                descr="Forces change of password at next login. Set by either Petra 2.2 installation or if the SYSADMIN changes a password for a user (not yet implemented)"
+                descr="Forces change of password at next login. Set when the SYSADMIN changes a password for a user. Also, data migration from legacy system will set this, and it will need to be set if the password hashing scheme should get changed."
                 format="Yes/No"
                 label="Password needs change"
                 help="Forces change of password at next login"
@@ -374,6 +374,13 @@
                 format="&gt;9"
                 label="Failed Logins"
                 initial="0"/>
+    <tablefield name="s_account_locked_l"
+                type="bit"
+                descr=""
+                format="Yes/No"
+                label="Locked?"
+                help="Account Locked?"
+                initial="no"/>
     <tablefield name="s_retired_l"
                 type="bit"
                 descr=""
@@ -392,6 +399,11 @@
                 descr="The date the user last logged in."
                 format="99/99/9999"
                 label="Last Login Date"/>
+    <tablefield name="s_account_activity_c"
+                type="varchar"
+                descr="Information about other account activity."
+                format="X(6000)"
+                label="Account Activity"/>                                
     <tablefield name="s_language_code_c"
                 type="varchar"
                 descr="This is the code used to identify a language."
@@ -1131,11 +1143,6 @@
                 format="X(10)"
                 label="User ID"
                 notnull="yes" />
-    <tablefield name="s_login_tty_line_c"
-                type="varchar"
-                descr="This is the tty line on which the terminal is located on computer."
-                format="X(8)"
-                label="TTY Line"/>
     <tablefield name="s_login_time_i"
                 type="integer"
                 descr="The time a user logged in."
@@ -1149,10 +1156,17 @@
                 format="99/99/9999"
                 label="Login Date"
                 notnull="yes"/>
+    <tablefield name="s_login_successful_l"
+                type="bit"
+                descr="Was the login successful?"
+                label="Login Successful"
+                format="Yes/No"
+                initial="no"
+                notnull="yes"/>
     <tablefield name="s_login_status_c"
                 type="varchar"
                 descr="Description of the login attempt."
-                format="X(25)"
+                format="X(250)"
                 label="Login Status"/>
     <tablefield name="s_logout_time_i"
                 type="integer"
@@ -1475,7 +1489,7 @@
                 label="Read Only"
                 notnull="yes"
                 initial="yes"/>
-	<!-- Constraints on table s_system_defaults -->
+    <!-- Constraints on table s_system_defaults -->
     <primarykey name="s_system_defaults_pk"
                 descr=""
                 thisFields="s_default_code_c"/>
@@ -1524,7 +1538,7 @@
                 thisFields="s_default_code_c"
                 otherTable="s_system_defaults"
                 otherFields="s_default_code_c"/>
-  </table>	
+  </table>  
   <table name="s_error_log"
          descr="Log of captured runtime errors"
          area="Petra Data"

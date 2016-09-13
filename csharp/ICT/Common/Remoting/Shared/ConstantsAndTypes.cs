@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,16 @@ using Ict.Common;
 
 namespace Ict.Common.Remoting.Shared
 {
+    /// <summary>
+    /// Contains resource texts.
+    /// </summary>
+    public static class ResourceTexts
+    {
+        /// <summary>TODO</summary>
+        public static readonly string StrRequestCallerInfo = Catalog.GetString("[Request came from Computer '{0}' " +
+            "(IP Address: {1})]");
+    }
+
     /// <summary>
     /// Surrogate Base Interface
     /// All Interfaces can safely derive from this Interface. The reason why we have this is:

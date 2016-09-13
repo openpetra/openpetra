@@ -194,7 +194,7 @@ namespace Ict.Petra.Shared
         public const String SYSDEFAULT_DEFAULTFIELDMOTIVATION = "DefaultFieldMotivation";
 
         /// <summary>System Defaults</summary>
-        public const String SYSDEFAULT_FAILEDLOGINS_UNTIL_RETIRE = "FailedLoginsUntilRetire";
+        public const String SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED = "FailedLoginsUntilAccountGetsLocked";
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_NEW_PERSON_TAKEOVERALLADDRESSES = "NewPerson_TakeOverAllAddresses";

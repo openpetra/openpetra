@@ -459,8 +459,8 @@ OpenPetra:
                     UserPreferences:
                         SetUserPreferences: {Label=User Preferences, Description="Maintain User Preferences", ActionOpenScreen=TFrmUserPreferencesDialog}
                 Security: {DontShowNestedTasksAsLinks=true}
-                    Password: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
-                        SetPassword: {Description="Please change your own password regularly", ActionClick=TSysManMain.SetUserPassword}
+                    Login:
+                        ChangePassword: {Description="You are advised to change your password regularly!", ActionClick=TSysManMain.SetUserPassword}
         SystemManager: {Icon=sysman.ico, Namespace=Ict.Petra.Client.MSysMan.Gui, PermissionsRequired=SYSMAN, ShowAsCollapsiblePanels=true}
             Security:
                 Users: {DontShowNestedTasksAsLinks=true}

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +42,7 @@ namespace Ict.Petra.Shared.Security
         private Int32 FFailedLogins;
         private Int64 FPartnerKey;
         private Int64 FDefaultLedgerNumber;
+        private Boolean FAccountLocked;
         private Boolean FRetired;
         private Boolean FModifiableUser;
 
@@ -56,6 +57,16 @@ namespace Ict.Petra.Shared.Security
             }
         }
 
+        /// <summary>
+        /// is the user account available for log-in or locked
+        /// </summary>
+        public Boolean AccountLocked
+        {
+            get
+            {
+                return FAccountLocked;
+            }
+        }
         /// <summary>
         /// is the user still active or retired
         /// </summary>
@@ -217,6 +228,7 @@ namespace Ict.Petra.Shared.Security
         /// <param name="AFailedLogins"></param>
         /// <param name="APartnerKey"></param>
         /// <param name="ADefaultLedgerNumber"></param>
+        /// <param name="AAccountLocked"></param>
         /// <param name="ARetired"></param>
         /// <param name="AModifiableUser"></param>
         public TPetraIdentity(String AUserID,
@@ -230,6 +242,7 @@ namespace Ict.Petra.Shared.Security
             Int32 AFailedLogins,
             Int64 APartnerKey,
             Int64 ADefaultLedgerNumber,
+            Boolean AAccountLocked,
             Boolean ARetired,
             Boolean AModifiableUser) : base()
         {
@@ -244,6 +257,7 @@ namespace Ict.Petra.Shared.Security
             FFailedLogins = AFailedLogins;
             FPartnerKey = APartnerKey;
             FDefaultLedgerNumber = ADefaultLedgerNumber;
+            FAccountLocked = AAccountLocked;
             FRetired = ARetired;
             FModifiableUser = AModifiableUser;
         }

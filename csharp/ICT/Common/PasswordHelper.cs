@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using PasswordUtilities;
+using Sodium;
 
 namespace Ict.Common
 {
@@ -62,49 +63,47 @@ namespace Ict.Common
         public static string GetRandomSecurePassword()
         {
             double Entropy = 0;
-            PasswordGenerator Generator = new PasswordGenerator();
+            PasswordGenerator PWGenerator = new PasswordGenerator(new PasswordPolicy(15, 18));
 
-            // TODO An Entropy of 72 was deemed sufficient in 2014 but it should be raised in future years to accommodate the increase
+            // NOTE: An Entropy of 91 was deemed sufficient in 2016 but it should be raised in future years to accommodate the increase
             // in computing power and hence the lessening of time it would take to break a password of such an Entropy.
-            while (Entropy < 72)
+            while (Entropy < 91)
             {
-                Generator.GeneratePassword();
-                Entropy = Generator.PasswordEntropy;
+                PWGenerator.GeneratePassword();
+                Entropy = PWGenerator.PasswordEntropy;
             }
 
-            return Generator.Password;
+            return PWGenerator.Password;
         }
 
         /// generate a new password salt
         public static string GetNewPasswordSalt()
         {
-            byte[] saltBytes = new byte[32];
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            rng.GetNonZeroBytes(saltBytes);
+            byte[] Salt = PasswordHash.GenerateSalt();
 
-            return Convert.ToBase64String(saltBytes);;
+            return Encoding.ASCII.GetString(Salt);
         }
 
         /// <summary>
-        /// generate a password hash
+        /// Generates a Password Hash using the 'Scrypt' Key Stretching Algorithm (which is provided through the libsodium-net
+        /// libaray ['Sodium' namespace]).
         /// </summary>
-        /// <param name="APassword"></param>
-        /// <param name="ASalt"></param>
-        /// <returns>Hash</returns>
+        /// <remarks><em>IMPORTANT:</em> Changing the way 'Salt' is generated and/or changing the 'Password Hash Strength limit'
+        /// that gets passed to the PasswordHash.ScryptHashBinary Method (currently PasswordHash.Strength.Medium)
+        /// <em>***invalidates existing passwords***</em>, ie. users will no longer be able to log on with their passwords once
+        /// this is done!
+        /// <para />
+        /// If those parameters should ever be changed then the Ict.Tools.PasswordResetter.exe application can be used to assign
+        /// new, random passwords that are created 'in the new way' and users will need to log on once with that password,
+        /// then they will immediately need to enter a new password. This will then be stored 'in the new way' and users will
+        /// be able to log on as they used to do from then onwards - with the new password of their choice.</remarks>
+        /// <param name="APassword">Password.</param>
+        /// <param name="ASalt">Salt. Must have been created with <see cref="GetNewPasswordSalt"/>!!!</param>
+        /// <returns>Password Hash created with the 'Scrypt' Key Stretching Algorithm.</returns>
         public static string GetPasswordHash(string APassword, string ASalt)
         {
-            return GetPasswordHash(String.Concat(APassword, ASalt));
-        }
-
-        /// <summary>
-        /// generate a password hash
-        /// </summary>
-        /// <param name="APasswordAndSalt"></param>
-        /// <returns>Hash</returns>
-        public static string GetPasswordHash(string APasswordAndSalt)
-        {
-            return BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
-                        APasswordAndSalt))).Replace("-", "");
+            return BitConverter.ToString(
+                PasswordHash.ScryptHashBinary(APassword, ASalt, PasswordHash.Strength.Medium)).Replace("-", "");
         }
     }
 }

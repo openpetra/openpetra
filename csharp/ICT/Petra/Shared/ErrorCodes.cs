@@ -735,11 +735,17 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Missing password")]
         public const String ERR_MISSING_PASSWORD = "SYS.00001V";
 
-        /// <summary>Password missing.</summary>
+        /// <summary>Password rules not adhered to.</summary>
         [ErrCodeAttribute("Invalid password.",
              ErrorMessageText = "The password must have at least {0} characters, and must contain at least one digit and one letter.",
              ErrorMessageTitle = "Invalid password")]
         public const String ERR_INVALID_PASSWORD = "SYS.00002V";
+
+        /// <summary>Attempted password change not changing the password.</summary>
+        [ErrCodeAttribute("Invalid password.",
+             ErrorMessageText = "The new password must be different from the current password, but it is identical.",
+             ErrorMessageTitle = "Invalid password")]
+        public const String ERR_NEW_PASSWORD_MUST_BE_DIFFERENT = "SYS.00003V";
 
         #endregion
     }
