@@ -183,15 +183,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 return false;
             }
 
-            if (APasswordNeedsChanged && APassword == AOldPassword) {
-                AVerification = new TVerificationResultCollection();
-                AVerification.Add(new TVerificationResult("\nPassword check.",
-                            Catalog.GetString(
-                                "Password not changed as the old password was reused. Please use a new password."),
-                        TResultSeverity.Resv_Critical));
-                return false;
-            }
-
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
                 TPetraPrincipal tempPrincipal;
@@ -302,7 +293,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string NewPasswordHashWithOldSalt = TUserManagerWebConnector.CreateHashOfPassword(ANewPassword,
                 AUserDR.PasswordSalt, "Scrypt");
 
-            if (PasswordHash.SlowEquals(Convert.FromBase64String(AUserDR.PasswordHash),
+            if (PasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(AUserDR.PasswordHash),
                     Convert.FromBase64String(NewPasswordHashWithOldSalt)))
             {
                 AVerificationResult = new TVerificationResult("Password change",

@@ -247,9 +247,6 @@ namespace Ict.Petra.Shared
         /// <summary>temporary column name for info if available site is listed in PPartnerLedger</summary>
         public const String SYSMAN_AVAILABLE_SITES_COLUMN_IS_PARTNER_LEDGER = "IsPartnerLedger";
 
-        /// <summary>this message is returned by the server after successful login, if the user is required to change the password</summary>
-        public const String LOGINMUSTCHANGEPASSWORD = "LOGINMUSTCHANGEPASSWORD";
-
         /// <summary>
         /// Used in XML Reports messaging between Server and Client.
         /// </summary>

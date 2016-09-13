@@ -105,5 +105,24 @@ namespace Ict.Common
             return BitConverter.ToString(
                 PasswordHash.ScryptHashBinary(APassword, ASalt, PasswordHash.Strength.Medium)).Replace("-", "");
         }
+
+        /// <summary>
+        /// Compare two byte arrays.
+        /// Avoiding timing attacks by making sure that the comparison always takes the same amount of time.
+        /// </summary>
+        /// <param name="a">array 1.</param>
+        /// <param name="b">array 2.</param>
+        /// <returns>True if equal. Otherwise False.</returns>
+        public static bool EqualsAntiTimingAttack(byte[] a, byte[] b)
+        {
+            uint diff = (uint)a.Length ^ (uint)b.Length;
+
+            for (int i = 0; i < a.Length && i < b.Length; i++)
+            {
+               diff |= (uint)(a[i] ^ b[i]);
+            }
+
+            return diff == 0;
+        }
     }
 }

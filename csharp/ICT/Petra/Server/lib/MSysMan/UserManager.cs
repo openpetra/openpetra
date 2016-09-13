@@ -196,12 +196,11 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// <param name="APassword">Password.</param>
         /// <param name="AClientComputerName">Name of the Client Computer that the authentication request came from.</param>
         /// <param name="AClientIPAddress">IP Address of the Client Computer that the authentication request came from.</param>
-        /// <param name="AProcessID">Process ID.</param>
         /// <param name="ASystemEnabled">True if the system is enabled, otherwise false.</param>
         /// <returns>An instance of <see cref="TPetraPrincipal"/> if the authentication was successful, otherwise null.</returns>
         [NoRemoting]
         public static TPetraPrincipal PerformUserAuthentication(String AUserID, String APassword,
-            string AClientComputerName, string AClientIPAddress, out Int32 AProcessID, out Boolean ASystemEnabled)
+            string AClientComputerName, string AClientIPAddress, out Boolean ASystemEnabled)
         {
             DateTime LoginDateTime;
             TPetraPrincipal PetraPrincipal = null;
@@ -238,7 +237,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 else if (UserAuthenticationMethod == "OpenPetraDBSUser")
                 {
                     //if (CreateHashOfPassword(APassword, UserDR.PasswordSalt) != UserDR.PasswordHash)
-                    if (!PasswordHash.SlowEquals(Convert.FromBase64String(CreateHashOfPassword(APassword, UserDR.PasswordSalt)),
+                    if (!PasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(CreateHashOfPassword(APassword, UserDR.PasswordSalt)),
                             Convert.FromBase64String(UserDR.PasswordHash)))
                     {
                         // The password that the user supplied is wrong!!! --> Save failed user login attempt!
@@ -611,16 +610,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// <param name="APassword">Password.</param>
         /// <param name="AClientComputerName">Name of the Client Computer that the authentication request came from.</param>
         /// <param name="AClientIPAddress">IP Address of the Client Computer that the authentication request came from.</param>
-        /// <param name="AProcessID">Process ID.</param>
         /// <param name="ASystemEnabled">True if the system is enabled, otherwise false.</param>
         /// <returns>An instance of <see cref="TPetraPrincipal"/> if the authentication was successful, otherwise null.</returns>
         public IPrincipal PerformUserAuthentication(string AUserID, string APassword,
             string AClientComputerName, string AClientIPAddress,
-            out Int32 AProcessID,
             out Boolean ASystemEnabled)
         {
-            return TUserManagerWebConnector.PerformUserAuthentication(AUserName, APassword, AClientComputerName, AClientIPAddress,
-                out AProcessID, out ASystemEnabled);
+            return TUserManagerWebConnector.PerformUserAuthentication(AUserID, APassword, AClientComputerName, AClientIPAddress,
+                out ASystemEnabled);
         }
 
         /// <summary>
