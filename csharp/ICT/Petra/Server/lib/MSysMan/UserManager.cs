@@ -527,7 +527,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             {
                 // TODO will be updated with revision 3285
                 return BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
-                        String.Concat(APassword, ASalt))).Replace("-", "");
+                        String.Concat(APassword, ASalt)))).Replace("-", "");
             }
             else if (AHashType.ToUpper() == "SCRYPT")
             {
