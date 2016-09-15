@@ -240,8 +240,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     if (UserDR.PasswordSalt.Length != 32) // old length was 44
                     {
                         // password has not been updated yet to new hash
-                        if (CreateHashOfPassword(String.Concat(APassword,
-                                    UserDR.PasswordSalt)) != UserDR.PasswordHash)
+                        if (CreateHashOfPassword(APassword,
+                                    UserDR.PasswordSalt, "SHA1") != UserDR.PasswordHash)
                         {
                             // The password that the user supplied is wrong!!! --> Save failed user login attempt!
                             // If the number of permitted failed logins in a row gets exceeded then also lock the user account!
@@ -522,6 +522,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 return BitConverter.ToString(
                     MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(String.Concat(APassword,
                                 ASalt)))).Replace("-", "");
+            }
+            else if (AHashType.ToUpper() == "SHA1")
+            {
+                // TODO will be updated with revision 3285
+                return BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
+                        String.Concat(APassword, ASalt))).Replace("-", "");
             }
             else if (AHashType.ToUpper() == "SCRYPT")
             {
