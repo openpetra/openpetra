@@ -236,9 +236,36 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 //
                 else if (UserAuthenticationMethod == "OpenPetraDBSUser")
                 {
-                    //if (CreateHashOfPassword(APassword, UserDR.PasswordSalt) != UserDR.PasswordHash)
-                    if (!PasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(CreateHashOfPassword(APassword, UserDR.PasswordSalt)),
-                            Convert.FromBase64String(UserDR.PasswordHash)))
+                    // TODO see PwdSchemeVersion in commit 3285
+                    if (UserDR.PasswordSalt.Length != 32) // old length was 44
+                    {
+                        // password has not been updated yet to new hash
+                        if (CreateHashOfPassword(String.Concat(APassword,
+                                    UserDR.PasswordSalt)) != UserDR.PasswordHash)
+                        {
+                            // The password that the user supplied is wrong!!! --> Save failed user login attempt!
+                            // If the number of permitted failed logins in a row gets exceeded then also lock the user account!
+                            SaveFailedLogin(AUserID, UserDR, AClientComputerName, AClientIPAddress);
+
+                            if (UserDR.AccountLocked)
+                            {
+                                // User Account just got locked!
+                                throw new EUserAccountGotLockedException(StrInvalidUserIDPassword);
+                            }
+                            else
+                            {
+                                throw new EPasswordWrongException(StrInvalidUserIDPassword);
+                            }
+                        }
+                        else
+                        {
+                            // TODO update password with new hash
+                            // see SetNewPasswordHashAndSaltForUser in commit 3285
+                        }
+                    }
+                    else if (!PasswordHelper.EqualsAntiTimingAttack(
+                                Convert.FromBase64String(CreateHashOfPassword(APassword, UserDR.PasswordSalt)),
+                                Convert.FromBase64String(UserDR.PasswordHash)))
                     {
                         // The password that the user supplied is wrong!!! --> Save failed user login attempt!
                         // If the number of permitted failed logins in a row gets exceeded then also lock the user account!
