@@ -308,7 +308,7 @@ namespace Ict.Petra.Shared.MPartner
         public const String PARTNERIMPORT_PHONE = "Phone";
 
         /// <summary>MobilePhone</summary>
-        public const String PARTNERIMPORT_MOBILEPHONE = "MobilePhone";
+        public const String PARTNERIMPORT_MOBILEPHONE = "Mobile";
 
         /// <summary>Title</summary>
         public const String PARTNERIMPORT_TITLE = "Title";

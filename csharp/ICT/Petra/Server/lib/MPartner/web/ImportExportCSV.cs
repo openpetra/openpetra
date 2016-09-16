@@ -780,7 +780,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE))
                 {
-                    ShortTermRow.OutreachRole = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
+                    ShortTermRow.StCongressCode = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_EVENTROLE);
                 }
 
                 String ChargedField = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD);

@@ -225,6 +225,32 @@ namespace Ict.Petra.Shared.MPartner
     };
 
     /// <summary>
+    /// Defines the format of an import file (currently partner import)
+    /// </summary>
+    public enum TImportFileFormat
+    {
+        /// <summary>
+        /// unknown file format
+        /// </summary>
+        unknown,
+
+        /// <summary>
+        /// .ext file format
+        /// </summary>
+        ext,
+
+        /// <summary>
+        /// .csv file format
+        /// </summary>
+        csv,
+
+        /// <summary>
+        /// .yml file format
+        /// </summary>
+        yml
+    };
+
+    /// <summary>
     /// Class that holds a combination of SiteKey and LocationKey.
     /// </summary>
     [Serializable()]

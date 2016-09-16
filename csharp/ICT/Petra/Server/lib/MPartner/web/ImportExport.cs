@@ -545,6 +545,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// If the address I'm importing is already on file, I don't want to create another row.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AImportFileFormat"></param>
         /// <param name="PartnerRow"></param>
         /// <param name="AReplaceAddress"></param>
         /// <param name="ASiteKeyToBeReplaced"></param>
@@ -552,6 +553,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         private static void CheckAddresses(PartnerImportExportTDS MainDS,
+            TImportFileFormat AImportFileFormat,
             PPartnerRow PartnerRow,
             Boolean AReplaceAddress,
             Int64 ASiteKeyToBeReplaced,
@@ -660,8 +662,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 // check if partner with this location key already exists in database
                                 if (PPartnerLocationAccess.Exists(PartnerRow.PartnerKey, 0, DbLocationRow.LocationKey, Transaction))
                                 {
-                                    MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
-                                    RowRemoved = true;
+                                    // in case of .ext files all data is imported, so the PartnerLocation record may contain important
+                                    // information like start and end date of an address, whereas with .csv this information is not imported
+                                    if (AImportFileFormat != TImportFileFormat.ext)
+                                    {
+                                        MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+                                        RowRemoved = true;
+                                    }
                                 }
                                 else
                                 {
@@ -1153,19 +1160,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 PmGeneralApplicationRow GenAppRow = MainDS.PmGeneralApplication[RowIdx];
 
                 // Check if this row already exists, using the unique key
-                if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink,
-                        Transaction))
-                {
-                    // If it does, I need to update and not add.
-                    PmGeneralApplicationTable Tbl = PmGeneralApplicationAccess.LoadByUniqueKey(
-                        GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
-                    PmGeneralApplicationRow ExistingRow = Tbl[0];
-
-                    GenAppRow.AcceptChanges();
-                    GenAppRow.ModificationId = ExistingRow.ModificationId;
-
-                    AddVerificationResult(ref ReferenceResults, "Existing Application record updated.");
-                }
+                //TODOWBxxx: probably not needed any longer
+                //if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink,
+                //        Transaction))
+                //{
+                //    // If it does, I need to update and not add.
+                //    PmGeneralApplicationTable Tbl = PmGeneralApplicationAccess.LoadByUniqueKey(
+                //        GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
+                //    PmGeneralApplicationRow ExistingRow = Tbl[0];
+                //
+                //    GenAppRow.AcceptChanges();
+                //    GenAppRow.ModificationId = ExistingRow.ModificationId;
+                //
+                //    AddVerificationResult(ref ReferenceResults, "Existing Application record updated.");
+                //}
 
                 if ((GenAppRow.GenApplicationStatus != "") && (!PtApplicantStatusAccess.Exists(GenAppRow.GenApplicationStatus, Transaction)))
                 {
@@ -1362,15 +1370,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     }
                 }
 
-                if ((rv.OutreachRole != "") && (!PtCongressCodeAccess.Exists(rv.OutreachRole, Transaction)))
+                if ((rv.StCongressCode != "") && (!PtCongressCodeAccess.Exists(rv.StCongressCode, Transaction)))
                 {
-                    MainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0}='{1}'", PtCongressCodeTable.GetCodeDBName(), (rv.OutreachRole));
+                    MainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0}='{1}'", PtCongressCodeTable.GetCodeDBName(), (rv.StCongressCode));
 
                     if (MainDS.PtCongressCode.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
-                        AddVerificationResult(ref ReferenceResults, "Adding new Congress Code " + rv.OutreachRole);
+                        AddVerificationResult(ref ReferenceResults, "Adding new Congress Code " + rv.StCongressCode);
                         PtCongressCodeRow Row = MainDS.PtCongressCode.NewRowTyped();
-                        Row.Code = rv.OutreachRole;
+                        Row.Code = rv.StCongressCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtCongressCode.Rows.Add(Row);
                         TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -1707,18 +1715,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         {
             foreach (PSubscriptionRow SubsRow in MainDS.PSubscription.Rows)
             {
-                PSubscriptionTable Tbl = PSubscriptionAccess.LoadByPrimaryKey(SubsRow.PublicationCode, SubsRow.PartnerKey, Transaction); // If the record is present, I need to update rather than add.
-
-                if (Tbl.Rows.Count > 0)
-                {
-                    PSubscriptionRow DbRow = Tbl[0];
-                    SubsRow.AcceptChanges();                        // This removes the "Added" attribute.
-                    SubsRow.PartnerKey = SubsRow.PartnerKey;        // this looks pointless, but it makes the row "Modified".
-
-                    SubsRow.ModificationId = DbRow.ModificationId;  // I'll copy this to keep the ORM happy,
-                    SubsRow.CreatedBy = DbRow.CreatedBy;            // and these two in case anyone might refer to them.
-                    SubsRow.DateCreated = DbRow.DateCreated;
-                }
+                //TODOWBxxx: probably not needed any longer
+                //PSubscriptionTable Tbl = PSubscriptionAccess.LoadByPrimaryKey(SubsRow.PublicationCode, SubsRow.PartnerKey, Transaction); // If the record is present, I need to update rather than add.
+                //
+                //if (Tbl.Rows.Count > 0)
+                //{
+                //    PSubscriptionRow DbRow = Tbl[0];
+                //    SubsRow.AcceptChanges();                        // This removes the "Added" attribute.
+                //    SubsRow.PartnerKey = SubsRow.PartnerKey;        // this looks pointless, but it makes the row "Modified".
+                //
+                //    SubsRow.ModificationId = DbRow.ModificationId;  // I'll copy this to keep the ORM happy,
+                //    SubsRow.CreatedBy = DbRow.CreatedBy;            // and these two in case anyone might refer to them.
+                //    SubsRow.DateCreated = DbRow.DateCreated;
+                //}
 
                 if (SubsRow.ReasonSubsGivenCode == "")
                 {
@@ -1829,6 +1838,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// or in some cases substitute a known value in the reference.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AImportFileFormat"></param>
         /// <param name="AReplaceAddress"></param>
         /// <param name="ASiteKeyToBeReplaced"></param>
         /// <param name="ALocationKeyToBeReplaced"></param>
@@ -1836,6 +1846,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="Transaction"></param>
         /// <returns>false if this data can't be imported.</returns>
         private static bool CheckReferencedTables(PartnerImportExportTDS MainDS,
+            TImportFileFormat AImportFileFormat,
             Boolean AReplaceAddress,
             Int64 ASiteKeyToBeReplaced,
             Int32 ALocationKeyToBeReplaced,
@@ -1860,7 +1871,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckBusiness(MainDS, ref ReferenceResults, Transaction);
             CheckLanguage(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAcquisitionCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
-            CheckAddresses(MainDS, PartnerRow, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced, ref ReferenceResults, Transaction);
+            CheckAddresses(MainDS,
+                AImportFileFormat,
+                PartnerRow,
+                AReplaceAddress,
+                ASiteKeyToBeReplaced,
+                ALocationKeyToBeReplaced,
+                ref ReferenceResults,
+                Transaction);
             CheckAddresseeTypeCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAbilityArea(MainDS, ref ReferenceResults, Transaction);
             CheckPartnerInterest(MainDS, ref ReferenceResults, Transaction);
@@ -1892,6 +1910,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// and supllies values to index tables.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AImportFileFormat"></param>
         /// <param name="AReplaceAddress"></param>
         /// <param name="ASiteKeyToBeReplaced"></param>
         /// <param name="ALocationKeyToBeReplaced"></param>
@@ -1899,6 +1918,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <returns>true if no error</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean CommitChanges(PartnerImportExportTDS MainDS,
+            TImportFileFormat AImportFileFormat,
             Boolean AReplaceAddress,
             Int64 ASiteKeyToBeReplaced,
             Int32 ALocationKeyToBeReplaced,
@@ -1920,7 +1940,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     if (CanImport)
                     {
                         CanImport =
-                            CheckReferencedTables(MainDS, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced, ref ReferenceResults,
+                            CheckReferencedTables(MainDS, AImportFileFormat, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced,
+                                ref ReferenceResults,
                                 Transaction);
                     }
 
