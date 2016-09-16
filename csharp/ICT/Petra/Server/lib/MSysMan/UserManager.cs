@@ -478,6 +478,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// that tries to perform user authentication with 'username guessing' cannot easily tell that the user doesn't exist by
         /// checking the time in which the server returns an error (this is an attack vector called 'timing attack')!
         /// </summary>
+        [RequireModulePermission("NONE")]        
         public static void SimulatePasswordAuthenticationForNonExistingUser()
         {
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
