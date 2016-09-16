@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                             return false;
                         }
 
-                        Result = TImportExportDialogs.ExportTofile(Doc, FileName);
+                        Result = TImportExportDialogs.ExportTofile(Doc, FileName, AOldPetraFormat);
 
                         if (!Result)
                         {

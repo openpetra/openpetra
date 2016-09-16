@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Text;
 using System.Xml;
 using GNU.Gettext;
 using Ict.Common;
@@ -69,12 +70,25 @@ namespace Ict.Common.IO
         /// </summary>
         /// <param name="doc"></param>
         /// <param name="FileName"></param>
+        /// <param name="AOldPetraFormat"></param>
         /// <returns></returns>
-        public static bool ExportTofile(string doc, string FileName)
+        public static bool ExportTofile(string doc, string FileName, Boolean AOldPetraFormat)
         {
             if (FileName.EndsWith("ext"))
             {
-                StreamWriter outfile = new StreamWriter(FileName);
+                StreamWriter outfile;
+
+                if (AOldPetraFormat)
+                {
+                    // for export to Petra we currently use ANSI (as it was the case in Petra)
+                    outfile = new StreamWriter(FileName, false, Encoding.ASCII);
+                }
+                else
+                {
+                    // for export to OpenPetra we use UTF-8 with BOM
+                    outfile = new StreamWriter(FileName, false, new UTF8Encoding(true));
+                }
+
                 outfile.Write(doc);
                 outfile.Close();
                 return true;

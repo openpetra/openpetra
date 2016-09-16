@@ -236,9 +236,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             DialogOpen.Filter =
                 Catalog.GetString(
-                    "All supported formats|*.csv;*.ext|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|.csv");
+                    "All supported formats|*.csv;*.ext|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|*.csv");
             // For now: don't show yml file format any longer --> needs to be determined if/how helpful this is for future use
-            // "All supported formats|*.yml;*.csv;*.ext|Text file (*.yml)|*.yml|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|.csv");
+            // "All supported formats|*.yml;*.csv;*.ext|Text file (*.yml)|*.yml|Partner Extract (*.ext)|*.ext|Partner List (*.csv)|*.csv");
             DialogOpen.FilterIndex = 1;
 
             DialogOpen.RestoreDirectory = true;

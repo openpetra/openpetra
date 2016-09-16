@@ -73,7 +73,7 @@ namespace Ict.Petra.Client.MPartner.Logic
                         ExportFamiliesPersons,
                         AOldPetraFormat);
 
-                    Result = TImportExportDialogs.ExportTofile(ExtFormattedDocument, FileName);
+                    Result = TImportExportDialogs.ExportTofile(ExtFormattedDocument, FileName, AOldPetraFormat);
 
                     if (!Result)
                     {
