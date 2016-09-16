@@ -35,6 +35,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MReporting;
+using Ict.Common.Verification;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -74,6 +75,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void InitializeManualCode()
         {
             cmbMailingCode.cmbCombobox.AllowBlankValue = true;
+        }
+
+        private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
+        {
+            if (!dtpFromDate.ValidDate(false)
+                || !dtpToDate.ValidDate(false))
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("Date format problem"),
+                    Catalog.GetString("Please check the date entry."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
+            else
+            {
+                if (dtpFromDate.Date > dtpToDate.Date)
+                {
+                    TVerificationResult VerificationResult = new TVerificationResult(
+                        Catalog.GetString("From date is later than to date."),
+                        Catalog.GetString("Please change from date or to date."),
+                        TResultSeverity.Resv_Critical);
+                    FPetraUtilsObject.AddVerificationResult(VerificationResult);
+                }
+            }
+
+            if (!ucoMotivationCriteria.IsAnyMotivationDetailSelected())
+            {
+                TVerificationResult VerificationResult = new TVerificationResult(
+                    Catalog.GetString("No Motivation Detail selected"),
+                    Catalog.GetString("Please select at least one Motivation Detail."),
+                    TResultSeverity.Resv_Critical);
+                FPetraUtilsObject.AddVerificationResult(VerificationResult);
+            }
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

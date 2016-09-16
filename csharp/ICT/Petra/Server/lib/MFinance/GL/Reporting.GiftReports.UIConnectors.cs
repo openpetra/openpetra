@@ -812,6 +812,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             string Query = string.Empty;
 
+            if (TLogging.DebugLevel == TLogging.DEBUGLEVEL_REPORTING)
+            {
+                foreach (string k in AParameters.Keys)
+                {
+                    TLogWriter.Log(String.Format("{0} => {1}", k, AParameters[k].ToString()));
+                }
+            }
+
             if (ReportType == "Detailed") // Detailed report only
             {
                 Query = "SELECT a_gift.a_date_entered_d AS DateEntered," +
