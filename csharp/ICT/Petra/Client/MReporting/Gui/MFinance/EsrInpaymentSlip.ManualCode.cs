@@ -108,8 +108,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String[] PartnerNamePart = PartnerShortName.Split(new Char[] { ',' });
             Row["DonorShortName"] =
                 PartnerNamePart.Length > 1 ?
-                PartnerNamePart[0] + " " + PartnerNamePart[1] :
-                PartnerNamePart[0];
+                PartnerNamePart[0].Trim() + " " + PartnerNamePart[1].Trim() :
+                PartnerNamePart[0].Trim();
 
 
             TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(
@@ -118,8 +118,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             PartnerNamePart = PartnerShortName.Split(new Char[] { ',' });
             Row["RecipientShortName"] =
                 PartnerNamePart.Length > 1 ?
-                PartnerNamePart[0] + " " + PartnerNamePart[1] :
-                PartnerNamePart[0];
+                PartnerNamePart[0].Trim() + " " + PartnerNamePart[1].Trim() :
+                PartnerNamePart[0].Trim();
 
             PLocationTable LocationTbl;
             String CountryName;

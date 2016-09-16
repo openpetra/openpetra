@@ -699,6 +699,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
+            FCurrentAccount.AccountRow.PostingStatus = false;
+            FCurrentAccount.CanDelete = false;
+
             string newName = FNameForNewAccounts;
             Int32 countNewAccount = 0;
 

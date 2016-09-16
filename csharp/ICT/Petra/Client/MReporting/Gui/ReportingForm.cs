@@ -558,6 +558,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 Thread.Sleep(500);
             }
+
+            TLogging.Log("", TLoggingType.ToStatusBar);
         }
 
         private void ThreadFunctionViaDelegate(Object Delgt)

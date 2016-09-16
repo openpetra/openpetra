@@ -230,7 +230,14 @@ namespace Ict.Petra.Server.MFinance.GL
                                 // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
                                 string RowType =
                                     TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber, Messages,
-                                        null);
+                                        null).Trim();
+
+                                if (RowType == "")  // don't object if there are "empty" lines
+                                {
+                                    // Skip to the next line
+                                    FImportLine = sr.ReadLine();
+                                    continue;
+                                }
 
                                 if (RowType == "B")
                                 {

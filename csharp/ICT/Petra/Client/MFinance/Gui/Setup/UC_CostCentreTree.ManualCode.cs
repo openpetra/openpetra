@@ -275,7 +275,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();
                 ANewParent.Expand();
-                ((CostCentreNodeDetails)ANewParent.Tag).CostCentreRow.PostingCostCentreFlag = false; // The parent is now a summary CostCentre!
+                ParentRow.PostingCostCentreFlag = false; // The parent is now a summary CostCentre!
+                ((CostCentreNodeDetails)ANewParent.Tag).CanDelete = false;
                 ANewParent.BackColor = Color.White;
                 FParentForm.ShowStatus(String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
                         AChild.Text, PrevParent, ANewParent.Text));

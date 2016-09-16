@@ -148,7 +148,7 @@ namespace Ict.Common
         private static TStatusCallbackProcedure StatusBarProcedure;
 
         /// <summary>
-        /// This is variable indicates if StatusBarProcedure is set to a valid value.
+        /// This is variable indicates if StatusBarProcedure was set to a valid value. Although it could be out of date...
         /// </summary>
         private static bool StatusBarProcedureValid;
 
@@ -178,8 +178,7 @@ namespace Ict.Common
         public TLogging()
         {
             TLogging.Context = "";
-            TLogging.StatusBarProcedure = null;
-            StatusBarProcedureValid = false;
+            SetStatusBarProcedure(null);
         }
 
         /// <summary>
@@ -209,8 +208,7 @@ namespace Ict.Common
                     Path.GetFullPath(AFileName));
             }
 
-            TLogging.StatusBarProcedure = null;
-            StatusBarProcedureValid = false;
+            SetStatusBarProcedure(null);
         }
 
         /// <summary>
@@ -260,7 +258,7 @@ namespace Ict.Common
         public static void SetStatusBarProcedure(TStatusCallbackProcedure callbackfn)
         {
             TLogging.StatusBarProcedure = callbackfn;
-            StatusBarProcedureValid = true;
+            StatusBarProcedureValid = (callbackfn != null);
         }
 
         /// <summary>
@@ -290,14 +288,19 @@ namespace Ict.Common
         /// to the StatusBar of a Form (default = null).</param>
         public static void Log(string Text, TStatusCallbackProcedure ACustomStatusCallbackProcedure = null)
         {
+            TLoggingType loggingType = TLoggingType.ToConsole;
+
             if (ULogWriter != null)
             {
-                Log(Text, TLoggingType.ToLogfile | TLoggingType.ToConsole, ACustomStatusCallbackProcedure);
+                loggingType |= TLoggingType.ToLogfile;
             }
-            else
+
+            if (StatusBarProcedureValid || (ACustomStatusCallbackProcedure != null))
             {
-                Log(Text, TLoggingType.ToConsole);
+                loggingType |= TLoggingType.ToStatusBar;
             }
+
+            Log(Text, loggingType);
         }
 
         /// <summary>
@@ -361,9 +364,8 @@ namespace Ict.Common
                 }
             }
             else if (((ALoggingType & TLoggingType.ToConsole) != 0)
-                     || ((ALoggingType & TLoggingType.ToLogfile) != 0)
                      // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
-                     || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel == TLogging.DEBUGLEVEL_TRACE)))
+                     || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel != 0)))
             {
                 Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
 
@@ -373,28 +375,24 @@ namespace Ict.Common
                 }
             }
 
-            if (((ALoggingType & TLoggingType.ToConsole) != 0) || ((ALoggingType & TLoggingType.ToLogfile) != 0)
-                || ((ALoggingType & TLoggingType.ToStatusBar) != 0))
+            if (((ALoggingType & TLoggingType.ToStatusBar) != 0)
+                && (Text.IndexOf("SELECT") == -1))    // Don't print sql statements to the statusbar
             {
-                // don't print sql statements to the statusbar in debug mode
-                if (Text.IndexOf("SELECT") == -1)
+                if (!string.IsNullOrEmpty(TLogging.Context))
                 {
-                    if (!string.IsNullOrEmpty(TLogging.Context))
-                    {
-                        Text += "; Context: " + TLogging.Context;
-                    }
+                    Text += "; Context: " + TLogging.Context;
+                }
 
-                    if (ACustomStatusCallbackProcedure == null)
+                if (ACustomStatusCallbackProcedure == null)
+                {
+                    if (TLogging.StatusBarProcedureValid)
                     {
-                        if (TLogging.StatusBarProcedureValid)
-                        {
-                            StatusBarProcedure(Text);
-                        }
+                        StatusBarProcedure(Text);
                     }
-                    else
-                    {
-                        ACustomStatusCallbackProcedure(Text);
-                    }
+                }
+                else
+                {
+                    ACustomStatusCallbackProcedure(Text);
                 }
             }
 

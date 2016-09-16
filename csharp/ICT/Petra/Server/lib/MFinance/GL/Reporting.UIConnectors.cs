@@ -873,8 +873,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable BalanceSheetTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            DataTable FilteredResults = null;
-
             /* Required columns:
              * Actual
              * LastYearActual
@@ -884,13 +882,46 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             Int32 NumberOfAccountingPeriods;
             Int32 AccountingYear = AParameters["param_year_i"].ToInt32();
+            String yearFilter;
+
             Int32 ReportPeriodEnd = AParameters["param_end_period_i"].ToInt32();
+            String periodFilter;
+            String thisYearSelect;
+            String lastYearSelect;
+
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
             String RootCostCentre = AParameters["param_cost_centre_code"].ToString();
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
             Decimal EffectiveExchangeRate = 1;
             Decimal LastYearExchangeRate = 1;
+
+            NumberOfAccountingPeriods = new TLedgerInfo(LedgerNumber, DbAdapter.FPrivateDatabaseObj).NumberOfAccountingPeriods;
+
+            if (ReportPeriodEnd > NumberOfAccountingPeriods)
+            {
+                yearFilter = " AND glm.a_year_i = " + AccountingYear;
+                periodFilter = " AND glmp.a_period_number_i IN (" +
+                               (ReportPeriodEnd - NumberOfAccountingPeriods) +
+                               "," +
+                               ReportPeriodEnd +
+                               ")";
+                thisYearSelect = "SUM (CASE WHEN glmp.a_period_number_i= " +
+                                 ReportPeriodEnd + " THEN glmp.a_actual_base_n ELSE 0 END)";
+                lastYearSelect = "SUM (CASE WHEN glmp.a_period_number_i= " +
+                                 (ReportPeriodEnd - NumberOfAccountingPeriods) + " THEN glmp.a_actual_base_n ELSE 0 END)";
+            }
+            else
+            {
+                yearFilter = " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")";
+                periodFilter = " AND glmp.a_period_number_i=" + ReportPeriodEnd;
+                thisYearSelect = "SUM (CASE WHEN glm.a_year_i = " +
+                                 AccountingYear + " AND glmp.a_period_number_i= " +
+                                 ReportPeriodEnd + " THEN glmp.a_actual_base_n ELSE 0 END)";
+                lastYearSelect = "SUM (CASE WHEN glm.a_year_i = " +
+                                 (AccountingYear - 1) + " AND glmp.a_period_number_i= " +
+                                 ReportPeriodEnd + " THEN glmp.a_actual_base_n ELSE 0 END)";
+            }
 
             if (International)
             {
@@ -902,12 +933,23 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     ReportPeriodEnd,
                     -1);
 
-                LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
-                    LedgerNumber,
-                    AccountingYear - 1,
-                    ReportPeriodEnd,
-                    -1);
-            }
+                if (ReportPeriodEnd > NumberOfAccountingPeriods)
+                {
+                    LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                        LedgerNumber,
+                        AccountingYear,
+                        ReportPeriodEnd - NumberOfAccountingPeriods,
+                        -1);
+                }
+                else
+                {
+                    LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                        LedgerNumber,
+                        AccountingYear - 1,
+                        ReportPeriodEnd,
+                        -1);
+                }
+            } // International
 
             TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
             DataTable resultTable = null;
@@ -917,7 +959,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref ReadTrans,
                 delegate
                 {
-                    NumberOfAccountingPeriods = new TLedgerInfo(LedgerNumber, DbAdapter.FPrivateDatabaseObj).NumberOfAccountingPeriods;
                     ACostCentreTable AllCostCentres = ACostCentreAccess.LoadViaALedger(LedgerNumber, ReadTrans);
                     AllCostCentres.DefaultView.Sort = ACostCentreTable.GetCostCentreToReportToDBName();
                     List <string>ReportingCostCentres = new List <string>();
@@ -927,24 +968,23 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     String Summarised =                                                                  // This query gets the totals I need
                                         "(SELECT " +
-                                        " glm.a_year_i AS Year," +
-                                        " glmp.a_period_number_i AS Period," +
                                         " a_account.a_account_type_c AS AccountType," +
                                         " a_account.a_debit_credit_indicator_l AS DebitCredit," +
                                         " glm.a_account_code_c AS AccountCode," +
                                         " a_account.a_account_code_short_desc_c AS AccountName," +
-                                        " sum(glmp.a_actual_base_n) AS Actual" +
+                                        LastYearExchangeRate + " * (" + lastYearSelect + ") AS LastYearActual," +
+                                        EffectiveExchangeRate + " * (" + thisYearSelect + ") AS ActualYTD" +
 
                                         " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account" +
                                         " WHERE glm.a_ledger_number_i=" + LedgerNumber +
                                         " AND glm.a_cost_centre_code_c in (" + CostCentreList + ") " +
-                                        " AND glm.a_year_i IN (" + (AccountingYear - 1) + ", " + AccountingYear + ")" +
+                                        yearFilter +
                                         " AND glm.a_glm_sequence_i = glmp.a_glm_sequence_i" +
-                                        " AND glmp.a_period_number_i=" + ReportPeriodEnd +
+                                        periodFilter +
                                         " AND a_account.a_account_code_c = glm.a_account_code_c" +
                                         " AND a_account.a_ledger_number_i = glm.a_ledger_number_i" +
                                         " AND a_account.a_posting_status_l = true" +
-                                        " GROUP BY glm.a_year_i, glmp.a_period_number_i, a_account.a_account_type_c," +
+                                        " GROUP BY a_account.a_account_type_c," +
                                         "   a_account.a_debit_credit_indicator_l, glm.a_account_code_c," +
                                         "   a_account.a_account_code_short_desc_c" +
                                         " ORDER BY glm.a_account_code_c) AS summarised"
@@ -953,71 +993,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String Query =
                         "SELECT " +
                         "summarised.*," +
+                        " 0 AS Actual, " +
                         " 1 AS AccountLevel," +
                         " false AS HasChildren," +
                         " false AS ParentFooter," +
                         " 0 AS AccountTypeOrder," +
                         " false AS AccountIsSummary," +
-                        " 'Path' AS AccountPath," +
-                        " 0.0 AS ActualYTD," +
-                        " 0.0 AS LastYearActual" +
+                        " 'Path' AS AccountPath" +
                         " FROM " + Summarised;
 
                     resultTable = DbAdapter.RunQuery(Query, "BalanceSheet", ReadTrans);
-
-                    DataView LastYear = new DataView(resultTable);
-                    LastYear.Sort = "AccountCode";
-                    LastYear.RowFilter = String.Format("Year={0}", AccountingYear - 1);
-
-                    DataView ThisYear = new DataView(resultTable);
-                    ThisYear.RowFilter = String.Format("Year={0}", AccountingYear);
-
-                    //
-                    // Some of these rows are from a year ago. I'll copy those into the current period "LastYear" fields.
-
-                    TLogging.Log(Catalog.GetString("Get last year data.."), TLoggingType.ToStatusBar);
-
-                    foreach (DataRowView rv in ThisYear)
-                    {
-                        if (DbAdapter.IsCancelled)
-                        {
-                            return;
-                        }
-
-                        DataRow Row = rv.Row;
-                        Int32 RowIdx = LastYear.Find(
-                            new Object[] {
-                                Row["AccountCode"]
-                            }
-                            );
-
-                        if (RowIdx >= 0)
-                        {
-                            DataRow LastYearRow = LastYear[RowIdx].Row;
-                            Row["LastYearActual"] = LastYearExchangeRate * Convert.ToDecimal(LastYearRow["Actual"]);
-                            LastYearRow.Delete();
-                        }
-
-                        Row["Actual"] = EffectiveExchangeRate * Convert.ToDecimal(Row["Actual"]);
-                    }
-
-                    //
-                    // At the end of that process, there may be some remaining LastYearRows that don't have an equivalent entry in this year
-                    // (because there's been no activity this year.)
-                    // I'll tweak these so the Row appears as this year, but the amount appears as LastYear:
-
-                    foreach (DataRowView rv in LastYear)
-                    {
-                        DataRow Row = rv.Row;
-                        Row["Year"] = Convert.ToInt32(Row["Year"]) + 1;
-                        Row["LastYearActual"] = LastYearExchangeRate * Convert.ToDecimal(Row["Actual"]);
-                        Row["Actual"] = 0.0;
-                    }
-
-                    //
-                    // So now I don't have to look at last year's rows:
-
-                    FilteredResults = ThisYear.ToTable("BalanceSheet");
 
                     //
                     // I only have "posting accounts" - I need to add the summary accounts.
@@ -1027,9 +1012,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ReadTrans);
 
                     HierarchyTbl.DefaultView.Sort = "a_reporting_account_code_c";  // These two sort orders
-                    FilteredResults.DefaultView.Sort = "AccountCode";              // Are required by AddTotalsToParentAccountRow, below.
+                    resultTable.DefaultView.Sort = "AccountCode";                  // Are required by AddTotalsToParentAccountRow, below.
 
-                    Int32 PostingAccountRecords = FilteredResults.Rows.Count;
+                    Int32 PostingAccountRecords = resultTable.Rows.Count;
 
                     TLogging.Log(Catalog.GetString("Summarise to parent accounts.."), TLoggingType.ToStatusBar);
 
@@ -1040,11 +1025,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             return;
                         }
 
-                        DataRow Row = FilteredResults.Rows[Idx];
+                        DataRow Row = resultTable.Rows[Idx];
                         String ParentAccountPath;
                         Int32 ParentAccountTypeOrder;
                         Int32 AccountLevel = AddTotalsToParentAccountRow(
-                            FilteredResults,
+                            resultTable,
                             HierarchyTbl,
                             LedgerNumber,
                             "", // No Cost Centres on Balance Sheet
@@ -1066,19 +1051,19 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             Int32 DetailLevel = AParameters["param_nesting_depth"].ToInt32();
             String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
-            FilteredResults.DefaultView.Sort = "AccountTypeOrder, AccountPath";
+            resultTable.DefaultView.Sort = "AccountTypeOrder, AccountPath";
 
-            FilteredResults.DefaultView.RowFilter = "(Actual <> 0 OR LastYearActual <> 0 )" + // Only non-zero rows
-                                                    DepthFilter;    // Nothing too detailed
+            resultTable.DefaultView.RowFilter = "(Actual <> 0 OR LastYearActual <> 0 )" + // Only non-zero rows
+                                                DepthFilter;        // Nothing too detailed
 
-            FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
+            resultTable = resultTable.DefaultView.ToTable("BalanceSheet");
 
             //
             // The income and expense accounts have been used to produce the balance of 'PL',
             // but now I don't want to see those details - only the total.
 
-            FilteredResults.DefaultView.RowFilter = "AccountPath NOT LIKE '%-PL~%' OR AccountLevel < 3"; // Don't include Children of PL account
-            FilteredResults = FilteredResults.DefaultView.ToTable("BalanceSheet");
+            resultTable.DefaultView.RowFilter = "AccountPath NOT LIKE '%-PL~%' OR AccountLevel < 3"; // Don't include Children of PL account
+            resultTable = resultTable.DefaultView.ToTable("BalanceSheet");
 
             //
             // Finally, to make the hierarchical report possible,
@@ -1087,48 +1072,48 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             TLogging.Log(Catalog.GetString("Format data for reporting.."), TLoggingType.ToStatusBar);
 
-            for (Int32 RowIdx = 0; RowIdx < FilteredResults.Rows.Count - 1; RowIdx++)
+            for (Int32 RowIdx = 0; RowIdx < resultTable.Rows.Count - 1; RowIdx++)
             {
                 if (DbAdapter.IsCancelled)
                 {
-                    return FilteredResults;
+                    return null;
                 }
 
-                Int32 ParentAccountLevel = Convert.ToInt32(FilteredResults.Rows[RowIdx]["AccountLevel"]);
-                Boolean HasChildren = (Convert.ToInt32(FilteredResults.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
-                FilteredResults.Rows[RowIdx]["HasChildren"] = HasChildren;
+                Int32 ParentAccountLevel = Convert.ToInt32(resultTable.Rows[RowIdx]["AccountLevel"]);
+                Boolean HasChildren = (Convert.ToInt32(resultTable.Rows[RowIdx + 1]["AccountLevel"]) > ParentAccountLevel);
+                resultTable.Rows[RowIdx]["HasChildren"] = HasChildren;
 
                 if (HasChildren)
                 {
                     Int32 NextSiblingPos = -1;
 
-                    for (Int32 ChildIdx = RowIdx + 2; ChildIdx < FilteredResults.Rows.Count; ChildIdx++)
+                    for (Int32 ChildIdx = RowIdx + 2; ChildIdx < resultTable.Rows.Count; ChildIdx++)
                     {
-                        if (Convert.ToInt32(FilteredResults.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
-                        {                                                                                           // so I insert my footer before here.
+                        if (Convert.ToInt32(resultTable.Rows[ChildIdx]["AccountLevel"]) <= ParentAccountLevel)  // This row is not a child of mine
+                        {                                                                                       // so I insert my footer before here.
                             NextSiblingPos = ChildIdx;
                             break;
                         }
                     }
 
-                    DataRow FooterRow = FilteredResults.NewRow();
-                    DataUtilities.CopyAllColumnValues(FilteredResults.Rows[RowIdx], FooterRow);
+                    DataRow FooterRow = resultTable.NewRow();
+                    DataUtilities.CopyAllColumnValues(resultTable.Rows[RowIdx], FooterRow);
                     FooterRow["ParentFooter"] = true;
                     FooterRow["HasChildren"] = false;
 
                     if (NextSiblingPos > 0)
                     {
-                        FilteredResults.Rows.InsertAt(FooterRow, NextSiblingPos);
+                        resultTable.Rows.InsertAt(FooterRow, NextSiblingPos);
                     }
                     else
                     {
-                        FilteredResults.Rows.Add(FooterRow);
+                        resultTable.Rows.Add(FooterRow);
                     }
                 }
             } // for
 
             TLogging.Log("", TLoggingType.ToStatusBar);
-            return FilteredResults;
+            return resultTable;
         } // Balance Sheet Table
 
         /// <summary>
