@@ -862,7 +862,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         {
             // only create special need record if data exists in import file
             if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
-                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS))
+                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS)
+                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS)
+                || TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS))
             {
                 PmSpecialNeedRow NewRow = AMainDS.PmSpecialNeed.NewRowTyped();
                 Boolean IsNewRecord = true;
@@ -890,6 +892,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
 
                 NewRow.MedicalComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
+                NewRow.DietaryComment = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS);
+                NewRow.OtherSpecialNeed = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS);
 
                 if (TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_VEGETARIAN).ToLower() == "yes")
                 {

@@ -325,6 +325,12 @@ namespace Ict.Petra.Shared.MPartner
         /// <summary>MedicalNeeds</summary>
         public const String PARTNERIMPORT_MEDICALNEEDS = "MedicalNeeds";
 
+        /// <summary>DietaryNeeds</summary>
+        public const String PARTNERIMPORT_DIETARYNEEDS = "DietaryNeeds";
+
+        /// <summary>OtherNeeds</summary>
+        public const String PARTNERIMPORT_OTHERNEEDS = "OtherNeeds";
+
         /// <summary>EventPartnerKey</summary>
         public const String PARTNERIMPORT_EVENTKEY = "EventPartnerKey";
 

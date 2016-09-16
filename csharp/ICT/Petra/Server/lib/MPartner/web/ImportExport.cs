@@ -158,7 +158,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     // read special needs (for PERSON)
                     if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
-                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS))
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_OTHERNEEDS))
                     {
                         MainDS.Merge(PmSpecialNeedAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
                     }

@@ -185,6 +185,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_SPECIALTYPES);
             CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_VEGETARIAN);
             CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS);
+            CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_OTHERNEEDS);
             CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_EVENTKEY);
             CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ARRIVALDATE);
             CheckAndAddToCSVColumnList(ADoc, MPartnerConstants.PARTNERIMPORT_ARRIVALTIME);
@@ -1899,9 +1901,40 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             PmSpecialNeedRow ExistingRow = (PmSpecialNeedRow)AExistingPartnerDS.PmSpecialNeed.DefaultView[0].Row;
 
-            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS))
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS)
+                && (ImportedRow.MedicalComment.Trim() != "")
+                && !ExistingRow.MedicalComment.Contains(ImportedRow.MedicalComment))
             {
-                ExistingRow.MedicalComment = ImportedRow.MedicalComment;
+                if (ExistingRow.MedicalComment != "")
+                {
+                    ExistingRow.MedicalComment += " - ";
+                }
+
+                ExistingRow.MedicalComment += ImportedRow.MedicalComment;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS)
+                && (ImportedRow.DietaryComment.Trim() != "")
+                && !ExistingRow.DietaryComment.Contains(ImportedRow.DietaryComment))
+            {
+                if (ExistingRow.DietaryComment != "")
+                {
+                    ExistingRow.DietaryComment += " - ";
+                }
+
+                ExistingRow.DietaryComment += ImportedRow.DietaryComment;
+            }
+
+            if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_OTHERNEEDS)
+                && (ImportedRow.OtherSpecialNeed.Trim() != "")
+                && !ExistingRow.OtherSpecialNeed.Contains(ImportedRow.OtherSpecialNeed))
+            {
+                if (ExistingRow.OtherSpecialNeed != "")
+                {
+                    ExistingRow.OtherSpecialNeed += " - ";
+                }
+
+                ExistingRow.OtherSpecialNeed += ImportedRow.OtherSpecialNeed;
             }
 
             if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_VEGETARIAN))
