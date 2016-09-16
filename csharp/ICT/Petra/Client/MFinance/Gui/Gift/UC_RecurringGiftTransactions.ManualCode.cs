@@ -481,9 +481,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// reset the control
         /// </summary>
+        /// <param name="ABatchToClear"></param>
         /// <param name="AResetFBatchNumber"></param>
-        public void ClearCurrentSelection(bool AResetFBatchNumber = true)
+        public void ClearCurrentSelection(int ABatchToClear = 0, bool AResetFBatchNumber = true)
         {
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (FPreviouslySelectedDetailRow.BatchNumber != ABatchToClear))
+            {
+                return;
+            }
+
+            //Set selection to null
             this.FPreviouslySelectedDetailRow = null;
 
             if (AResetFBatchNumber)

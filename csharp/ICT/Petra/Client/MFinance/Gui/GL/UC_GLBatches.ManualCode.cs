@@ -86,7 +86,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime FCurrentEffectiveDate;
         private int FCurrentLedgerYear;
         private int FCurrentLedgerPeriod;
-        private bool FInactiveValuesWarningOnGLPosting = false;
+
+        /// <summary>
+        /// InactiveValuesWarningOnGLPosting User Setting
+        /// </summary>
+        public bool FInactiveValuesWarningOnGLPosting = false;
 
         /// <summary>
         ///List of all batches and whether or not the user has been warned of the presence
@@ -427,7 +431,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void ShowJournalTab(Object sender, EventArgs e)
         {
-            ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Journals);
+            ((TFrmGLBatch)ParentForm).SelectTab(TGLBatchEnums.eGLTabs.Journals);
         }
 
         /// <summary>
@@ -591,7 +595,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (myParentForm.InitialBatchFound && (myParentForm.InitialJournalNumber != -1))
                 {
-                    myParentForm.SelectTab(TFrmGLBatch.eGLTabs.Journals);
+                    myParentForm.SelectTab(TGLBatchEnums.eGLTabs.Journals);
                 }
 
                 FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_POSTING,
@@ -964,7 +968,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FPetraUtilsObject.SetChangedFlag();
                     }
 
-                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Batch, UpdateTransactionDates);
+                    ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TGLBatchEnums.eGLLevel.Batch, UpdateTransactionDates);
                 }
             }
             catch (Exception ex)
@@ -1008,17 +1012,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            TFrmGLBatch GLBatchForm = (TFrmGLBatch) this.ParentForm;
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("There is no current Batch row selected!"),
+                    Catalog.GetString("Post Batch"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
 
             //get index position of row to post
             int NewCurrentRowPos = GetSelectedRowIndex();
 
+            TFrmGLBatch GLBatchForm = (TFrmGLBatch) this.ParentForm;
+
             try
             {
-                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.POSTING;
+                GLBatchForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.POSTING;
 
                 if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
-                        FEndDateLastForwardingPeriod, FInactiveValuesWarningOnGLPosting))
+                        FEndDateLastForwardingPeriod))
                 {
                     // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
                     ////Select unposted batch row in same index position as batch just posted
@@ -1045,7 +1058,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             finally
             {
-                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.NONE;
+                GLBatchForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
             }
         }
 
@@ -1056,17 +1069,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void TestPostBatch(System.Object sender, EventArgs e)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("There is no current Batch row selected!"),
+                    Catalog.GetString("Test Post Batch"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation);
+                return;
+            }
+
             TFrmGLBatch GLBatchForm = (TFrmGLBatch) this.ParentForm;
 
             try
             {
-                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.POSTING;
+                GLBatchForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.TESTING;
 
                 FPostLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
             }
             finally
             {
-                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.NONE;
+                GLBatchForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
             }
         }
 

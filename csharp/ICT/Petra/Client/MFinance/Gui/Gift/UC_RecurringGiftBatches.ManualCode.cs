@@ -22,8 +22,9 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -33,6 +34,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
@@ -82,6 +84,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private bool FActiveOnly = false;
         private bool FBankAccountOnly = true;
         private string FSelectedBatchMethodOfPayment = String.Empty;
+
+        //List of all batches and whether or not the user has been warned of the presence
+        // of inactive fields on saving.
+        private Dictionary <int, bool>FRecurringBatchesVerifiedOnSavingDict = new Dictionary <int, bool>();
 
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
@@ -203,12 +209,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             TFrmRecurringGiftBatch myParentForm = (TFrmRecurringGiftBatch)ParentForm;
 
             // Remember our current row position
-            int nCurrentRowIndex = GetSelectedRowIndex();
-            int nCurrentBatchNumber = -1;
+            int CurrentRowIndex = GetSelectedRowIndex();
+            int CurrentBatchNumber = -1;
 
             if ((myParentForm != null) && (myParentForm.InitialBatchNumber > 0))
             {
-                nCurrentBatchNumber = myParentForm.InitialBatchNumber;
+                CurrentBatchNumber = myParentForm.InitialBatchNumber;
                 myParentForm.InitialBatchNumber = -1;
             }
             else if (AIsMessageRefresh)
@@ -225,11 +231,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
-                nCurrentBatchNumber = 1;
+                CurrentBatchNumber = 1;
             }
             else if (FPreviouslySelectedDetailRow != null)
             {
-                nCurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
+                CurrentBatchNumber = FPreviouslySelectedDetailRow.BatchNumber;
             }
 
             TFrmRecurringGiftBatch parentForm = (TFrmRecurringGiftBatch)ParentForm;
@@ -261,17 +267,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 // Now we can select the gift batch we had before (if it still exists on the grid)
                 for (int i = 0; (i < FMainDS.ARecurringGiftBatch.Rows.Count); i++)
                 {
-                    if (FMainDS.ARecurringGiftBatch[i].BatchNumber == nCurrentBatchNumber)
+                    if (FMainDS.ARecurringGiftBatch[i].BatchNumber == CurrentBatchNumber)
                     {
                         DataView dv = ((DevAge.ComponentModel.BoundDataView)grdDetails.DataSource).DataView;
                         Int32 RowNumberGrid = DataUtilities.GetDataViewIndexByDataTableIndex(dv, FMainDS.ARecurringGiftBatch, i) + 1;
 
-                        nCurrentRowIndex = RowNumberGrid;
+                        CurrentRowIndex = RowNumberGrid;
                         break;
                     }
                 }
 
-                SelectRowInGrid(nCurrentRowIndex);
+                SelectRowInGrid(CurrentRowIndex);
 
                 UpdateRecordNumberDisplay();
 
@@ -303,6 +309,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// reset the control
         public void ClearCurrentSelection()
         {
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
             if (FPetraUtilsObject.HasChanges)
             {
                 GetDataFromControls();
@@ -334,7 +345,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void CheckBeforeSaving()
         {
-            //Add code here to run before the batch is saved
+            UpdateRecurringBatchDictionary();
         }
 
         /// <summary>
@@ -476,6 +487,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Nothing to do as yet
         }
 
+        /// <summary>
+        /// Call ShowDetails() from outside form
+        /// </summary>
+        public void ShowDetailsRefresh()
+        {
+            ShowDetails();
+        }
+
         private void ShowDetailsManual(ARecurringGiftBatchRow ARow)
         {
             ((TFrmRecurringGiftBatch)ParentForm).EnableTransactions(ARow != null);
@@ -539,21 +558,97 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Re-show the specified row
         /// </summary>
-        /// <param name="AModifiedBatchRow"></param>
+        /// <param name="ABatchToDelete"></param>
         /// <param name="ARedisplay"></param>
-        public void UndoModifiedBatchRow(ARecurringGiftBatchRow AModifiedBatchRow, bool ARedisplay)
+        /// <param name="ACurrentBatchTransactionsLoadedAndCurrent"></param>
+        public void PrepareBatchDataForDeleting(Int32 ABatchToDelete, bool ARedisplay, out bool ACurrentBatchTransactionsLoadedAndCurrent)
         {
-            //Check if new row or not
-            if (AModifiedBatchRow.RowState == DataRowState.Added)
+            //This code will only be called when the Batch tab is active.
+
+            ACurrentBatchTransactionsLoadedAndCurrent = false;
+
+            DataView GiftBatchDV = new DataView(FMainDS.ARecurringGiftBatch);
+            DataView GiftDV = new DataView(FMainDS.ARecurringGift);
+            DataView GiftDetailDV = new DataView(FMainDS.ARecurringGiftDetail);
+
+            GiftBatchDV.RowFilter = String.Format("{0}={1}",
+                ARecurringGiftBatchTable.GetBatchNumberDBName(),
+                ABatchToDelete);
+
+            GiftDV.RowFilter = String.Format("{0}={1}",
+                AGiftTable.GetBatchNumberDBName(),
+                ABatchToDelete);
+
+            GiftDetailDV.RowFilter = String.Format("{0}={1}",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                ABatchToDelete);
+
+            //Work from lowest level up
+            if (GiftDetailDV.Count > 0)
             {
-                return;
+                TFrmRecurringGiftBatch mainForm = (TFrmRecurringGiftBatch) this.ParentForm;
+                ACurrentBatchTransactionsLoadedAndCurrent = (mainForm.GetTransactionsControl().FBatchNumber == ABatchToDelete);
+
+                GiftDetailDV.Sort = String.Format("{0}, {1}",
+                    ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                    ARecurringGiftDetailTable.GetDetailNumberDBName());
+
+                foreach (DataRowView drv in GiftDetailDV)
+                {
+                    ARecurringGiftDetailRow gDR = (ARecurringGiftDetailRow)drv.Row;
+
+                    if (gDR.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (gDR.RowState != DataRowState.Unchanged)
+                    {
+                        gDR.RejectChanges();
+                    }
+                }
             }
 
-            AModifiedBatchRow.RejectChanges();
-
-            if (ARedisplay)
+            if (GiftDV.Count > 0)
             {
-                ShowDetails(AModifiedBatchRow);
+                GiftDV.Sort = String.Format("{0}", ARecurringGiftTable.GetGiftTransactionNumberDBName());
+
+                foreach (DataRowView drv in GiftDV)
+                {
+                    ARecurringGiftRow gR = (ARecurringGiftRow)drv.Row;
+
+                    if (gR.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (gR.RowState != DataRowState.Unchanged)
+                    {
+                        gR.RejectChanges();
+                    }
+                }
+            }
+
+            if (GiftBatchDV.Count > 0)
+            {
+                ARecurringGiftBatchRow gB = (ARecurringGiftBatchRow)GiftBatchDV[0].Row;
+
+                //No need to check for Added state as new batches are always saved
+                // on creation
+
+                if (gB.RowState != DataRowState.Unchanged)
+                {
+                    gB.RejectChanges();
+                }
+
+                if (ARedisplay)
+                {
+                    ShowDetails(gB);
+                }
+            }
+
+            if (GiftDetailDV.Count == 0)
+            {
+                //Load all related data for batch ready to delete
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, ABatchToDelete));
             }
         }
 
@@ -802,31 +897,198 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return RowPos + 1;
         }
 
-        private bool AllowInactiveFieldValues(ref bool ASubmittingConfirmed)
+        /// <summary>
+        /// Check for inactive field values
+        /// </summary>
+        /// <param name="AAction"></param>
+        /// <returns></returns>
+        public bool AllowInactiveFieldValues(TExtraGiftBatchChecks.GiftBatchAction AAction)
         {
-            //Check for inactive Bank Cost Centre & Account
-            string BankCostCentre = FPreviouslySelectedDetailRow.BankCostCentre;
-            string BankAccount = FPreviouslySelectedDetailRow.BankAccountCode;
-
-            if (FWarnOfInactiveValuesOnSubmitting
-                && (!FAccountAndCostCentreLogicObject.AccountIsActive(BankAccount)
-                    || !FAccountAndCostCentreLogicObject.CostCentreIsActive(BankCostCentre)))
+            if (FPreviouslySelectedDetailRow == null)
             {
-                string msg =
-                    string.Format(Catalog.GetString(
-                            "Recurring Gift Batch {0} has an inactive Cost Centre and/or Bank Account!\n\nDo you want to continue submitting the batch?"),
-                        FPreviouslySelectedDetailRow.BatchNumber);
+                return true;
+            }
 
-                if (MessageBox.Show(msg, Catalog.GetString("Submit Gift Batch"), MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning) != DialogResult.Yes)
+            TFrmRecurringGiftBatch MainForm = (TFrmRecurringGiftBatch) this.ParentForm;
+
+            bool InSubmitting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING);
+            bool InDeleting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.DELETING);
+
+            int CurrentBatch = FPreviouslySelectedDetailRow.BatchNumber;
+
+            //Variables for building warning message
+            string WarningMessage = string.Empty;
+            string WarningHeader = string.Empty;
+            StringBuilder WarningList = new StringBuilder();
+
+            //Find batches that have changed
+            List <ARecurringGiftBatchRow>BatchesToCheck = MainForm.GetUnsavedBatchRowsList(CurrentBatch);
+            List <int>BatchesWithInactiveValues = new List <int>();
+
+            if (BatchesToCheck.Count > 0)
+            {
+                int currentBatchListNo;
+                string batchNoList = string.Empty;
+                int numInactiveFieldsPresent = 0;
+                string bankCostCentre;
+                string bankAccount;
+
+                foreach (ARecurringGiftBatchRow gBR in BatchesToCheck)
                 {
-                    return false;
+                    currentBatchListNo = gBR.BatchNumber;
+
+                    bool checkingCurrentBatch = (currentBatchListNo == CurrentBatch);
+
+                    bool batchVerified = false;
+                    bool batchExistsInDict = FRecurringBatchesVerifiedOnSavingDict.TryGetValue(currentBatchListNo, out batchVerified);
+
+                    if (batchExistsInDict)
+                    {
+                        if (batchVerified && !(InSubmitting && checkingCurrentBatch && FWarnOfInactiveValuesOnSubmitting))
+                        {
+                            continue;
+                        }
+                    }
+                    else if (!(InDeleting && checkingCurrentBatch))
+                    {
+                        FRecurringBatchesVerifiedOnSavingDict.Add(currentBatchListNo, false);
+                    }
+
+                    //If processing batch about to be posted, only warn according to user preferences
+                    if ((InSubmitting && checkingCurrentBatch && !FWarnOfInactiveValuesOnSubmitting)
+                        || (InDeleting && checkingCurrentBatch))
+                    {
+                        continue;
+                    }
+
+                    //Check for inactive Bank Cost Centre & Account
+                    bankCostCentre = gBR.BankCostCentre;
+                    bankAccount = gBR.BankAccountCode;
+
+                    if (!FAccountAndCostCentreLogicObject.CostCentreIsActive(bankCostCentre))
+                    {
+                        WarningList.AppendFormat("   Cost Centre '{0}' in batch: {1}{2}",
+                            gBR.BankAccountCode,
+                            gBR.BatchNumber,
+                            Environment.NewLine);
+
+                        numInactiveFieldsPresent++;
+                        BatchesWithInactiveValues.Add(currentBatchListNo);
+                    }
+
+                    if (!FAccountAndCostCentreLogicObject.AccountIsActive(bankAccount))
+                    {
+                        WarningList.AppendFormat(" Bank Account '{0}' in batch: {1}{2}",
+                            gBR.BankAccountCode,
+                            gBR.BatchNumber,
+                            Environment.NewLine);
+
+                        numInactiveFieldsPresent++;
+
+                        if (!BatchesWithInactiveValues.Contains(currentBatchListNo))
+                        {
+                            BatchesWithInactiveValues.Add(currentBatchListNo);
+                        }
+                    }
                 }
 
-                ASubmittingConfirmed = true;
+                if (numInactiveFieldsPresent > 0)
+                {
+                    string batchList = string.Empty;
+                    string otherChangedBatches = string.Empty;
+
+                    BatchesWithInactiveValues.Sort();
+
+                    //Update the dictionary
+                    foreach (int batch in BatchesWithInactiveValues)
+                    {
+                        if (batch == CurrentBatch)
+                        {
+                            if (!InSubmitting && (FRecurringBatchesVerifiedOnSavingDict[batch] == false)
+                                || (InSubmitting && FWarnOfInactiveValuesOnSubmitting))
+                            {
+                                FRecurringBatchesVerifiedOnSavingDict[batch] = true;
+                                batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
+                            }
+                        }
+                        else if (FRecurringBatchesVerifiedOnSavingDict[batch] == false)
+                        {
+                            FRecurringBatchesVerifiedOnSavingDict[batch] = true;
+                            batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
+                            //Build a list of all batches except current batch
+                            otherChangedBatches += (string.IsNullOrEmpty(otherChangedBatches) ? "" : ", ") + batch.ToString();
+                        }
+                    }
+
+                    //Create header message
+                    WarningHeader = "{0} inactive value(s) found in recurring batch{1}{4}{4}Do you still want to continue with ";
+                    WarningHeader += AAction.ToString().ToLower() + " batch: {2}";
+                    WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
+
+                    if (!InSubmitting || (otherChangedBatches.Length > 0))
+                    {
+                        WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
+                    }
+
+                    //Handle plural
+                    batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
+
+                    WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
+                        numInactiveFieldsPresent,
+                        batchList,
+                        CurrentBatch,
+                        otherChangedBatches,
+                        Environment.NewLine,
+                        new String('-', 44),
+                        WarningList);
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmRecurringGiftBatch)ParentForm);
+
+                    return extendedMessageBox.ShowDialog(WarningMessage,
+                        Catalog.GetString((InSubmitting ? "Submit" : (InDeleting ? "Delete" : "Save")) + " Recurring Gift Batch"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbYesNo,
+                        TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
+                }
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Update the dictionary that stores all unposted batches
+        ///  and whether or not they have been warned about inactive
+        ///   fields
+        /// </summary>
+        /// <param name="ABatchNumberToExclude"></param>
+        public void UpdateRecurringBatchDictionary(int ABatchNumberToExclude = 0)
+        {
+            if (ABatchNumberToExclude > 0)
+            {
+                FRecurringBatchesVerifiedOnSavingDict.Remove(ABatchNumberToExclude);
+            }
+
+            DataView BatchDV = new DataView(FMainDS.ARecurringGiftBatch);
+
+            foreach (DataRowView bRV in BatchDV)
+            {
+                ARecurringGiftBatchRow br = (ARecurringGiftBatchRow)bRV.Row;
+
+                int currentBatch = br.BatchNumber;
+
+                if ((currentBatch != ABatchNumberToExclude) && !FRecurringBatchesVerifiedOnSavingDict.ContainsKey(currentBatch))
+                {
+                    FRecurringBatchesVerifiedOnSavingDict.Add(br.BatchNumber, false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Select a specified row in the recurring gift batch grid
+        /// </summary>
+        /// <param name="ARecurringBatchRow"></param>
+        public void SelectRowInBatchGrid(int ARecurringBatchRow)
+        {
+            SelectRowInGrid(ARecurringBatchRow);
         }
 
         private Boolean LoadAllBatchData(int ABatchNumber = 0)
@@ -834,76 +1096,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return ((TFrmRecurringGiftBatch)ParentForm).EnsureGiftDataPresent(FLedgerNumber, ABatchNumber);
         }
 
-        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
-        {
-            bool RetVal = false;
-
-            FDeletedBatchRowIndex = grdDetails.GetFirstHighlightedRowIndex();
-
-            RetVal = FDeleteLogicObject.DeleteRowManual(ARowToDelete, ref FPreviouslySelectedDetailRow, ref ACompletionMessage);
-
-            UpdateRecordNumberDisplay();
-
-            return RetVal;
-        }
-
-        private void PostDeleteManual(ARecurringGiftBatchRow ARowToDelete,
-            bool AAllowDeletion,
-            bool ADeletionPerformed,
-            string ACompletionMessage)
-        {
-            FDeleteLogicObject.PostDeleteManual(ARowToDelete,
-                AAllowDeletion,
-                ADeletionPerformed,
-                ACompletionMessage);
-
-            if (ADeletionPerformed)
-            {
-                UpdateChangeableStatus();
-
-                ((TFrmRecurringGiftBatch)ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
-
-                SelectRowInGrid(FDeletedBatchRowIndex > 0 ? FDeletedBatchRowIndex : 1);
-            }
-        }
-
         private void SubmitBatch(System.Object sender, System.EventArgs e)
         {
             bool Success = false;
-            bool LoadDialogVisible = false;
-            bool CancelledDueToExWorker = false;
-
-            if (!((TFrmRecurringGiftBatch)ParentForm).SaveChangesForSubmitting(FMainDS.ARecurringGiftDetail, out CancelledDueToExWorker))
-            {
-                string msg = string.Empty;
-
-                if (CancelledDueToExWorker)
-                {
-                    msg = Catalog.GetString("Saving of recurring gift batch cancelled due to Ex-Worker recipient(s) in gift(s)!");
-                }
-                else
-                {
-                    msg = Catalog.GetString("Error in trying to save prior to submitting current recurring gift batch!");
-                }
-
-                MessageBox.Show(msg, Catalog.GetString("Submit Recurring Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                return;
-            }
-
-            TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
 
             if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
             {
-                MessageBox.Show(Catalog.GetString("Please select a Recurring Batch before submitting."));
+                MessageBox.Show(Catalog.GetString("Please select a Recurring Gift Batch before submitting!"));
                 return;
             }
 
+            TFrmRecurringGiftBatch MainForm = (TFrmRecurringGiftBatch)ParentForm;
+            TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
+            bool LoadDialogVisible = false;
+
             try
             {
-                bool submittingAlreadyConfirmed = false;
-
                 Cursor = Cursors.WaitCursor;
+                MainForm.FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING;
 
                 dlgStatus.Show();
                 LoadDialogVisible = true;
@@ -921,21 +1131,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return;
                 }
 
-                dlgStatus.CurrentStatus = Catalog.GetString("Checking for inactive values...");
-
-                if (!AllowInactiveFieldValues(ref submittingAlreadyConfirmed))
-                {
-                    dlgStatus.Close();
-                    LoadDialogVisible = false;
-                    return;
-                }
-
                 dlgStatus.Close();
                 LoadDialogVisible = false;
 
                 Success = FSubmitLogicObject.SubmitBatch(FPreviouslySelectedDetailRow,
-                    txtDetailHashTotal,
-                    ref submittingAlreadyConfirmed);
+                    FWarnOfInactiveValuesOnSubmitting,
+                    FDonorZeroIsValid,
+                    FRecipientZeroIsValid);
             }
             catch (Exception ex)
             {
@@ -950,7 +1152,58 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     LoadDialogVisible = false;
                 }
 
+                MainForm.FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.NONE;
                 Cursor = Cursors.Default;
+            }
+        }
+
+        private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
+        {
+            bool RetVal = false;
+
+            //Notify of deletion process
+            TFrmRecurringGiftBatch MainForm = (TFrmRecurringGiftBatch) this.ParentForm;
+
+            try
+            {
+                MainForm.FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.DELETING;
+
+                FDeletedBatchRowIndex = grdDetails.GetFirstHighlightedRowIndex();
+
+                RetVal = FDeleteLogicObject.DeleteRowManual(ARowToDelete, ref FPreviouslySelectedDetailRow, ref ACompletionMessage);
+            }
+            finally
+            {
+                MainForm.FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.NONE;
+            }
+
+            return RetVal;
+        }
+
+        private void PostDeleteManual(ARecurringGiftBatchRow ARowToDelete,
+            bool AAllowDeletion,
+            bool ADeletionPerformed,
+            string ACompletionMessage)
+        {
+            FDeleteLogicObject.PostDeleteManual(ARowToDelete,
+                AAllowDeletion,
+                ADeletionPerformed,
+                ACompletionMessage);
+
+            if (ADeletionPerformed)
+            {
+                //Reset row to fire events
+                SelectRowInGrid(FDeletedBatchRowIndex);
+                UpdateRecordNumberDisplay();
+
+                //If no row exists in current view after cancellation
+                if (grdDetails.Rows.Count < 2)
+                {
+                    UpdateChangeableStatus();
+                }
+
+                //                ((TFrmRecurringGiftBatch)ParentForm).EnableTransactions((grdDetails.Rows.Count > 1));
+                //SelectRowInGrid(FDeletedBatchRowIndex > 0 ? FDeletedBatchRowIndex : 1);
             }
         }
 

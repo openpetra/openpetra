@@ -38,6 +38,7 @@ using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -85,25 +86,35 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AEffectiveDate">The effective date for the batch</param>
         /// <param name="AStartDateCurrentPeriod">The earliest postable date</param>
         /// <param name="AEndDateLastForwardingPeriod">The latest postable date</param>
-        /// <param name="AInactiveValuesWarningOnGLPosting">Warn of inactive values</param>
         /// <returns>
         /// True if the batch was successfully posted
         /// </returns>
         public bool PostBatch(ABatchRow ACurrentBatchRow,
             DateTime AEffectiveDate,
             DateTime AStartDateCurrentPeriod,
-            DateTime AEndDateLastForwardingPeriod,
-            bool AInactiveValuesWarningOnGLPosting = true)
+            DateTime AEndDateLastForwardingPeriod)
         {
-            bool RetVal = false;
+            int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
 
-            if (!SaveBatchForPosting())
+            if (FPetraUtilsObject.HasChanges)
             {
-                return RetVal;
+                //Keep this conditional check separate so that it only gets called when necessary
+                // and doesn't result in the executon of the next else if which calls same method
+                if (!SaveBatchForPosting(TGLBatchEnums.GLBatchAction.POSTING))
+                {
+                    return false;
+                }
+            }
+            //This has to be called here as if there are no changes then the DataSavingValidating method
+            // which calls the method below, will not run.
+            else if (!FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber, CurrentBatchNumber,
+                         TGLBatchEnums.GLBatchAction.POSTING))
+            {
+                return false;
             }
 
             //Load all Batch data
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, ACurrentBatchRow.BatchNumber));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, CurrentBatchNumber));
 
             if (FCacheDS == null)
             {
@@ -115,21 +126,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 SetAccountCostCentreTableVariables();
             }
 
-            //Check for inactive values
-            int NumInactiveValues = 0;
-
-            if (AInactiveValuesWarningOnGLPosting
-                && !FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber, ACurrentBatchRow.BatchNumber, out NumInactiveValues))
-            {
-                return RetVal;
-            }
-
-            bool PostWithInactiveValues = (NumInactiveValues > 0);
-
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
-
-            int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
 
             if ((AEffectiveDate.Date < AStartDateCurrentPeriod) || (AEffectiveDate.Date > AEndDateLastForwardingPeriod))
             {
@@ -138,7 +136,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         AStartDateCurrentPeriod,
                         AEndDateLastForwardingPeriod));
 
-                return RetVal;
+                return false;
             }
 
             // check that a corportate exchange rate exists
@@ -149,11 +147,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return false;
             }
 
-            if (PostWithInactiveValues
-                || (MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post GL batch {0}?"),
-                            CurrentBatchNumber),
-                        Catalog.GetString("Question"),
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
+            if ((MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post GL batch {0}?"),
+                         CurrentBatchNumber),
+                     Catalog.GetString("Question"),
+                     MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
             {
                 try
                 {
@@ -197,8 +194,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FMyForm.GetTransactionsControl().ClearCurrentSelection();
 
                         FMyUserControl.UpdateDisplay();
-
-                        RetVal = true;
                     }
                 }
                 catch (Exception ex)
@@ -218,7 +213,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            return RetVal;
+            return true;
         }
 
         private void SetAccountCostCentreTableVariables()
@@ -260,7 +255,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ACurrentBatchRow">The data row corresponding to the batch to post</param>
         public void TestPostBatch(ABatchRow ACurrentBatchRow)
         {
-            if (!SaveBatchForPosting())
+            int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                //Keep this conditional check separate so that it only gets called when necessary
+                // and doesn't result in the executon of the next else if which calls same method
+                if (!SaveBatchForPosting(TGLBatchEnums.GLBatchAction.TESTING))
+                {
+                    return;
+                }
+            }
+            else if (!FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber, CurrentBatchNumber,
+                         TGLBatchEnums.GLBatchAction.TESTING))
             {
                 return;
             }
@@ -270,7 +277,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             FMyForm.Cursor = Cursors.WaitCursor;
 
-            List <TVariant>Result = TRemote.MFinance.GL.WebConnectors.TestPostGLBatch(FLedgerNumber, ACurrentBatchRow.BatchNumber, out Verifications);
+            List <TVariant>Result = TRemote.MFinance.GL.WebConnectors.TestPostGLBatch(FLedgerNumber, CurrentBatchNumber, out Verifications);
 
             try
             {
@@ -349,7 +356,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             try
                             {
                                 string CSVFilePath = TClientSettings.PathLog + Path.DirectorySeparatorChar + "Batch" +
-                                                     ACurrentBatchRow.BatchNumber.ToString() +
+                                                     CurrentBatchNumber.ToString() +
                                                      "_TestPosting.csv";
 
                                 StreamWriter sw = new StreamWriter(CSVFilePath, false, System.Text.Encoding.UTF8);
@@ -431,21 +438,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         #region Helper methods
 
-        private bool SaveBatchForPosting()
+        private bool SaveBatchForPosting(TGLBatchEnums.GLBatchAction AAction)
         {
-            // save first, then post
-            if (FPetraUtilsObject.HasChanges && !FMyForm.SaveChanges())
-            {
-                // saving failed, therefore do not try to post
-                MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                    Catalog.GetString("Please first save the batch, and then post it!"),
-                    Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return FMyForm.SaveChangesManual(AAction);
         }
 
         #endregion

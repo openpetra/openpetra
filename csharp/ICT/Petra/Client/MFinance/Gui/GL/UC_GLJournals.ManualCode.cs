@@ -189,7 +189,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (jr.DateEffective != BatchDateEffective)
                     {
-                        ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Batch, true);
+                        ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TGLBatchEnums.eGLLevel.Batch, true);
                         break;
                     }
                 }
@@ -438,7 +438,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Transactions);
+            ((TFrmGLBatch)ParentForm).SelectTab(TGLBatchEnums.eGLTabs.Transactions);
         }
 
         /// <summary>
@@ -653,7 +653,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0.0m)
             {
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Journal);
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TGLBatchEnums.eGLLevel.Journal);
             }
         }
 

@@ -37,6 +37,71 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 namespace Ict.Petra.Client.MFinance.Logic
 {
     /// <summary>
+    /// Common logic for extra checks to be carried out during saving/posting/submitting in GL Batch and Recurring GL Batch
+    /// </summary>
+    public static class TGLBatchEnums
+    {
+        /// <summary>
+        /// This window contains 3 tabs
+        /// </summary>
+        public enum eGLTabs
+        {
+            /// list of batches
+            Batches,
+
+            /// list of journals
+            Journals,
+
+            /// list of transactions
+            Transactions,
+
+            /// None
+            None
+        };
+
+        /// <summary>
+        /// GL contains 4 levels
+        /// </summary>
+        public enum eGLLevel
+        {
+            /// batch level
+            Batch,
+
+            /// journal level
+            Journal,
+
+            /// transaction level
+            Transaction,
+
+            /// analysis attribute level
+            Analysis
+        };
+
+        /// <summary>
+        ///List of Gift Batch Actions
+        /// </summary>
+        public enum GLBatchAction
+        {
+            /// <summary>GLBatch and RecurringGLBatch</summary>
+            SAVING,
+            /// <summary>GLBatch and RecurringGLBatch</summary>
+            NEWBATCH,
+            /// <summary>GLBatch</summary>
+            POSTING,
+            /// <summary>GLBatch</summary>
+            TESTING,
+            /// <summary>GLBatch</summary>
+            CANCELLING,
+            /// <summary>RecurringGLBatch</summary>
+            SUBMITTING,
+            /// <summary>RecurringGLBatch</summary>
+            DELETING,
+            /// <summary>No action being taken</summary>
+            NONE
+        };
+    }
+
+    /// <summary>
     /// Common logic for extra checks to be carried out during saving/posting/submitting in Gift Batch and Recurring Gift Batch
     /// </summary>
     public static class TExtraGiftBatchChecks
@@ -57,7 +122,9 @@ namespace Ict.Petra.Client.MFinance.Logic
             /// <summary>RecurringGiftBatch</summary>
             SUBMITTING,
             /// <summary>RecurringGiftBatch</summary>
-            DELETING
+            DELETING,
+            /// <summary>No action being taken</summary>
+            NONE
         };
 
         /// <summary>
@@ -481,18 +548,19 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
                 else
                 {
-                    Msg += Catalog.GetString("Changed gift(s) will need to be saved before ");
+                    Msg += Environment.NewLine + Environment.NewLine;
+                    Msg += Catalog.GetString("(any changes will also need to be saved before ");
 
                     if (AAction == GiftBatchAction.NEWBATCH)
                     {
-                        Msg += Catalog.GetString("a new batch can be created.");
+                        Msg += Catalog.GetString("a new batch can be created");
                     }
                     else //POSTING, CANCELLING, SUBMITTING, DELETING
                     {
                         Msg += Catalog.GetString("this batch continues with " + AAction.ToString().ToLower());
                     }
 
-                    Msg += Environment.NewLine + Environment.NewLine;
+                    Msg += ")" + Environment.NewLine + Environment.NewLine;
                     Msg += Catalog.GetString("Do you want to continue?");
                 }
 
@@ -521,48 +589,32 @@ namespace Ict.Petra.Client.MFinance.Logic
             }
 
             DataView dv = AExWorkers.DefaultView;
-            dv.Sort = GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName() + " ASC";
+            dv.Sort = string.Format("{0} ASC, {1} ASC",
+                GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName(),
+                GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName());
             DataTable sortedDT = dv.ToTable();
 
-            if ((AAction == GiftBatchAction.POSTING) || (AAction == GiftBatchAction.SUBMITTING))
-            {
-                if (AExWorkers.Rows.Count == 1)
-                {
-                    ReturnValue = string.Format(Catalog.GetString(
-                            "The gift listed below has a recipient who has a Special Type beginning with {0}:"), AExWorkerSpecialType);
-                }
-                else
-                {
-                    ReturnValue = string.Format(Catalog.GetString(
-                            "The gifts listed below have recipients who have a Special Type beginning with {0}:"),
-                        AExWorkerSpecialType);
-                }
-            }
-            else
-            {
-                if (AExWorkers.Rows.Count == 1)
-                {
-                    ReturnValue = string.Format(Catalog.GetString(
-                            "The unsaved gift listed below is for a recipient who has Special Type beginning with {0}:"), AExWorkerSpecialType);
-                }
-                else
-                {
-                    ReturnValue = string.Format(Catalog.GetString(
-                            "The unsaved gifts listed below are for recipients who have Special Type beginning with {0}:"), AExWorkerSpecialType);
-                }
-            }
+            ReturnValue = String.Format(Catalog.GetString("The {0}gift(s) listed below have recipient(s) with a Special Type beginning with {1}:{2}"),
+                ((AAction == GiftBatchAction.POSTING) || (AAction == GiftBatchAction.SUBMITTING)) ? "" : "unsaved ",
+                AExWorkerSpecialType,
+                Environment.NewLine);
 
-            ReturnValue += "\n\n";
+            ReturnValue += new String('-', 86);
+            ReturnValue += Environment.NewLine;
 
             foreach (DataRow Row in sortedDT.Rows)
             {
                 ReturnValue += Catalog.GetString("Batch: ") + Row[GiftBatchTDSAGiftDetailTable.GetBatchNumberDBName()] + "; " +
                                Catalog.GetString("Gift: ") + Row[GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName()] + "; " +
+                               Catalog.GetString("Detail: ") + Row[GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName()] + "; " +
                                Catalog.GetString("Recipient: ") + Row[GiftBatchTDSAGiftDetailTable.GetRecipientDescriptionDBName()] + " (" +
-                               Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()] + ")\n";
+                               Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()] + ")";
+                ReturnValue += Environment.NewLine;
             }
 
-            return ReturnValue += "\n";
+            ReturnValue += new String('-', 86);
+
+            return ReturnValue;
         }
 
         /// <summary>

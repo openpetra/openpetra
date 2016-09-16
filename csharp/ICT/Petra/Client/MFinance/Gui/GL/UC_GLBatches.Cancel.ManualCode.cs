@@ -29,6 +29,7 @@ using Ict.Common;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -111,14 +112,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMyForm.GetBatchControl().UndoModifiedBatchRow(ABatchRowToCancel, true);
                 //Load all data for batch if necessary
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, ABatchRowToCancel.BatchNumber));
-
                 //clear any transactions currently being editied in the Transaction Tab
                 FMyForm.GetTransactionsControl().ClearCurrentSelection();
                 //clear any journals currently being editied in the Journals Tab
                 FMyForm.GetJournalsControl().ClearCurrentSelection();
 
                 //Delete transactions and attributes
-                FMyForm.GetTransactionsControl().DeleteCurrentBatchTransactionData(CurrentBatchNo);
+                FMyForm.GetTransactionsControl().DeleteTransactionData(CurrentBatchNo);
 
                 //Update Journal totals and status
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
@@ -148,10 +148,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
 
                 //Need to call save
-                if (FMyForm.SaveChangesManual())
+                if (FMyForm.SaveChangesManual(TGLBatchEnums.GLBatchAction.CANCELLING))
                 {
                     MessageBox.Show(CompletionMessage,
-                        "Batch Cancelled",
+                        Catalog.GetString("Batch Cancelled"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
@@ -160,7 +160,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else
                 {
-                    throw new Exception(Catalog.GetString("The batch failed to save after being cancelled! Reopen the form and retry."));
+                    string errMsg = Catalog.GetString("The batch failed to save after being cancelled! Reopen the form and retry.");
+                    MessageBox.Show(errMsg, Catalog.GetString("Save Error"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
 
                 CancellationSuccessful = true;
@@ -172,7 +174,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 CompletionMessage = ex.Message;
                 MessageBox.Show(CompletionMessage,
-                    "Cancellation Error",
+                    Catalog.GetString("Cancellation Error"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 

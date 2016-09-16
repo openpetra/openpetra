@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Delete data from current recurring gift batch
         /// </summary>
         /// <param name="ABatchNumber"></param>
-        public void DeleteCurrentRecurringBatchGiftData(Int32 ABatchNumber)
+        public void DeleteRecurringBatchGiftData(Int32 ABatchNumber)
         {
             DataView RecurringGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
 
@@ -116,10 +116,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection(false);
+                    ClearCurrentSelection(0, false);
 
                     //Now delete all Recurring Gift data for current batch
-                    DeleteCurrentRecurringBatchGiftData(BatchNumberToClear);
+                    DeleteRecurringBatchGiftData(BatchNumberToClear);
 
                     FBatchRow.BatchTotal = 0;
                     txtBatchTotal.NumberValueDecimal = 0;

@@ -899,38 +899,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //If only updating the currency active row
             if (AUpdateCurrentRowOnly && (FPreviouslySelectedDetailRow != null))
             {
-                FPreviouslySelectedDetailRow.BeginEdit();
-
-                FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide((decimal)txtDetailGiftTransactionAmount.NumberValueDecimal,
-                    BatchExchangeRateToBase);
-
-                if (!IsTransactionInIntlCurrency)
+                try
                 {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
-                        FPreviouslySelectedDetailRow.GiftAmount,
-                        IntlToBaseCurrencyExchRate);
-                }
-                else
-                {
-                    FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
-                }
-
-                if (FSETUseTaxDeductiblePercentageFlag)
-                {
-                    EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
-                    UpdateTaxDeductibilityAmounts(this, null);
-                }
-
-                FPreviouslySelectedDetailRow.EndEdit();
-            }
-            else
-            {
-                if (TransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
-                {
-                    //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
                     FPreviouslySelectedDetailRow.BeginEdit();
 
-                    FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftTransactionAmount,
+                    FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide((decimal)txtDetailGiftTransactionAmount.NumberValueDecimal,
                         BatchExchangeRateToBase);
 
                     if (!IsTransactionInIntlCurrency)
@@ -944,7 +917,44 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
                     }
 
+                    if (FSETUseTaxDeductiblePercentageFlag)
+                    {
+                        EnableTaxDeductibilityPct(chkDetailTaxDeductible.Checked);
+                        UpdateTaxDeductibilityAmounts(this, null);
+                    }
+                }
+                finally
+                {
                     FPreviouslySelectedDetailRow.EndEdit();
+                }
+            }
+            else
+            {
+                if (TransactionsFromCurrentBatch && (FPreviouslySelectedDetailRow != null))
+                {
+                    try
+                    {
+                        //Rows already active in transaction tab. Need to set current row as code further below will not update selected row
+                        FPreviouslySelectedDetailRow.BeginEdit();
+
+                        FPreviouslySelectedDetailRow.GiftAmount = GLRoutines.Divide(FPreviouslySelectedDetailRow.GiftTransactionAmount,
+                            BatchExchangeRateToBase);
+
+                        if (!IsTransactionInIntlCurrency)
+                        {
+                            FPreviouslySelectedDetailRow.GiftAmountIntl = (IntlToBaseCurrencyExchRate == 0) ? 0 : GLRoutines.Divide(
+                                FPreviouslySelectedDetailRow.GiftAmount,
+                                IntlToBaseCurrencyExchRate);
+                        }
+                        else
+                        {
+                            FPreviouslySelectedDetailRow.GiftAmountIntl = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                        }
+                    }
+                    finally
+                    {
+                        FPreviouslySelectedDetailRow.EndEdit();
+                    }
                 }
 
                 //Update all transactions

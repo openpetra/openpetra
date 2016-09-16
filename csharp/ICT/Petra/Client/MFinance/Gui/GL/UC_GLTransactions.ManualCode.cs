@@ -749,7 +749,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 || (OldDebitCreditIndicator != ARow.DebitCreditIndicator))
             {
                 // Third parameter must be set to true because we are already inside BeginEdit/EndEdit
-                UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Transaction, false, true);
+                UpdateTransactionTotals(TGLBatchEnums.eGLLevel.Transaction, false, true);
             }
         }
 
@@ -903,7 +903,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AUpdateLevel"></param>
         /// <param name="AUpdateTransDates"></param>
         /// <param name="AIsActionInsideRowEdit">Set this to true if the call is from within a BeginEdit/EndEdit clause</param>
-        public void UpdateTransactionTotals(TFrmGLBatch.eGLLevel AUpdateLevel = TFrmGLBatch.eGLLevel.Transaction,
+        public void UpdateTransactionTotals(TGLBatchEnums.eGLLevel AUpdateLevel = TGLBatchEnums.eGLLevel.Transaction,
             bool AUpdateTransDates = false, bool AIsActionInsideRowEdit = false)
         {
             bool OriginalSaveButtonState = false;
@@ -933,11 +933,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DataView JournalsToUpdateDV = null;
             DataView TransactionsToUpdateDV = null;
 
-            bool BatchLevel = (AUpdateLevel == TFrmGLBatch.eGLLevel.Batch);
-            bool JournalLevel = (AUpdateLevel == TFrmGLBatch.eGLLevel.Journal);
-            bool TransLevel = (AUpdateLevel == TFrmGLBatch.eGLLevel.Transaction);
+            bool BatchLevel = (AUpdateLevel == TGLBatchEnums.eGLLevel.Batch);
+            bool JournalLevel = (AUpdateLevel == TGLBatchEnums.eGLLevel.Journal);
+            bool TransLevel = (AUpdateLevel == TGLBatchEnums.eGLLevel.Transaction);
 
-            if (AUpdateLevel == TFrmGLBatch.eGLLevel.Analysis)
+            if (AUpdateLevel == TGLBatchEnums.eGLLevel.Analysis)
             {
                 TLogging.Log(String.Format("{0} called with wrong first argument!", Utilities.GetMethodSignature()));
                 return;
@@ -1551,13 +1551,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// Delete data from current GL Batch
         /// </summary>
         /// <param name="ABatchNumber"></param>
-        public void DeleteCurrentBatchTransactionData(Int32 ABatchNumber)
+        /// <param name="AJournalNumber"></param>
+        public void DeleteTransactionData(Int32 ABatchNumber, Int32 AJournalNumber = 0)
         {
             DataView TransAnalAttribView = new DataView(FMainDS.ATransAnalAttrib);
 
-            TransAnalAttribView.RowFilter = String.Format("{0}={1}",
+            TransAnalAttribView.RowFilter = String.Format("{0}={1} And " + (AJournalNumber > 0 ? "{2}={3}" : "{2}>{3}"),
                 ATransAnalAttribTable.GetBatchNumberDBName(),
-                ABatchNumber);
+                ABatchNumber,
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                AJournalNumber);
 
             TransAnalAttribView.Sort = String.Format("{0} DESC, {1} DESC, {2} DESC",
                 ATransAnalAttribTable.GetJournalNumberDBName(),
@@ -1571,9 +1574,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             DataView TransactionView = new DataView(FMainDS.ATransaction);
 
-            TransactionView.RowFilter = String.Format("{0}={1}",
+            TransactionView.RowFilter = String.Format("{0}={1} And " + (AJournalNumber > 0 ? "{2}={3}" : "{2}>{3}"),
                 ATransactionTable.GetBatchNumberDBName(),
-                ABatchNumber);
+                ABatchNumber,
+                ATransactionTable.GetJournalNumberDBName(),
+                AJournalNumber);
 
             TransactionView.Sort = String.Format("{0} DESC, {1} DESC",
                 ATransactionTable.GetJournalNumberDBName(),
@@ -2394,199 +2399,373 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
-        /// <param name="ANumInactiveValues"></param>
-        /// <param name="AInPosting"></param>
+        /// <param name="AAction"></param>
         /// <returns></returns>
-        public bool AllowInactiveFieldValues(int ALedgerNumber, int ABatchNumber, out int ANumInactiveValues, bool AInPosting = true)
+        public bool AllowInactiveFieldValues(int ALedgerNumber,
+            int ABatchNumber,
+            TGLBatchEnums.GLBatchAction AAction = TGLBatchEnums.GLBatchAction.SAVING)
         {
-            bool RetVal = false;
+            TUC_GLBatches BatchForm = ((TFrmGLBatch)ParentForm).GetBatchControl();
 
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
-            string VerificationMessage = string.Empty;
+            //Variables for building warning message
+            string WarningMessage = string.Empty;
+            string WarningHeader = string.Empty;
+            StringBuilder WarningList = new StringBuilder();
 
-            DataView JournalDV = new DataView(FMainDS.AJournal);
-            DataView TransDV = new DataView(FMainDS.ATransaction);
-            DataView AttribDV = new DataView(FMainDS.ATransAnalAttrib);
+            bool InTesting = (AAction == TGLBatchEnums.GLBatchAction.TESTING);
+            bool InPosting = ((AAction == TGLBatchEnums.GLBatchAction.POSTING) || InTesting);
+            string PostingTitle1 = string.Empty;
+            string PostingTitle2 = string.Empty;
 
-            ANumInactiveValues = 0;
+            bool WarnOfInactiveForPostingCurrentBatch = InPosting && BatchForm.FInactiveValuesWarningOnGLPosting;
+
+            //Find batches that have changed
+            List <ABatchRow>BatchesToCheck = GetUnsavedBatches(ABatchNumber);
+            List <int>BatchesWithInactiveValues = new List <int>();
+
+            int NumInactiveValues = 0;
             int NumInactiveAccounts = 0;
             int NumInactiveCostCentres = 0;
             int NumInactiveAccountTypes = 0;
             int NumInactiveAccountValues = 0;
 
-            bool BatchVerified = false;
-            bool BatchExistsInDict = ((TFrmGLBatch)ParentForm).GetBatchControl().FUnpostedBatchesVerifiedOnSavingDict.TryGetValue(ABatchNumber,
-                out BatchVerified);
-
-            //Check if the user has already been warned before saving
-            if (!AInPosting
-                && ((BatchExistsInDict && BatchVerified) || !BatchExistsInDict))
+            if (BatchesToCheck.Count > 0)
             {
-                return true;
-            }
-
-            //Make sure that journal and transaction data etc. is loaded for the current batch
-            JournalDV.RowFilter = String.Format("{0}={1}",
-                AJournalTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            TransDV.RowFilter = String.Format("{0}={1}",
-                ATransactionTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            AttribDV.RowFilter = String.Format("{0}={1}",
-                ATransAnalAttribTable.GetBatchNumberDBName(),
-                ABatchNumber);
-
-            if (!AInPosting)
-            {
-                if (JournalDV.Count == 0)
+                if (InPosting)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(ALedgerNumber, ABatchNumber));
-
-                    if (JournalDV.Count == 0)
-                    {
-                        return true;
-                    }
+                    PostingTitle1 = (InTesting ? "test-" : "") + "posting";
+                    PostingTitle2 = (InTesting ? "Test-" : "") + "Post";
                 }
-                else
-                {
-                    if (TransDV.Count == 0)
-                    {
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForBatch(ALedgerNumber, ABatchNumber));
 
-                        if (TransDV.Count == 0)
+                int currentBatchListNo;
+                string batchNoList = string.Empty;
+
+                foreach (ABatchRow gBR in BatchesToCheck)
+                {
+                    currentBatchListNo = gBR.BatchNumber;
+
+                    bool checkingCurrentBatch = (currentBatchListNo == ABatchNumber);
+
+                    bool batchVerified = false;
+                    bool batchExistsInDict = BatchForm.FUnpostedBatchesVerifiedOnSavingDict.TryGetValue(currentBatchListNo, out batchVerified);
+
+                    if (batchExistsInDict)
+                    {
+                        if (batchVerified && !(InPosting && checkingCurrentBatch && WarnOfInactiveForPostingCurrentBatch))
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        BatchForm.FUnpostedBatchesVerifiedOnSavingDict.Add(currentBatchListNo, false);
+                    }
+
+                    //If processing batch about to be posted, only warn according to user preferences
+                    if (InPosting && checkingCurrentBatch && !WarnOfInactiveForPostingCurrentBatch)
+                    {
+                        continue;
+                    }
+
+                    DataView journalDV = new DataView(FMainDS.AJournal);
+                    DataView transDV = new DataView(FMainDS.ATransaction);
+                    DataView attribDV = new DataView(FMainDS.ATransAnalAttrib);
+
+                    //Make sure that journal and transaction data etc. is loaded for the current batch
+                    journalDV.RowFilter = String.Format("{0}={1}",
+                        AJournalTable.GetBatchNumberDBName(),
+                        currentBatchListNo);
+
+                    transDV.RowFilter = String.Format("{0}={1}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        currentBatchListNo);
+
+                    attribDV.RowFilter = String.Format("{0}={1}",
+                        ATransAnalAttribTable.GetBatchNumberDBName(),
+                        currentBatchListNo);
+
+                    if (journalDV.Count == 0)
+                    {
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(ALedgerNumber, currentBatchListNo));
+
+                        if (journalDV.Count == 0)
                         {
                             return true;
                         }
                     }
                     else
                     {
-                        if (AttribDV.Count == 0)
+                        if (transDV.Count == 0)
                         {
-                            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(ALedgerNumber, ABatchNumber));
+                            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForBatch(ALedgerNumber,
+                                    currentBatchListNo));
+
+                            if (transDV.Count == 0)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            if (attribDV.Count == 0)
+                            {
+                                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(ALedgerNumber, currentBatchListNo));
+                            }
+                        }
+                    }
+
+                    //Check for inactive account or cost centre codes
+                    transDV.Sort = String.Format("{0} ASC, {1} ASC",
+                        ATransactionTable.GetJournalNumberDBName(),
+                        ATransactionTable.GetTransactionNumberDBName());
+
+                    foreach (DataRowView drv in transDV)
+                    {
+                        ATransactionRow transRow = (ATransactionRow)drv.Row;
+
+                        if (!AccountIsActive(ALedgerNumber, transRow.AccountCode))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Account '{0}'{4}",
+                                transRow.AccountCode,
+                                transRow.BatchNumber,
+                                transRow.JournalNumber,
+                                transRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            NumInactiveAccounts++;
+
+                            if (!BatchesWithInactiveValues.Contains(transRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(transRow.BatchNumber);
+                            }
+                        }
+
+                        if (!CostCentreIsActive(ALedgerNumber, transRow.CostCentreCode))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Cost Centre '{0}'{4}",
+                                transRow.CostCentreCode,
+                                transRow.BatchNumber,
+                                transRow.JournalNumber,
+                                transRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            NumInactiveCostCentres++;
+
+                            if (!BatchesWithInactiveValues.Contains(transRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(transRow.BatchNumber);
+                            }
+                        }
+                    }
+
+                    //Check anlysis attributes
+                    attribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                        ATransAnalAttribTable.GetJournalNumberDBName(),
+                        ATransAnalAttribTable.GetTransactionNumberDBName(),
+                        ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                    foreach (DataRowView drv2 in attribDV)
+                    {
+                        ATransAnalAttribRow analAttribRow = (ATransAnalAttribRow)drv2.Row;
+
+                        if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Analysis Code '{0}'{4}",
+                                analAttribRow.AnalysisTypeCode,
+                                analAttribRow.BatchNumber,
+                                analAttribRow.JournalNumber,
+                                analAttribRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            NumInactiveAccountTypes++;
+
+                            if (!BatchesWithInactiveValues.Contains(analAttribRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(analAttribRow.BatchNumber);
+                            }
+                        }
+
+                        if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Analysis Value '{0}'{4}",
+                                analAttribRow.AnalysisAttributeValue,
+                                analAttribRow.BatchNumber,
+                                analAttribRow.JournalNumber,
+                                analAttribRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            NumInactiveAccountValues++;
+
+                            if (!BatchesWithInactiveValues.Contains(analAttribRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(analAttribRow.BatchNumber);
+                            }
                         }
                     }
                 }
-            }
 
-            try
-            {
-                //Check for inactive account or cost centre codes
-                TransDV.Sort = String.Format("{0} ASC, {1} ASC",
-                    ATransactionTable.GetJournalNumberDBName(),
-                    ATransactionTable.GetTransactionNumberDBName());
+                NumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
 
-                foreach (DataRowView drv in TransDV)
+                if (NumInactiveValues > 0)
                 {
-                    ATransactionRow transRow = (ATransactionRow)drv.Row;
+                    string batchList = string.Empty;
+                    string otherChangedBatches = string.Empty;
 
-                    if (!AccountIsActive(ALedgerNumber, transRow.AccountCode))
+                    BatchesWithInactiveValues.Sort();
+
+                    //Update the dictionary
+                    foreach (int batch in BatchesWithInactiveValues)
                     {
-                        VerificationMessage += String.Format(" Account '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            transRow.AccountCode,
-                            transRow.JournalNumber,
-                            transRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveAccounts++;
+                        if (batch == ABatchNumber)
+                        {
+                            if (!InPosting && (BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
+                                || (InPosting && WarnOfInactiveForPostingCurrentBatch))
+                            {
+                                BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
+                                batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
+                            }
+                        }
+                        else if (BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
+                        {
+                            BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
+                            batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
+                            //Build a list of all batches except current batch
+                            otherChangedBatches += (string.IsNullOrEmpty(otherChangedBatches) ? "" : ", ") + batch.ToString();
+                        }
                     }
 
-                    if (!CostCentreIsActive(ALedgerNumber, transRow.CostCentreCode))
+                    //Create header message
+                    WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
+                    WarningHeader += (InPosting ? PostingTitle1 : "saving") + " batch: {2}";
+                    WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
+
+                    if (!InPosting || (otherChangedBatches.Length > 0))
                     {
-                        VerificationMessage += String.Format(" Cost Centre '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            transRow.CostCentreCode,
-                            transRow.JournalNumber,
-                            transRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveCostCentres++;
-                    }
-                }
-
-                //Check anlysis attributes
-                AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
-                    ATransAnalAttribTable.GetJournalNumberDBName(),
-                    ATransAnalAttribTable.GetTransactionNumberDBName(),
-                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
-
-                foreach (DataRowView drv2 in AttribDV)
-                {
-                    ATransAnalAttribRow analAttribRow = (ATransAnalAttribRow)drv2.Row;
-
-                    if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
-                    {
-                        VerificationMessage += String.Format(" Analysis Code '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            analAttribRow.AnalysisTypeCode,
-                            analAttribRow.JournalNumber,
-                            analAttribRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveAccountTypes++;
+                        WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
                     }
 
-                    if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
-                    {
-                        VerificationMessage += String.Format(" Analysis Value '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            analAttribRow.AnalysisAttributeValue,
-                            analAttribRow.JournalNumber,
-                            analAttribRow.TransactionNumber,
-                            Environment.NewLine);
+                    //Handle plural
+                    batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
 
-                        NumInactiveAccountValues++;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
-
-            ANumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
-
-            if (ANumInactiveValues > 0)
-            {
-                VerificationResult.Add(new TVerificationResult(string.Format(Catalog.GetString("Inactive Values:{0}"), Environment.NewLine),
-                        VerificationMessage,
-                        TResultSeverity.Resv_Noncritical));
-
-                StringBuilder errorMessages = new StringBuilder();
-
-                //Create header message
-                string headerMsg = "{0} inactive value(s) found in GL Batch {1}. Do you still want to ";
-
-                if (AInPosting)
-                {
-                    headerMsg += "post?{2}";
-                }
-                else
-                {
-                    headerMsg += "save?{2}{2}(You will only be warned about this once when saving this batch!){2}";
-                }
-
-                errorMessages.AppendFormat(Catalog.GetString(headerMsg),
-                    ANumInactiveValues,
-                    ABatchNumber,
-                    Environment.NewLine);
-
-                foreach (TVerificationResult message in VerificationResult)
-                {
-                    errorMessages.AppendFormat("{0}{1}",
+                    WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
+                        NumInactiveValues,
+                        batchList,
+                        ABatchNumber,
+                        otherChangedBatches,
                         Environment.NewLine,
-                        message.ResultText);
+                        new String('-', 80),
+                        WarningList);
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGLBatch)ParentForm);
+
+                    return extendedMessageBox.ShowDialog(WarningMessage,
+                        Catalog.GetString((InPosting ? PostingTitle2 : "Save") + " GL Batch"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbYesNo,
+                        TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
                 }
-
-                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGLBatch)ParentForm);
-
-                RetVal = (extendedMessageBox.ShowDialog(errorMessages.ToString(),
-                              Catalog.GetString((AInPosting ? "Post" : "Save") + " Batch"), string.Empty,
-                              TFrmExtendedMessageBox.TButtons.embbYesNo,
-                              TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes);
             }
-            else
+
+            return true;
+        }
+
+        private List <ABatchRow>GetUnsavedBatches(int ACurrentBatch = 0)
+        {
+            List <ABatchRow>RetVal = new List <ABatchRow>();
+            List <int>BatchesWithChangesList = new List <int>();
+            string BatchesWithChangesString = string.Empty;
+
+            DataView BatchesDV = new DataView(FMainDS.ABatch);
+            BatchesDV.RowFilter = String.Format("{0}='{1}'",
+                ABatchTable.GetBatchStatusDBName(),
+                MFinanceConstants.BATCH_UNPOSTED);
+            BatchesDV.Sort = ABatchTable.GetBatchNumberDBName() + " ASC";
+
+            DataView JournalDV = new DataView(FMainDS.AJournal);
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+            DataView AttribDV = new DataView(FMainDS.ATransAnalAttrib);
+
+            //Make sure that journal and transaction data etc. is loaded for the current batch
+            JournalDV.Sort = String.Format("{0} ASC, {1} ASC",
+                AJournalTable.GetBatchNumberDBName(),
+                AJournalTable.GetJournalNumberDBName());
+
+            TransDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                ATransactionTable.GetBatchNumberDBName(),
+                ATransactionTable.GetJournalNumberDBName(),
+                ATransactionTable.GetTransactionNumberDBName());
+
+            AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC, {3} ASC",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                ATransAnalAttribTable.GetTransactionNumberDBName(),
+                ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+            //Add the batch number(s) of changed journals
+            foreach (DataRowView dRV in JournalDV)
             {
-                RetVal = true;
+                AJournalRow jR = (AJournalRow)dRV.Row;
+
+                if (jR.RowState != DataRowState.Unchanged)
+                {
+                    BatchesWithChangesList.Add(jR.BatchNumber);
+                }
+            }
+
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
+
+                //Add any other batch number(s) of changed transactions
+                TransDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    ATransactionTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
+
+            foreach (DataRowView dRV in TransDV)
+            {
+                ATransactionRow tR = (ATransactionRow)dRV.Row;
+
+                if (tR.RowState != DataRowState.Unchanged)
+                {
+                    BatchesWithChangesList.Add(tR.BatchNumber);
+                }
+            }
+
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
+
+                //Add any other batch number(s) of changed analysis attributes
+                AttribDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    ATransAnalAttribTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
+
+            foreach (DataRowView dRV in AttribDV)
+            {
+                ATransAnalAttribRow aR = (ATransAnalAttribRow)dRV.Row;
+
+                if (aR.RowState != DataRowState.Unchanged)
+                {
+                    BatchesWithChangesList.Add(aR.BatchNumber);
+                }
+            }
+
+            BatchesWithChangesList.Sort();
+
+            foreach (DataRowView dRV in BatchesDV)
+            {
+                ABatchRow batchRow = (ABatchRow)dRV.Row;
+
+                if ((batchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                    && ((batchRow.BatchNumber == ACurrentBatch)
+                        || (batchRow.RowState != DataRowState.Unchanged)
+                        || BatchesWithChangesList.Contains(batchRow.BatchNumber)))
+                {
+                    RetVal.Add(batchRow);
+                }
             }
 
             return RetVal;

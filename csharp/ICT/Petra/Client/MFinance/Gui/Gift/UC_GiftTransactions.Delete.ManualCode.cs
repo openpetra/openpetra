@@ -48,7 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="ABatchNumber"></param>
         /// <param name="AModifiedDetailKeyRows"></param>
-        public void DeleteCurrentBatchGiftData(Int32 ABatchNumber, ref List <string>AModifiedDetailKeyRows)
+        public void DeleteBatchGiftData(Int32 ABatchNumber, ref List <string>AModifiedDetailKeyRows)
         {
             DataView giftDetailView = new DataView(FMainDS.AGiftDetail);
 
@@ -128,10 +128,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FPreviouslySelectedDetailRow.BatchNumber);
 
                     //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection(false);
+                    ClearCurrentSelection(0, false);
 
                     //Now delete all gift data for current batch
-                    DeleteCurrentBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
+                    DeleteBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
 
                     FBatchRow.BatchTotal = 0;
                     txtBatchTotal.NumberValueDecimal = 0;
@@ -510,11 +510,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS)
         {
-            AMainDS.ALedger.Clear();
-            AMainDS.AGiftDetail.Clear();
-            AMainDS.AGift.Clear();
-            AMainDS.AGiftBatch.Clear();
-
+            //TODO: Find out which one is best in terms of speed and merged rowstates
+            AMainDS.Clear();
             AMainDS.Merge(ABackupDS);
         }
 

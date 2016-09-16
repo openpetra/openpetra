@@ -66,6 +66,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private AAccountTable FAccountTable = null;
 
         /// <summary>
+        ///List of all batches and whether or not the user has been warned of the presence
+        /// of inactive fields on saving.
+        /// </summary>
+        public Dictionary <int, bool>FRecurringBatchesVerifiedOnSavingDict = new Dictionary <int, bool>();
+
+        /// <summary>
         /// load the batches into the grid
         /// </summary>
         public Int32 LedgerNumber
@@ -190,6 +196,46 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FPreviouslySelectedDetailRow == null) && (((TFrmRecurringGLBatch) this.ParentForm) != null))
             {
                 ((TFrmRecurringGLBatch) this.ParentForm).DisableJournals();
+            }
+        }
+
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSaving()
+        {
+            UpdateRecurringBatchDictionary();
+        }
+
+        /// <summary>
+        /// Update the dictionary that stores all unposted batches
+        ///  and whether or not they have been warned about inactive
+        ///   fields
+        /// </summary>
+        /// <param name="ABatchNumberToExclude"></param>
+        public void UpdateRecurringBatchDictionary(int ABatchNumberToExclude = 0)
+        {
+            if (ABatchNumberToExclude > 0)
+            {
+                FRecurringBatchesVerifiedOnSavingDict.Remove(ABatchNumberToExclude);
+            }
+
+            DataView BatchDV = new DataView(FMainDS.ARecurringBatch);
+
+            //Recurring batches marked as cancelled are set to that just before deleting
+            BatchDV.RowFilter = string.Format("{0}<>'<||About to be deleted||>'",
+                ARecurringBatchTable.GetBatchDescriptionDBName());
+
+            foreach (DataRowView bRV in BatchDV)
+            {
+                ARecurringBatchRow br = (ARecurringBatchRow)bRV.Row;
+
+                int currentBatch = br.BatchNumber;
+
+                if ((currentBatch != ABatchNumberToExclude) && !FRecurringBatchesVerifiedOnSavingDict.ContainsKey(currentBatch))
+                {
+                    FRecurringBatchesVerifiedOnSavingDict.Add(br.BatchNumber, false);
+                }
             }
         }
 
@@ -900,6 +946,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Reject any changes which may fail validation
                 ARowToDelete.RejectChanges();
                 ShowDetails(ARowToDelete);
+                //Identify batch as to be deleted
+                ARowToDelete.BatchDescription = "<||About to be deleted||>";
             }
 
             try
