@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Donor Gift Statement
     WindowWidth: 700
-    WindowHeight: 625
+    WindowHeight: 725
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance
     TemplateParameters:
         XMLFILES: [Finance\\\\donorgiftstatement.xml,Finance\\\\finance.xml,common.xml]

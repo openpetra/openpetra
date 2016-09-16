@@ -433,8 +433,17 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         if (!AParameters["param_all_motivation_groups"].ToBool())
                         {
-                            motivationFilter = "AND detail.a_motivation_group_code_c in (" +
+                            motivationFilter = " AND detail.a_motivation_group_code_c in (" +
                                                AParameters["param_motivation_group_quotes"].ToString() + ")";
+                        }
+                    }
+
+                    if (AParameters.ContainsKey("param_all_motivation_details"))
+                    {
+                        if (!AParameters["param_all_motivation_details"].ToBool())
+                        {
+                            motivationFilter += " AND detail.a_motivation_detail_code_c in (" +
+                                                AParameters["param_motivation_details_quotes"].ToString() + ")";
                         }
                     }
 
@@ -447,6 +456,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " DonorPartner.p_partner_class_c AS DonorClass," +
                                    " detail.p_recipient_key_n AS RecipientKey," +
                                    " detail.a_motivation_group_code_c AS MotivationGroup," +
+                                   " detail.a_motivation_detail_code_c AS MotivationDetail," +
                                    " detail.a_confidential_gift_flag_l AS Confidential," +
                                    " detail." + giftAmountField + " AS GiftAmount," +
                                    " gift.a_receipt_number_i AS Receipt," +

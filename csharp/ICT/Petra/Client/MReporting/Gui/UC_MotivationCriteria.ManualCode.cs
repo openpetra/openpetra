@@ -312,7 +312,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                     {
                         // odd Index: Detail Code
                         Group_Detail_Pairs += KeyPart + "')";
-                        Group_Detail_Individual += KeyPart;
+                        Group_Detail_Individual += ("'" + KeyPart + "'");
                     }
 
                     // increase Index for next element
@@ -321,7 +321,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             ACalc.AddParameter("param_motivation_group_detail_pairs", Group_Detail_Pairs);
-            ACalc.AddParameter("param_motivation_details_only", Group_Detail_Individual);
+            ACalc.AddParameter("param_motivation_details_quotes", Group_Detail_Individual);
 
             ACalc.AddParameter("param_number_of_mot_details", clbMotivationDetail.CheckedItemsCount);
 
