@@ -64,6 +64,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ACompletelyNewRecurringGift"></param>
         private void CreateANewRecurringGift(bool ACompletelyNewRecurringGift)
         {
+            // Using a button's keyboard shortcut results in a different sequence of Events from clicking it with the mouse. If the current control is in pnlDetails,
+            // then when the New or Delete button's processing attempts to save the current record and calls TFrmPetraUtils.ForceOnLeaveForActiveControl(),
+            // it inadvertently re-raises the pnlDetails.Enter event which activates BeginEditMode() at a point when it's not supposed to be activated, putting
+            // TCmbAutoComplete controls in a state they're not supposed to be in, resulting in a NullReferenceException from FPreviouslySelectedDetailRow
+            // in UC_RecurringGiftTransactions.Motivation.ManualCode.cs, MotivationDetailChanged().
+            // To fix it, put the focus outside pnlDetails, preventing the whole chain of events from happening.
+            grdDetails.Focus();
+
             ARecurringGiftRow CurrentRecurringGiftRow = null;
             bool IsEmptyGrid = (grdDetails.Rows.Count == 1);
             bool HasChanges = FPetraUtilsObject.HasChanges;
