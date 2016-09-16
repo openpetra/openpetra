@@ -50,8 +50,10 @@ namespace Ict.Common.IO
 
             DialogSave.DefaultExt = "ext";
             DialogSave.Filter = Catalog.GetString(
-                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
-            DialogSave.FilterIndex = 3; // pre-select .ext extension
+                //"Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra Export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv"); // at the moment we only support .ext format
+                "Petra Export (*.ext)|*.ext");
+            //DialogSave.FilterIndex = 3; // pre-select .ext extension
+            DialogSave.FilterIndex = 1; // pre-select .ext extension
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;

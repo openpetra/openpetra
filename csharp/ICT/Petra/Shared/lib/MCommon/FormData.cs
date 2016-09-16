@@ -621,7 +621,8 @@ namespace Ict.Petra.Shared.MCommon
                 AddRetrievalSection(TFormDataRetrievalSection.eGiftDetail);
             }
 
-            if (TagList.Exists(x => x.StartsWith("Skill")))
+            if ((TagList.Exists(x => x.StartsWith("Skill")))
+                || (TagList.Exists(x => x.StartsWith("Degree."))))
             {
                 AddRetrievalSection(TFormDataRetrievalSection.eSkill);
             }
@@ -1446,6 +1447,7 @@ namespace Ict.Petra.Shared.MCommon
             Skill = new List <TFormDataSkill>();
             SkillP = new List <TFormDataSkill>();
             SkillNP = new List <TFormDataSkill>();
+            Degree = new List <TFormDataDegree>();
             WorkExp = new List <TFormDataWorkExperience>();
             WorkExpNonProfit = new List <TFormDataWorkExperience>();
             WorkExpOther = new List <TFormDataWorkExperience>();
@@ -1594,6 +1596,9 @@ namespace Ict.Petra.Shared.MCommon
         /// list of non professional skills
         public List <TFormDataSkill>SkillNP;
 
+        /// list of degrees (taken from skill table)
+        public List <TFormDataDegree>Degree;
+
         /// list of work experience
         public List <TFormDataWorkExperience>WorkExp;
 
@@ -1637,6 +1642,14 @@ namespace Ict.Petra.Shared.MCommon
             {
                 SkillNP.Add(ARecord);
             }
+        }
+
+        /// <summary>
+        ///  add degree record to list
+        /// </summary>
+        public void AddDegree(TFormDataDegree ARecord)
+        {
+            Degree.Add(ARecord);
         }
 
         /// <summary>
@@ -2117,6 +2130,23 @@ namespace Ict.Petra.Shared.MCommon
 
         ///  Comment
         public String Comment {
+            get; set;
+        }
+    }
+
+    /// <summary>
+    /// Contains data for a degree record for a person
+    /// </summary>
+    [Serializable()]
+    public class TFormDataDegree : TFormData
+    {
+        ///  Degree name
+        public String Name {
+            get; set;
+        }
+
+        ///  Degree year
+        public String Year {
             get; set;
         }
     }

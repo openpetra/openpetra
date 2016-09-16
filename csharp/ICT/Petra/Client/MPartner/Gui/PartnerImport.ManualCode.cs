@@ -1050,6 +1050,14 @@ namespace Ict.Petra.Client.MPartner.Gui
             MatchString = MatchString.Replace("ae", "%");
             MatchString = MatchString.Replace("ss", "%");
 
+            MatchString = MatchString.Replace("â", "_");
+            MatchString = MatchString.Replace("é", "_");
+            MatchString = MatchString.Replace("è", "_");
+            MatchString = MatchString.Replace("ë", "_");
+            MatchString = MatchString.Replace("ê", "_");
+            MatchString = MatchString.Replace("ï", "_");
+            MatchString = MatchString.Replace("ô", "_");
+
             return MatchString;
         }
 
@@ -1595,6 +1603,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             ref PartnerImportExportTDS AImportPartnerDS,
             PartnerImportExportTDS AExistingPartnerDS)
         {
+            Boolean UpdateName = false;
+
             AImportPartnerDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
                 PPartnerTable.GetPartnerKeyDBName(), AImportPartnerKey);
 
@@ -1614,8 +1624,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerRow ImportedPartnerRowCopy = AImportPartnerDS.PPartner.NewRowTyped(false);
             ImportedPartnerRowCopy.ItemArray = (object[])ImportedPartnerRow.ItemArray.Clone();
 
+            if (ImportedPartnerRow.PartnerShortName != ExistingPartnerRow.PartnerShortName)
+            {
+                if (MessageBox.Show(string.Format(Catalog.GetString("Do you want to update the name '{0}' to '{1}'?"),
+                            ExistingPartnerRow.PartnerShortName, ImportedPartnerRow.PartnerShortName),
+                        Catalog.GetString("Update Name"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Yes)
+                {
+                    UpdateName = true;
+                }
+            }
+
             ImportedPartnerRow.ItemArray = (object[])ExistingPartnerRow.ItemArray.Clone();
             ImportedPartnerRow.AcceptChanges();
+
+            if ((FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                 || FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                 || FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE))
+                && UpdateName)
+            {
+                ImportedPartnerRow.PartnerShortName = ImportedPartnerRowCopy.PartnerShortName;
+            }
 
             if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_AQUISITION))
             {
@@ -1649,7 +1678,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 PPersonRow ExistingPersonRow = (PPersonRow)AExistingPartnerDS.PPerson.DefaultView[0].Row;
 
-                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                    && UpdateName)
                 {
                     ExistingPersonRow.FamilyName = ImportedPersonRow.FamilyName;
                 }
@@ -1664,12 +1694,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ExistingPersonRow.Gender = ImportedPersonRow.Gender;
                 }
 
-                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                    && UpdateName)
                 {
                     ExistingPersonRow.FirstName = ImportedPersonRow.FirstName;
                 }
 
-                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE))
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE)
+                    && UpdateName)
                 {
                     ExistingPersonRow.Title = ImportedPersonRow.Title;
                 }
@@ -1703,7 +1735,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 PFamilyRow ExistingFamilyRow = (PFamilyRow)AExistingPartnerDS.PFamily.DefaultView[0].Row;
 
-                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME))
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FAMILYNAME)
+                    && UpdateName)
                 {
                     ExistingFamilyRow.FamilyName = ImportedFamilyRow.FamilyName;
                 }
@@ -1713,12 +1746,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     ExistingFamilyRow.MaritalStatus = ImportedFamilyRow.MaritalStatus;
                 }
 
-                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME))
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_FIRSTNAME)
+                    && UpdateName)
                 {
                     ExistingFamilyRow.FirstName = ImportedFamilyRow.FirstName;
                 }
 
-                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE))
+                if (FCSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_TITLE)
+                    && UpdateName)
                 {
                     ExistingFamilyRow.Title = ImportedFamilyRow.Title;
                 }
@@ -2083,6 +2118,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
                 bool importingAlready = false;
+                bool IgnoreImportLocationForCsv = false;
 
                 FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
                     PLocationTable.GetLocationKeyDBName(),
@@ -2105,6 +2141,33 @@ namespace Ict.Petra.Client.MPartner.Gui
                         // Check address already being imported, comparing StreetName, City, PostalCode etc.
                         // If I'm already importing it, I'll ignore this row.
                         // (The address may still be already in the database.)
+
+                        if ((FFileFormat == TImportFileFormat.csv)
+                            && chkReplaceAddress.Checked)
+                        {
+                            String CurrentAddress = UserSelectedRow.Locality + " - " + UserSelectedRow.StreetName + " - " +
+                                                    UserSelectedRow.Address3 + " - " + UserSelectedRow.City + " - " +
+                                                    UserSelectedRow.PostalCode + " - " + UserSelectedRow.County + " - " +
+                                                    UserSelectedRow.CountryCode;
+                            String NewAddress = NewLocation.Locality + " - " + NewLocation.StreetName + " - " +
+                                                NewLocation.Address3 + " - " + NewLocation.City + " - " +
+                                                NewLocation.PostalCode + " - " + NewLocation.County + " - " +
+                                                NewLocation.CountryCode;
+
+                            if (CurrentAddress != NewAddress)
+                            {
+                                String AddressMessage;
+                                AddressMessage = Catalog.GetString("Do you really want to replace the current address:") + "\r\n";
+                                AddressMessage += CurrentAddress + "\r\n\r\n";
+                                AddressMessage += Catalog.GetString("with this NEW address:") + "\r\n";
+                                AddressMessage += NewAddress + "\r\n";
+
+                                if (MessageBox.Show(AddressMessage, Catalog.GetString("Replace Address"), MessageBoxButtons.YesNo) == DialogResult.No)
+                                {
+                                    IgnoreImportLocationForCsv = true;
+                                }
+                            }
+                        }
 
                         foreach (DataRowView plrv in ANewPartnerDS.PLocation.DefaultView)
                         {
@@ -2132,8 +2195,17 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         //TODOWBxxx: is it ok that I took this out of the if statement above?
                         // if location already exists: make sure we point the partner location record to the existing location
-                        PartnerLocationRow.SiteKey = NewLocation.SiteKey;
-                        PartnerLocationRow.LocationKey = NewLocation.LocationKey;
+                        if (IgnoreImportLocationForCsv)
+                        {
+                            PartnerLocationRow.SiteKey = UserSelectedRow.SiteKey;
+                            PartnerLocationRow.LocationKey = UserSelectedRow.LocationKey;
+                        }
+                        else
+                        {
+                            PartnerLocationRow.SiteKey = NewLocation.SiteKey;
+                            PartnerLocationRow.LocationKey = NewLocation.LocationKey;
+                        }
+
                         ANewPartnerDS.PPartnerLocation.ImportRow(PartnerLocationRow);
                         // Set the PartnerKey for the new Row (TODOWBxxx: why does this have to be set after ImportRow?)
                         int NewRow = ANewPartnerDS.PPartnerLocation.Rows.Count - 1;
