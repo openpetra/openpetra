@@ -25,6 +25,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Text;
 using System.Xml;
 using System.Data;
 using System.Text.RegularExpressions;
@@ -318,7 +319,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 SaveUserDefaults(dlgSeparator);
                                 FSelectedSeparator = dlgSeparator.SelectedSeparator;
-                                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, FSelectedSeparator);
+                                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, FSelectedSeparator, Encoding.Default);
                                 FFileContent = TXMLParser.XmlToString(doc);
                                 GetImportIDHeaderText(doc);
                                 FillCSVColumnList(doc);
@@ -351,12 +352,27 @@ namespace Ict.Petra.Client.MPartner.Gui
                         chkReplaceAddress.Checked = false;
                         chkReplaceAddress.Hide();
 
-                        StreamReader sr = new StreamReader(FFileName, true);
+                        // Be sure the encoding imports accented characters correctly by getting the file encoding
+                        using (StreamReader sr = new StreamReader(FFileName, TTextFile.GetFileEncoding(FFileName, Encoding.Default), false))
+                        {
+                            FFileContent = sr.ReadToEnd().Replace("\r", "");
+                            sr.Close();
+                        }
 
-                        FFileContent = sr.ReadToEnd().Replace("\r", "");
-                        sr.Close();
+                        int lineCount = 1;
+                        int pos = -1;
 
-                        AddStatus(String.Format("{0} lines.\r\n", FFileContent.Length));
+                        do
+                        {
+                            pos = FFileContent.IndexOf('\n', ++pos);
+
+                            if (pos >= 0)
+                            {
+                                lineCount++;
+                            }
+                        } while (pos >= 0);
+
+                        AddStatus(String.Format("{0} lines.\r\n", lineCount));
                         AddStatus(Catalog.GetString("Parsing file. Please wait...\r\n"));
 
                         LoadDataSet(ref VerificationResult);
@@ -724,6 +740,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 this.Cursor = Cursors.WaitCursor;
 
+                if (FCurrentNumberOfRecord <= FTotalNumberOfRecords)
+                {
+                    do
+                    {
+                        FCurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
+
+                        if ((FCurrentPartner != null)
+                            && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
+                        {
+                            // I need to get the Person linked to this Partner and set it as the current person
+                            FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}",
+                                PPersonTable.GetPartnerKeyDBName(), FCurrentPartner.PartnerKey);
+                            FCurrentPerson = (PPersonRow)FMainDS.PPerson.DefaultView[0].Row;
+                        }
+                        else
+                        {
+                            FCurrentPerson = null;
+                        }
+
+                        if (FImportedUnits.Contains(FCurrentPartner.PartnerKey))
+                        {
+                            AddStatus(String.Format(Catalog.GetString("Unit [{0}] already imported.\r\n"), FCurrentPartner.PartnerKey));
+                            FCurrentNumberOfRecord++;
+                        }
+                    } while (FImportedUnits.Contains(FCurrentPartner.PartnerKey) && (FCurrentNumberOfRecord <= FTotalNumberOfRecords));
+                }
+
                 // have we finished importing?
                 if (FCurrentNumberOfRecord > FTotalNumberOfRecords)
                 {
@@ -746,30 +789,6 @@ namespace Ict.Petra.Client.MPartner.Gui
                     txtHint.Text = String.Empty;
                     return;
                 }
-
-                do
-                {
-                    FCurrentPartner = FMainDS.PPartner[FCurrentNumberOfRecord - 1];
-
-                    if ((FCurrentPartner != null)
-                        && (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON))
-                    {
-                        // I need to get the Person linked to this Partner and set it as the current person
-                        FMainDS.PPerson.DefaultView.RowFilter = String.Format("{0}={1}",
-                            PPersonTable.GetPartnerKeyDBName(), FCurrentPartner.PartnerKey);
-                        FCurrentPerson = (PPersonRow)FMainDS.PPerson.DefaultView[0].Row;
-                    }
-                    else
-                    {
-                        FCurrentPerson = null;
-                    }
-
-                    if (FImportedUnits.Contains(FCurrentPartner.PartnerKey))
-                    {
-                        AddStatus(String.Format(Catalog.GetString("Unit [{0}] already imported.\r\n"), FCurrentPartner.PartnerKey));
-                        FCurrentNumberOfRecord++;
-                    }
-                } while (FImportedUnits.Contains(FCurrentPartner.PartnerKey));
 
                 string PartnerInfo = String.Format("[{0}] {1} ",
                     FCurrentPartner.PartnerClass,

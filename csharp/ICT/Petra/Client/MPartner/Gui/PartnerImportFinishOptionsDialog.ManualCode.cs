@@ -38,6 +38,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private void InitializeManualCode()
         {
             pnlExtract.TabIndex = pnlOutputFile.TabIndex + 10;
+            chkWriteOutputFile.Checked = true;
         }
 
         private void chkWriteOutputFile_CheckedChanged(object sender, EventArgs e)

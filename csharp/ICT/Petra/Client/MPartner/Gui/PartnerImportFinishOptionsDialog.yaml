@@ -27,7 +27,7 @@ RootNode:
 
         chkWriteOutputFile: {CheckBoxAttachedLabel=right, OnChange=chkWriteOutputFile_CheckedChanged}
             Tooltip: Write an output CSV file containing the latest information for each partner
-        chkIncludeFamiliesInCSV: {CheckBoxAttachedLabel=right, Label=Include Family records of imported Persons, Enabled=false}
+        chkIncludeFamiliesInCSV: {CheckBoxAttachedLabel=right, Label=Include Family records of imported Persons}
             Padding: 15,-5,2,2
             Tooltip: When ticked the file will contain additional Family Partners created for each imported Person
         txtOutputFileName: {Stretch=horizontally, Label=Path to Output File, Tooltip=Choose a name for the Output File, Enabled=false}
