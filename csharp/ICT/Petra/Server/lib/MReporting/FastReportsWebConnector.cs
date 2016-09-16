@@ -421,7 +421,14 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                                        " AND GiftBatch.a_batch_status_c = 'Posted'";
 
                         DataTable Results = ADbAdapter.RunQuery(Query, "RecipientTotals", Transaction);
-                        Totals.Merge(Results);
+                        if (Results == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            Totals.Merge(Results);
+                        }
                     } // for month
 
                 }); // Get NewOrExisting AutoRead Transaction
@@ -471,6 +478,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
             View.Sort = "DonorKey";
 
             DataTable DistinctDonors = new DataTable();
+            DataTable tempTable;
 
             if (View.Count > 0)
             {
@@ -509,7 +517,11 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
 
                 // Get recipient information for each donor
-                Recipients.Merge(TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey));
+                tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
+                if (tempTable != null)
+                {
+                    Recipients.Merge(tempTable);
+                }
 
                 if (ADbAdapter.IsCancelled)
                 {
@@ -522,9 +534,11 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
             foreach (DataRow Row in DistinctDonors.Rows)
             {
                 // get best address for each donor
-                DonorAddresses.Merge(
-                    TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]))
-                    );
+                tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+                if (tempTable != null)
+                {
+                    DonorAddresses.Merge(tempTable);
+                }
 
                 if (ADbAdapter.IsCancelled)
                 {
@@ -593,7 +607,11 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
 
                 // get donor information for each recipient
-                Donors.Merge(TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, -1, recipientKey));
+                DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, -1, recipientKey);
+                if (DonorTemp != null)
+                {
+                    Donors.Merge(DonorTemp);
+                }
 
                 if (ADbAdapter.IsCancelled)
                 {
@@ -616,19 +634,17 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 foreach (DataRow Row in DistinctDonors.Rows)
                 {
                     // get best address for each distinct donor
-                    DonorAddresses.Merge(
-                        TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]))
-                        );
+                    DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+                    if (DonorTemp != null)
+                    {
+                        DonorAddresses.Merge(DonorTemp);
+                    }
 
                     if (ADbAdapter.IsCancelled)
                     {
                         return null;
                     }
                 }
-            }
-            else
-            {
-                DonorAddresses.Merge(DistinctDonors);
             }
 
             // We only want distinct donors for this report (i.e. no more than one per recipient)
