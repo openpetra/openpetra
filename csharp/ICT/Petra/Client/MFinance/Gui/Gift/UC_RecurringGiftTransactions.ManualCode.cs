@@ -817,6 +817,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 cmbDetailReceiptLetterCode.SetSelectedString(ACurrentGiftRow.ReceiptLetterCode);
             }
 
+            if (ACurrentGiftRow.IsActiveNull())
+            {
+                chkDetailActive.Checked = false;
+            }
+            else
+            {
+                chkDetailActive.Checked = ACurrentGiftRow.Active;
+            }
+
             if (FCurrentGiftInBatch != ACurrentGiftRow.GiftTransactionNumber)
             {
                 //New gift is selected so update the totals

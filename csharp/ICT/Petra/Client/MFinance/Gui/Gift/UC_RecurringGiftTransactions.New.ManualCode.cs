@@ -130,6 +130,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         recurringGiftRow.BatchNumber = FBatchRow.BatchNumber;
                         recurringGiftRow.GiftTransactionNumber = ++FBatchRow.LastGiftNumber;
                         recurringGiftRow.MethodOfPaymentCode = FBatchRow.MethodOfPaymentCode;
+                        recurringGiftRow.Active = true;
                         recurringGiftRow.LastDetailNumber = 1;
 
                         FMainDS.ARecurringGift.Rows.Add(recurringGiftRow);
@@ -160,9 +161,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     newRow.BatchNumber = FBatchRow.BatchNumber;
                     newRow.GiftTransactionNumber = CurrentRecurringGiftRow.GiftTransactionNumber;
                     newRow.DetailNumber = CurrentRecurringGiftRow.LastDetailNumber;
+                    newRow.DonorKey = CurrentRecurringGiftRow.DonorKey;
+                    newRow.Active = CurrentRecurringGiftRow.Active;
                     newRow.MethodOfPaymentCode = CurrentRecurringGiftRow.MethodOfPaymentCode;
                     newRow.MethodOfGivingCode = CurrentRecurringGiftRow.MethodOfGivingCode;
-                    newRow.DonorKey = CurrentRecurringGiftRow.DonorKey;
                     newRow.DateEntered = DateTime.Now;
 
                     if (CopyDetails)

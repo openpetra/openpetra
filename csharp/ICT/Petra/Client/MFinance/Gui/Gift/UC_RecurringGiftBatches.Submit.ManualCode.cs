@@ -100,12 +100,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             GiftBatchTDSARecurringGiftDetailTable RecurringBatchGiftDetails = new GiftBatchTDSARecurringGiftDetailTable();
 
-            foreach (ARecurringGiftDetailRow Row in FMainDS.ARecurringGiftDetail.Rows)
+            DataView RecurringGiftDetailDV = new DataView(FMainDS.ARecurringGiftDetail);
+
+            RecurringGiftDetailDV.RowFilter = string.Format("{0}={1}",
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                SelectedBatchNumber);
+
+            foreach (DataRowView dRV in RecurringGiftDetailDV)
             {
-                if (Row.BatchNumber == SelectedBatchNumber)
-                {
-                    RecurringBatchGiftDetails.Rows.Add((object[])Row.ItemArray.Clone());
-                }
+                GiftBatchTDSARecurringGiftDetailRow rGBR = (GiftBatchTDSARecurringGiftDetailRow)dRV.Row;
+                RecurringBatchGiftDetails.Rows.Add((object[])rGBR.ItemArray.Clone());
             }
 
             if (FPetraUtilsObject.HasChanges)
