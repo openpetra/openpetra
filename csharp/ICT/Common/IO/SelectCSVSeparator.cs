@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
@@ -43,6 +44,7 @@ namespace Ict.Common.IO
 
         private int MAXLINESPARSE = 50;
         private int MAXLINESDISPLAY = 5;
+        private int MAXBYTESPARSE = 4000;
         private string FSeparator;
         private bool FFileHasCaption;
         private List <String>FCSVRows = null;
@@ -232,25 +234,34 @@ namespace Ict.Common.IO
         /// <returns></returns>
         public Boolean OpenCsvFile(String AfileName)
         {
-            System.Text.Encoding FileEncoding = TTextFile.GetFileEncoding(AfileName);
+            // We don't need to read the whole file for this because we will only display the first 5 lines
+            string fileContent;
+            Encoding fileEncoding;
+            bool hasBOM, isAmbiguous;
 
-            //
-            // If it failed to open the file, GetFileEncoding returned null.
-            if (FileEncoding == null)
+            byte[] rawBytes;
+
+            if (TTextFile.AutoDetectTextEncodingAndOpenFile(AfileName, null, out fileContent, out fileEncoding,
+                    out hasBOM, out isAmbiguous, out rawBytes, MAXBYTESPARSE) == false)
             {
                 return false;
             }
 
-            StreamReader reader = new StreamReader(AfileName, FileEncoding, false);
-
-            FCSVRows = new List <string>();
-
-            while (!reader.EndOfStream && FCSVRows.Count < MAXLINESPARSE)
+            using (StringReader reader = new StringReader(fileContent))
             {
-                FCSVRows.Add(reader.ReadLine());
+                FCSVRows = new List <string>();
+
+                string line = reader.ReadLine();
+
+                while (line != null && FCSVRows.Count < MAXLINESPARSE)
+                {
+                    FCSVRows.Add(line);
+                    line = reader.ReadLine();
+                }
+
+                reader.Close();
             }
 
-            reader.Close();
             RbtCheckedChanged(null, null);
             return true;
         }

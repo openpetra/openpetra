@@ -353,10 +353,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                         chkReplaceAddress.Hide();
 
                         // Be sure the encoding imports accented characters correctly by getting the file encoding
-                        using (StreamReader sr = new StreamReader(FFileName, TTextFile.GetFileEncoding(FFileName, Encoding.Default), false))
+                        Encoding fileEncoding;
+                        bool hasBOM, isAmbiguous;
+                        byte[] rawBytes;
+
+                        if (TTextFile.AutoDetectTextEncodingAndOpenFile(FFileName, null, out FFileContent,
+                                out fileEncoding, out hasBOM, out isAmbiguous, out rawBytes) == false)
                         {
-                            FFileContent = sr.ReadToEnd().Replace("\r", "");
-                            sr.Close();
+                            AddStatus(Catalog.GetString("Failed to open the file, or the file was empty.\r\n"));
+                            return;
                         }
 
                         int lineCount = 1;
