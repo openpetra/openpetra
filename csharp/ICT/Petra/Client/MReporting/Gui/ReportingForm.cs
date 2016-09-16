@@ -148,6 +148,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>If FastReports is supported in this context, this will initialise; otherwise LoadedOK is false</summary>
         public FastReportsWrapper FFastReportsPlugin;
 
+        private Boolean FMaintainStatusBarUpdate;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -539,7 +541,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             String OldLoggingText = "";
 
-            while (true)
+            FMaintainStatusBarUpdate = true;
+
+            while (FMaintainStatusBarUpdate)
             {
                 String ProgressInformation = TRemote.MReporting.WebConnectors.GetServerStatus();
 
@@ -570,9 +574,21 @@ namespace Ict.Petra.Client.MReporting.Gui
             // Here's the actual call that causes the report to happen:
             ((TDelegateGenerateReportOverride)Delgt)(FCalculator);
 
-            StatusThread.Abort();
-            StatusThread.Join();
+            if (StatusThread.IsAlive)
+            {
+                StatusThread.Abort();
+                StatusThread.Join();
+            }
+
             UpdateParentFormEndOfReport();
+        }
+
+        /// <summary>
+        /// Close the UpdateStatusBarThread Thread
+        /// </summary>
+        public void AbortStatusThread()
+        {
+            FMaintainStatusBarUpdate = false;
         }
 
         /// <summary>
@@ -626,7 +642,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             TFrmMaintainTemplates ManageTemplatesDialog = new TFrmMaintainTemplates(FFormReportUi);
 
-            if (ManageTemplatesDialog.SelectTemplate(FReportName) == DialogResult.OK)
+            if (ManageTemplatesDialog.SelectTemplate(FReportName, FFastReportsPlugin.SelectedTemplateId) == DialogResult.OK)
             {
                 FFastReportsPlugin.SetTemplate(ManageTemplatesDialog.GetSelectedTemplate());
             }
@@ -756,7 +772,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (FDelegateGenerateExtract != null) // Call FastReport's extract scheme
                 {
-                    FDelegateGenerateExtract(FCalculator);
+                    ThreadFunctionViaDelegate(FDelegateGenerateExtract);
                 }
                 else
                 {

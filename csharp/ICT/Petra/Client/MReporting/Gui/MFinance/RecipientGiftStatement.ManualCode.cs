@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             // get data for this report
-            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetRecipientGiftStatementDataSet(paramsDictionary);
+            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("RecipientGiftStatement", paramsDictionary);
 
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
             {
@@ -145,7 +145,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             // register datatables with the report
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["RecipientTotals"], "RecipientTotals");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
 

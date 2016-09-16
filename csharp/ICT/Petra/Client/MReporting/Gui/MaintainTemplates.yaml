@@ -38,10 +38,9 @@ RootNode:
         chkPrivateDefault:
             Label: Default for me
         chkReadonly:
-        pnlBtnRow: {AutoButtonMaxWidths=true, ControlsOrientation = horizontal }
-            Padding:97,0,0,0
-            Width:243
+        pnlBtnRow: {ControlsOrientation = horizontal }
             Controls: [btnDuplicate, btnRemove, btnSelect]
+            Padding:130,0,0,0
         btnDuplicate:
         btnRemove: {Label=Delete }
         btnSelect: {AcceptButton=true}

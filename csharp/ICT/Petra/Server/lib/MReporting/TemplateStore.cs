@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 if (ADefaultOnly)
                 {
-                    filter += " AND (s_default_l=true OR s_private_default_l=true)";
+                    filter += String.Format(" AND (s_default_l=true OR (s_private_default_l=true AND s_author_c ='{0}'))", AAuthor);
                 }
 
                 Tbl.DefaultView.RowFilter = filter;
