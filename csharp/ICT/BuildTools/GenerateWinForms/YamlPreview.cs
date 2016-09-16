@@ -97,7 +97,9 @@ namespace Ict.Tools.GenerateWinForms
 
             foreach (string dllName in dllnames)
             {
-                if (!dllName.EndsWith("sqlite3.dll"))
+                if ((!dllName.EndsWith("sqlite3.dll")
+                    && (!dllName.EndsWith("libsodium.dll"))
+                    && (!dllName.EndsWith("libsodium-64.dll"))))
                 {
                     parameters.ReferencedAssemblies.Add(dllName);
                 }
