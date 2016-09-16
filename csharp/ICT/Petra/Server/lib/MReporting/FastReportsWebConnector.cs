@@ -122,7 +122,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "StewardshipForPeriod":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.StewardshipForPeriodTable(AParameters, FDbAdapter);
                     break;
@@ -190,7 +189,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "TotalForRecipients":
-                    FDbAdapter = new TReportingDbAdapter(false);
                     ResultTbl = TFinanceReportingWebConnector.TotalForRecipients(AParameters, FDbAdapter);
                     break;
 
@@ -266,7 +264,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             try
             {
-                FDbAdapter = new TReportingDbAdapter(false);
+                FDbAdapter = new TReportingDbAdapter(true);
                 Transaction = FDbAdapter.FPrivateDatabaseObj.BeginTransaction(
 ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
@@ -404,7 +402,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
         [RequireModulePermission("none")]
         public static DataSet GetOneYearMonthGivingDataSet(Dictionary <String, TVariant>AParameters)
         {
-            FDbAdapter = new TReportingDbAdapter(false);
+            FDbAdapter = new TReportingDbAdapter(true);
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataSet ReturnDataSet = new DataSet();
 
@@ -413,6 +411,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
             if (FDbAdapter.IsCancelled || (Recipients == null))
             {
+                FDbAdapter.CloseConnection();
                 return null;
             }
 
@@ -425,12 +424,15 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
                 if (FDbAdapter.IsCancelled)
                 {
+                    FDbAdapter.CloseConnection();
                     return null;
                 }
             }
 
             ReturnDataSet.Tables.Add(Recipients);
             ReturnDataSet.Tables.Add(Donors);
+
+            FDbAdapter.CloseConnection();
 
             return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
         }

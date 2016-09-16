@@ -231,12 +231,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             DataTable Contacts = new DataTable();
             DataSet Results = new DataSet();
 
-#if DEBUG
-            foreach (String key in AParameters.Keys)
+            if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
             {
-                TLogWriter.Log(key + " => " + AParameters[key].ToString());
+                foreach (String key in AParameters.Keys)
+                {
+                    TLogWriter.Log(key + " => " + AParameters[key].ToString());
+                }
             }
-#endif
 
             if (AParameters["param_exclude_anonymous_donors"].ToBool())
             {
@@ -342,14 +343,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             Details.DonorName
                         ;
                     "                                                                                                                                        ;
-#if DEBUG
-                    TLogWriter.Log(Query);
-#endif
 
                     Gifts = DbAdapter.RunQuery(Query, "GiftsOverMinimum", Transaction);
-#if DEBUG
-                    TLogWriter.Log("Query finished");
-#endif
+
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        TLogWriter.Log("Query finished");
+                    }
 
                     // Get the donors' addresses. Thought about using enum instead of const, but enums 1) have to be declared right at the top in the class declaration where
                     // it's easy to forget to add an item and 2) have to be cast to back int before use in array index, making the use uglier than constants.
@@ -370,21 +370,27 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Gifts.Columns.Remove(col);
                     }
 
-#if DEBUG
-                    TLogWriter.Log("Getting donor addresses");
-#endif
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        TLogWriter.Log("Getting donor addresses");
+                    }
+
                     DataTable DonorAddresses = TAddressTools.GetBestAddressForPartners(Donors, 0, Transaction);
                     DataRow[] AddressRows;
                     DataRow Addr;
-#if DEBUG
-                    TLogWriter.Log("Finished");
-#endif
+
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        TLogWriter.Log("Finished");
+                    }
 
                     //String EmailAddress, PhoneNumber, FaxNumber;
                     List <String>DonorList = new List <string>();
-#if DEBUG
-                    TLogging.Log("Processing addresses");
-#endif
+
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        TLogging.Log("Processing addresses");
+                    }
 
                     foreach (DataRow Donor in Donors.Rows)
                     {
@@ -428,10 +434,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         DonorList.Add("null");
                     }
 
-#if DEBUG
-                    TLogging.Log(
-                        "Addresses finished");
-#endif
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        TLogging.Log(
+                            "Addresses finished");
+                    }
 
                     // Get the most recent contacts with each donor
                     Query =
@@ -471,14 +478,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         +
                         AParameters["param_max_contacts"] + @";
                     "                                                                 ;
-#if DEBUG
-                    TLogWriter.Log(Query);
-#endif
 
                     Contacts = DbAdapter.RunQuery(Query, "Contacts", Transaction);
-#if DEBUG
-                    TLogWriter.Log("Query finished");
-#endif
+
+                    if (TLogging.DebugLevel >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        TLogWriter.Log("Query finished");
+                    }
 
                     if (DbAdapter.IsCancelled)
                     {

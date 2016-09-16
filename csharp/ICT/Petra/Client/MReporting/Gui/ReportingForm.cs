@@ -543,7 +543,10 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 String ProgressInformation = TRemote.MReporting.WebConnectors.GetServerStatus();
 
-                if (ProgressInformation != OldLoggingText)
+                // Filter out messages most likely to alarm or confuse users
+                if ((ProgressInformation != OldLoggingText)
+                    && !(ProgressInformation.StartsWith("    Connecting to database")
+                         || ProgressInformation.StartsWith("    Database connection closed.")))
                 {
                     TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
                     OldLoggingText = ProgressInformation;

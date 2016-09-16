@@ -422,7 +422,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Columns.Add(new DataColumn("Currency", typeof(string)));
 
             Boolean FromStartOfYear = (AStartPeriod == 1);
-            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(false);
+            TReportingDbAdapter DbAdapter = new TReportingDbAdapter(true);
 
             if (!FromStartOfYear)
             {
@@ -484,6 +484,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 {
                     GlmTbl = DbAdapter.RunQuery(Query, "balances", ReadTrans);
                 });
+
+            DbAdapter.CloseConnection();
 
             String CostCentre = "";
             String AccountCode = "";
