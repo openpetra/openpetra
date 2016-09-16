@@ -137,7 +137,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FMainDS.ATransaction.Clear();
 
                 //Load data afresh
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber, CurrentBatchNumber,
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForJournal(FLedgerNumber, CurrentBatchNumber,
                         CurrentJournalNumber));
                 FMainDS.AcceptChanges();
 

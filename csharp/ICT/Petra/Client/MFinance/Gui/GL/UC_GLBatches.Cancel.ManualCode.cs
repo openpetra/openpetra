@@ -74,80 +74,56 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Assign default value(s)
             bool CancellationSuccessful = false;
 
-            if ((ABatchRowToCancel == null))
+            string CancelMessage = string.Empty;
+            string CompletionMessage = string.Empty;
+
+            if ((ABatchRowToCancel == null) || (ABatchRowToCancel.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                return CancellationSuccessful;
+                return false;
             }
 
-            int CurrentBatchNumber = ABatchRowToCancel.BatchNumber;
+            int CurrentBatchNo = ABatchRowToCancel.BatchNumber;
 
-            if ((MessageBox.Show(String.Format(Catalog.GetString("You have chosen to cancel this batch ({0}).\n\nDo you really want to cancel it?"),
-                         CurrentBatchNumber),
-                     Catalog.GetString("Confirm Cancel"),
+            CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel GL Batch {0}?"),
+                CurrentBatchNo);
+
+            if ((MessageBox.Show(CancelMessage,
+                     "Cancel GL Batch",
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
             {
-                return CancellationSuccessful;
+                return false;
             }
 
             //Backup the Dataset for reversion purposes
             GLBatchTDS BackupMainDS = (GLBatchTDS)FMainDS.Copy();
             BackupMainDS.Merge(FMainDS);
 
-            bool RowToDeleteIsNew = (ABatchRowToCancel.RowState == DataRowState.Added);
-
-            if (!RowToDeleteIsNew)
-            {
-                //Remove any changes, which may cause validation issues, before cancelling
-                FMyForm.GetBatchControl().UndoModifiedBatchRow(ABatchRowToCancel, true);
-
-                if (!(FMyForm.SaveChanges()))
-                {
-                    MessageBox.Show(Catalog.GetString("Error in trying to save prior to cancelling current Batch!"),
-                        Catalog.GetString("Cancellation Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return CancellationSuccessful;
-                }
-            }
-
             try
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
+
+                CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                    CurrentBatchNo);
+
+                //Remove any changes, which may cause validation issues, before cancelling
+                FMyForm.GetBatchControl().UndoModifiedBatchRow(ABatchRowToCancel, true);
+                //Load all data for batch if necessary
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, ABatchRowToCancel.BatchNumber));
 
                 //clear any transactions currently being editied in the Transaction Tab
                 FMyForm.GetTransactionsControl().ClearCurrentSelection();
                 //clear any journals currently being editied in the Journals Tab
                 FMyForm.GetJournalsControl().ClearCurrentSelection();
 
-                //Clear Journals etc for current Batch
-                FMainDS.ATransAnalAttrib.Clear();
-                FMainDS.ATransaction.Clear();
-                FMainDS.AJournal.Clear();
-
-                //Load tables afresh
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(FLedgerNumber, CurrentBatchNumber));
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(FLedgerNumber, CurrentBatchNumber));
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(FLedgerNumber, CurrentBatchNumber));
-                FMainDS.AcceptChanges();
-
-                //Delete transactions and analysis attributes
-                for (int i = FMainDS.ATransAnalAttrib.Count - 1; i >= 0; i--)
-                {
-                    FMainDS.ATransAnalAttrib[i].Delete();
-                }
-
-                for (int i = FMainDS.ATransaction.Count - 1; i >= 0; i--)
-                {
-                    FMainDS.ATransaction[i].Delete();
-                }
+                //Delete transactions and attributes
+                FMyForm.GetTransactionsControl().DeleteCurrentBatchTransactionData(CurrentBatchNo);
 
                 //Update Journal totals and status
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                 {
-                    if (journal.BatchNumber == CurrentBatchNumber)
+                    if (journal.BatchNumber == CurrentBatchNo)
                     {
                         journal.BeginEdit();
                         journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
@@ -160,22 +136,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 // Edit the batch row
                 ABatchRowToCancel.BeginEdit();
-
                 ABatchRowToCancel.BatchCreditTotal = 0;
                 ABatchRowToCancel.BatchDebitTotal = 0;
                 ABatchRowToCancel.BatchControlTotal = 0;
                 ABatchRowToCancel.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-
                 ABatchRowToCancel.EndEdit();
 
                 FPetraUtilsObject.SetChangedFlag();
 
+                //Don't run an inactive fields check on this batch
+                FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
+
                 //Need to call save
-                if (FMyForm.SaveChanges())
+                if (FMyForm.SaveChangesManual())
                 {
-                    MessageBox.Show(Catalog.GetString("The batch has been cancelled successfully!"),
-                        Catalog.GetString("Success"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(CompletionMessage,
+                        "Batch Cancelled",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
 
                     FMyForm.DisableTransactions();
                     FMyForm.DisableJournals();
@@ -189,13 +167,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message,
+                //Revert to previous state
+                FMainDS.Merge(BackupMainDS);
+
+                CompletionMessage = ex.Message;
+                MessageBox.Show(CompletionMessage,
                     "Cancellation Error",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
 
-                //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {

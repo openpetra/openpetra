@@ -36,7 +36,6 @@ namespace Ict.Petra.Client.MSysMan.Gui
     {
         //private int FCurrentLedger;
         private int FInitiallySelectedLedger;
-
         private bool FNewDonorAlert = true;
         private bool FDonorZeroIsValidSystemDefault = false;
         private bool FDonorZeroIsValid = false;

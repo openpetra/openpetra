@@ -1305,11 +1305,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             int CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
 
-            FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow);
+            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow))
+            {
+                //Reset row to fire events
+                SelectRowInGrid(CurrentlySelectedRow);
+                UpdateRecordNumberDisplay();
 
-            SelectRowInGrid(CurrentlySelectedRow);
-
-            UpdateRecordNumberDisplay();
+                //If no row exists in current view after cancellation
+                if (grdDetails.Rows.Count < 2)
+                {
+                    UpdateChangeableStatus();
+                }
+            }
         }
 
         /// <summary>

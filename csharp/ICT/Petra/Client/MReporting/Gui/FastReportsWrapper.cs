@@ -788,7 +788,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             try
             {
-                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContentUsingPrivateDb(ALedgerNumber, ABatchNumber);
+                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTablesUsingPrivateDb(ALedgerNumber, ABatchNumber);
             }
             catch
             {

@@ -549,7 +549,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 else
                 {
                     //Load all journals for this batch
-                    TempDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FBatchNumber));
+                    TempDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndRelatedTables(FLedgerNumber, FBatchNumber));
                     TempDS.AcceptChanges();
 
                     //Clear the transactions and load newly saved dataset

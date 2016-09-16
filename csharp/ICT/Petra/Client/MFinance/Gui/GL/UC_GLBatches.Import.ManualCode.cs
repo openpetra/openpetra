@@ -145,7 +145,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
 
                 dialog.Title = Catalog.GetString("Import Batches from CSV File");
-                dialog.Filter = Catalog.GetString("GL Batch Files(*.csv) | *.csv | Text Files(*.txt) | *.txt");
+                dialog.Filter = Catalog.GetString("GL Batch Files (*.csv)|*.csv|Text Files (*.txt)|*.txt");
                 impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
@@ -389,7 +389,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Update the client side with new information from the server
                 FMyForm.Cursor = Cursors.WaitCursor;
                 FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAJournal(FLedgerNumber, ACurrentBatchRow.BatchNumber));
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(FLedgerNumber,
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForJournal(FLedgerNumber,
                         ACurrentBatchRow.BatchNumber, ACurrentJournalRow.JournalNumber));
                 FMainDS.AcceptChanges();
                 FMyForm.Cursor = Cursors.Default;

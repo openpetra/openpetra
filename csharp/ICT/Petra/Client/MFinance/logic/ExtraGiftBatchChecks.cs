@@ -42,7 +42,7 @@ namespace Ict.Petra.Client.MFinance.Logic
     public static class TExtraGiftBatchChecks
     {
         /// <summary>
-        ///
+        ///List of Gift Batch Actions
         /// </summary>
         public enum GiftBatchAction
         {
@@ -59,7 +59,6 @@ namespace Ict.Petra.Client.MFinance.Logic
             /// <summary>RecurringGiftBatch</summary>
             DELETING
         };
-
 
         /// <summary>
         /// Checks the entire gift batch for inactive values and informs the user

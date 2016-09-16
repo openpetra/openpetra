@@ -238,6 +238,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FJournalsLoaded = true;
         }
 
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSaving()
+        {
+            //UpdateUnpostedBatchDictionary();
+        }
+
         private void SetJournalDefaultView()
         {
             string DVRowFilter = string.Format("{0}={1}",

@@ -142,7 +142,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFileDialog, fullPath, exportPath);
 
                 OFileDialog.Title = Catalog.GetString("Import Batches from CSV File");
-                OFileDialog.Filter = Catalog.GetString("Gift Batch Files(*.csv) | *.csv | Text Files(*.txt) | *.txt");
+                OFileDialog.Filter = Catalog.GetString("Gift Batch Files(*.csv)|*.csv|Text Files(*.txt)|*.txt");
                 ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()

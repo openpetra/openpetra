@@ -481,7 +481,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 GLBatchTDS submitRecurringDS = (GLBatchTDS)FMainDS.Clone();
                 int currentBatch = FPreviouslySelectedDetailRow.BatchNumber;
 
-                submitRecurringDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndContent(FLedgerNumber, currentBatch));
+                submitRecurringDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatchAndRelatedTables(FLedgerNumber, currentBatch));
 
                 SubmitForm.SubmitMainDS = submitRecurringDS;
                 SubmitForm.ShowDialog();
@@ -525,11 +525,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (JournalDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndContent(FLedgerNumber, FSelectedBatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndRelatedTables(FLedgerNumber, FSelectedBatchNumber));
                 }
                 else if (TransDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionAndContent(FLedgerNumber, FSelectedBatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionAndRelatedTables(FLedgerNumber, FSelectedBatchNumber));
                 }
 
                 NoJournalRows = (JournalDV.Count == 0);

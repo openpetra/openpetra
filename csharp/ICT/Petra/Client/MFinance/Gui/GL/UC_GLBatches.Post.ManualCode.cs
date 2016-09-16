@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Diagnostics;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
@@ -104,7 +103,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Load all Batch data
-            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ACurrentBatchRow.BatchNumber));
+            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, ACurrentBatchRow.BatchNumber));
 
             if (FCacheDS == null)
             {
@@ -119,13 +118,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Check for inactive values
             int NumInactiveValues = 0;
 
-            if (AInactiveValuesWarningOnGLPosting && !AllowInactiveFieldValues(ACurrentBatchRow.BatchNumber, out NumInactiveValues))
+            if (AInactiveValuesWarningOnGLPosting
+                && !FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber, ACurrentBatchRow.BatchNumber, out NumInactiveValues))
             {
                 return RetVal;
             }
 
             bool PostWithInactiveValues = (NumInactiveValues > 0);
-
 
             // TODO: display progress of posting
             TVerificationResultCollection Verifications;
@@ -187,7 +186,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             MessageBoxIcon.Information);
 
                         // refresh the grid, to reflect that the batch has been posted
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, CurrentBatchNumber));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, CurrentBatchNumber));
 
                         // make sure that the current dataset is clean,
                         // otherwise the next save would try to modify the posted batch, even though no values have been changed
@@ -247,229 +246,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FAccountTable = (AAccountTable)AccountListTable;
         }
 
-        private bool AllowInactiveFieldValues(int ABatchNumber, out int ANumInactiveValues)
-        {
-            bool RetVal = false;
-
-            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
-            string VerificationMessage = string.Empty;
-
-            DataView TransDV = new DataView(FMainDS.ATransaction);
-            DataView AttribDV = new DataView(FMainDS.ATransAnalAttrib);
-
-            int NumInactiveAccounts = 0;
-            int NumInactiveCostCentres = 0;
-            int NumInactiveAccountTypes = 0;
-            int NumInactiveAccountValues = 0;
-
-            try
-            {
-                //Check for inactive account or cost centre codes
-                TransDV.RowFilter = String.Format("{0}={1}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ABatchNumber);
-                TransDV.Sort = String.Format("{0} ASC, {1} ASC",
-                    ATransactionTable.GetJournalNumberDBName(),
-                    ATransactionTable.GetTransactionNumberDBName());
-
-                foreach (DataRowView drv in TransDV)
-                {
-                    ATransactionRow transRow = (ATransactionRow)drv.Row;
-
-                    if (!AccountIsActive(transRow.AccountCode))
-                    {
-                        VerificationMessage += String.Format(" Account '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            transRow.AccountCode,
-                            transRow.JournalNumber,
-                            transRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveAccounts++;
-                    }
-
-                    if (!CostCentreIsActive(transRow.CostCentreCode))
-                    {
-                        VerificationMessage += String.Format(" Cost Centre '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            transRow.CostCentreCode,
-                            transRow.JournalNumber,
-                            transRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveCostCentres++;
-                    }
-                }
-
-                //Check anlysis attributes
-                AttribDV.RowFilter = String.Format("{0}={1}",
-                    ATransAnalAttribTable.GetBatchNumberDBName(),
-                    ABatchNumber);
-                AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
-                    ATransAnalAttribTable.GetJournalNumberDBName(),
-                    ATransAnalAttribTable.GetTransactionNumberDBName(),
-                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
-
-                foreach (DataRowView drv2 in AttribDV)
-                {
-                    ATransAnalAttribRow analAttribRow = (ATransAnalAttribRow)drv2.Row;
-
-                    if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
-                    {
-                        VerificationMessage += String.Format(" Analysis Code '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            analAttribRow.AnalysisTypeCode,
-                            analAttribRow.JournalNumber,
-                            analAttribRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveAccountTypes++;
-                    }
-
-                    if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
-                    {
-                        VerificationMessage += String.Format(" Analysis Value '{0}' in Journal:{1} Transaction:{2}.{3}",
-                            analAttribRow.AnalysisAttributeValue,
-                            analAttribRow.JournalNumber,
-                            analAttribRow.TransactionNumber,
-                            Environment.NewLine);
-
-                        NumInactiveAccountValues++;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
-            }
-
-            ANumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
-
-            if (ANumInactiveValues > 0)
-            {
-                VerificationResult.Add(new TVerificationResult(string.Format(Catalog.GetString("Inactive Values:{0}"), Environment.NewLine),
-                        VerificationMessage,
-                        TResultSeverity.Resv_Noncritical));
-
-                StringBuilder errorMessages = new StringBuilder();
-
-                errorMessages.AppendFormat(Catalog.GetString("{0} inactive value(s) found in GL Batch {1}. Do you still want to post?{2}"),
-                    ANumInactiveValues,
-                    ABatchNumber,
-                    Environment.NewLine);
-
-                foreach (TVerificationResult message in VerificationResult)
-                {
-                    errorMessages.AppendFormat("{0}{1}",
-                        Environment.NewLine,
-                        message.ResultText);
-                }
-
-                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
-
-                RetVal = (extendedMessageBox.ShowDialog(errorMessages.ToString(),
-                              Catalog.GetString("Post Batch"), string.Empty,
-                              TFrmExtendedMessageBox.TButtons.embbYesNo,
-                              TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes);
-            }
-            else
-            {
-                RetVal = true;
-            }
-
-            return RetVal;
-        }
-
         private void ShowMessages(TVerificationResultCollection AMessages)
         {
             if (AMessages.Count == 0)
             {
                 return;
             }
-        }
-
-        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
-        {
-            bool retVal = true;
-
-            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
-            {
-                return retVal;
-            }
-
-            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
-
-            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
-                AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                AAccountCode,
-                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
-                AAnalysisCode,
-                AAnalysisAttributeTable.GetActiveDBName());
-
-            retVal = (dv.Count > 0);
-
-            return retVal;
-        }
-
-        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
-        {
-            bool retVal = true;
-
-            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
-            {
-                return retVal;
-            }
-
-            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
-
-            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
-                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-                AAnalysisCode,
-                AFreeformAnalysisTable.GetAnalysisValueDBName(),
-                AAnalysisAttributeValue,
-                AFreeformAnalysisTable.GetActiveDBName());
-
-            retVal = (dv.Count > 0);
-
-            return retVal;
-        }
-
-        private bool AccountIsActive(string AAccountCode)
-        {
-            bool retVal = true;
-
-            AAccountRow currentAccountRow = null;
-
-            if (FAccountTable != null)
-            {
-                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
-            }
-
-            if (currentAccountRow != null)
-            {
-                retVal = currentAccountRow.AccountActiveFlag;
-            }
-
-            return retVal;
-        }
-
-        private bool CostCentreIsActive(string ACostCentreCode)
-        {
-            bool retVal = true;
-
-            ACostCentreRow currentCostCentreRow = null;
-
-            if (FCostCentreTable != null)
-            {
-                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
-            }
-
-            if (currentCostCentreRow != null)
-            {
-                retVal = currentCostCentreRow.CostCentreActiveFlag;
-            }
-
-            return retVal;
         }
 
         /// <summary>
@@ -652,7 +434,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private bool SaveBatchForPosting()
         {
             // save first, then post
-            if (!FMyForm.SaveChanges())
+            if (FPetraUtilsObject.HasChanges && !FMyForm.SaveChanges())
             {
                 // saving failed, therefore do not try to post
                 MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +

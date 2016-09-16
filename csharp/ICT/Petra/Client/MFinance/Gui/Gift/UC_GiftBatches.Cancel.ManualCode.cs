@@ -68,9 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Method to cancel a specified batch
         /// </summary>
-        /// <param name="ACurrentBatchRow"></param>
+        /// <param name="ABatchRowToCancel"></param>
         /// <returns></returns>
-        public bool CancelBatch(AGiftBatchRow ACurrentBatchRow)
+        public bool CancelBatch(AGiftBatchRow ABatchRowToCancel)
         {
             bool CancellationSuccessful = false;
 
@@ -79,23 +79,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             List <string>ModifiedDetailKeys = new List <string>();
 
-            if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            if ((ABatchRowToCancel == null) || (ABatchRowToCancel.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                return CancellationSuccessful;
+                return false;
             }
 
-            int CurrentBatchNo = ACurrentBatchRow.BatchNumber;
+            int CurrentBatchNo = ABatchRowToCancel.BatchNumber;
 
-            CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel gift batch number: {0}?"),
+            CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel Gift Batch {0}?"),
                 CurrentBatchNo);
 
             if ((MessageBox.Show(CancelMessage,
-                     "Cancel Batch",
+                     "Cancel Gift Batch",
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
                      MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
             {
-                return CancellationSuccessful;
+                return false;
             }
 
             //Backup the Dataset for reversion purposes
@@ -106,26 +106,24 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
 
-                FMyForm.EnsureGiftDataPresent(FLedgerNumber, CurrentBatchNo);
-
                 CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
                     CurrentBatchNo);
 
-                FMyForm.GetBatchControl().UndoModifiedBatchRow(ACurrentBatchRow, true);
+                //Remove any changes, which may cause validation issues, before cancelling
+                FMyForm.GetBatchControl().UndoModifiedBatchRow(ABatchRowToCancel, true);
+                //Load all data for batch if necessary
+                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, CurrentBatchNo));
 
                 //clear any transactions currently being editied in the Transaction Tab
                 FMyForm.GetTransactionsControl().ClearCurrentSelection();
-
-                //Load all data for current Batch
-                FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadGiftTransactionsForBatch(FLedgerNumber, CurrentBatchNo));
 
                 //Delete transactions
                 FMyForm.GetTransactionsControl().DeleteCurrentBatchGiftData(CurrentBatchNo, ref ModifiedDetailKeys);
 
                 //Batch is only cancelled and never deleted
-                ACurrentBatchRow.BatchTotal = 0;
-                ACurrentBatchRow.LastGiftNumber = 0;
-                ACurrentBatchRow.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                ABatchRowToCancel.BatchTotal = 0;
+                ABatchRowToCancel.LastGiftNumber = 0;
+                ABatchRowToCancel.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
 
                 FPetraUtilsObject.SetChangedFlag();
 
@@ -141,7 +139,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     MessageBox.Show(CompletionMessage,
-                        "Batch Cancelled",
+                        "Gift Batch Cancelled",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
