@@ -48,7 +48,7 @@ namespace Ict.Common.Verification.Testing
         public void Init()
         {
             Catalog.Init();
-            new TLogging("test.log");
+            new TLogging("../../log/test.log");
         }
 
         /// <summary>
