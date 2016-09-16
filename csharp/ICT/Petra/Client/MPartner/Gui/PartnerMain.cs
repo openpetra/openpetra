@@ -36,6 +36,9 @@ using System.Xml;
 using System.Collections.Generic;
 using System.Collections;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.MPartner.Logic;
+using Ict.Petra.Client.CommonControls.Logic;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -483,6 +486,96 @@ namespace Ict.Petra.Client.MPartner.Gui
                     MessageBox.Show(Catalog.GetString("Error while cancelling expired Subscriptions"),
                         Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Exports a single Partner to OpenPetra.
+        /// </summary>
+        public static void ExportSinglePartnerToOpenPetra(Form AParentForm)
+        {
+            bool OldPetraFormat = false;
+            ExportSinglePartner(AParentForm,OldPetraFormat);
+        }
+
+        /// <summary>
+        /// Exports a single Partner to Petra.
+        /// </summary>
+        public static void ExportSinglePartnerToPetra(Form AParentForm)
+        {
+            bool OldPetraFormat = true;
+            ExportSinglePartner(AParentForm, OldPetraFormat);
+        }
+
+        /// <summary>
+        /// Exports a single Partner to OpenPetra or Petra.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        /// <param name="AOldPetraFormat"></param>
+        public static void ExportSinglePartner(Form AParentForm, bool AOldPetraFormat)
+        {
+            Int64 PartnerKey = -1;
+            String ShortName;
+            TPartnerClass? PartnerClass;
+            TLocationPK ResultLocationPK;
+
+            if (TPartnerFindScreenManager.OpenModalForm("",
+                    out PartnerKey,
+                    out ShortName,
+                    out PartnerClass,
+                    out ResultLocationPK,
+                    AParentForm))
+            {
+                TPartnerExportLogic.ExportSinglePartner(PartnerKey, PartnerClass.ToString(), 0, 0, AOldPetraFormat);
+            }
+        }
+
+        /// <summary>
+        /// Exports Partners from an Extract to Petra.
+        /// </summary>
+        public static void ExportPartnersInExtractToPetra(Form AParentForm)
+        {
+            bool OldPetraFormat = true;
+            ExportPartnersInExtract(AParentForm, OldPetraFormat);
+        }
+
+        /// <summary>
+        /// Exports Partners from an Extract To OpenPetra.
+        /// </summary>
+        public static void ExportPartnersInExtractToOpenPetra(Form AParentForm)
+        {
+            bool OldPetraFormat = false;
+            ExportPartnersInExtract(AParentForm, OldPetraFormat);
+        }
+
+        /// <summary>
+        /// Exports Partners from an Extract.
+        /// </summary>
+        /// <param name="AParentForm"></param>
+        /// <param name="AOldPetraFormat"></param>
+        public static void ExportPartnersInExtract(Form AParentForm, bool AOldPetraFormat)
+        {
+            int ExtractId = -1;
+            String ExtractName;
+            String ExtractDesc;
+
+            if (TCommonScreensForwarding.OpenExtractFindScreen != null)
+            {
+                if (TCommonScreensForwarding.OpenExtractFindScreen.Invoke(out ExtractId,
+                                        out ExtractName,
+                                        out ExtractDesc,
+                                        AParentForm))
+                {
+                   if (ExtractId >= 0)
+                   {
+                        TPartnerExportLogic.ExportPartnersInExtract(ExtractId, AOldPetraFormat);
+                   }
+                }    
+            }
+            else
+            {
+                throw new EOPAppException(
+                    "DEVELOPER ERROR: TDelegateOpenExtractFindScreen Delegate must be assigned on TCommonScreensForwarding.OpenExtractFindScreen to be able to open an Extract find dialog!");
             }
         }
     }

@@ -41,6 +41,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MPartner.Logic;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -100,80 +101,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public bool ExportPartnersInExtract(Boolean AOldPetraFormat)
         {
             Boolean Result = false;
+            int ExtractId = -1;
 
             if (!WarnIfNotSingleSelection(Catalog.GetString("Export Partners in Extract"))
                 && (GetSelectedDetailRow() != null))
             {
-                String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
-
-                if (FileName.Length > 0)
-                {
-                    bool ExportFamiliesPersons = false;
-
-                    bool ContainsFamily = TRemote.MPartner.ImportExport.WebConnectors.CheckExtractContainsFamily(GetSelectedDetailRow().ExtractId);
-
-                    if (ContainsFamily)
-                    {
-                        if (MessageBox.Show(
-                                Catalog.GetString("When exporting a FAMILY record do you want to also export all associated PERSON records?"),
-                                Catalog.GetString("Export Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
-                        {
-                            ExportFamiliesPersons = true;
-                        }
-                    }
-
-                    this.Cursor = Cursors.WaitCursor;
-
-                    if (FileName.EndsWith("ext"))
-                    {
-                        string Doc = string.Empty;
-
-                        // run in thread so we can have Progress Dialog
-                        Thread t = new Thread(() => ExportToFile(ExportFamiliesPersons, ref Doc, AOldPetraFormat));
-
-                        using (TProgressDialog dialog = new TProgressDialog(t))
-                        {
-                            dialog.ShowDialog();
-                        }
-
-                        // null if the user cancelled the operation
-                        if (Doc == null)
-                        {
-                            MessageBox.Show(Catalog.GetString("Export cancelled."), Catalog.GetString(
-                                    "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            this.Cursor = Cursors.Default;
-                            return false;
-                        }
-
-                        Result = TImportExportDialogs.ExportTofile(Doc, FileName, AOldPetraFormat);
-
-                        if (!Result)
-                        {
-                            MessageBox.Show(Catalog.GetString("Export of Partners in Extract failed!"), Catalog.GetString(
-                                    "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
-                        else
-                        {
-                            MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished"), Catalog.GetString(
-                                    "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
-                    }
-                    else
-                    {
-                        // XmlDocument doc = new XmlDocument();
-                        MessageBox.Show(Catalog.GetString("Export with this format is not yet supported!"), Catalog.GetString(
-                                "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
-                        // Result = TImportExportDialogs.ExportTofile(doc, FileName);
-                    }
-
-                    this.Cursor = Cursors.Default;
-                }
-
-                return Result;
+                ExtractId = GetSelectedDetailRow().ExtractId;
+                Result = TPartnerExportLogic.ExportPartnersInExtract(ExtractId, AOldPetraFormat);
             }
-
-            return false;
+            return Result;
         }
 
         private void ExportToFile(bool AExportFamiliesPersons, ref string ADoc, Boolean AOldPetraFormat)
