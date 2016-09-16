@@ -29,6 +29,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
@@ -139,6 +140,9 @@ namespace Ict.Tools.DevelopersAssistant
             _externalLinks.Load();
             _externalLinks.PopulateListBox(lstExternalWebLinks);
 
+            tbbSourceHistoryAllMenuItem.Font = new Font(tbbSourceHistoryAllMenuItem.Font, FontStyle.Bold);
+            tbbShowSourceDifferencesAllMenuItem.Font = new Font(tbbShowSourceDifferencesAllMenuItem.Font, FontStyle.Bold);
+
             PopulateCombos();
 
             this.Text = Program.APP_TITLE;
@@ -154,7 +158,6 @@ namespace Ict.Tools.DevelopersAssistant
             chkTreatWarningsAsErrors.Checked = _localSettings.TreatWarningsAsErrors;
             chkCompileWinform.Checked = _localSettings.CompileWinForm;
             chkStartClientAfterGenerateWinform.Checked = _localSettings.StartClientAfterCompileWinForm;
-            txtYAMLPath.Text = _localSettings.YAMLLocation;
             txtFlashAfterSeconds.Text = _localSettings.FlashAfterSeconds.ToString();
 
             if (_localSettings.BranchLocation != String.Empty)
@@ -174,6 +177,12 @@ namespace Ict.Tools.DevelopersAssistant
                 }
 
                 cboBranchLocation.SelectedIndex = 0;
+            }
+
+            if (_localSettings.YAMLLocationHistory != string.Empty)
+            {
+                cboYAMLHistory.Items.AddRange(_localSettings.YAMLLocationHistory.Split(','));
+                cboYAMLHistory.SelectedIndex = 0;
             }
 
             txtLaunchpadUserName.Text = _localSettings.LaunchpadUserName;
@@ -228,11 +237,13 @@ namespace Ict.Tools.DevelopersAssistant
             {
                 lblDbBuildConfig.Text = "";
                 lblDatabaseName.Text = "None";
+                ShowDbNameInComboText(string.Empty);
             }
             else
             {
                 lblDbBuildConfig.Text = dbCfg.CurrentConfig;
                 lblDatabaseName.Text = dbCfg.CurrentDBName;
+                ShowDbNameInComboText(dbCfg.CurrentDBName);
             }
 
             dbCfg.ListAllConfigs(listDbBuildConfig, -1);        // This might add a new configuration, so we need to update our local settings
@@ -323,8 +334,13 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (bGotBranch && (cboSourceCode.Items.Count > 0))
             {
-                bIsBlockingBazaarTaskSelected = (new BazaarTask((BazaarTask.TaskItem)cboSourceCode.SelectedIndex + 1)).GetBazaarArgs(BranchLocation,
-                    string.Empty).Contains("--ui-mode");
+                // Deal with the Go button for Source Code
+                BazaarTask.TaskItem curTask = (BazaarTask.TaskItem)cboSourceCode.SelectedIndex + 1;
+
+                if ((curTask != BazaarTask.TaskItem.qdiffFile) && (curTask != BazaarTask.TaskItem.qlogFile))
+                {
+                    bIsBlockingBazaarTaskSelected = (new BazaarTask(curTask)).GetBazaarArgs(BranchLocation, string.Empty).Contains("--ui-mode");
+                }
             }
 
             linkLabelStartServer.Enabled = bGotBranch && !_serverIsRunning && bIsNantIdle;
@@ -334,7 +350,7 @@ namespace Ict.Tools.DevelopersAssistant
             linkLabelBranchLocation.Enabled = bIsNantIdle && bIsBazaarIdle;
             cboBranchLocation.Enabled = bIsNantIdle && bIsBazaarIdle;
 
-            btnGenerateWinform.Enabled = bGotBranch && bIsNantIdle && txtYAMLPath.Text != String.Empty;
+            btnGenerateWinform.Enabled = bGotBranch && bIsNantIdle && cboYAMLHistory.Items.Count > 0;
             btnCodeGeneration.Enabled = bGotBranch && bIsNantIdle;
             btnCompilation.Enabled = bGotBranch && bIsNantIdle;
             btnMiscellaneous.Enabled = bGotBranch && bIsNantIdle;
@@ -346,17 +362,28 @@ namespace Ict.Tools.DevelopersAssistant
             btnRunAltSequence.Enabled = bGotBranch && bIsNantIdle && txtAltSequence.Text != String.Empty;
             btnResetClientConfig.Enabled = bGotBranch;
             btnUpdateMyClientConfig.Enabled = bGotBranch;
+            btnPreviewWinform.Enabled = CanEnableYAMLPreview(btnGenerateWinform.Enabled);
 
-            if (btnGenerateWinform.Enabled)
-            {
-                string path = Path.Combine(BranchLocation, Path.Combine(@"csharp\ICT\petra\client", txtYAMLPath.Text));
-                path = path.Replace(".yaml", "-generated.cs");
-                btnPreviewWinform.Enabled = File.Exists(path);
-            }
-            else
-            {
-                btnPreviewWinform.Enabled = false;
-            }
+            tbbGenerateSolutionFullCompile.Enabled = btnCodeGeneration.Enabled;
+            tbbGenerateSolutionMinCompile.Enabled = btnCodeGeneration.Enabled;
+            tbbGenerateWinForms.Enabled = btnCodeGeneration.Enabled;
+            tbbGenerateGlue.Enabled = btnCodeGeneration.Enabled;
+
+            tbbUncrustify.Enabled = btnMiscellaneous.Enabled;
+            tbbRunAllTests.Enabled = btnMiscellaneous.Enabled;
+            tbbRunMainNavigationScreensTests.Enabled = btnMiscellaneous.Enabled;
+
+            tbbSourceHistoryLog.Enabled = bGotBranch;
+            tbbShowSourceDifferences.Enabled = bGotBranch;
+            tbbCommitSourceChanges.Enabled = bGotBranch && bIsBazaarIdle;
+            tbbShelveSourceChanges.Enabled = bGotBranch && bIsBazaarIdle;
+            tbbUnshelveSourceChanges.Enabled = bGotBranch && bIsBazaarIdle;
+
+            tbbMergeSourceFromTrunk.Enabled = bGotBranch && bIsBazaarIdle;
+            tbbCreateNewSourceBranch.Enabled = bIsBazaarIdle;
+
+            tbbCreateDatabase.Enabled = btnDatabase.Enabled;
+            tbbDatabaseContent.Enabled = btnDatabase.Enabled;
         }
 
         private void SetWarningButtons()
@@ -550,7 +577,7 @@ namespace Ict.Tools.DevelopersAssistant
 
             dlg.DefaultExt = "yaml";
             dlg.AddExtension = true;
-            dlg.Filter = "YAML files|*.yaml|All files|*.*";
+            dlg.Filter = "YAML files|*.yaml;*.yml|All files|*.*";
             dlg.InitialDirectory = BranchLocation + "\\csharp\\ICT\\Petra\\Client";
 
             if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
@@ -560,7 +587,8 @@ namespace Ict.Tools.DevelopersAssistant
 
             string s = dlg.FileName;
             int p = s.IndexOf("\\Petra\\Client\\", 0, StringComparison.InvariantCultureIgnoreCase);
-            txtYAMLPath.Text = s.Substring(p + 14);
+
+            UpdateYAMLHistoryOrder(s.Substring(p + 14));
 
             SetEnabledStates();
         }
@@ -840,7 +868,8 @@ namespace Ict.Tools.DevelopersAssistant
             msg += "You may notice changes in the behaviour of your client application as a result of this action.\r\n\r\n";
             msg += "Do you want to proceed?";
 
-            if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
+            if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.No)
             {
                 return;
             }
@@ -990,7 +1019,7 @@ namespace Ict.Tools.DevelopersAssistant
             _localSettings.SourceCodeComboID = cboSourceCode.SelectedIndex;
             _localSettings.StartClientAfterCompileWinForm = chkStartClientAfterGenerateWinform.Checked;
             _localSettings.TreatWarningsAsErrors = chkTreatWarningsAsErrors.Checked;
-            _localSettings.YAMLLocation = txtYAMLPath.Text;
+            _localSettings.YAMLLocationHistory = string.Join(",", cboYAMLHistory.Items.Cast <string>());
 
             if (WindowState == FormWindowState.Minimized)
             {
@@ -1269,6 +1298,17 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
+        private void cboYAMLHistory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cboYAMLHistory.SelectedIndex == 0)
+            {
+                return;
+            }
+
+            UpdateYAMLHistoryOrder(cboYAMLHistory.SelectedItem.ToString());
+            btnPreviewWinform.Enabled = CanEnableYAMLPreview(btnGenerateWinform.Enabled);
+        }
+
         #endregion
 
         #region Main OP actions initiated from the GUI
@@ -1377,13 +1417,18 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnCodeGeneration_Click(object sender, EventArgs e)
         {
+            RunCodeGenerationTask((NantTask.TaskItem)(cboCodeGeneration.SelectedIndex + NantTask.FirstCodeGenItem));
+        }
+
+        private void RunCodeGenerationTask(NantTask.TaskItem ACodeGenerationTask)
+        {
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
             TickTimer.Enabled = false;
-            NantTask task = new NantTask(cboCodeGeneration.Items[cboCodeGeneration.SelectedIndex].ToString());
+            NantTask task = new NantTask(ACodeGenerationTask);
 
-            if (chkAutoStopServer.Checked && (task.Item == NantTask.TaskItem.generateSolution))
+            if (chkAutoStopServer.Checked && (ACodeGenerationTask == NantTask.TaskItem.generateSolution))
             {
                 // This is a case where we need to auto-stop the server first
                 GetServerState();
@@ -1403,7 +1448,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             // Now we are ready to perform the original task
-            if (task.Item == NantTask.TaskItem.generateSolutionNoCompile)
+            if (ACodeGenerationTask == NantTask.TaskItem.generateSolutionNoCompile)
             {
                 Environment.SetEnvironmentVariable("OPDA_StopServer", (_localSettings.DoPreBuildOnIctCommon) ? "1" : null);
                 Environment.SetEnvironmentVariable("OPDA_StartServer", (_localSettings.DoPostBuildOnPetraClient) ? "1" : null);
@@ -1474,14 +1519,19 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnMiscellaneous_Click(object sender, EventArgs e)
         {
+            RunMiscellaneousTask((NantTask.TaskItem)(cboMiscellaneous.SelectedIndex + NantTask.FirstMiscItem));
+        }
+
+        private void RunMiscellaneousTask(NantTask.TaskItem AMiscellaneousTask)
+        {
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
             TickTimer.Enabled = false;
-            NantTask task = new NantTask(cboMiscellaneous.Items[cboMiscellaneous.SelectedIndex].ToString());
+            NantTask task = new NantTask(AMiscellaneousTask);
             string workingFolder = BranchLocation;
 
-            if (task.Item == NantTask.TaskItem.uncrustify)
+            if (AMiscellaneousTask == NantTask.TaskItem.uncrustify)
             {
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
                 dlg.Description = "Select a folder to Uncrustify";
@@ -1517,27 +1567,12 @@ namespace Ict.Tools.DevelopersAssistant
                 // Ready to run - overriding the usual root location with the specified folder
                 workingFolder = dlg.SelectedPath;
             }
-            else if ((task.Item == NantTask.TaskItem.test) || (task.Item == NantTask.TaskItem.testWithoutDisplay)
-                     || (task.Item == NantTask.TaskItem.mainNavigationTests))
+            else if ((AMiscellaneousTask == NantTask.TaskItem.test) || (AMiscellaneousTask == NantTask.TaskItem.testWithoutDisplay)
+                     || (AMiscellaneousTask == NantTask.TaskItem.mainNavigationTests))
             {
-                BuildConfiguration dbBldConfig = new BuildConfiguration(BranchLocation, _localSettings);
-                string dbName = dbBldConfig.CurrentDBName;
-
-                if (String.Compare(dbName, "nantTest", true) != 0)
+                if (!CanRunTestOnCurrentDatabase())
                 {
-                    string msg = String.Format(
-                        "You are about to run tests using the '{0}' database.  This is a friendly reminder that all the data in the database will be lost.\r\n\r\n",
-                        dbName);
-                    msg +=
-                        "Click OK to continue, or 'Cancel' if you want to select a different database for testing (by moving to the 'database' tab of the Assistant).\r\n\r\n";
-                    msg += "The best advice is to create a specific database for testing purposes using PgAdmin or equivalent.\r\n\r\n";
-                    msg += "Tip: if you call your test database 'nantTest', it will be used without displaying this message!";
-
-                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OKCancel,
-                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.Cancel)
-                    {
-                        return;
-                    }
+                    return;
                 }
 
                 // reset the start time
@@ -1563,7 +1598,12 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnSourceCode_Click(object sender, EventArgs e)
         {
-            BazaarTask task = new BazaarTask((BazaarTask.TaskItem)cboSourceCode.SelectedIndex + 1);
+            RunBazaarTask((BazaarTask.TaskItem)cboSourceCode.SelectedIndex + 1);
+        }
+
+        private void RunBazaarTask(BazaarTask.TaskItem ABazaarTask)
+        {
+            BazaarTask task = new BazaarTask(ABazaarTask);
 
             if ((task.Item != BazaarTask.TaskItem.winexplore) && (txtBazaarPath.Text == String.Empty))
             {
@@ -1674,24 +1714,16 @@ namespace Ict.Tools.DevelopersAssistant
 
         private void btnDatabase_Click(object sender, EventArgs e)
         {
-            BuildConfiguration dbBldConfig = new BuildConfiguration(BranchLocation, _localSettings);
-            string dbName = dbBldConfig.CurrentDBName;
-            NantTask task = new NantTask(cboDatabase.Items[cboDatabase.SelectedIndex].ToString());
+            RunDatabaseTask((NantTask.TaskItem)(cboDatabase.SelectedIndex + NantTask.FirstDatabaseItem));
+        }
 
-            if ((task.Item == NantTask.TaskItem.resetDatabase) || (task.Item == NantTask.TaskItem.recreateDatabase))
+        private void RunDatabaseTask(NantTask.TaskItem ADatabaseTask)
+        {
+            if ((ADatabaseTask == NantTask.TaskItem.resetDatabase) || (ADatabaseTask == NantTask.TaskItem.recreateDatabase))
             {
-                if (String.Compare(dbName, "nantTest", true) != 0)
+                if (!CanResetCurrentDatabase())
                 {
-                    // We don't mind nantTest, but any other database name (including demo) gives rise to a warning
-                    string msg = String.Format("Warning!  Your current database is '{0}'.  " +
-                        "If you proceed you will lose all the information in this database." +
-                        "\r\nAre you sure that you want to continue?", dbName);
-
-                    if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo,
-                            MessageBoxIcon.Question) == System.Windows.Forms.DialogResult.No)
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
 
@@ -1700,7 +1732,7 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.ResetOutput();
             TickTimer.Enabled = false;
 
-            if (chkAutoStopServer.Checked && (task.Item == NantTask.TaskItem.recreateDatabase))
+            if (chkAutoStopServer.Checked && (ADatabaseTask == NantTask.TaskItem.recreateDatabase))
             {
                 // This is a case where we need to auto-stop the server first
                 GetServerState();
@@ -1720,6 +1752,7 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             // Now we are ready to perform the original task
+            NantTask task = new NantTask(ADatabaseTask);
             string workingFolder = PrepareAsyncNantTask(task);
 
             // Define an async task to run nant and parse the output file
@@ -1901,6 +1934,110 @@ namespace Ict.Tools.DevelopersAssistant
             }
         }
 
+        #region Toolbar Buttons
+
+        private void tbbGenerateSolutionFullCompile_Click(object sender, EventArgs e)
+        {
+            RunCodeGenerationTask(NantTask.TaskItem.generateSolution);
+        }
+
+        private void tbbGenerateSolutionMinCompile_Click(object sender, EventArgs e)
+        {
+            RunCodeGenerationTask(NantTask.TaskItem.minimalGenerateSolution);
+        }
+
+        private void tbbGenerateWinForms_Click(object sender, EventArgs e)
+        {
+            RunCodeGenerationTask(NantTask.TaskItem.generateWinforms);
+        }
+
+        private void tbbGenerateGlue_Click(object sender, EventArgs e)
+        {
+            RunCodeGenerationTask(NantTask.TaskItem.generateGlue);
+        }
+
+        private void tbbUncrustify_Click(object sender, EventArgs e)
+        {
+            RunMiscellaneousTask(NantTask.TaskItem.uncrustify);
+        }
+
+        private void tbbRunAllTests_Click(object sender, EventArgs e)
+        {
+            RunMiscellaneousTask(NantTask.TaskItem.test);
+        }
+
+        private void tbbRunMainNavigationScreensTests_Click(object sender, EventArgs e)
+        {
+            RunMiscellaneousTask(NantTask.TaskItem.mainNavigationTests);
+        }
+
+        private void tbbSourceHistoryLog_ButtonClick(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qlog);
+        }
+
+        private void tbbSourceHistoryAllMenuItem_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qlog);
+        }
+
+        private void tbbSourceHistoryFileMenuItem_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qlogFile);
+        }
+
+        private void tbbShowSourceDifferences_ButtonClick(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qdiff);
+        }
+
+        private void tbbShowSourceDifferencesAllMenuItem_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qdiff);
+        }
+
+        private void tbbShowSourceDifferencesFileMenuItem_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qdiffFile);
+        }
+
+        private void tbbCommitSourceChanges_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qcommit);
+        }
+
+        private void tbbShelveSourceChanges_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qshelve);
+        }
+
+        private void tbbUnshelveSourceChanges_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qunshelve);
+        }
+
+        private void tbbMergeSourceFromTrunk_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qmerge);
+        }
+
+        private void tbbCreateNewSourceBranch_Click(object sender, EventArgs e)
+        {
+            RunBazaarTask(BazaarTask.TaskItem.qbranch);
+        }
+
+        private void tbbCreateDatabase_Click(object sender, EventArgs e)
+        {
+            RunDatabaseTask(NantTask.TaskItem.recreateDatabase);
+        }
+
+        private void tbbDatabaseContent_Click(object sender, EventArgs e)
+        {
+            RunDatabaseTask(NantTask.TaskItem.resetDatabase);
+        }
+
+        #endregion
+
         #endregion
 
         #region Helper functions
@@ -2019,10 +2156,12 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
 
-            if (NantExecutor.RunGenerateWinform(BranchLocation, txtYAMLPath.Text))
+            if (NantExecutor.RunGenerateWinform(BranchLocation, cboYAMLHistory.SelectedItem.ToString()))
             {
                 // It ran successfully - let us check the output ...
                 OutputText.AddLogFileOutput(BranchLocation + @"\csharp\ICT\Petra\Client\opda.txt", task);
+                NumFailures += task.NumFailures;
+                NumWarnings += task.NumWarnings;
             }
             else
             {
@@ -2109,7 +2248,7 @@ namespace Ict.Tools.DevelopersAssistant
             OutputText.AppendText(OutputText.OutputStream.Both, String.Format("~~~~~~~~~~~~~~~~ {0} ...\r\n", task.LogText));
             dlg.Refresh();
 
-            if (NantExecutor.RunPreviewWinform(BranchLocation, txtYAMLPath.Text))
+            if (NantExecutor.RunPreviewWinform(BranchLocation, cboYAMLHistory.SelectedItem.ToString()))
             {
                 // It ran successfully - let us check the output ...
                 OutputText.AddLogFileOutput(BranchLocation + @"\csharp\ICT\Petra\Client\opda.txt", task);
@@ -2125,6 +2264,23 @@ namespace Ict.Tools.DevelopersAssistant
         // Generic method to run a sequence of tasks
         private void RunSequence(List <NantTask.TaskItem>Sequence)
         {
+            if (Sequence.Contains(NantTask.TaskItem.recreateDatabase) || Sequence.Contains(NantTask.TaskItem.resetDatabase))
+            {
+                if (!CanResetCurrentDatabase())
+                {
+                    return;
+                }
+            }
+
+            if (Sequence.Contains(NantTask.TaskItem.test) || Sequence.Contains(NantTask.TaskItem.testClient)
+                || Sequence.Contains(NantTask.TaskItem.testWithoutDisplay))
+            {
+                if (!CanRunTestOnCurrentDatabase())
+                {
+                    return;
+                }
+            }
+
             DateTime dtStart = DateTime.UtcNow;
 
             OutputText.ResetOutput();
@@ -2899,6 +3055,130 @@ namespace Ict.Tools.DevelopersAssistant
             }
 
             return true;
+        }
+
+        private bool CanResetCurrentDatabase()
+        {
+            BuildConfiguration dbBldConfig = new BuildConfiguration(BranchLocation, _localSettings);
+            string dbName = dbBldConfig.CurrentDBName;
+
+            if (String.Compare(dbName, "nantTest", true) != 0)
+            {
+                // We don't mind nantTest, but any other database name (including demo) gives rise to a warning
+                string msg = String.Format("Warning!  Your current database is '{0}'.  " +
+                    "If you proceed you will lose all the information in this database." +
+                    "\r\nAre you sure that you want to continue?", dbName);
+
+                if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.No)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private bool CanRunTestOnCurrentDatabase()
+        {
+            BuildConfiguration dbBldConfig = new BuildConfiguration(BranchLocation, _localSettings);
+            string dbName = dbBldConfig.CurrentDBName;
+
+            if (String.Compare(dbName, "nantTest", true) != 0)
+            {
+                string msg = String.Format(
+                    "You are about to run tests using the '{0}' database.  This is a friendly reminder that all the data in the database will be lost.\r\n\r\n",
+                    dbName);
+                msg +=
+                    "Click OK to continue, or 'Cancel' if you want to select a different database for testing (by moving to the 'database' tab of the Assistant).\r\n\r\n";
+                msg += "The best advice is to create a specific database for testing purposes using PgAdmin or equivalent.\r\n\r\n";
+                msg += "Tip: if you call your test database 'nantTest', it will be used without displaying this message!";
+
+                if (MessageBox.Show(msg, Program.APP_TITLE, MessageBoxButtons.OKCancel,
+                        MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Cancel)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private void UpdateYAMLHistoryOrder(string Filename)
+        {
+            List <string>locations = _localSettings.YAMLLocationHistory.Split(',').ToList();
+
+            if (locations.Contains(Filename))
+            {
+                locations.Remove(Filename);
+            }
+
+            locations.Insert(0, Filename);
+
+            while (locations.Count > 10)
+            {
+                locations.RemoveAt(10);
+            }
+
+            cboYAMLHistory.Items.Clear();
+            cboYAMLHistory.Text = "";
+            cboYAMLHistory.Items.AddRange(locations.ToArray());
+            cboYAMLHistory.SelectedIndex = 0;
+        }
+
+        private void ShowDbNameInComboText(string DbName)
+        {
+            for (int i = 0; i < cboDatabase.Items.Count; i++)
+            {
+                string item = (string)cboDatabase.Items[i];
+                int posBrace = item.IndexOf('(');
+
+                if (posBrace == -1)
+                {
+                    // Not yet got a db in parentheses
+                    item += DbName.Length == 0 ? "" : " ";
+                    posBrace = item.Length;
+                }
+
+                // This is the text up to the parenthesis
+                string prefix = item.Substring(0, posBrace);
+
+                if (DbName.Length > 0)
+                {
+                    // add the db name as suffix
+                    cboDatabase.Items[i] = string.Format("{0}({1})", prefix, DbName);
+                }
+                else
+                {
+                    cboDatabase.Items[i] = prefix;
+                }
+            }
+
+            // And do the tooltips for the toolbar buttons
+            if (DbName.Length > 0)
+            {
+                tbbCreateDatabase.ToolTipText = "Create a New Database as " + DbName;
+                tbbDatabaseContent.ToolTipText = "Reset the Database Content of " + DbName;
+            }
+            else
+            {
+                tbbCreateDatabase.ToolTipText = "Create a New Database";
+                tbbDatabaseContent.ToolTipText = "Reset the Database Content";
+            }
+        }
+
+        private bool CanEnableYAMLPreview(bool CanGenerateWinForm)
+        {
+            if (CanGenerateWinForm)
+            {
+                string path = Path.Combine(BranchLocation, Path.Combine(@"csharp\ICT\petra\client", cboYAMLHistory.SelectedItem.ToString()));
+                path = path.Replace(".yaml", "-generated.cs");
+                return File.Exists(path);
+            }
+            else
+            {
+                return false;
+            }
         }
 
         #endregion

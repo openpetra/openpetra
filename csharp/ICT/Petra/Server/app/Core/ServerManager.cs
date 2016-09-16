@@ -297,8 +297,7 @@ namespace Ict.Petra.Server.App.Core
             // we need a GUserInfo object for submitting the changes to the database later on
             TPetraIdentity PetraIdentity = new TPetraIdentity(
                 "SYSADMIN", "", "", "", "", DateTime.MinValue,
-                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
-                false);
+                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
 
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 

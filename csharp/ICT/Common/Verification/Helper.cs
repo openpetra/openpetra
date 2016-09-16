@@ -59,7 +59,7 @@ namespace Ict.Common.Verification
                 }
 
                 // Remove any ampersands ('&', signalling the keyboard shortcut in a Control's Label .Text Property)
-                // and any double-occurance of a single-quote (which could happen after we prepended and appended
+                // and any double-occurrence of a single-quote (which could happen after we prepended and appended
                 // single quotes)
                 ReturnValue = ReturnValue.Replace("&", String.Empty).Replace("''", "'");;
             }

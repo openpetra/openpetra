@@ -233,7 +233,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             string defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_EUROPEAN;
 
-            if (myCulture.EnglishName.EndsWith("-US"))
+            if (myCulture.TextInfo.CultureName.EndsWith("-US"))
             {
                 defaultImpOptions = myCulture.TextInfo.ListSeparator + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
             }

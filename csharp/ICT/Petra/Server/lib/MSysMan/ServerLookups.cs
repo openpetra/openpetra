@@ -27,8 +27,8 @@ using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.IO;
 using Ict.Common.Exceptions;
-using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
@@ -41,17 +41,6 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
     /// </summary>
     public class TSysManServerLookups
     {
-        // This is the password for the IUSROPEMAIL user.  If authentication is required by the EMail server so that clients can send emails from
-        // connections on the public internet, we can tell the client to authenticate using these credentials.
-        // That way they do not need to supply their own login credentials which we would have to store somewhere.
-        // The sysadmin for the servers needs to create this user with low privileges accessible by the mail server (locally or using Active Directory).
-        // The password must be set to 'never expires' and 'cannot be changed'.
-        // Note that the password is not stored in this file as text and it is never exposed to a client.
-        // Password is ....
-        private static byte[] EmailUserPassword = new byte[] {
-            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
-        };
-
         /// <summary>
         /// Retrieves the current database version
         /// </summary>
@@ -177,8 +166,8 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
                 // We give the client the details of the OP Email user.
                 // The password is converted from a byte array (rather than being compiled into this DLL as plain text).
                 // The username and password are stored in different server DLL's.
-                ALoginUsername = MSysManConstants.EMAIL_USER_LOGIN_NAME;
-                ALoginPassword = Encoding.ASCII.GetString(EmailUserPassword);
+                ALoginUsername = TSmtpSender.EMAIL_USER_LOGIN_NAME;
+                ALoginPassword = Encoding.ASCII.GetString(PasswordHelper.EmailUserPassword);
             }
         }
     }

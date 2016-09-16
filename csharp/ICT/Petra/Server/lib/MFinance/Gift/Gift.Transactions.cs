@@ -339,8 +339,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             TransactionInIntlCurrency = (batch.CurrencyCode == ledgerTable[0].IntlCurrency);
 
-                            foreach (ARecurringGiftRow recGift in MainRecurringDS.ARecurringGift.Rows)
+                            DataView giftDV = new DataView(MainRecurringDS.ARecurringGift);
+                            giftDV.Sort = string.Format("{0} ASC", ARecurringGiftTable.GetGiftTransactionNumberDBName());
+
+                            foreach (DataRowView giftRV in giftDV)
                             {
+                                ARecurringGiftRow recGift = (ARecurringGiftRow)giftRV.Row;
+
                                 if ((recGift.BatchNumber == ABatchNumber) && (recGift.LedgerNumber == ALedgerNumber) && recGift.Active)
                                 {
                                     //Look if there is a detail which is in the donation period (else continue)
@@ -370,8 +375,8 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     gift.BatchNumber = batch.BatchNumber;
                                     gift.GiftTransactionNumber = ++batch.LastGiftNumber;
                                     gift.DonorKey = recGift.DonorKey;
-                                    gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
                                     gift.DateEntered = AEffectiveDate;
+                                    gift.MethodOfGivingCode = recGift.MethodOfGivingCode;
 
                                     if (gift.MethodOfGivingCode.Length == 0)
                                     {
@@ -388,13 +393,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                     gift.Reference = recGift.Reference;
                                     gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
 
-
                                     MainDS.AGift.Rows.Add(gift);
-                                    //TODO (not here, but in the client or while posting) Check for Ex-OM Partner
-                                    //TODO (not here, but in the client or while posting) Check for expired key ministry (while Posting)
 
-                                    foreach (ARecurringGiftDetailRow recGiftDetail in MainRecurringDS.ARecurringGiftDetail.Rows)
+                                    DataView giftDetailDV = new DataView(MainRecurringDS.ARecurringGiftDetail);
+                                    giftDetailDV.Sort = string.Format("{0} ASC, {1} ASC",
+                                        ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                                        ARecurringGiftDetailTable.GetDetailNumberDBName());
+
+                                    foreach (DataRowView detailRV in giftDetailDV)
                                     {
+                                        ARecurringGiftDetailRow recGiftDetail = (ARecurringGiftDetailRow)detailRV.Row;
+
                                         //decimal amtIntl = 0M;
                                         decimal amtBase = 0M;
                                         decimal amtTrans = 0M;
@@ -412,23 +421,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             detail.DetailNumber = ++gift.LastDetailNumber;
 
                                             amtTrans = recGiftDetail.GiftAmount;
-                                            detail.GiftTransactionAmount = amtTrans;
-                                            batchTotal += amtTrans;
                                             amtBase = GLRoutines.Divide((decimal)amtTrans, AExchangeRateToBase);
+                                            detail.GiftTransactionAmount = amtTrans;
                                             detail.GiftAmount = amtBase;
-
-                                            if (!TransactionInIntlCurrency)
-                                            {
-                                                detail.GiftAmountIntl = GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
-                                            }
-                                            else
-                                            {
-                                                detail.GiftAmountIntl = amtTrans;
-                                            }
+                                            detail.GiftAmountIntl =
+                                                TransactionInIntlCurrency ? amtTrans : GLRoutines.Divide((decimal)amtBase, AExchangeRateIntlToBase);
+                                            batchTotal += amtTrans;
 
                                             detail.RecipientKey = recGiftDetail.RecipientKey;
                                             detail.RecipientLedgerNumber = recGiftDetail.RecipientLedgerNumber;
-
                                             detail.ChargeFlag = recGiftDetail.ChargeFlag;
                                             detail.ConfidentialGiftFlag = recGiftDetail.ConfidentialGiftFlag;
                                             detail.TaxDeductible = recGiftDetail.TaxDeductible;
@@ -2898,49 +2899,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftDate"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static Int64 GetGiftDestinationForRecipient(Int64 APartnerKey, DateTime ? AGiftDate)
+        public static Int64 GetRecipientGiftDestination(Int64 APartnerKey, DateTime ? AGiftDate)
         {
-            Int64 PartnerField = 0;
-
-            if ((APartnerKey == 0) || !AGiftDate.HasValue)
-            {
-                return 0;
-            }
-
-            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n as FieldKey" +
-                "  FROM PUB_p_partner_gift_destination pgd " +
-                "  WHERE pgd.p_partner_key_n = {0}" +
-                "    And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL)" +
-                "         Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
-                APartnerKey,
-                AGiftDate);
-
-            DataTable GiftDestTable = null;
-            string PartnerGiftDestinationTable = "PartnerGiftDestination";
-
-            TDBTransaction Transaction = null;
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
-                {
-                    try
-                    {
-                        GiftDestTable = DBAccess.GDBAccessObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
-
-                        if ((GiftDestTable != null) && (GiftDestTable.Rows.Count > 0))
-                        {
-                            PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        TLogging.LogException(ex, Utilities.GetMethodSignature());
-                        throw;
-                    }
-                });
-
-            return PartnerField;
+            return TPartnerServerLookups.GetPartnerGiftDestination(APartnerKey, AGiftDate);
         }
 
         /// <summary>
@@ -5019,43 +4980,51 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TDBTransaction Transaction = null;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                TEnforceIsolationLevel.eilMinimum,
-                ref Transaction,
-                delegate
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
+                        MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                        MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                        MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+                        MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
+
+                        #region Validate Data
+
+                        if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(Catalog.GetString(
+                                    "GetRecipientFundNumber: Ledger Partner Types data does not exist or could not be accessed."));
+                        }
+                        else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
+                        {
+                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                        "GetRecipientFundNumber: Recipient data for Partner Key {0} does not exist or could not be accessed."),
+                                    APartnerKey));
+                        }
+
+                        #endregion Validate Data
+
+                        DataLoaded = true;
+                    });
+
+                if (DataLoaded)
                 {
-                    MainDS.LedgerPartnerTypes.Merge(PPartnerTypeAccess.LoadViaPType(MPartnerConstants.PARTNERTYPE_LEDGER, Transaction));
-                    MainDS.RecipientPartners.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                    MainDS.RecipientFamily.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                    MainDS.RecipientPerson.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-                    MainDS.RecipientUnit.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, Transaction));
-
-                    #region Validate Data
-
-                    if ((MainDS.LedgerPartnerTypes == null) || (MainDS.LedgerPartnerTypes.Count == 0))
-                    {
-                        throw new EFinanceSystemDataTableReturnedNoDataException(Catalog.GetString(
-                                "GetRecipientFundNumber: Ledger Partner Types data does not exist or could not be accessed."));
-                    }
-                    else if ((MainDS.RecipientPartners == null) || (MainDS.RecipientPartners.Count == 0))
-                    {
-                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                    "GetRecipientFundNumber: Recipient data for Partner Key {0} does not exist or could not be accessed."),
-                                APartnerKey));
-                    }
-
-                    #endregion Validate Data
-
-                    DataLoaded = true;
-                });
-
-            if (DataLoaded)
-            {
-                return GetRecipientFundNumberInner(MainDS, APartnerKey, AGiftDate);
+                    return GetRecipientFundNumberInner(MainDS, APartnerKey, AGiftDate);
+                }
+                else
+                {
+                    return 0;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return 0;
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -5089,7 +5058,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (FamilyRow != null)
             {
-                return GetGiftDestinationForRecipient(APartnerKey, AGiftDate);
+                return GetRecipientGiftDestination(APartnerKey, AGiftDate);
             }
 
             //Look in RecipientPerson table
@@ -5097,7 +5066,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             if (PersonRow != null)
             {
-                return GetGiftDestinationForRecipient(PersonRow.FamilyKey, AGiftDate);
+                return GetRecipientGiftDestination(PersonRow.FamilyKey, AGiftDate);
             }
 
             //Check that LedgerPartnertypes are already loaded

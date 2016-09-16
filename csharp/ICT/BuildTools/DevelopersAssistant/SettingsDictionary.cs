@@ -84,9 +84,9 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
-        /// The path to the current working YAML file
+        /// A comma-separated list of YAML files
         /// </summary>
-        public string YAMLLocation {
+        public string YAMLLocationHistory {
             get; set;
         }
 
@@ -379,7 +379,7 @@ namespace Ict.Tools.DevelopersAssistant
             LaunchpadUserName = String.Empty;
             Sequence = String.Empty;
             WindowPosition = String.Empty;
-            YAMLLocation = String.Empty;
+            YAMLLocationHistory = String.Empty;
 
             CodeGenerationComboID = 2;
             CompilationComboID = 2;
@@ -422,7 +422,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("LaunchpadUserName", LaunchpadUserName);
             this.Add("Sequence", Sequence);
             this.Add("WindowPosition", WindowPosition);
-            this.Add("YAMLLocation", YAMLLocation);
+            this.Add("YAMLLocationHistory", YAMLLocationHistory);
 
             this.Add("CodeGenerationComboID", CodeGenerationComboID.ToString());
             this.Add("CompilationComboID", CompilationComboID.ToString());
@@ -479,7 +479,7 @@ namespace Ict.Tools.DevelopersAssistant
             LaunchpadUserName = this["LaunchpadUserName"];
             Sequence = this["Sequence"];
             WindowPosition = this["WindowPosition"];
-            YAMLLocation = this["YAMLLocation"];
+            YAMLLocationHistory = this["YAMLLocationHistory"];
 
             CodeGenerationComboID = Convert.ToInt32(this["CodeGenerationComboID"]);
             CompilationComboID = Convert.ToInt32(this["CompilationComboID"]);
@@ -513,6 +513,14 @@ namespace Ict.Tools.DevelopersAssistant
             CompileWinForm = (this["CompileWinForm"] != "0");
             StartClientAfterCompileWinForm = (this["StartClientAfterCompileWinForm"] != "0");
             AutoCheckForUpdates = (this["AutoCheckForUpdates"] != "0");
+
+            // Non-version-specific updates
+            if (this.ContainsKey("YAMLLocation"))
+            {
+                // We now store YAML History instead of a single YAML Path
+                YAMLLocationHistory = this["YAMLLocation"];
+                this.Remove("YAMLLocation");
+            }
 
             // Do version-specific upgrades
             if (this.ContainsKey("ApplicationVersion"))
@@ -580,7 +588,7 @@ namespace Ict.Tools.DevelopersAssistant
             this["LaunchpadUserName"] = LaunchpadUserName;
             this["Sequence"] = Sequence;
             this["WindowPosition"] = WindowPosition;
-            this["YAMLLocation"] = YAMLLocation;
+            this["YAMLLocationHistory"] = YAMLLocationHistory;
 
             this["CodeGenerationComboID"] = CodeGenerationComboID.ToString();
             this["CompilationComboID"] = CompilationComboID.ToString();

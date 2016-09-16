@@ -144,6 +144,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     || (CriteriaRow["PartnerClass"].ToString() == "*")))
             {
                 sb.AppendFormat("{0},{1}", "PUB.p_person.p_family_key_n", Environment.NewLine);
+                sb.AppendFormat("{0},{1}", "PUB.p_person.p_date_of_birth_d", Environment.NewLine);
             }
 
             sb.AppendFormat("{0},{1}", "PUB.p_partner_location.p_location_type_c", Environment.NewLine);
@@ -745,6 +746,33 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 BuildContactDetailsExtraCriteria(PhoneNumberIsSearchedFor, ref CriteriaRow, ref CustomWhereCriteria,
                     ref InternalParameters);
+            }
+
+            // this is only relevant for Person searches
+            if ((CriteriaRow["DateOfBirth"]).ToString().Length > 0)
+            {
+                // Searched DB Field: 'p_date_of_birth_d'
+
+                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
+                    PPersonTable.GetTableDBName(), PPersonTable.GetDateOfBirthDBName());
+
+                OdbcParameter miParam = new OdbcParameter("DateOfBirth", OdbcType.Date, 16);
+                miParam.Value = CriteriaRow["DateOfBirth"];
+                InternalParameters.Add(miParam);
+            }
+
+            // this is only relevant for Person searches
+            if (((CriteriaRow["FamilyKey"]).ToString().Length > 0)
+                && ((Int64)(CriteriaRow["FamilyKey"]) != 0))
+            {
+                // Searched DB Field: 'p_family_key_n'
+
+                CustomWhereCriteria = String.Format("{0} AND PUB.{1}.{2} = ?", CustomWhereCriteria,
+                    PPersonTable.GetTableDBName(), PPersonTable.GetFamilyKeyDBName());
+
+                OdbcParameter miParam = new OdbcParameter("FamilyKey", OdbcType.Decimal, 10);
+                miParam.Value = (object)CriteriaRow["FamilyKey"];
+                InternalParameters.Add(miParam);
             }
 
             #region Partner Status
@@ -1383,6 +1411,61 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
             {
                 return 0;
             }
+        }
+
+        /// <summary>
+        /// modify search result: filter each result partner for best address only
+        /// </summary>
+        /// <returns>DataTable with filtered result</returns>
+        public DataTable FilterResultByBestAddress()
+        {
+            Int64 CurrentPartnerKey = 0;
+            Int64 NewPartnerKey = 0;
+            DataTable FullFindResultDT = new PartnerFindTDSSearchResultTable();
+            DataTable FilteredResultDT = new PartnerFindTDSSearchResultTable();
+            DataRow fallbackRow = null;
+            TLocationPK bestLocationPK = null;
+
+            string partnerKeyDBname = PartnerFindTDSSearchResultTable.GetPartnerKeyDBName();
+            string locationKeyDBName = PartnerFindTDSSearchResultTable.GetLocationKeyDBName();
+            string siteKeyDBname = PartnerFindTDSSearchResultTable.GetSiteKeyDBName();
+
+            // Request all found Partners from FPagedDataSetObject
+            FullFindResultDT = FPagedDataSetObject.GetAllData();
+
+            // Sort by PartnerKey so we get duplicates together
+            FullFindResultDT.DefaultView.Sort = partnerKeyDBname + " ASC";
+
+            foreach (DataRowView rv in FullFindResultDT.DefaultView)
+            {
+                DataRow row = rv.Row;
+                NewPartnerKey = Convert.ToInt64(row[partnerKeyDBname]);
+
+                if (NewPartnerKey != CurrentPartnerKey)
+                {
+                    // We have moved on to the next partner
+                    if (fallbackRow != null)
+                    {
+                        // Not sure if/how this can happen but we didn't save anything  for the previous partner
+                        // We must save something so we save the row we kept as a fallback.  It is not the 'best' address however.
+                        FilteredResultDT.ImportRow(fallbackRow);
+                    }
+
+                    // Find the best address for the new partner
+                    bestLocationPK = ServerCalculations.DetermineBestAddress(NewPartnerKey);
+                    CurrentPartnerKey = NewPartnerKey;
+                }
+
+                // Is this row the same as the Best Address? If so its the one we import and we no longer need a fallback
+                if ((bestLocationPK.LocationKey == Convert.ToInt32(row[locationKeyDBName]))
+                    && (bestLocationPK.SiteKey == Convert.ToInt64(row[siteKeyDBname])))
+                {
+                    FilteredResultDT.ImportRow(row);
+                    fallbackRow = null;
+                }
+            }
+
+            return FilteredResultDT;
         }
 
         /// <summary>

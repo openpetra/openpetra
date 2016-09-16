@@ -41,11 +41,19 @@ namespace Ict.Petra.Client.MReporting.Gui
         private String FCurrentUser;
         private Boolean FInChangeEvent = false;
         private Boolean DataChangedFlag = false;
+        private Int32 FNewTemplateId = -1;
 
         private void InitManualCode()
         {
             FCurrentUser = UserInfo.GUserInfo.UserID;
             FPetraUtilsObject = new TFrmPetraReportingUtils(this, this, null);
+            this.KeyPreview = true;
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(Form_KeyDown);
+        }
+
+        private void Form_KeyDown(object sender, KeyEventArgs e)
+        {
+            FPetraUtilsObject.Form_KeyDown(sender, e);
         }
 
         private bool SaveChanges()
@@ -85,10 +93,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             lblPrivate.Visible = chkPrivate.Visible;
             lblReadonly.Visible = chkReadonly.Visible;
 
-            /*
-             * chkPrivateDefault.Visible = chkPrivate.Checked;
-             * lblPrivateDefault.Visible = chkPrivateDefault.Visible;
-             */
+            chkPrivateDefault.Visible = (!chkDefault.Checked && FSelectedRow.Author == FCurrentUser);
+            lblPrivateDefault.Visible = (!chkDefault.Checked && FSelectedRow.Author == FCurrentUser);
         }
 
         private void chkDefaultCheckedChanged(System.Object sender, System.Object e)
@@ -180,6 +186,11 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 try
                 {
+                    if (FSelectedRow.ReportVariant != txtDescription.Text)
+                    {
+                        DataChangedFlag = true;
+                    }
+
                     FSelectedRow.ReportVariant = txtDescription.Text;   // This previously could fail, but now ReportVariant is not a Primary Key.
                 }                                                       // the Try-Catch block is left here in case the previous style comes back!
                 catch (Exception)
@@ -236,11 +247,24 @@ namespace Ict.Petra.Client.MReporting.Gui
             return FPetraUtilsObject;
         }
 
+        private void SelectRowByTemplateId(Int32 ASelectedTemplateId)
+        {
+            for (Int32 RowIdx = 0; RowIdx < FTemplateTable.DefaultView.Count; RowIdx++)
+            {
+                if (((SReportTemplateRow)FTemplateTable.DefaultView[RowIdx].Row).TemplateId == ASelectedTemplateId)
+                {
+                    grdTemplateList.SelectRowInGrid(RowIdx + 1);
+                    break;
+                }
+            }
+        }
+
         /// <summary>
         /// Call this to display the form and show the available templates.
         /// </summary>
         /// <param name="AReportType"></param>
-        public DialogResult SelectTemplate(String AReportType)
+        /// <param name="ASelectedTemplateId">Supply this to set the current row</param>
+        public DialogResult SelectTemplate(String AReportType, Int32 ASelectedTemplateId)
         {
             FTemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(AReportType, FCurrentUser, false);
             DataView myDataView = FTemplateTable.DefaultView;
@@ -248,8 +272,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             grdTemplateList.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
             grdTemplateList.Columns.Clear();
             grdTemplateList.AddTextColumn(AReportType, FTemplateTable.ColumnReportVariant);
-            grdTemplateList.SelectRowInGrid(1);
+            SelectRowByTemplateId(ASelectedTemplateId);
             FocusedRowChanged(null, null);
+            FNewTemplateId = -1;
 
             this.FormClosing += TFrmPetra_Closed; // Apparently I need to do this myself - it's not called automatically.
             return ShowDialog();
@@ -266,7 +291,18 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private void ExitManualCode()
         {
-            SaveChanges();
+            if (DataChangedFlag)
+            {
+                if (
+                    MessageBox.Show(
+                        Catalog.GetString("Save changes before closing?"),
+                        Catalog.GetString("Maintain Templates"),
+                        MessageBoxButtons.YesNo)
+                    == DialogResult.Yes)
+                {
+                    SaveChanges();
+                }
+            }
         }
 
         private void DeleteRecord(object sender, EventArgs e)
@@ -290,13 +326,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             GetDataFromControls();
             SReportTemplateRow NewRow = FTemplateTable.NewRowTyped();
             DataUtilities.CopyAllColumnValues(FSelectedRow, NewRow);
-            NewRow.TemplateId = -1;
+            NewRow.TemplateId = FNewTemplateId;
             NewRow.Author = FCurrentUser;
             NewRow.Default = false;
             NewRow.Readonly = false;
             NewRow.ReportVariant = String.Format(Catalog.GetString("{0} copy of {1}"), FCurrentUser, NewRow.ReportVariant);
             FTemplateTable.Rows.Add(NewRow);
+            SelectRowByTemplateId(FNewTemplateId);
             DataChangedFlag = true;
+            FNewTemplateId--;
         }
 
         private void ReturnSelected(object sender, EventArgs e)
@@ -304,6 +342,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             GetDataFromControls();
             SaveChanges();
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            Close();
+        }
+
+        private void ReturnCancel(object sender, EventArgs e)
+        {
+            this.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             Close();
         }
     }

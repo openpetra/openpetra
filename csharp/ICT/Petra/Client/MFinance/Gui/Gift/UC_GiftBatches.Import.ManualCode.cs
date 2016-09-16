@@ -65,6 +65,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FromClipboard
         };
 
+        private TFrmGiftBatch FMyForm = null;
         private TDlgSelectCSVSeparator FdlgSeparator;
 
         private TFrmPetraEditUtils FPetraUtilsObject = null;
@@ -80,6 +81,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             FPetraUtilsObject = APetraUtilsObject;
             FLedgerNumber = ALedgerNumber;
             FMyUserControl = AUserControl;
+            FMyForm = (TFrmGiftBatch)FPetraUtilsObject.GetForm();
         }
 
         #endregion
@@ -92,10 +94,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void ImportBatches(TGiftImportDataSourceEnum AImportSource)
         {
-            bool ok = false;
-            String importString;
-            String impOptions;
-            OpenFileDialog dialog = null;
+            bool ImportOK = false;
+            String ImportString;
+            String ImportOptions;
+            OpenFileDialog OFileDialog = null;
 
             if (FPetraUtilsObject.HasChanges)
             {
@@ -109,46 +111,46 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
             {
-                importString = Clipboard.GetText(TextDataFormat.UnicodeText);
+                ImportString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
-                if ((importString == null) || (importString.Length == 0))
+                if ((ImportString == null) || (ImportString.Length == 0))
                 {
                     MessageBox.Show(Catalog.GetString("Please first copy data from your spreadsheet application!"),
                         Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
+                ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
                 String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.SelectedSeparator = "\t";
-                FdlgSeparator.CSVData = importString;
+                FdlgSeparator.CSVData = ImportString;
                 FdlgSeparator.DateFormat = dateFormatString;
 
-                if (impOptions.Length > 1)
+                if (ImportOptions.Length > 1)
                 {
-                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                    FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
                 }
             }
             else if (AImportSource == TGiftImportDataSourceEnum.FromFile)
             {
-                dialog = new OpenFileDialog();
+                OFileDialog = new OpenFileDialog();
 
                 string exportPath = TClientSettings.GetExportPath();
                 string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
                     exportPath + Path.DirectorySeparatorChar + "import.csv");
-                TImportExportDialogs.SetOpenFileDialogFilePathAndName(dialog, fullPath, exportPath);
+                TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFileDialog, fullPath, exportPath);
 
-                dialog.Title = Catalog.GetString("Import Batches from CSV File");
-                dialog.Filter = Catalog.GetString("Gift Batch Files(*.csv) | *.csv | Text Files(*.txt) | *.txt");
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+                OFileDialog.Title = Catalog.GetString("Import Batches from CSV File");
+                OFileDialog.Filter = Catalog.GetString("Gift Batch Files(*.csv)|*.csv|Text Files(*.txt)|*.txt");
+                ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
                 TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
 
-                if (dialog.ShowDialog() == DialogResult.OK)
+                if (OFileDialog.ShowDialog() == DialogResult.OK)
                 {
-                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(dialog.FileName);
+                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(OFileDialog.FileName);
 
                     if (!fileCanOpen)
                     {
@@ -159,17 +161,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
+                    ImportString = File.ReadAllText(OFileDialog.FileName, Encoding.Default);
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;
 
-                    if (impOptions.Length > 1)
+                    if (ImportOptions.Length > 1)
                     {
-                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
+                        FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
                     }
 
-                    FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+                    FdlgSeparator.SelectedSeparator = ImportOptions.Substring(0, 1);
                 }
                 else
                 {
@@ -179,8 +181,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 // unknown source!!  The following need a value...
-                impOptions = String.Empty;
-                importString = String.Empty;
+                ImportOptions = String.Empty;
+                ImportString = String.Empty;
             }
 
             if (FdlgSeparator.ShowDialog() == DialogResult.OK)
@@ -204,9 +206,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     Thread ImportThread = new Thread(() => ImportGiftBatches(
                             requestParams,
-                            importString,
+                            ImportString,
                             out AMessages,
-                            out ok,
+                            out ImportOK,
                             out NeedRecipientLedgerNumber));
 
                     using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
@@ -238,11 +240,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             {
                                 string CheckboxText = string.Empty;
 
-                                // only show checkbox if there is at least one more occurance of this error
+                                // only show checkbox if there is at least one more occurrence of this error
                                 if (NeedRecipientLedgerNumber.Rows.Count - count > 0)
                                 {
                                     CheckboxText = string.Format(
-                                        Catalog.GetString("Do this for all further occurances ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
+                                        Catalog.GetString("Do this for all further occurrences ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
                                 }
 
                                 TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
@@ -292,10 +294,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 // We save the defaults even if ok is false - because the client will probably want to try and import
                 //   the same file again after correcting any errors
-                SaveUserDefaults(dialog, impOptions);
+                SaveUserDefaults(OFileDialog, ImportOptions);
             }
 
-            if (ok)
+            if (ImportOK)
             {
                 MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
                     Catalog.GetString("Gift Import"),
@@ -303,7 +305,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Information);
 
                 FMyUserControl.LoadBatchesForCurrentYear();
-                FPetraUtilsObject.DisableSaveButton();
+                FMyForm.GetBatchControl().SelectRowInBatchGrid(1);
+                //Force initial inactive values check
+                FMyForm.SaveChangesManual();
             }
         }
 
@@ -464,20 +468,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
                     // then the import will have failed and we need to alert the user
-                    if (NeedRecipientLedgerNumber.Rows.Count > 0)
+                    int numberOfMissingGiftDestinations = NeedRecipientLedgerNumber.Rows.Count;
+
+                    if (numberOfMissingGiftDestinations > 0)
                     {
-                        bool OfferToRunImportAgain = true;
+                        bool offerToRunImportAgain = true;
+                        int currentMissingGiftDestinationNo = 1;
 
                         // for each gift in which the recipient needs a Git Destination
                         foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
                         {
+                            //Lookup the partner shortname
+                            string partnerShortName = string.Empty;
+                            TPartnerClass partnerClass;
+
+                            if (TServerLookup.TMPartner.GetPartnerShortName(Row.RecipientKey, out partnerShortName, out partnerClass))
+                            {
+                                Row.RecipientDescription = partnerShortName;
+                            }
+
                             if (MessageBox.Show(string.Format(
                                         Catalog.GetString(
-                                            "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
-                                        Row.RecipientDescription, Row.RecipientKey) +
+                                            "Error: {0:0000} of {1:0000} - Recipient '{2}' ({3}) has no Gift Destination assigned."),
+                                        currentMissingGiftDestinationNo, numberOfMissingGiftDestinations, Row.RecipientDescription,
+                                        Row.RecipientKey) +
                                     "\n\n" +
                                     Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
-                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                                    Catalog.GetString("Gift Import Cancelled"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
                                 == DialogResult.Yes)
                             {
                                 // allow the user to assign a Gift Destingation
@@ -486,12 +503,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             }
                             else
                             {
-                                OfferToRunImportAgain = false;
+                                offerToRunImportAgain = false;
                             }
+
+                            currentMissingGiftDestinationNo++;
                         }
 
                         // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
-                        if (OfferToRunImportAgain
+                        if (offerToRunImportAgain
                             && (MessageBox.Show(Catalog.GetString("Would you like to import these Gift Transactions again?"),
                                     Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
                                     MessageBoxDefaultButton.Button1)
@@ -514,7 +533,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
 
-                //FMyUserControl.LoadBatchesForCurrentYear();
+                FMyUserControl.LoadBatchesForCurrentYear();
                 FPetraUtilsObject.DisableSaveButton();
             }
 
@@ -538,7 +557,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
-
 
             ImportIsSuccessful = TRemote.MFinance.Gift.WebConnectors.ImportGiftBatches(
                 ARequestParams,

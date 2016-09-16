@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Odbc;
@@ -107,6 +108,43 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return AAddress != null;
+        }
+
+        /// <summary>
+        /// Given a DataColumn of Partner Keys, return a table with the best address for each partner
+        /// </summary>
+        /// <param name="Partners">DataTable containing a column of partner keys</param>
+        /// <param name="PartnerKeyColumn">Column number in Partners that contains the keys</param>
+        /// <param name="ATransaction">The current database transaction</param>
+        /// <returns></returns>
+        public static DataTable GetBestAddressForPartners(DataTable Partners, int PartnerKeyColumn, TDBTransaction ATransaction)
+        {
+            List <String>PartnerList = new List <string>();
+
+            foreach (DataRow Partner in Partners.Rows)
+            {
+                PartnerList.Add(Partner[PartnerKeyColumn].ToString());
+            }
+
+            return GetBestAddressForPartners(String.Join(",", PartnerList), ATransaction);
+        }
+
+        /// <summary>
+        /// Given a string list of Partner Keys, return a table with the best address for each partner
+        /// </summary>
+        /// <param name="DonorList">Comma-separated list of partner keys, or SQL query returning partner keys only</param>
+        /// <param name="ATransaction">The current database transaction</param>
+        /// <returns></returns>
+        public static DataTable GetBestAddressForPartners(String DonorList, TDBTransaction ATransaction)
+        {
+            DataTable ResultTable = new DataTable();
+
+            string Query = TDataBase.ReadSqlFile("Partner.CommonAddressTools.GetBestAddress.sql");
+
+            Query = Query.Replace("{DonorList}", DonorList);
+
+            ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "PartnersAddresses", ATransaction);
+            return ResultTable;
         }
 
         /// <summary>

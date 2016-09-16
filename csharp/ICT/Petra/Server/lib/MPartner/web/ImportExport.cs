@@ -83,6 +83,138 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         }
 
         /// <summary>
+        /// read data from db for partner with given key according to csv columns needed
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static PartnerImportExportTDS ReadPartnerDataForCSV(Int64 APartnerKey, List <String>ACSVColumns)
+        {
+            TDBTransaction ReadTransaction = null;
+
+            PartnerImportExportTDS MainDS = new PartnerImportExportTDS();
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.RepeatableRead, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    // read PPartner record
+                    MainDS.Merge(PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+
+                    // read Partner specific record
+                    if ((MainDS.PPartner != null)
+                        && (MainDS.PPartner.Count > 0))
+                    {
+                        switch (MainDS.PPartner[0].PartnerClass)
+                        {
+                            case MPartnerConstants.PARTNERCLASS_FAMILY:
+                                MainDS.Merge(PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_PERSON:
+                                MainDS.Merge(PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_UNIT:
+                                MainDS.Merge(PUnitAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_ORGANISATION:
+                                MainDS.Merge(POrganisationAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_CHURCH:
+                                MainDS.Merge(PChurchAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_BANK:
+                                MainDS.Merge(PBankAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            case MPartnerConstants.PARTNERCLASS_VENUE:
+                                MainDS.Merge(PVenueAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction));
+                                break;
+
+                            default:
+                                // this should not happen
+                                break;
+                        }
+                    }
+
+                    // read addresses
+                    MainDS.Merge(PLocationAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+                    MainDS.Merge(PPartnerLocationAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+
+                    // read contact details
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EMAIL)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PHONE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MOBILEPHONE))
+                    {
+                        MainDS.Merge(PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+                    }
+
+                    // for FAMILY ("SpecialTypeFamily_x") and other Partner Classes ("SpecialType_x"):
+                    // read special types in any case (checking for criteria would take too much runtime)
+                    MainDS.Merge(PPartnerTypeAccess.LoadViaPPartner(APartnerKey, ReadTransaction));
+
+                    // read special needs (for PERSON)
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_VEGETARIAN)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_MEDICALNEEDS)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DIETARYNEEDS)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_OTHERNEEDS))
+                    {
+                        MainDS.Merge(PmSpecialNeedAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
+                    }
+
+                    // read application (for PERSON)
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EVENTKEY)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ARRIVALDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_ARRIVALTIME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_DEPARTURETIME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_EVENTROLE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPSTATUS)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPTYPE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CHARGEDFIELD)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_APPCOMMENTS))
+                    {
+                        MainDS.Merge(PmGeneralApplicationAccess.LoadViaPPersonPartnerKey(APartnerKey, ReadTransaction));
+                        MainDS.Merge(PmShortTermApplicationAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
+                    }
+
+                    // read contact logs
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTCODE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTDATE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTTIME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTOR)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTNOTES)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTATTR)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_CONTACTDETAIL))
+                    {
+                        MainDS.Merge(PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, ReadTransaction));
+                    }
+
+                    // read passports (for PERSON)
+                    if (ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNAME)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTTYPE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFBIRTH)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTNATIONALITY)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTPLACEOFISSUE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTCOUNTRYOFISSUE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFISSUE)
+                        || ACSVColumns.Contains(MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION))
+                    {
+                        MainDS.Merge(PmPassportDetailsAccess.LoadViaPPerson(APartnerKey, ReadTransaction));
+                    }
+                });
+
+            MainDS.AcceptChanges();
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// This imports partners from a CSV file
         /// </summary>
         [RequireModulePermission("PTNRUSER")]
@@ -415,58 +547,147 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// If the address I'm importing is already on file, I don't want to create another row.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AImportFileFormat"></param>
         /// <param name="PartnerRow"></param>
+        /// <param name="AReplaceAddress"></param>
+        /// <param name="ASiteKeyToBeReplaced"></param>
+        /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         private static void CheckAddresses(PartnerImportExportTDS MainDS,
+            TImportFileFormat AImportFileFormat,
             PPartnerRow PartnerRow,
+            Boolean AReplaceAddress,
+            Int64 ASiteKeyToBeReplaced,
+            Int32 ALocationKeyToBeReplaced,
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
         {
-            PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, Transaction);
+            Boolean AddressIsReplaced = false;
 
-            if (LocationTable.Rows.Count == 0)
+            if (AReplaceAddress)
             {
-                return;
-            }
+                // this case is for csv files only and we should only have one import address
 
-            for (int ImportPartnerLocationRowIdx = 0; ImportPartnerLocationRowIdx < MainDS.PPartnerLocation.Rows.Count; )
-            {
-                PPartnerLocationRow ImportPartnerLocationRow = (PPartnerLocationRow)MainDS.PPartnerLocation[ImportPartnerLocationRowIdx];
-                MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}",
-                    PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
-                bool RowRemoved = false;
+                PLocationTable LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKeyToBeReplaced, ALocationKeyToBeReplaced, Transaction);
 
-                if (MainDS.PLocation.DefaultView.Count > 0)
+                if ((LocationTable.Rows.Count > 0)
+                    && (MainDS.PPartnerLocation.Rows.Count == 1)
+                    && (MainDS.PLocation.Rows.Count == 1))
                 {
-                    PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
+                    String ExistingAddress = Calculations.DetermineLocationString(LocationTable[0],
+                        Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                    String NewAddress = Calculations.DetermineLocationString(MainDS.PLocation[0],
+                        Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
 
-                    // Now I want to find out whether this row exists in my database.
-                    foreach (PLocationRow DbLocationRow in LocationTable.Rows)
+                    // now we need to find out if this address is also used by other partners
+                    // (if used by other partners we need to create a new one, if not then we can just modify this one)
+                    PPartnerLocationTable PartnerLocationTable = PPartnerLocationAccess.LoadViaPLocation(LocationTable[0].SiteKey,
+                        LocationTable[0].LocationKey,
+                        Transaction);
+
+                    if (PartnerLocationTable.Count == 1)
                     {
-                        if (
-                            (DbLocationRow.StreetName == ImportLocationRow.StreetName)
-                            && (DbLocationRow.Locality == ImportLocationRow.Locality)
-                            && (DbLocationRow.City == ImportLocationRow.City)
-                            && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
-                            )
-                        {
-                            String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
-                                Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+                        // save imported values to temporary location row
+                        PLocationRow ImportedLocationRow = MainDS.PLocation[0];
+                        PLocationRow ImportedLocationRowCopy = MainDS.PLocation.NewRowTyped(false);
+                        ImportedLocationRowCopy.ItemArray = (object[])ImportedLocationRow.ItemArray.Clone();
 
-                            MainDS.PLocation.Rows.Remove(ImportLocationRow);
-                            MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+                        // now initialize imported row with values from db and reset RowState (with AcceptChanges) so that is it not Added
+                        ImportedLocationRow.ItemArray = (object[])LocationTable[0].ItemArray.Clone();
+                        ImportedLocationRow.AcceptChanges();
 
-                            AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
-                            RowRemoved = true;
-                            break;  // If there's already a duplicate in the database, I can't fix that here...
-                        }
+                        // copy imported values into row (does not affect RowState), but keep location key from db
+                        ImportedLocationRow.ItemArray = (object[])ImportedLocationRowCopy.ItemArray.Clone();
+                        ImportedLocationRow.SiteKey = ASiteKeyToBeReplaced;
+                        ImportedLocationRow.LocationKey = ALocationKeyToBeReplaced;
+
+                        // remove partner location as the one in db already points to the right location
+                        MainDS.PPartnerLocation.Rows.RemoveAt(0);
+
+                        AddressIsReplaced = true;
+                        AddVerificationResult(ref ReferenceResults,
+                            "Existing address (" + ExistingAddress + ") replaced with: " + NewAddress,
+                            TResultSeverity.Resv_Status);
+                    }
+                    else if (PartnerLocationTable.Count > 1)
+                    {
+                        // remove partner location for this partner and add the address as a new one (further down in the code of this method)
+                        PPartnerLocationAccess.DeleteByPrimaryKey(PartnerRow.PartnerKey,
+                            LocationTable[0].SiteKey,
+                            LocationTable[0].LocationKey,
+                            Transaction);
                     }
                 }
+            }
 
-                if (!RowRemoved)
+            // if address should not be replaced or if replacing did not work continue here anyways so we can definitely import some address data
+            if (!AddressIsReplaced)
+            {
+                PLocationTable LocationTable = PLocationAccess.LoadViaPPartner(PartnerRow.PartnerKey, Transaction);
+
+                if (LocationTable.Rows.Count == 0)
                 {
-                    ImportPartnerLocationRowIdx++; // There is no auto-increment on the "for" loop.
+                    return;
+                }
+
+                for (int ImportPartnerLocationRowIdx = 0; ImportPartnerLocationRowIdx < MainDS.PPartnerLocation.Rows.Count; )
+                {
+                    PPartnerLocationRow ImportPartnerLocationRow = (PPartnerLocationRow)MainDS.PPartnerLocation[ImportPartnerLocationRowIdx];
+                    MainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1}",
+                        PLocationTable.GetLocationKeyDBName(), ImportPartnerLocationRow.LocationKey);
+                    bool RowRemoved = false;
+
+                    if (MainDS.PLocation.DefaultView.Count > 0)
+                    {
+                        PLocationRow ImportLocationRow = (PLocationRow)MainDS.PLocation.DefaultView[0].Row;
+
+                        // Now I want to find out whether this row exists in my database.
+                        foreach (PLocationRow DbLocationRow in LocationTable.Rows)
+                        {
+                            if (
+                                (DbLocationRow.StreetName == ImportLocationRow.StreetName)
+                                && (DbLocationRow.Locality == ImportLocationRow.Locality)
+                                && (DbLocationRow.Address3 == ImportLocationRow.Address3)
+                                && (DbLocationRow.County == ImportLocationRow.County)
+                                && (DbLocationRow.City == ImportLocationRow.City)
+                                && (DbLocationRow.CountryCode == ImportLocationRow.CountryCode)
+                                && (DbLocationRow.PostalCode == ImportLocationRow.PostalCode)
+                                )
+                            {
+                                String ExistingAddress = Calculations.DetermineLocationString(DbLocationRow,
+                                    Calculations.TPartnerLocationFormatEnum.plfCommaSeparated);
+
+                                MainDS.PLocation.Rows.Remove(ImportLocationRow);
+
+                                //TODOWBxxx
+                                // check if partner with this location key already exists in database
+                                if (PPartnerLocationAccess.Exists(PartnerRow.PartnerKey, 0, DbLocationRow.LocationKey, Transaction))
+                                {
+                                    // in case of .ext files all data is imported, so the PartnerLocation record may contain important
+                                    // information like start and end date of an address, whereas with .csv this information is not imported
+                                    if (AImportFileFormat != TImportFileFormat.ext)
+                                    {
+                                        MainDS.PPartnerLocation.Rows.RemoveAt(ImportPartnerLocationRowIdx);
+                                        RowRemoved = true;
+                                    }
+                                }
+                                else
+                                {
+                                    ((PPartnerLocationRow)MainDS.PPartnerLocation.Rows[ImportPartnerLocationRowIdx]).LocationKey =
+                                        DbLocationRow.LocationKey;
+                                }
+
+                                AddVerificationResult(ref ReferenceResults, "Existing address used: " + ExistingAddress, TResultSeverity.Resv_Status);
+                                break;  // If there's already a duplicate in the database, I can't fix that here...
+                            }
+                        }
+                    }
+
+                    if (!RowRemoved)
+                    {
+                        ImportPartnerLocationRowIdx++; // There is no auto-increment on the "for" loop.
+                    }
                 }
             }
         }
@@ -941,19 +1162,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 PmGeneralApplicationRow GenAppRow = MainDS.PmGeneralApplication[RowIdx];
 
                 // Check if this row already exists, using the unique key
-                if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink,
-                        Transaction))
-                {
-                    // If it does, I need to update and not add.
-                    PmGeneralApplicationTable Tbl = PmGeneralApplicationAccess.LoadByUniqueKey(
-                        GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
-                    PmGeneralApplicationRow ExistingRow = Tbl[0];
-
-                    GenAppRow.AcceptChanges();
-                    GenAppRow.ModificationId = ExistingRow.ModificationId;
-
-                    AddVerificationResult(ref ReferenceResults, "Existing Application record updated.");
-                }
+                //TODOWBxxx: probably not needed any longer
+                //if (PmGeneralApplicationAccess.Exists(GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink,
+                //        Transaction))
+                //{
+                //    // If it does, I need to update and not add.
+                //    PmGeneralApplicationTable Tbl = PmGeneralApplicationAccess.LoadByUniqueKey(
+                //        GenAppRow.PartnerKey, GenAppRow.GenAppDate, GenAppRow.AppTypeName, GenAppRow.OldLink, Transaction);
+                //    PmGeneralApplicationRow ExistingRow = Tbl[0];
+                //
+                //    GenAppRow.AcceptChanges();
+                //    GenAppRow.ModificationId = ExistingRow.ModificationId;
+                //
+                //    AddVerificationResult(ref ReferenceResults, "Existing Application record updated.");
+                //}
 
                 if ((GenAppRow.GenApplicationStatus != "") && (!PtApplicantStatusAccess.Exists(GenAppRow.GenApplicationStatus, Transaction)))
                 {
@@ -1150,15 +1372,15 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     }
                 }
 
-                if ((rv.OutreachRole != "") && (!PtCongressCodeAccess.Exists(rv.OutreachRole, Transaction)))
+                if ((rv.StCongressCode != "") && (!PtCongressCodeAccess.Exists(rv.StCongressCode, Transaction)))
                 {
-                    MainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0}='{1}'", PtCongressCodeTable.GetCodeDBName(), (rv.OutreachRole));
+                    MainDS.PtCongressCode.DefaultView.RowFilter = String.Format("{0}='{1}'", PtCongressCodeTable.GetCodeDBName(), (rv.StCongressCode));
 
                     if (MainDS.PtCongressCode.DefaultView.Count == 0) // Check I've not just added this a moment ago..
                     {
-                        AddVerificationResult(ref ReferenceResults, "Adding new Congress Code " + rv.OutreachRole);
+                        AddVerificationResult(ref ReferenceResults, "Adding new Congress Code " + rv.StCongressCode);
                         PtCongressCodeRow Row = MainDS.PtCongressCode.NewRowTyped();
-                        Row.Code = rv.OutreachRole;
+                        Row.Code = rv.StCongressCode;
                         Row.Description = FNewRowDescription;
                         MainDS.PtCongressCode.Rows.Add(Row);
                         TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
@@ -1405,7 +1627,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 {
                     if (DbPassport.PassportNumber == ImportPassport.PassportNumber) // This simple match ought to be unique
                     {   // These rows are the same passport. I want my imported data to overwrite the data in the database.
-                        ImportPassport.AcceptChanges(); // This should cause the passport to be updated rather then added.
+                        //TODOWBxxx ImportPassport.AcceptChanges(); // This should cause the passport to be updated rather then added.
                         ImportPassport.DateCreated = DbPassport.DateCreated;
                         ImportPassport.CreatedBy = DbPassport.CreatedBy;
                         ImportPassport.ModificationId = DbPassport.ModificationId; // The trick only works if I have this magic password.
@@ -1495,18 +1717,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         {
             foreach (PSubscriptionRow SubsRow in MainDS.PSubscription.Rows)
             {
-                PSubscriptionTable Tbl = PSubscriptionAccess.LoadByPrimaryKey(SubsRow.PublicationCode, SubsRow.PartnerKey, Transaction); // If the record is present, I need to update rather than add.
-
-                if (Tbl.Rows.Count > 0)
-                {
-                    PSubscriptionRow DbRow = Tbl[0];
-                    SubsRow.AcceptChanges();                        // This removes the "Added" attribute.
-                    SubsRow.PartnerKey = SubsRow.PartnerKey;        // this looks pointless, but it makes the row "Modified".
-
-                    SubsRow.ModificationId = DbRow.ModificationId;  // I'll copy this to keep the ORM happy,
-                    SubsRow.CreatedBy = DbRow.CreatedBy;            // and these two in case anyone might refer to them.
-                    SubsRow.DateCreated = DbRow.DateCreated;
-                }
+                //TODOWBxxx: probably not needed any longer
+                //PSubscriptionTable Tbl = PSubscriptionAccess.LoadByPrimaryKey(SubsRow.PublicationCode, SubsRow.PartnerKey, Transaction); // If the record is present, I need to update rather than add.
+                //
+                //if (Tbl.Rows.Count > 0)
+                //{
+                //    PSubscriptionRow DbRow = Tbl[0];
+                //    SubsRow.AcceptChanges();                        // This removes the "Added" attribute.
+                //    SubsRow.PartnerKey = SubsRow.PartnerKey;        // this looks pointless, but it makes the row "Modified".
+                //
+                //    SubsRow.ModificationId = DbRow.ModificationId;  // I'll copy this to keep the ORM happy,
+                //    SubsRow.CreatedBy = DbRow.CreatedBy;            // and these two in case anyone might refer to them.
+                //    SubsRow.DateCreated = DbRow.DateCreated;
+                //}
 
                 if (SubsRow.ReasonSubsGivenCode == "")
                 {
@@ -1617,10 +1840,18 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// or in some cases substitute a known value in the reference.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AImportFileFormat"></param>
+        /// <param name="AReplaceAddress"></param>
+        /// <param name="ASiteKeyToBeReplaced"></param>
+        /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="ReferenceResults"></param>
         /// <param name="Transaction"></param>
         /// <returns>false if this data can't be imported.</returns>
         private static bool CheckReferencedTables(PartnerImportExportTDS MainDS,
+            TImportFileFormat AImportFileFormat,
+            Boolean AReplaceAddress,
+            Int64 ASiteKeyToBeReplaced,
+            Int32 ALocationKeyToBeReplaced,
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
         {
@@ -1642,7 +1873,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             CheckBusiness(MainDS, ref ReferenceResults, Transaction);
             CheckLanguage(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAcquisitionCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
-            CheckAddresses(MainDS, PartnerRow, ref ReferenceResults, Transaction);
+            CheckAddresses(MainDS,
+                AImportFileFormat,
+                PartnerRow,
+                AReplaceAddress,
+                ASiteKeyToBeReplaced,
+                ALocationKeyToBeReplaced,
+                ref ReferenceResults,
+                Transaction);
             CheckAddresseeTypeCode(MainDS, PartnerRow, ref ReferenceResults, Transaction);
             CheckAbilityArea(MainDS, ref ReferenceResults, Transaction);
             CheckPartnerInterest(MainDS, ref ReferenceResults, Transaction);
@@ -1674,10 +1912,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// and supllies values to index tables.
         /// </summary>
         /// <param name="MainDS"></param>
+        /// <param name="AImportFileFormat"></param>
+        /// <param name="AReplaceAddress"></param>
+        /// <param name="ASiteKeyToBeReplaced"></param>
+        /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns>true if no error</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static Boolean CommitChanges(PartnerImportExportTDS MainDS, out TVerificationResultCollection AVerificationResult)
+        public static Boolean CommitChanges(PartnerImportExportTDS MainDS,
+            TImportFileFormat AImportFileFormat,
+            Boolean AReplaceAddress,
+            Int64 ASiteKeyToBeReplaced,
+            Int32 ALocationKeyToBeReplaced,
+            out TVerificationResultCollection AVerificationResult)
         {
             TVerificationResultCollection ReferenceResults = new TVerificationResultCollection();
 
@@ -1694,7 +1941,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
                     if (CanImport)
                     {
-                        CanImport = CheckReferencedTables(MainDS, ref ReferenceResults, Transaction);
+                        CanImport =
+                            CheckReferencedTables(MainDS, AImportFileFormat, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced,
+                                ref ReferenceResults,
+                                Transaction);
                     }
 
                     SubmissionOK = true;
@@ -1704,9 +1954,30 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             if (CanImport)
             {
-                PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+                try
+                {
+                    PartnerImportExportTDSAccess.SubmitChanges(MainDS);
+                    Res = TSubmitChangesResult.scrOK;
+                }
+                catch (Exception ex)
+                {
+                    TLogging.LogException(ex, "ImportExport.WebConnectors_CommitChanges");
+                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                }
+            }
 
-                Res = TSubmitChangesResult.scrOK;
+            if (CanImport && (Res == TSubmitChangesResult.scrError))
+            {
+                // We got an exception!
+                string msg = Catalog.GetString("A server error occurred during import of {0} {1}.  ");
+                msg += Catalog.GetString("More information is available in the server log file.  No data was imported for this row.");
+
+                AddVerificationResult(
+                    ref ReferenceResults,
+                    String.Format(msg,
+                        ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass,
+                        ((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerShortName),
+                    TResultSeverity.Resv_Critical);
             }
 
             if (((PPartnerRow)MainDS.PPartner.Rows[0]).PartnerClass == "")

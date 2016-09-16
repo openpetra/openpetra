@@ -17,6 +17,7 @@ Mono.Data.Sqlite=${dir.3rdParty}/SQLite/Mono.Data.Sqlite.dll
 System.Data.SQLite*=${dir.3rdParty}/SQLite/System.Data.SQLite.DLL
 OpenQA.Selenium*=${dir.3rdParty}/Selenium/WebDriver.dll
 PasswordUtilities*=${dir.3rdParty}/PasswordUtilities/PasswordUtilities.dll
+Sodium*=${dir.3rdParty}/libsodium-net/Sodium.dll
 Accessibility=${csharpStdLibs}/Accessibility.dll
 System.Collections.Generic=${csharpStdLibs}/System.Core.dll
 System.Configuration=${csharpStdLibs}/System.Configuration.dll

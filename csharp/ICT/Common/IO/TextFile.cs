@@ -341,5 +341,232 @@ namespace Ict.Common.IO
 
             return ADefaultEncoding;
         }
+
+        /// <summary>
+        /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little or big endian), and local default codepage, and potentially other codepages.
+        /// </summary>
+        /// <param name="AFilename">Filename to open</param>
+        /// <param name="AFallbackEncoding">An encoding that will be used if there is no explicit encoding.  If null the default encoding
+        /// for the active machine will be used.  Otherwise you could pass a specific CodePage using Encoding.GetEncoding(1252) for example.</param>
+        /// <param name="AText">The content of the file using the discovered encoding.</param>
+        /// <param name="ATestByteCount">Number of bytes to check of the file (to save processing).
+        /// Higher value is slower, but more reliable (especially UTF-8 with special characters later on may appear to be ASCII initially).
+        /// If ATestByteCount = 0, then ATestByteCount becomes the length of the file (for maximum reliability).</param>
+        /// <param name="AEncoding">The discovered encoding</param>
+        /// <param name="AHasBOM">Will be set to true if the file has a BOM header</param>
+        /// <param name="AIsAmbiguous">Will be set to true if the text that the method outputs is ambiguous.  This will be true if the encoding is ANSI
+        ///  so we don't know the Code Page for sure, or the determination of the UTF format was statistically not significant</param>
+        /// <param name="ARawBytes">The raw bytes read from the file.  This can be used to display alternative text for ambiguous options</param>
+        /// <returns>True if the file was opened and read successfully</returns>
+        public static bool AutoDetectTextEncodingAndOpenFile(string AFilename,
+            Encoding AFallbackEncoding,
+            out String AText,
+            out Encoding AEncoding,
+            out bool AHasBOM,
+            out bool AIsAmbiguous,
+            out byte[] ARawBytes,
+            int ATestByteCount = 0)
+        {
+            // This algorithm is based on http://stackoverflow.com/questions/1025332/determine-a-strings-encoding-in-c-sharp
+            // AlanP implemented this method May 2016
+            // There are a number of similar algorithms on other pages of the internet...
+            AText = string.Empty;
+            AEncoding = null;
+            AHasBOM = false;
+            AIsAmbiguous = false;
+            ARawBytes = null;
+
+            byte[] b;
+
+            try
+            {
+                // This static method does not need to be closed and will Dispose of resources automatically
+                b = File.ReadAllBytes(AFilename);
+
+                if ((b == null) || (b.Length == 0))
+                {
+                    throw new Exception("The file is empty");
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(string.Format("Could not open file: {0}   Exception message was {1}", AFilename, ex.Message));
+                return false;
+            }
+
+            ARawBytes = b;
+
+            // First check the low hanging fruit by checking if a BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
+            AHasBOM = true;
+            AIsAmbiguous = false;
+
+            if ((b.Length >= 4) && (b[0] == 0x00) && (b[1] == 0x00) && (b[2] == 0xFE) && (b[3] == 0xFF))
+            {
+                AText = Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4);
+                AEncoding = Encoding.GetEncoding("utf-32BE");
+                return true;
+            }  // UTF-32, big-endian
+            else if ((b.Length >= 4) && (b[0] == 0xFF) && (b[1] == 0xFE) && (b[2] == 0x00) && (b[3] == 0x00))
+            {
+                AText = Encoding.UTF32.GetString(b, 4, b.Length - 4);
+                AEncoding = Encoding.UTF32;
+                return true;
+            }  // UTF-32, little-endian
+            else if ((b.Length >= 2) && (b[0] == 0xFE) && (b[1] == 0xFF))
+            {
+                AText = Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2);
+                AEncoding = Encoding.BigEndianUnicode;
+                return true;
+            }  // UTF-16, big-endian
+            else if ((b.Length >= 2) && (b[0] == 0xFF) && (b[1] == 0xFE))
+            {
+                AText = Encoding.Unicode.GetString(b, 2, b.Length - 2);
+                AEncoding = Encoding.Unicode;
+                return true;
+            }  // UTF-16, little-endian
+            else if ((b.Length >= 3) && (b[0] == 0xEF) && (b[1] == 0xBB) && (b[2] == 0xBF))
+            {
+                AText = Encoding.UTF8.GetString(b, 3, b.Length - 3);
+                AEncoding = Encoding.UTF8;
+                return true;
+            }  // UTF-8
+            else if ((b.Length >= 3) && (b[0] == 0x2b) && (b[1] == 0x2f) && (b[2] == 0x76))
+            {
+                AText = Encoding.UTF7.GetString(b, 3, b.Length - 3);
+                AEncoding = Encoding.UTF7;
+                return true;
+            }  // UTF-7
+
+            // If the code reaches here, no BOM/signature was found, so now we need to 'taste' the file to see if can manually discover
+            // the encoding. A high test byte count value is desired for UTF-8
+            if ((ATestByteCount == 0) || (ATestByteCount > b.Length))
+            {
+                ATestByteCount = b.Length;    // ATestByteCount size can't be bigger than the filesize obviously.
+            }
+
+            // So the file did NOT have a BOM
+            AHasBOM = false;
+
+            // Some text files are encoded in UTF8, but have no BOM/signature. Hence the below manually checks for a UTF8 pattern.
+            // This code is based off the top answer at: http://stackoverflow.com/questions/6555015/check-for-invalid-utf8
+            // An alternative stricter (and terser/slower) implementation is shown at:
+            //   http://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
+            // It is more useful for checking that the UTF-8 is 'well formed'
+            // Using the first method, false positives should be exceedingly rare and would be either slightly malformed UTF-8
+            // (which would suit our purposes anyway) or 8-bit extended ASCII/UTF-16/32 at a vanishingly long shot.
+            // [Sadly UTF-8 can always be mistaken for 2-byte Chinese or other Asian characters.]
+            int i = 0;
+            int utfCpCount = 0;
+            bool utf8 = false;
+
+            while (i < ATestByteCount - 4)
+            {
+                if (b[i] <= 0x7F)
+                {
+                    i += 1;
+                    continue;
+                }     // If all characters are below 0x80, then it is valid UTF8, but UTF8 is not 'required'
+
+                // (and therefore the text is more desirable to be treated as the AFallbackEncoding codepage of the computer).
+                // Hence, there's no "utf8 = true;" code unlike the next three checks.
+
+                if ((b[i] >= 0xC2) && (b[i] <= 0xDF) && (b[i + 1] >= 0x80) && (b[i + 1] < 0xC0))
+                {
+                    i += 2;
+                    utf8 = true;
+                    utfCpCount++;
+                    continue;
+                }
+
+                if ((b[i] >= 0xE0) && (b[i] <= 0xF0) && (b[i + 1] >= 0x80) && (b[i + 1] < 0xC0) && (b[i + 2] >= 0x80) && (b[i + 2] < 0xC0))
+                {
+                    i += 3;
+                    utf8 = true;
+                    utfCpCount++;
+                    continue;
+                }
+
+                if ((b[i] >= 0xF0) && (b[i] <= 0xF4) && (b[i + 1] >= 0x80) && (b[i + 1] < 0xC0) && (b[i + 2] >= 0x80) && (b[i + 2] < 0xC0)
+                    && (b[i + 3] >= 0x80) && (b[i + 3] < 0xC0))
+                {
+                    i += 4;
+                    utf8 = true;
+                    utfCpCount++;
+                    continue;
+                }
+
+                utf8 = false;
+                break;
+            }
+
+            if (utf8 == true)
+            {
+                // Is ambiguous depends on statistics.  We invent our own values for this.  Provided we read the whole file the statistics are simple.
+                AIsAmbiguous = utfCpCount < 2;      // ambiguous if we only find one example?
+
+                AText = Encoding.UTF8.GetString(b);
+                AEncoding = Encoding.UTF8;
+                return true;
+            }
+
+            // The next check is a heuristic attempt to detect UTF-16 without a BOM.
+            // We simply look for zeroes in odd or even byte places, and if a certain threshold is reached, the code is 'probably' UTF-16.
+            double threshold = 0.1; // proportion of chars step 2 which must be zeroed to be diagnosed as utf-16. 0.1 = 10%
+            int count = 0;
+
+            for (int n = 0; n < ATestByteCount; n += 2)
+            {
+                if (b[n] == 0)
+                {
+                    count++;
+                }
+            }
+
+            if (((double)count) / ATestByteCount > threshold)
+            {
+                AText = Encoding.BigEndianUnicode.GetString(b);
+                AEncoding = Encoding.BigEndianUnicode;
+                AIsAmbiguous = false;
+                return true;
+            }
+
+            count = 0;
+
+            for (int n = 1; n < ATestByteCount; n += 2)
+            {
+                if (b[n] == 0)
+                {
+                    count++;
+                }
+            }
+
+            if (((double)count) / ATestByteCount > threshold)
+            {
+                AText = Encoding.Unicode.GetString(b);
+                AEncoding = Encoding.Unicode;
+                AIsAmbiguous = false;
+                return true;
+            } // (little-endian)
+
+            // If all else fails, the encoding is probably (though certainly not definitely) the user's local codepage!
+            // One might present to the user a list of alternative encodings as shown here:
+            //   http://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
+            // A full list can be found using Encoding.GetEncodings();
+
+            AIsAmbiguous = true;
+
+            if (AFallbackEncoding == null)
+            {
+                AText = Encoding.Default.GetString(b);
+                AEncoding = Encoding.Default;
+            }
+            else
+            {
+                AText = AFallbackEncoding.GetString(b);
+                AEncoding = AFallbackEncoding;
+            }
+
+            return true;
+        }
     }
 }

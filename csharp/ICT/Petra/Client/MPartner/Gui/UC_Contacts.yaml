@@ -40,6 +40,7 @@ RootNode:
             Columns: [ContactDate, ContactCode, Contactor, MailingCode, ContactComment]
             AutoFindMode: FirstCharacter
             AutoFindColumn: 2
+            SortOrder: ContactDate DESC
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control

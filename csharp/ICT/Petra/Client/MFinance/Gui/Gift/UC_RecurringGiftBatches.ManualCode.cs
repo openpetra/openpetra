@@ -36,7 +36,6 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Logic;
-using Ict.Petra.Client.CommonControls;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -70,7 +69,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             bool ADontRecordNewDataValidationRun = true);
     }
 
-    public partial class TUC_RecurringGiftBatches : IUC_RecurringGiftBatches
+    public partial class TUC_RecurringGiftBatches : IUC_RecurringGiftBatches, IBoundImageEvaluator
     {
         private Int32 FLedgerNumber;
 
@@ -417,35 +416,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void SetupExtraGridFunctionality()
         {
-            //Prepare grid to highlight inactive accounts/cost centres
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string accountCode = row[ARecurringGiftBatchTable.ColumnBankAccountCodeId].ToString();
-                return !FAccountAndCostCentreLogicObject.AccountIsActive(accountCode);
-            };
-
-            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string costCentreCode = row[ARecurringGiftBatchTable.ColumnBankCostCentreId].ToString();
-                return !FAccountAndCostCentreLogicObject.CostCentreIsActive(costCentreCode);
-            };
-
             //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 5;
             int indexOfAccountCodeDataColumn = 6;
 
-            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
+            // Add red triangle to inactive accounts
+            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.CostCentreCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.AccountCode, BoundGridImage.DisplayImageEnum.Inactive);
         }
 
         /// <summary>
@@ -657,7 +636,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if ((FSelectedBatchMethodOfPayment != null) && (FSelectedBatchMethodOfPayment.Length > 0))
             {
-                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment(false);
+                ((TFrmRecurringGiftBatch)ParentForm).GetTransactionsControl().UpdateMethodOfPayment();
             }
         }
 
@@ -835,9 +814,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 string msg =
                     string.Format(Catalog.GetString(
-                            "Recurring Gift batch {0} has an inactive bank cost centre and/or account!{1}{1}Do you want to continue submitting batch {0} ?"),
-                        FPreviouslySelectedDetailRow.BatchNumber,
-                        Environment.NewLine);
+                            "Recurring Gift Batch {0} has an inactive Cost Centre and/or Bank Account!\n\nDo you want to continue submitting the batch?"),
+                        FPreviouslySelectedDetailRow.BatchNumber);
 
                 if (MessageBox.Show(msg, Catalog.GetString("Submit Gift Batch"), MessageBoxButtons.YesNo,
                         MessageBoxIcon.Warning) != DialogResult.Yes)
@@ -892,8 +870,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private void SubmitBatch(System.Object sender, System.EventArgs e)
         {
             bool Success = false;
-
             bool LoadDialogVisible = false;
+            bool CancelledDueToExWorker = false;
+
+            if (!((TFrmRecurringGiftBatch)ParentForm).SaveChangesForSubmitting(FMainDS.ARecurringGiftDetail, out CancelledDueToExWorker))
+            {
+                string msg = string.Empty;
+
+                if (CancelledDueToExWorker)
+                {
+                    msg = Catalog.GetString("Saving of recurring gift batch cancelled due to Ex-Worker recipient(s) in gift(s)!");
+                }
+                else
+                {
+                    msg = Catalog.GetString("Error in trying to save prior to submitting current recurring gift batch!");
+                }
+
+                MessageBox.Show(msg, Catalog.GetString("Submit Recurring Gift Batch"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             TFrmStatusDialog dlgStatus = new TFrmStatusDialog(FPetraUtilsObject.GetForm());
 
             if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
@@ -956,5 +953,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 Cursor = Cursors.Default;
             }
         }
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
+        {
+            ARecurringGiftBatchRow row = (ARecurringGiftBatchRow)ADataRowView.Row;
+
+            switch (AContext)
+            {
+                case BoundGridImage.AnnotationContextEnum.AccountCode:
+                    return !FAccountAndCostCentreLogicObject.AccountIsActive(row.BankAccountCode);
+
+                case BoundGridImage.AnnotationContextEnum.CostCentreCode:
+                    return !FAccountAndCostCentreLogicObject.CostCentreIsActive(row.BankCostCentre);
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

@@ -104,7 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 MessageBoxIcon MsgIcon = MessageBoxIcon.Question;
 
                 // load journals belonging to batch
-                GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, ACurrentBatchRow.BatchNumber);
+                GLBatchTDS TempDS = TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(FLedgerNumber,
+                    ACurrentBatchRow.BatchNumber);
                 FMainDS.Merge(TempDS);
 
                 foreach (AJournalRow Journal in TempDS.AJournal.Rows)
@@ -171,7 +172,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             MessageBoxIcon.Information);
 
                         // refresh the grid, to reflect that the batch has been reversed
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndContent(FLedgerNumber, ReversalGLBatch));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, ReversalGLBatch));
 
                         // make sure that the current dataset is clean,
                         // otherwise the next save would try to modify the posted batch, even though no values have been changed

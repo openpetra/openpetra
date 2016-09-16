@@ -148,6 +148,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>If FastReports is supported in this context, this will initialise; otherwise LoadedOK is false</summary>
         public FastReportsWrapper FFastReportsPlugin;
 
+        private Boolean FMaintainStatusBarUpdate;
+
         /// <summary>
         /// constructor
         /// </summary>
@@ -539,11 +541,16 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             String OldLoggingText = "";
 
-            while (true)
+            FMaintainStatusBarUpdate = true;
+
+            while (FMaintainStatusBarUpdate)
             {
                 String ProgressInformation = TRemote.MReporting.WebConnectors.GetServerStatus();
 
-                if (ProgressInformation != OldLoggingText)
+                // Filter out messages most likely to alarm or confuse users
+                if ((ProgressInformation != OldLoggingText)
+                    && !(ProgressInformation.StartsWith("    Connecting to database")
+                         || ProgressInformation.StartsWith("    Database connection closed.")))
                 {
                     TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
                     OldLoggingText = ProgressInformation;
@@ -567,9 +574,21 @@ namespace Ict.Petra.Client.MReporting.Gui
             // Here's the actual call that causes the report to happen:
             ((TDelegateGenerateReportOverride)Delgt)(FCalculator);
 
-            StatusThread.Abort();
-            StatusThread.Join();
+            if (StatusThread.IsAlive)
+            {
+                StatusThread.Abort();
+                StatusThread.Join();
+            }
+
             UpdateParentFormEndOfReport();
+        }
+
+        /// <summary>
+        /// Close the UpdateStatusBarThread Thread
+        /// </summary>
+        public void AbortStatusThread()
+        {
+            FMaintainStatusBarUpdate = false;
         }
 
         /// <summary>
@@ -623,7 +642,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             TFrmMaintainTemplates ManageTemplatesDialog = new TFrmMaintainTemplates(FFormReportUi);
 
-            if (ManageTemplatesDialog.SelectTemplate(FReportName) == DialogResult.OK)
+            if (ManageTemplatesDialog.SelectTemplate(FReportName, FFastReportsPlugin.SelectedTemplateId) == DialogResult.OK)
             {
                 FFastReportsPlugin.SetTemplate(ManageTemplatesDialog.GetSelectedTemplate());
             }
@@ -753,7 +772,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (FDelegateGenerateExtract != null) // Call FastReport's extract scheme
                 {
-                    FDelegateGenerateExtract(FCalculator);
+                    ThreadFunctionViaDelegate(FDelegateGenerateExtract);
                 }
                 else
                 {
@@ -1189,7 +1208,20 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            TFrmSettingsLoad SettingsDialog = new TFrmSettingsLoad(FStoredSettings);
+            // a bit cumbersome but this is a current way to find out if dialog is called to produce report or extract
+            Boolean CalledFromExtract = false;
+            ToolStrip tbrMain = (ToolStrip)(this.FWinForm.Controls.Find("tbrMain", false)[0]);
+            ToolStripItem[] CancelBtns = tbrMain.Items.Find("tbbGenerateExtract", true);
+
+            if (CancelBtns.Length > 0)
+            {
+                if (CancelBtns[0].Visible)
+                {
+                    CalledFromExtract = true;
+                }
+            }
+
+            TFrmSettingsLoad SettingsDialog = new TFrmSettingsLoad(FStoredSettings, CalledFromExtract);
 
             if (SettingsDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {

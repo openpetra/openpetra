@@ -104,20 +104,23 @@ RootNode:
                 Row2: [cmbKeyMinistries, chkDetailTaxDeductible]
                 Row3: [dtpDetailStartDonations, dtpDetailEndDonations]
                 Row4: [txtDetailGiftAmount, cmbDetailMailingCode]
-                Row5: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row5: [cmbDetailMotivationGroupCode, cmbMotivationDetailCode]         
                 Row6: [txtDetailCostCentreCode, txtDetailAccountCode]
                 Row7: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
                 Row8: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row9: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
-                Row10: [txtDetailRecipientKeyMinistry]
+                Row10: [txtDetailRecipientKeyMinistry, txtDetailMotivationDetailCode]
+                Row11: [txtMotivationDetailDesc]
 
 		#GIFT-Level Controls
         # Bound
-        txtDetailDonorKey: {Label=Donor, Type=PartnerKey, Width=350, Unbound=true, RequiredField=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
+        txtDetailDonorKey: {Label=D&onor, Type=PartnerKey, Width=350, Unbound=true, RequiredField=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
         txtDetailReference: {Label=Reference, Width=170}
-        cmbDetailReceiptLetterCode: {Label=Letter Code, OptionalValues=[NO*RECET]}
+        cmbDetailReceiptLetterCode:
+            Label: Letter Code
+            OptionalValues: [NO*RECET]
         chkDetailActive: {Label=Active Gift, Tooltip=Check this box if this recurring gift is 'active'}
         # Unbound
         txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
@@ -125,23 +128,21 @@ RootNode:
 
 		#GIFT DETAIL-Level Controls
         # Bound
-        txtDetailRecipientKey: {Label=Recipient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
-        dtpDetailStartDonations: {Label=Don. Period From}
-        dtpDetailEndDonations: {Label=To}
-        cmbDetailMotivationGroupCode: {Label=Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
-        cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
+        txtDetailRecipientKey: {Label=Reci&pient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
+        cmbDetailMotivationGroupCode: {Label=&Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
+        txtDetailMotivationDetailCode: {Label=Motivation Detail}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
         chkDetailChargeFlag: {Label=Admin Grants?}
         cmbDetailMailingCode: {Label=Mailing, List=UserDefinedList}
-        txtDetailRecipientKeyMinistry: {Label=Key Ministry}
-        txtDetailGiftAmount: {Label=Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
+        txtDetailRecipientKeyMinistry: {Label=&Key Ministry}
+        txtDetailGiftAmount: {Label=&Amount, Format=Currency, NullValueAllowed=false, OnChange=GiftDetailAmountChanged}
         chkDetailConfidentialGiftFlag: {Label=Confidential?, Tooltip=Check this box if this gift is confidential}
         chkDetailTaxDeductible: {Label=Tax deductible?}
-        txtDetailGiftCommentOne: {Label=Comment 1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentTwo: {Label=Comment 2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
-        txtDetailGiftCommentThree: {Label=Comment 3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentOne: {Label=Comment &1, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentTwo: {Label=Comment &2, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
+        txtDetailGiftCommentThree: {Label=Comment &3, Width=100, Stretch=horizontally, Validation=true, OnLeave=DetailCommentChanged}
         cmbDetailCommentOneType:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]
@@ -154,8 +155,12 @@ RootNode:
             Label: for
             OptionalValues: [Donor,Recipient,=Both,Office]   
             OnLeave: DetailCommentTypeChanged
+        dtpDetailStartDonations: {Label=Don. Period From}
+        dtpDetailEndDonations: {Label=To}
         # Unbound
-        cmbKeyMinistries: {Label=Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+        cmbKeyMinistries: {Label=&Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+        cmbMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, Unbound=true, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
+        txtMotivationDetailDesc: {NoLabel=true, ReadOnly=true, Unbound=true, Text=Detail Code}
 
         tbrTabPage:
         mnuTabPage:

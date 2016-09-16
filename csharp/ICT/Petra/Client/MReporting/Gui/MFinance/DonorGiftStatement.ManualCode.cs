@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,6 +30,10 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Windows.Forms;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -44,6 +49,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
+                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Column Settings is not supported in the FastReports based solution.
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
             }
         }
@@ -213,6 +220,52 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 tpgReportSorting.Enabled = true;
                 this.Refresh();
             }
+        }
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            //
+            // I need the name of the ledger, and the currency formatter..
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            ACalc.AddStringParameter("param_recipient", "All Recipients");
+
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && !paramsDictionary.ContainsKey(p.name))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            // get data for this report
+            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", paramsDictionary);
+
+            if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
+            {
+                return false;
+            }
+
+            // if no recipients
+            if ((ReportDataSet.Tables["Recipients"] == null) || (ReportDataSet.Tables["Recipients"].Rows.Count == 0))
+            {
+                MessageBox.Show(Catalog.GetString("No Recipients found."), "Recipient Gift Statement");
+                return false;
+            }
+
+            // Register datatables with the report
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Totals"], "Totals");
+
+            return true;
         }
     }
 }

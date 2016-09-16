@@ -61,43 +61,68 @@ namespace Ict.Tools.DevelopersAssistant
         {
             Process[] allProcesses = Process.GetProcessesByName("PetraServerConsole");
             bool bIsRunning = allProcesses.Length > 0;
+            DateTime? dtServerStart = null;
 
             if (bIsRunning && (_serverProcessID == 0))
             {
                 // Theoretically there could be more than one server console running.  If there are we will just work with the first one
                 //  and then work out which cmd window is associated with it
-                DateTime dtServerStart = allProcesses[0].StartTime;
-
-                // Now go round all cmd.exe processes to find the one that started just before
-                // We assume that it will be within 5 seconds
-                Process[] cmdProcesses = Process.GetProcessesByName("cmd");
-
-                if (cmdProcesses.Length > 0)
+                for (int i = 0; i < allProcesses.Length; i++)
                 {
-                    TimeSpan tsSmallest = TimeSpan.FromDays(36500);      // assume the smallest time span so far is 100 years!
-
-                    for (int i = 0; i < cmdProcesses.Length; i++)
+                    try
                     {
-                        try
-                        {
-                            // If this command window is an administrator's one, we will get access denied when we ask for the start time
-                            // But that's ok - it won't be one we are interested in anyway!  So we can just try the next one.
-                            TimeSpan ts = dtServerStart - cmdProcesses[i].StartTime;
+                        dtServerStart = allProcesses[0].StartTime;
+                    }
+                    catch (Exception)
+                    {
+                        // We did not have access permission for this process
+                    }
 
-                            if (ts >= TimeSpan.Zero)
+                    if (dtServerStart.HasValue)
+                    {
+                        break;
+                    }
+                }
+
+                if (dtServerStart.HasValue)
+                {
+                    // Now go round all cmd.exe processes to find the one that started just before
+                    // We assume that it will be within 5 seconds
+                    Process[] cmdProcesses = Process.GetProcessesByName("cmd");
+
+                    if (cmdProcesses.Length > 0)
+                    {
+                        TimeSpan tsSmallest = TimeSpan.FromDays(36500);      // assume the smallest time span so far is 100 years!
+
+                        for (int i = 0; i < cmdProcesses.Length; i++)
+                        {
+                            try
                             {
-                                // This cmd window did start before the server console process
-                                if (ts < tsSmallest)
+                                // If this command window is an administrator's one, we will get access denied when we ask for the start time
+                                // But that's ok - it won't be one we are interested in anyway!  So we can just try the next one.
+                                TimeSpan ts = dtServerStart.Value - cmdProcesses[i].StartTime;
+
+                                if (ts >= TimeSpan.Zero)
                                 {
-                                    _serverProcessID = cmdProcesses[i].Id;
-                                    _serverProcessIdIsCmdWindow = true;
-                                    tsSmallest = ts;
+                                    // This cmd window did start before the server console process
+                                    if (ts < tsSmallest)
+                                    {
+                                        _serverProcessID = cmdProcesses[i].Id;
+                                        _serverProcessIdIsCmdWindow = true;
+                                        tsSmallest = ts;
+                                    }
                                 }
                             }
+                            catch (Exception)
+                            {
+                                // We did not have access permission for this process
+                            }
                         }
-                        catch (Exception)
-                        {
-                        }
+                    }
+                    else
+                    {
+                        _serverProcessID = allProcesses[0].Id;
+                        _serverProcessIdIsCmdWindow = false;
                     }
                 }
                 else

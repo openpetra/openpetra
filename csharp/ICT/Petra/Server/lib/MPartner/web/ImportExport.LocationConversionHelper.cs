@@ -209,6 +209,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             PartnerAttributeDR.AttributeType = APPARec.AttributeType;
             PartnerAttributeDR.Index = APPARec.Index;
             PartnerAttributeDR.Value = APPARec.Value;
+            PartnerAttributeDR.ValueCountry = APPARec.ValueCountry;
             PartnerAttributeDR.Comment = APPARec.Comment;
             PartnerAttributeDR.Primary = APPARec.Primary;
             PartnerAttributeDR.WithinOrganisation = APPARec.WithinOrganisation;

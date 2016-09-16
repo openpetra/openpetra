@@ -46,6 +46,11 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             cmbDefaultLedger.SetSelectedInt32(FInitiallySelectedLedger);
 
+            //Warn of inactive values on posting
+            FInactiveValuesWarningOnGLPosting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_POSTING,
+                true);
+            chkInactiveValuesWarningOnGLPosting.Checked = FInactiveValuesWarningOnGLPosting;
+
             FShowMoneyAsCurrency = TUserDefaults.GetBooleanDefault(StringHelper.FINANCE_CURRENCY_FORMAT_AS_CURRENCY, true);
             chkMoneyFormat.Checked = FShowMoneyAsCurrency;
 

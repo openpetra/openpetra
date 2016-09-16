@@ -37,6 +37,9 @@
   <include name="CustomControl.OrientedTextControls.dll"/>
   <include name="Owf.Controls.A1Panel.dll"/>
   <include name="PasswordUtilities.dll"/>
+  <include name="Sodium.dll"/>
+  <include name="libsodium.dll"/>
+  <include name="libsodium-64.dll"/>
 </patternset>
 
 <patternset id="NunitPattern">

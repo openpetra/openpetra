@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -46,23 +46,27 @@ namespace Ict.Petra.Server.App.Core.Security
         /// todoComment
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ALoginSuccesful"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
         public static void AddLoginLogEntry(String AUserID,
+            Boolean ALoginSuccesful,
             String ALoginStatus,
             out Int32 AProcessID)
         {
-            AddLoginLogEntry(AUserID, ALoginStatus, false, out AProcessID);
+            AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatus, false, out AProcessID);
         }
 
         /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ALoginSuccesful"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
         public static void AddLoginLogEntry(String AUserID,
+            Boolean ALoginSuccesful,
             String ALoginStatus,
             Boolean AImmediateLogout,
             out Int32 AProcessID)
@@ -82,6 +86,7 @@ namespace Ict.Petra.Server.App.Core.Security
             // Set DataRow values
             NewLoginRow.LoginProcessId = -1;
             NewLoginRow.UserId = AUserID.ToUpper();
+            NewLoginRow.LoginSuccessful = ALoginSuccesful;
             NewLoginRow.LoginStatus = ALoginStatus;
             NewLoginRow.LoginDate = LoginDateTime.Date;
             NewLoginRow.LoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
@@ -127,7 +132,7 @@ namespace Ict.Petra.Server.App.Core.Security
             ParametersArray[1].Value = (System.Object)(LoginDateTime.Date);
             ParametersArray[2] = new OdbcParameter("", OdbcType.Int);
             ParametersArray[2].Value = (System.Object)(NewLoginRow.LoginTime);
-            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 50);
+            ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 500);
             ParametersArray[3].Value = (System.Object)(ALoginStatus);
 
             ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);

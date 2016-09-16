@@ -1,0 +1,42 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Import Completion Options
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 600
+    WindowHeight: 330
+
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls: [pnlOutputFile, pnlExtract]
+        pnlExtract:
+            Dock: Fill
+            Controls:
+                Row0: [chkCreateExtract]
+                Row1: [chkIncludeFamiliesInExtract]
+                Row2: [txtExtractName]
+                Row3: [txtExtractDescription]
+        pnlOutputFile:
+            Dock: Top
+            Controls:
+                Row0: [chkWriteOutputFile]
+                Row1: [txtOutputFileName, btnBrowse]
+                Row2: [chkIncludeFamiliesInCSV]
+
+        chkWriteOutputFile: {CheckBoxAttachedLabel=right, OnChange=chkWriteOutputFile_CheckedChanged}
+            Tooltip: Write an output CSV file containing the latest information for each partner
+        chkIncludeFamiliesInCSV: {CheckBoxAttachedLabel=right, Label=Include Family records of imported Persons}
+            Padding: 15,-5,2,2
+            Tooltip: When ticked the file will contain additional Family Partners created for each imported Person
+        txtOutputFileName: {Stretch=horizontally, Label=Path to Output File, Tooltip=Choose a name for the Output File, Enabled=false}
+        btnBrowse: {Align=right, Tooltip=Click to open the File Open dialog, ActionClick=btnBrowse_Click, Enabled=false}
+
+        chkCreateExtract: {CheckBoxAttachedLabel=right, OnChange=chkCreateExtract_CheckedChanged}
+            Tooltip: Create an extract of all the imported partners
+        chkIncludeFamiliesInExtract: {CheckBoxAttachedLabel=right, Label=Include Family records of imported Persons, Enabled=false}
+            Padding: 15,-2,2,2
+            Tooltip: When ticked the file will contain additional Family Partners created for each imported Person
+        txtExtractName: {Width=200, Tooltip=You must provide a name for the Extract, Enabled=false}
+        txtExtractDescription: {Multiline=true, ScrollBars=Vertical, Height=80, Stretch=fully, Enabled=false, Tooltip=Please enter a description for this extract}

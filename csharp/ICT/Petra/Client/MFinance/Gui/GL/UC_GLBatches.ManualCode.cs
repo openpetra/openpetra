@@ -22,9 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Windows.Forms;
-using System.IO;
+using System.Collections.Generic;
 using System.Data;
+using System.IO;
+using System.Text;
+using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Data;
@@ -85,6 +87,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private int FCurrentLedgerYear;
         private int FCurrentLedgerPeriod;
         private bool FInactiveValuesWarningOnGLPosting = false;
+
+        /// <summary>
+        ///List of all batches and whether or not the user has been warned of the presence
+        /// of inactive fields on saving.
+        /// </summary>
+        public Dictionary <int, bool>FUnpostedBatchesVerifiedOnSavingDict = new Dictionary <int, bool>();
 
         /// <summary>
         /// load the batches into the grid
@@ -259,6 +267,47 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((FPreviouslySelectedDetailRow == null) && (((TFrmGLBatch) this.ParentForm) != null))
             {
                 ((TFrmGLBatch) this.ParentForm).DisableJournals();
+            }
+        }
+
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSaving()
+        {
+            UpdateUnpostedBatchDictionary();
+        }
+
+        /// <summary>
+        /// Update the dictionary that stores all unposted batches
+        ///  and whether or not they have been warned about inactive
+        ///   fields
+        /// </summary>
+        /// <param name="ABatchNumberToExclude"></param>
+        public void UpdateUnpostedBatchDictionary(int ABatchNumberToExclude = 0)
+        {
+            if (ABatchNumberToExclude > 0)
+            {
+                FUnpostedBatchesVerifiedOnSavingDict.Remove(ABatchNumberToExclude);
+            }
+
+            DataView BatchDV = new DataView(FMainDS.ABatch);
+
+            //Just want unposted batches
+            BatchDV.RowFilter = string.Format("{0}='{1}'",
+                ABatchTable.GetBatchStatusDBName(),
+                MFinanceConstants.BATCH_UNPOSTED);
+
+            foreach (DataRowView bRV in BatchDV)
+            {
+                ABatchRow br = (ABatchRow)bRV.Row;
+
+                int currentBatch = br.BatchNumber;
+
+                if ((currentBatch != ABatchNumberToExclude) && !FUnpostedBatchesVerifiedOnSavingDict.ContainsKey(currentBatch))
+                {
+                    FUnpostedBatchesVerifiedOnSavingDict.Add(br.BatchNumber, false);
+                }
             }
         }
 
@@ -604,7 +653,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void ImportTransactions(TUC_GLBatches_Import.TImportDataSourceEnum AImportDataSource)
         {
-            FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, GetCurrentJournal(), AImportDataSource);
+            FImportLogicObject.ImportTransactions(FPreviouslySelectedDetailRow, GetCurrentJournalRow(), AImportDataSource);
         }
 
         private void ExportBatches(object sender, EventArgs e)
@@ -628,7 +677,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ((Label)FFilterAndFindObject.FindPanelControls.FindControlByName("lblBatchNumber")).Text = "Batch number";
         }
 
-        private AJournalRow GetCurrentJournal()
+        /// <summary>
+        /// Get current Batch row
+        /// </summary>
+        /// <returns></returns>
+        public ABatchRow GetCurrentBatchRow()
+        {
+            return (ABatchRow) this.GetSelectedDetailRow();
+        }
+
+        private AJournalRow GetCurrentJournalRow()
         {
             return (AJournalRow)((TFrmGLBatch) this.ParentForm).GetJournalsControl().GetSelectedDetailRow();
         }
@@ -663,7 +721,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             break;
                         }
 
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndContent(FLedgerNumber, batchNumber));
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(FLedgerNumber, batchNumber));
                     }
 
                     EnsureNewBatchIsVisible();
@@ -816,11 +874,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        /// <summary>
-        /// Cancel a batch (there is no deletion of batches)
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void CancelRow(System.Object sender, EventArgs e)
         {
             int CurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
@@ -829,17 +882,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 //Reset row to fire events
                 SelectRowInGrid(CurrentRowPos);
+                UpdateRecordNumberDisplay();
 
-                //The current Batch is still selected, so disable
-                //((TFrmGLBatch)ParentForm).DisableJournals();
-                //((TFrmGLBatch)ParentForm).DisableTransactions();
-            }
-
-            //If no row exists in current view after cancellation
-            if (grdDetails.Rows.Count < 2)
-            {
-                EnableButtonControl(false);
-                ClearDetailControls();
+                //If no row exists in current view after cancellation
+                if (grdDetails.Rows.Count < 2)
+                {
+                    EnableButtonControl(false);
+                    ClearDetailControls();
+                }
             }
         }
 
@@ -958,33 +1008,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
+            TFrmGLBatch GLBatchForm = (TFrmGLBatch) this.ParentForm;
+
             //get index position of row to post
-            int newCurrentRowPos = GetSelectedRowIndex();
+            int NewCurrentRowPos = GetSelectedRowIndex();
 
-            if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
-                    FEndDateLastForwardingPeriod, FInactiveValuesWarningOnGLPosting))
+            try
             {
-                // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
-                ////Select unposted batch row in same index position as batch just posted
-                //grdDetails.DataSource = null;
-                //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
+                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.POSTING;
 
-                if (grdDetails.Rows.Count > 1)
+                if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
+                        FEndDateLastForwardingPeriod, FInactiveValuesWarningOnGLPosting))
                 {
-                    //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
-                    // such that a removal of a row is not detected
-                    SelectRowInGrid(newCurrentRowPos);
-                }
-                else
-                {
-                    EnableButtonControl(false);
-                    ClearDetailControls();
-                    btnNew.Focus();
-                    pnlDetails.Enabled = false;
-                }
+                    // AlanP - commenting out most of this because it should be unnecessary - or should move to ShowDetailsManual()
+                    ////Select unposted batch row in same index position as batch just posted
+                    //grdDetails.DataSource = null;
+                    //grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ABatch.DefaultView);
 
-                UpdateRecordNumberDisplay();
-                FFilterAndFindObject.SetRecordNumberDisplayProperties();
+                    if (grdDetails.Rows.Count > 1)
+                    {
+                        //Needed because posting process forces grid events which sets FDetailGridRowsCountPrevious = FDetailGridRowsCountCurrent
+                        // such that a removal of a row is not detected
+                        SelectRowInGrid(NewCurrentRowPos);
+                    }
+                    else
+                    {
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                        btnNew.Focus();
+                        pnlDetails.Enabled = false;
+                    }
+
+                    UpdateRecordNumberDisplay();
+                    FFilterAndFindObject.SetRecordNumberDisplayProperties();
+                }
+            }
+            finally
+            {
+                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.NONE;
             }
         }
 
@@ -995,7 +1056,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         private void TestPostBatch(System.Object sender, EventArgs e)
         {
-            FPostLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
+            TFrmGLBatch GLBatchForm = (TFrmGLBatch) this.ParentForm;
+
+            try
+            {
+                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.POSTING;
+
+                FPostLogicObject.TestPostBatch(FPreviouslySelectedDetailRow);
+            }
+            finally
+            {
+                GLBatchForm.FCurrentGLBatchAction = TFrmGLBatch.GLBatchAction.NONE;
+            }
         }
 
         private void RefreshGridData(int ABatchNumber, bool ANoFocusChange, bool ASelectOnly = false)

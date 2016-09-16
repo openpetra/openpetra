@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Maintain Contact Methods
+    FormTitle: Maintain Contact Log Methods
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PMethodOfContact
     CacheableTable: MethodOfContactList

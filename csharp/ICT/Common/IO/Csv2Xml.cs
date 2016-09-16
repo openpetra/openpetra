@@ -435,28 +435,34 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator = null, Encoding AEncoding = null)
+        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator = null, Encoding AFallbackEncoding = null)
         {
-            StreamReader sr = new StreamReader(ACSVFilename, TTextFile.GetFileEncoding(ACSVFilename, AEncoding), false);
+            string fileContent;
+            Encoding fileEncoding;
+            bool hasBOM, isAmbiguous;
+
+            byte[] rawBytes;
 
             List <string>Lines = new List <string>();
-            try
-            {
-                while (!sr.EndOfStream)
-                {
-                    Lines.Add(sr.ReadLine());
-                }
 
-                return ParseCSV2Xml(Lines, ASeparator);
-            }
-            catch (Exception)
+            if (TTextFile.AutoDetectTextEncodingAndOpenFile(ACSVFilename, AFallbackEncoding, out fileContent, out fileEncoding,
+                    out hasBOM, out isAmbiguous, out rawBytes))
             {
-                throw;
+                using (StringReader reader = new StringReader(fileContent))
+                {
+                    string line = reader.ReadLine();
+
+                    while (line != null)
+                    {
+                        Lines.Add(line);
+                        line = reader.ReadLine();
+                    }
+
+                    reader.Close();
+                }
             }
-            finally
-            {
-                sr.Close();
-            }
+
+            return ParseCSV2Xml(Lines, ASeparator);
         }
 
         /// <summary>

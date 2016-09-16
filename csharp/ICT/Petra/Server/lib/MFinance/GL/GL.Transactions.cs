@@ -258,7 +258,38 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return MainDS;
         }
 
-        private static GLBatchTDS LoadABatchAndContent(TDataBase ADbConnection, Int32 ALedgerNumber, Int32 ABatchNumber)
+        /// <summary>
+        /// load the specified batch and its journals and transactions and attributes.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            return LoadABatchAndRelatedTables(DBAccess.GDBAccessObj, ALedgerNumber, ABatchNumber);
+        }
+
+        /// <summary>
+        /// load the specified batch and its journals and transactions and attributes.
+        /// this method is called after a batch has been posted.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadABatchAndRelatedTablesUsingPrivateDb(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            TDataBase dbConnection = TReportingDbAdapter.EstablishDBConnection(true, "LoadABatchAndRelatedTables");
+
+            GLBatchTDS tempTDS = LoadABatchAndRelatedTables(dbConnection, ALedgerNumber, ABatchNumber);
+
+            dbConnection.CloseDBConnection();
+            return tempTDS;
+        }
+
+        private static GLBatchTDS LoadABatchAndRelatedTables(TDataBase ADbConnection, Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -278,7 +309,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             #endregion Validate Arguments
 
             GLBatchTDS MainDS = new GLBatchTDS();
-
             TDBTransaction Transaction = null;
 
             try
@@ -340,37 +370,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             return MainDS;
-        }
-
-        /// <summary>
-        /// load the specified batch and its journals and transactions and attributes.
-        /// this method is called after a batch has been posted.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            return LoadABatchAndContent(DBAccess.GDBAccessObj, ALedgerNumber, ABatchNumber);
-        }
-
-        /// <summary>
-        /// load the specified batch and its journals and transactions and attributes.
-        /// this method is called after a batch has been posted.
-        /// </summary>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadABatchAndContentUsingPrivateDb(Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            TDataBase dbConnection = TReportingDbAdapter.EstablishDBConnection(true, "LoadABatchAndContent");
-
-            GLBatchTDS tempTDS = LoadABatchAndContent(dbConnection, ALedgerNumber, ABatchNumber);
-
-            dbConnection.CloseDBConnection();
-            return tempTDS;
         }
 
         /// <summary>
@@ -867,7 +866,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadAJournalAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadAJournalAndRelatedTablesForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -935,13 +934,94 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of journals for the given ledger and batch
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadAJournalAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+            else if (AJournalNumber <= 0)
+            {
+                throw new ArgumentException(String.Format(Catalog.GetString("Function:{0} - The Journal number must be greater than 0!"),
+                        Utilities.GetMethodName(true),
+                        AJournalNumber));
+            }
+
+            #endregion Validate Arguments
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        AJournalAccess.LoadByPrimaryKey(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                        ATransactionAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+                        ATransAnalAttribAccess.LoadViaAJournal(MainDS, ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.AJournal.Count == 0) && (MainDS.ATransaction.Count > 0))
+                        {
+                            throw new ApplicationException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Orphaned GL Transactions exist in GL Batch {1} in Ledger {2}!"),
+                                    Utilities.GetMethodName(true),
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+                        else if (((MainDS.AJournal.Count == 0) || (MainDS.ATransaction.Count == 0)) && (MainDS.ATransAnalAttrib.Count > 0))
+                        {
+                            throw new ApplicationException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Orphaned GL Transaction Analysis Attributes exist in GL Batch {1} in Ledger {2}!"),
+                                    Utilities.GetMethodName(true),
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of recurring journals for the given ledger and recurring batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadARecurringJournalAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadARecurringJournalAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -1026,7 +1106,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadARecurringTransactionAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadARecurringTransactionAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -1319,7 +1399,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadATransaction(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public static GLBatchTDS LoadATransactionForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             #region Validate Arguments
 
@@ -1434,7 +1514,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadATransaction(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadATransactionForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -1534,6 +1614,74 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         }
 
         /// <summary>
+        /// loads a list of transactions for the given ledger and batch with analysis attributes
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static GLBatchTDS LoadATransactionAndRelatedTablesForBatch(Int32 ALedgerNumber, Int32 ABatchNumber)
+        {
+            #region Validate Arguments
+
+            if (ALedgerNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidLedgerNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Ledger number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber);
+            }
+            else if (ABatchNumber <= 0)
+            {
+                throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
+                            "Function:{0} - The Batch number must be greater than 0!"),
+                        Utilities.GetMethodName(true)), ALedgerNumber, ABatchNumber);
+            }
+
+            #endregion Validate Arguments
+
+            string AnalysisAttrList = string.Empty;
+
+            GLBatchTDS MainDS = new GLBatchTDS();
+            TDBTransaction Transaction = null;
+
+            try
+            {
+                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                    TEnforceIsolationLevel.eilMinimum,
+                    ref Transaction,
+                    delegate
+                    {
+                        ATransactionAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+                        ATransAnalAttribAccess.LoadViaABatch(MainDS, ALedgerNumber, ABatchNumber, Transaction);
+
+                        #region Validate Data
+
+                        if ((MainDS.ATransaction.Count == 0) && (MainDS.ATransAnalAttrib.Count > 0))
+                        {
+                            throw new ApplicationException(String.Format(Catalog.GetString(
+                                        "Function:{0} - Orphaned GL Transaction Analysis Attributes exist in GL Batch {1} in Ledger {2}!"),
+                                    Utilities.GetMethodName(true),
+                                    ABatchNumber,
+                                    ALedgerNumber));
+                        }
+
+                        #endregion Validate Data
+                    });
+
+                CreateCombinedAnalAttribListPerTransaction(MainDS);
+
+                MainDS.AcceptChanges();
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+
+            return MainDS;
+        }
+
+        /// <summary>
         /// loads a list of transactions for the given ledger and batch and journal with analysis attributes
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -1541,7 +1689,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AJournalNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadATransactionATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
+        public static GLBatchTDS LoadATransactionAndRelatedTablesForJournal(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber)
         {
             #region Validate Arguments
 
@@ -1565,8 +1713,6 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             }
 
             #endregion Validate Arguments
-
-            string AnalysisAttrList = string.Empty;
 
             GLBatchTDS MainDS = new GLBatchTDS();
             TDBTransaction Transaction = null;
@@ -1596,34 +1742,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                         #endregion Validate Data
                     });
 
-                foreach (GLBatchTDSATransactionRow transRow in MainDS.ATransaction.Rows)
-                {
-                    MainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0} = {1}",
-                        ATransAnalAttribTable.GetTransactionNumberDBName(),
-                        transRow.TransactionNumber);
-
-                    foreach (DataRowView drv in MainDS.ATransAnalAttrib.DefaultView)
-                    {
-                        ATransAnalAttribRow transAnalAttrRow = (ATransAnalAttribRow)drv.Row;
-
-                        if (AnalysisAttrList.Length > 0)
-                        {
-                            AnalysisAttrList += ", ";
-                        }
-
-                        AnalysisAttrList += (transAnalAttrRow.AnalysisTypeCode + "=" + transAnalAttrRow.AnalysisAttributeValue);
-                    }
-
-                    if (transRow.AnalysisAttributes != AnalysisAttrList)
-                    {
-                        transRow.AnalysisAttributes = AnalysisAttrList;
-                    }
-
-                    //reset the attributes string
-                    AnalysisAttrList = string.Empty;
-                }
-
-                MainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
+                CreateCombinedAnalAttribListPerTransaction(MainDS);
 
                 MainDS.AcceptChanges();
             }
@@ -1636,6 +1755,49 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             return MainDS;
         }
 
+        private static void CreateCombinedAnalAttribListPerTransaction(GLBatchTDS AMainDS)
+        {
+            if ((AMainDS == null)
+                || (AMainDS.ATransaction == null)
+                || (AMainDS.ATransAnalAttrib == null)
+                || (AMainDS.ATransaction.Count == 0))
+            {
+                return;
+            }
+
+            string AnalysisAttrList = string.Empty;
+
+            //Create the combined analysis attributes list per transaction row
+            foreach (GLBatchTDSATransactionRow transRow in AMainDS.ATransaction.Rows)
+            {
+                AMainDS.ATransAnalAttrib.DefaultView.RowFilter = String.Format("{0} = {1}",
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    transRow.TransactionNumber);
+
+                foreach (DataRowView drv in AMainDS.ATransAnalAttrib.DefaultView)
+                {
+                    ATransAnalAttribRow transAnalAttrRow = (ATransAnalAttribRow)drv.Row;
+
+                    if (AnalysisAttrList.Length > 0)
+                    {
+                        AnalysisAttrList += ", ";
+                    }
+
+                    AnalysisAttrList += (transAnalAttrRow.AnalysisTypeCode + "=" + transAnalAttrRow.AnalysisAttributeValue);
+                }
+
+                if (transRow.AnalysisAttributes != AnalysisAttrList)
+                {
+                    transRow.AnalysisAttributes = AnalysisAttrList;
+                }
+
+                //reset the attributes string
+                AnalysisAttrList = string.Empty;
+            }
+
+            AMainDS.ATransAnalAttrib.DefaultView.RowFilter = string.Empty;
+        }
+
         /// <summary>
         /// loads a list of attributes for the given transaction (identified by ledger,batch,journal and transaction number)
         /// </summary>
@@ -1645,7 +1807,10 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ATransactionNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadATransAnalAttrib(Int32 ALedgerNumber, Int32 ABatchNumber, Int32 AJournalNumber, Int32 ATransactionNumber)
+        public static GLBatchTDS LoadATransAnalAttribForTransaction(Int32 ALedgerNumber,
+            Int32 ABatchNumber,
+            Int32 AJournalNumber,
+            Int32 ATransactionNumber)
         {
             #region Validate Arguments
 
@@ -2022,7 +2187,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-1")]
-        public static GLBatchTDS LoadARecurringBatchAndContent(Int32 ALedgerNumber, Int32 ABatchNumber)
+        public static GLBatchTDS LoadARecurringBatchAndRelatedTables(Int32 ALedgerNumber, Int32 ABatchNumber)
         {
             #region Validate Arguments
 
@@ -4986,7 +5151,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             else if (SingleBatchDS.ATransaction.Count == 0)
             {
                 //Try to load all data
-                SingleBatchDS.Merge(LoadATransaction(ALedgerNumber, ABatchNumber));
+                SingleBatchDS.Merge(LoadATransactionForBatch(ALedgerNumber, ABatchNumber));
             }
 
             SingleBatchDS.AcceptChanges();

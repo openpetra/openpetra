@@ -25,9 +25,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Verification;
+
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MFinance;
@@ -1038,6 +1040,44 @@ namespace Ict.Petra.Shared.MPartner.Validation
             {
                 ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
                         PetraErrorCodes.ERR_PARTNER_TYPECC_UNLINKED, new string[] { APartnerKey.ToString("0000000000") }));
+
+                if (AErrorMessageText != String.Empty)
+                {
+                    ReturnValue.OverrideResultText(AErrorMessageText + Environment.NewLine + ReturnValue.ResultText);
+                }
+            }
+
+            if ((ReturnValue != null)
+                && (AResultColumn != null))
+            {
+                ReturnValue = new TScreenVerificationResult(ReturnValue, AResultColumn, AResultControl);
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Checks whether a Partner with a certain PartnerKey and a range of valid PartnerClasses exists.
+        /// </summary>
+        /// <param name="APartnerKey">PartnerKey.</param>
+        /// <param name="AGiftDate">LedgerNumber.</param>
+        /// <param name="AErrorMessageText">Text that should be prepended to the ResultText. (Default: empty string)</param>
+        /// <param name="AResultContext">ResultContext (Default: null).</param>
+        /// <param name="AResultColumn">Which <see cref="System.Data.DataColumn" /> failed (can be null). (Default: null).</param>
+        /// <param name="AResultControl">Which <see cref="System.Windows.Forms.Control" /> is involved (can be null). (Default: null).</param>
+        /// <returns>Not Null if the Partner is of type CC and does not have a link setup</returns>
+        public static TVerificationResult IsValidRecipientGiftDestination(Int64 APartnerKey, DateTime? AGiftDate,
+            string AErrorMessageText = "", object AResultContext = null,
+            System.Data.DataColumn AResultColumn = null, System.Windows.Forms.Control AResultControl = null)
+        {
+            TVerificationResult ReturnValue = null;
+
+            bool VerificationOK = TSharedPartnerValidationHelper.PartnerHasCurrentGiftDestination(APartnerKey, AGiftDate);
+
+            if (!VerificationOK)
+            {
+                ReturnValue = new TVerificationResult(AResultContext, ErrorCodes.GetErrorInfo(
+                        PetraErrorCodes.ERR_RECIPIENT_GIFT_DESTINATION_INVALID, new string[] { APartnerKey.ToString("0000000000") }));
 
                 if (AErrorMessageText != String.Empty)
                 {

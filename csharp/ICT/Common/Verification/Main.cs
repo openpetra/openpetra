@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,6 +33,7 @@
 //
 using System;
 using System.Data;
+using System.Diagnostics.CodeAnalysis;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -915,6 +916,7 @@ namespace Ict.Common.Verification
         /// <param name="value">the verification object to be added (must not be null)</param>
         public int Add(IResultInterface value)
         {
+            VerifyType(value);
             FList.Add(value);
             return Count;
         }
@@ -929,6 +931,7 @@ namespace Ict.Common.Verification
         {
             if (value != null)
             {
+                VerifyType(value);
                 FList.Add(value);
                 return Count;
             }
@@ -984,7 +987,9 @@ namespace Ict.Common.Verification
 
                 if (ARestrictToTypeWhichRaisesError != null)
                 {
-                    if ((si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError) || (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD))
+                    if (((si.ResultContext != null)
+                         && (si.ResultContext.GetType() == ARestrictToTypeWhichRaisesError))
+                        || (si.ResultCode == CommonErrorCodes.ERR_DUPLICATE_RECORD))
                     {
                         IncludeVerificationResult = true;
                     }
@@ -1433,6 +1438,7 @@ namespace Ict.Common.Verification
         /// <param name="Value">the new value</param>
         public void SetVerificationResult(int Index, IResultInterface Value)
         {
+            VerifyType(Value);
             FList[Index] = Value;
         }
 
@@ -1453,6 +1459,7 @@ namespace Ict.Common.Verification
         /// <param name="value">value to add</param>
         public void Insert(int index, IResultInterface value)
         {
+            VerifyType(value);
             FList.Insert(index, value);
         }
 
@@ -1597,6 +1604,11 @@ namespace Ict.Common.Verification
         /// <param name="value">value to delete</param>
         public void Remove(IResultInterface value)
         {
+            if (FList.IndexOf(value) == -1)
+            {
+                throw new ArgumentException("Cannot find VerificationResult passed in with Argument 'value'");
+            }
+
             FList.Remove(value);
         }
 
@@ -1679,6 +1691,14 @@ namespace Ict.Common.Verification
             {
                 // MessageBox.Show('List.Remove of ' + siarray[Counter2].ResultColumn.ToString + ' at array count ' + Counter2.ToString);
                 FList.Remove((TVerificationResult)siarray[Counter2]);
+            }
+        }
+
+        private void VerifyType(object value)
+        {
+            if (!(value is IResultInterface))
+            {
+                throw new ArgumentException("Invalid Type");
             }
         }
 

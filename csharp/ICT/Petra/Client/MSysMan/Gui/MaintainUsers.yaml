@@ -10,7 +10,8 @@
     WindowHeight: 600
     Actions:
         actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
-        actRetire: {ActionClick=RetireUser, Image=Delete_Record.ico}
+        actLockUnlock: {ActionClick=LockUnlockUser}
+        actRetireUnretire: {ActionClick=RetireUnretireUser}
         actChangePassword: {ActionClick=SetPassword}
         cndChangePermissions:
     Controls:
@@ -35,30 +36,34 @@
             FindControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName]
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNewUser, btnRetire, btnChangePassword]
+            Controls: [btnNewUser, btnLockUnlock, btnRetireUnretire, btnChangePassword]
             ControlsOrientation: horizontal
         btnNewUser: {Width=110}
-        btnRetire: {Label=Retire/Unretire, Width=130}
+        btnLockUnlock: {Label=Lock/Unlock, Width=130}
+        btnRetireUnretire: {Label=Retire/Unretire, Width=130}
         btnChangePassword: {Width=130, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
-            Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailRetired, DetailLastLoginDate]
+            Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailAccountLocked, DetailFailedLogins, DetailRetired, DetailLastLoginDate, DetailFailedLoginDate]
             SortOrder: DetailUserId ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
             Controls:
-                Row0: [txtDetailUserId, txtDetailPasswordHash]
-                Row1: [txtDetailFirstName, txtDetailLastName]
-                Row2: [clbUserGroup]
+                Row0: [txtDetailUserId, txtDetailPasswordHash, chkDetailAccountLocked]
+                Row1: [txtDetailFirstName, txtDetailLastName, chkDetailRetired]
+                Row2: [txtDetailEmailAddress]
+                Row3: [clbUserGroup]
         txtDetailUserId:
         txtDetailPasswordHash:
             Label: Password
-            Tooltip: Enter a password for the user
             PasswordEntry: true
         txtDetailFirstName:
         txtDetailLastName:
+        txtDetailEmailAddress:
+        chkDetailAccountLocked: {Label=Account Locked, ReadOnly=true}
+        chkDetailRetired: {Label=User Retired, ReadOnly=true}
         clbUserGroup:
             Label: This User can access
             ColSpan: 2

@@ -512,6 +512,26 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Adds an image annotation to the cells in the specified column of the grid.
+        /// </summary>
+        /// <param name="ACallerForm">The form or user control that is hosting the grid</param>
+        /// <param name="AImageColumnIndex">The column index that will display the optional annotation</param>
+        /// <param name="AColumnContext">An arbitrary context string that identifies the column when more than one column is annotated</param>
+        /// <param name="AImageEnum">The image selected from one of the available enumerated items</param>
+        public void AddAnnotationImage(IBoundImageEvaluator ACallerForm,
+            int AImageColumnIndex,
+            BoundGridImage.AnnotationContextEnum AColumnContext,
+            BoundGridImage.DisplayImageEnum AImageEnum)
+        {
+            // Add a model for the image
+            this.Columns[AImageColumnIndex].DataCell.Model.AddModel(new BoundGridImage(ACallerForm, AColumnContext, AImageEnum));
+
+            // Add a standard SourceGrid tool tip for the bound image
+            this.Columns[AImageColumnIndex].DataCell.AddController(SourceGrid.Cells.Controllers.ToolTipText.Default);
+            this.Columns[AImageColumnIndex].DataCell.Model.AddModel(new BoundImageToolTipModel(ACallerForm, AColumnContext, AImageEnum));
+        }
+
         /*
          * Custom properties follow
          */

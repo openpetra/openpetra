@@ -125,7 +125,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementRecipientTable(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        public static DataTable GiftStatementRecipientTable(
+            Dictionary <String, TVariant>AParameters,
+            TReportingDbAdapter DbAdapter,
+            Int64 ADonorKey = -1)
         {
             TDBTransaction Transaction = null;
 
@@ -151,8 +154,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     //     through the IN clause.
                     // I have tested this form of the quey with SwissDev4 and some pretty random date ranges and an extract with 7000 partners
                     // and it is always quick - of the order of about 1 second or less.
-                    DateTime paramFromDate = AParameters["param_from_date"].ToDate();
-                    DateTime paramToDate = AParameters["param_to_date"].ToDate();
+                    String paramFromDate = "'" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") + "'";
+                    String paramToDate = "'" + AParameters["param_to_date"].ToDate().ToString(
+                        "yyyy-MM-dd") + "'";
+                    String donorKeyFilter =
+                        (ADonorKey == -1) ?
+                        ""
+                        :
+                        " AND gift.p_donor_key_n =" + ADonorKey;
 
                     string Query = "SELECT" +
                                    " Recipient.p_partner_key_n AS RecipientKey," +
@@ -171,7 +180,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " OR PUB_p_partner.p_partner_key_n = um_unit_structure.um_child_unit_key_n)" +
                                    " THEN PUB_p_partner.p_partner_key_n " +
                                    " ELSE 0" +
-                                   " END AS FieldKey" +
+                                   " END AS FieldKey," +
+                                   " 0 AS thisYearTotal, " +
+                                   " 0 AS previousYearTotal " +
 
                                    " FROM" +
                                    " PUB_a_gift as gift, " +
@@ -182,12 +193,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " LEFT JOIN PUB_p_partner_gift_destination" +
                                    " ON Recipient.p_partner_class_c = 'FAMILY'" +
                                    " AND PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n" +
-                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= '" + paramFromDate.ToString(
-                        "yyyy-MM-dd") + "'" +
-                                   " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL OR (PUB_p_partner_gift_destination.p_date_expires_d >= '"
+                                   " AND PUB_p_partner_gift_destination.p_date_effective_d <= " + paramFromDate +
+                                   " AND (PUB_p_partner_gift_destination.p_date_expires_d IS NULL OR (PUB_p_partner_gift_destination.p_date_expires_d >= "
                                    +
-                                   paramToDate.ToString(
-                        "yyyy-MM-dd") + "'" +
+                                   paramToDate +
                                    " AND PUB_p_partner_gift_destination.p_date_effective_d <> PUB_p_partner_gift_destination.p_date_expires_d))" +
 
                                    " LEFT JOIN um_unit_structure" +
@@ -208,8 +217,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                              " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
                              " AND PUB_a_gift_batch.a_ledger_number_i = gift.a_ledger_number_i" +
                              " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
-                             " AND gift.a_date_entered_d BETWEEN '" + paramFromDate.ToString("yyyy-MM-dd") +
-                             "' AND '" + paramToDate.ToString("yyyy-MM-dd") + "'" +
+                             donorKeyFilter +
+                             " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
                              " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
                              " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
 
@@ -230,8 +239,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " LEFT JOIN PUB_a_gift_batch batch ON batch.a_batch_number_i = detail.a_batch_number_i AND batch.a_ledger_number_i = detail.a_ledger_number_i"
                                  +
                                  " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
-                                 " AND gift.a_date_entered_d BETWEEN '" + paramFromDate.ToString("yyyy-MM-dd") +
-                                 "' AND '" + paramToDate.ToString("yyyy-MM-dd") + "'" +
+                                 " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
                                  " AND batch.a_batch_status_c = 'Posted'" +
                                  " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
                     }
@@ -272,9 +280,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementTotalsTable(Dictionary <String, TVariant>AParameters,
-            Int64 ARecipientKey,
-            TReportingDbAdapter DbAdapter)
+        public static Boolean GetGiftStatementTotals(Dictionary <String, TVariant>AParameters,
+            TReportingDbAdapter DbAdapter,
+            Int64 APartnerKey,
+            out Decimal AThisYearTotal,
+            out Decimal APreviousYearTotal,
+            Boolean AForDonor = false)
         {
             TDBTransaction Transaction = null;
 
@@ -291,27 +302,32 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    DateTime thisYearStart = new DateTime(CurrentYear, 1, 1);
-                    DateTime paramToDate = AParameters["param_to_date"].ToDate();
-                    DateTime lastYearStart = new DateTime(CurrentYear - 1, 1, 1);
-                    DateTime lastYearEnd = new DateTime(CurrentYear - 1, 12, 31);
+                    String thisYearStart = "'" + new DateTime(CurrentYear, 1, 1).ToString("yyyy-MM-dd") + "'";
+                    String paramToDate = "'" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'";
+                    String lastYearStart = "'" + new DateTime(CurrentYear - 1, 1, 1).ToString("yyyy-MM-dd") + "'";
+                    String lastYearEnd = "'" + new DateTime(CurrentYear - 1, 12, 31).ToString("yyyy-MM-dd") + "'";
+                    String partnerFieldSelector = (AForDonor) ?
+                                                  " AND Gift.p_donor_key_n = " + APartnerKey
+                                                  :
+                                                  " AND GiftDetail.p_recipient_key_n = " + APartnerKey;
+                    String partnerKeyName = (AForDonor) ?
+                                            "DonorKey"
+                                            :
+                                            "RecipientKey";
 
-                    //TODO: Calendar vs Financial Date Handling - Check if this should use financial year start/end in all places below
                     string Query = "SELECT " +
-                                   " GiftDetail.p_recipient_key_n AS RecipientKey," +
-
                                    " SUM (" +
                                    " CASE WHEN" +
-                                   " Gift.a_date_entered_d >= '" + lastYearStart.ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + lastYearEnd.ToString("yyyy-MM-dd") + "'" +
+                                   " Gift.a_date_entered_d >= " + lastYearStart +
+                                   " AND Gift.a_date_entered_d <= " + lastYearEnd +
                                    " THEN GiftDetail." + Currency +
                                    " ELSE 0" +
                                    " END) AS PreviousYearTotal," +
 
                                    " SUM (" +
                                    " CASE WHEN" +
-                                   " Gift.a_date_entered_d >= '" + thisYearStart.ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + paramToDate.ToString("yyyy-MM-dd") + "'" +
+                                   " Gift.a_date_entered_d >= " + thisYearStart +
+                                   " AND Gift.a_date_entered_d <= " + paramToDate +
                                    " THEN GiftDetail." + Currency +
                                    " ELSE 0" +
                                    " END) AS CurrentYearTotal" +
@@ -324,48 +340,63 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " WHERE" +
 
                                    " GiftDetail.a_ledger_number_i = " + LedgerNumber +
-                                   " AND GiftDetail.p_recipient_key_n = " + ARecipientKey +
+                                   partnerFieldSelector +
                                    " AND Gift.a_ledger_number_i = " + LedgerNumber +
                                    " AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i" +
                                    " AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i" +
-                                   " AND ((Gift.a_date_entered_d >= '" + lastYearStart.ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + lastYearEnd.ToString("yyyy-MM-dd") + "')" +
-                                   " OR (Gift.a_date_entered_d >= '" + thisYearStart.ToString("yyyy-MM-dd") + "'" +
-                                   " AND Gift.a_date_entered_d <= '" + paramToDate.ToString("yyyy-MM-dd") + "'))" +
+                                   " AND ((Gift.a_date_entered_d >= " + lastYearStart +
+                                   " AND Gift.a_date_entered_d <= " + lastYearEnd + ")" +
+                                   " OR (Gift.a_date_entered_d >= " + thisYearStart +
+                                   " AND Gift.a_date_entered_d <= " + paramToDate + "))" +
                                    " AND GiftBatch.a_ledger_number_i = " + LedgerNumber +
                                    " AND GiftBatch.a_batch_number_i = Gift.a_batch_number_i" +
-                                   " AND GiftBatch.a_batch_status_c = 'Posted'" +
-
-                                   " GROUP BY GiftDetail.p_recipient_key_n";
+                                   " AND GiftBatch.a_batch_status_c = 'Posted'";
 
                     Results = DbAdapter.RunQuery(Query, "RecipientTotals", Transaction);
                 });
 
-            return Results;
+            if ((Results == null) || (Results.Rows.Count == 0))
+            {
+                AThisYearTotal = 0;
+                APreviousYearTotal = 0;
+                return false;
+            }
+
+            DataRow Row = Results.Rows[0];
+            AThisYearTotal = Convert.ToDecimal(Row["CurrentYearTotal"]);
+            APreviousYearTotal = Convert.ToDecimal(Row["PreviousYearTotal"]);
+
+            return true;
         }
 
         /// <summary>
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementDonorTable(Dictionary <String, TVariant>AParameters,
-            Int64 ARecipientKey,
-            TReportingDbAdapter DbAdapter)
+        public static DataTable GiftStatementDonorTable(Dictionary <String, TVariant>AParameters,
+            TReportingDbAdapter DbAdapter,
+            Int64 ADonorKey = -1,
+            Int64 ARecipientKey = -1,
+            String ACommentFor = "RECIPIENT"
+            )
         {
             TDBTransaction Transaction = null;
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string ReportType = AParameters["param_report_type"].ToString();
-            string Currency = "";
+            string giftAmountField = "";
 
             if ((ReportType == "List") || (ReportType == "Email"))
             {
-                Currency = "a_gift_transaction_amount_n";
+                giftAmountField = "a_gift_transaction_amount_n";
             }
             else
             {
-                Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+                giftAmountField = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
             }
+
+            String paramFromDate = "'" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") + "'";
+            String paramToDate = "'" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'";
 
             // create new datatable
             DataTable Results = new DataTable();
@@ -376,6 +407,46 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    String recipientKeyFilter =
+                        (ARecipientKey == -1) ?
+                        ""
+                        :
+                        " AND detail.p_recipient_key_n = " + ARecipientKey;
+                    String donorKeyFilter =
+                        (ADonorKey == -1) ?
+                        ""
+                        :
+                        " AND gift.p_donor_key_n = " + ADonorKey;
+
+                    String amountFilter = "";
+
+                    if (AParameters.ContainsKey("param_min_amount"))
+                    {
+                        Decimal minAmount = AParameters["param_min_amount"].ToDecimal();
+                        Decimal maxAmount = AParameters["param_max_amount"].ToDecimal();
+                        amountFilter = " AND detail.a_gift_amount_n >= " + minAmount + " AND detail.a_gift_amount_n <= " + maxAmount;
+                    }
+
+                    String motivationFilter = "";
+
+                    if (AParameters.ContainsKey("param_all_motivation_groups"))
+                    {
+                        if (!AParameters["param_all_motivation_groups"].ToBool())
+                        {
+                            motivationFilter = " AND detail.a_motivation_group_code_c in (" +
+                                               AParameters["param_motivation_group_quotes"].ToString() + ")";
+                        }
+                    }
+
+                    if (AParameters.ContainsKey("param_all_motivation_details"))
+                    {
+                        if (!AParameters["param_all_motivation_details"].ToBool())
+                        {
+                            motivationFilter += " AND detail.a_motivation_detail_code_c in (" +
+                                                AParameters["param_motivation_details_quotes"].ToString() + ")";
+                        }
+                    }
+
                     string Query = "SELECT" +
                                    " gift.a_date_entered_d AS GiftDate," +
                                    " gift.p_donor_key_n AS DonorKey," +
@@ -384,31 +455,34 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " ELSE '" + Catalog.GetString("Unknown Donor") + "' END AS DonorName," +
                                    " DonorPartner.p_partner_class_c AS DonorClass," +
                                    " detail.p_recipient_key_n AS RecipientKey," +
-                                   " detail.a_motivation_detail_code_c AS MotivationCode," +
+                                   " detail.a_motivation_group_code_c AS MotivationGroup," +
+                                   " detail.a_motivation_detail_code_c AS MotivationDetail," +
                                    " detail.a_confidential_gift_flag_l AS Confidential," +
-                                   " detail." + Currency + " AS GiftAmount," +
+                                   " detail." + giftAmountField + " AS GiftAmount," +
                                    " gift.a_receipt_number_i AS Receipt," +
                                    " PUB_a_gift_batch.a_currency_code_c AS GiftCurrency," +
                                    " RecipientLedgerPartner.p_partner_short_name_c AS GiftField," +
 
                                    " CASE WHEN" +
-                                   " (UPPER(detail.a_comment_one_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_one_type_c) = 'BOTH')" +
+                                   " (UPPER(detail.a_comment_one_type_c) = '" + ACommentFor + "' OR UPPER(detail.a_comment_one_type_c) = 'BOTH')" +
                                    " AND '" + ReportType + "' = 'Complete'" +
                                    " THEN detail.a_gift_comment_one_c" +
                                    " ELSE ''" +
                                    " END AS CommentOne," +
                                    " CASE WHEN" +
-                                   " UPPER(detail.a_comment_two_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_two_type_c) = 'BOTH'" +
+                                   " UPPER(detail.a_comment_two_type_c) = '" + ACommentFor + "' OR UPPER(detail.a_comment_two_type_c) = 'BOTH'" +
                                    " AND '" + ReportType + "' = 'Complete'" +
                                    " THEN detail.a_gift_comment_two_c" +
                                    " ELSE ''" +
                                    " END AS CommentTwo," +
                                    " CASE WHEN" +
-                                   " UPPER(detail.a_comment_three_type_c) = 'RECIPIENT' OR UPPER(detail.a_comment_three_type_c) = 'BOTH'" +
+                                   " UPPER(detail.a_comment_three_type_c) = '" + ACommentFor + "' OR UPPER(detail.a_comment_three_type_c) = 'BOTH'" +
                                    " AND '" + ReportType + "' = 'Complete'" +
                                    " THEN detail.a_gift_comment_three_c" +
                                    " ELSE ''" +
-                                   " END AS CommentThree" +
+                                   " END AS CommentThree," +
+                                   " 0 AS thisYearTotal, " +
+                                   " 0 AS previousYearTotal " +
 
                                    " FROM" +
                                    " PUB_a_gift as gift," +
@@ -419,12 +493,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                    " WHERE" +
                                    " detail.a_ledger_number_i = gift.a_ledger_number_i" +
-                                   " AND detail.p_recipient_key_n = " + ARecipientKey +
+                                   donorKeyFilter +
+                                   recipientKeyFilter +
+                                   amountFilter +
+                                   motivationFilter +
                                    " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
                                    " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
                                    " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
-                                   " AND gift.a_date_entered_d BETWEEN '" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") +
-                                   "' AND '" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'" +
+                                   " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
                                    " AND DonorPartner.p_partner_key_n = gift.p_donor_key_n" +
                                    " AND RecipientLedgerPartner.p_partner_key_n = detail.a_recipient_ledger_number_n" +
                                    " AND gift.a_ledger_number_i = " + LedgerNumber +
@@ -450,7 +526,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         /// Returns a DataTable to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        public static DataTable RecipientGiftStatementDonorAddressesTable(Int64 ADonorKey, TReportingDbAdapter DbAdapter)
+        public static DataTable GiftStatementDonorAddressesTable(TReportingDbAdapter DbAdapter, Int64 ADonorKey)
         {
             TDBTransaction Transaction = null;
 
@@ -467,7 +543,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     PPartnerLocationTable PartnerLocationDT = PPartnerLocationAccess.LoadViaPPartner(ADonorKey, Transaction);
                     TLocationPK BestAddress = Calculations.DetermineBestAddress(PartnerLocationDT);
 
-                    string QueryLocation = "SELECT" +
+                    string QueryLocation = "SELECT " +
+                                           ADonorKey + " AS DonorKey, " +
+                                           " DonorPartner.p_partner_short_name_c AS DonorName, " +
                                            " PUB_p_location.p_locality_c AS Locality," +
                                            " PUB_p_location.p_street_name_c," +
                                            " PUB_p_location.p_address_3_c," +
@@ -478,13 +556,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                            " PUB_p_country.p_address_order_i" +
 
                                            " FROM" +
+                                           " PUB_p_partner AS DonorPartner," +
                                            " PUB_p_location" +
 
                                            " LEFT JOIN PUB_p_country" +
                                            " ON PUB_p_country.p_country_code_c = PUB_p_location.p_country_code_c" +
 
                                            " WHERE" +
-                                           " PUB_p_location.p_site_key_n = " + BestAddress.SiteKey +
+                                           " DonorPartner.p_partner_key_n = " + ADonorKey +
+                                           " AND PUB_p_location.p_site_key_n = " + BestAddress.SiteKey +
                                            " AND PUB_p_location.p_location_key_i = " + BestAddress.LocationKey;
 
                     Results.Merge(DbAdapter.RunQuery(QueryLocation, "DonorAddresses", Transaction));
@@ -495,8 +575,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         NewRow["Locality"] = "UNKNOWN";
                         Results.Rows.Add(NewRow);
                     }
-
-                    Results.Rows[0]["DonorKey"] = ADonorKey;
                 });
 
             return Results;

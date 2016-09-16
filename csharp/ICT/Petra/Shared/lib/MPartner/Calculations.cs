@@ -235,6 +235,21 @@ namespace Ict.Petra.Shared.MPartner
 
                 return names[0].Substring(0, 1) + ".";
             }
+            else if (AFormat == eShortNameFormat.eJustRemoveTitle)
+            {
+                if (names.Count > 1)
+                {
+                    // remove the title
+                    names.RemoveAt(names.Count - 1);
+                }
+
+                if (names.Count > 1)
+                {
+                    return names[0] + ", " + names[1];
+                }
+
+                return names[0];
+            }
 
             return "";
         }

@@ -1,7 +1,7 @@
 RootNode:
     BaseYaml: PartnerReportingForm.yaml
     FormType: report
-    FormTitle: Partner Contact Report
+    FormTitle: Contact Logs Report
     Namespace: Ict.Petra.Client.MReporting.Gui.MPartner
     DetailTable: PContactAttribute
     TemplateParameters:

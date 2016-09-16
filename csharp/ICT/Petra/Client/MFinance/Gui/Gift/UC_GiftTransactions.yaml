@@ -16,12 +16,12 @@ RootNode:
         actNewDetail: {Label=Add Detai&l, ActionClick=NewGiftDetail, Image=New_Record.ico}
         actDelete: {Label=&Delete Detail, ActionClick=DeleteRecord}
         actDeleteAll: {Label=Delete All, ActionClick=DeleteAllGifts}
-        actAdjustGift: {Label=&Adjust Gift, ActionClick=AdjustGift}
+        actAdjustGift: {Label=Ad&just Gift, ActionClick=AdjustGift}
         actReverseGift: {Label=Reverse &Gift, ActionClick=ReverseGift}
-        actReverseGiftDetail: {Label=&Reverse Gift Detail, ActionClick=ReverseGiftDetail}
+        actReverseGiftDetail: {Label=Re&verse Gift Detail, ActionClick=ReverseGiftDetail}
         actReverseGiftBatch: {Label=Reverse Gift &Batch, ActionClick=ReverseGiftBatch}
         actImportTransactions: {Label=&Import Transactions From File, ActionClick=ImportTransactionsFromFile}
-        actImportFromClipboard: {Label=I&mport Transactions From Clipboard, ActionClick=ImportTransactionsFromClipboard}
+        actImportFromClipboard: {Label=Import &Transactions From Clipboard, ActionClick=ImportTransactionsFromClipboard}
     Controls:
         pnlContent:
             Controls: [pnlInfo, pnlFilterAndFind, sptTransactions]
@@ -118,32 +118,35 @@ RootNode:
                 Row1: [txtDetailRecipientLedgerNumber, chkDetailChargeFlag]
                 Row2: [cmbKeyMinistries, chkDetailTaxDeductible]
                 Row3: [txtDetailGiftTransactionAmount, cmbDetailMailingCode]
-                Row4: [cmbDetailMotivationGroupCode, cmbDetailMotivationDetailCode]         
+                Row4: [cmbDetailMotivationGroupCode, cmbMotivationDetailCode]         
                 Row5: [txtDetailCostCentreCode, txtDetailAccountCode]
                 Row6: [txtDetailGiftCommentOne, cmbDetailCommentOneType]
                 Row7: [txtDetailGiftCommentTwo, cmbDetailCommentTwoType]
                 Row8: [txtDetailGiftCommentThree, cmbDetailCommentThreeType]
-                Row9: [txtDetailRecipientKeyMinistry]
+                Row9: [txtDetailRecipientKeyMinistry, txtDetailMotivationDetailCode]
                 Row10: [txtNonDeductAmount, txtDeductiblePercentage]
                 Row11: [txtTaxDeductAmount, txtDeductibleAccount]
+                Row12: [txtMotivationDetailDesc]
         
 		#GIFT-Level Controls
         # Bound
         txtDetailDonorKey: {Label=D&onor, Type=PartnerKey, Width=350, Unbound=true, RequiredField=true, Tooltip=Enter the partner key for the donor (right-click on partner name for further info), OnChange=DonorKeyChanged, Validation=true}
         cmbDetailMethodOfGivingCode: {Label=Method of Giving, List=UserDefinedList}
         cmbDetailMethodOfPaymentCode: {Label=Method of Payment, List=UserDefinedList}
-        txtDetailReference: {Label=Re&ference, Width=170}
-        cmbDetailReceiptLetterCode: {Label=Letter Code, OptionalValues=[NO*RECET]}
+        txtDetailReference: {Label=Reference, Width=170}
+        cmbDetailReceiptLetterCode:
+            Label: Letter Code
+            OptionalValues: [NO*RECET]
         # Unbound
         txtDonorInfo: {NoLabel=true, ReadOnly=true, Width=450}
-        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         txtGiftTotal: {Label=Total, Format=Currency, ReadOnly=true, Unbound=true, SuppressChangeDetection=true}
+        dtpDateEntered: {Label=Gift Date, OnChange=GiftDateChanged, Tooltip=This date is used for receipt printing, Unbound=true, Validation=true}
         
 		#GIFT DETAIL-Level Controls
         # Bound
         txtDetailRecipientKey: {Label=Reci&pient, Type=PartnerKey, Width=350, Tooltip=Enter the partner key for the recipient (right-click on partner name for further info), OnChange=RecipientKeyChanged, Validation=true}
-        cmbDetailMotivationGroupCode: {Label=Moti&vation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
-        cmbDetailMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
+        cmbDetailMotivationGroupCode: {Label=&Motivation Group, List=UserDefinedList, OnChange=MotivationGroupChanged, Validation=true}
+        txtDetailMotivationDetailCode: {Label=Motivation Detail}
         txtDetailCostCentreCode: {Label=Cost Centre, List=UserDefinedList, ReadOnly=true}
         txtDetailRecipientLedgerNumber: {Label=Field, Type=PartnerKey, Width=300, ReadOnly=true, OnChange=RecipientLedgerNumberChanged}
         txtDetailAccountCode: {Label=Account, List=UserDefinedList, ReadOnly=true}
@@ -170,6 +173,8 @@ RootNode:
             OnLeave: DetailCommentTypeChanged
         # Unbound
         cmbKeyMinistries: {Label=&Key Ministry, List=UserDefinedList, OnChange=KeyMinistryChanged, Unbound=true, Tooltip=Select a key ministry}
+        cmbMotivationDetailCode: {Label=Motivation Detail, List=UserDefinedList, Unbound=true, NullValueAllowed=false, OnChange=MotivationDetailChanged, Validation=true}
+        txtMotivationDetailDesc: {NoLabel=true, ReadOnly=true, Unbound=true, Text=Detail Code}
         chkNoReceiptOnAdjustment: {Label=Do not print on periodic receipt, CheckBoxAttachedLabel=right, Tooltip=Tick this if you want to exclude this adjusting gift from periodic receipts}
         txtDeductiblePercentage: {Visible=false, Label=% Tax Deductible, Format=PercentDecimal(2), Width=80, NullValueAllowed=false}
         txtTaxDeductAmount: {Visible=false, Label=Deductible, Format=Currency, ReadOnly=true}
@@ -182,7 +187,7 @@ RootNode:
     Menu:
         mniTransactions:
             Label: &Gift Transaction
-            mniAdjustGift: {Label=&Adjust Gift, Action=actAdjustGift}
+            mniAdjustGift: {Label=Ad&just Gift, Action=actAdjustGift}
             mniReverseGiftBatch: {Label=Reverse Gift &Batch, Action=actReverseGiftBatch}
             mniReverseGift: {Label=Reverse &Gift, Action=actReverseGift}
             mniReverseGiftDetail: {Label=Re&verse Gift Detail, Action=actReverseGiftDetail}

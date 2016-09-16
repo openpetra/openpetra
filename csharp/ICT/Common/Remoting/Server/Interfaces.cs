@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,15 +36,24 @@ namespace Ict.Common.Remoting.Server
     public interface IUserManager
     {
         /// <summary>
-        /// add a new user
+        /// Adds a new user
         /// </summary>
         bool AddUser(string AUserID, string APassword = "");
 
         /// <summary>
-        /// authenticate a user
+        /// Authenticates a user.
         /// </summary>
         IPrincipal PerformUserAuthentication(string AUserName, string APassword,
+            string AClientComputerName, string AClientIPAddress,
             out Boolean ASystemEnabled);
+
+        /// <summary>
+        /// Call this Method when a log-in is attempted for a non-existing user (!) so that the time that is spent on
+        /// 'authenticating' them is as long as is spent on authenticating existing users. This is done so that an attacker
+        /// that tries to perform user authentication with 'username guessing' cannot easily tell that the user doesn't exist by
+        /// checking the time in which the server returns an error (this is an attack vector called 'timing attack')!
+        /// </summary>
+        void SimulatePasswordAuthenticationForNonExistingUser();
     }
 
     /// <summary>

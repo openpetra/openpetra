@@ -99,6 +99,18 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
         }
 
+        /// <summary>The Id of the currently selected FastReport template (or 0)</summary>
+        public Int32 SelectedTemplateId
+        {
+            get
+            {
+                return (FSelectedTemplate == null) ?
+                       0
+                       :
+                       FSelectedTemplate.TemplateId;
+            }
+        }
+
         /// <summary>The Template Name will be written to the UI title bar</summary>
         public string SelectedTemplateName
         {
@@ -263,6 +275,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         private void CancelReportGeneration(TRptCalculator ACalc)
         {
             TRemote.MReporting.WebConnectors.CancelDataTableGeneration();
+
+            if (FPetraUtilsObject != null)
+            {
+                FPetraUtilsObject.AbortStatusThread();
+            }
         }
 
         /// <summary>
@@ -788,7 +805,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             try
             {
-                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndContentUsingPrivateDb(ALedgerNumber, ABatchNumber);
+                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTablesUsingPrivateDb(ALedgerNumber, ABatchNumber);
             }
             catch
             {

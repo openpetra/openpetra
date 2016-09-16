@@ -780,13 +780,13 @@ namespace Ict.Common.Controls
 
         private void RefreshLabel(object sender, EventArgs e)
         {
-            string descr = cmbCombobox.GetSelectedDescription();
+            string Descr = cmbCombobox.GetSelectedDescription();
 
-            this.lblDescription.Text = descr;
+            this.lblDescription.Text = Descr;
 
             if (this.lblDescription.Visible)
             {
-                HighlightLabelForInactiveItems(descr);
+                HighlightLabelForInactiveItems(Descr);
             }
         }
 

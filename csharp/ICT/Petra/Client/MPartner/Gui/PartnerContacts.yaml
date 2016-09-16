@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../CommonForms/PetraForm.yaml
-    FormTitle: Contacts with Partners
+    FormTitle: Find/Delete Contact Logs
     Comment: this screen shows who has been contacted by us via letter, phone, personal meeting, email, etc
     Namespace: Ict.Petra.Client.MPartner.Gui
     FormType: browse

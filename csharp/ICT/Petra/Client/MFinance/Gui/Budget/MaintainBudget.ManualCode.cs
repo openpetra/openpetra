@@ -71,7 +71,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
         void SelectRowInGrid(int ARowIndex);
     }
 
-    public partial class TFrmMaintainBudget : IMaintainBudget
+    public partial class TFrmMaintainBudget : IMaintainBudget, IBoundImageEvaluator
     {
         private Int32 FLedgerNumber;
         private Int32 FCurrentFinancialYear;
@@ -256,35 +256,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             FAccountTable = (AAccountTable)AccountList;
 
-            //Prepare grid to highlight inactive accounts/cost centres
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string accountCode = row[ABudgetTable.ColumnAccountCodeId].ToString();
-                return !AccountIsActive(accountCode);
-            };
-
-            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string costCentreCode = row[ABudgetTable.ColumnCostCentreCodeId].ToString();
-                return !CostCentreIsActive(costCentreCode);
-            };
-
-            //Add conditions to columns
             int IndexOfCostCentreCodeDataColumn = 0;
             int IndexOfAccountCodeDataColumn = 1;
 
-            grdDetails.Columns[IndexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[IndexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
+            // Add red triangle to inactive accounts
+            grdDetails.AddAnnotationImage(this, IndexOfCostCentreCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.CostCentreCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, IndexOfAccountCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.AccountCode, BoundGridImage.DisplayImageEnum.Inactive);
         }
 
         private void InitialiseControls()
@@ -1558,5 +1537,31 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
             cmbDetailAccountCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_ACCOUNT;
             cmbDetailCostCentreCode.AttachedLabel.Text = TFinanceControls.SELECT_VALID_COST_CENTRE;
         }
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
+        {
+            ABudgetRow row = (ABudgetRow)ADataRowView.Row;
+
+            switch (AContext)
+            {
+                case BoundGridImage.AnnotationContextEnum.AccountCode:
+                    return !AccountIsActive(row.AccountCode);
+
+                case BoundGridImage.AnnotationContextEnum.CostCentreCode:
+                    return !CostCentreIsActive(row.CostCentreCode);
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

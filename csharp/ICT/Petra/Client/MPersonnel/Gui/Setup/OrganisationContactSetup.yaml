@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Organisation Contacts
+    FormTitle: Maintain Organisation Contacts
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtContact
     CacheableTable: ContactList

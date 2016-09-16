@@ -146,37 +146,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     LedgerIntlCurrency,
                     StartOfMonth,
                     ABatchEffectiveDate);
-
-                if (IntlToBaseCurrencyExchRate == 0)
-                {
-                    string IntlRateErrorMessage =
-                        String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
-                            LedgerBaseCurrency,
-                            LedgerIntlCurrency,
-                            ABatchEffectiveDate);
-
-                    MessageBox.Show(IntlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
             }
 
             return IntlToBaseCurrencyExchRate;
-        }
-
-        private void CheckBatchEffectiveDate(object sender, EventArgs e)
-        {
-            DateTime dateValue;
-            string aDate = dtpEffectiveDate.Text;
-
-            if (DateTime.TryParse(aDate, out dateValue))
-            {
-                LookupCurrencyExchangeRates(dateValue);
-            }
-            else
-            {
-                MessageBox.Show(Catalog.GetString("Invalid date entered!"));
-                dtpEffectiveDate.Focus();
-                dtpEffectiveDate.SelectAll();
-            }
         }
 
         private void SetExchangeRateValue(Object sender, EventArgs e)
@@ -213,9 +185,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void SubmitBatch(object sender, EventArgs e)
         {
-            //Need to run this here just in case the user presses <ENTER> on keyboard
-            // after changing the date but no OnLeave event occurs for the date box.
-            CheckBatchEffectiveDate(null, null);
+            DateTime TheDateValue;
+            string TheDateString = dtpEffectiveDate.Text;
+            string LedgerBaseCurrency = FMainDS.ALedger[0].BaseCurrency;
+            string LedgerIntlCurrency = FMainDS.ALedger[0].IntlCurrency;
+
+            if (DateTime.TryParse(TheDateString, out TheDateValue))
+            {
+                LookupCurrencyExchangeRates(TheDateValue);
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Invalid date entered!"));
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
+                return;
+            }
 
             // This should never happen - but ...
             if (txtExchangeRateToBase.NumberValueDecimal <= 0.0m)
@@ -226,6 +211,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     MessageBoxIcon.Exclamation);
 
                 btnGetSetExchangeRate.Enabled = true;
+                return;
+            }
+            else if (FExchangeRateIntlToBase == 0)
+            {
+                string intlRateErrorMessage =
+                    String.Format(Catalog.GetString("No Corporate Exchange rate exists for {0} to {1} for the month: {2:MMMM yyyy}!"),
+                        LedgerBaseCurrency,
+                        LedgerIntlCurrency,
+                        TheDateValue);
+
+                MessageBox.Show(intlRateErrorMessage, "Lookup Corporate Exchange Rate", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+                dtpEffectiveDate.Focus();
+                dtpEffectiveDate.SelectAll();
                 return;
             }
             //check the gift batch date

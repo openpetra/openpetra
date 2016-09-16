@@ -81,9 +81,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return DeletionSuccessful;
             }
 
-            int BatchNumber = ARowToDelete.BatchNumber;
-
             ACompletionMessage = string.Empty;
+            int BatchNumber = ARowToDelete.BatchNumber;
 
             bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
 

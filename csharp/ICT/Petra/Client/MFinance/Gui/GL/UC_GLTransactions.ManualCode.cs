@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using GNU.Gettext;
@@ -37,6 +38,7 @@ using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.CommonDialogs;
 
@@ -50,7 +52,7 @@ using SourceGrid;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
-    public partial class TUC_GLTransactions
+    public partial class TUC_GLTransactions : IBoundImageEvaluator
     {
         private bool FLoadCompleted = false;
         private Int32 FLedgerNumber = -1;
@@ -64,8 +66,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private decimal FCreditAmount = 0;
 
         private ABatchRow FBatchRow = null;
-        private AAccountTable FAccountList;
-        private ACostCentreTable FCostCentreList;
+        private AAccountTable FAccountList = null;
+        private ACostCentreTable FCostCentreList = null;
 
         private GLSetupTDS FCacheDS = null;
         private GLBatchTDSAJournalRow FJournalRow = null;
@@ -295,7 +297,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 if (FMainDS.ATransaction.DefaultView.Count == 0)
                 {
                     dlgStatus.CurrentStatus = Catalog.GetString("Requesting transactions from server...");
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionATransAnalAttrib(ALedgerNumber, ABatchNumber, AJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForJournal(ALedgerNumber, ABatchNumber,
+                            AJournalNumber));
                 }
                 else if (FMainDS.ATransAnalAttrib.DefaultView.Count == 0) // just in case transactions have been loaded in a separate process without analysis attributes
                 {
@@ -817,7 +820,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 RetVal = true;
             }
-            else if (AJournalNumber == 0)
+            else if (AJournalNumber == 0) //need to load all journals and data
             {
                 AJournalDV.RowFilter = String.Format("{0}={1} And {2}='{3}'",
                     AJournalTable.GetBatchNumberDBName(),
@@ -827,21 +830,24 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (AJournalDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalATransaction(ALedgerNumber, ABatchNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(ALedgerNumber, ABatchNumber));
 
                     if (AJournalDV.Count == 0)
                     {
                         return false;
                     }
                 }
-
-                TransDV.RowFilter = String.Format("{0}={1}",
-                    ATransactionTable.GetBatchNumberDBName(),
-                    ABatchNumber);
-
-                if (TransDV.Count == 0)
+                else
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber));
+                    TransDV.RowFilter = String.Format("{0}={1}",
+                        ATransactionTable.GetBatchNumberDBName(),
+                        ABatchNumber);
+
+                    if (TransDV.Count == 0)
+                    {
+                        //Load transactions and analysis attributes for entire batch
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForBatch(ALedgerNumber, ABatchNumber));
+                    }
                 }
 
                 //As long as transactions exist, return true
@@ -857,7 +863,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (AJournalDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournal(ALedgerNumber, ABatchNumber, AJournalNumber));
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTables(ALedgerNumber, ABatchNumber, AJournalNumber));
 
                     if (AJournalDV.Count == 0)
                     {
@@ -873,13 +879,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (TransDV.Count == 0)
                 {
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransaction(ALedgerNumber, ABatchNumber, AJournalNumber));
+                    //Load transactions and analysis attributes
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForJournal(ALedgerNumber, ABatchNumber,
+                            AJournalNumber));
                 }
 
                 RetVal = true;
             }
 
             return RetVal;
+        }
+
+        /// <summary>
+        /// Checks various things on the form before saving
+        /// </summary>
+        public void CheckBeforeSaving()
+        {
         }
 
         /// <summary>
@@ -1287,9 +1302,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void SetupExtraGridFunctionality()
+        private void SetupAccountCostCentreVariables(int ALedgerNumber)
         {
-            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, FLedgerNumber);
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
 
             ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
 
@@ -1306,7 +1321,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCostCentreList = (ACostCentreTable)CostCentreListTable;
             }
 
-            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, FLedgerNumber);
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
 
             AAccountTable tmpAccountTable = new AAccountTable();
             FMainDS.Tables.Add(tmpAccountTable);
@@ -1321,89 +1336,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FAccountList = (AAccountTable)AccountListTable;
             }
+        }
 
-            //Prepare grid to highlight inactive accounts/cost centres
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell.Font = new System.Drawing.Font(grdDetails.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAccountCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionAccountCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string accountCode = row[ATransactionTable.ColumnAccountCodeId].ToString();
-                return !AccountIsActive(accountCode);
-            };
-
-            SourceGrid.Conditions.ConditionView conditionCostCentreCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell);
-            conditionCostCentreCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column, int gridRow, object itemRow)
-            {
-                DataRowView row = (DataRowView)itemRow;
-                string costCentreCode = row[ATransactionTable.ColumnCostCentreCodeId].ToString();
-                return !CostCentreIsActive(costCentreCode);
-            };
+        private void SetupExtraGridFunctionality()
+        {
+            SetupAccountCostCentreVariables(FLedgerNumber);
 
             //Add conditions to columns
             int indexOfCostCentreCodeDataColumn = 2;
             int indexOfAccountCodeDataColumn = 3;
 
-            grdDetails.Columns[indexOfCostCentreCodeDataColumn].Conditions.Add(conditionCostCentreCodeActive);
-            grdDetails.Columns[indexOfAccountCodeDataColumn].Conditions.Add(conditionAccountCodeActive);
+            // Add red triangle to inactive accounts
+            grdDetails.AddAnnotationImage(this, indexOfCostCentreCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.CostCentreCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdDetails.AddAnnotationImage(this, indexOfAccountCodeDataColumn,
+                BoundGridImage.AnnotationContextEnum.AccountCode, BoundGridImage.DisplayImageEnum.Inactive);
 
-            //Prepare Analysis attributes grid to highlight inactive analysis codes
-            // Create a cell view for special conditions
-            SourceGrid.Cells.Views.Cell strikeoutCell2 = new SourceGrid.Cells.Views.Cell();
-            strikeoutCell2.Font = new System.Drawing.Font(grdAnalAttributes.Font, FontStyle.Strikeout);
-            //strikeoutCell.ForeColor = Color.Crimson;
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAnalysisCodeActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
-            conditionAnalysisCodeActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
-            {
-                if (itemRow2 != null)
-                {
-                    DataRowView row2 = (DataRowView)itemRow2;
-                    string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                    return !FAnalysisAttributesLogic.AnalysisCodeIsActive(
-                        cmbDetailAccountCode.GetSelectedString(), FCacheDS.AAnalysisAttribute, analysisCode);
-                }
-                else
-                {
-                    return false;
-                }
-            };
-
-            // Create a condition, apply the view when true, and assign a delegate to handle it
-            SourceGrid.Conditions.ConditionView conditionAnalysisAttributeValueActive = new SourceGrid.Conditions.ConditionView(strikeoutCell2);
-            conditionAnalysisAttributeValueActive.EvaluateFunction = delegate(SourceGrid.DataGridColumn column2, int gridRow2, object itemRow2)
-            {
-                if (itemRow2 != null)
-                {
-                    DataRowView row2 = (DataRowView)itemRow2;
-                    string analysisCode = row2[ATransAnalAttribTable.ColumnAnalysisTypeCodeId].ToString();
-                    string analysisAttributeValue = row2[ATransAnalAttribTable.ColumnAnalysisAttributeValueId].ToString();
-                    return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues,
-                        FCacheDS.AFreeformAnalysis,
-                        analysisCode,
-                        analysisAttributeValue);
-                }
-                else
-                {
-                    return false;
-                }
-            };
-
-            //Add conditions to columns
+            //Add conditions to columns of Analysis Attributes grid
             int indexOfAnalysisCodeColumn = 0;
             int indexOfAnalysisAttributeValueColumn = 1;
 
-            grdAnalAttributes.Columns[indexOfAnalysisCodeColumn].Conditions.Add(conditionAnalysisCodeActive);
-            grdAnalAttributes.Columns[indexOfAnalysisAttributeValueColumn].Conditions.Add(conditionAnalysisAttributeValueActive);
+            // Add red triangle to inactive analysis type codes and their values
+            grdAnalAttributes.AddAnnotationImage(this, indexOfAnalysisCodeColumn,
+                BoundGridImage.AnnotationContextEnum.AnalysisTypeCode, BoundGridImage.DisplayImageEnum.Inactive);
+            grdAnalAttributes.AddAnnotationImage(this, indexOfAnalysisAttributeValueColumn,
+                BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue, BoundGridImage.DisplayImageEnum.Inactive);
         }
 
-        private bool AccountIsActive(string AAccountCode = "")
+        private bool AccountIsActive(int ALedgerNumber, string AAccountCode = "")
         {
             bool AccountActive = false;
             bool AccountExists = true;
@@ -1423,20 +1383,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            AccountActive = TFinanceControls.AccountIsActive(FLedgerNumber, AAccountCode, FAccountList, out AccountExists);
+            if (FAccountList == null)
+            {
+                SetupAccountCostCentreVariables(ALedgerNumber);
+            }
+
+            AccountActive = TFinanceControls.AccountIsActive(ALedgerNumber, AAccountCode, FAccountList, out AccountExists);
 
             if (!AccountExists && (AAccountCode.Length > 0))
             {
                 string errorMessage = String.Format(Catalog.GetString("Account {0} does not exist in Ledger {1}!"),
                     AAccountCode,
-                    FLedgerNumber);
+                    ALedgerNumber);
                 TLogging.Log(errorMessage);
             }
 
             return AccountActive;
         }
 
-        private bool CostCentreIsActive(string ACostCentreCode = "")
+        private bool CostCentreIsActive(int ALedgerNumber, string ACostCentreCode = "")
         {
             bool CostCentreActive = false;
             bool CostCentreExists = true;
@@ -1456,13 +1421,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            CostCentreActive = TFinanceControls.CostCentreIsActive(FLedgerNumber, ACostCentreCode, FCostCentreList, out CostCentreExists);
+            if (FCostCentreList == null)
+            {
+                SetupAccountCostCentreVariables(ALedgerNumber);
+            }
+
+            CostCentreActive = TFinanceControls.CostCentreIsActive(ALedgerNumber, ACostCentreCode, FCostCentreList, out CostCentreExists);
 
             if (!CostCentreExists && (ACostCentreCode.Length > 0))
             {
                 string errorMessage = String.Format(Catalog.GetString("Cost Centre {0} does not exist in Ledger {1}!"),
                     ACostCentreCode,
-                    FLedgerNumber);
+                    ALedgerNumber);
                 TLogging.Log(errorMessage);
             }
 
@@ -1574,6 +1544,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         cont.Enabled = changeable;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Delete data from current GL Batch
+        /// </summary>
+        /// <param name="ABatchNumber"></param>
+        public void DeleteCurrentBatchTransactionData(Int32 ABatchNumber)
+        {
+            DataView TransAnalAttribView = new DataView(FMainDS.ATransAnalAttrib);
+
+            TransAnalAttribView.RowFilter = String.Format("{0}={1}",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            TransAnalAttribView.Sort = String.Format("{0} DESC, {1} DESC, {2} DESC",
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                ATransAnalAttribTable.GetTransactionNumberDBName(),
+                ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+            foreach (DataRowView dr in TransAnalAttribView)
+            {
+                dr.Delete();
+            }
+
+            DataView TransactionView = new DataView(FMainDS.ATransaction);
+
+            TransactionView.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            TransactionView.Sort = String.Format("{0} DESC, {1} DESC",
+                ATransactionTable.GetJournalNumberDBName(),
+                ATransactionTable.GetTransactionNumberDBName());
+
+            foreach (DataRowView dr in TransactionView)
+            {
+                dr.Delete();
             }
         }
 
@@ -2345,11 +2353,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (cmb.Name.StartsWith("cmbDetailCostCentre"))
             {
-                brush = CostCentreIsActive(content) ? Brushes.Black : Brushes.Red;
+                brush = CostCentreIsActive(FLedgerNumber, content) ? Brushes.Black : Brushes.Red;
             }
             else if (cmb.Name.StartsWith("cmbDetailAccount"))
             {
-                brush = AccountIsActive(content) ? Brushes.Black : Brushes.Red;
+                brush = AccountIsActive(FLedgerNumber, content) ? Brushes.Black : Brushes.Red;
             }
             else
             {
@@ -2380,5 +2388,295 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
         }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="ANumInactiveValues"></param>
+        /// <param name="AInPosting"></param>
+        /// <returns></returns>
+        public bool AllowInactiveFieldValues(int ALedgerNumber, int ABatchNumber, out int ANumInactiveValues, bool AInPosting = true)
+        {
+            bool RetVal = false;
+
+            TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+            string VerificationMessage = string.Empty;
+
+            DataView JournalDV = new DataView(FMainDS.AJournal);
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+            DataView AttribDV = new DataView(FMainDS.ATransAnalAttrib);
+
+            ANumInactiveValues = 0;
+            int NumInactiveAccounts = 0;
+            int NumInactiveCostCentres = 0;
+            int NumInactiveAccountTypes = 0;
+            int NumInactiveAccountValues = 0;
+
+            bool BatchVerified = false;
+            bool BatchExistsInDict = ((TFrmGLBatch)ParentForm).GetBatchControl().FUnpostedBatchesVerifiedOnSavingDict.TryGetValue(ABatchNumber,
+                out BatchVerified);
+
+            //Check if the user has already been warned before saving
+            if (!AInPosting
+                && ((BatchExistsInDict && BatchVerified) || !BatchExistsInDict))
+            {
+                return true;
+            }
+
+            //Make sure that journal and transaction data etc. is loaded for the current batch
+            JournalDV.RowFilter = String.Format("{0}={1}",
+                AJournalTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            TransDV.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            AttribDV.RowFilter = String.Format("{0}={1}",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            if (!AInPosting)
+            {
+                if (JournalDV.Count == 0)
+                {
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(ALedgerNumber, ABatchNumber));
+
+                    if (JournalDV.Count == 0)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (TransDV.Count == 0)
+                    {
+                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForBatch(ALedgerNumber, ABatchNumber));
+
+                        if (TransDV.Count == 0)
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        if (AttribDV.Count == 0)
+                        {
+                            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransAnalAttribForBatch(ALedgerNumber, ABatchNumber));
+                        }
+                    }
+                }
+            }
+
+            try
+            {
+                //Check for inactive account or cost centre codes
+                TransDV.Sort = String.Format("{0} ASC, {1} ASC",
+                    ATransactionTable.GetJournalNumberDBName(),
+                    ATransactionTable.GetTransactionNumberDBName());
+
+                foreach (DataRowView drv in TransDV)
+                {
+                    ATransactionRow transRow = (ATransactionRow)drv.Row;
+
+                    if (!AccountIsActive(ALedgerNumber, transRow.AccountCode))
+                    {
+                        VerificationMessage += String.Format(" Account '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            transRow.AccountCode,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccounts++;
+                    }
+
+                    if (!CostCentreIsActive(ALedgerNumber, transRow.CostCentreCode))
+                    {
+                        VerificationMessage += String.Format(" Cost Centre '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            transRow.CostCentreCode,
+                            transRow.JournalNumber,
+                            transRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveCostCentres++;
+                    }
+                }
+
+                //Check anlysis attributes
+                AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                foreach (DataRowView drv2 in AttribDV)
+                {
+                    ATransAnalAttribRow analAttribRow = (ATransAnalAttribRow)drv2.Row;
+
+                    if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
+                    {
+                        VerificationMessage += String.Format(" Analysis Code '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            analAttribRow.AnalysisTypeCode,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccountTypes++;
+                    }
+
+                    if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                    {
+                        VerificationMessage += String.Format(" Analysis Value '{0}' in Journal:{1} Transaction:{2}.{3}",
+                            analAttribRow.AnalysisAttributeValue,
+                            analAttribRow.JournalNumber,
+                            analAttribRow.TransactionNumber,
+                            Environment.NewLine);
+
+                        NumInactiveAccountValues++;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+
+            ANumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
+
+            if (ANumInactiveValues > 0)
+            {
+                VerificationResult.Add(new TVerificationResult(string.Format(Catalog.GetString("Inactive Values:{0}"), Environment.NewLine),
+                        VerificationMessage,
+                        TResultSeverity.Resv_Noncritical));
+
+                StringBuilder errorMessages = new StringBuilder();
+
+                //Create header message
+                string headerMsg = "{0} inactive value(s) found in GL Batch {1}. Do you still want to ";
+
+                if (AInPosting)
+                {
+                    headerMsg += "post?{2}";
+                }
+                else
+                {
+                    headerMsg += "save?{2}{2}(You will only be warned about this once when saving this batch!){2}";
+                }
+
+                errorMessages.AppendFormat(Catalog.GetString(headerMsg),
+                    ANumInactiveValues,
+                    ABatchNumber,
+                    Environment.NewLine);
+
+                foreach (TVerificationResult message in VerificationResult)
+                {
+                    errorMessages.AppendFormat("{0}{1}",
+                        Environment.NewLine,
+                        message.ResultText);
+                }
+
+                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGLBatch)ParentForm);
+
+                RetVal = (extendedMessageBox.ShowDialog(errorMessages.ToString(),
+                              Catalog.GetString((AInPosting ? "Post" : "Save") + " Batch"), string.Empty,
+                              TFrmExtendedMessageBox.TButtons.embbYesNo,
+                              TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes);
+            }
+            else
+            {
+                RetVal = true;
+            }
+
+            return RetVal;
+        }
+
+        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
+
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                AAccountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
+
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
+        {
+            switch (AContext)
+            {
+                case BoundGridImage.AnnotationContextEnum.AccountCode:
+                    ATransactionRow row = (ATransactionRow)ADataRowView.Row;
+                    return !AccountIsActive(FLedgerNumber, row.AccountCode);
+
+                case BoundGridImage.AnnotationContextEnum.CostCentreCode:
+                    ATransactionRow row2 = (ATransactionRow)ADataRowView.Row;
+                    return !CostCentreIsActive(FLedgerNumber, row2.CostCentreCode);
+
+                case BoundGridImage.AnnotationContextEnum.AnalysisTypeCode:
+                    ATransAnalAttribRow row3 = (ATransAnalAttribRow)ADataRowView.Row;
+                    return !FAnalysisAttributesLogic.AnalysisCodeIsActive(cmbDetailAccountCode.GetSelectedString(),
+                    FCacheDS.AAnalysisAttribute,
+                    row3.AnalysisTypeCode);
+
+                case BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue:
+                    ATransAnalAttribRow row4 = (ATransAnalAttribRow)ADataRowView.Row;
+                    return !TAnalysisAttributes.AnalysisAttributeValueIsActive(ref FcmbAnalAttribValues,
+                    FCacheDS.AFreeformAnalysis,
+                    row4.AnalysisTypeCode,
+                    row4.AnalysisAttributeValue);
+            }
+
+            return false;
+        }
+
+        #endregion
     }
 }

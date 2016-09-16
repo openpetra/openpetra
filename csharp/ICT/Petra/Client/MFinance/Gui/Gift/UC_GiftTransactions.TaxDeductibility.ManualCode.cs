@@ -21,8 +21,9 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+#region usings
+
 using System;
-using System.Data;
 using System.Reflection;
 
 using Ict.Common;
@@ -35,10 +36,40 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
+#endregion usings
+
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftTransactions
     {
+        #region event handler
+
+        private void ToggleTaxDeductible(Object sender, EventArgs e)
+        {
+            if (FSETUseTaxDeductiblePercentageFlag)
+            {
+                bool taxDeductible = chkDetailTaxDeductible.Checked;
+
+                EnableTaxDeductibilityPct(taxDeductible);
+
+                if (taxDeductible)
+                {
+                    UpdateTaxDeductiblePct(Convert.ToInt64(txtDetailRecipientKey.Text), false);
+                    ReconcileTaxDeductibleAmounts(FPreviouslySelectedDetailRow);
+                }
+                else
+                {
+                    txtDeductiblePercentage.NumberValueDecimal = 0.0m;
+                    txtTaxDeductAmount.NumberValueDecimal = 0.0m;
+                    txtNonDeductAmount.NumberValueDecimal = FPreviouslySelectedDetailRow.GiftTransactionAmount;
+                }
+            }
+        }
+
+        #endregion event handler
+
+        #region control handling
+
         /// <summary>
         /// This is used to rearrnage the controls for when the Tax Deductibility Percentage is enabled (i.e. OM CH).
         /// It is unfortunately highly manual and might look confusing.
@@ -133,7 +164,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             txtTaxDeductAmount.TabIndex = STARTINGINDEX += 20;
             txtNonDeductAmount.TabIndex = STARTINGINDEX += 20;
             cmbDetailMotivationGroupCode.TabIndex = STARTINGINDEX += 20;
-            cmbDetailMotivationDetailCode.TabIndex = STARTINGINDEX += 20;
+            cmbMotivationDetailCode.TabIndex = STARTINGINDEX += 20;
             cmbDetailMailingCode.TabIndex = STARTINGINDEX += 20;
             txtDetailCostCentreCode.TabIndex = STARTINGINDEX += 20;
             txtDeductibleAccount.TabIndex = STARTINGINDEX += 20;
@@ -179,19 +210,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             UpdateTaxDeductibilityAmounts(this, null);
         }
 
+        private void EnableTaxDeductibilityPct(bool AEnable)
+        {
+            txtDeductiblePercentage.Enabled = AEnable;
+        }
+
+        #endregion control handling
+
+        #region data handling
+
         // get tax deductible percentage data from controls
         private void GetTaxDeductibleDataFromControlsManual(GiftBatchTDSAGiftDetailRow ARow)
         {
-            if (FCreatingNewGift)
+            if (FNewGiftInProcess)
             {
                 return;
             }
 
             ARow.TaxDeductiblePct = txtDeductiblePercentage.NumberValueDecimal.Value;
 
-            ARow.TaxDeductibleAmount = txtTaxDeductAmount.NumberValueDecimal.Value;
-
-            ARow.NonDeductibleAmount = txtNonDeductAmount.NumberValueDecimal.Value;
+            ReconcileTaxDeductibleAmounts(ARow);
 
             if (txtDeductibleAccount.Text.Length == 0)
             {
@@ -203,9 +241,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void EnableTaxDeductibilityPct(bool AEnable)
+        private void ReconcileTaxDeductibleAmounts(GiftBatchTDSAGiftDetailRow ARow)
         {
-            txtDeductiblePercentage.Enabled = AEnable;
+            AGiftDetailRow GDR = (AGiftDetailRow)ARow;
+
+            TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref GDR);
+
+            if ((txtTaxDeductAmount.NumberValueDecimal != ARow.TaxDeductibleAmount)
+                || (txtNonDeductAmount.NumberValueDecimal != ARow.NonDeductibleAmount))
+            {
+                txtTaxDeductAmount.NumberValueDecimal = ARow.TaxDeductibleAmount;
+                txtNonDeductAmount.NumberValueDecimal = ARow.NonDeductibleAmount;
+            }
         }
 
         // Set the Tax Deductibility Percentage from a Recipient's PPartnerTaxDeductiblePct row (if it exists)
@@ -284,9 +331,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             return TaxDeductiblePct;
         }
 
+        #endregion data handling
+
+        #region data validation
+
         private void ValidateTaxDeductiblePct(GiftBatchTDSAGiftDetailRow ARow, ref TVerificationResultCollection AVerificationResultCollection)
         {
+            int PreValidationResultCount = AVerificationResultCollection.Count;
+
             TSharedFinanceValidation_Gift.ValidateTaxDeductiblePct(this, ARow, ref AVerificationResultCollection, FValidationControlsDict);
+
+            //No validation errors occurred
+            if (PreValidationResultCount == AVerificationResultCollection.Count)
+            {
+                ReconcileTaxDeductibleAmounts(ARow);
+            }
         }
+
+        #endregion data validation
     }
 }

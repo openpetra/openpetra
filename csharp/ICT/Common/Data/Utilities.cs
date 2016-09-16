@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -251,22 +251,28 @@ namespace Ict.Common.Data
         }
 
         /// <summary>
-        /// calculate a hash for a table and the size of the table
+        /// Calculates a Hash value for a DataTable and calculates the size of the DataTable, too.
         /// </summary>
-        /// <param name="AHashDT">the table to be analysed</param>
-        /// <param name="AHash">returns the hash value of the table</param>
-        /// <param name="ASize">returns the size of the table</param>
+        /// <remarks><em>Do not use for creation of a password hash</em> - this Method uses the SHA1 algorithm
+        /// for speed reasons but this is not deemed safe enough for password hashing! --> Use
+        /// PasswordHelper.GetPasswordHash() for this instead!!!</remarks>
+        /// <param name="AHashDT">The DataTable to be analysed.</param>
+        /// <param name="AHash">Returns the Hash value of the DataTable.</param>
+        /// <param name="ASize">Returns the size of the DataTable.</param>
         public static void CalculateHashAndSize(DataTable AHashDT, out String AHash, out Int32 ASize)
         {
             CalculateHashAndSize(AHashDT.DefaultView, out AHash, out ASize);
         }
 
         /// <summary>
-        /// calculate a hash for a table and the size of the dataview
+        /// Calculate a Hash for a DataView and the calculates the size of the DataView, too.
         /// </summary>
-        /// <param name="AHashDV">the dataview to be analysed</param>
-        /// <param name="AHash">returns the hash value of the table</param>
-        /// <param name="ASize">returns the size of the table</param>
+        /// <remarks><em>Do not use for creation of a password hash</em> - this Method uses the SHA1 algorithm
+        /// for speed reasons but this is not deemed safe enough for password hashing! --> Use
+        /// PasswordHelper.GetPasswordHash() for this instead!!!</remarks>
+        /// <param name="AHashDV">The DataView to be analysed.</param>
+        /// <param name="AHash">Returns the Hash value of the DataView.</param>
+        /// <param name="ASize">Returns the size of the DataView.</param>
         public static void CalculateHashAndSize(DataView AHashDV, out String AHash, out Int32 ASize)
         {
             StringBuilder HashStringBuilder;

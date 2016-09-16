@@ -2268,7 +2268,7 @@ namespace Ict.Common
             int ReturnValue = -9999;
             char CurrentChar;
             char ClosingBracketChar;
-            int ExtraBracketOccurances = 0;
+            int ExtraBracketOccurrences = 0;
 
             #region Working on Arguments
 
@@ -2303,15 +2303,15 @@ namespace Ict.Common
 
                 if (CurrentChar == ABracketChar)
                 {
-                    ExtraBracketOccurances++;
-                    ReturnValue = (ExtraBracketOccurances * -1);  // set ReturnValue in case no matching number of closing Brackets is ever found!
+                    ExtraBracketOccurrences++;
+                    ReturnValue = (ExtraBracketOccurrences * -1);  // set ReturnValue in case no matching number of closing Brackets is ever found!
                 }
                 else if (CurrentChar == ClosingBracketChar)
                 {
-                    if (ExtraBracketOccurances > 0)
+                    if (ExtraBracketOccurrences > 0)
                     {
-                        ExtraBracketOccurances--;
-                        ReturnValue = (ExtraBracketOccurances * -1);  // set ReturnValue in case no matching number of closing Brackets is ever found!
+                        ExtraBracketOccurrences--;
+                        ReturnValue = (ExtraBracketOccurrences * -1);  // set ReturnValue in case no matching number of closing Brackets is ever found!
                     }
                     else
                     {

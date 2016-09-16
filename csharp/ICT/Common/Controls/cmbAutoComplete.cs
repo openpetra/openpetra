@@ -62,7 +62,7 @@ namespace Ict.Common.Controls
     /// he cannot add a new item. The 'CaseSensitiveSearch' property allows to switch
     /// between a case sensitive search and a non case sensitive search in the items
     /// of the Combobox. However the ComboBox searches its internal data for the text
-    /// being entered and returns the first occurance of that text. The searching is
+    /// being entered and returns the first occurrence of that text. The searching is
     /// done while typing, saving the end user some time.
     /// </summary>
     public class TCmbAutoComplete : System.Windows.Forms.ComboBox
@@ -459,7 +459,7 @@ namespace Ict.Common.Controls
 
         /// <summary>
         /// This function builds a string collection out of a comma seperated list given
-        /// in the format of a string. The occurance of each column can only be one.
+        /// in the format of a string. The occurrence of each column can only be one.
         /// Therefore Duplicates are being removed.
         /// </summary>
         private StringCollection BuildColumnStringCollection(String AString)

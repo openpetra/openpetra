@@ -1,6 +1,6 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraEditForm.yaml
-    FormTitle: Unit Hierarchy
+    FormTitle: Maintain Unit Hierarchy
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     FormType: edit
     Template: window

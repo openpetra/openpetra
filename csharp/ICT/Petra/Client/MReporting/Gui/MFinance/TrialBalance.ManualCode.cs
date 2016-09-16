@@ -97,13 +97,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ALedgerTable LedgerTbl = TRemote.MFinance.AP.WebConnectors.GetLedgerInfo(FLedgerNumber);
 
-            String LedgerName = "";
             Boolean IsClosed = false;
 
             if (LedgerTbl.Rows.Count > 0)
             {
                 ALedgerRow LedgerRow = LedgerTbl[0];
-                LedgerName = LedgerRow.LedgerName;
                 //
                 // I want to tell the user whether the selected period is closed
                 // (although they probably know already...)
@@ -116,6 +114,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 }
             }
 
+            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddParameter("param_period_closed", IsClosed);
 

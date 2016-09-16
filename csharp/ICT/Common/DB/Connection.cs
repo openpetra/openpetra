@@ -101,13 +101,16 @@ namespace Ict.Common.DB
 
                     TLogging.Log(
                         "    " +
-                        (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") + "Database connection closed." + AConnectionName);
+                        (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") +
+                        "Database connection closed." + AConnectionName + " " +
+                        TDataBase.GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection());
                 }
                 catch (Exception exp)
                 {
                     TLogging.Log(
                         (TLogging.DL >=
-                         DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") + "Error closing Database connection!" + AConnectionName +
+                         DBAccess.DB_DEBUGLEVEL_TRACE ? "CloseDBConnection:" : "") + "Error closing Database connection!" +
+                        AConnectionName + " " + TDataBase.GetThreadAndAppDomainCallInfoForDBConnectionEstablishmentAndDisconnection() +
                         " Exception: " + exp.ToString());
                     throw;
                 }

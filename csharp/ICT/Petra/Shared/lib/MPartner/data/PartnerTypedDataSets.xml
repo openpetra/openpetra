@@ -345,6 +345,8 @@
       <CustomField name="BankKey" type="Int64" initial="0"/>
       <CustomField name="Bic" type="string"/>
       <CustomField name="BicMatch" type="string" initial="BEGINS"/>
+      <CustomField name="DateOfBirth" type="DateTime"/>
+      <CustomField name="FamilyKey" type="Int64" initial="0"/>
     </CustomTable>
     <CustomTable name="SearchResult">
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
@@ -509,6 +511,17 @@
     <Table sqltable="um_job_qualification"/>
     <Table sqltable="pc_building"/>
     <Table sqltable="pc_room"/>
+    <!-- Custom table that holds import process information about each file row -->
+    <CustomTable name="OutputData">
+      <CustomField name="ImportID" type="string"/>
+      <CustomField name="IsFromFile" type="bool"/>
+      <CustomField name="InputPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="OutputPersonPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="OutputFamilyPartnerKey" type="Int64" initial="0"/>
+      <CustomField name="PartnerClass" type="string"/>
+      <CustomField name="PartnerShortName" type="string"/>
+      <CustomField name="ImportStatus" type="string"/>
+    </CustomTable>
   </DataSet>
 
   <DataSet name="ExtractTDS">

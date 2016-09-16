@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters
+//       peters, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -25,6 +25,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using PasswordUtilities;
+using Sodium;
 
 namespace Ict.Common
 {
@@ -33,6 +34,18 @@ namespace Ict.Common
     /// </summary>
     public class PasswordHelper
     {
+        /// <summary>
+        /// This is the password for the IUSROPEMAIL user.  If authentication is required by the EMail server so that clients can send emails from
+        /// connections on the public internet, we can tell the client to authenticate using these credentials.
+        /// That way they do not need to supply their own login credentials which we would have to store somewhere.
+        /// The sysadmin for the servers needs to create this user with low privileges accessible by the mail server (locally or using Active Directory).
+        /// The password must be set to 'never expires' and 'cannot be changed'.
+        /// Note that the password is not stored in this file as text and it is never exposed to a client.
+        // Password is ....
+        public readonly static byte[] EmailUserPassword = new byte[] {
+            0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+        };
+
         /// <summary>
         /// Generate a new secure random password and salt. Use them to create a hash.
         /// </summary>
@@ -50,49 +63,66 @@ namespace Ict.Common
         public static string GetRandomSecurePassword()
         {
             double Entropy = 0;
-            PasswordGenerator Generator = new PasswordGenerator();
+            PasswordGenerator PWGenerator = new PasswordGenerator(new PasswordPolicy(15, 18));
 
-            // TODO An Entropy of 72 was deemed sufficient in 2014 but it should be raised in future years to accommodate the increase
+            // NOTE: An Entropy of 91 was deemed sufficient in 2016 but it should be raised in future years to accommodate the increase
             // in computing power and hence the lessening of time it would take to break a password of such an Entropy.
-            while (Entropy < 72)
+            while (Entropy < 91)
             {
-                Generator.GeneratePassword();
-                Entropy = Generator.PasswordEntropy;
+                PWGenerator.GeneratePassword();
+                Entropy = PWGenerator.PasswordEntropy;
             }
 
-            return Generator.Password;
+            return PWGenerator.Password;
         }
 
         /// generate a new password salt
         public static string GetNewPasswordSalt()
         {
-            byte[] saltBytes = new byte[32];
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            rng.GetNonZeroBytes(saltBytes);
+            byte[] Salt = PasswordHash.GenerateSalt();
 
-            return Convert.ToBase64String(saltBytes);;
+            return Encoding.ASCII.GetString(Salt);
         }
 
         /// <summary>
-        /// generate a password hash
+        /// Generates a Password Hash using the 'Scrypt' Key Stretching Algorithm (which is provided through the libsodium-net
+        /// libaray ['Sodium' namespace]).
         /// </summary>
-        /// <param name="APassword"></param>
-        /// <param name="ASalt"></param>
-        /// <returns>Hash</returns>
+        /// <remarks><em>IMPORTANT:</em> Changing the way 'Salt' is generated and/or changing the 'Password Hash Strength limit'
+        /// that gets passed to the PasswordHash.ScryptHashBinary Method (currently PasswordHash.Strength.Medium)
+        /// <em>***invalidates existing passwords***</em>, ie. users will no longer be able to log on with their passwords once
+        /// this is done!
+        /// <para />
+        /// If those parameters should ever be changed then the Ict.Tools.PasswordResetter.exe application can be used to assign
+        /// new, random passwords that are created 'in the new way' and users will need to log on once with that password,
+        /// then they will immediately need to enter a new password. This will then be stored 'in the new way' and users will
+        /// be able to log on as they used to do from then onwards - with the new password of their choice.</remarks>
+        /// <param name="APassword">Password.</param>
+        /// <param name="ASalt">Salt. Must have been created with <see cref="GetNewPasswordSalt"/>!!!</param>
+        /// <returns>Password Hash created with the 'Scrypt' Key Stretching Algorithm.</returns>
         public static string GetPasswordHash(string APassword, string ASalt)
         {
-            return GetPasswordHash(String.Concat(APassword, ASalt));
+            return BitConverter.ToString(
+                PasswordHash.ScryptHashBinary(APassword, ASalt, PasswordHash.Strength.Medium)).Replace("-", "");
         }
 
         /// <summary>
-        /// generate a password hash
+        /// Compare two byte arrays.
+        /// Avoiding timing attacks by making sure that the comparison always takes the same amount of time.
         /// </summary>
-        /// <param name="APasswordAndSalt"></param>
-        /// <returns>Hash</returns>
-        public static string GetPasswordHash(string APasswordAndSalt)
+        /// <param name="a">array 1.</param>
+        /// <param name="b">array 2.</param>
+        /// <returns>True if equal. Otherwise False.</returns>
+        public static bool EqualsAntiTimingAttack(byte[] a, byte[] b)
         {
-            return BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
-                        APasswordAndSalt))).Replace("-", "");
+            uint diff = (uint)a.Length ^ (uint)b.Length;
+
+            for (int i = 0; i < a.Length && i < b.Length; i++)
+            {
+               diff |= (uint)(a[i] ^ b[i]);
+            }
+
+            return diff == 0;
         }
     }
 }

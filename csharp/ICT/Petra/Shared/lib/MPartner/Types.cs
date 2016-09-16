@@ -166,7 +166,10 @@ namespace Ict.Petra.Shared.MPartner
         eReverseLastnameInitialsOnly,
 
         /// firstname lastname
-        eReverseWithoutTitle
+        eReverseWithoutTitle,
+
+        /// lastname, firstname (just remove title field)
+        eJustRemoveTitle
     };
 
     /// <summary>
@@ -219,6 +222,32 @@ namespace Ict.Petra.Shared.MPartner
         /// Bank Account
         /// </summary>
         BANKACCOUNT
+    };
+
+    /// <summary>
+    /// Defines the format of an import file (currently partner import)
+    /// </summary>
+    public enum TImportFileFormat
+    {
+        /// <summary>
+        /// unknown file format
+        /// </summary>
+        unknown,
+
+        /// <summary>
+        /// .ext file format
+        /// </summary>
+        ext,
+
+        /// <summary>
+        /// .csv file format
+        /// </summary>
+        csv,
+
+        /// <summary>
+        /// .yml file format
+        /// </summary>
+        yml
     };
 
     /// <summary>

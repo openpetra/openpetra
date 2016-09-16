@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -49,7 +50,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmGLBatch
     {
-        /// this window contains 3 tabs
+        /// <summary>
+        /// This window contains 3 tabs
+        /// </summary>
         public enum eGLTabs
         {
             /// list of batches
@@ -65,7 +68,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             None
         };
 
+        /// <summary>
         /// GL contains 3 levels
+        /// </summary>
         public enum eGLLevel
         {
             /// batch level
@@ -80,6 +85,30 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             /// analysis attribute level
             Analysis
         };
+
+        /// <summary>
+        /// List of Gift Batch Actions
+        /// </summary>
+        public enum GLBatchAction
+        {
+            /// <summary>Saving GLBatch or RecurringGLBatch</summary>
+            SAVING,
+            /// <summary>A New GLBatch or RecurringGLBatch</summary>
+            NEWBATCH,
+            /// <summary>Posting a GLBatch</summary>
+            POSTING,
+            /// <summary>Cancelling a GLBatch</summary>
+            CANCELLING,
+            /// <summary>Submitting a RecurringGLBatch</summary>
+            SUBMITTING,
+            /// <summary>Deleting a RecurringGLBatch</summary>
+            DELETING,
+            /// <summary>No action being taken</summary>
+            NONE
+        };
+
+        /// <summary>Store the current action on the batch</summary>
+        public GLBatchAction FCurrentGLBatchAction = GLBatchAction.NONE;
 
         private eGLTabs FPreviouslySelectedTab = eGLTabs.None;
         private Int32 FLedgerNumber = -1;
@@ -202,8 +231,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Setting the ledger number of the batch control will automatically load the current financial year batches
                 ucoBatches.LedgerNumber = value;
 
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(FPetraUtilsObject_DataSavingValidated);
+
                 ucoJournals.WorkAroundInitialization();
                 ucoTransactions.WorkAroundInitialization();
+            }
+            get
+            {
+                return FLedgerNumber;
             }
         }
 
@@ -397,7 +433,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (this.tpgTransactions.Enabled)
                     {
+                        ABatchRow batchRow = ucoBatches.GetSelectedDetailRow();
+
+                        string loadingMessage = string.Empty;
                         bool batchWasPreviousTab = (FPreviouslySelectedTab == eGLTabs.Batches);
+
                         FPreviouslySelectedTab = eGLTabs.Transactions;
 
                         // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
@@ -409,19 +449,42 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             //  which is only allowed when one journal exists
 
                             //Need to make sure that the Journal is loaded
-                            LoadJournals(ucoBatches.GetSelectedDetailRow());
+                            LoadJournals(batchRow);
                         }
 
-                        LoadTransactions(ucoJournals.GetSelectedDetailRow().BatchNumber,
-                            ucoBatches.GetSelectedDetailRow().BatchStatus,
-                            ucoJournals.GetSelectedDetailRow().JournalNumber,
-                            ucoJournals.GetSelectedDetailRow().JournalStatus,
-                            ucoJournals.GetSelectedDetailRow().TransactionCurrency,
-                            batchWasPreviousTab);
+                        GLBatchTDSAJournalRow journalRow = ucoJournals.GetSelectedDetailRow();
 
-                        //Warn if missing International Exchange Rate
-                        WarnAboutMissingIntlExchangeRate = true;
-                        GetInternationalCurrencyExchangeRate();
+                        if ((batchRow == null) || batchRow.IsBatchStatusNull())
+                        {
+                            loadingMessage = Catalog.GetString(
+                                "There has been a problem loading the batch, please reselect the Batch tab and batch again and then retry.");
+                        }
+                        else if ((journalRow == null) || journalRow.IsJournalStatusNull())
+                        {
+                            loadingMessage = Catalog.GetString(
+                                "There has been a problem loading the journals, please reselect the Batch tab and then the Journal tab and then retry.");
+                        }
+
+                        if (loadingMessage.Length == 0)
+                        {
+                            LoadTransactions(journalRow.BatchNumber,
+                                batchRow.BatchStatus,
+                                journalRow.JournalNumber,
+                                journalRow.JournalStatus,
+                                journalRow.TransactionCurrency,
+                                batchWasPreviousTab);
+
+                            //Warn if missing International Exchange Rate
+                            WarnAboutMissingIntlExchangeRate = true;
+                            GetInternationalCurrencyExchangeRate();
+                        }
+                        else
+                        {
+                            MessageBox.Show(loadingMessage,
+                                "View Transactions",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+                        }
                     }
                 }
             }
@@ -790,6 +853,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out AVerificationResult);
         }
 
+        // Before the dataset is saved, check for correlation between batch and transactions
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            ucoBatches.CheckBeforeSaving();
+            ucoJournals.CheckBeforeSaving();
+            ucoTransactions.CheckBeforeSaving();
+        }
+
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
+        {
+            //Check if the user has made a Bank Cost Centre or Account Code inactive
+            // on saving
+            int NumInactiveValues = 0;
+
+            if ((FCurrentGLBatchAction != GLBatchAction.POSTING)
+                && !ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, GetBatchControl().GetCurrentBatchRow().BatchNumber, out NumInactiveValues,
+                    false))
+            {
+                e.Cancel = true;
+            }
+        }
+
         private void FPetraUtilsObject_DataSaved(object sender, TDataSavedEventArgs e)
         {
             if (e.Success && FLatestSaveIncludedForex)
@@ -798,6 +883,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
             }
+        }
+
+        private void FileSaveManual(object sender, EventArgs e)
+        {
+            SaveChangesManual();
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual()
+        {
+            //Do manual checks here
+
+            return SaveChanges();
         }
 
         /// <summary>

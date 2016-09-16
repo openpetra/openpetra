@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,13 +40,15 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// todoComment
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ALoginSuccesful"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
         public static void AddLoginLogEntry(String AUserID,
+            Boolean ALoginSuccesful,
             String ALoginStatus,
             out Int32 AProcessID)
         {
-            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID,
+            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful,
                 ALoginStatus,
                 out AProcessID);
         }
@@ -55,15 +57,17 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// todoComment
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ALoginSuccesful"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
         public static void AddLoginLogEntry(String AUserID,
+            Boolean ALoginSuccesful,
             String ALoginStatus,
             Boolean AImmediateLogout,
             out Int32 AProcessID)
         {
-            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID,
+            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful,
                 ALoginStatus,
                 AImmediateLogout,
                 out AProcessID);

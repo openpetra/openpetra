@@ -55,7 +55,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// Private Declarations
         /// </summary>
         /// <returns>void</returns>
-        public TFrmSettingsLoad(TStoredSettings AStoredSettings)
+        public TFrmSettingsLoad(TStoredSettings AStoredSettings, Boolean ACalledFromExtract = false)
         {
             //
             // Required for Windows Form Designer support
@@ -67,7 +67,16 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Label1.Text = Catalog.GetString("Existing stored Settings") + ":";
             this.Btn_Cancel.Text = Catalog.GetString("Cancel");
             this.Btn_LoadFile.Text = Catalog.GetString("Load");
-            this.Text = Catalog.GetString("Load Report Settings");
+
+            if (ACalledFromExtract)
+            {
+                this.Text = Catalog.GetString("Load Extract Settings");
+            }
+            else
+            {
+                this.Text = Catalog.GetString("Load Report Settings");
+            }
+
             #endregion
             Btn_LoadFile.Enabled = false;
             FSettingsName = "";

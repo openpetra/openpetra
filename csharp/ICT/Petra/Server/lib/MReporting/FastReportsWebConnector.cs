@@ -122,7 +122,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "StewardshipForPeriod":
-                    FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
                     ResultTbl = TFinanceReportingWebConnector.StewardshipForPeriodTable(AParameters, FDbAdapter);
                     break;
@@ -190,7 +189,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "TotalForRecipients":
-                    FDbAdapter = new TReportingDbAdapter(false);
                     ResultTbl = TFinanceReportingWebConnector.TotalForRecipients(AParameters, FDbAdapter);
                     break;
 
@@ -230,6 +228,15 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* Finance */
+                case "RecipientGiftStatement":
+                    ResultSet = GetRecipientGiftStatementDataSet(AParameters, FDbAdapter);
+                    break;
+
+                case "DonorGiftStatement":
+                    ResultSet = GetDonorGiftStatementDataSet(AParameters, FDbAdapter);
+                    break;
+
                 /* Financial Development */
 
                 case "GiftsOverMinimum":
@@ -266,7 +273,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             try
             {
-                FDbAdapter = new TReportingDbAdapter(false);
+                FDbAdapter = new TReportingDbAdapter(true);
                 Transaction = FDbAdapter.FPrivateDatabaseObj.BeginTransaction(
 ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
@@ -300,44 +307,313 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
             return MainDs;
         }
 
+        private static void GetDonorHistoricTotals(Dictionary <String, TVariant>AParameters,
+            TReportingDbAdapter ADbAdapter,
+            Int64 APartnerKey,
+            DataTable Totals)
+        {
+            TDBTransaction Transaction = null;
+            int ledgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            int currentYear = DateTime.Now.Year;
+
+            string amountField = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+
+            ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    for (Int32 month = 1; month <= 12; month++)
+                    {
+                        String currentMonthStart = string.Format("-{0:D2}-01'", month);
+                        String nextMonthStart = string.Format("-{0:D2}-01'", month + 1);
+                        Int32 nextMonthYear = currentYear;
+
+                        if (month == 12)
+                        {
+                            nextMonthYear++;
+                            nextMonthStart = "-01-01'";
+                        }
+
+                        string Query = "SELECT " +
+                                       APartnerKey + " AS DonorKey, " +
+                                       month + " AS Month, " +
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + currentYear + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + nextMonthYear + nextMonthStart +
+                                       " THEN GiftDetail." + amountField +
+                                       " ELSE 0" +
+                                       " END) AS Year0Total," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + currentYear + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + nextMonthYear + nextMonthStart +
+                                       " THEN 1" +
+                                       " ELSE 0" +
+                                       " END) AS Year0Count," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + (currentYear - 1) + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + (nextMonthYear - 1) + nextMonthStart +
+                                       " THEN GiftDetail." + amountField +
+                                       " ELSE 0" +
+                                       " END) AS Year1Total," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + (currentYear - 1) + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + (nextMonthYear - 1) + nextMonthStart +
+                                       " THEN 1" +
+                                       " ELSE 0" +
+                                       " END) AS Year1Count," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + (currentYear - 2) + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + (nextMonthYear - 2) + nextMonthStart +
+                                       " THEN GiftDetail." + amountField +
+                                       " ELSE 0" +
+                                       " END) AS Year2Total," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + (currentYear - 2) + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + (nextMonthYear - 2) + nextMonthStart +
+                                       " THEN 1" +
+                                       " ELSE 0" +
+                                       " END) AS Year2Count," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + (currentYear - 3) + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + (nextMonthYear - 3) + nextMonthStart +
+                                       " THEN GiftDetail." + amountField +
+                                       " ELSE 0" +
+                                       " END) AS Year3Total," +
+
+                                       " SUM (" +
+                                       " CASE WHEN" +
+                                       " Gift.a_date_entered_d >= '" + (currentYear - 3) + currentMonthStart +
+                                       " AND Gift.a_date_entered_d < '" + (nextMonthYear - 3) + nextMonthStart +
+                                       " THEN 1 " +
+                                       " ELSE 0" +
+                                       " END) AS Year3Count" +
+
+                                       " FROM" +
+                                       " PUB_a_gift AS Gift, " +
+                                       " PUB_a_gift_detail AS GiftDetail," +
+                                       " PUB_a_gift_batch AS GiftBatch" +
+
+                                       " WHERE" +
+
+                                       " GiftDetail.a_ledger_number_i = " + ledgerNumber +
+                                       " AND Gift.p_donor_key_n = " + APartnerKey +
+                                       " AND Gift.a_ledger_number_i = " + ledgerNumber +
+                                       " AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i" +
+                                       " AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i" +
+                                       " AND Gift.a_date_entered_d >= '" + (currentYear - 3) + "-01-01'" +
+                                       " AND GiftBatch.a_ledger_number_i = " + ledgerNumber +
+                                       " AND GiftBatch.a_batch_number_i = Gift.a_batch_number_i" +
+                                       " AND GiftBatch.a_batch_status_c = 'Posted'";
+
+                        DataTable Results = ADbAdapter.RunQuery(Query, "RecipientTotals", Transaction);
+                        if (Results == null)
+                        {
+                            break;
+                        }
+                        else
+                        {
+                            Totals.Merge(Results);
+                        }
+                    } // for month
+
+                }); // Get NewOrExisting AutoRead Transaction
+        }
+
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
-        [RequireModulePermission("none")]
-        public static DataSet GetRecipientGiftStatementDataSet(Dictionary <String, TVariant>AParameters)
+        [NoRemoting]
+        private static DataSet GetDonorGiftStatementDataSet(Dictionary <String, TVariant>AParameters, TReportingDbAdapter ADbAdapter)
         {
-            string ReportType = AParameters["param_report_type"].ToString();
+            String reportType = AParameters["param_report_type"].ToString();
+            String donorSelect = AParameters["param_donor"].ToString();
+            Int64 donorKey = (donorSelect == "All Donors") ?
+                             -1
+                             :
+                             AParameters["param_donorkey"].ToInt64();
 
-            FDbAdapter = new TReportingDbAdapter(false);
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
-            DataSet ReturnDataSet = new DataSet();
 
-            // get recipients
-            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters, FDbAdapter);
+            // get donors
+            DataTable Donors = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, donorKey, -1, "DONOR");
 
-            if (FDbAdapter.IsCancelled || (Recipients == null))
+            if (ADbAdapter.IsCancelled || (Donors == null))
             {
                 return null;
             }
 
-            DataTable RecipientTotals = new DataTable("RecipientTotals");
-            RecipientTotals.Columns.Add("PreviousYearTotal", typeof(decimal));
-            RecipientTotals.Columns.Add("CurrentYearTotal", typeof(decimal));
+            DataTable Recipients = new DataTable("Recipients");
+            DataTable Totals = new DataTable("Totals");
+
+            if (reportType != "Totals")
+            {
+                Totals.Columns.Add("DonorKey", typeof(Int64));
+                Totals.Columns.Add("Month", typeof(Int32));
+                Totals.Columns.Add("Year0Total", typeof(Decimal));
+                Totals.Columns.Add("Year0Count", typeof(Int32));
+                Totals.Columns.Add("Year1Total", typeof(Decimal));
+                Totals.Columns.Add("Year1Count", typeof(Int32));
+                Totals.Columns.Add("Year2Total", typeof(Decimal));
+                Totals.Columns.Add("Year2Count", typeof(Int32));
+                Totals.Columns.Add("Year3Total", typeof(Decimal));
+                Totals.Columns.Add("Year3Count", typeof(Int32));
+            }
+
+            DataView View = new DataView(Donors);
+            View.Sort = "DonorKey";
+
+            DataTable DistinctDonors = new DataTable();
+            DataTable tempTable;
+
+            if (View.Count > 0)
+            {
+                DistinctDonors = View.ToTable(true, "DonorKey");
+            }
+
+            foreach (DataRow Row in DistinctDonors.Rows)
+            {
+                Int64 DonorKey = (Int64)Row["DonorKey"];
+
+                // get historical totals for donor
+                if (reportType == "Totals")
+                {
+                    GetDonorHistoricTotals(AParameters, ADbAdapter, DonorKey, Totals);
+                    Totals.DefaultView.Sort = "DonorKey, Month";
+                    Totals = Totals.DefaultView.ToTable();
+                }
+                else
+                {
+                    Decimal thisYearTotal = 0;
+                    Decimal previousYearTotal = 0;
+                    TFinanceReportingWebConnector.GetGiftStatementTotals(AParameters,
+                        ADbAdapter,
+                        DonorKey,
+                        out thisYearTotal,
+                        out previousYearTotal,
+                        true);
+                    DataRowView[] WriteBackRVs = View.FindRows(DonorKey);
+
+                    foreach (DataRowView rv in WriteBackRVs)
+                    {
+                        DataRow DonorsRow = rv.Row;
+                        DonorsRow["thisYearTotal"] = thisYearTotal;
+                        DonorsRow["previousYearTotal"] = previousYearTotal;
+                    }
+                }
+
+                // Get recipient information for each donor
+                tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
+                if (tempTable != null)
+                {
+                    Recipients.Merge(tempTable);
+                }
+
+                if (ADbAdapter.IsCancelled)
+                {
+                    return null;
+                }
+            }
+
+            DataTable DonorAddresses = new DataTable("DonorAddresses");
+
+            foreach (DataRow Row in DistinctDonors.Rows)
+            {
+                // get best address for each donor
+                tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+                if (tempTable != null)
+                {
+                    DonorAddresses.Merge(tempTable);
+                }
+
+                if (ADbAdapter.IsCancelled)
+                {
+                    return null;
+                }
+            }
+
+            if (ADbAdapter.IsCancelled)
+            {
+                return null;
+            }
+
+            DataSet ReturnDataSet = new DataSet();
+            ReturnDataSet.Tables.Add(Recipients);
+            ReturnDataSet.Tables.Add(Donors);
+            ReturnDataSet.Tables.Add(DonorAddresses);
+            ReturnDataSet.Tables.Add(Totals);
+            return ReturnDataSet;
+        } // Get DonorGiftStatement DataSet
+
+        /// <summary>
+        /// Returns a DataSet to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        private static DataSet GetRecipientGiftStatementDataSet(Dictionary <String, TVariant>AParameters, TReportingDbAdapter ADbAdapter)
+        {
+            string ReportType = AParameters["param_report_type"].ToString();
+
+            TLogging.SetStatusBarProcedure(WriteToStatusBar);
+
+            // get recipients
+            DataTable Recipients = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter);
+            Recipients.DefaultView.Sort = "RecipientKey";
+
+            if (ADbAdapter.IsCancelled || (Recipients == null))
+            {
+                return null;
+            }
+
             DataTable Donors = new DataTable("Donors");
 
             foreach (DataRow Row in Recipients.Rows)
             {
+                Int64 recipientKey = (Int64)Row["RecipientKey"];
+
                 if (ReportType == "Complete")
                 {
-                    // get year totals for recipient
-                    RecipientTotals.Merge(TFinanceReportingWebConnector.RecipientGiftStatementTotalsTable(AParameters, (Int64)Row["RecipientKey"],
-                            FDbAdapter));
+                    // get historical totals for recipient
+                    Decimal thisYearTotal = 0;
+                    Decimal previousYearTotal = 0;
+                    TFinanceReportingWebConnector.GetGiftStatementTotals(AParameters,
+                        ADbAdapter,
+                        recipientKey,
+                        out thisYearTotal,
+                        out previousYearTotal,
+                        false);
+
+                    DataRowView[] WriteBackRVs = Recipients.DefaultView.FindRows(recipientKey);
+
+                    foreach (DataRowView rv in WriteBackRVs)
+                    {
+                        DataRow RecipientsRow = rv.Row;
+                        RecipientsRow["thisYearTotal"] = thisYearTotal;
+                        RecipientsRow["previousYearTotal"] = previousYearTotal;
+                    }
                 }
 
                 // get donor information for each recipient
-                Donors.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorTable(AParameters, (Int64)Row["RecipientKey"], FDbAdapter));
+                DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, -1, recipientKey);
+                if (DonorTemp != null)
+                {
+                    Donors.Merge(DonorTemp);
+                }
 
-                if (FDbAdapter.IsCancelled)
+                if (ADbAdapter.IsCancelled)
                 {
                     return null;
                 }
@@ -358,18 +634,17 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 foreach (DataRow Row in DistinctDonors.Rows)
                 {
                     // get best address for each distinct donor
-                    DonorAddresses.Merge(TFinanceReportingWebConnector.RecipientGiftStatementDonorAddressesTable(Convert.ToInt64(Row["DonorKey"]),
-                            FDbAdapter));
+                    DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+                    if (DonorTemp != null)
+                    {
+                        DonorAddresses.Merge(DonorTemp);
+                    }
 
-                    if (FDbAdapter.IsCancelled)
+                    if (ADbAdapter.IsCancelled)
                     {
                         return null;
                     }
                 }
-            }
-            else
-            {
-                DonorAddresses.Merge(DistinctDonors);
             }
 
             // We only want distinct donors for this report (i.e. no more than one per recipient)
@@ -390,12 +665,17 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
             }
 
+            if (ADbAdapter.IsCancelled)
+            {
+                return null;
+            }
+
+            DataSet ReturnDataSet = new DataSet();
             ReturnDataSet.Tables.Add(Recipients);
-            ReturnDataSet.Tables.Add(RecipientTotals);
             ReturnDataSet.Tables.Add(Donors);
             ReturnDataSet.Tables.Add(DonorAddresses);
 
-            return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
+            return ReturnDataSet;
         }
 
         /// <summary>
@@ -404,15 +684,16 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
         [RequireModulePermission("none")]
         public static DataSet GetOneYearMonthGivingDataSet(Dictionary <String, TVariant>AParameters)
         {
-            FDbAdapter = new TReportingDbAdapter(false);
+            FDbAdapter = new TReportingDbAdapter(true);
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
             DataSet ReturnDataSet = new DataSet();
 
             // get recipients
-            DataTable Recipients = TFinanceReportingWebConnector.RecipientGiftStatementRecipientTable(AParameters, FDbAdapter);
+            DataTable Recipients = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, FDbAdapter);
 
             if (FDbAdapter.IsCancelled || (Recipients == null))
             {
+                FDbAdapter.CloseConnection();
                 return null;
             }
 
@@ -425,12 +706,15 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
                 if (FDbAdapter.IsCancelled)
                 {
+                    FDbAdapter.CloseConnection();
                     return null;
                 }
             }
 
             ReturnDataSet.Tables.Add(Recipients);
             ReturnDataSet.Tables.Add(Donors);
+
+            FDbAdapter.CloseConnection();
 
             return (FDbAdapter.IsCancelled) ? null : ReturnDataSet;
         }

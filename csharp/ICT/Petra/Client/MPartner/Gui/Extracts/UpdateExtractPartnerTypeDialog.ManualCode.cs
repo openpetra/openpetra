@@ -100,6 +100,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
             FTypeTable = (PTypeTable)TDataCache.TMPartner.GetCacheablePartnerTable(
                 TCacheablePartnerTablesEnum.PartnerTypeList);
+
+            for (int i = 0; i < FTypeTable.Rows.Count; i++)
+            {
+                PTypeRow row = (PTypeRow)FTypeTable.Rows[i];
+
+                if (!row.ValidType)
+                {
+                    row.TypeDescription += MCommonResourcestrings.StrGenericInactiveCode;
+                }
+            }
+
+            FTypeTable.AcceptChanges();
+
             grdTypes.AddTextColumn(Catalog.GetString("Type Code"), FTypeTable.Columns[PTypeTable.GetTypeCodeDBName()]);
             grdTypes.AddTextColumn(Catalog.GetString("Description"), FTypeTable.Columns[PTypeTable.GetTypeDescriptionDBName()]);
 
@@ -147,16 +160,31 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             // find selected type code
             DataRowView[] SelectedGridRow = grdTypes.SelectedDataRowsAsDataRowView;
 
-            if (SelectedGridRow.Length >= 1)
+            if (SelectedGridRow.Length < 1)
             {
-                FTypeCode = ((PTypeRow)SelectedGridRow[0].Row).TypeCode;
+                return;
             }
+
+            PTypeRow row = (PTypeRow)SelectedGridRow[0].Row;
+            FTypeCode = row.TypeCode;
 
             if (FAdd)
             {
+                Title = Catalog.GetString("Add Partner Special Type");
+
+                if (!row.ValidType)
+                {
+                    Message = string.Format(Catalog.GetString("The code '{0}' is no longer active.  Are you sure you want to use it?"), FTypeCode);
+
+                    if (MessageBox.Show(Message, Title, MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                            MessageBoxDefaultButton.Button2) == DialogResult.No)
+                    {
+                        return;
+                    }
+                }
+
                 Message = String.Format(Catalog.GetString("Are you sure that you want to add special type '{0}' " +
                         "for all partners in extract '{1}'?"), FTypeCode, FExtractName);
-                Title = Catalog.GetString("Add Partner Special Type");
             }
             else
             {

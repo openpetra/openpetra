@@ -1,10 +1,9 @@
-//
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -42,6 +41,19 @@ namespace Ict.Petra.Client.MSysMan.Gui
     /// manual methods for the generated window
     public partial class TFrmMaintainUsers
     {
+        #region Resourcetexts
+
+        private readonly string StrAccountStateChangeQuestion = Catalog.GetString(
+            "Are you sure you want to {0} the user account of user {1} (currently it is {2})?");
+        private readonly string StrAccountStateChangeConfirmation = Catalog.GetString(
+            "User Account got {0} - user {1} {2}!\r\n(Press 'Save' to apply now.)");
+        private readonly string StrAccountStateChangeConfirmationTitle = Catalog.GetString("User Account: {0} Changed");
+        private readonly string StrWillBeAbleToLogin = Catalog.GetString("will be able to log in again");
+        private readonly string StrWillNotBeAbleToLogin = Catalog.GetString("will not be able to log in anymore");
+        private readonly string StrWillBeStillNotBeAbleToLogin = Catalog.GetString("will still not be able to log in because {0}");
+
+        #endregion
+
         private void InitializeManualCode()
         {
             bool CanCreateUser;
@@ -113,8 +125,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             if (Result == TSubmitChangesResult.scrOK)
             {
-                MessageBox.Show(Catalog.GetString("Changes to users will take effect at next login."),
-                    Catalog.GetString("Maintain Users"));
+                MessageBox.Show(Catalog.GetString("Changes to any users will take effect only at their next login!"),
+                    Catalog.GetString("Maintain Users: Saving of Data Successful"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                 // Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
                 Int32 rowIdx = GetSelectedRowIndex();
@@ -235,14 +248,72 @@ namespace Ict.Petra.Client.MSysMan.Gui
             ARow.UserId = newName;
         }
 
-        private void RetireUser(Object Sender, EventArgs e)
+        private void LockUnlockUser(Object Sender, EventArgs e)
         {
-            GetSelectedDetailRow().Retired = !GetSelectedDetailRow().Retired;
-            FPetraUtilsObject.SetChangedFlag();
+            DialogResult UserAnswer = MessageBox.Show(String.Format(StrAccountStateChangeQuestion,
+                    GetSelectedDetailRow().AccountLocked ? "unlock" : "lock", txtDetailUserId.Text,
+                    GetSelectedDetailRow().AccountLocked ? "locked" : "not locked"),
+                Catalog.GetString("Lock/Unlock User Account?"),
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+            if (UserAnswer == DialogResult.Yes)
+            {
+                chkDetailAccountLocked.Checked = !chkDetailAccountLocked.Checked;
+                GetSelectedDetailRow().AccountLocked = !GetSelectedDetailRow().AccountLocked;
+                GetSelectedDetailRow().FailedLogins = 0;
+                FPetraUtilsObject.SetChangedFlag();
+
+                MessageBox.Show(String.Format(StrAccountStateChangeConfirmation,
+                        chkDetailAccountLocked.Checked ? Catalog.GetString("locked") : Catalog.GetString(
+                            "unlocked and the user's Failed Login count was reset to 0"),
+                        txtDetailUserId.Text, chkDetailAccountLocked.Checked ? StrWillNotBeAbleToLogin :
+                        (!chkDetailRetired.Checked ? StrWillBeAbleToLogin : String.Format(StrWillBeStillNotBeAbleToLogin,
+                             Catalog.GetString("the user is retired"))
+                        )),
+                    String.Format(StrAccountStateChangeConfirmationTitle, Catalog.GetString("Locked State")),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Lock state of User Account did not get changed."),
+                    Catalog.GetString("User Account: Lock State Not Changed"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void RetireUnretireUser(Object Sender, EventArgs e)
+        {
+            DialogResult UserAnswer = MessageBox.Show(String.Format(StrAccountStateChangeQuestion,
+                    GetSelectedDetailRow().Retired ? "unretire" : "retire", txtDetailUserId.Text,
+                    GetSelectedDetailRow().Retired ? "retired" : "not retired"),
+                Catalog.GetString("Retire/Unretire User Account?"),
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+
+            if (UserAnswer == DialogResult.Yes)
+            {
+                chkDetailRetired.Checked = !chkDetailRetired.Checked;
+                GetSelectedDetailRow().Retired = !GetSelectedDetailRow().Retired;
+                FPetraUtilsObject.SetChangedFlag();
+
+                MessageBox.Show(String.Format(StrAccountStateChangeConfirmation,
+                        chkDetailRetired.Checked ? Catalog.GetString("retired") : Catalog.GetString("unretired"),
+                        txtDetailUserId.Text, chkDetailRetired.Checked ? StrWillNotBeAbleToLogin :
+                        (!chkDetailAccountLocked.Checked ? StrWillBeAbleToLogin : String.Format(StrWillBeStillNotBeAbleToLogin,
+                             Catalog.GetString("the User Account is Locked"))
+                        )),
+                    String.Format(StrAccountStateChangeConfirmationTitle, Catalog.GetString("Retired State")),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Retired state of User Account did not get changed."),
+                    Catalog.GetString("User Account: Retired State Not Changed"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         private void SetPassword(Object Sender, EventArgs e)
         {
+            TVerificationResultCollection VerificationResultCollection = null;
+
             if (FPreviouslySelectedDetailRow == null)
             {
                 return;
@@ -251,8 +322,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
             if (FPetraUtilsObject.HasChanges)
             {
                 MessageBox.Show(
-                    Catalog.GetString("Please save changes before changing password."),
-                    Catalog.GetString("Change password."),
+                    Catalog.GetString("It is necessary to save any changes before a user's password can be changed." +
+                        Environment.NewLine + "Please save changes now and then repeat the operation."),
+                    CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
                 return;
@@ -260,44 +332,54 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             string username = GetSelectedDetailRow().UserId;
 
-            string MessageTitle = Catalog.GetString("Set Password");
-            string ErrorMessage = String.Format(Catalog.GetString("There was a problem setting the password for user {0}."), username);
-
             // only request the password once, since this is the sysadmin changing it.
             // see http://bazaar.launchpad.net/~openpetracore/openpetraorg/trunkhosted/view/head:/csharp/ICT/Petra/Client/MSysMan/Gui/SysManMain.cs
             // for the change password dialog for the normal user
             PetraInputBox input = new PetraInputBox(
-                Catalog.GetString("Change the password"),
-                String.Format(Catalog.GetString("Please enter the new password for user {0}:"), username),
+                CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
+                String.Format(Catalog.GetString("Please enter a new password for user {0}:"), username),
                 "", true);
 
             if (input.ShowDialog() == DialogResult.OK)
             {
                 string password = input.GetAnswer();
-                TVerificationResult VerificationResult;
 
-                if (TSharedSysManValidation.CheckPasswordQuality(password, out VerificationResult))
+                try
                 {
-                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true, true))
-                    {
-                        MessageBox.Show(String.Format(Catalog.GetString("Password was successfully set for user {0}."), username),
-                            MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Cursor = Cursors.WaitCursor;
+                    Application.DoEvents();  // give Windows a chance to update the Cursor
 
-                        // This has been saved on the server so my data is dirty - I need to re-load:
+                    // Request the setting of the new password (incl. server-side checks)
+                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true, true,
+                            out VerificationResultCollection))
+                    {
+                        MessageBox.Show(String.Format(Catalog.GetString(CommonDialogsResourcestrings.StrChangePasswordSuccess +
+                                    Environment.NewLine + Environment.NewLine +
+                                    "(The user must change this password for a password of his/her choice the next time (s)he logs on.)"),
+                                username), CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        // This has been saved on the server so my data is out-of-date - re-loading needed to get new ModificationId etc:
                         FPreviouslySelectedDetailRow = null;
                         Int32 rowIdx = GetSelectedRowIndex();
+
                         LoadUsers();
+
                         grdDetails.SelectRowInGrid(rowIdx);
                     }
                     else
                     {
-                        MessageBox.Show(ErrorMessage, MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show(String.Format(CommonDialogsResourcestrings.StrChangePasswordError, username) +
+                            Environment.NewLine + Environment.NewLine +
+                            VerificationResultCollection.BuildVerificationResultString(),
+                            CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
                     }
                 }
-                else
+                finally
                 {
-                    MessageBox.Show(ErrorMessage + Environment.NewLine + Environment.NewLine + VerificationResult.ResultText,
-                        MessageTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    this.Cursor = Cursors.Default;
                 }
             }
         }

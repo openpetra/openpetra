@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,19 +31,21 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Data;
 using Ict.Common.Exceptions;
+
+using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Shared.Security;
+
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Server.App.Core.Security;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 {
@@ -112,6 +114,58 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         public static Boolean GetPartnerShortName(Int64 APartnerKey, out String APartnerShortName, out TPartnerClass APartnerClass)
         {
             return GetPartnerShortName(APartnerKey, out APartnerShortName, out APartnerClass, true);
+        }
+
+        /// <summary>
+        /// Gets the Gift Destination of a Partner.
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Int64 GetPartnerGiftDestination(Int64 APartnerKey, DateTime ? AGiftDate)
+        {
+            Int64 PartnerField = 0;
+
+            if ((APartnerKey == 0) || !AGiftDate.HasValue)
+            {
+                return 0;
+            }
+
+            string GetPartnerGiftDestinationSQL = String.Format("SELECT DISTINCT pgd.p_field_key_n as FieldKey" +
+                "  FROM PUB_p_partner_gift_destination pgd " +
+                "  WHERE pgd.p_partner_key_n = {0}" +
+                "    And ((pgd.p_date_effective_d <= '{1:yyyy-MM-dd}' And pgd.p_date_expires_d IS NULL)" +
+                "         Or ('{1:yyyy-MM-dd}' BETWEEN pgd.p_date_effective_d And pgd.p_date_expires_d))",
+                APartnerKey,
+                AGiftDate);
+
+            DataTable GiftDestTable = null;
+            string PartnerGiftDestinationTable = "PartnerGiftDestination";
+
+            TDBTransaction Transaction = null;
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    try
+                    {
+                        GiftDestTable = DBAccess.GDBAccessObj.SelectDT(GetPartnerGiftDestinationSQL, PartnerGiftDestinationTable, Transaction);
+
+                        if ((GiftDestTable != null) && (GiftDestTable.Rows.Count > 0))
+                        {
+                            PartnerField = (Int64)GiftDestTable.DefaultView[0].Row["FieldKey"];
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        TLogging.LogException(ex, Utilities.GetMethodSignature());
+                        throw;
+                    }
+                });
+
+            return PartnerField;
         }
 
         /// <summary>
@@ -237,13 +291,17 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
         }
 
         /// <summary>Is this Recipient, if of type CC, linked?</summary>
-        /// <param name="ALedgerNumber"></param>
+        /// <param name="ALedgerNumber">The ledger where the partner should be linked to a cost center.
+        /// This can be overwritten by the parameter LedgerForPartnerCCLinks in the config file</param>
         /// <param name="APartnerKey"></param>
         /// <returns>True if this is a valid key to a partner of type CC
         /// that is linked (in the specified ledger)</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerOfTypeCCIsLinked(Int32 ALedgerNumber, Int64 APartnerKey)
         {
+            // For multi ledger setups, the partners are sometimes only linked in one ledger
+            ALedgerNumber = TAppSettingsManager.GetInt32("LedgerForPartnerCCLinks", ALedgerNumber);
+
             bool PartnerAndLinksCombinationIsValid = true;
             int NumPartnerWithTypeCostCentre = 0;
             int NumPartnerLinks = 0;
@@ -297,6 +355,17 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
                 });
 
             return PartnerAndLinksCombinationIsValid;
+        }
+
+        /// <summary>Does this Recipient have a valid current gift destination?</summary>
+        /// <param name="APartnerKey"></param>
+        /// <param name="AGiftDate"></param>
+        /// <returns>True if this is partner has a valid gift destination
+        /// that is linked (in the specified ledger)</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static Boolean PartnerHasCurrentGiftDestination(Int64 APartnerKey, DateTime ? AGiftDate)
+        {
+            return GetPartnerGiftDestination(APartnerKey, AGiftDate) > 0;
         }
 
         /// <summary>
@@ -726,11 +795,11 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                 switch (APartnerInfoScope)
                 {
-                    case TPartnerInfoScopeEnum.pisHeadOnly:
+                    case TPartnerInfoScopeEnum.pisHeadOnly :
 
                         throw new NotImplementedException();
 
-                    case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly:
+                    case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly :
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);

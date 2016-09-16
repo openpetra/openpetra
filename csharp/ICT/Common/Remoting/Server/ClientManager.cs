@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -303,8 +303,6 @@ namespace Ict.Common.Remoting.Server
             out Boolean ASystemEnabled)
         {
             IPrincipal ReturnValue;
-            const String AUTHENTICATION_FAILED = "Authentication for User '{0}' failed! " +
-                                                 "Reason: {1}. Connect request came from Computer '{2}' " + "(IP Address: {3})";
 
             if (UUserManager == null)
             {
@@ -313,59 +311,86 @@ namespace Ict.Common.Remoting.Server
 
             try
             {
-                // This function call will throw Exceptions if the User cannot be authenticated
+                // This function call will throw various Exceptions if the User doesn't exist or cannot be authenticated!
                 ReturnValue = UUserManager.PerformUserAuthentication(AUserName,
-                    APassword,
+                    APassword, AClientComputerName, AClientIPAddress,
                     out ASystemEnabled);
             }
             catch (EUserNotExistantException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User does not exist in the OpenPetra Database!", AClientComputerName, AClientIPAddress }));
+                LogFailedUserAuthentication(AUserName, "User does not exist in the OpenPetra Database!",
+                    AClientComputerName, AClientIPAddress);
 
+                // Simulate that time is spent on 'authenticating' a user (although the user doesn't exist)...! Reason for that: see Method
+                // SimulatePasswordAuthenticationForNonExistingUser!
+                UUserManager.SimulatePasswordAuthenticationForNonExistingUser();
+
+                // for security reasons we don't distinguish between a nonexisting user and a wrong password when informing the Client!
                 throw;
             }
             catch (EPasswordWrongException PasswordWrongException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "The Password that the user supplied is wrong!", AClientComputerName, AClientIPAddress }));
+                LogFailedUserAuthentication(AUserName, "The Password that the user supplied is wrong!",
+                    AClientComputerName, AClientIPAddress);
 
                 // for security reasons we don't distinguish between a nonexisting user and a wrong password when informing the Client!
                 throw new EUserNotExistantException(PasswordWrongException.Message);
             }
-            catch (EAccessDeniedException AccessDeniedException)
+            catch (EUserAccountGotLockedException UserAccountGotLockedException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User got auto-retired after too many failed log-in attempts!", AClientComputerName,
-                                       AClientIPAddress }));
+                LogFailedUserAuthentication(AUserName,
+                    "User tried to log in, but the password that the user supplied is wrong and now the account got locked " +
+                    "after too many failed log-ins.",
+                    AClientComputerName, AClientIPAddress);
 
-                // for security reasons we don't distinguish between user that just got auto-retired and a wrong username/password combination when informing the Client!
-                throw new EUserNotExistantException(AccessDeniedException.Message);
+                // for security reasons we don't distinguish between a user account that got Locked and a wrong username/password combination when informing the Client!
+                throw new EUserNotExistantException(UserAccountGotLockedException.Message);
+            }
+            catch (EUserAccountLockedException UserAccountLockedException)
+            {
+                LogFailedUserAuthentication(AUserName,
+                    "User tried to log in, but that user account is locked.",
+                    AClientComputerName, AClientIPAddress);
+
+                // for security reasons we don't distinguish between user account that is Locked and a wrong username/password combination when informing the Client!
+                throw new EUserNotExistantException(UserAccountLockedException.Message);
             }
             catch (EUserRetiredException UserRetiredException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "User tried to log in, but that user is 'retired'.", AClientComputerName, AClientIPAddress }));
+                LogFailedUserAuthentication(AUserName,
+                    "User tried to log in, but that user is 'retired'.",
+                    AClientComputerName, AClientIPAddress);
 
                 // for security reasons we don't distinguish between user that is retired and a wrong username/password combination when informing the Client!
                 throw new EUserNotExistantException(UserRetiredException.Message);
             }
             catch (ESystemDisabledException)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "The System is currently Disabled", AClientComputerName, AClientIPAddress }));
+                LogFailedUserAuthentication(AUserName, "The System is currently Disabled",
+                    AClientComputerName, AClientIPAddress);
 
                 throw;
             }
             catch (Exception exp)
             {
-                TLogging.Log(String.Format(AUTHENTICATION_FAILED,
-                        new String[] { AUserName, "Exception occured: " + exp.ToString(), AClientComputerName, AClientIPAddress }));
+                LogFailedUserAuthentication(AUserName, "Exception occured: " + exp.ToString(),
+                    AClientComputerName, AClientIPAddress);
 
                 throw;
             }
 
             return ReturnValue;
+        }
+
+        private static void LogFailedUserAuthentication(string AUserName, string AReason,
+            string AClientComputerName, string AClientIPAddress)
+        {
+            const String AUTHENTICATION_FAILED = "Authentication for User '{0}' failed! " +
+                                                 "Reason: {1}  ";
+
+            TLogging.Log(String.Format(AUTHENTICATION_FAILED,
+                    new String[] { AUserName, AReason }) +
+                String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress));
         }
 
         /// <summary>

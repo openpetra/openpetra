@@ -21,344 +21,142 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
+#region usings
+
 using System;
 using System.Data;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ict.Common;
-using Ict.Common.Verification;
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
-using Ict.Petra.Client.CommonControls;
-using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
-using Ict.Petra.Shared.MPartner;
+
+#endregion usings
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     /// <summary>
-    /// A business logic static class that handles the interactions between controls in the recipient section of
+    /// A business logic class that handles the interactions between controls in the recipient section of
     /// the Recurring Gift transaction on a details panel.
     /// </summary>
-    public static class TUC_RecurringGiftTransactions_Recipient
+    public partial class TUC_RecurringGiftTransactions
     {
         #region Initialisation
 
-        /// <summary>
-        /// Manage the overlay
-        /// </summary>
-        public static void SetTextBoxOverlayOnKeyMinistryCombo(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            bool AShowRecurringGiftDetail,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationDetailCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationDetail,
-            bool AInEditModeFlag,
-            bool AReadComboValue = false,
-            TFrmPetraEditUtils APetraUtilsObject = null)
+        private void SetFocusToKeyMinistryCombo(object sender, EventArgs e)
         {
-            ResetMotivationDetailCodeFilter(ACmbMotivationDetailCode, ref AMotivationDetail, AShowRecurringGiftDetail, APetraUtilsObject);
-
-            // Always enabled initially. Combobox may be diabled later once populated.
-            ACmbKeyMinistries.Enabled = true;
-
-            ATxtDetailRecipientKeyMinistry.Visible = true;
-            ATxtDetailRecipientKeyMinistry.BringToFront();
-            ATxtDetailRecipientKeyMinistry.Parent.Refresh();
-
-            if (AReadComboValue)
-            {
-                ReconcileKeyMinistryFromCombo(ACurrentDetailRow,
-                    ACmbKeyMinistries,
-                    ATxtDetailRecipientKeyMinistry,
-                    AInEditModeFlag);
-            }
-            else
-            {
-                ReconcileKeyMinistryFromTextbox(ACurrentDetailRow,
-                    ACmbKeyMinistries,
-                    ATxtDetailRecipientKeyMinistry,
-                    AInEditModeFlag);
-            }
+            cmbKeyMinistries.Focus();
         }
 
         #endregion
 
-        #region ShowDetails
+        #region change event handlers
 
-        /// <summary>
-        /// Call from ShowDetailsManual
-        /// </summary>
-        public static bool OnStartShowDetailsManual(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationGroupCode,
-            TCmbAutoPopulated ACmbMotivationDetailCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationGroup,
-            ref string AMotivationDetail,
-            bool AShowRecurringGiftDetail,
-            bool ATransactionsLoadedFlag,
-            bool AInEditModeFlag)
+        private void KeyMinistryChanged(object sender, EventArgs e)
         {
-            if (!ATxtDetailRecipientKeyMinistry.Visible)
-            {
-                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow, AShowRecurringGiftDetail, ACmbKeyMinistries, ACmbMotivationDetailCode,
-                    ATxtDetailRecipientKeyMinistry, ref AMotivationDetail, AInEditModeFlag, true);
-            }
-            else if (!ATransactionsLoadedFlag)
-            {
-                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow, AShowRecurringGiftDetail, ACmbKeyMinistries, ACmbMotivationDetailCode,
-                    ATxtDetailRecipientKeyMinistry, ref AMotivationDetail, AInEditModeFlag);
-            }
-
-            if (ACurrentDetailRow == null)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Call from ShowDetailsManual after ACurrentDetailRow is known to be non-NULL
-        /// </summary>
-        public static void FinishShowDetailsManual(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow, TCmbAutoPopulated ACmbMotivationDetailCode,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey, TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode, TextBox ATxtDetailAccountCode, Ict.Common.Controls.TCmbAutoComplete ACmbDetailCommentOneType,
-            Ict.Common.Controls.TCmbAutoComplete ACmbDetailCommentTwoType, Ict.Common.Controls.TCmbAutoComplete ACmbDetailCommentThreeType,
-            ref string AMotivationGroup, ref string AMotivationDetail, out bool ? AEnableRecipientRecurringGiftDestination)
-        {
-            AEnableRecipientRecurringGiftDestination = null;
-
-            //Record current values for motivation
-            AMotivationGroup = ACurrentDetailRow.MotivationGroupCode;
-            AMotivationDetail = ACurrentDetailRow.MotivationDetailCode;
-
-            if (ACurrentDetailRow.IsCostCentreCodeNull())
-            {
-                ATxtDetailCostCentreCode.Text = string.Empty;
-            }
-            else
-            {
-                ATxtDetailCostCentreCode.Text = ACurrentDetailRow.CostCentreCode;
-            }
-
-            if (ACurrentDetailRow.IsAccountCodeNull())
-            {
-                ATxtDetailAccountCode.Text = string.Empty;
-            }
-            else
-            {
-                ATxtDetailAccountCode.Text = ACurrentDetailRow.AccountCode;
-            }
-
-            if (ACurrentDetailRow.IsRecipientKeyNull())
-            {
-                ATxtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                UpdateRecipientKeyText(0, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
-            }
-            else
-            {
-                ATxtDetailRecipientKey.Text = String.Format("{0:0000000000}", ACurrentDetailRow.RecipientKey);
-                UpdateRecipientKeyText(ACurrentDetailRow.RecipientKey, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
-            }
-
-            if (Convert.ToInt64(ATxtDetailRecipientKey.Text) == 0)
-            {
-                OnRecipientPartnerClassChanged(null,
-                    ATxtDetailRecipientKey,
-                    AtxtDetailRecipientLedgerNumber,
-                    out AEnableRecipientRecurringGiftDestination);
-            }
-
-            if (Convert.ToInt64(AtxtDetailRecipientLedgerNumber.Text) == 0)
-            {
-                OnRecipientPartnerClassChanged(ATxtDetailRecipientKey.CurrentPartnerClass,
-                    ATxtDetailRecipientKey,
-                    AtxtDetailRecipientLedgerNumber,
-                    out AEnableRecipientRecurringGiftDestination);
-            }
-
-            if (ACurrentDetailRow.IsCommentOneTypeNull())
-            {
-                ACmbDetailCommentOneType.SetSelectedString("Both");
-            }
-
-            if (ACurrentDetailRow.IsCommentTwoTypeNull())
-            {
-                ACmbDetailCommentTwoType.SetSelectedString("Both");
-            }
-
-            if (ACurrentDetailRow.IsCommentThreeTypeNull())
-            {
-                ACmbDetailCommentThreeType.SetSelectedString("Both");
-            }
-        }
-
-        #endregion
-
-        #region Main public change event handlers
-
-        /// <summary>
-        /// Call when the Motivation Detail changes
-        /// </summary>
-        public static void OnMotivationDetailChanged(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationDetailCode,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            Int64 ARecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode,
-            TextBox ATxtDetailAccountCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            CheckBox AChkDetailTaxDeductible,
-            string AMotivationGroup,
-            ref string AMotivationDetail,
-            ref bool AMotivationDetailChangedFlag,
-            bool ARecipientKeyChangingFlag,
-            bool ACreatingNewRecurringGiftFlag,
-            bool AInEditModeFlag,
-            bool AAutoPopulatingRecurringGift,
-            ref string AAutoPopComment)
-        {
-            if (!AInEditModeFlag || ATxtDetailRecipientKeyMinistry.Visible)
+            if ((FPreviouslySelectedDetailRow == null)
+                || FKeyMinistryChangedInProcess
+                || FRecipientKeyChangedInProcess
+                || FPetraUtilsObject.SuppressChangeDetection
+                || txtDetailRecipientKeyMinistry.Visible)
             {
                 return;
             }
 
-            Int64 MotivationRecipientKey = 0;
-            AMotivationDetail = ACmbMotivationDetailCode.GetSelectedString();
+            string KeyMinistry = cmbKeyMinistries.GetSelectedDescription();
+            string RecipientKey = cmbKeyMinistries.GetSelectedInt64().ToString();
 
-            if (AMotivationDetail.Length > 0)
+            try
             {
-                ACmbMotivationDetailCode.RefreshLabel();
+                FKeyMinistryChangedInProcess = true;
 
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { ALedgerNumber, AMotivationGroup, AMotivationDetail });
-
-                if (motivationDetail != null)
+                if (cmbKeyMinistries.Count == 0)
                 {
-                    RetrieveMotivationDetailAccountCode(motivationDetail,
-                        ATxtDetailAccountCode);
+                    cmbKeyMinistries.SelectedIndex = -1;
 
-                    MotivationRecipientKey = motivationDetail.RecipientKey;
-
-                    // if motivation detail autopopulation is set to true
-                    if (motivationDetail.Autopopdesc)
+                    if (txtDetailRecipientKeyMinistry.Text != string.Empty)
                     {
-                        AAutoPopComment = motivationDetail.MotivationDetailDesc;
-                    }
-                    else
-                    {
-                        AAutoPopComment = null;
-                    }
-
-                    // set tax deductible checkbox if motivation detail has been changed by the user (i.e. not a row change)
-                    if (!APetraUtilsObject.SuppressChangeDetection || ARecipientKeyChangingFlag)
-                    {
-                        if (AChkDetailTaxDeductible.Checked != motivationDetail.TaxDeductible)
-                        {
-                            AChkDetailTaxDeductible.Checked = motivationDetail.TaxDeductible;
-                        }
+                        txtDetailRecipientKeyMinistry.Text = string.Empty;
                     }
                 }
                 else
                 {
-                    AChkDetailTaxDeductible.Checked = false;
+                    // if key ministry has actually changed
+                    if ((txtDetailRecipientKeyMinistry.Text != KeyMinistry)
+                        || (FPreviouslySelectedDetailRow.RecipientKeyMinistry != KeyMinistry))
+                    {
+                        txtDetailRecipientKeyMinistry.Text = KeyMinistry;
+                        FPreviouslySelectedDetailRow.RecipientKeyMinistry = KeyMinistry;
+                    }
+
+                    if (Convert.ToInt64(txtDetailRecipientKey.Text) != Convert.ToInt64(RecipientKey))
+                    {
+                        txtDetailRecipientKey.Text = RecipientKey;
+                    }
                 }
             }
-
-            if (!ACreatingNewRecurringGiftFlag && !AAutoPopulatingRecurringGift && (MotivationRecipientKey > 0))
+            finally
             {
-                AMotivationDetailChangedFlag = true;
-                PopulateKeyMinistry(ACurrentDetailRow,
-                    ACmbKeyMinistries,
-                    ATxtDetailRecipientKey,
-                    AtxtDetailRecipientLedgerNumber,
-                    AMotivationDetailChangedFlag,
-                    MotivationRecipientKey);
-                AMotivationDetailChangedFlag = false;
-            }
-            else if (ARecipientKey == 0)
-            {
-                UpdateRecipientKeyText(0, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
-            }
-
-            if (ARecipientKey == 0)
-            {
-                RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
-            }
-            else
-            {
-                string NewCCCode = string.Empty;
-
-                // it is possible that there are no active motivation details and so AMotivationDetail is blank
-                if (!string.IsNullOrEmpty(AMotivationDetail))
-                {
-                    bool partnerIsMissingLink = false;
-
-                    NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
-                        ARecipientKey,
-                        ACurrentDetailRow.RecipientLedgerNumber,
-                        DateTime.Now,
-                        AMotivationGroup,
-                        AMotivationDetail,
-                        out partnerIsMissingLink);
-                }
-
-                if (ATxtDetailCostCentreCode.Text != NewCCCode)
-                {
-                    ATxtDetailCostCentreCode.Text = NewCCCode;
-                }
+                FKeyMinistryChangedInProcess = false;
             }
         }
 
-        /// <summary>
-        /// Call when the recipient key changes
-        /// </summary>
-        public static void OnRecipientKeyChanged(Int64 APartnerKey,
+        private void RecipientKeyChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
+        {
+            bool DoValidateGiftDestination;
+
+            if (!AValidSelection)
+            {
+                if (APartnerKey != 0)
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("Recipient number {0} could not be found!"),
+                            APartnerKey));
+                    txtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
+                    return;
+                }
+            }
+
+            FRecipientKey = APartnerKey;
+
+            OnRecipientKeyChanged(APartnerKey, APartnerShortName, AValidSelection, out DoValidateGiftDestination);
+
+            if (DoValidateGiftDestination)
+            {
+                FPartnerShortName = APartnerShortName;
+
+                //Thread only invokes ValidateGiftDestination once Partner Short Name has been updated.
+                // Otherwise the Gift Destination screen is displayed and then the screen focus moves to this screen again
+                // when the Partner Short Name is updated.
+                new Thread(ValidateRecipientLedgerNumberThread).Start();
+            }
+
+            mniRecipientHistory.Enabled = APartnerKey != 0;
+        }
+
+        private void OnRecipientKeyChanged(Int64 APartnerKey,
             String APartnerShortName,
             bool AValidSelection,
-            GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TFrmPetraEditUtils APetraUtilsObject,
-            ref TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationGroupCode,
-            TCmbAutoPopulated ACmbMotivationDetailCode,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode,
-            TextBox ATxtDetailAccountCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            CheckBox AChkDetailTaxDeductible,
-            ref string AMotivationGroup,
-            ref string AMotivationDetail,
-            bool AShowingDetailsFlag,
-            ref bool ARecipientKeyChangingFlag,
-            bool AInKeyMinistryChangingFlag,
-            bool AInEditModeFlag,
-            bool AMotivationDetailChangedFlag,
-            bool ACreatingNewRecurringGiftFlag,
-            bool AActiveOnly,
             out bool ADoValidateRecurringGiftDestination)
         {
             ADoValidateRecurringGiftDestination = false;
 
-            if (ARecipientKeyChangingFlag || APetraUtilsObject.SuppressChangeDetection || AShowingDetailsFlag)
+            if (FRecipientKeyChangedInProcess
+                || FPetraUtilsObject.SuppressChangeDetection
+                || FShowDetailsInProcess)
             {
                 return;
             }
 
             Int64 RecipientLedgerNumber = 0;
-            ACurrentDetailRow.BeginEdit();
+            FPreviouslySelectedDetailRow.BeginEdit();
 
             // get the recipient ledger number
             if (APartnerKey > 0)
@@ -367,89 +165,77 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     DateTime.Now);
             }
 
-            ARecipientKeyChangingFlag = true;
-            ATxtDetailRecipientKeyMinistry.Text = string.Empty;
+            FRecipientKeyChangedInProcess = true;
+            txtDetailRecipientKeyMinistry.Text = string.Empty;
 
             try
             {
-                ACurrentDetailRow.RecipientKey = APartnerKey;
-                ACurrentDetailRow.RecipientDescription = APartnerShortName;
-                ACurrentDetailRow.RecipientClass = ATxtDetailRecipientKey.CurrentPartnerClass.ToString();
+                FPreviouslySelectedDetailRow.RecipientKey = APartnerKey;
+                FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
+                FPreviouslySelectedDetailRow.RecipientClass = txtDetailRecipientKey.CurrentPartnerClass.ToString();
 
-                APetraUtilsObject.SuppressChangeDetection = true;
+                FPetraUtilsObject.SuppressChangeDetection = true;
 
                 //Set RecipientLedgerNumber
-                ACurrentDetailRow.RecipientLedgerNumber = RecipientLedgerNumber;
+                FPreviouslySelectedDetailRow.RecipientLedgerNumber = RecipientLedgerNumber;
 
-                if (!AInKeyMinistryChangingFlag)
+                if (!FKeyMinistryChangedInProcess)
                 {
-                    GetRecipientData(ACurrentDetailRow,
-                        APartnerKey,
-                        ref ACmbKeyMinistries,
-                        ATxtDetailRecipientKey,
-                        ref AtxtDetailRecipientLedgerNumber,
-                        AMotivationDetailChangedFlag);
+                    GetRecipientData(APartnerKey, FMotivationDetailHasChangedFlag);
                     ADoValidateRecurringGiftDestination = true;
                 }
 
-                APetraUtilsObject.SuppressChangeDetection = false;
+                FPetraUtilsObject.SuppressChangeDetection = false;
 
                 // do not want to update motivation comboboxes if recipient key is being changed due to a new Recurring Gift or the motivation detail being changed
-                if (!AMotivationDetailChangedFlag && !ACreatingNewRecurringGiftFlag
-                    && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetail(APartnerKey, ref AMotivationGroup, ref AMotivationDetail))
+                if (!FMotivationDetailHasChangedFlag && !FNewGiftInProcess
+                    && TRemote.MFinance.Gift.WebConnectors.GetMotivationGroupAndDetailForPartner(APartnerKey, ref FMotivationGroup,
+                        ref FMotivationDetail))
                 {
-                    if (AMotivationGroup != ACmbMotivationGroupCode.GetSelectedString())
+                    if (cmbDetailMotivationGroupCode.GetSelectedString() != FMotivationGroup)
                     {
                         // note - this will also update the Motivation Detail
-                        ACmbMotivationGroupCode.SetSelectedString(AMotivationGroup);
+                        cmbDetailMotivationGroupCode.SetSelectedString(FMotivationGroup, -1);
                     }
 
-                    if (AMotivationDetail != ACmbMotivationDetailCode.GetSelectedString())
+                    if (cmbMotivationDetailCode.GetSelectedString() != FMotivationDetail)
                     {
-                        ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
+                        cmbMotivationDetailCode.SetSelectedString(FMotivationDetail, -1);
                     }
 
-                    ACurrentDetailRow.MotivationGroupCode = AMotivationGroup;
-                    ACurrentDetailRow.MotivationDetailCode = AMotivationDetail;
+                    FPreviouslySelectedDetailRow.MotivationGroupCode = FMotivationGroup;
+                    FPreviouslySelectedDetailRow.MotivationDetailCode = FMotivationDetail;
                 }
 
-                APetraUtilsObject.SuppressChangeDetection = true;
+                FPetraUtilsObject.SuppressChangeDetection = true;
 
                 if (APartnerKey > 0)
                 {
-                    RetrieveRecipientCostCentreCode(ACurrentDetailRow, ATxtDetailCostCentreCode);
+                    ApplyRecipientCostCentreCode();
                 }
                 else
                 {
-                    UpdateRecipientKeyText(APartnerKey, ACurrentDetailRow, AMotivationGroup, AMotivationDetail);
+                    UpdateRecipientKeyText(APartnerKey, FPreviouslySelectedDetailRow, FMotivationGroup, FMotivationDetail);
 
-                    RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
+                    DisplayMotivationDetailCostCentreCode();
                 }
             }
             finally
             {
-                ARecipientKeyChangingFlag = false;
-                ReconcileKeyMinistryFromCombo(ACurrentDetailRow,
-                    ACmbKeyMinistries,
-                    ATxtDetailRecipientKeyMinistry,
-                    AInEditModeFlag);
-
-                ACurrentDetailRow.EndEdit();
-                APetraUtilsObject.SuppressChangeDetection = false;
+                FRecipientKeyChangedInProcess = false;
+                ReconcileKeyMinistryFromCombo(FPreviouslySelectedDetailRow);
+                FPreviouslySelectedDetailRow.EndEdit();
+                FPetraUtilsObject.SuppressChangeDetection = false;
             }
         }
 
-        /// <summary>
-        /// Call when the recipient ledger number changes
-        /// </summary>
-        public static void OnRecipientLedgerNumberChanged(Int32 ALedgerNumber,
-            GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            TFrmPetraEditUtils APetraUtilsObject,
-            TextBox ATxtDetailCostCentreCode,
-            bool ARecipientKeyChangingFlag,
-            bool AShowingDetailsFlag)
+        private void RecipientLedgerNumberChanged(Int64 APartnerKey,
+            String APartnerShortName,
+            bool AValidSelection)
         {
-            if (APetraUtilsObject.SuppressChangeDetection || AShowingDetailsFlag || ARecipientKeyChangingFlag)
+            if (FPetraUtilsObject.SuppressChangeDetection
+                || FShowDetailsInProcess
+                || FRecipientKeyChangedInProcess)
             {
                 return;
             }
@@ -457,169 +243,132 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             string NewCCCode = string.Empty;
 
             // it is possible that there are no active motivation details and so AMotivationDetail is blank
-            if (!string.IsNullOrEmpty(ACurrentDetailRow.MotivationDetailCode))
+            if (!string.IsNullOrEmpty(FPreviouslySelectedDetailRow.MotivationDetailCode))
             {
                 bool partnerIsMissingLink = false;
 
-                NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ALedgerNumber,
-                    ACurrentDetailRow.RecipientKey,
-                    ACurrentDetailRow.RecipientLedgerNumber,
+                NewCCCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(FLedgerNumber,
+                    FPreviouslySelectedDetailRow.RecipientKey,
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
                     DateTime.Now,
-                    ACurrentDetailRow.MotivationGroupCode,
-                    ACurrentDetailRow.MotivationDetailCode,
+                    FPreviouslySelectedDetailRow.MotivationGroupCode,
+                    FPreviouslySelectedDetailRow.MotivationDetailCode,
                     out partnerIsMissingLink);
             }
 
-            if (ATxtDetailCostCentreCode.Text != NewCCCode)
+            if (txtDetailCostCentreCode.Text != NewCCCode)
             {
-                ATxtDetailCostCentreCode.Text = NewCCCode;
+                txtDetailCostCentreCode.Text = NewCCCode;
+            }
+        }
+
+        /// <summary>
+        /// modifies menu items depending on the Recipient's Partner class
+        /// </summary>
+        /// <param name="APartnerClass"></param>
+        private void RecipientPartnerClassChanged(TPartnerClass ? APartnerClass)
+        {
+            bool? DoEnableRecipientGiftDestination;
+
+            OnRecipientPartnerClassChanged(APartnerClass, out DoEnableRecipientGiftDestination);
+
+            if (DoEnableRecipientGiftDestination.HasValue)
+            {
+                mniRecipientGiftDestination.Enabled = DoEnableRecipientGiftDestination.Value;
             }
         }
 
         /// <summary>
         /// Modifies menu items depending on the Recipeint's Partner class
         /// </summary>
-        public static void OnRecipientPartnerClassChanged(TPartnerClass? APartnerClass, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber, out bool ? AEnableRecipientRecurringGiftDestination)
+        private void OnRecipientPartnerClassChanged(TPartnerClass? APartnerClass,
+            out bool ? AEnableRecipientRecurringGiftDestination)
         {
             AEnableRecipientRecurringGiftDestination = null;
 
-            string ItemText = Catalog.GetString("Open Recipient RecurringGift Destination");
+            string ItemText = Catalog.GetString("Open Recipient Recurring Gift Destination");
 
             if ((APartnerClass == TPartnerClass.UNIT) || (APartnerClass == null))
             {
-                ATxtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
-                AtxtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, false);
+                txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, false);
+                txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, false);
                 AEnableRecipientRecurringGiftDestination = false;
             }
             else if (APartnerClass == TPartnerClass.FAMILY)
             {
-                ATxtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
-                AtxtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
+                txtDetailRecipientKey.CustomContextMenuItemsVisibility(ItemText, true);
+                txtDetailRecipientLedgerNumber.CustomContextMenuItemsVisibility(ItemText, true);
                 AEnableRecipientRecurringGiftDestination = true;
             }
         }
 
-        /// <summary>
-        /// Call when the motivation group changes
-        /// </summary>
-        public static void OnMotivationGroupChanged(GiftBatchTDSARecurringGiftDetailRow ARecurringGiftBatchDetail,
-            GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationGroupCode,
-            ref TCmbAutoPopulated ACmbMotivationDetailCode,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            Int64 ARecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode,
-            TextBox ATxtDetailAccountCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            CheckBox AChkDetailTaxDeductible,
-            ref string AMotivationGroup,
-            ref string AMotivationDetail,
-            ref bool AMotivationDetailChangedFlag,
-            bool AActiveOnly,
-            bool ACreatingNewRecurringGiftFlag,
-            bool ARecipientKeyChangingFlag,
-            bool AInEditModeFlag,
-            ref string AAutoPopComment)
+        #endregion change event handlers
+
+        #region control handling
+
+        private void ReconcileKeyMinistryFromCombo(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow)
         {
-            if (APetraUtilsObject.SuppressChangeDetection || !AInEditModeFlag || ATxtDetailRecipientKeyMinistry.Visible)
+            if (FInEditModeFlag)
             {
-                return;
+                string keyMinistry = string.Empty;
+                bool isEmptyDetailRow = (ACurrentDetailRow == null);
+
+                if (!isEmptyDetailRow && (cmbKeyMinistries.SelectedIndex > -1))
+                {
+                    keyMinistry = cmbKeyMinistries.GetSelectedDescription();
+                }
+
+                txtDetailRecipientKeyMinistry.Text = keyMinistry;
             }
-
-            AMotivationGroup = ACmbMotivationGroupCode.GetSelectedString();
-
-            if (!ARecipientKeyChangingFlag)
-            {
-                AMotivationDetail = string.Empty;
-            }
-
-            ApplyMotivationDetailCodeFilter(ARecurringGiftBatchDetail,
-                AMainDS,
-                ALedgerNumber,
-                APetraUtilsObject,
-                ACmbKeyMinistries,
-                ref ACmbMotivationDetailCode,
-                ATxtDetailRecipientKey,
-                ARecipientKey,
-                AtxtDetailRecipientLedgerNumber,
-                ATxtDetailCostCentreCode,
-                ATxtDetailAccountCode,
-                ATxtDetailRecipientKeyMinistry,
-                AChkDetailTaxDeductible,
-                AMotivationGroup,
-                ref AMotivationDetail,
-                ref AMotivationDetailChangedFlag,
-                AActiveOnly,
-                ARecipientKeyChangingFlag,
-                ACreatingNewRecurringGiftFlag,
-                AInEditModeFlag,
-                ref AAutoPopComment);
         }
 
-        /// <summary>
-        /// Call when the key ministry changes
-        /// </summary>
-        public static void OnKeyMinistryChanged(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow, TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries, TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey, TextBox ATxtDetailRecipientKeyMinistry,
-            bool ARecipientKeyChangingFlag, ref bool AInKeyMinistryChangingFlag)
+        private void ReconcileKeyMinistryFromTextbox(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow)
         {
-            if ((ACurrentDetailRow == null) || AInKeyMinistryChangingFlag || ARecipientKeyChangingFlag
-                || APetraUtilsObject.SuppressChangeDetection || ATxtDetailRecipientKeyMinistry.Visible)
+            if (FInEditModeFlag)
             {
-                return;
-            }
+                bool isEmptyDetailRow = (ACurrentDetailRow == null);
+                string keyMinistry = txtDetailRecipientKeyMinistry.Text;
 
-            string KeyMinistry = ACmbKeyMinistries.GetSelectedDescription();
-            string RecipientKey = ACmbKeyMinistries.GetSelectedInt64().ToString();
-
-            try
-            {
-                AInKeyMinistryChangingFlag = true;
-
-                if (ACmbKeyMinistries.Count == 0)
+                if (!isEmptyDetailRow && (keyMinistry.Length > 0))
                 {
-                    ACmbKeyMinistries.SelectedIndex = -1;
-
-                    if (ATxtDetailRecipientKeyMinistry.Text != string.Empty)
-                    {
-                        ATxtDetailRecipientKeyMinistry.Text = string.Empty;
-                    }
+                    cmbKeyMinistries.SetSelectedString(keyMinistry);
                 }
                 else
                 {
-                    // if key ministry has actually changed
-                    if ((ATxtDetailRecipientKeyMinistry.Text != KeyMinistry)
-                        || (ACurrentDetailRow.RecipientKeyMinistry != KeyMinistry))
-                    {
-                        ATxtDetailRecipientKeyMinistry.Text = KeyMinistry;
-                        ACurrentDetailRow.RecipientKeyMinistry = KeyMinistry;
-                    }
-
-                    if (Convert.ToInt64(ATxtDetailRecipientKey.Text) != Convert.ToInt64(RecipientKey))
-                    {
-                        ATxtDetailRecipientKey.Text = RecipientKey;
-                    }
+                    cmbKeyMinistries.SelectedIndex = -1;
                 }
-            }
-            finally
-            {
-                AInKeyMinistryChangingFlag = false;
             }
         }
 
-        #endregion
+        private void PopulateKeyMinistry(Int64 APartnerKey, bool AMotivationDetailChangedFlag)
+        {
+            ClearKeyMinistries();
 
-        #region Other public methods
+            if (APartnerKey == 0)
+            {
+                APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
 
-        /// <summary>
-        /// UpdateRecipientKeyText
-        /// </summary>
-        public static void UpdateRecipientKeyText(Int64 APartnerKey,
+                if (APartnerKey == 0)
+                {
+                    cmbKeyMinistries.Enabled = false;
+                    return;
+                }
+            }
+
+            GetRecipientData(APartnerKey, AMotivationDetailChangedFlag);
+        }
+
+        private void ClearKeyMinistries()
+        {
+            cmbKeyMinistries.SelectedIndex = -1;
+            cmbKeyMinistries.Clear();
+        }
+
+        #endregion control handling
+
+        #region data handling
+
+        private void UpdateRecipientKeyText(Int64 APartnerKey,
             GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
             string AMotivationGroupCode,
             string AMotivationDetailCode)
@@ -637,189 +386,38 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// SetKeyMinistryTextBoxInvisible
-        /// </summary>
-        public static void SetKeyMinistryTextBoxInvisible(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            ref TCmbAutoPopulated ACmbMotivationGroupCode,
-            ref TCmbAutoPopulated ACmbMotivationDetailCode,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            Int64 ARecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode,
-            TextBox ATxtDetailAccountCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            CheckBox AChkDetailTaxDeductible,
-            string AMotivationGroup,
-            ref string AMotivationDetail,
-            ref bool AMotivationDetailChangedFlag,
-            bool AActiveOnly,
-            bool ARecipientKeyChangingFlag,
-            bool ACreatingNewRecurringGiftFlag,
-            bool AInEditModeFlag,
-            ref string AAutoPopComment)
-        {
-            if (ATxtDetailRecipientKeyMinistry.Visible)
-            {
-                ApplyMotivationDetailCodeFilter(ACurrentDetailRow,
-                    AMainDS,
-                    ALedgerNumber,
-                    APetraUtilsObject,
-                    ACmbKeyMinistries,
-                    ref ACmbMotivationDetailCode,
-                    ATxtDetailRecipientKey,
-                    ARecipientKey,
-                    AtxtDetailRecipientLedgerNumber,
-                    ATxtDetailCostCentreCode,
-                    ATxtDetailAccountCode,
-                    ATxtDetailRecipientKeyMinistry,
-                    AChkDetailTaxDeductible,
-                    AMotivationGroup,
-                    ref AMotivationDetail,
-                    ref AMotivationDetailChangedFlag,
-                    AActiveOnly,
-                    ARecipientKeyChangingFlag,
-                    ACreatingNewRecurringGiftFlag,
-                    AInEditModeFlag,
-                    ref AAutoPopComment);
-
-                PopulateKeyMinistry(ACurrentDetailRow, ACmbKeyMinistries, ATxtDetailRecipientKey, AtxtDetailRecipientLedgerNumber, false);
-
-                ReconcileKeyMinistryFromTextbox(ACurrentDetailRow,
-                    ACmbKeyMinistries,
-                    ATxtDetailRecipientKeyMinistry,
-                    AInEditModeFlag);
-
-                //hide the overlay box during editing
-                ATxtDetailRecipientKeyMinistry.Visible = false;
-            }
-        }
-
-        /// <summary>
-        /// OnEndEditMode
-        /// </summary>
-        public static void OnEndEditMode(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TCmbAutoPopulated ACmbMotivationGroupCode,
-            TCmbAutoPopulated ACmbMotivationDetailCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            ref string AMotivationGroup,
-            ref string AMotivationDetail,
-            bool AShowRecurringGiftDetail,
-            bool AInEditModeFlag,
-            TFrmPetraEditUtils APetraUtilsObject)
-        {
-            if (!ATxtDetailRecipientKeyMinistry.Visible)
-            {
-                SetTextBoxOverlayOnKeyMinistryCombo(ACurrentDetailRow,
-                    AShowRecurringGiftDetail,
-                    ACmbKeyMinistries,
-                    ACmbMotivationDetailCode,
-                    ATxtDetailRecipientKeyMinistry,
-                    ref AMotivationDetail,
-                    AInEditModeFlag,
-                    false,
-                    APetraUtilsObject);
-            }
-        }
-
-        /// <summary>
-        /// GetRecipientData
-        /// </summary>
-        public static void GetRecipientData(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            long APartnerKey,
-            ref TCmbAutoPopulated ACmbKeyMinistries,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            ref TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            bool AMotivationDetailChangedFlag)
+        private void GetRecipientData(long APartnerKey, bool AMotivationDetailChangedFlag)
         {
             if (APartnerKey == 0)
             {
-                APartnerKey = Convert.ToInt64(ATxtDetailRecipientKey.Text);
+                APartnerKey = Convert.ToInt64(txtDetailRecipientKey.Text);
             }
 
             // If this method has been called as a result of a change in motivation detail then txtDetailRecipientKey has not yet been set...
             // but we do know that the recipient must be a Unit.
 
             // if Family Recipient
-            if (!AMotivationDetailChangedFlag && (ATxtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
+            if (!AMotivationDetailChangedFlag && (txtDetailRecipientKey.CurrentPartnerClass == TPartnerClass.FAMILY))
             {
-                AtxtDetailRecipientLedgerNumber.Text = ACurrentDetailRow.RecipientLedgerNumber.ToString();
-                ACmbKeyMinistries.Clear();
-                ACmbKeyMinistries.Enabled = false;
+                txtDetailRecipientLedgerNumber.Text = FPreviouslySelectedDetailRow.RecipientLedgerNumber.ToString();
+                ClearKeyMinistries();
+                cmbKeyMinistries.Enabled = false;
             }
             // if Unit Recipient
             else
             {
                 //At this point, only active KeyMinistries are allowed in a live Recurring Gift
                 bool activeOnly = true;
-                TFinanceControls.GetRecipientData(ref ACmbKeyMinistries, ref AtxtDetailRecipientLedgerNumber, APartnerKey, activeOnly);
+                TFinanceControls.GetRecipientData(ref cmbKeyMinistries, ref txtDetailRecipientLedgerNumber, APartnerKey, activeOnly);
 
                 // enable / disable combo box depending on whether it contains any key ministries
-                if ((ACmbKeyMinistries.Table == null) || (ACmbKeyMinistries.Table.Rows.Count == 0))
-                {
-                    ACmbKeyMinistries.Enabled = false;
-                }
-                else
-                {
-                    ACmbKeyMinistries.Enabled = true;
-                }
+                cmbKeyMinistries.Enabled = ((cmbKeyMinistries.Table != null) && (cmbKeyMinistries.Table.Rows.Count > 0));
             }
         }
 
-        /// <summary>
-        /// Keep the combo and textboxes together
-        /// </summary>
-        public static void ReconcileKeyMinistryFromCombo(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            bool AInEditModeFlag = true)
+        private void UpdateAllRecipientDescriptions(Int32 ABatchNumber)
         {
-            string KeyMinistry = string.Empty;
-            bool isEmptyDetailRow = (ACurrentDetailRow == null);
-
-            if (!isEmptyDetailRow && (ACmbKeyMinistries.SelectedIndex > -1))
-            {
-                KeyMinistry = ACmbKeyMinistries.GetSelectedDescription();
-            }
-
-            ATxtDetailRecipientKeyMinistry.Text = KeyMinistry;
-        }
-
-        /// <summary>
-        /// Keep the combo and textboxes together
-        /// </summary>
-        private static void ReconcileKeyMinistryFromTextbox(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            bool AInEditModeFlag)
-        {
-            if (AInEditModeFlag)
-            {
-                bool isEmptyDetailRow = (ACurrentDetailRow == null);
-                string keyMinistry = ATxtDetailRecipientKeyMinistry.Text;
-
-                if (!isEmptyDetailRow && (keyMinistry.Length > 0))
-                {
-                    ACmbKeyMinistries.SetSelectedString(keyMinistry);
-                }
-                else
-                {
-                    ACmbKeyMinistries.SelectedIndex = -1;
-                }
-            }
-        }
-
-        /// <summary>
-        /// UpdateAllRecipientDescriptions
-        /// </summary>
-        public static void UpdateAllRecipientDescriptions(Int32 ABatchNumber, GiftBatchTDS AMainDS)
-        {
-            DataView RecurringGiftDetailView = new DataView(AMainDS.ARecurringGiftDetail);
+            DataView RecurringGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
 
             RecurringGiftDetailView.RowFilter = String.Format("{0}={1}",
                 ARecurringGiftDetailTable.GetBatchNumberDBName(),
@@ -843,84 +441,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        /// <summary>
-        /// To be called on the display of a new record
-        /// </summary>
-        private static void RetrieveMotivationDetailAccountCode(GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TextBox ATxtDetailAccountCode,
-            string AMotivationGroup,
-            string AMotivationDetail)
+        private void ApplyRecipientCostCentreCode()
         {
-            string AcctCode = string.Empty;
-
-            if (AMotivationDetail.Length > 0)
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { ALedgerNumber, AMotivationGroup, AMotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    AcctCode = motivationDetail.AccountCode;
-                }
-            }
-
-            if (ATxtDetailAccountCode.Text != AcctCode)
-            {
-                ATxtDetailAccountCode.Text = AcctCode;
-            }
-        }
-
-        /// <summary>
-        /// To be called on the display of a new record
-        /// </summary>
-        private static void RetrieveMotivationDetailAccountCode(AMotivationDetailRow AMotivationDetail,
-            TextBox ATxtDetailAccountCode)
-        {
-            if (AMotivationDetail != null)
-            {
-                if (ATxtDetailAccountCode.Text != AMotivationDetail.AccountCode)
-                {
-                    ATxtDetailAccountCode.Text = AMotivationDetail.AccountCode;
-                }
-            }
-        }
-
-        /// <summary>
-        /// RetrieveMotivationDetailCostCentreCode
-        /// </summary>
-        public static void RetrieveMotivationDetailCostCentreCode(GiftBatchTDS AMainDS, Int32 ALedgerNumber, TextBox ATxtDetailCostCentreCode,
-            string AMotivationGroup, string AMotivationDetail)
-        {
-            string CostCentreCode = string.Empty;
-
-            if (AMotivationDetail.Length > 0)
-            {
-                AMotivationDetailRow motivationDetail = (AMotivationDetailRow)AMainDS.AMotivationDetail.Rows.Find(
-                    new object[] { ALedgerNumber, AMotivationGroup, AMotivationDetail });
-
-                if (motivationDetail != null)
-                {
-                    CostCentreCode = motivationDetail.CostCentreCode.ToString();
-                }
-            }
-
-            if (ATxtDetailCostCentreCode.Text != CostCentreCode)
-            {
-                ATxtDetailCostCentreCode.Text = CostCentreCode;
-            }
-        }
-
-        #endregion
-
-        #region Private methods
-
-        /// <summary>
-        /// RetrieveRecipientCostCentreCode
-        /// </summary>
-        private static void RetrieveRecipientCostCentreCode(GiftBatchTDSARecurringGiftDetailRow ARow, TextBox ATxtDetailCostCentreCode)
-        {
-            if (ARow == null)
+            if (FPreviouslySelectedDetailRow == null)
             {
                 return;
             }
@@ -929,17 +452,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
-                string newCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(ARow.LedgerNumber,
-                    ARow.RecipientKey,
-                    ARow.RecipientLedgerNumber,
+                string newCostCentreCode = TRemote.MFinance.Gift.WebConnectors.RetrieveCostCentreCodeForRecipient(
+                    FPreviouslySelectedDetailRow.LedgerNumber,
+                    FPreviouslySelectedDetailRow.RecipientKey,
+                    FPreviouslySelectedDetailRow.RecipientLedgerNumber,
                     DateTime.Now,
-                    ARow.MotivationGroupCode,
-                    ARow.MotivationDetailCode,
+                    FPreviouslySelectedDetailRow.MotivationGroupCode,
+                    FPreviouslySelectedDetailRow.MotivationDetailCode,
                     out PartnerIsMissingLink);
 
-                if (ARow.CostCentreCode != newCostCentreCode)
+                if (FPreviouslySelectedDetailRow.CostCentreCode != newCostCentreCode)
                 {
-                    ARow.CostCentreCode = newCostCentreCode;
+                    FPreviouslySelectedDetailRow.CostCentreCode = newCostCentreCode;
                 }
             }
             catch (Exception ex)
@@ -948,208 +472,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 throw;
             }
 
-            if (ATxtDetailCostCentreCode.Text != ARow.CostCentreCode)
+            if (txtDetailCostCentreCode.Text != FPreviouslySelectedDetailRow.CostCentreCode)
             {
-                ATxtDetailCostCentreCode.Text = ARow.CostCentreCode;
+                txtDetailCostCentreCode.Text = FPreviouslySelectedDetailRow.CostCentreCode;
             }
         }
 
-        /// <summary>
-        /// ResetMotivationDetailCodeFilter
-        /// </summary>
-        private static void ResetMotivationDetailCodeFilter(TCmbAutoPopulated ACmbMotivationDetailCode,
-            ref string AMotivationDetail,
-            bool AShowRecurringGiftDetail,
-            TFrmPetraEditUtils APetraUtilsObject = null)
-        {
-            if ((ACmbMotivationDetailCode.Count == 0) && (ACmbMotivationDetailCode.Filter != null)
-                && (!ACmbMotivationDetailCode.Filter.Contains("1 = 2")))
-            {
-                AMotivationDetail = string.Empty;
-                ACmbMotivationDetailCode.RefreshLabel();
-
-                if (AShowRecurringGiftDetail)
-                {
-                    //This is needed as the code in TFinanceControls.ChangeFilterMotivationDetailList looks for presence of the active only prefix
-                    ACmbMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true And 1 = 2";
-                }
-                else
-                {
-                    ACmbMotivationDetailCode.Filter = "1 = 2";
-                }
-
-                return;
-            }
-
-            if (ACmbMotivationDetailCode.Count > 0)
-            {
-                AMotivationDetail = ACmbMotivationDetailCode.GetSelectedString();
-            }
-
-            if (AShowRecurringGiftDetail)
-            {
-                ACmbMotivationDetailCode.Filter = AMotivationDetailTable.GetMotivationStatusDBName() + " = true";
-            }
-            else
-            {
-                ACmbMotivationDetailCode.Filter = string.Empty;
-            }
-
-            //Update the combo
-            try
-            {
-                if (APetraUtilsObject != null)
-                {
-                    APetraUtilsObject.SuppressChangeDetection = true;
-                }
-
-                ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
-            }
-            finally
-            {
-                if (APetraUtilsObject != null)
-                {
-                    APetraUtilsObject.SuppressChangeDetection = false;
-                }
-            }
-
-            ACmbMotivationDetailCode.RefreshLabel();
-        }
-
-        /// <summary>
-        /// ApplyMotivationDetailCodeFilter
-        /// </summary>
-        private static void ApplyMotivationDetailCodeFilter(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            GiftBatchTDS AMainDS,
-            Int32 ALedgerNumber,
-            TFrmPetraEditUtils APetraUtilsObject,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            ref TCmbAutoPopulated ACmbMotivationDetailCode,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            Int64 ARecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            TextBox ATxtDetailCostCentreCode,
-            TextBox ATxtDetailAccountCode,
-            TextBox ATxtDetailRecipientKeyMinistry,
-            CheckBox AChkDetailTaxDeductible,
-            string AMotivationGroup,
-            ref string AMotivationDetail,
-            ref bool AMotivationDetailChangedFlag,
-            bool AActiveOnly,
-            bool ARecipientKeyChangingFlag,
-            bool ACreatingNewRecurringGiftFlag,
-            bool AInEditModeFlag,
-            ref string AAutoPopComment)
-        {
-            //FMotivationbDetail will change by next process
-            string motivationDetail = AMotivationDetail;
-
-            TFinanceControls.ChangeFilterMotivationDetailList(ref ACmbMotivationDetailCode, AMotivationGroup);
-            AMotivationDetail = motivationDetail;
-
-            if (AMotivationDetail.Length > 0)
-            {
-                if ((ACmbMotivationDetailCode.GetSelectedString() != null) && (ACmbMotivationDetailCode.GetSelectedString() != AMotivationDetail))
-                {
-                    ACmbMotivationDetailCode.SetSelectedString(AMotivationDetail);
-                }
-
-                ACmbMotivationDetailCode.RefreshLabel();
-            }
-            else if (ACmbMotivationDetailCode.Count > 0)
-            {
-                ACmbMotivationDetailCode.SelectedIndex = 0;
-
-                //Force refresh of label
-                OnMotivationDetailChanged(ACurrentDetailRow,
-                    AMainDS,
-                    ALedgerNumber,
-                    APetraUtilsObject,
-                    ACmbKeyMinistries,
-                    ACmbMotivationDetailCode,
-                    ATxtDetailRecipientKey,
-                    ARecipientKey,
-                    AtxtDetailRecipientLedgerNumber,
-                    ATxtDetailCostCentreCode,
-                    ATxtDetailAccountCode,
-                    ATxtDetailRecipientKeyMinistry,
-                    AChkDetailTaxDeductible,
-                    AMotivationGroup,
-                    ref AMotivationDetail,
-                    ref AMotivationDetailChangedFlag,
-                    ARecipientKeyChangingFlag,
-                    ACreatingNewRecurringGiftFlag,
-                    AInEditModeFlag,
-                    false,
-                    ref AAutoPopComment);
-            }
-            else
-            {
-                ACmbMotivationDetailCode.SelectedIndex = -1;
-                //Force refresh of label
-                OnMotivationDetailChanged(ACurrentDetailRow,
-                    AMainDS,
-                    ALedgerNumber,
-                    APetraUtilsObject,
-                    ACmbKeyMinistries,
-                    ACmbMotivationDetailCode,
-                    ATxtDetailRecipientKey,
-                    ARecipientKey,
-                    AtxtDetailRecipientLedgerNumber,
-                    ATxtDetailCostCentreCode,
-                    ATxtDetailAccountCode,
-                    ATxtDetailRecipientKeyMinistry,
-                    AChkDetailTaxDeductible,
-                    AMotivationGroup,
-                    ref AMotivationDetail,
-                    ref AMotivationDetailChangedFlag,
-                    ARecipientKeyChangingFlag,
-                    ACreatingNewRecurringGiftFlag,
-                    AInEditModeFlag,
-                    false,
-                    ref AAutoPopComment);
-            }
-
-            RetrieveMotivationDetailAccountCode(AMainDS, ALedgerNumber, ATxtDetailAccountCode,
-                AMotivationGroup, AMotivationDetail);
-
-            if ((ATxtDetailRecipientKey.Text == string.Empty) || (Convert.ToInt64(ATxtDetailRecipientKey.Text) == 0))
-            {
-                ATxtDetailRecipientKey.Text = String.Format("{0:0000000000}", 0);
-                RetrieveMotivationDetailCostCentreCode(AMainDS, ALedgerNumber, ATxtDetailCostCentreCode, AMotivationGroup, AMotivationDetail);
-            }
-        }
-
-        /// <summary>
-        /// PopulateKeyMinistry
-        /// </summary>
-        private static void PopulateKeyMinistry(GiftBatchTDSARecurringGiftDetailRow ACurrentDetailRow,
-            TCmbAutoPopulated ACmbKeyMinistries,
-            TtxtAutoPopulatedButtonLabel ATxtDetailRecipientKey,
-            TtxtAutoPopulatedButtonLabel AtxtDetailRecipientLedgerNumber,
-            bool AMotivationDetailChangedFlag,
-            long APartnerKey = 0)
-        {
-            ACmbKeyMinistries.Clear();
-
-            if (APartnerKey == 0)
-            {
-                APartnerKey = Convert.ToInt64(ATxtDetailRecipientKey.Text);
-
-                if (APartnerKey == 0)
-                {
-                    return;
-                }
-            }
-
-            GetRecipientData(ACurrentDetailRow,
-                APartnerKey,
-                ref ACmbKeyMinistries,
-                ATxtDetailRecipientKey,
-                ref AtxtDetailRecipientLedgerNumber,
-                AMotivationDetailChangedFlag);
-        }
-
-        #endregion
+        #endregion data handling
     }
 }

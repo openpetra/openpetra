@@ -300,27 +300,6 @@ namespace Ict.Petra.Client.MPartner.Gui
             frm.Show();
         }
 
-        /// export partners into file
-        public static void ExportPartners(Form AParentForm)
-        {
-            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
-
-            if (FileName.Length > 0)
-            {
-                if (FileName.EndsWith("ext"))
-                {
-                    String doc = TRemote.MPartner.ImportExport.WebConnectors.ExportAllPartnersExt();
-                    TImportExportDialogs.ExportTofile(doc, FileName);
-                }
-                else
-                {
-                    XmlDocument doc = new XmlDocument();
-                    doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportPartners());
-                    TImportExportDialogs.ExportTofile(doc, FileName);
-                }
-            }
-        }
-
         /// <summary>
         /// Checks if the the partner is merged. If so then show a dialog where the user can
         /// choose to work with the current partner or the merged partner.

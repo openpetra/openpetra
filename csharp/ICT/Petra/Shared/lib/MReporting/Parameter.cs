@@ -682,7 +682,7 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// remove variable completely from list, all occurances
+        /// remove variable completely from list, all occurrences
         /// </summary>
         /// <param name="AParameterId"></param>
         public void RemoveVariable(String AParameterId)
@@ -766,7 +766,7 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
-        /// Prints a message to log with all occurances of the given variable in the parameter list
+        /// Prints a message to log with all occurrences of the given variable in the parameter list
         /// This can be helpful for debugging.
         ///
         /// </summary>
@@ -968,7 +968,7 @@ namespace Ict.Petra.Shared.MReporting
                         lowerLevel = element.level;
                     }
 
-                    // we are looking for any occurance
+                    // we are looking for any occurrence
                     if ((depth == -1) && (column == -1))
                     {
                         anyFit = element;

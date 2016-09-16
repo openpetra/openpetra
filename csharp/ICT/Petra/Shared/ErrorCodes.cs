@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -291,6 +291,11 @@ namespace Ict.Petra.Shared
         [ErrCodeAttribute("Invalid Motivation Group for Recipient's Field.",
              ErrorMessageText = "The Recipient's Field is 0 and so cannot have the Motivation Group Code 'Gift.'")]
         public const String ERR_RECIPIENT_FIELD_MOTIVATION_GROUP = "PARTN.00999V";
+
+        /// <summary>The Recipient's Gift Destination is missing or invalid.</summary>
+        [ErrCodeAttribute("Invalid Gift Destination for Recipient.",
+             ErrorMessageText = "The Recipient's Gift Destination is missing or invalid.")]
+        public const String ERR_RECIPIENT_GIFT_DESTINATION_INVALID = "PARTN.00997V";
 
         /// <summary>Partner Status MERGED must not be assigned.</summary>
         [ErrCodeAttribute("Partner Status MERGED must not be assigned",
@@ -730,11 +735,17 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "Missing password")]
         public const String ERR_MISSING_PASSWORD = "SYS.00001V";
 
-        /// <summary>Password missing.</summary>
+        /// <summary>Password rules not adhered to.</summary>
         [ErrCodeAttribute("Invalid password.",
-             ErrorMessageText = "Your password must have at least {0} characters, and must contain at least one digit and one letter.",
+             ErrorMessageText = "The password must have at least {0} characters, and must contain at least one digit and one letter.",
              ErrorMessageTitle = "Invalid password")]
         public const String ERR_INVALID_PASSWORD = "SYS.00002V";
+
+        /// <summary>Attempted password change not changing the password.</summary>
+        [ErrCodeAttribute("Invalid password.",
+             ErrorMessageText = "The new password must be different from the current password, but it is identical.",
+             ErrorMessageTitle = "Invalid password")]
+        public const String ERR_NEW_PASSWORD_MUST_BE_DIFFERENT = "SYS.00003V";
 
         #endregion
     }

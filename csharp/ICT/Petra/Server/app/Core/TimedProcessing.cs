@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -100,8 +100,7 @@ namespace Ict.Petra.Server.App.Core
 
             TPetraIdentity PetraIdentity = new TPetraIdentity(
                 "SYSADMIN", "", "", "", "", DateTime.MinValue,
-                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false,
-                false);
+                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
 
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 

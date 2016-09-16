@@ -23,6 +23,7 @@
     <if test="${not property::exists('combinedTest')}">
       <nant inheritall="false" target="resetDatabase" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     </if>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Verification.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Common.Controls.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ExchangeRates.dll" />
