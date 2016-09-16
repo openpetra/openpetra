@@ -665,16 +665,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Undo all changes to the specified batch ready to cancel it.
         ///  This avoids unecessary validation errors when cancelling.
-        ///  befor cancelling it
         /// </summary>
         /// <param name="ABatchToCancel"></param>
         /// <param name="ARedisplay"></param>
-        /// <param name="ACurrentBatchTransactionsLoadedAndCurrent"></param>
-        public void PrepareBatchDataForCancelling(Int32 ABatchToCancel, bool ARedisplay, out bool ACurrentBatchTransactionsLoadedAndCurrent)
+        public void PrepareBatchDataForCancelling(Int32 ABatchToCancel, bool ARedisplay)
         {
             //This code will only be called when the Batch tab is active.
-
-            ACurrentBatchTransactionsLoadedAndCurrent = false;
 
             DataView GiftBatchDV = new DataView(FMainDS.AGiftBatch);
             DataView GiftDV = new DataView(FMainDS.AGift);
@@ -695,9 +691,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Work from lowest level up
             if (GiftDetailDV.Count > 0)
             {
-                TFrmGiftBatch mainForm = (TFrmGiftBatch) this.ParentForm;
-                ACurrentBatchTransactionsLoadedAndCurrent = (mainForm.GetTransactionsControl().FBatchNumber == ABatchToCancel);
-
                 GiftDetailDV.Sort = String.Format("{0}, {1}",
                     AGiftDetailTable.GetGiftTransactionNumberDBName(),
                     AGiftDetailTable.GetDetailNumberDBName());
@@ -1038,6 +1031,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool InPosting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.POSTING);
             bool InCancelling = (AAction == TExtraGiftBatchChecks.GiftBatchAction.CANCELLING);
+            bool InDeletingTrans = (AAction == TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS);
 
             int CurrentBatch = FPreviouslySelectedDetailRow.BatchNumber;
 
@@ -1054,6 +1048,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 int currentBatchListNo;
                 string batchNoList = string.Empty;
+
                 int numInactiveFieldsPresent = 0;
                 string bankCostCentre;
                 string bankAccount;
@@ -1148,7 +1143,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     //Create header message
                     WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
-                    WarningHeader += AAction.ToString().ToLower() + " batch: {2}";
+                    WarningHeader += (!InDeletingTrans ? AAction.ToString().ToLower() : "deleting gift detail(s) and saving changes to") +
+                                     " batch: {2}";
                     WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
 
                     if (!InPosting || (otherChangedBatches.Length > 0))
@@ -1170,8 +1166,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGiftBatch)ParentForm);
 
+                    string header = string.Empty;
+
+                    if (InPosting)
+                    {
+                        header = "Post";
+                    }
+                    else if (InCancelling)
+                    {
+                        header = "Cancel";
+                    }
+                    else if (InDeletingTrans)
+                    {
+                        header = "Delete Gift Detail From";
+                    }
+                    else
+                    {
+                        header = "Save";
+                    }
+
                     return extendedMessageBox.ShowDialog(WarningMessage,
-                        Catalog.GetString((InPosting ? "Post" : (InCancelling ? "Cancel" : "Save")) + " Gift Batch"), string.Empty,
+                        Catalog.GetString(header + " Gift Batch"), string.Empty,
                         TFrmExtendedMessageBox.TButtons.embbYesNo,
                         TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
                 }
@@ -1328,12 +1343,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 MainForm.FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.CANCELLING;
 
-                int CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
+                int currentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
 
                 if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow))
                 {
                     //Reset row to fire events
-                    SelectRowInGrid(CurrentlySelectedRow);
+                    SelectRowInGrid(currentlySelectedRow);
                     UpdateRecordNumberDisplay();
 
                     //If no row exists in current view after cancellation

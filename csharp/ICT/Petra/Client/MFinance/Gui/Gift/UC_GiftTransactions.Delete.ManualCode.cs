@@ -89,6 +89,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void DeleteAllGifts(System.Object sender, EventArgs e)
         {
+            TFrmGiftBatch FMyForm = (TFrmGiftBatch) this.ParentForm;
+
             string CompletionMessage = string.Empty;
             int BatchNumberToClear = FBatchNumber;
 
@@ -107,74 +109,82 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
+            GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have chosen to delete all gifts from Gift Batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                            "You have chosen to delete all gifts from Gift Batch: {0}.{1}{1}Are you sure you want to delete all?"),
                         BatchNumberToClear,
                         Environment.NewLine),
                     Catalog.GetString("Confirm Delete All"),
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
             {
-                try
+                return;
+            }
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                //Specify current action
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS;
+
+                //clear any transactions currently being editied in the Transaction Tab
+                ClearCurrentSelection(0, false);
+
+                //Now delete all gift data for current batch
+                DeleteBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
+
+                FBatchRow.BatchTotal = 0;
+                txtBatchTotal.NumberValueDecimal = 0;
+
+                // Be sure to set the last gift number in the parent table before saving all the changes
+                FBatchRow.LastGiftNumber = 0;
+
+                FPetraUtilsObject.SetChangedFlag();
+
+                // save changes
+                if (((TFrmGiftBatch)ParentForm).SaveChangesManual())
                 {
-                    this.Cursor = Cursors.WaitCursor;
-
-                    //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                    CompletionMessage = String.Format(Catalog.GetString("All gifts and details deleted successfully."),
-                        FPreviouslySelectedDetailRow.BatchNumber);
-
-                    //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection(0, false);
-
-                    //Now delete all gift data for current batch
-                    DeleteBatchGiftData(BatchNumberToClear, ref OriginatingDetailRef);
-
-                    FBatchRow.BatchTotal = 0;
-                    txtBatchTotal.NumberValueDecimal = 0;
-
-                    // Be sure to set the last gift number in the parent table before saving all the changes
-                    FBatchRow.LastGiftNumber = 0;
-
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    // save first, then post
-                    if (((TFrmGiftBatch)ParentForm).SaveChangesManual())
+                    //Check if have deleted a reversing gift detail
+                    if (OriginatingDetailRef.Count > 0)
                     {
-                        //Check if have deleted a reversing gift detail
-                        if (OriginatingDetailRef.Count > 0)
-                        {
-                            TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
-                        }
-
-                        MessageBox.Show(CompletionMessage,
-                            "All Gifts Deleted.",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
+                        TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
                     }
-                    else
-                    {
-                        throw new Exception("Unable to save after deleting all gifts!");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    //Revert to previous state
-                    RevertDataSet(FMainDS, BackupMainDS);
 
-                    TLogging.LogException(ex, Utilities.GetMethodSignature());
-                    throw;
+                    CompletionMessage = Catalog.GetString("All Gifts and their details deleted successfully.");
+
+                    MessageBox.Show(CompletionMessage,
+                        Catalog.GetString("Gifts Deletion"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
-                finally
+                else
                 {
-                    SetGiftDetailDefaultView();
-                    FFilterAndFindObject.ApplyFilter();
-                    this.Cursor = Cursors.Default;
+                    CompletionMessage = Catalog.GetString("All Gifts and their details have been deleted but saving the changes failed!");
+
+                    MessageBox.Show(CompletionMessage,
+                        Catalog.GetString("All Gifts Deletion"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
                 }
             }
+            catch (Exception ex)
+            {
+                //Revert to previous state
+                RevertDataSet(FMainDS, BackupDS);
+
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+            finally
+            {
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.NONE;
+                this.Cursor = Cursors.Default;
+            }
+
+            SetGiftDetailDefaultView();
+            FFilterAndFindObject.ApplyFilter();
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -191,7 +201,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool OnPreDeleteManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            bool allowDeletion = true;
+            bool AllowDeletion = true;
 
             FGift = GetGiftRow(ARowToDelete.GiftTransactionNumber);
             FFilterAllDetailsOfGift = String.Format("{0}={1} and {2}={3}",
@@ -238,61 +248,41 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     String.Format(Catalog.GetString("Gift no. {0} in Batch no. {1} has no detail rows in the Gift Detail table!"),
                         ARowToDelete.GiftTransactionNumber,
                         ARowToDelete.BatchNumber);
-                allowDeletion = false;
+                AllowDeletion = false;
             }
 
-            return allowDeletion;
+            return AllowDeletion;
         }
 
         private bool OnDeleteRowManual(GiftBatchTDSAGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
-            bool DeletionSuccessful = false;
+            //TODO: Make this like deleton on GL Transactions form
+            // e.g. pass copy to delete method on server...
+            //GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+            //TempDS.Merge(FMainDS);
 
-            List <string>OriginatingDetailRef = new List <string>();
+            bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
 
-            if (ARowToDelete == null)
+            if (FBatchRow == null)
             {
-                return DeletionSuccessful;
+                FBatchRow = GetBatchRow();
             }
 
+            if ((ARowToDelete == null) || (FBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return false;
+            }
+
+            int CurrentBatchNo = ARowToDelete.BatchNumber;
             bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
+            int CurrentRowIndex = GetSelectedRowIndex();
 
-            if (!RowToDeleteIsNew)
-            {
-                try
-                {
-                    // temporarily disable  New Donor Warning
-                    ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = false;
+            TFrmGiftBatch FMyForm = (TFrmGiftBatch) this.ParentForm;
 
-                    //Return modified row to last saved state to avoid validation failures
-                    ARowToDelete.RejectChanges();
-                    ShowDetails(ARowToDelete);
-
-                    if (!((TFrmGiftBatch) this.ParentForm).SaveChanges())
-                    {
-                        MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current gift detail!"),
-                            Catalog.GetString("Deletion Error"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-
-                        return DeletionSuccessful;
-                    }
-                }
-                finally
-                {
-                    ((TFrmGiftBatch) this.ParentForm).NewDonorWarning = true;
-                }
-            }
-
-            //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
-
-            //To be used later....Pass copy to delete method.
-            //GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
-            //TempDS.Merge(FMainDS);
+            GiftBatchTDS BackupMainDS = null;
+            List <string>OriginatingDetailRef = new List <string>();
 
             int SelectedDetailNumber = ARowToDelete.DetailNumber;
             int GiftToDeleteTransNo = 0;
@@ -304,16 +294,32 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-
+                //Specify current action
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS;
                 //Speeds up deletion of larger gift sets
                 FMainDS.EnforceConstraints = false;
+                // temporarily disable  New Donor Warning
+                FMyForm.NewDonorWarning = false;
+
+                //Backup the Dataset for reversion purposes
+                BackupMainDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
+
+                //Don't run an inactive fields check on this batch
+                FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
 
                 if ((ARowToDelete.ModifiedDetailKey != null) && (ARowToDelete.ModifiedDetailKey.Length > 0))
                 {
                     OriginatingDetailRef.Add(ARowToDelete.ModifiedDetailKey);
                 }
 
-                //Delete current detail row
+                //Delete current row
+                ARowToDelete.RejectChanges();
+
+                if (!RowToDeleteIsNew)
+                {
+                    ShowDetails(ARowToDelete);
+                }
+
                 ARowToDelete.Delete();
 
                 //If there existed (before the delete row above) more than one detail row, then no need to delete gift header row
@@ -334,8 +340,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FGift.LastDetailNumber--;
-
-                    FPetraUtilsObject.SetChangedFlag();
                 }
                 else
                 {
@@ -412,49 +416,66 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FPreviouslySelectedDetailRow = null;
-
-                    FPetraUtilsObject.SetChangedFlag();
-
                     FGiftSelectedForDeletionFlag = true;
-
                     FBatchRow.LastGiftNumber--;
                 }
 
-                //Try to save changes
-                if (((TFrmGiftBatch) this.ParentForm).SaveChangesManual())
+                //Save and check for inactive values and ex-workers and anonymous gifts
+                //  in other unsaved Batches
+                FPetraUtilsObject.SetChangedFlag();
+
+                if (!FMyForm.SaveChangesManual(Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS, false, false))
                 {
-                    //Check if have deleted a reversing gift detail
-                    if (OriginatingDetailRef.Count > 0)
+                    FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary();
+
+                    MessageBox.Show(Catalog.GetString("The gift detail has been deleted but the changes are not saved!"),
+                        Catalog.GetString("Deletion Warning"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    ACompletionMessage = string.Empty;
+
+                    if (FGiftSelectedForDeletionFlag)
                     {
-                        TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
+                        FGiftSelectedForDeletionFlag = false;
+                        SetBatchLastGiftNumber();
+                        UpdateControlsProtection();
                     }
 
-                    //Clear current batch's gift data and reload from server
-                    RefreshCurrentBatchGiftData(FBatchNumber, true);
+                    UpdateTotals();
+
+                    return false;
                 }
-                else
+
+                //Check if have deleted a reversing gift detail
+                if (OriginatingDetailRef.Count > 0)
                 {
-                    throw new Exception("Unable to save after deleting a gift!");
+                    TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, OriginatingDetailRef);
                 }
+
+                //Clear current batch's gift data and reload from server
+                RefreshBatchGiftData(FBatchNumber, true);
 
                 DeletionSuccessful = true;
             }
             catch (Exception ex)
             {
                 //Revert to previous state
-                RevertDataSet(FMainDS, BackupMainDS);
+                RevertDataSet(FMainDS, BackupMainDS, CurrentRowIndex);
 
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
             finally
             {
+                FMyForm.NewDonorWarning = true;
                 FMainDS.EnforceConstraints = true;
-                SetGiftDetailDefaultView();
-                FFilterAndFindObject.ApplyFilter();
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.NONE;
                 this.Cursor = Cursors.Default;
             }
 
+            SetGiftDetailDefaultView();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
 
             return DeletionSuccessful;
@@ -470,9 +491,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (FGiftSelectedForDeletionFlag)
                 {
                     FGiftSelectedForDeletionFlag = false;
-
                     SetBatchLastGiftNumber();
-
                     UpdateControlsProtection();
                 }
 
@@ -508,11 +527,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         #region revert to backup
 
-        private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS)
+        private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS, int ASelectRowInGrid = 0)
         {
-            //TODO: Find out which one is best in terms of speed and merged rowstates
-            AMainDS.Clear();
-            AMainDS.Merge(ABackupDS);
+            if ((ABackupDS != null) && (AMainDS != null))
+            {
+                AMainDS.RejectChanges();
+                AMainDS.Merge(ABackupDS);
+
+                if (ASelectRowInGrid > 0)
+                {
+                    SelectRowInGrid(ASelectRowInGrid);
+                }
+            }
         }
 
         #endregion revert to backup

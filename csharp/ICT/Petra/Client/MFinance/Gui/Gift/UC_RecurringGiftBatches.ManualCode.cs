@@ -556,16 +556,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// Re-show the specified row
+        /// Undo all changes to the specified batch ready to delete it.
+        ///  This avoids unecessary validation errors when deleting.
         /// </summary>
         /// <param name="ABatchToDelete"></param>
         /// <param name="ARedisplay"></param>
-        /// <param name="ACurrentBatchTransactionsLoadedAndCurrent"></param>
-        public void PrepareBatchDataForDeleting(Int32 ABatchToDelete, bool ARedisplay, out bool ACurrentBatchTransactionsLoadedAndCurrent)
+        public void PrepareBatchDataForDeleting(Int32 ABatchToDelete, bool ARedisplay)
         {
             //This code will only be called when the Batch tab is active.
-
-            ACurrentBatchTransactionsLoadedAndCurrent = false;
 
             DataView GiftBatchDV = new DataView(FMainDS.ARecurringGiftBatch);
             DataView GiftDV = new DataView(FMainDS.ARecurringGift);
@@ -586,9 +584,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //Work from lowest level up
             if (GiftDetailDV.Count > 0)
             {
-                TFrmRecurringGiftBatch mainForm = (TFrmRecurringGiftBatch) this.ParentForm;
-                ACurrentBatchTransactionsLoadedAndCurrent = (mainForm.GetTransactionsControl().FBatchNumber == ABatchToDelete);
-
                 GiftDetailDV.Sort = String.Format("{0}, {1}",
                     ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
                     ARecurringGiftDetailTable.GetDetailNumberDBName());
@@ -913,6 +908,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool InSubmitting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING);
             bool InDeleting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.DELETING);
+            bool InDeletingTrans = (AAction == TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS);
 
             int CurrentBatch = FPreviouslySelectedDetailRow.BatchNumber;
 
@@ -929,6 +925,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 int currentBatchListNo;
                 string batchNoList = string.Empty;
+
                 int numInactiveFieldsPresent = 0;
                 string bankCostCentre;
                 string bankAccount;
@@ -1022,7 +1019,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     //Create header message
                     WarningHeader = "{0} inactive value(s) found in recurring batch{1}{4}{4}Do you still want to continue with ";
-                    WarningHeader += AAction.ToString().ToLower() + " batch: {2}";
+                    WarningHeader += (!InDeletingTrans ? AAction.ToString().ToLower() : "deleting gift detail(s) and saving changes to") +
+                                     " batch: {2}";
                     WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
 
                     if (!InSubmitting || (otherChangedBatches.Length > 0))
@@ -1044,8 +1042,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmRecurringGiftBatch)ParentForm);
 
+                    string header = string.Empty;
+
+                    if (InSubmitting)
+                    {
+                        header = "Submit";
+                    }
+                    else if (InDeleting)
+                    {
+                        header = "Delete";
+                    }
+                    else if (InDeletingTrans)
+                    {
+                        header = "Delete Gift Detail From";
+                    }
+                    else
+                    {
+                        header = "Save";
+                    }
+
                     return extendedMessageBox.ShowDialog(WarningMessage,
-                        Catalog.GetString((InSubmitting ? "Submit" : (InDeleting ? "Delete" : "Save")) + " Recurring Gift Batch"), string.Empty,
+                        Catalog.GetString(header + " Recurring Gift Batch"), string.Empty,
                         TFrmExtendedMessageBox.TButtons.embbYesNo,
                         TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
                 }

@@ -109,11 +109,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Backup the Dataset for reversion purposes
                 BackupMainDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
 
-                //Check how many batches need saving
-                List <Int32>BatchesToCheck = FMyForm.GetUnsavedBatchRowNumbersList(CurrentBatchNo);
-
                 //Don't run an inactive fields check on this batch
                 FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
+
+                //Check if current batch gift details are currently loaded
+                CurrentBatchTransactionsLoadedAndCurrent = (FMyForm.GetTransactionsControl().FBatchNumber == CurrentBatchNo);
 
                 //Save and check for inactive values and ex-workers and anonymous gifts
                 //  in other unsaved Batches
@@ -133,43 +133,43 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     return false;
                 }
-                else
+
+                //Remove any changes to current batch that may cause validation issues
+                FMyForm.GetBatchControl().PrepareBatchDataForCancelling(CurrentBatchNo, true);
+
+                if (CurrentBatchTransactionsLoadedAndCurrent)
                 {
-                    //Remove any changes to current batch that may cause validation issues
-                    FMyForm.GetBatchControl().PrepareBatchDataForCancelling(CurrentBatchNo, true, out CurrentBatchTransactionsLoadedAndCurrent);
-
-                    if (CurrentBatchTransactionsLoadedAndCurrent)
-                    {
-                        //Clear any transactions currently being edited in the Transaction Tab
-                        FMyForm.GetTransactionsControl().ClearCurrentSelection(CurrentBatchNo);
-                    }
-
-                    //Delete transactions
-                    FMyForm.GetTransactionsControl().DeleteBatchGiftData(CurrentBatchNo, ref ModifiedDetailKeys);
-
-                    //Batch is only cancelled and never deleted
-                    ABatchRowToCancel.BeginEdit();
-                    ABatchRowToCancel.BatchTotal = 0;
-                    ABatchRowToCancel.LastGiftNumber = 0;
-                    ABatchRowToCancel.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
-                    ABatchRowToCancel.EndEdit();
-
-                    if (ModifiedDetailKeys.Count > 0)
-                    {
-                        TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, ModifiedDetailKeys);
-                    }
-
-                    FPetraUtilsObject.SetChangedFlag();
-                    FMyForm.SaveChangesManual();
-
-                    CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
-                        CurrentBatchNo);
-
-                    MessageBox.Show(CompletionMessage,
-                        "Gift Batch Cancelled",
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                    //Clear any transactions currently being edited in the Transaction Tab
+                    FMyForm.GetTransactionsControl().ClearCurrentSelection(CurrentBatchNo);
                 }
+
+                //Delete transactions
+                FMyForm.GetTransactionsControl().DeleteBatchGiftData(CurrentBatchNo, ref ModifiedDetailKeys);
+
+                //Batch is only cancelled and never deleted
+                ABatchRowToCancel.BeginEdit();
+                ABatchRowToCancel.BatchTotal = 0;
+                ABatchRowToCancel.LastGiftNumber = 0;
+                ABatchRowToCancel.BatchStatus = MFinanceConstants.BATCH_CANCELLED;
+                ABatchRowToCancel.EndEdit();
+
+                if (ModifiedDetailKeys.Count > 0)
+                {
+                    TRemote.MFinance.Gift.WebConnectors.ReversedGiftReset(FLedgerNumber, ModifiedDetailKeys);
+                }
+
+                FPetraUtilsObject.SetChangedFlag();
+                FMyForm.SaveChangesManual();
+
+                CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                    CurrentBatchNo);
+
+                MessageBox.Show(CompletionMessage,
+                    "Gift Batch Cancelled",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+
+                FMyForm.DisableTransactions();
 
                 CancellationSuccessful = true;
             }

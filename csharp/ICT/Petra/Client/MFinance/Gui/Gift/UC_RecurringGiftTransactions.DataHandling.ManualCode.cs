@@ -238,7 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Clear the gift data of the current batch without marking records for delete
         /// </summary>
-        private bool RefreshCurrentRecurringBatchGiftData(Int32 ABatchNumber,
+        private bool RefreshRecurringBatchGiftData(Int32 ABatchNumber,
             bool AAcceptChanges = false,
             bool AHandleDataSetBackup = false)
         {
@@ -252,8 +252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AHandleDataSetBackup)
             {
-                BackupDS = (GiftBatchTDS)FMainDS.Copy();
-                BackupDS.Merge(FMainDS);
+                BackupDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
             }
 
             try

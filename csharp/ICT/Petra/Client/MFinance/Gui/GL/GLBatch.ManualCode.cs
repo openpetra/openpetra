@@ -796,34 +796,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out AVerificationResult);
         }
 
-        // Before the dataset is saved, check for correlation between batch and transactions
-        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
-        {
-            ucoBatches.CheckBeforeSaving();
-            ucoJournals.CheckBeforeSaving();
-            ucoTransactions.CheckBeforeSaving();
-        }
-
-        private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
-        {
-            //Check if the user has made a Bank Cost Centre or Account Code inactive
-            // on saving
-            if (!ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, GetBatchControl().GetCurrentBatchRow().BatchNumber, FCurrentGLBatchAction))
-            {
-                e.Cancel = true;
-            }
-        }
-
-        private void FPetraUtilsObject_DataSaved(object sender, TDataSavedEventArgs e)
-        {
-            if (e.Success && FLatestSaveIncludedForex)
-            {
-                // Notify the exchange rate screen, if it is there
-                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
-                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
-            }
-        }
-
         private void FileSaveManual(object sender, EventArgs e)
         {
             SaveChangesManual();
@@ -842,15 +814,63 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Check for ExWorkers before saving or cancelling
         /// </summary>
+        /// <param name="AAction"></param>
+        /// <param name="AGetOnlyNonBatchDataFromControls"></param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TGLBatchEnums.GLBatchAction AAction)
+        public bool SaveChangesManual(TGLBatchEnums.GLBatchAction AAction, bool AGetOnlyNonBatchDataFromControls = false)
         {
+            if (AAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                AAction = TGLBatchEnums.GLBatchAction.SAVING;
+                FCurrentGLBatchAction = AAction;
+            }
+
             if (AAction != TGLBatchEnums.GLBatchAction.CANCELLING)
             {
                 GetDataFromControls();
             }
+            else if (AGetOnlyNonBatchDataFromControls) //Only applicable when cancelling current batch
+            {
+                //If in cancelling but trans tab is showing data from an earlier viewed batch with changes
+                // then still need to get data from controls on Transaction and Journals tab.
+                ucoTransactions.GetDataFromControls();
+                ucoJournals.GetDataFromControls();
+            }
 
             return SaveChanges();
+        }
+
+        // Before the dataset is saved, check for correlation between batch and transactions
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            ucoBatches.CheckBeforeSaving();
+            ucoJournals.CheckBeforeSaving();
+            ucoTransactions.CheckBeforeSaving();
+        }
+
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
+        {
+            if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
+            }
+
+            //Check if the user has made a Bank Cost Centre or Account Code inactive
+            // on saving
+            if (!ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, GetBatchControl().GetCurrentBatchRow().BatchNumber, FCurrentGLBatchAction))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void FPetraUtilsObject_DataSaved(object sender, TDataSavedEventArgs e)
+        {
+            if (e.Success && FLatestSaveIncludedForex)
+            {
+                // Notify the exchange rate screen, if it is there
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+            }
         }
 
         /// <summary>
@@ -897,7 +917,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Needs to be called prior to posting current batch to ensure all data is up-to-date
         /// </summary>
-        public void GetControlDataForPosting()
+        public void GetLatestControlData()
         {
             GetDataFromControls();
         }

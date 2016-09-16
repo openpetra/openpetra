@@ -479,7 +479,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// reset the control
+        /// Clear the current selection
         /// </summary>
         /// <param name="ABatchToClear"></param>
         /// <param name="AResetFBatchNumber"></param>

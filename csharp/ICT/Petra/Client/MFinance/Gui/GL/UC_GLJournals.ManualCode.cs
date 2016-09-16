@@ -478,11 +478,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// clear the current selection
         /// </summary>
-        public void ClearCurrentSelection()
+        /// <param name="ABatchToClear"></param>
+        /// <param name="AResetFBatchNumber"></param>
+        public void ClearCurrentSelection(int ABatchToClear = 0, bool AResetFBatchNumber = true)
         {
             //Called from Batch tab, so no need to check for GetDetailsFromControls()
             // as tab change does that and current tab is Batch tab.
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (FPreviouslySelectedDetailRow.BatchNumber != ABatchToClear))
+            {
+                return;
+            }
+
+            //Set selection to null
             this.FPreviouslySelectedDetailRow = null;
+
+            if (AResetFBatchNumber)
+            {
+                FBatchNumber = -1;
+            }
         }
 
         private void ValidateDataDetailsManual(AJournalRow ARow)

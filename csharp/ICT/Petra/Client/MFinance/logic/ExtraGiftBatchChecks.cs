@@ -113,15 +113,17 @@ namespace Ict.Petra.Client.MFinance.Logic
         {
             /// <summary>GiftBatch and RecurringGiftBatch</summary>
             SAVING,
-            /// <summary>GiftBatch and RecurringGiftBatch</summary>
+            /// <summary>Gift Batch and Recurring Gift Batch</summary>
             NEWBATCH,
-            /// <summary>GiftBatch</summary>
+            /// <summary>Gift Batch</summary>
             POSTING,
-            /// <summary>GiftBatch</summary>
+            /// <summary>Gift Batch</summary>
             CANCELLING,
-            /// <summary>RecurringGiftBatch</summary>
+            /// <summary>Gift Batch and Recurring Gift Batch</summary>
+            DELETINGTRANS,
+            /// <summary>Recurring Gift Batch</summary>
             SUBMITTING,
-            /// <summary>RecurringGiftBatch</summary>
+            /// <summary>Recurring Gift Batch</summary>
             DELETING,
             /// <summary>No action being taken</summary>
             NONE

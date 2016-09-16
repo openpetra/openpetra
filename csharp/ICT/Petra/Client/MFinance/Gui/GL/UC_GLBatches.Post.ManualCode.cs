@@ -96,6 +96,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
 
+            //Make sure that all control data is in dataset
+            FMyForm.GetLatestControlData();
+
             if (FPetraUtilsObject.HasChanges)
             {
                 //Keep this conditional check separate so that it only gets called when necessary
@@ -190,8 +193,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         FMainDS.AcceptChanges();
 
                         // Ensure these tabs will ask the server for updates
-                        FMyForm.GetJournalsControl().ClearCurrentSelection();
                         FMyForm.GetTransactionsControl().ClearCurrentSelection();
+                        FMyForm.GetJournalsControl().ClearCurrentSelection();
 
                         FMyUserControl.UpdateDisplay();
                     }

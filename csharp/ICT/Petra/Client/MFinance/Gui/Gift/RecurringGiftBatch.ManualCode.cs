@@ -155,8 +155,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         /// <param name="AAction"></param>
         /// <param name="AGetOnlyTransDataFromControls"></param>
+        /// <param name="ABatchLevelAction"></param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction, bool AGetOnlyTransDataFromControls = false)
+        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction,
+            bool AGetOnlyTransDataFromControls = false,
+            bool ABatchLevelAction = true)
         {
             if (AAction == TExtraGiftBatchChecks.GiftBatchAction.NONE)
             {
@@ -164,11 +167,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FCurrentGiftBatchAction = AAction;
             }
 
-            if (AAction != TExtraGiftBatchChecks.GiftBatchAction.DELETING)
+            if ((AAction != TExtraGiftBatchChecks.GiftBatchAction.DELETING)
+                && (AAction != TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS))
             {
                 GetDataFromControls();
             }
-            else if (AGetOnlyTransDataFromControls) //Only applicable when deleting current batch
+            else if (ABatchLevelAction && AGetOnlyTransDataFromControls) //Only applicable when cancelling current batch
             {
                 //If in deletion but trans tab is showing data from an earlier viewed batch with changes
                 // then still need to get data from controls on Transaction tab.
@@ -873,44 +877,70 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public List <ARecurringGiftBatchRow>GetUnsavedBatchRowsList(int ABatchToInclude = 0)
         {
             List <ARecurringGiftBatchRow>RetVal = new List <ARecurringGiftBatchRow>();
+            List <int>BatchesWithChangesList = new List <int>();
+            string BatchesWithChangesString = string.Empty;
 
             DataView GiftBatchesDV = new DataView(FMainDS.ARecurringGiftBatch);
             GiftBatchesDV.Sort = ARecurringGiftBatchTable.GetBatchNumberDBName() + " ASC";
 
-            foreach (DataRowView dRV in GiftBatchesDV)
-            {
-                ARecurringGiftBatchRow giftBatchRow = (ARecurringGiftBatchRow)dRV.Row;
+            DataView GiftDV = new DataView(FMainDS.ARecurringGift);
+            DataView GiftDetailsDV = new DataView(FMainDS.ARecurringGiftDetail);
 
-                if ((giftBatchRow.BatchNumber == ABatchToInclude)
-                    || (giftBatchRow.RowState != DataRowState.Unchanged))
+            GiftDV.Sort = String.Format("{0} ASC, {1} ASC",
+                ARecurringGiftTable.GetBatchNumberDBName(),
+                ARecurringGiftTable.GetGiftTransactionNumberDBName());
+
+            GiftDetailsDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                ARecurringGiftDetailTable.GetDetailNumberDBName());
+
+            //Add the batch number(s) of changed gift rows
+            foreach (DataRowView dRV in GiftDV)
+            {
+                ARecurringGiftRow gR = (ARecurringGiftRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(gR.BatchNumber)
+                    && (gR.RowState != DataRowState.Unchanged))
                 {
-                    RetVal.Add(giftBatchRow);
+                    BatchesWithChangesList.Add(gR.BatchNumber);
                 }
             }
 
-            return RetVal;
-        }
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
 
-        /// <summary>
-        /// Get Unsaved Recurring Batch Row numbers in a list
-        /// </summary>
-        /// <param name="ABatchToInclude"></param>
-        /// <returns></returns>
-        public List <Int32>GetUnsavedBatchRowNumbersList(int ABatchToInclude = 0)
-        {
-            List <Int32>RetVal = new List <Int32>();
+                //Add any other batch number(s) of changed gift details
+                GiftDetailsDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
 
-            DataView GiftBatchesDV = new DataView(FMainDS.ARecurringGiftBatch);
-            GiftBatchesDV.Sort = ARecurringGiftBatchTable.GetBatchNumberDBName() + " ASC";
+            foreach (DataRowView dRV in GiftDetailsDV)
+            {
+                ARecurringGiftDetailRow gDR = (ARecurringGiftDetailRow)dRV.Row;
 
+                if (!BatchesWithChangesList.Contains(gDR.BatchNumber)
+                    && (gDR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(gDR.BatchNumber);
+                }
+            }
+
+            BatchesWithChangesList.Sort();
+
+            //Get batch rows
             foreach (DataRowView dRV in GiftBatchesDV)
             {
                 ARecurringGiftBatchRow giftBatchRow = (ARecurringGiftBatchRow)dRV.Row;
 
                 if ((giftBatchRow.BatchNumber == ABatchToInclude)
+                    || BatchesWithChangesList.Contains(giftBatchRow.BatchNumber)
                     || (giftBatchRow.RowState != DataRowState.Unchanged))
                 {
-                    RetVal.Add(giftBatchRow.BatchNumber);
+                    RetVal.Add(giftBatchRow);
                 }
             }
 

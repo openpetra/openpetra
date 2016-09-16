@@ -254,6 +254,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
+        /// <summary>
+        /// Call ShowDetails() from outside form
+        /// </summary>
+        public void ShowDetailsRefresh()
+        {
+            ShowDetails();
+        }
+
+        /// reset the control
+        public void ClearCurrentSelection()
+        {
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+
+            if (FPetraUtilsObject.HasChanges)
+            {
+                GetDataFromControls();
+            }
+
+            this.FPreviouslySelectedDetailRow = null;
+            ShowData();
+        }
+
         private void UpdateChangeableStatus()
         {
             FPetraUtilsObject.EnableAction("actReverseBatch", (FPreviouslySelectedDetailRow != null)
@@ -403,27 +428,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// Re-show the specified row
-        /// </summary>
-        /// <param name="AModifiedBatchRow"></param>
-        /// <param name="ARedisplay"></param>
-        public void UndoModifiedBatchRow(ABatchRow AModifiedBatchRow, bool ARedisplay)
-        {
-            //Check if new row or not
-            if (AModifiedBatchRow.RowState == DataRowState.Added)
-            {
-                return;
-            }
-
-            AModifiedBatchRow.RejectChanges();
-
-            if (ARedisplay)
-            {
-                ShowDetails(AModifiedBatchRow);
-            }
-        }
-
-        /// <summary>
         /// This routine is called by a double click on a batch row, which means: Open the
         /// Journal Tab of this batch.
         /// </summary>
@@ -451,6 +455,98 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnPostBatch.Enabled = AEnable;
             btnTestPostBatch.Enabled = AEnable;
             btnCancel.Enabled = AEnable;
+        }
+
+        /// <summary>
+        /// Undo all changes to the specified batch ready to cancel it.
+        ///  This avoids unecessary validation errors when cancelling.
+        /// </summary>
+        /// <param name="ABatchToCancel"></param>
+        /// <param name="ARedisplay"></param>
+        public void PrepareBatchDataForCancelling(Int32 ABatchToCancel, bool ARedisplay)
+        {
+            //This code will only be called when the Batch tab is active.
+
+            DataView GLBatchDV = new DataView(FMainDS.ABatch);
+            DataView JournalDV = new DataView(FMainDS.AJournal);
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+
+            GLBatchDV.RowFilter = String.Format("{0}={1}",
+                ABatchTable.GetBatchNumberDBName(),
+                ABatchToCancel);
+
+            JournalDV.RowFilter = String.Format("{0}={1}",
+                AJournalTable.GetBatchNumberDBName(),
+                ABatchToCancel);
+
+            TransDV.RowFilter = String.Format("{0}={1}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ABatchToCancel);
+
+            //Work from lowest level up
+            if (TransDV.Count > 0)
+            {
+                TransDV.Sort = String.Format("{0}, {1}",
+                    ATransactionTable.GetJournalNumberDBName(),
+                    ATransactionTable.GetTransactionNumberDBName());
+
+                foreach (DataRowView drv in TransDV)
+                {
+                    ATransactionRow gDR = (ATransactionRow)drv.Row;
+
+                    if (gDR.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (gDR.RowState != DataRowState.Unchanged)
+                    {
+                        gDR.RejectChanges();
+                    }
+                }
+            }
+
+            if (JournalDV.Count > 0)
+            {
+                JournalDV.Sort = String.Format("{0}", AJournalTable.GetJournalNumberDBName());
+
+                foreach (DataRowView drv in JournalDV)
+                {
+                    AJournalRow gR = (AJournalRow)drv.Row;
+
+                    if (gR.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (gR.RowState != DataRowState.Unchanged)
+                    {
+                        gR.RejectChanges();
+                    }
+                }
+            }
+
+            if (GLBatchDV.Count > 0)
+            {
+                ABatchRow gB = (ABatchRow)GLBatchDV[0].Row;
+
+                //No need to check for Added state as new batches are always saved
+                // on creation
+
+                if (gB.RowState != DataRowState.Unchanged)
+                {
+                    gB.RejectChanges();
+                }
+
+                if (ARedisplay)
+                {
+                    ShowDetails(gB);
+                }
+            }
+
+            if (TransDV.Count == 0)
+            {
+                //Load all related data for batch ready to delete/cancel
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(FLedgerNumber, ABatchToCancel));
+            }
         }
 
         /// <summary>
@@ -880,20 +976,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int CurrentRowPos = grdDetails.GetFirstHighlightedRowIndex();
+            TFrmGLBatch MainForm = (TFrmGLBatch) this.ParentForm;
 
-            if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow))
+            try
             {
-                //Reset row to fire events
-                SelectRowInGrid(CurrentRowPos);
-                UpdateRecordNumberDisplay();
+                MainForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.CANCELLING;
 
-                //If no row exists in current view after cancellation
-                if (grdDetails.Rows.Count < 2)
+                int currentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
+
+                if (FCancelLogicObject.CancelBatch(FPreviouslySelectedDetailRow))
                 {
-                    EnableButtonControl(false);
-                    ClearDetailControls();
+                    //Reset row to fire events
+                    SelectRowInGrid(currentlySelectedRow);
+                    UpdateRecordNumberDisplay();
+
+                    //If no row exists in current view after cancellation
+                    if (grdDetails.Rows.Count < 2)
+                    {
+                        EnableButtonControl(false);
+                        ClearDetailControls();
+                    }
                 }
+            }
+            finally
+            {
+                MainForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
             }
         }
 
@@ -1012,23 +1119,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
-            if (FPreviouslySelectedDetailRow == null)
+            if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
             {
-                MessageBox.Show(Catalog.GetString("There is no current Batch row selected!"),
-                    Catalog.GetString("Post Batch"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Exclamation);
+                MessageBox.Show(Catalog.GetString("Please select a GL Batch before posting!"));
                 return;
             }
 
             //get index position of row to post
             int NewCurrentRowPos = GetSelectedRowIndex();
 
-            TFrmGLBatch GLBatchForm = (TFrmGLBatch) this.ParentForm;
+            TFrmGLBatch MainForm = (TFrmGLBatch) this.ParentForm;
 
             try
             {
-                GLBatchForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.POSTING;
+                MainForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.POSTING;
 
                 if (FPostLogicObject.PostBatch(FPreviouslySelectedDetailRow, dtpDetailDateEffective.Date.Value, FStartDateCurrentPeriod,
                         FEndDateLastForwardingPeriod))
@@ -1058,7 +1162,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             finally
             {
-                GLBatchForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
+                MainForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
             }
         }
 

@@ -54,11 +54,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLTransactions : IBoundImageEvaluator
     {
-        private bool FLoadCompleted = false;
+        /// <summary>
+        /// The batch to which the currently viewed transactions belong
+        /// </summary>
+        public Int32 FBatchNumber = -1;
+
         private Int32 FLedgerNumber = -1;
-        private Int32 FBatchNumber = -1;
         private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
+        private bool FLoadCompleted = false;
         private bool FActiveOnly = true;
         private string FTransactionCurrency = string.Empty;
 
@@ -971,8 +975,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ((TFrmGLBatch) this.ParentForm).GetJournalsControl().ClearCurrentSelection();
                 FPetraUtilsObject.SuppressChangeDetection = false;
                 //Ensure that when the Journal and Trans tab is opened, the data is reloaded.
-                FBatchNumber = -1;
-                ((TFrmGLBatch) this.ParentForm).GetJournalsControl().FBatchNumber = -1;
             }
             else
             {
@@ -983,8 +985,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (JournalLevel)
             {
                 ClearCurrentSelection();
-                //Ensure that when the Trans tab is opened, the data is reloaded.
-                FBatchNumber = -1;
             }
             else if (TransLevel && (FPreviouslySelectedDetailRow != null))
             {
@@ -1618,8 +1618,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 try
                 {
+                    this.Cursor = Cursors.WaitCursor;
+
                     //Unbind any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection();
+                    // but do not reset FBatchNumber to -1
+                    ClearCurrentSelection(0, false);
 
                     //Delete transactions
                     DataView TransDV = new DataView(FMainDS.ATransaction);
@@ -1685,8 +1688,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
                     FMainDS.Merge(FTempDS);
+
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
                 }
 
                 //If all rows have deleted successfully
@@ -1957,9 +1966,26 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// clear the current selection
         /// </summary>
-        public void ClearCurrentSelection()
+        /// <param name="ABatchToClear"></param>
+        /// <param name="AResetFBatchNumber"></param>
+        public void ClearCurrentSelection(int ABatchToClear = 0, bool AResetFBatchNumber = true)
         {
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (FPreviouslySelectedDetailRow.BatchNumber != ABatchToClear))
+            {
+                return;
+            }
+
+            //Set selection to null
             this.FPreviouslySelectedDetailRow = null;
+
+            if (AResetFBatchNumber)
+            {
+                FBatchNumber = -1;
+            }
         }
 
         private void ClearControls()
@@ -2401,44 +2427,41 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="ABatchNumber"></param>
         /// <param name="AAction"></param>
         /// <returns></returns>
-        public bool AllowInactiveFieldValues(int ALedgerNumber,
-            int ABatchNumber,
-            TGLBatchEnums.GLBatchAction AAction = TGLBatchEnums.GLBatchAction.SAVING)
+        public bool AllowInactiveFieldValues(int ALedgerNumber, int ABatchNumber, TGLBatchEnums.GLBatchAction AAction)
         {
-            TUC_GLBatches BatchForm = ((TFrmGLBatch)ParentForm).GetBatchControl();
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                return true;
+            }
+
+            TUC_GLBatches MainForm = ((TFrmGLBatch)ParentForm).GetBatchControl();
+
+            bool InTesting = (AAction == TGLBatchEnums.GLBatchAction.TESTING);
+            bool InPosting = ((AAction == TGLBatchEnums.GLBatchAction.POSTING) || InTesting);
+            bool InCancelling = (AAction == TGLBatchEnums.GLBatchAction.CANCELLING);
+            bool InDeleting = (AAction == TGLBatchEnums.GLBatchAction.DELETING);
+
+            bool WarnOfInactiveForPostingCurrentBatch = InPosting && MainForm.FInactiveValuesWarningOnGLPosting;
 
             //Variables for building warning message
             string WarningMessage = string.Empty;
             string WarningHeader = string.Empty;
             StringBuilder WarningList = new StringBuilder();
 
-            bool InTesting = (AAction == TGLBatchEnums.GLBatchAction.TESTING);
-            bool InPosting = ((AAction == TGLBatchEnums.GLBatchAction.POSTING) || InTesting);
-            string PostingTitle1 = string.Empty;
-            string PostingTitle2 = string.Empty;
-
-            bool WarnOfInactiveForPostingCurrentBatch = InPosting && BatchForm.FInactiveValuesWarningOnGLPosting;
-
             //Find batches that have changed
-            List <ABatchRow>BatchesToCheck = GetUnsavedBatches(ABatchNumber);
+            List <ABatchRow>BatchesToCheck = GetUnsavedBatchRowsList(ABatchNumber);
             List <int>BatchesWithInactiveValues = new List <int>();
-
-            int NumInactiveValues = 0;
-            int NumInactiveAccounts = 0;
-            int NumInactiveCostCentres = 0;
-            int NumInactiveAccountTypes = 0;
-            int NumInactiveAccountValues = 0;
 
             if (BatchesToCheck.Count > 0)
             {
-                if (InPosting)
-                {
-                    PostingTitle1 = (InTesting ? "test-" : "") + "posting";
-                    PostingTitle2 = (InTesting ? "Test-" : "") + "Post";
-                }
-
                 int currentBatchListNo;
                 string batchNoList = string.Empty;
+
+                int numInactiveFieldsPresent = 0;
+                int numInactiveAccounts = 0;
+                int numInactiveCostCentres = 0;
+                int numInactiveAccountTypes = 0;
+                int numInactiveAccountValues = 0;
 
                 foreach (ABatchRow gBR in BatchesToCheck)
                 {
@@ -2447,7 +2470,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     bool checkingCurrentBatch = (currentBatchListNo == ABatchNumber);
 
                     bool batchVerified = false;
-                    bool batchExistsInDict = BatchForm.FUnpostedBatchesVerifiedOnSavingDict.TryGetValue(currentBatchListNo, out batchVerified);
+                    bool batchExistsInDict = MainForm.FUnpostedBatchesVerifiedOnSavingDict.TryGetValue(currentBatchListNo, out batchVerified);
 
                     if (batchExistsInDict)
                     {
@@ -2456,13 +2479,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             continue;
                         }
                     }
-                    else
+                    else if (!(InCancelling && checkingCurrentBatch))
                     {
-                        BatchForm.FUnpostedBatchesVerifiedOnSavingDict.Add(currentBatchListNo, false);
+                        MainForm.FUnpostedBatchesVerifiedOnSavingDict.Add(currentBatchListNo, false);
                     }
 
                     //If processing batch about to be posted, only warn according to user preferences
-                    if (InPosting && checkingCurrentBatch && !WarnOfInactiveForPostingCurrentBatch)
+                    if ((InPosting && checkingCurrentBatch && !WarnOfInactiveForPostingCurrentBatch)
+                        || (InCancelling && checkingCurrentBatch))
                     {
                         continue;
                     }
@@ -2532,7 +2556,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 transRow.TransactionNumber,
                                 Environment.NewLine);
 
-                            NumInactiveAccounts++;
+                            numInactiveAccounts++;
 
                             if (!BatchesWithInactiveValues.Contains(transRow.BatchNumber))
                             {
@@ -2549,7 +2573,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 transRow.TransactionNumber,
                                 Environment.NewLine);
 
-                            NumInactiveCostCentres++;
+                            numInactiveCostCentres++;
 
                             if (!BatchesWithInactiveValues.Contains(transRow.BatchNumber))
                             {
@@ -2577,7 +2601,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 analAttribRow.TransactionNumber,
                                 Environment.NewLine);
 
-                            NumInactiveAccountTypes++;
+                            numInactiveAccountTypes++;
 
                             if (!BatchesWithInactiveValues.Contains(analAttribRow.BatchNumber))
                             {
@@ -2594,7 +2618,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 analAttribRow.TransactionNumber,
                                 Environment.NewLine);
 
-                            NumInactiveAccountValues++;
+                            numInactiveAccountValues++;
 
                             if (!BatchesWithInactiveValues.Contains(analAttribRow.BatchNumber))
                             {
@@ -2604,9 +2628,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
                 }
 
-                NumInactiveValues = (NumInactiveAccounts + NumInactiveCostCentres + NumInactiveAccountTypes + NumInactiveAccountValues);
+                numInactiveFieldsPresent = (numInactiveAccounts + numInactiveCostCentres + numInactiveAccountTypes + numInactiveAccountValues);
 
-                if (NumInactiveValues > 0)
+                if (numInactiveFieldsPresent > 0)
                 {
                     string batchList = string.Empty;
                     string otherChangedBatches = string.Empty;
@@ -2618,16 +2642,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     {
                         if (batch == ABatchNumber)
                         {
-                            if (!InPosting && (BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
+                            if (!InPosting && (MainForm.FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
                                 || (InPosting && WarnOfInactiveForPostingCurrentBatch))
                             {
-                                BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
+                                MainForm.FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
                                 batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
                             }
                         }
-                        else if (BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
+                        else if (MainForm.FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
                         {
-                            BatchForm.FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
+                            MainForm.FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
                             batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
                             //Build a list of all batches except current batch
                             otherChangedBatches += (string.IsNullOrEmpty(otherChangedBatches) ? "" : ", ") + batch.ToString();
@@ -2636,7 +2660,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     //Create header message
                     WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
-                    WarningHeader += (InPosting ? PostingTitle1 : "saving") + " batch: {2}";
+                    WarningHeader += AAction.ToString().ToLower() + " batch: {2}";
                     WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
 
                     if (!InPosting || (otherChangedBatches.Length > 0))
@@ -2648,7 +2672,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
 
                     WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
-                        NumInactiveValues,
+                        numInactiveFieldsPresent,
                         batchList,
                         ABatchNumber,
                         otherChangedBatches,
@@ -2658,8 +2682,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGLBatch)ParentForm);
 
+                    string header = string.Empty;
+
+                    switch (AAction)
+                    {
+                        case TGLBatchEnums.GLBatchAction.POSTING:
+                            header = "Post";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.TESTING:
+                            header = "Test";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.CANCELLING:
+                            header = "Cancel";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.DELETING:
+                            header = "Delete";
+                            break;
+
+                        default:
+                            header = "Save";
+                            break;
+                    }
+
                     return extendedMessageBox.ShowDialog(WarningMessage,
-                        Catalog.GetString((InPosting ? PostingTitle2 : "Save") + " GL Batch"), string.Empty,
+                        Catalog.GetString(header + " GL Batch"), string.Empty,
                         TFrmExtendedMessageBox.TButtons.embbYesNo,
                         TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
                 }
@@ -2668,7 +2717,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return true;
         }
 
-        private List <ABatchRow>GetUnsavedBatches(int ACurrentBatch = 0)
+        private List <ABatchRow>GetUnsavedBatchRowsList(int ABatchToInclude = 0)
         {
             List <ABatchRow>RetVal = new List <ABatchRow>();
             List <int>BatchesWithChangesList = new List <int>();
@@ -2705,7 +2754,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 AJournalRow jR = (AJournalRow)dRV.Row;
 
-                if (jR.RowState != DataRowState.Unchanged)
+                if (!BatchesWithChangesList.Contains(jR.BatchNumber)
+                    && (jR.RowState != DataRowState.Unchanged))
                 {
                     BatchesWithChangesList.Add(jR.BatchNumber);
                 }
@@ -2726,7 +2776,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ATransactionRow tR = (ATransactionRow)dRV.Row;
 
-                if (tR.RowState != DataRowState.Unchanged)
+                if (!BatchesWithChangesList.Contains(tR.BatchNumber)
+                    && (tR.RowState != DataRowState.Unchanged))
                 {
                     BatchesWithChangesList.Add(tR.BatchNumber);
                 }
@@ -2747,7 +2798,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 ATransAnalAttribRow aR = (ATransAnalAttribRow)dRV.Row;
 
-                if (aR.RowState != DataRowState.Unchanged)
+                if (!BatchesWithChangesList.Contains(aR.BatchNumber)
+                    && (aR.RowState != DataRowState.Unchanged))
                 {
                     BatchesWithChangesList.Add(aR.BatchNumber);
                 }
@@ -2760,9 +2812,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchRow batchRow = (ABatchRow)dRV.Row;
 
                 if ((batchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
-                    && ((batchRow.BatchNumber == ACurrentBatch)
-                        || (batchRow.RowState != DataRowState.Unchanged)
-                        || BatchesWithChangesList.Contains(batchRow.BatchNumber)))
+                    && ((batchRow.BatchNumber == ABatchToInclude)
+                        || BatchesWithChangesList.Contains(batchRow.BatchNumber)
+                        || (batchRow.RowState != DataRowState.Unchanged)))
                 {
                     RetVal.Add(batchRow);
                 }

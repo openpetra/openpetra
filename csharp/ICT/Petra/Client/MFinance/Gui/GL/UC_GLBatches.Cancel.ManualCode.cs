@@ -72,11 +72,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns></returns>
         public bool CancelBatch(ABatchRow ABatchRowToCancel)
         {
-            //Assign default value(s)
             bool CancellationSuccessful = false;
-
-            string CancelMessage = string.Empty;
-            string CompletionMessage = string.Empty;
 
             if ((ABatchRowToCancel == null) || (ABatchRowToCancel.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
@@ -84,6 +80,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             int CurrentBatchNo = ABatchRowToCancel.BatchNumber;
+            bool CurrentBatchJournalsLoadedAndCurrent = false;
+            bool CurrentBatchTransactionsLoadedAndCurrent = false;
+
+            string CancelMessage = string.Empty;
+            string CompletionMessage = string.Empty;
 
             CancelMessage = String.Format(Catalog.GetString("Are you sure you want to cancel GL Batch {0}?"),
                 CurrentBatchNo);
@@ -98,38 +99,70 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             //Backup the Dataset for reversion purposes
-            GLBatchTDS BackupMainDS = (GLBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
+            GLBatchTDS BackupMainDS = null;
 
             try
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
 
-                CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
-                    CurrentBatchNo);
+                //Backup the Dataset for reversion purposes
+                BackupMainDS = (GLBatchTDS)FMainDS.GetChangesTyped(false);
 
-                //Remove any changes, which may cause validation issues, before cancelling
-                FMyForm.GetBatchControl().UndoModifiedBatchRow(ABatchRowToCancel, true);
-                //Load all data for batch if necessary
-                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, ABatchRowToCancel.BatchNumber));
-                //clear any transactions currently being editied in the Transaction Tab
-                FMyForm.GetTransactionsControl().ClearCurrentSelection();
-                //clear any journals currently being editied in the Journals Tab
-                FMyForm.GetJournalsControl().ClearCurrentSelection();
+                //Don't run an inactive fields check on this batch
+                FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
+
+                //Check if current batch details are currently loaded
+                CurrentBatchJournalsLoadedAndCurrent = (FMyForm.GetJournalsControl().FBatchNumber == CurrentBatchNo);
+                CurrentBatchTransactionsLoadedAndCurrent = (FMyForm.GetTransactionsControl().FBatchNumber == CurrentBatchNo);
+
+                //Save and check for inactive values and ex-workers and anonymous gifts
+                //  in other unsaved Batches
+                FPetraUtilsObject.SetChangedFlag();
+
+                if (!FMyForm.SaveChangesManual(TGLBatchEnums.GLBatchAction.CANCELLING, !CurrentBatchTransactionsLoadedAndCurrent))
+                {
+                    FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary();
+
+                    CompletionMessage = String.Format(Catalog.GetString("GL Batch {0} has not been cancelled."),
+                        CurrentBatchNo);
+
+                    MessageBox.Show(CompletionMessage,
+                        "Gift Batch Cancelled",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    return false;
+                }
+
+                //Remove any changes to current batch that may cause validation issues
+                FMyForm.GetBatchControl().PrepareBatchDataForCancelling(CurrentBatchNo, true);
+
+                //Clear the journal and trans tabs if current batch data is displayed there
+                if (CurrentBatchJournalsLoadedAndCurrent)
+                {
+                    //Clear any transactions currently being edited in the Transaction Tab
+                    FMyForm.GetJournalsControl().ClearCurrentSelection(CurrentBatchNo);
+                }
+
+                if (CurrentBatchTransactionsLoadedAndCurrent)
+                {
+                    //Clear any transactions currently being edited in the Transaction Tab
+                    FMyForm.GetTransactionsControl().ClearCurrentSelection(CurrentBatchNo);
+                }
 
                 //Delete transactions and attributes
                 FMyForm.GetTransactionsControl().DeleteTransactionData(CurrentBatchNo);
 
-                //Update Journal totals and status
+                //Journals are not deleted. Update Journal totals and status
                 foreach (AJournalRow journal in FMainDS.AJournal.Rows)
                 {
                     if (journal.BatchNumber == CurrentBatchNo)
                     {
                         journal.BeginEdit();
-                        journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
                         journal.JournalCreditTotal = 0;
                         journal.JournalDebitTotal = 0;
                         journal.LastTransactionNumber = 0;
+                        journal.JournalStatus = MFinanceConstants.BATCH_CANCELLED;
                         journal.EndEdit();
                     }
                 }
@@ -143,40 +176,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ABatchRowToCancel.EndEdit();
 
                 FPetraUtilsObject.SetChangedFlag();
+                FMyForm.SaveChangesManual();
 
-                //Don't run an inactive fields check on this batch
-                FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary(CurrentBatchNo);
+                CompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} cancelled successfully."),
+                    CurrentBatchNo);
 
-                //Need to call save
-                if (FMyForm.SaveChangesManual(TGLBatchEnums.GLBatchAction.CANCELLING))
-                {
-                    MessageBox.Show(CompletionMessage,
-                        Catalog.GetString("Batch Cancelled"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                MessageBox.Show(CompletionMessage,
+                    Catalog.GetString("Batch Cancelled"),
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
 
-                    FMyForm.DisableTransactions();
-                    FMyForm.DisableJournals();
-                }
-                else
-                {
-                    string errMsg = Catalog.GetString("The batch failed to save after being cancelled! Reopen the form and retry.");
-                    MessageBox.Show(errMsg, Catalog.GetString("Save Error"),
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
+                FMyForm.DisableTransactions();
+                FMyForm.DisableJournals();
 
                 CancellationSuccessful = true;
             }
             catch (Exception ex)
             {
                 //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                if (BackupMainDS != null)
+                {
+                    FMainDS.ATransAnalAttrib.RejectChanges();
+                    FMainDS.ATransAnalAttrib.Merge(BackupMainDS.ATransAnalAttrib);
+                    FMainDS.ATransaction.RejectChanges();
+                    FMainDS.ATransaction.Merge(BackupMainDS.ATransaction);
+                    FMainDS.AJournal.RejectChanges();
+                    FMainDS.AJournal.Merge(BackupMainDS.AJournal);
+                    FMainDS.ABatch.RejectChanges();
+                    FMainDS.ABatch.Merge(BackupMainDS.ABatch);
 
-                CompletionMessage = ex.Message;
-                MessageBox.Show(CompletionMessage,
-                    Catalog.GetString("Cancellation Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    FMyForm.GetBatchControl().ShowDetailsRefresh();
+                }
 
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
