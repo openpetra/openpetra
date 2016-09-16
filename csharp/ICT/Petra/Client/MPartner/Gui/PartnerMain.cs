@@ -562,17 +562,40 @@ namespace Ict.Petra.Client.MPartner.Gui
             int ExtractId = -1;
             String ExtractName;
             String ExtractDesc;
+            int ExtractKeyCount;
 
             if (TCommonScreensForwarding.OpenExtractFindScreen != null)
             {
-                if (TCommonScreensForwarding.OpenExtractFindScreen.Invoke(out ExtractId,
-                        out ExtractName,
-                        out ExtractDesc,
-                        AParentForm))
+                while (TCommonScreensForwarding.OpenExtractFindScreen.Invoke(out ExtractId,
+                           out ExtractName,
+                           out ExtractDesc,
+                           out ExtractKeyCount,
+                           AParentForm))
                 {
-                    if (ExtractId >= 0)
+                    // Indicates that the user cancelled the operation...
+                    if (ExtractId < 0)
+                    {
+                        return;
+                    }
+
+                    if (ExtractKeyCount > 0)
                     {
                         TPartnerExportLogic.ExportPartnersInExtract(ExtractId, AOldPetraFormat);
+                        break;
+                    }
+                    else
+                    {
+                        DialogResult result;
+                        result =
+                            MessageBox.Show(Catalog.GetString(
+                                    "The selected extract doesn't contain any partners. Would you like to choose a different extract?"),
+                                Catalog.GetString(
+                                    "Export Partners"), MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                        if (result == DialogResult.No)
+                        {
+                            break;
+                        }
                     }
                 }
             }

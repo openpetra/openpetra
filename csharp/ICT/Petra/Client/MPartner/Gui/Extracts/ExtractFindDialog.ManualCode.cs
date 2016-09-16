@@ -115,24 +115,39 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// </returns>
         public bool GetResult(out int AExtractId, out String AExtractName, out String AExtractDescription)
         {
-            if ((FResultTable != null)
-                && (FResultTable.Count > 0))
-            {
-                // use first row (this method should normally only be called for single select dialog)
-                MExtractMasterRow Row = (MExtractMasterRow)FResultTable.Rows[0];
-                AExtractId = Row.ExtractId;
-                AExtractName = Row.ExtractName;
-                AExtractDescription = Row.ExtractDesc;
-            }
-            else
-            {
-                // no selected rows -> initialize values
-                AExtractId = -1;
-                AExtractName = "";
-                AExtractDescription = "";
-            }
+            int ExtractKeyCount;
+            String ExtractCreatedBy;
+            DateTime ExtractDateCreated;
 
-            return AExtractId >= 0;
+            return GetResult(out AExtractId,
+                out AExtractName,
+                out AExtractDescription,
+                out ExtractKeyCount,
+                out ExtractCreatedBy,
+                out ExtractDateCreated);
+        }
+
+        /// <summary>
+        /// Called by the instantiator of this Dialog to retrieve the result of the dialog
+        ///
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <param name="AExtractName"></param>
+        /// <param name="AExtractDescription"></param>
+        /// <param name="AExtractKeyCount"></param>
+        /// <returns>true if a row was selected
+        /// </returns>
+        public bool GetResult(out int AExtractId, out String AExtractName, out String AExtractDescription, out int AExtractKeyCount)
+        {
+            String ExtractCreatedBy;
+            DateTime ExtractDateCreated;
+
+            return GetResult(out AExtractId,
+                out AExtractName,
+                out AExtractDescription,
+                out AExtractKeyCount,
+                out ExtractCreatedBy,
+                out ExtractDateCreated);
         }
 
         /// <summary>
@@ -505,23 +520,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         /// <param name="AExtractId">Id of extract found</param>
         /// <param name="AExtractName">Name of the extract found</param>
         /// <param name="AExtractDesc">Description of the extract found</param>
+        /// <param name="AExtractKeyCount">Number of partners in extract</param>
         /// <param name="AParentForm"></param>
         /// <returns>True if an extrac was found and accepted by the user,
         /// otherwise false.</returns>
         public static bool OpenModalForm(out int AExtractId,
             out String AExtractName,
             out String AExtractDesc,
+            out int AExtractKeyCount,
             Form AParentForm)
         {
             AExtractId = -1;
             AExtractName = String.Empty;
             AExtractDesc = String.Empty;
+            AExtractKeyCount = -1;
 
             TFrmExtractFindDialog SelectExtract = new TFrmExtractFindDialog(AParentForm);
 
             if (SelectExtract.ShowDialog(true))
             {
-                SelectExtract.GetResult(out AExtractId, out AExtractName, out AExtractDesc);
+                SelectExtract.GetResult(out AExtractId, out AExtractName, out AExtractDesc, out AExtractKeyCount);
                 return true;
             }
 

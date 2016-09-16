@@ -1873,9 +1873,12 @@ namespace Ict.Petra.Client.CommonControls
                                 /* TLogging.Log('OpenExtractFindDialog is assigned!', [TLoggingType.ToLogfile]); */
                                 try
                                 {
+                                    // This variable is only needed to fit the delegate signature of TDelegateOpenExtractFindScreen.
+                                    int ExtractKeyCount;
                                     TCommonScreensForwarding.OpenExtractFindScreen.Invoke(out mResultShortIntTxt,
                                         out mResultStringName,
                                         out mResultStringLbl,
+                                        out ExtractKeyCount,
                                         this.ParentForm);
 
                                     if (mResultShortIntTxt != -1)

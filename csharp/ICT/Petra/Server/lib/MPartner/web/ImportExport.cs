@@ -2211,6 +2211,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     int Total = ExtractPartners.Rows.Count;
                     decimal PercentCompleted = 0;
 
+                    // Handle empty extracts to prevent endless loops (if SetCurrentState() isn't called)
+                    if (Total == 0)
+                    {
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            string.Format(Catalog.GetString("Exporting partner {0} out of {1}."), 0, 0), 100);
+                    }
+
                     foreach (DataRow ExtractPartner in ExtractPartners.Rows)
                     {
                         // stop if user cancels operation

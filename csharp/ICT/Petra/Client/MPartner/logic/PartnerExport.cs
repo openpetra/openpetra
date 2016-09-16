@@ -131,7 +131,7 @@ namespace Ict.Petra.Client.MPartner.Logic
                     string Doc = string.Empty;
 
                     // run in thread so we can have Progress Dialog
-                    Thread t = new Thread(() => ExportExtractToFile(AExtractId, ExportFamiliesPersons, ref Doc, AOldPetraFormat));
+                    Thread t = new Thread(() => ExportExtractToString(AExtractId, ExportFamiliesPersons, ref Doc, AOldPetraFormat));
 
                     using (TProgressDialog dialog = new TProgressDialog(t))
                     {
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.MPartner.Logic
                     }
                     else
                     {
-                        MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished"), Catalog.GetString(
+                        MessageBox.Show(Catalog.GetString("Export of Partners in Extract finished."), Catalog.GetString(
                                 "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
@@ -174,7 +174,7 @@ namespace Ict.Petra.Client.MPartner.Logic
             return false;
         }
 
-        private static void ExportExtractToFile(int AExtractId, bool AExportFamiliesPersons, ref string ADoc, Boolean AOldPetraFormat)
+        private static void ExportExtractToString(int AExtractId, bool AExportFamiliesPersons, ref string ADoc, Boolean AOldPetraFormat)
         {
             ADoc = TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartnersExt(
                 AExtractId, AExportFamiliesPersons, AOldPetraFormat);
