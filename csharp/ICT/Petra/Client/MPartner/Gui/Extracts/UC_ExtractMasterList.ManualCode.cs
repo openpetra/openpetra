@@ -109,6 +109,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ExtractId = GetSelectedDetailRow().ExtractId;
                 Result = TPartnerExportLogic.ExportPartnersInExtract(ExtractId, AOldPetraFormat);
             }
+
             return Result;
         }
 

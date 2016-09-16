@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MPartner.Logic
                         return false;
                     }
 
-                    Result = TImportExportDialogs.ExportTofile(Doc, FileName,AOldPetraFormat);
+                    Result = TImportExportDialogs.ExportTofile(Doc, FileName, AOldPetraFormat);
 
                     if (!Result)
                     {
@@ -167,8 +167,10 @@ namespace Ict.Petra.Client.MPartner.Logic
                     // doc.LoadXml(TRemote.MPartner.ImportExport.WebConnectors.ExportExtractPartners(GetSelectedDetailRow().ExtractId, false));
                     // Result = TImportExportDialogs.ExportTofile(doc, FileName);
                 }
+
                 return Result;
             }
+
             return false;
         }
 

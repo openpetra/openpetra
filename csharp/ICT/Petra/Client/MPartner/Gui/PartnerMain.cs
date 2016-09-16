@@ -495,7 +495,8 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void ExportSinglePartnerToOpenPetra(Form AParentForm)
         {
             bool OldPetraFormat = false;
-            ExportSinglePartner(AParentForm,OldPetraFormat);
+
+            ExportSinglePartner(AParentForm, OldPetraFormat);
         }
 
         /// <summary>
@@ -504,6 +505,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void ExportSinglePartnerToPetra(Form AParentForm)
         {
             bool OldPetraFormat = true;
+
             ExportSinglePartner(AParentForm, OldPetraFormat);
         }
 
@@ -536,6 +538,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void ExportPartnersInExtractToPetra(Form AParentForm)
         {
             bool OldPetraFormat = true;
+
             ExportPartnersInExtract(AParentForm, OldPetraFormat);
         }
 
@@ -545,6 +548,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         public static void ExportPartnersInExtractToOpenPetra(Form AParentForm)
         {
             bool OldPetraFormat = false;
+
             ExportPartnersInExtract(AParentForm, OldPetraFormat);
         }
 
@@ -562,15 +566,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (TCommonScreensForwarding.OpenExtractFindScreen != null)
             {
                 if (TCommonScreensForwarding.OpenExtractFindScreen.Invoke(out ExtractId,
-                                        out ExtractName,
-                                        out ExtractDesc,
-                                        AParentForm))
+                        out ExtractName,
+                        out ExtractDesc,
+                        AParentForm))
                 {
-                   if (ExtractId >= 0)
-                   {
+                    if (ExtractId >= 0)
+                    {
                         TPartnerExportLogic.ExportPartnersInExtract(ExtractId, AOldPetraFormat);
-                   }
-                }    
+                    }
+                }
             }
             else
             {
