@@ -62,8 +62,8 @@ RootNode:
         rgrSendingReceiving: {Label=Consider selected Field as, Stretch=horizontally, ParameterName=param_sending_receiving}
             Controls: [rbtReceivingField, rbtSendingField]
 #            Action: actSendingReceivingSelectionChanged
-        rbtReceivingField: {Label=Receiving Field (for Commitments), ParameterValue=ReceivingField}
-        rbtSendingField: {Label=Sending Field (for Commitments), ParameterValue=SendingField}
+        rbtReceivingField: {Label=Receiving Field for Commitments, ParameterValue=ReceivingField}
+        rbtSendingField: {Label=Sending Field for Commitments, ParameterValue=SendingField}
 
         rgrCommitmentsOnly: {Label=Commitment and Worker Field, Stretch=horizontally, ParameterName=param_commitments_and_worker_field}
             Controls: [rbtCommitmentsOnly, rbtCommitmentsAndWorkerField]

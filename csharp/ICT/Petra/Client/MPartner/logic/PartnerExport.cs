@@ -51,8 +51,14 @@ namespace Ict.Petra.Client.MPartner.Logic
         {
             bool Result = false;
             String ExtFormattedDocument;
+            String PartnerShortName;
+            TPartnerClass PartnerClass;
 
-            string FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+            // prepare suggestion for file name: Partner short name
+            TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(APartnerKey, out PartnerShortName, out PartnerClass);
+            PartnerShortName = "p_" + PartnerShortName;
+
+            string FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"), PartnerShortName);
 
             if (FileName.Length > 0)
             {
@@ -102,9 +108,13 @@ namespace Ict.Petra.Client.MPartner.Logic
         /// <param name="AOldPetraFormat">Set to true if old format should be used.</param>
         public static Boolean ExportPartnersInExtract(int AExtractId, Boolean AOldPetraFormat)
         {
+            String SuggestedFileName = "";
             Boolean Result = false;
 
-            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"));
+            // prepare suggestion for file name: Extract name
+            SuggestedFileName = "p_" + TRemote.MPartner.Partner.WebConnectors.GetExtractName(AExtractId);
+
+            String FileName = TImportExportDialogs.GetExportFilename(Catalog.GetString("Save Partners into File"), SuggestedFileName);
 
             if (AExtractId < 0)
             {

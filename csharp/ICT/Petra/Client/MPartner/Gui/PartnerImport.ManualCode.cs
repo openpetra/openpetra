@@ -1366,11 +1366,110 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 /* If the first name is just an initial (in which case one of the characters is a "." */
                 /* then check for first names that start with the characters of the imported initial */
-                //TODOWB
+                String FirstName = Calculations.FormatShortName(ACurrentPartner.PartnerShortName, eShortNameFormat.eOnlyFirstname);
 
-                /* If nothing found yet then check if there is an abbreviated first name in the database. */
+                if (FirstName.EndsWith("."))
+                {
+                    CriteriaTable.Rows.Clear();
+                    CriteriaRow = CriteriaTable.NewRowTyped();
+
+                    // For any partner class OTHER THAN Person, I only want to see matching records of the same class. For Persons we can include Family records.
+                    // !!! It is important to set the PartnerClass Search Criteria if we don't only search for PartnerKey
+                    if (ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                    {
+                        CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY + "," + MPartnerConstants.PARTNERCLASS_PERSON;
+                    }
+                    else
+                    {
+                        CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                    }
+
+                    CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                            ACurrentPartner.PartnerShortName), eShortNameFormat.eOnlySurnameFirstNameInitial);
+                    CriteriaRow.PartnerName = CriteriaRow.PartnerName.TrimEnd('.');
+                    CriteriaRow.PartnerNameMatch = "BEGINS";
+                    CriteriaTable.Rows.Add(CriteriaRow);
+
+                    FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                    FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                    result = FPartnerFindObject.FilterResultByBestAddress();
+
+                    if (TotalRecords > 0)
+                    {
+                        // we found a partner with the given key
+                        AMatchingPartnersExplanation = Catalog.GetString(
+                            "Partners found with given family name and first name starting with same initials.");
+                        return result;
+                    }
+                }
+
+                /* If nothing found yet then check if there is an abbreviated first name (with dot) in the database. */
                 /* This would find "J. Jansen" in the database if "Jan Jansen" is in the import file */
-                //TODOWB
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+
+                // For any partner class OTHER THAN Person, I only want to see matching records of the same class. For Persons we can include Family records.
+                // !!! It is important to set the PartnerClass Search Criteria if we don't only search for PartnerKey
+                if (ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY + "," + MPartnerConstants.PARTNERCLASS_PERSON;
+                }
+                else
+                {
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                }
+
+                CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                        ACurrentPartner.PartnerShortName), eShortNameFormat.eOnlySurnameFirstNameInitial);
+                CriteriaRow.PartnerName = CriteriaRow.PartnerName.TrimEnd('.');
+                CriteriaRow.PartnerName += ".";
+                CriteriaRow.PartnerNameMatch = "BEGINS";
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                result = FPartnerFindObject.FilterResultByBestAddress();
+
+                if (TotalRecords > 0)
+                {
+                    // we found a partner with initial of imported first name
+                    AMatchingPartnersExplanation = Catalog.GetString("Partners found with given initial of the imported first name.");
+                    return result;
+                }
+
+                /* If nothing found yet then check if there is an abbreviated first name (no dot) in the database. */
+                /* This would find "J Jansen" in the database if "Jan Jansen" is in the import file */
+                CriteriaTable.Rows.Clear();
+                CriteriaRow = CriteriaTable.NewRowTyped();
+
+                // For any partner class OTHER THAN Person, I only want to see matching records of the same class. For Persons we can include Family records.
+                // !!! It is important to set the PartnerClass Search Criteria if we don't only search for PartnerKey
+                if (ACurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
+                {
+                    CriteriaRow.PartnerClass = MPartnerConstants.PARTNERCLASS_FAMILY + "," + MPartnerConstants.PARTNERCLASS_PERSON;
+                }
+                else
+                {
+                    CriteriaRow.PartnerClass = ACurrentPartner.PartnerClass;
+                }
+
+                CriteriaRow.PartnerName = Calculations.FormatShortName(AssembleMatchString(
+                        ACurrentPartner.PartnerShortName), eShortNameFormat.eOnlySurnameFirstNameInitial);
+                CriteriaRow.PartnerName = CriteriaRow.PartnerName.TrimEnd('.');
+                CriteriaRow.PartnerName += ",";
+                CriteriaRow.PartnerNameMatch = "BEGINS";
+                CriteriaTable.Rows.Add(CriteriaRow);
+
+                FPartnerFindObject.PerformSearch(CriteriaTable, true);
+                FPartnerFindObject.GetDataPagedResult(0, PageSize, out TotalRecords, out TotalPages);
+                result = FPartnerFindObject.FilterResultByBestAddress();
+
+                if (TotalRecords > 0)
+                {
+                    // we found a partner with initial of imported first name
+                    AMatchingPartnersExplanation = Catalog.GetString("Partners found with given initial of the imported first name.");
+                    return result;
+                }
             }
 
             return result;

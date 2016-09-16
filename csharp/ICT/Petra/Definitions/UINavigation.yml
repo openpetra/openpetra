@@ -50,7 +50,8 @@ OpenPetra:
                     GeneratePartnerExtracts: {Label=Generate Partner Extract}
                         GeneralExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=General Extract, Description=Create Extract of Partners using selected criteria, ActionClick=TPartnerExtractsMain.PartnerByGeneralCriteriaExtract}
                         ManualExtract: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Manual Extract, Description=Create Extract of manually selected Partners, ActionClick=TPartnerExtractsMain.PartnerNewManualExtract}
-                        PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, Description=Create Extract of Partners in a selected City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
+                        #Partner by City extract commented out here and can probably completely be removed as it is in cluded in the General Extract
+                        #PartnerByCity: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by City, Description=Create Extract of Partners in a selected City, ActionClick=TPartnerExtractsMain.PartnerByCityExtract}
                         PartnerBySubscription: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Subscription, Description=Create Extract of Partners with selected Subscriptions, ActionClick=TPartnerExtractsMain.PartnerBySubscriptionExtract}
                         PartnerBySpecialType: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Special Type, Description=Create Extract of Partners with selected Special Types, ActionClick=TPartnerExtractsMain.PartnerBySpecialTypeExtract}
                         PartnerByRelationship: {Namespace=Ict.Petra.Client.MPartner.Gui.Extracts, Label=Partner by Relationship, Description=Create Extract of Partners with selected Relationships, ActionClick=TPartnerExtractsMain.PartnerByRelationshipExtract}
