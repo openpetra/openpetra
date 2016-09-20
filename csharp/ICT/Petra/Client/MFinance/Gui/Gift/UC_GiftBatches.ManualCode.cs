@@ -1024,9 +1024,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             TFrmGiftBatch MainForm = (TFrmGiftBatch) this.ParentForm;
 
-            bool InPosting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.POSTING);
-            bool InCancelling = (AAction == TExtraGiftBatchChecks.GiftBatchAction.CANCELLING);
-            bool InDeletingTrans = (AAction == TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS);
+            bool InSaving = (AAction == TExtraGiftBatchChecks.GiftBatchAction.SAVING);
+            bool InPosting = false;
+            bool InCancelling = false;
+            bool InDeletingTrans = false;
+            bool InImporting = false;
+
+            if (!InSaving)
+            {
+                switch (AAction)
+                {
+                    case TExtraGiftBatchChecks.GiftBatchAction.POSTING:
+                        InPosting = true;
+                        break;
+
+                    case TExtraGiftBatchChecks.GiftBatchAction.CANCELLING:
+                        InCancelling = true;
+                        break;
+
+                    case TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS:
+                        InDeletingTrans = true;
+                        break;
+
+                    case TExtraGiftBatchChecks.GiftBatchAction.IMPORTING:
+                        InImporting = true;
+                        break;
+                }
+            }
 
             int CurrentBatch = FPreviouslySelectedDetailRow.BatchNumber;
 
@@ -1137,33 +1161,53 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     //Create header message
-                    WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
-                    WarningHeader += (!InDeletingTrans ? AAction.ToString().ToLower() : "deleting gift detail(s) and saving changes to") +
-                                     " batch: {2}";
-                    WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
-
-                    if (!InPosting || (otherChangedBatches.Length > 0))
-                    {
-                        WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
-                    }
-
-                    //Handle plural
                     batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
 
-                    WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
-                        numInactiveFieldsPresent,
-                        batchList,
-                        CurrentBatch,
-                        otherChangedBatches,
-                        Environment.NewLine,
-                        new String('-', 44),
-                        WarningList);
+                    if (!InImporting)
+                    {
+                        WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
+                        WarningHeader += (!InDeletingTrans ? AAction.ToString().ToLower() : "deleting gift detail(s) and saving changes to") +
+                                         " batch: {2}";
+                        WarningHeader += (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
+
+                        if (!InPosting || (otherChangedBatches.Length > 0))
+                        {
+                            WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
+                        }
+
+                        WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
+                            numInactiveFieldsPresent,
+                            batchList,
+                            CurrentBatch,
+                            otherChangedBatches,
+                            Environment.NewLine,
+                            new String('-', 44),
+                            WarningList);
+                    }
+                    else
+                    {
+                        WarningHeader = "{1}{0}Warning: Inactive Account(s)or CostCentre(s){0}{1}{0}{0}";
+                        WarningHeader += "Please note that {2} inactive value(s) were found in batch{3}{0}{0}";
+                        WarningHeader += "{0}Inactive values:{0}{5}{0}{4}{5}{0}{0}";
+                        WarningHeader += "These will need to be approved or changed before the batch can be posted.";
+                        WarningMessage = String.Format(Catalog.GetString(WarningHeader),
+                            Environment.NewLine,
+                            new String('-', 60),
+                            numInactiveFieldsPresent,
+                            batchList,
+                            WarningList,
+                            new String('-', 50));
+                    }
 
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGiftBatch)ParentForm);
 
                     string header = string.Empty;
 
-                    if (InPosting)
+                    if (InSaving)
+                    {
+                        header = "Save";
+                    }
+                    else if (InPosting)
                     {
                         header = "Post";
                     }
@@ -1175,15 +1219,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         header = "Delete Gift Detail From";
                     }
-                    else
+                    else if (InImporting)
                     {
-                        header = "Save";
+                        header = "Import";
                     }
 
-                    return extendedMessageBox.ShowDialog(WarningMessage,
-                        Catalog.GetString(header + " Gift Batch"), string.Empty,
-                        TFrmExtendedMessageBox.TButtons.embbYesNo,
-                        TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
+                    header = Catalog.GetString(header + " Gift Batch");
+
+                    if (!InImporting)
+                    {
+                        return extendedMessageBox.ShowDialog(WarningMessage,
+                            header, string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbYesNo,
+                            TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
+                    }
+                    else
+                    {
+                        return extendedMessageBox.ShowDialog(WarningMessage,
+                            header, string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbOK,
+                            TFrmExtendedMessageBox.TIcon.embiWarning) == TFrmExtendedMessageBox.TResult.embrOK;
+                    }
                 }
             }
 

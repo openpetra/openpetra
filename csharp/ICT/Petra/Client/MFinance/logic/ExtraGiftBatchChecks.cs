@@ -104,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             DELETINGALLTRANS,
             /// <summary>GL Batch and Recurring GL Batch</summary>
             DELETINGTRANS,
+            /// <summary>GL Batch</summary>
+            IMPORTING,
             /// <summary>No action being taken</summary>
             NONE
         };
@@ -133,6 +135,8 @@ namespace Ict.Petra.Client.MFinance.Logic
             SUBMITTING,
             /// <summary>Recurring Gift Batch</summary>
             DELETING,
+            /// <summary>Gift Batch and Details</summary>
+            IMPORTING,
             /// <summary>No action being taken</summary>
             NONE
         };
@@ -609,8 +613,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AExWorkerSpecialType,
                 Environment.NewLine);
 
-            ReturnValue += new String('-', 86);
-            ReturnValue += Environment.NewLine;
+            ReturnValue += new String('-', 86) + Environment.NewLine;
 
             foreach (DataRow Row in sortedDT.Rows)
             {
@@ -618,8 +621,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                                Catalog.GetString("Gift: ") + Row[GiftBatchTDSAGiftDetailTable.GetGiftTransactionNumberDBName()] + "; " +
                                Catalog.GetString("Detail: ") + Row[GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName()] + "; " +
                                Catalog.GetString("Recipient: ") + Row[GiftBatchTDSAGiftDetailTable.GetRecipientDescriptionDBName()] + " (" +
-                               Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()] + ")";
-                ReturnValue += Environment.NewLine;
+                               Row[GiftBatchTDSAGiftDetailTable.GetRecipientKeyDBName()] + ")" +
+                               Environment.NewLine;
             }
 
             ReturnValue += new String('-', 86);

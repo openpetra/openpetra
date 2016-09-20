@@ -2610,6 +2610,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool InCancellingJournal = false;
             bool InDeletingAllTrans = false;
             bool InDeletingTrans = false;
+            bool InImporting = false;
 
             if (!InSaving)
             {
@@ -2637,6 +2638,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     case TGLBatchEnums.GLBatchAction.DELETINGTRANS:
                         InDeletingTrans = true;
+                        break;
+
+                    case TGLBatchEnums.GLBatchAction.IMPORTING:
+                        InImporting = true;
                         break;
                 }
             }
@@ -2885,43 +2890,59 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     //Create header message
-                    WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
+                    batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
 
-                    if (InCancellingJournal)
+                    if (!InImporting)
                     {
-                        WarningHeader += String.Format("cancelling journal {0} and saving changes to", AJournalNumber);
-                    }
-                    else if (InDeletingAllTrans)
-                    {
-                        WarningHeader += String.Format("deleting all transactions from journal {0} and saving changes to", AJournalNumber);
-                    }
-                    else if (InDeletingTrans)
-                    {
-                        WarningHeader += String.Format("deleting transaction {0} and saving changes to", ATransactionNumber);
+                        WarningHeader = "{0} inactive value(s) found in batch{1}{4}{4}Do you still want to continue with ";
+
+                        if (InCancellingJournal)
+                        {
+                            WarningHeader += String.Format("cancelling journal {0} and saving changes to", AJournalNumber);
+                        }
+                        else if (InDeletingAllTrans)
+                        {
+                            WarningHeader += String.Format("deleting all transactions from journal {0} and saving changes to", AJournalNumber);
+                        }
+                        else if (InDeletingTrans)
+                        {
+                            WarningHeader += String.Format("deleting transaction {0} and saving changes to", ATransactionNumber);
+                        }
+                        else
+                        {
+                            WarningHeader += AAction.ToString().ToLower();
+                        }
+
+                        WarningHeader += " batch: {2}" + (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
+
+                        if (!InPosting || (otherChangedBatches.Length > 0))
+                        {
+                            WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
+                        }
+
+                        WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
+                            numInactiveFieldsPresent,
+                            batchList,
+                            ABatchNumber,
+                            otherChangedBatches,
+                            Environment.NewLine,
+                            new String('-', 80),
+                            WarningList);
                     }
                     else
                     {
-                        WarningHeader += AAction.ToString().ToLower();
+                        WarningHeader = "{1}{0}Warning: Inactive Account(s)or CostCentre(s){0}{1}{0}{0}";
+                        WarningHeader += "Please note that {2} inactive value(s) were found in batch{3}{0}{0}";
+                        WarningHeader += "{0}Inactive values:{0}{5}{0}{4}{5}{0}{0}";
+                        WarningHeader += "These will need to be approved or changed before the batch can be posted.";
+                        WarningMessage = String.Format(Catalog.GetString(WarningHeader),
+                            Environment.NewLine,
+                            new String('-', 80),
+                            numInactiveFieldsPresent,
+                            batchList,
+                            WarningList,
+                            new String('-', 80));
                     }
-
-                    WarningHeader += " batch: {2}" + (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
-
-                    if (!InPosting || (otherChangedBatches.Length > 0))
-                    {
-                        WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
-                    }
-
-                    //Handle plural
-                    batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
-
-                    WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
-                        numInactiveFieldsPresent,
-                        batchList,
-                        ABatchNumber,
-                        otherChangedBatches,
-                        Environment.NewLine,
-                        new String('-', 80),
-                        WarningList);
 
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmGLBatch)ParentForm);
 
@@ -2953,15 +2974,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             header = "Delete Transaction Detail From";
                             break;
 
+                        case TGLBatchEnums.GLBatchAction.IMPORTING:
+                            header = "Import";
+                            break;
+
                         default:
                             header = "Save";
                             break;
                     }
 
-                    return extendedMessageBox.ShowDialog(WarningMessage,
-                        Catalog.GetString(header + " GL Batch"), string.Empty,
-                        TFrmExtendedMessageBox.TButtons.embbYesNo,
-                        TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
+                    header = Catalog.GetString(header + " GL Batch");
+
+                    if (!InImporting)
+                    {
+                        return extendedMessageBox.ShowDialog(WarningMessage,
+                            header, string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbYesNo,
+                            TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
+                    }
+                    else
+                    {
+                        return extendedMessageBox.ShowDialog(WarningMessage,
+                            header, string.Empty,
+                            TFrmExtendedMessageBox.TButtons.embbOK,
+                            TFrmExtendedMessageBox.TIcon.embiWarning) == TFrmExtendedMessageBox.TResult.embrOK;
+                    }
                 }
             }
 

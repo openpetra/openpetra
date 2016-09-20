@@ -111,220 +111,230 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             ALedgerRow LedgerRow = (ALedgerRow)AMainDS.ALedger.Rows[0];
             int CurrentTopBatchNumber = LedgerRow.LastGiftBatchNumber;
 
-            FdlgSeparator = new TDlgSelectCSVSeparator(false);
-
-            if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
+            try
             {
-                ImportString = Clipboard.GetText(TextDataFormat.UnicodeText);
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.IMPORTING;
 
-                if ((ImportString == null) || (ImportString.Length == 0))
-                {
-                    MessageBox.Show(Catalog.GetString("Please first copy data from your spreadsheet application!"),
-                        Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
-                FdlgSeparator.SelectedSeparator = "\t";
-                FdlgSeparator.CSVData = ImportString;
-                FdlgSeparator.DateFormat = dateFormatString;
 
-                if (ImportOptions.Length > 1)
+                if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
                 {
-                    FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
-                }
-            }
-            else if (AImportSource == TGiftImportDataSourceEnum.FromFile)
-            {
-                OFileDialog = new OpenFileDialog();
+                    ImportString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
-                string exportPath = TClientSettings.GetExportPath();
-                string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
-                    exportPath + Path.DirectorySeparatorChar + "import.csv");
-                TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFileDialog, fullPath, exportPath);
-
-                OFileDialog.Title = Catalog.GetString("Import Batches from CSV File");
-                OFileDialog.Filter = Catalog.GetString("Gift Batch Files(*.csv)|*.csv|Text Files(*.txt)|*.txt");
-                ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
-
-                // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
-                TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
-
-                if (OFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(OFileDialog.FileName);
-
-                    if (!fileCanOpen)
+                    if ((ImportString == null) || (ImportString.Length == 0))
                     {
-                        MessageBox.Show(Catalog.GetString("Unable to open file."),
-                            Catalog.GetString("Gift Import"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Stop);
+                        MessageBox.Show(Catalog.GetString("Please first copy data from your spreadsheet application!"),
+                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
 
-                    ImportString = File.ReadAllText(OFileDialog.FileName, Encoding.Default);
-
+                    ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                    FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                    FdlgSeparator.SelectedSeparator = "\t";
+                    FdlgSeparator.CSVData = ImportString;
                     FdlgSeparator.DateFormat = dateFormatString;
 
                     if (ImportOptions.Length > 1)
                     {
                         FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
                     }
+                }
+                else if (AImportSource == TGiftImportDataSourceEnum.FromFile)
+                {
+                    OFileDialog = new OpenFileDialog();
 
-                    FdlgSeparator.SelectedSeparator = ImportOptions.Substring(0, 1);
+                    string exportPath = TClientSettings.GetExportPath();
+                    string fullPath = TUserDefaults.GetStringDefault("Imp Filename",
+                        exportPath + Path.DirectorySeparatorChar + "import.csv");
+                    TImportExportDialogs.SetOpenFileDialogFilePathAndName(OFileDialog, fullPath, exportPath);
+
+                    OFileDialog.Title = Catalog.GetString("Import Batches from CSV File");
+                    OFileDialog.Filter = Catalog.GetString("Gift Batch Files(*.csv)|*.csv|Text Files(*.txt)|*.txt");
+                    ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+
+                    // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
+                    TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
+
+                    if (OFileDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        Boolean fileCanOpen = FdlgSeparator.OpenCsvFile(OFileDialog.FileName);
+
+                        if (!fileCanOpen)
+                        {
+                            MessageBox.Show(Catalog.GetString("Unable to open file."),
+                                Catalog.GetString("Gift Import"),
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Stop);
+                            return;
+                        }
+
+                        ImportString = File.ReadAllText(OFileDialog.FileName, Encoding.Default);
+
+                        String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+                        FdlgSeparator.DateFormat = dateFormatString;
+
+                        if (ImportOptions.Length > 1)
+                        {
+                            FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
+                        }
+
+                        FdlgSeparator.SelectedSeparator = ImportOptions.Substring(0, 1);
+                    }
+                    else
+                    {
+                        return;
+                    }
                 }
                 else
                 {
-                    return;
+                    // unknown source!!  The following need a value...
+                    ImportOptions = String.Empty;
+                    ImportString = String.Empty;
                 }
-            }
-            else
-            {
-                // unknown source!!  The following need a value...
-                ImportOptions = String.Empty;
-                ImportString = String.Empty;
-            }
 
-            if (FdlgSeparator.ShowDialog() == DialogResult.OK)
-            {
-                Hashtable requestParams = new Hashtable();
-
-                requestParams.Add("ALedgerNumber", FLedgerNumber);
-                requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
-                requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
-                requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
-                requestParams.Add("NewLine", Environment.NewLine);
-
-                bool Repeat = true;
-
-                while (Repeat)
+                if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
-                    Repeat = false;
+                    Hashtable requestParams = new Hashtable();
 
-                    TVerificationResultCollection AMessages = new TVerificationResultCollection();
-                    GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
+                    requestParams.Add("ALedgerNumber", FLedgerNumber);
+                    requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
+                    requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
+                    requestParams.Add("NewLine", Environment.NewLine);
 
-                    Thread ImportThread = new Thread(() => ImportGiftBatches(
-                            requestParams,
-                            ImportString,
-                            out AMessages,
-                            out ImportOK,
-                            out NeedRecipientLedgerNumber));
+                    bool Repeat = true;
 
-                    using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
+                    while (Repeat)
                     {
-                        ImportDialog.ShowDialog();
-                    }
+                        Repeat = false;
 
-                    // If NeedRecipientLedgerNumber contains data then AMessages will only ever contain
-                    // one message alerting the user that no data has been imported.
-                    // We do not want to show this as we will be displaying another more detailed message.
-                    if (NeedRecipientLedgerNumber.Rows.Count == 0)
-                    {
-                        ShowMessages(AMessages);
-                    }
+                        TVerificationResultCollection AMessages = new TVerificationResultCollection();
+                        GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
 
-                    // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
-                    // then the import will have failed and we need to alert the user
-                    if (NeedRecipientLedgerNumber.Rows.Count > 0)
-                    {
-                        bool OfferToRunImportAgain = true;
-                        bool DoNotShowMessageBoxEverytime = false;
-                        TFrmExtendedMessageBox.TResult Result = TFrmExtendedMessageBox.TResult.embrUndefined;
-                        int count = 1;
+                        Thread ImportThread = new Thread(() => ImportGiftBatches(
+                                requestParams,
+                                ImportString,
+                                out AMessages,
+                                out ImportOK,
+                                out NeedRecipientLedgerNumber));
 
-                        // for each gift in which the recipient needs a Git Destination
-                        foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
+                        using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
                         {
-                            if (!DoNotShowMessageBoxEverytime)
-                            {
-                                string CheckboxText = string.Empty;
-
-                                // only show checkbox if there is at least one more occurrence of this error
-                                if (NeedRecipientLedgerNumber.Rows.Count - count > 0)
-                                {
-                                    CheckboxText = string.Format(
-                                        Catalog.GetString("Do this for all further occurrences ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
-                                }
-
-                                TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
-
-                                extendedMessageBox.ShowDialog(string.Format(
-                                        Catalog.GetString(
-                                            "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
-                                        Row.RecipientDescription, Row.RecipientKey) +
-                                    "\n\r\n\r\n\r" +
-                                    Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
-                                    Catalog.GetString("Import Errors"),
-                                    CheckboxText,
-                                    TFrmExtendedMessageBox.TButtons.embbYesNo, TFrmExtendedMessageBox.TIcon.embiWarning);
-                                Result = extendedMessageBox.GetResult(out DoNotShowMessageBoxEverytime);
-                            }
-
-                            if (Result == TFrmExtendedMessageBox.TResult.embrYes)
-                            {
-                                // allow the user to assign a Gift Destingation
-                                TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
-                                GiftDestinationForm.ShowDialog();
-                            }
-                            else
-                            {
-                                OfferToRunImportAgain = false;
-
-                                if (DoNotShowMessageBoxEverytime)
-                                {
-                                    break;
-                                }
-                            }
-
-                            count++;
+                            ImportDialog.ShowDialog();
                         }
 
-                        // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
-                        if (OfferToRunImportAgain
-                            && (MessageBox.Show(Catalog.GetString("Would you like to import this Gift Batch again?"),
-                                    Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                                    MessageBoxDefaultButton.Button2)
-                                == DialogResult.Yes))
+                        // If NeedRecipientLedgerNumber contains data then AMessages will only ever contain
+                        // one message alerting the user that no data has been imported.
+                        // We do not want to show this as we will be displaying another more detailed message.
+                        if (NeedRecipientLedgerNumber.Rows.Count == 0)
                         {
-                            Repeat = true;
+                            ShowMessages(AMessages);
+                        }
+
+                        // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
+                        // then the import will have failed and we need to alert the user
+                        if (NeedRecipientLedgerNumber.Rows.Count > 0)
+                        {
+                            bool OfferToRunImportAgain = true;
+                            bool DoNotShowMessageBoxEverytime = false;
+                            TFrmExtendedMessageBox.TResult Result = TFrmExtendedMessageBox.TResult.embrUndefined;
+                            int count = 1;
+
+                            // for each gift in which the recipient needs a Git Destination
+                            foreach (GiftBatchTDSAGiftDetailRow Row in NeedRecipientLedgerNumber.Rows)
+                            {
+                                if (!DoNotShowMessageBoxEverytime)
+                                {
+                                    string CheckboxText = string.Empty;
+
+                                    // only show checkbox if there is at least one more occurrence of this error
+                                    if (NeedRecipientLedgerNumber.Rows.Count - count > 0)
+                                    {
+                                        CheckboxText = string.Format(
+                                            Catalog.GetString(
+                                                "Do this for all further occurrences ({0})?"), NeedRecipientLedgerNumber.Rows.Count - count);
+                                    }
+
+                                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FPetraUtilsObject.GetForm());
+
+                                    extendedMessageBox.ShowDialog(string.Format(
+                                            Catalog.GetString(
+                                                "Gift Import has been cancelled as the recipient '{0}' ({1}) has no Gift Destination assigned."),
+                                            Row.RecipientDescription, Row.RecipientKey) +
+                                        "\n\r\n\r\n\r" +
+                                        Catalog.GetString("Do you want to assign a Gift Destination to this partner now?"),
+                                        Catalog.GetString("Import Errors"),
+                                        CheckboxText,
+                                        TFrmExtendedMessageBox.TButtons.embbYesNo, TFrmExtendedMessageBox.TIcon.embiWarning);
+                                    Result = extendedMessageBox.GetResult(out DoNotShowMessageBoxEverytime);
+                                }
+
+                                if (Result == TFrmExtendedMessageBox.TResult.embrYes)
+                                {
+                                    // allow the user to assign a Gift Destingation
+                                    TFrmGiftDestination GiftDestinationForm = new TFrmGiftDestination(FPetraUtilsObject.GetForm(), Row.RecipientKey);
+                                    GiftDestinationForm.ShowDialog();
+                                }
+                                else
+                                {
+                                    OfferToRunImportAgain = false;
+
+                                    if (DoNotShowMessageBoxEverytime)
+                                    {
+                                        break;
+                                    }
+                                }
+
+                                count++;
+                            }
+
+                            // if the user has clicked yes to assigning Gift Destinations then offer to restart the import
+                            if (OfferToRunImportAgain
+                                && (MessageBox.Show(Catalog.GetString("Would you like to import this Gift Batch again?"),
+                                        Catalog.GetString("Gift Import"), MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                        MessageBoxDefaultButton.Button2)
+                                    == DialogResult.Yes))
+                            {
+                                Repeat = true;
+                            }
                         }
                     }
+
+                    // We save the defaults even if ok is false - because the client will probably want to try and import
+                    //   the same file again after correcting any errors
+                    SaveUserDefaults(OFileDialog, ImportOptions);
                 }
 
-                // We save the defaults even if ok is false - because the client will probably want to try and import
-                //   the same file again after correcting any errors
-                SaveUserDefaults(OFileDialog, ImportOptions);
-            }
-
-            if (ImportOK)
-            {
-                MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
-                    Catalog.GetString("Gift Import"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
-
-                FMyUserControl.LoadBatchesForCurrentYear();
-                FMyForm.GetBatchControl().SelectRowInBatchGrid(1);
-
-                DataView allNewBatches = new DataView(AMainDS.AGiftBatch);
-
-                allNewBatches.RowFilter = String.Format("{0} > {1}",
-                    AGiftBatchTable.GetBatchNumberDBName(),
-                    CurrentTopBatchNumber);
-
-                foreach (DataRowView drv in allNewBatches)
+                if (ImportOK)
                 {
-                    drv.Row.SetModified();
-                }
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Gift Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
 
-                FPetraUtilsObject.SetChangedFlag();
-                //Force initial inactive values check
-                FMyForm.SaveChangesManual();
+                    FMyUserControl.LoadBatchesForCurrentYear();
+                    FMyForm.GetBatchControl().SelectRowInBatchGrid(1);
+
+                    DataView allNewBatches = new DataView(AMainDS.AGiftBatch);
+
+                    allNewBatches.RowFilter = String.Format("{0} > {1}",
+                        AGiftBatchTable.GetBatchNumberDBName(),
+                        CurrentTopBatchNumber);
+
+                    foreach (DataRowView drv in allNewBatches)
+                    {
+                        drv.Row.SetModified();
+                    }
+
+                    FPetraUtilsObject.SetChangedFlag();
+                    //Force initial inactive values check
+                    FMyForm.SaveChangesManual(FMyForm.FCurrentGiftBatchAction);
+                }
+            }
+            finally
+            {
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.NONE;
             }
         }
 
@@ -345,7 +355,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FPetraUtilsObject.HasChanges)
             {
                 // saving failed, therefore do not try to import
-                MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
+                MessageBox.Show(Catalog.GetString("Please save any changes before calling this function!"), Catalog.GetString(
                         "Gift Import"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
