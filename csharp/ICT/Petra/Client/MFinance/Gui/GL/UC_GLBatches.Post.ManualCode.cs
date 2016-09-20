@@ -28,6 +28,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text;
 using System.Threading;
 
 using Ict.Common;
@@ -37,10 +38,12 @@ using Ict.Common.Remoting.Client;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
@@ -94,6 +97,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             DateTime AStartDateCurrentPeriod,
             DateTime AEndDateLastForwardingPeriod)
         {
+            if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
+            {
+                return false;
+            }
+
             int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
 
             //Make sure that all control data is in dataset
@@ -103,15 +111,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 //Keep this conditional check separate so that it only gets called when necessary
                 // and doesn't result in the executon of the next else if which calls same method
-                if (!SaveBatchForPosting(TGLBatchEnums.GLBatchAction.POSTING))
+                if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction))
                 {
                     return false;
                 }
             }
             //This has to be called here as if there are no changes then the DataSavingValidating method
             // which calls the method below, will not run.
-            else if (!FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber, CurrentBatchNumber,
-                         TGLBatchEnums.GLBatchAction.POSTING))
+            else if (!FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber,
+                         CurrentBatchNumber, FMyForm.FCurrentGLBatchAction))
             {
                 return false;
             }
@@ -128,9 +136,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 SetAccountCostCentreTableVariables();
             }
-
-            // TODO: display progress of posting
-            TVerificationResultCollection Verifications;
 
             if ((AEffectiveDate.Date < AStartDateCurrentPeriod) || (AEffectiveDate.Date > AEndDateLastForwardingPeriod))
             {
@@ -153,70 +158,91 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if ((MessageBox.Show(String.Format(Catalog.GetString("Are you sure you want to post GL batch {0}?"),
                          CurrentBatchNumber),
                      Catalog.GetString("Question"),
-                     MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != System.Windows.Forms.DialogResult.Yes))
             {
-                try
-                {
-                    Cursor.Current = Cursors.WaitCursor;
+                return true;
+            }
 
-                    if (!TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, CurrentBatchNumber, out Verifications))
+            TVerificationResultCollection Verifications = new TVerificationResultCollection();
+
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
+
+                Thread postingThread = new Thread(() => PostGLBatch(CurrentBatchNumber, out Verifications));
+
+                using (TProgressDialog dialog = new TProgressDialog(postingThread))
+                {
+                    dialog.ShowDialog();
+                }
+
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
+                {
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
+                    StringBuilder errorMessages = new StringBuilder();
+                    int counter = 0;
+
+                    errorMessages.AppendLine(Catalog.GetString("________________________GL Posting Errors________________________"));
+                    errorMessages.AppendLine();
+
+                    foreach (TVerificationResult verif in Verifications)
                     {
-                        string ErrorMessages = String.Empty;
-
-                        foreach (TVerificationResult verif in Verifications)
-                        {
-                            ErrorMessages += "[" + verif.ResultContext + "] " +
-                                             verif.ResultTextCaption + ": " +
-                                             verif.ResultText + Environment.NewLine;
-                        }
-
-                        System.Windows.Forms.MessageBox.Show(ErrorMessages, Catalog.GetString("Posting failed"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
+                        counter++;
+                        errorMessages.AppendLine(counter.ToString("000") + " - " + verif.ResultText);
+                        errorMessages.AppendLine();
                     }
-                    else
-                    {
-                        //I don't need to call this directly, because the server calls it:
-                        //TFrmGLBatch.PrintPostingRegister(FLedgerNumber, CurrentBatchNumber);
 
-                        // TODO: print reports on successfully posted batch
-                        MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
-                            Catalog.GetString("Success"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-
-                        // refresh the grid, to reflect that the batch has been posted
-                        FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, CurrentBatchNumber));
-
-                        // make sure that the current dataset is clean,
-                        // otherwise the next save would try to modify the posted batch, even though no values have been changed
-                        FMainDS.AcceptChanges();
-
-                        // Ensure these tabs will ask the server for updates
-                        FMyForm.GetTransactionsControl().ClearCurrentSelection();
-                        FMyForm.GetJournalsControl().ClearCurrentSelection();
-
-                        FMyUserControl.UpdateDisplay();
-                    }
+                    extendedMessageBox.ShowDialog(errorMessages.ToString(),
+                        Catalog.GetString("Post Batch Error"),
+                        string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
                 }
-                catch (Exception ex)
+                else
                 {
-                    string msg = (String.Format(Catalog.GetString("Unexpected error occurred during the posting of GL Batch {0}!{1}{1}{2}{1}{1}{3}"),
-                                      CurrentBatchNumber,
-                                      Environment.NewLine,
-                                      ex.Message,
-                                      ex.InnerException!=null?ex.InnerException.Message:String.Empty));
+                    //I don't need to call this directly, because the server calls it:
+                    //TFrmGLBatch.PrintPostingRegister(FLedgerNumber, CurrentBatchNumber);
 
-                    TLogging.LogException(ex, Utilities.GetMethodSignature());
-                    MessageBox.Show(msg, "Post GL Batch Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    // TODO: print reports on successfully posted batch
+                    MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    // refresh the grid, to reflect that the batch has been posted
+                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, CurrentBatchNumber));
+
+                    // make sure that the current dataset is clean,
+                    // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                    FMainDS.AcceptChanges();
+
+                    // Ensure these tabs will ask the server for updates
+                    FMyForm.GetTransactionsControl().ClearCurrentSelection();
+                    FMyForm.GetJournalsControl().ClearCurrentSelection();
+
+                    FMyUserControl.UpdateDisplay();
                 }
-                finally
-                {
-                    Cursor.Current = Cursors.Default;
-                }
+            }
+            catch (Exception ex)
+            {
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// executed by progress dialog thread
+        /// </summary>
+        private void PostGLBatch(int ABatchNumber, out TVerificationResultCollection AVerifications)
+        {
+            TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, ABatchNumber, out AVerifications);
         }
 
         private void SetAccountCostCentreTableVariables()
@@ -264,13 +290,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 //Keep this conditional check separate so that it only gets called when necessary
                 // and doesn't result in the executon of the next else if which calls same method
-                if (!SaveBatchForPosting(TGLBatchEnums.GLBatchAction.TESTING))
+                if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction))
                 {
                     return;
                 }
             }
-            else if (!FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber, CurrentBatchNumber,
-                         TGLBatchEnums.GLBatchAction.TESTING))
+            else if (!FMyForm.GetTransactionsControl().AllowInactiveFieldValues(FLedgerNumber,
+                         CurrentBatchNumber, FMyForm.FCurrentGLBatchAction))
             {
                 return;
             }
@@ -441,10 +467,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         #region Helper methods
 
-        private bool SaveBatchForPosting(TGLBatchEnums.GLBatchAction AAction)
-        {
-            return FMyForm.SaveChangesManual(AAction);
-        }
 
         #endregion
     }

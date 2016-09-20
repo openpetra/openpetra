@@ -178,12 +178,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Revert to previous state
                 if (BackupMainDS != null)
                 {
-                    FMainDS.AGiftDetail.RejectChanges();
-                    FMainDS.AGiftDetail.Merge(BackupMainDS.AGiftDetail);
-                    FMainDS.AGift.RejectChanges();
-                    FMainDS.AGift.Merge(BackupMainDS.AGift);
-                    FMainDS.AGiftBatch.RejectChanges();
-                    FMainDS.AGiftBatch.Merge(BackupMainDS.AGiftBatch);
+                    FMainDS.RejectChanges();
+                    FMainDS.Merge(BackupMainDS);
 
                     FMyForm.GetBatchControl().ShowDetailsRefresh();
                 }

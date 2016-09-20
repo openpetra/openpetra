@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (ARowToDelete == null)
             {
-                return DeletionSuccessful;
+                return false;
             }
 
             int CurrentBatchNo = ARowToDelete.BatchNumber;
@@ -148,14 +148,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Revert to previous state
                 if (BackupMainDS != null)
                 {
-                    FMainDS.ARecurringGiftDetail.RejectChanges();
-                    FMainDS.ARecurringGiftDetail.Merge(BackupMainDS.ARecurringGiftDetail);
-                    FMainDS.ARecurringGift.RejectChanges();
-                    FMainDS.ARecurringGift.Merge(BackupMainDS.ARecurringGift);
-                    FMainDS.ARecurringGiftBatch.RejectChanges();
-                    FMainDS.ARecurringGiftBatch.Merge(BackupMainDS.ARecurringGiftBatch);
-                    FMainDS.ALedger.RejectChanges();
-                    FMainDS.ALedger.Merge(BackupMainDS.ALedger);
+                    FMainDS.RejectChanges();
+                    FMainDS.Merge(BackupMainDS);
 
                     FMyForm.GetBatchControl().ShowDetailsRefresh();
                 }

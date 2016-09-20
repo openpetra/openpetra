@@ -222,6 +222,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
+
+            // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
+            tbbSave.Click -= FileSave;
+            mniFileSave.Click -= FileSave;
+            tbbSave.Click += FileSaveManual;
+            mniFileSave.Click += FileSaveManual;
         }
 
         private void tabGLBatch_GotFocus(Object Sender, EventArgs e)
@@ -807,17 +813,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>True if Save is successful</returns>
         public bool SaveChangesManual()
         {
-            //Do manual checks here
-            return SaveChangesManual(TGLBatchEnums.GLBatchAction.SAVING);
+            FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
+            return SaveChangesManual(FCurrentGLBatchAction);
         }
 
         /// <summary>
-        /// Check for ExWorkers before saving or cancelling
+        /// Save according to current batch action
         /// </summary>
         /// <param name="AAction"></param>
-        /// <param name="AGetOnlyNonBatchDataFromControls"></param>
+        /// <param name="AGetJournalDataFromControls"></param>
+        /// <param name="AGetTransDataFromControls"></param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TGLBatchEnums.GLBatchAction AAction, bool AGetOnlyNonBatchDataFromControls = false)
+        public bool SaveChangesManual(TGLBatchEnums.GLBatchAction AAction,
+            bool AGetJournalDataFromControls = false,
+            bool AGetTransDataFromControls = false)
         {
             if (AAction == TGLBatchEnums.GLBatchAction.NONE)
             {
@@ -825,16 +834,36 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FCurrentGLBatchAction = AAction;
             }
 
-            if (AAction != TGLBatchEnums.GLBatchAction.CANCELLING)
+            if (AAction == TGLBatchEnums.GLBatchAction.CANCELLING)
+            {
+                if (AGetJournalDataFromControls)
+                {
+                    ucoJournals.GetDataFromControls();
+                }
+
+                if (AGetTransDataFromControls)
+                {
+                    ucoTransactions.GetDataFromControls();
+                }
+            }
+            else if (AAction == TGLBatchEnums.GLBatchAction.CANCELLINGJOURNAL)
+            {
+                ucoBatches.GetDataFromControls();
+
+                if (AGetTransDataFromControls)
+                {
+                    ucoTransactions.GetDataFromControls();
+                }
+            }
+            else if ((AAction == TGLBatchEnums.GLBatchAction.DELETINGTRANS)
+                     || (AAction == TGLBatchEnums.GLBatchAction.DELETINGALLTRANS))
+            {
+                ucoBatches.GetDataFromControls();
+                ucoJournals.GetDataFromControls();
+            }
+            else
             {
                 GetDataFromControls();
-            }
-            else if (AGetOnlyNonBatchDataFromControls) //Only applicable when cancelling current batch
-            {
-                //If in cancelling but trans tab is showing data from an earlier viewed batch with changes
-                // then still need to get data from controls on Transaction and Journals tab.
-                ucoTransactions.GetDataFromControls();
-                ucoJournals.GetDataFromControls();
             }
 
             return SaveChanges();
@@ -850,14 +879,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
         {
+            int BatchNumber = GetBatchControl().GetCurrentBatchRow().BatchNumber;
+            int JournalNumber = 0;
+            int TransactionNumber = 0;
+
             if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.NONE)
             {
                 FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
             }
+            else if ((FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.CANCELLINGJOURNAL)
+                     || (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGALLTRANS))
+            {
+                JournalNumber = GetJournalsControl().GetCurrentJournalRow().JournalNumber;
+            }
+            else if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGTRANS)
+            {
+                JournalNumber = GetJournalsControl().GetCurrentJournalRow().JournalNumber;
+                TransactionNumber = GetTransactionsControl().GetCurrentTransactionRow().TransactionNumber;
+            }
 
             //Check if the user has made a Bank Cost Centre or Account Code inactive
             // on saving
-            if (!ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, GetBatchControl().GetCurrentBatchRow().BatchNumber, FCurrentGLBatchAction))
+            if (!ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, BatchNumber, FCurrentGLBatchAction,
+                    JournalNumber, TransactionNumber))
             {
                 e.Cancel = true;
             }
@@ -874,7 +918,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
-        /// find a special gift detail
+        /// find a specific transaction
         /// </summary>
         public void FindGLTransaction(int ABatchNumber, int AJournalNumber, int ATransactionNumber)
         {

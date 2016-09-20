@@ -169,8 +169,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         StringHelper.FormatUsingCurrencyCode(ACurrentBatchRow.HashTotal, ACurrentBatchRow.CurrencyCode)),
                     "Post Gift Batch");
 
-                FMyForm.GetBatchControl().Controls["txtDetailHashTotal"].Focus();
-                FMyForm.GetBatchControl().Controls["txtDetailHashTotal"].Select();
                 return false;
             }
 

@@ -10988,6 +10988,11 @@
                 thisFields="s_user_id_c"
                 otherTable="s_user"
                 otherFields="s_user_id_c"/>
+    <foreignkey name="a_recurring_transaction_fk8"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_recurring_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
     <!-- Explicit Indexes on table a_recurring_transaction  -->
   </table>
   <table name="a_recurring_trans_anal_attrib"

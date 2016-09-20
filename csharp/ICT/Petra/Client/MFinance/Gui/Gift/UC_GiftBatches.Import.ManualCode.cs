@@ -40,6 +40,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
@@ -92,7 +93,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// this supports the batch export files from Petra 2.x.
         /// Each line starts with a type specifier, B for batch, J for journal, T for transaction
         /// </summary>
-        public void ImportBatches(TGiftImportDataSourceEnum AImportSource)
+        public void ImportBatches(TGiftImportDataSourceEnum AImportSource, GiftBatchTDS AMainDS)
         {
             bool ImportOK = false;
             String ImportString;
@@ -101,11 +102,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FPetraUtilsObject.HasChanges)
             {
-                // saving failed, therefore do not try to post
+                // saving failed, therefore do not try to import
                 MessageBox.Show(Catalog.GetString("Please save before calling this function!"), Catalog.GetString(
                         "Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
+            ALedgerRow LedgerRow = (ALedgerRow)AMainDS.ALedger.Rows[0];
+            int CurrentTopBatchNumber = LedgerRow.LastGiftBatchNumber;
 
             FdlgSeparator = new TDlgSelectCSVSeparator(false);
 
@@ -306,6 +310,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FMyUserControl.LoadBatchesForCurrentYear();
                 FMyForm.GetBatchControl().SelectRowInBatchGrid(1);
+
+                DataView allNewBatches = new DataView(AMainDS.AGiftBatch);
+
+                allNewBatches.RowFilter = String.Format("{0} > {1}",
+                    AGiftBatchTable.GetBatchNumberDBName(),
+                    CurrentTopBatchNumber);
+
+                foreach (DataRowView drv in allNewBatches)
+                {
+                    drv.Row.SetModified();
+                }
+
+                FPetraUtilsObject.SetChangedFlag();
                 //Force initial inactive values check
                 FMyForm.SaveChangesManual();
             }

@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 
 using Ict.Common;
@@ -222,9 +223,20 @@ namespace Tests.MFinance.GLBatches
                 ModalFormHandler = delegate(string name2, IntPtr hWnd2, Form form2)
                 {
                     MessageBoxTester tester2 = new MessageBoxTester(hWnd2);
-                    Assert.AreEqual("Success", tester2.Title);
+                    Assert.AreEqual("Progress Dialog", tester2.Title);
 
-                    tester2.SendCommand(MessageBoxTester.Command.Yes);
+                    //Wait for it to close
+                    Thread.Sleep(1000);
+
+                    // there is a second message box after posting, telling the user about success.
+                    // because the ModalFormHandler is reset after handling the first message box, we need to set up a new handler.
+                    ModalFormHandler = delegate(string name3, IntPtr hWnd3, Form form3)
+                    {
+                        MessageBoxTester tester3 = new MessageBoxTester(hWnd3);
+                        Assert.AreEqual("Success", tester3.Title);
+
+                        tester3.SendCommand(MessageBoxTester.Command.Yes);
+                    };
                 };
 
                 tester.SendCommand(MessageBoxTester.Command.Yes);

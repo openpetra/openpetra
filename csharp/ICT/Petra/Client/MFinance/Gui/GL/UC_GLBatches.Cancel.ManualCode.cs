@@ -115,11 +115,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CurrentBatchJournalsLoadedAndCurrent = (FMyForm.GetJournalsControl().FBatchNumber == CurrentBatchNo);
                 CurrentBatchTransactionsLoadedAndCurrent = (FMyForm.GetTransactionsControl().FBatchNumber == CurrentBatchNo);
 
-                //Save and check for inactive values and ex-workers and anonymous gifts
-                //  in other unsaved Batches
+                //Save and check for inactive values in other unsaved Batches
                 FPetraUtilsObject.SetChangedFlag();
 
-                if (!FMyForm.SaveChangesManual(TGLBatchEnums.GLBatchAction.CANCELLING, !CurrentBatchTransactionsLoadedAndCurrent))
+                if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction, !CurrentBatchJournalsLoadedAndCurrent,
+                        !CurrentBatchTransactionsLoadedAndCurrent))
                 {
                     FMyForm.GetBatchControl().UpdateUnpostedBatchDictionary();
 
@@ -127,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         CurrentBatchNo);
 
                     MessageBox.Show(CompletionMessage,
-                        "Gift Batch Cancelled",
+                        Catalog.GetString("GL Batch Cancellation"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
 
@@ -196,14 +196,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 //Revert to previous state
                 if (BackupMainDS != null)
                 {
-                    FMainDS.ATransAnalAttrib.RejectChanges();
-                    FMainDS.ATransAnalAttrib.Merge(BackupMainDS.ATransAnalAttrib);
-                    FMainDS.ATransaction.RejectChanges();
-                    FMainDS.ATransaction.Merge(BackupMainDS.ATransaction);
-                    FMainDS.AJournal.RejectChanges();
-                    FMainDS.AJournal.Merge(BackupMainDS.AJournal);
-                    FMainDS.ABatch.RejectChanges();
-                    FMainDS.ABatch.Merge(BackupMainDS.ABatch);
+                    FMainDS.RejectChanges();
+                    FMainDS.Merge(BackupMainDS);
 
                     FMyForm.GetBatchControl().ShowDetailsRefresh();
                 }

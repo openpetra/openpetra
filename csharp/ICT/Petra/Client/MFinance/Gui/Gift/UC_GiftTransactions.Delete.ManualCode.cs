@@ -109,7 +109,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
+            GiftBatchTDS BackupDS = null;
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
                             "You have chosen to delete all gifts from Gift Batch: {0}.{1}{1}Are you sure you want to delete all?"),
@@ -129,6 +129,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 //Specify current action
                 FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS;
 
+                //Backup the Dataset for reversion purposes
+                BackupDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
+
                 //clear any transactions currently being editied in the Transaction Tab
                 ClearCurrentSelection(0, false);
 
@@ -144,7 +147,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPetraUtilsObject.SetChangedFlag();
 
                 // save changes
-                if (((TFrmGiftBatch)ParentForm).SaveChangesManual())
+                if (FMyForm.SaveChangesManual(Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS, false, false))
                 {
                     //Check if have deleted a reversing gift detail
                     if (OriginatingDetailRef.Count > 0)

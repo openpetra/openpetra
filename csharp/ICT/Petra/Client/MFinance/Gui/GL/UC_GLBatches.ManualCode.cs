@@ -463,13 +463,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ABatchToCancel"></param>
         /// <param name="ARedisplay"></param>
-        public void PrepareBatchDataForCancelling(Int32 ABatchToCancel, bool ARedisplay)
+        public void PrepareBatchDataForCancelling(Int32 ABatchToCancel, Boolean ARedisplay)
         {
             //This code will only be called when the Batch tab is active.
 
             DataView GLBatchDV = new DataView(FMainDS.ABatch);
             DataView JournalDV = new DataView(FMainDS.AJournal);
             DataView TransDV = new DataView(FMainDS.ATransaction);
+            DataView TransAnalDV = new DataView(FMainDS.ATransAnalAttrib);
 
             GLBatchDV.RowFilter = String.Format("{0}={1}",
                 ABatchTable.GetBatchNumberDBName(),
@@ -483,7 +484,33 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 ATransactionTable.GetBatchNumberDBName(),
                 ABatchToCancel);
 
+            TransAnalDV.RowFilter = String.Format("{0}={1}",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchToCancel);
+
             //Work from lowest level up
+            if (TransAnalDV.Count > 0)
+            {
+                TransAnalDV.Sort = String.Format("{0}, {1}, {2}",
+                    ATransAnalAttribTable.GetJournalNumberDBName(),
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                foreach (DataRowView drv in TransAnalDV)
+                {
+                    ATransAnalAttribRow transAnalRow = (ATransAnalAttribRow)drv.Row;
+
+                    if (transAnalRow.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (transAnalRow.RowState != DataRowState.Unchanged)
+                    {
+                        transAnalRow.RejectChanges();
+                    }
+                }
+            }
+
             if (TransDV.Count > 0)
             {
                 TransDV.Sort = String.Format("{0}, {1}",
@@ -492,15 +519,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 foreach (DataRowView drv in TransDV)
                 {
-                    ATransactionRow gDR = (ATransactionRow)drv.Row;
+                    ATransactionRow transRow = (ATransactionRow)drv.Row;
 
-                    if (gDR.RowState == DataRowState.Added)
+                    if (transRow.RowState == DataRowState.Added)
                     {
                         //Do nothing
                     }
-                    else if (gDR.RowState != DataRowState.Unchanged)
+                    else if (transRow.RowState != DataRowState.Unchanged)
                     {
-                        gDR.RejectChanges();
+                        transRow.RejectChanges();
                     }
                 }
             }
@@ -511,34 +538,34 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 foreach (DataRowView drv in JournalDV)
                 {
-                    AJournalRow gR = (AJournalRow)drv.Row;
+                    AJournalRow journalRow = (AJournalRow)drv.Row;
 
-                    if (gR.RowState == DataRowState.Added)
+                    if (journalRow.RowState == DataRowState.Added)
                     {
                         //Do nothing
                     }
-                    else if (gR.RowState != DataRowState.Unchanged)
+                    else if (journalRow.RowState != DataRowState.Unchanged)
                     {
-                        gR.RejectChanges();
+                        journalRow.RejectChanges();
                     }
                 }
             }
 
             if (GLBatchDV.Count > 0)
             {
-                ABatchRow gB = (ABatchRow)GLBatchDV[0].Row;
+                ABatchRow batchRow = (ABatchRow)GLBatchDV[0].Row;
 
                 //No need to check for Added state as new batches are always saved
                 // on creation
 
-                if (gB.RowState != DataRowState.Unchanged)
+                if (batchRow.RowState != DataRowState.Unchanged)
                 {
-                    gB.RejectChanges();
+                    batchRow.RejectChanges();
                 }
 
                 if (ARedisplay)
                 {
-                    ShowDetails(gB);
+                    ShowDetails(batchRow);
                 }
             }
 
@@ -814,12 +841,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     // Start with the highest batch number and continue until we reach the 'old' last batch
                     for (int i = 0; i < dv.Count; i++)
                     {
-                        int batchNumber = ((ABatchRow)dv[i].Row).BatchNumber;
+                        ABatchRow batchRow = (ABatchRow)dv[i].Row;
+                        int batchNumber = batchRow.BatchNumber;
 
                         if (batchNumber <= lastBatchNumber)
                         {
                             break;
                         }
+
+                        batchRow.SetModified();
 
                         FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadAJournalAndRelatedTablesForBatch(FLedgerNumber, batchNumber));
                     }
@@ -976,6 +1006,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CancelRow(System.Object sender, EventArgs e)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("Select the row to cancel first"));
+                return;
+            }
+
             TFrmGLBatch MainForm = (TFrmGLBatch) this.ParentForm;
 
             try

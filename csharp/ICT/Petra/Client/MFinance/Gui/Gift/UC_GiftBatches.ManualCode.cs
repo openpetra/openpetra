@@ -1022,11 +1022,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         public bool AllowInactiveFieldValues(ref bool AActionConfirmed, TExtraGiftBatchChecks.GiftBatchAction AAction)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return true;
-            }
-
             TFrmGiftBatch MainForm = (TFrmGiftBatch) this.ParentForm;
 
             bool InPosting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.POSTING);
@@ -1125,7 +1120,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         if (batch == CurrentBatch)
                         {
-                            if (!InPosting && (FUnpostedBatchesVerifiedOnSavingDict[batch] == false)
+                            if ((!InPosting && (FUnpostedBatchesVerifiedOnSavingDict[batch] == false))
                                 || (InPosting && FWarnOfInactiveValuesOnPosting))
                             {
                                 FUnpostedBatchesVerifiedOnSavingDict[batch] = true;
@@ -1337,6 +1332,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void CancelRecord(System.Object sender, EventArgs e)
         {
+            if (FPreviouslySelectedDetailRow == null)
+            {
+                MessageBox.Show(Catalog.GetString("Select the row to cancel first"));
+                return;
+            }
+
             TFrmGiftBatch MainForm = (TFrmGiftBatch) this.ParentForm;
 
             try
@@ -1497,7 +1498,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportBatches(System.Object sender, System.EventArgs e)
         {
-            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile);
+            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromFile, FMainDS);
         }
 
         /// <summary>
@@ -1506,7 +1507,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         private void ImportFromClipboard(System.Object sender, System.EventArgs e)
         {
-            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard);
+            FImportLogicObject.ImportBatches(TUC_GiftBatches_Import.TGiftImportDataSourceEnum.FromClipboard, FMainDS);
         }
 
         /// <summary>

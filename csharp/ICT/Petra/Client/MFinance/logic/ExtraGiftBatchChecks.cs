@@ -82,20 +82,28 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// </summary>
         public enum GLBatchAction
         {
-            /// <summary>GLBatch and RecurringGLBatch</summary>
+            /// <summary>GL Batch and Recurring GL Batch</summary>
             SAVING,
-            /// <summary>GLBatch and RecurringGLBatch</summary>
-            NEWBATCH,
-            /// <summary>GLBatch</summary>
+            /// <summary>GL Batch and Recurring GL Batch</summary>
+            CREATING,
+            /// <summary>GL Batch</summary>
             POSTING,
-            /// <summary>GLBatch</summary>
+            /// <summary>GL Batch</summary>
             TESTING,
-            /// <summary>GLBatch</summary>
+            /// <summary>GL Batch</summary>
             CANCELLING,
-            /// <summary>RecurringGLBatch</summary>
+            /// <summary>GL Batch</summary>
+            CANCELLINGJOURNAL,
+            /// <summary>Recurring GL Batch</summary>
             SUBMITTING,
-            /// <summary>RecurringGLBatch</summary>
+            /// <summary>Recurring GL Batch</summary>
             DELETING,
+            /// <summary>GL Batch and Recurring GL Batch</summary>
+            DELETINGJOURNAL,
+            /// <summary>GL Batch and Recurring GL Batch</summary>
+            DELETINGALLTRANS,
+            /// <summary>GL Batch and Recurring GL Batch</summary>
+            DELETINGTRANS,
             /// <summary>No action being taken</summary>
             NONE
         };

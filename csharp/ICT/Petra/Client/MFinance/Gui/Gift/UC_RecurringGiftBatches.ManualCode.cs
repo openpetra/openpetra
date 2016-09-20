@@ -899,11 +899,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <returns></returns>
         public bool AllowInactiveFieldValues(TExtraGiftBatchChecks.GiftBatchAction AAction)
         {
-            if (FPreviouslySelectedDetailRow == null)
-            {
-                return true;
-            }
-
             TFrmRecurringGiftBatch MainForm = (TFrmRecurringGiftBatch) this.ParentForm;
 
             bool InSubmitting = (AAction == TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING);
@@ -951,7 +946,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FRecurringBatchesVerifiedOnSavingDict.Add(currentBatchListNo, false);
                     }
 
-                    //If processing batch about to be posted, only warn according to user preferences
+                    //If processing batch about to be submitted, only warn according to user preferences
                     if ((InSubmitting && checkingCurrentBatch && !FWarnOfInactiveValuesOnSubmitting)
                         || (InDeleting && checkingCurrentBatch))
                     {
@@ -1001,7 +996,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     {
                         if (batch == CurrentBatch)
                         {
-                            if (!InSubmitting && (FRecurringBatchesVerifiedOnSavingDict[batch] == false)
+                            if ((!InSubmitting && (FRecurringBatchesVerifiedOnSavingDict[batch] == false))
                                 || (InSubmitting && FWarnOfInactiveValuesOnSubmitting))
                             {
                                 FRecurringBatchesVerifiedOnSavingDict[batch] = true;
@@ -1140,7 +1135,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (!LoadAllBatchData(FSelectedBatchNumber))
                 {
                     Cursor = Cursors.Default;
-                    MessageBox.Show(Catalog.GetString("The Recurring Gift Batch is empty!"), Catalog.GetString("Posting failed"),
+                    MessageBox.Show(Catalog.GetString("The Recurring Gift Batch is empty!"),
+                        Catalog.GetString("Submit Gift Batch"),
                         MessageBoxButtons.OK, MessageBoxIcon.Stop);
 
                     dlgStatus.Close();
@@ -1176,7 +1172,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool DeleteRowManual(ARecurringGiftBatchRow ARowToDelete, ref string ACompletionMessage)
         {
-            bool RetVal = false;
+            bool DeletionSuccessful = false;
+
+            if (ARowToDelete == null)
+            {
+                return false;
+            }
 
             //Notify of deletion process
             TFrmRecurringGiftBatch MainForm = (TFrmRecurringGiftBatch) this.ParentForm;
@@ -1187,14 +1188,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 FDeletedBatchRowIndex = grdDetails.GetFirstHighlightedRowIndex();
 
-                RetVal = FDeleteLogicObject.DeleteRowManual(ARowToDelete, ref FPreviouslySelectedDetailRow, ref ACompletionMessage);
+                DeletionSuccessful = FDeleteLogicObject.DeleteRowManual(ARowToDelete, ref FPreviouslySelectedDetailRow, ref ACompletionMessage);
             }
             finally
             {
                 MainForm.FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.NONE;
             }
 
-            return RetVal;
+            return DeletionSuccessful;
         }
 
         private void PostDeleteManual(ARecurringGiftBatchRow ARowToDelete,

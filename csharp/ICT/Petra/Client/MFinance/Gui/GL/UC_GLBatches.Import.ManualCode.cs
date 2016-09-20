@@ -226,7 +226,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     MessageBoxIcon.Information);
 
                 FMyUserControl.ReloadBatches();
-                FPetraUtilsObject.DisableSaveButton();
+
+                FPetraUtilsObject.SetChangedFlag();
+                FMyForm.SaveChangesManual();
             }
         }
 
