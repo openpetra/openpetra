@@ -734,8 +734,8 @@ namespace Ict.Common.Controls
             }
         }
 
-//		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
-//		{
+//      protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+//      {
         //            // Set a fixed width for the control.
         //            // ADD AN EXTRA HEIGHT VALIDATION TO AVOID INITIALIZATION PROBLEMS
         //            // BITWISE 'AND' OPERATION: IF ZERO THEN HEIGHT IS NOT INVOLVED IN THIS OPERATION
@@ -747,17 +747,17 @@ namespace Ict.Common.Controls
         //                    base.SetBoundsCore(x, y, MaxTaskWidth, height, specified);
         ////TLogging.Log("SetBoundsCore: After setting ucoTaskGroup " + Name + "'s Width to " + MaxTaskWidth.ToString() + ": Size = " + Size.ToString());
         //                }
-//		    }
+//          }
         //            else if ((specified&BoundsSpecified.Height) == 0)
         //            {
         //                base.SetBoundsCore(x, y, width, this.Height, specified);
         //            }
-//		    else
-//		    {
+//          else
+//          {
         //                return;
-//		    }
+//          }
         //TLogging.Log("SetBoundsCore: TLstTask " + Name + "'s size: " + Size.ToString());
-//		}
+//      }
 
         #endregion
 
@@ -774,10 +774,15 @@ namespace Ict.Common.Controls
                 parentForm = parentForm.Parent;
             }
 
-            string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
-            WriteToStatusBar(message);
-
-            Cursor = Cursors.Default;
+            try
+            {
+                string message = ExecuteAction((XmlNode)((TUcoSingleTask)sender).Tag, (Form)parentForm);
+                WriteToStatusBar(message);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
 
         void SingleTask_TaskSelected(object sender, EventArgs e)
