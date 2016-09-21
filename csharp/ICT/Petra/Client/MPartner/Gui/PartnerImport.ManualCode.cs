@@ -84,6 +84,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             chkSemiAutomatic.Checked = false;
             chkSemiAutomatic.Width = 126;
+            chkReplaceAddress.Checked = true;
             FPetraUtilsObject.SetStatusBarText(chkSemiAutomatic, Catalog.GetString(
                     "Selecting ‘Automatic Import’ will import all remaining partners in the file without stopping again (unless a decision is needed)."));
 
