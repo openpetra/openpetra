@@ -1,9 +1,9 @@
 -- passwords are inserted by OpenPetra.build
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('DEMO', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('MEDICAL', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('HEADSET', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('BOUNDARIES', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
-INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_password_needs_change_l) VALUES('ANONYMOUS', '{#PASSWORDHASHANONYMOUS}', '{#PASSWORDSALTANONYMOUS}', 0, false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('DEMO', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('MEDICAL', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('HEADSET', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('BOUNDARIES', '{#PASSWORDHASHDEMO}', '{#PASSWORDSALTDEMO}', 0, false);
+INSERT INTO s_user(s_user_id_c, s_password_hash_c, s_password_salt_c, s_pwd_scheme_version_i, s_password_needs_change_l) VALUES('ANONYMOUS', '{#PASSWORDHASHANONYMOUS}', '{#PASSWORDSALTANONYMOUS}', 0, false);
 
 INSERT INTO s_module(s_module_id_c, s_module_name_c) VALUES('LEDGER0043', 'LEDGER0043');
 
