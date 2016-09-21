@@ -125,6 +125,8 @@
     <if test="${file::exists(MonoBinPath+'/xsp4.bat')}">
       <delete file="${dir.bin}/Mono.Security.dll"/>
       <delete file="${dir.bin}/sqlite3.dll"/>
+      <delete file="${dir.bin}/libsodium.dll"/>
+      <delete file="${dir.bin}/libsodium-64.dll"/>
       <exec program="cmd.exe" 
               workingdir="${dir.delivery}"
               commandline="/C start xsp4.bat --verbose --root . --port ${Server.Port} --applications /:."
@@ -197,6 +199,8 @@
       <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
       <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
       <delete file="${dir.bin}/sqlite3.dll"/>
+      <delete file="${dir.bin}/libsodium.dll"/>
+      <delete file="${dir.bin}/libsodium-64.dll"/>
       <echo message="in your browser, go to http://localhost:${Server.Port}/"/>
       <property name="spawnxsp" value="false" overwrite="false"/>
       <exec program="xsp4" 
