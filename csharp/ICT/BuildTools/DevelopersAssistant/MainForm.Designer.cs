@@ -114,6 +114,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.btnDatabase = new System.Windows.Forms.Button();
             this.cboDatabase = new System.Windows.Forms.ComboBox();
             this.label7 = new System.Windows.Forms.Label();
+            this.DebuggingPage = new System.Windows.Forms.TabPage();
             this.OutputPage = new System.Windows.Forms.TabPage();
             this.btnNextWarning = new System.Windows.Forms.Button();
             this.btnPrevWarning = new System.Windows.Forms.Button();
@@ -191,12 +192,14 @@ namespace Ict.Tools.DevelopersAssistant
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.tbbCreateDatabase = new System.Windows.Forms.ToolStripButton();
             this.tbbDatabaseContent = new System.Windows.Forms.ToolStripButton();
+            this.ucPageDebugging = new Ict.Tools.DevelopersAssistant.PageDebugging();
             this.tabControl.SuspendLayout();
             this.TaskPage.SuspendLayout();
             this.grpMultiple.SuspendLayout();
             this.grpSingle.SuspendLayout();
             this.DatabasePage.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.DebuggingPage.SuspendLayout();
             this.OutputPage.SuspendLayout();
             this.ExternalPage.SuspendLayout();
             this.groupBox5.SuspendLayout();
@@ -212,6 +215,7 @@ namespace Ict.Tools.DevelopersAssistant
             //
             this.tabControl.Controls.Add(this.TaskPage);
             this.tabControl.Controls.Add(this.DatabasePage);
+            this.tabControl.Controls.Add(this.DebuggingPage);
             this.tabControl.Controls.Add(this.OutputPage);
             this.tabControl.Controls.Add(this.ExternalPage);
             this.tabControl.Controls.Add(this.OptionsPage);
@@ -917,6 +921,17 @@ namespace Ict.Tools.DevelopersAssistant
             this.label7.Size = new System.Drawing.Size(85, 13);
             this.label7.TabIndex = 3;
             this.label7.Text = "Database Tasks";
+            //
+            // DebuggingPage
+            //
+            this.DebuggingPage.Controls.Add(this.ucPageDebugging);
+            this.DebuggingPage.Location = new System.Drawing.Point(4, 22);
+            this.DebuggingPage.Name = "DebuggingPage";
+            this.DebuggingPage.Padding = new System.Windows.Forms.Padding(3);
+            this.DebuggingPage.Size = new System.Drawing.Size(733, 456);
+            this.DebuggingPage.TabIndex = 5;
+            this.DebuggingPage.Text = "Debugging";
+            this.DebuggingPage.UseVisualStyleBackColor = true;
             //
             // OutputPage
             //
@@ -1735,6 +1750,13 @@ namespace Ict.Tools.DevelopersAssistant
             this.tbbDatabaseContent.Text = "Reset the Database Content";
             this.tbbDatabaseContent.Click += new System.EventHandler(this.tbbDatabaseContent_Click);
             //
+            // ucPpageDebugging
+            //
+            this.ucPageDebugging.Location = new System.Drawing.Point(6, 6);
+            this.ucPageDebugging.Name = "ucPpageDebugging";
+            this.ucPageDebugging.Size = new System.Drawing.Size(720, 400);
+            this.ucPageDebugging.TabIndex = 0;
+            //
             // MainForm
             //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1761,6 +1783,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.DatabasePage.PerformLayout();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
+            this.DebuggingPage.ResumeLayout(false);
             this.OutputPage.ResumeLayout(false);
             this.OutputPage.PerformLayout();
             this.ExternalPage.ResumeLayout(false);
@@ -1921,5 +1944,7 @@ namespace Ict.Tools.DevelopersAssistant
         private System.Windows.Forms.ToolStripSplitButton tbbShowSourceDifferences;
         private System.Windows.Forms.ToolStripMenuItem tbbShowSourceDifferencesAllMenuItem;
         private System.Windows.Forms.ToolStripMenuItem tbbShowSourceDifferencesFileMenuItem;
+        private System.Windows.Forms.TabPage DebuggingPage;
+        private PageDebugging ucPageDebugging;
     }
 }

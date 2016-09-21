@@ -144,6 +144,7 @@ namespace Ict.Tools.DevelopersAssistant
             tbbShowSourceDifferencesAllMenuItem.Font = new Font(tbbShowSourceDifferencesAllMenuItem.Font, FontStyle.Bold);
 
             PopulateCombos();
+            ucPageDebugging.PopulateDebugLevelGrid();
 
             this.Text = Program.APP_TITLE;
             cboCodeGeneration.SelectedIndex = _localSettings.CodeGenerationComboID;
@@ -1288,6 +1289,15 @@ namespace Ict.Tools.DevelopersAssistant
                     }
                 }
             }
+
+            if (tabControl.SelectedTab == DebuggingPage)
+            {
+                ucPageDebugging.OnDebuggingTabSelected(BranchLocation);
+            }
+            else
+            {
+                ucPageDebugging.OnDebuggingTabDeselected();
+            }
         }
 
         private void cboSourceCode_SelectedIndexChanged(object sender, EventArgs e)
@@ -1533,26 +1543,18 @@ namespace Ict.Tools.DevelopersAssistant
 
             if (AMiscellaneousTask == NantTask.TaskItem.uncrustify)
             {
-                FolderBrowserDialog dlg = new FolderBrowserDialog();
-                dlg.Description = "Select a folder to Uncrustify";
-                dlg.SelectedPath = BranchLocation;
-                dlg.RootFolder = Environment.SpecialFolder.MyComputer;
-                dlg.ShowNewFolderButton = false;
+                DlgUncrustify dlg = new DlgUncrustify();
+                dlg.SelectedPath = _localSettings.UncrustifyPath;
 
-                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.Cancel)
+                if ((dlg.ShowDialog() == DialogResult.Cancel) || (dlg.SelectedPath == null))
                 {
                     return;
                 }
 
-                // check the selection is based on teh current branch
-                if (!dlg.SelectedPath.StartsWith(BranchLocation, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    MessageBox.Show("You must choose a folder within the current branch.", Program.APP_TITLE);
-                    return;
-                }
+                string rootPath = Path.Combine(BranchLocation, "csharp", dlg.SelectedPath);
 
                 // check that the folder contains a .build file
-                string[] files = Directory.GetFiles(dlg.SelectedPath, "*.build", SearchOption.TopDirectoryOnly);
+                string[] files = Directory.GetFiles(rootPath, "*.build", SearchOption.TopDirectoryOnly);
 
                 if (files.Length == 0)
                 {
@@ -1561,11 +1563,14 @@ namespace Ict.Tools.DevelopersAssistant
                     return;
                 }
 
+                // Remember the selected path
+                _localSettings.UncrustifyPath = dlg.SelectedPath;
+
                 // reset the start time
                 dtStart = DateTime.UtcNow;
 
                 // Ready to run - overriding the usual root location with the specified folder
-                workingFolder = dlg.SelectedPath;
+                workingFolder = rootPath;
             }
             else if ((AMiscellaneousTask == NantTask.TaskItem.test) || (AMiscellaneousTask == NantTask.TaskItem.testWithoutDisplay)
                      || (AMiscellaneousTask == NantTask.TaskItem.mainNavigationTests))
@@ -2090,7 +2095,7 @@ namespace Ict.Tools.DevelopersAssistant
                     break;
 
                 case NantTask.TaskItem.runAdminConsole:
-                    bOk = NantExecutor.RunServerAdminConsole(WorkingFolder, String.Empty);
+                    bOk = NantExecutor.RunServerAdminConsole(WorkingFolder, null);
                     break;
 
                 case NantTask.TaskItem.refreshCachedTables:

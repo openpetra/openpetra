@@ -77,6 +77,13 @@ namespace Ict.Tools.DevelopersAssistant
         }
 
         /// <summary>
+        /// The 'path' to uncrustify, starting with 'ICT'
+        /// </summary>
+        public string UncrustifyPath {
+            get; set;
+        }
+
+        /// <summary>
         /// The window position
         /// </summary>
         public string WindowPosition {
@@ -378,6 +385,7 @@ namespace Ict.Tools.DevelopersAssistant
             DbBuildConfigurations = String.Empty;
             LaunchpadUserName = String.Empty;
             Sequence = String.Empty;
+            UncrustifyPath = "ICT";
             WindowPosition = String.Empty;
             YAMLLocationHistory = String.Empty;
 
@@ -421,6 +429,7 @@ namespace Ict.Tools.DevelopersAssistant
             this.Add("DbBuildConfigurations", DbBuildConfigurations);
             this.Add("LaunchpadUserName", LaunchpadUserName);
             this.Add("Sequence", Sequence);
+            this.Add("UncrustifyPath", UncrustifyPath);
             this.Add("WindowPosition", WindowPosition);
             this.Add("YAMLLocationHistory", YAMLLocationHistory);
 
@@ -478,6 +487,7 @@ namespace Ict.Tools.DevelopersAssistant
             DbBuildConfigurations = this["DbBuildConfigurations"];
             LaunchpadUserName = this["LaunchpadUserName"];
             Sequence = this["Sequence"];
+            UncrustifyPath = this["UncrustifyPath"];
             WindowPosition = this["WindowPosition"];
             YAMLLocationHistory = this["YAMLLocationHistory"];
 
@@ -587,6 +597,7 @@ namespace Ict.Tools.DevelopersAssistant
             this["DbBuildConfigurations"] = DbBuildConfigurations;
             this["LaunchpadUserName"] = LaunchpadUserName;
             this["Sequence"] = Sequence;
+            this["UncrustifyPath"] = UncrustifyPath;
             this["WindowPosition"] = WindowPosition;
             this["YAMLLocationHistory"] = YAMLLocationHistory;
 
