@@ -89,12 +89,14 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AStartDateCurrentPeriod"></param>
         /// <param name="AEndDateLastForwardingPeriod"></param>
-        /// <returns></returns>
+        /// <returns>true if good data was returned</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod)
         {
+            Boolean dataIsOk = false;
+
             #region Validate Arguments
 
             if (ALedgerNumber <= 0)
@@ -182,12 +184,13 @@ namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
                     #endregion Validate Data 3
 
                     EndDateLastForwardingPeriod = accountingPeriodTable[0].PeriodEndDate;
+                    dataIsOk = true;
                 });
 
             AStartDateCurrentPeriod = StartDateCurrentPeriod;
             AEndDateLastForwardingPeriod = EndDateLastForwardingPeriod;
 
-            return true;
+            return dataIsOk;
         }
 
         /// <summary>

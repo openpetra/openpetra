@@ -35,66 +35,20 @@ namespace Ict.Petra.Client.MFinance.Logic
     /// </summary>
     public class TLedgerSelection
     {
-        private static SortedList <Int32, DateTime[]>FValidPostingDates = new SortedList <int, DateTime[]>();
-
-        /// <summary>
-        /// to be called if no valid dates exist yet in the cache;
-        /// also called by PeriodEnd to reset the cache.
-        /// </summary>
-        public static void ResetValidDates(Int32 ALedgerNumber)
-        {
-            DateTime StartDateCurrentPeriod;
-            DateTime EndDateLastForwardingPeriod;
-
-            TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(ALedgerNumber, out StartDateCurrentPeriod, out EndDateLastForwardingPeriod);
-
-            if (FValidPostingDates.ContainsKey(ALedgerNumber))
-            {
-                FValidPostingDates.Remove(ALedgerNumber);
-            }
-
-            FValidPostingDates.Add(ALedgerNumber, new DateTime[] { StartDateCurrentPeriod, EndDateLastForwardingPeriod });
-        }
-
         /// <summary>
         /// Get the valid dates for posting;
         /// based on current period and number of forwarding periods
         /// </summary>
-        public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
-            out DateTime AStartDateCurrentPeriod,
-            out DateTime AEndDateLastForwardingPeriod)
-        {
-            bool RetVal = false;
+        /// <returns>true if good data was returned
+        /// (If bad data were found, an exception would have been raised,
+        /// so it's unlikely that the returned value will ever be false.)</returns>
 
-            AStartDateCurrentPeriod = DateTime.MinValue;
-            AEndDateLastForwardingPeriod = DateTime.MinValue;
-
-            if (!FValidPostingDates.ContainsKey(ALedgerNumber))
-            {
-                ResetValidDates(ALedgerNumber);
-            }
-
-            if (FValidPostingDates.ContainsKey(ALedgerNumber))
-            {
-                AStartDateCurrentPeriod = FValidPostingDates[ALedgerNumber][0];
-                AEndDateLastForwardingPeriod = FValidPostingDates[ALedgerNumber][1];
-
-                RetVal = true;
-            }
-
-            return RetVal;
-        }
-
-        /// <summary>
-        /// Get the valid dates for posting;
-        /// based on current period and number of forwarding periods
-        /// </summary>
         public static bool GetCurrentPostingRangeDates(Int32 ALedgerNumber,
             out DateTime AStartDateCurrentPeriod,
             out DateTime AEndDateLastForwardingPeriod,
             out DateTime ADefaultDate)
         {
-            if (GetCurrentPostingRangeDates(ALedgerNumber,
+            if (TRemote.MFinance.GL.WebConnectors.GetCurrentPostingRangeDates(ALedgerNumber,
                     out AStartDateCurrentPeriod,
                     out AEndDateLastForwardingPeriod))
             {

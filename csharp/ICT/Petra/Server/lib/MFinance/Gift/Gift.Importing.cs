@@ -579,6 +579,12 @@ namespace Ict.Petra.Server.MFinance.Gift
                                                 TResultSeverity.Resv_Critical));
                                         break;
                                     }
+                                    else if (RowType == "J")
+                                    {
+                                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
+                                                Catalog.GetString("'J' is not a valid Row Type in Gift Batches. Is this a GL Batch?"),
+                                                TResultSeverity.Resv_Critical));
+                                    }
                                     else
                                     {
                                         Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),

@@ -105,8 +105,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             TheForm.FOperationResult = caller.EndInvoke(ar);
             TLogging.Log("AsyncOpEnd: " + TheForm.FOperationResult);
 
-            // Reset valid posting dates as they will have changed.
-            TLedgerSelection.ResetValidDates(TheForm.FLedgerNumber);
             TheForm.TidyUpAfterAsyncOperation();
         }
 

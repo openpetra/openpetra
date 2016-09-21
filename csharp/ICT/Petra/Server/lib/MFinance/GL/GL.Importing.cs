@@ -225,8 +225,6 @@ namespace Ict.Petra.Server.MFinance.GL
                             if ((FImportLine.Trim().Length > 0) && !FImportLine.StartsWith("/*") && !FImportLine.StartsWith("#"))
                             {
                                 int numberOfElements = StringHelper.GetCSVList(FImportLine, FDelimiter).Count;
-                                int preParseMessageCount = Messages.Count;
-
                                 // Read the row analysisType - there is no 'validation' on this so we can make the call with null parameters
                                 string RowType =
                                     TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("row type"), null, RowNumber, Messages,
@@ -239,6 +237,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     continue;
                                 }
 
+                                int preParseMessageCount = Messages.Count;
+
                                 if (RowType == "B")
                                 {
                                     ImportMessage = Catalog.GetString("Parsing a batch row");
@@ -246,7 +246,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     if (numberOfElements < 4)
                                     {
                                         Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                                Catalog.GetString("Wrong number of batch columns.  Expected 4 columns."),
+                                                String.Format(Catalog.GetString("Batch row has {0} columns.  Expected 4 columns."),
+                                                    numberOfElements),
                                                 TResultSeverity.Resv_Critical));
 
                                         FImportLine = sr.ReadLine();
@@ -364,7 +365,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     if (numberOfElements < 7)
                                     {
                                         Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                                Catalog.GetString("Wrong number of journal columns.  Expected 7 columns."),
+                                                String.Format(Catalog.GetString("Journal row has {0} columns.  Expected 7 columns."),
+                                                    numberOfElements),
                                                 TResultSeverity.Resv_Critical));
 
                                         FImportLine = sr.ReadLine();
@@ -561,7 +563,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     if (numberOfElements < 8)
                                     {
                                         Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrParsingErrorInLine, RowNumber),
-                                                Catalog.GetString("Wrong number of transaction columns.  Expected at least 8 columns."),
+                                                String.Format(Catalog.GetString("Transaction row has {0} columns.  Expected at least 8 columns."),
+                                                    numberOfElements),
                                                 TResultSeverity.Resv_Critical));
                                         skipThisLine = true;
                                     }

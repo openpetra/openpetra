@@ -761,8 +761,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     /* Go through all the transactions.
                      */
                     string transSQLWhereClause =
-                        "a_cost_centre_code_c = " + costCentreRow.CostCentreCode +
-                        " AND a_transaction_status_l = true" +
+                        "a_cost_centre_code_c = '" + costCentreRow.CostCentreCode +
+                        "' AND a_transaction_status_l = true" +
                         " AND a_ich_number_i = 0";
 
                     string transRowOrder = "a_batch_number_i, a_journal_number_i, a_transaction_number_i";
