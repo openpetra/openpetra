@@ -260,7 +260,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FMotivationDetailChangedInProcess = true;
 
                 bool doTaxUpdate;
-                string currentMotivationDetailCode = cmbMotivationDetailCode.GetSelectedString();
                 string prevAutoPopComment = FAutoPopComment;
 
                 //Assign new value from the combobox
@@ -296,11 +295,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
 
                 // if motivation detail has AutoPopDesc set to true and has not already been autopoulated for this detail
-                if (!txtDetailRecipientKeyMinistry.Visible
-                    && !string.IsNullOrEmpty(FAutoPopComment) && (txtDetailGiftCommentOne.Text != FAutoPopComment))
+                if (!txtDetailRecipientKeyMinistry.Visible && !string.IsNullOrEmpty(FAutoPopComment))
                 {
-                    // autopopulate comment one with the motivation detail description
-                    AutoPopulateCommentOne(FAutoPopComment);
+                    // autopopulate the first empty comment with the motivation detail description
+                    AutoPopulateComment(FAutoPopComment);
                 }
             }
             finally

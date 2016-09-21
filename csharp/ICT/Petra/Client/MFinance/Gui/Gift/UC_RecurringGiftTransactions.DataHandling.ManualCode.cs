@@ -401,7 +401,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void AutoPopulateCommentOne(string AAutoPopComment)
+        private void AutoPopulateComment(string AAutoPopComment)
         {
             if (string.IsNullOrEmpty(txtDetailGiftCommentOne.Text))
             {
@@ -410,17 +410,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
             else if (string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
             {
-                txtDetailGiftCommentTwo.Text = txtDetailGiftCommentOne.Text;
-                cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
-                txtDetailGiftCommentOne.Text = AAutoPopComment;
-                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+                txtDetailGiftCommentTwo.Text = AAutoPopComment;
+                cmbDetailCommentTwoType.SetSelectedString("Both", -1);
             }
             else if (string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
             {
-                txtDetailGiftCommentThree.Text = txtDetailGiftCommentOne.Text;
-                cmbDetailCommentThreeType.SetSelectedString(cmbDetailCommentOneType.GetSelectedString(), -1);
-                txtDetailGiftCommentOne.Text = AAutoPopComment;
-                cmbDetailCommentOneType.SetSelectedString("Both", -1);
+                txtDetailGiftCommentThree.Text = AAutoPopComment;
+                cmbDetailCommentThreeType.SetSelectedString("Both", -1);
             }
             else
             {
@@ -443,26 +439,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void RemoveAutoPopulatedComment(string AAutoPopComment)
         {
-            if (txtDetailGiftCommentOne.Text == AAutoPopComment)
+            if (!string.IsNullOrEmpty(txtDetailGiftCommentOne.Text)
+                && (txtDetailGiftCommentOne.Text == AAutoPopComment))
             {
                 txtDetailGiftCommentOne.Text = string.Empty;
+                cmbDetailCommentOneType.SelectedIndex = -1;
             }
-
-            // move any custom comments to fill Comment One
-            if (!string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text))
+            else if (!string.IsNullOrEmpty(txtDetailGiftCommentTwo.Text)
+                     && (txtDetailGiftCommentTwo.Text == AAutoPopComment))
             {
-                txtDetailGiftCommentOne.Text = txtDetailGiftCommentTwo.Text;
-                cmbDetailCommentOneType.SetSelectedString(cmbDetailCommentTwoType.GetSelectedString(-1));
                 txtDetailGiftCommentTwo.Text = string.Empty;
-                cmbDetailCommentTwoType.SetSelectedString("Both");
+                cmbDetailCommentTwoType.SelectedIndex = -1;
             }
-
-            if (!string.IsNullOrEmpty(txtDetailGiftCommentThree.Text))
+            else if (!string.IsNullOrEmpty(txtDetailGiftCommentThree.Text)
+                     && (txtDetailGiftCommentThree.Text == AAutoPopComment))
             {
-                txtDetailGiftCommentTwo.Text = txtDetailGiftCommentThree.Text;
-                cmbDetailCommentTwoType.SetSelectedString(cmbDetailCommentThreeType.GetSelectedString(-1));
                 txtDetailGiftCommentThree.Text = string.Empty;
-                cmbDetailCommentThreeType.SetSelectedString("Both");
+                cmbDetailCommentThreeType.SelectedIndex = -1;
             }
         }
 
