@@ -232,36 +232,10 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             //
             else if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
-                // TODO see PwdSchemeVersion in commit 3285
-                if (UserDR.PasswordSalt.Length != 32) // old length was 44
-                {
-					// password has not been updated yet to new hash
-					if (CreateHashOfPassword(APassword,
-								UserDR.PasswordSalt, "SHA1") != UserDR.PasswordHash)
-					{
-						// The password that the user supplied is wrong!!! --> Save failed user login attempt!
-						// If the number of permitted failed logins in a row gets exceeded then also lock the user account!
-						SaveFailedLogin(AUserID, UserDR, AClientComputerName, AClientIPAddress, ATransaction);
-
-						if (UserDR.AccountLocked)
-						{
-							// User Account just got locked!
-							throw new EUserAccountGotLockedException(StrInvalidUserIDPassword);
-						}
-						else
-						{
-							throw new EPasswordWrongException(StrInvalidUserIDPassword);
-						}
-					}
-					else
-					{
-						// TODO update password with new hash
-						// see SetNewPasswordHashAndSaltForUser in commit 3285
-					}
-				}
-				else if (!PasswordHelper.EqualsAntiTimingAttack(
-							Convert.FromBase64String(CreateHashOfPassword(APassword, UserDR.PasswordSalt)),
-							Convert.FromBase64String(UserDR.PasswordHash)))
+                if (!TPasswordHelper.EqualsAntiTimingAttack(
+                             Convert.FromBase64String(
+                                  CreateHashOfPassword(APassword, UserDR.PasswordSalt, UserDR.PwdSchemeVersion)), 
+                             Convert.FromBase64String(UserDR.PasswordHash)))
 				{
 					// The password that the user supplied is wrong!!! --> Save failed user login attempt!
 					// If the number of permitted failed logins in a row gets exceeded then also lock the user account!
@@ -446,6 +420,10 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             {
                 // Lock User Account (this user will no longer be able to log in until a Sysadmin resets this flag!)
                 UserDR.AccountLocked = true;
+
+                TMaintenanceWebConnector.AppendAccountActivity(UserDR,
+                    String.Format("The permitted number of failed logins in a row got exceeded and the user account for the user {0} got locked!",
+                        UserDR.UserId));
             }
 
             // Logging
@@ -453,6 +431,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     "Account Locked: now {1}, User Retired: {2})  ", UserDR.FailedLogins, UserDR.AccountLocked, UserDR.Retired) +
                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                 out AProcessID, ATransaction);
+
+            // Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
+            if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
+            {
+                TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword);
+            }
 
             SaveUser(AUserID, (SUserTable)UserDR.Table, ATransaction);
         }
@@ -470,7 +454,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             if (UserAuthenticationMethod == "OpenPetraDBSUser")
             {
-                TUserManagerWebConnector.CreateHashOfPassword("wrongPassword", PasswordHelper.GetNewPasswordSalt());
+                TUserManagerWebConnector.CreateHashOfPassword("wrongPassword",
+                    Convert.ToBase64String(TPasswordHelper.CurrentPasswordScheme.GetNewPasswordSalt()),
+                    TPasswordHelper.CurrentPasswordSchemeNumber);
             }
             else
             {
@@ -499,29 +485,27 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         /// replacement for FormsAuthentication.HashPasswordForStoringInConfigFile
         /// which is part of System.Web.dll and not available in the client profile of .net v4.0
         /// </summary>
-        /// <returns></returns>
+        /// <param name="APassword">Password (plain-text).</param>
+        /// <param name="ASalt">Salt for 'salting' the password hash. MUST be obtained from the same Password Helper
+        /// Class version that gets called in this Method - the Class gets chosen in this Method by evaluating
+        /// <paramref name="APasswordSchemeVersion"/></param>.
+        /// <param name="APasswordSchemeVersion">Version of the Password Hashing Scheme.</param>
+        /// <returns>Password Hash of <paramref name="APassword"/> according to
+        /// <paramref name="APasswordSchemeVersion"/> and the passed-in <paramref name="ASalt"/>.</returns>
         [NoRemoting]
-        public static string CreateHashOfPassword(string APassword, string ASalt, string AHashType = "Scrypt")
+        public static string CreateHashOfPassword(string APassword, string ASalt, int APasswordSchemeVersion)
         {
-            if (AHashType.ToUpper() == "MD5")
+            if (APasswordSchemeVersion == 0)
             {
+                // MD5 - DO NOT USE ANYMORE as this password hash is completely unsafe nowadays!
                 return BitConverter.ToString(
                     MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(String.Concat(APassword,
-                                ASalt)))).Replace("-", "");
-            }
-            else if (AHashType.ToUpper() == "SHA1")
-            {
-                // TODO will be updated with revision 3285
-                return BitConverter.ToString(SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(
-                        String.Concat(APassword, ASalt)))).Replace("-", "");
-            }
-            else if (AHashType.ToUpper() == "SCRYPT")
-            {
-                return PasswordHelper.GetPasswordHash(APassword, ASalt);
+                                                       ASalt)))).Replace("-", "");
             }
             else
             {
-                throw new ArgumentException("Unsupported AHashType argument value '" + AHashType + "'; supported types are 'MD5' and 'Scrypt'");
+                return TPasswordHelper.GetPasswordSchemeHelperForVersion(APasswordSchemeVersion).GetPasswordHash(
+                        APassword, Convert.FromBase64String(ASalt));
             }
         }
 

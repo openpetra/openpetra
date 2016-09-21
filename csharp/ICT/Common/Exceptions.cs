@@ -37,6 +37,7 @@ namespace Ict.Common.Exceptions
     /// <summary>
     /// Security violation (eg. access permissions etc).
     /// </summary>
+    [Serializable()]
     public class EPetraSecurityException : EOPAppException
     {
         /// <summary>

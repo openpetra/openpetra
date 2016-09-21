@@ -177,7 +177,7 @@ namespace Ict.Common.IO
                 // The password is converted from a byte array (rather than being compiled into this DLL as plain Unicode text).
                 // The username and password are stored in different DLL's. (Not brilliant security but a start.)
                 LoginUsername = EMAIL_USER_LOGIN_NAME;
-                LoginPassword = Encoding.ASCII.GetString(PasswordHelper.EmailUserPassword);
+                LoginPassword = Encoding.ASCII.GetString(TPasswordHelper.EmailUserPassword);
             }
 
             Initialise(

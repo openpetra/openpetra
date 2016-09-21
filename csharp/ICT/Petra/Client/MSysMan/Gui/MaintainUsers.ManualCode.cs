@@ -60,6 +60,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
             bool CanChangePassword;
             bool CanChangePermissions;
 
+            sptContent.SplitterDistance = 260;
+
             TRemote.MSysMan.Maintenance.WebConnectors.GetAuthenticationFunctionality(out CanCreateUser,
                 out CanChangePassword,
                 out CanChangePermissions);

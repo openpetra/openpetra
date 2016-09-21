@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       peters, christiank
+//       christiank
 //
 // Copyright 2004-2016 by OM International
 //
@@ -21,18 +21,45 @@
 // You should have received a copy of the GNU General Public License
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>
 //
+
 using System;
-using System.Security.Cryptography;
-using System.Text;
+using System.Collections.Generic;
 using PasswordUtilities;
-using Sodium;
 
 namespace Ict.Common
 {
     /// <summary>
-    /// TODO
+    /// Interface which all Password Hashing Scheme implementations need to implement.
     /// </summary>
-    public class PasswordHelper
+    public interface IPasswordHashingScheme
+    {
+        /// <summary>
+        /// Generates a new secure random password.
+        /// </summary>
+        /// <param name="APassword">Secure random password.</param>
+        /// <param name="ASalt">The Salt that was used in the creation of the Password Hash.</param>
+        /// <param name="APasswordHash">Password Hash.</param>
+        void GetNewPasswordSaltAndHash(out string APassword, out string ASalt, out string APasswordHash);
+
+        /// <summary>
+        /// Generates a new password Salt.
+        /// </summary>
+        /// <returns>New password Salt as a byte array.</returns>
+        byte[] GetNewPasswordSalt();
+
+        /// <summary>
+        /// Generates a Password Hash using the Hash Algorithm which is provided through the password hashing
+        /// methodology that is coded up in each Password Hashing Scheme implementation.
+        /// </summary>
+        string GetPasswordHash(string APassword, byte[] ASalt);
+    }
+
+    /// <summary>
+    /// Helper Class for dealing with the secure hashing of passwords in OpenPetra.
+    /// </summary>
+    /// <remarks>OpenPetra supports different versions of password hashing algorithms; these are implemented in the
+    /// Classes that implement the <see cref="IPasswordHashingScheme"/> Interface!</remarks>
+    public static class TPasswordHelper
     {
         /// <summary>
         /// This is the password for the IUSROPEMAIL user.  If authentication is required by the EMail server so that clients can send emails from
@@ -41,32 +68,99 @@ namespace Ict.Common
         /// The sysadmin for the servers needs to create this user with low privileges accessible by the mail server (locally or using Active Directory).
         /// The password must be set to 'never expires' and 'cannot be changed'.
         /// Note that the password is not stored in this file as text and it is never exposed to a client.
-        // Password is ....
+        /// Password is ...
+        /// </summary>
         public readonly static byte[] EmailUserPassword = new byte[] {
             0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
         };
 
+
         /// <summary>
-        /// Generate a new secure random password and salt. Use them to create a hash.
+        /// Number of the Password Hashing Scheme that represents OpenPetra's current Password Hashing Scheme.
         /// </summary>
-        /// <param name="APassword"></param>
-        /// <param name="ASalt"></param>
-        /// <param name="APasswordHash"></param>
-        public static void GetNewPasswordSaltAndHash(out string APassword, out string ASalt, out string APasswordHash)
+        public static int CurrentPasswordSchemeNumber
         {
-            APassword = GetRandomSecurePassword();
-            ASalt = GetNewPasswordSalt();
-            APasswordHash = GetPasswordHash(APassword, ASalt);
+            get
+            {
+                return TPasswordHelper.GetPasswordSchemeVersionNumber(TPasswordHelper.CurrentPasswordScheme);
+            }
         }
 
-        /// generate a new secure password
+        /// <summary>
+        /// *New* instance of the Class that implements OpenPetra's current Password Hashing Scheme ('Factory Pattern').
+        /// </summary>
+        /// <remarks>
+        /// IMPORTANT: This Method defines what is regarded as OpenPetra's current Password Hashing Scheme!!!
+        /// </remarks>
+        public static IPasswordHashingScheme CurrentPasswordScheme
+        {
+            get
+            {
+                return new TPasswordHashingScheme_V2();
+            }
+        }
+
+        /// <summary>
+        /// *New* instance of the Class that implements the specified version of OpenPetra's Password Hashing Scheme
+        /// ('Factory Pattern').
+        /// </summary>
+        public static IPasswordHashingScheme GetPasswordSchemeHelperForVersion(int AVersion)
+        {
+            switch (AVersion)
+            {
+                case 1:
+                    return new TPasswordHashingScheme_V1();
+
+                case 2:
+                    return new TPasswordHashingScheme_V2();
+
+                case 3:
+                    return new TPasswordHashingScheme_V3();
+
+                case 4:
+                    return new TPasswordHashingScheme_V4();
+
+                default:
+                    throw new ArgumentException("Unsupported AVersion argument value '" +
+                    AVersion + "'; supported versions are 1, 2, 3 and 4 (at present)", "AVersion");
+            }
+        }
+
+        /// <summary>
+        /// Version number of the Password Hashing Scheme instance passed in with <paramref name="APasswordHelperInstance"/>.
+        /// </summary>
+        /// <param name="APasswordHelperInstance">Instance of a Class that inherits from <see cref="IPasswordHashingScheme"/>.</param>
+        /// <returns>The version number of the Password Hashing Scheme instance passed in with
+        /// <paramref name="APasswordHelperInstance"/></returns>
+        private static int GetPasswordSchemeVersionNumber(IPasswordHashingScheme APasswordHelperInstance)
+        {
+            string PasswordHelperName = APasswordHelperInstance.GetType().Name;
+            int UnderscoreVPosition = PasswordHelperName.LastIndexOf("_V");
+
+            return Convert.ToInt32(
+                PasswordHelperName.Substring(UnderscoreVPosition + 2));
+        }
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Generates a new secure password.
+        /// </summary>
+        /// <returns>New secure password.</returns>
         public static string GetRandomSecurePassword()
         {
             double Entropy = 0;
-            PasswordGenerator PWGenerator = new PasswordGenerator(new PasswordPolicy(15, 18));
+            PasswordPolicy PWPolicy = new PasswordPolicy(15, 18);
 
-            // NOTE: An Entropy of 91 was deemed sufficient in 2016 but it should be raised in future years to accommodate the increase
-            // in computing power and hence the lessening of time it would take to break a password of such an Entropy.
+            // Don't allow the following characters:     | *$£-+_&=%/\^~#@
+            // (because the 'british pound' character doesn't exist on every keyboard!)
+            PWPolicy.CharacterSetRemove("AO");
+
+            PasswordGenerator PWGenerator = new PasswordGenerator(PWPolicy);
+
+            // NOTE: An Entropy of 91 was deemed sufficient in 2016 but it should be raised in future years to accommodate
+            // the increase in computing power (CPU and GPU) and advance of parallel processing and hence the lessening of
+            // time it would take to break a password of such an Entropy.
             while (Entropy < 91)
             {
                 PWGenerator.GeneratePassword();
@@ -76,34 +170,21 @@ namespace Ict.Common
             return PWGenerator.Password;
         }
 
-        /// generate a new password salt
-        public static string GetNewPasswordSalt()
-        {
-            byte[] Salt = PasswordHash.GenerateSalt();
-
-            return Encoding.ASCII.GetString(Salt);
-        }
-
         /// <summary>
-        /// Generates a Password Hash using the 'Scrypt' Key Stretching Algorithm (which is provided through the libsodium-net
-        /// libaray ['Sodium' namespace]).
+        /// Logs the decimal representation of a byte array of arbitrary length for debugging purposes.
         /// </summary>
-        /// <remarks><em>IMPORTANT:</em> Changing the way 'Salt' is generated and/or changing the 'Password Hash Strength limit'
-        /// that gets passed to the PasswordHash.ScryptHashBinary Method (currently PasswordHash.Strength.Medium)
-        /// <em>***invalidates existing passwords***</em>, ie. users will no longer be able to log on with their passwords once
-        /// this is done!
-        /// <para />
-        /// If those parameters should ever be changed then the Ict.Tools.PasswordResetter.exe application can be used to assign
-        /// new, random passwords that are created 'in the new way' and users will need to log on once with that password,
-        /// then they will immediately need to enter a new password. This will then be stored 'in the new way' and users will
-        /// be able to log on as they used to do from then onwards - with the new password of their choice.</remarks>
-        /// <param name="APassword">Password.</param>
-        /// <param name="ASalt">Salt. Must have been created with <see cref="GetNewPasswordSalt"/>!!!</param>
-        /// <returns>Password Hash created with the 'Scrypt' Key Stretching Algorithm.</returns>
-        public static string GetPasswordHash(string APassword, string ASalt)
+        /// <param name="AArray">Byte array.</param>
+        /// <param name="ADescription">Description of the byte array.</param>
+        public static void LogByteArrayContents(byte[] AArray, string ADescription)
         {
-            return BitConverter.ToString(
-                PasswordHash.ScryptHashBinary(APassword, ASalt, PasswordHash.Strength.Medium)).Replace("-", "");
+            string LogMessage = String.Format("Byte representation of passed-in byte array '{0}':  ", ADescription);
+
+            for (int i = 0; i < AArray.Length; i++)
+            {
+                LogMessage += String.Format("B.{0}: {1}; ", i, AArray[i]);
+            }
+
+            TLogging.Log(LogMessage);
         }
 
         /// <summary>
@@ -124,5 +205,7 @@ namespace Ict.Common
 
             return diff == 0;
         }
+
+        #endregion
     }
 }
