@@ -112,6 +112,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             //Copy all batch data to new table
             GiftBatchTDSARecurringGiftDetailTable RecurringBatchGiftDetails = new GiftBatchTDSARecurringGiftDetailTable();
+
+            //Filter ARecurringGiftDetail
             DataView RecurringGiftDetailDV = new DataView(FMainDS.ARecurringGiftDetail);
 
             RecurringGiftDetailDV.RowFilter = string.Format("{0}={1}",

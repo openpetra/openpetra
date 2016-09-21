@@ -703,8 +703,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         detailRow.SetAdded();
                     }
 
-                    //Add in the new records
-                    FMainDS.AGiftDetail.Merge(GiftDetailTable);
+                    //Add in the new records (latter two arguments put in to parallel recurring form)
+                    FMainDS.AGiftDetail.Merge(GiftDetailTable, false, MissingSchemaAction.Ignore);
 
                     int indexOfLatestRow = FMainDS.AGiftDetail.Rows.Count - 1;
 

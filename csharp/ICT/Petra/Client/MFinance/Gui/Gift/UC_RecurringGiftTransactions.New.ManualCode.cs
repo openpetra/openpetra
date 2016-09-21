@@ -570,8 +570,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     //Add in the new records
                     //  It is OK to merge from a different table structure as long as common fields
-                    //  exist as between AGiftDetail and ARecurringGiftDetail
-                    FMainDS.ARecurringGiftDetail.Merge(GiftDetailTable);
+                    //  exist as between AGiftDetail and ARecurringGiftDetail but musn't add additional columns
+                    FMainDS.ARecurringGiftDetail.Merge(GiftDetailTable, false, MissingSchemaAction.Ignore);
 
                     int indexOfLatestRow = FMainDS.ARecurringGiftDetail.Rows.Count - 1;
 
