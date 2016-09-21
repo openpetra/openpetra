@@ -364,23 +364,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                 return;
             }
 
-            //Write to Budget custom fields
-            for (int i = 1; i <= FNumberOfPeriods; i++)
+            string CurrentCustomPeriodColumn = string.Empty;
+
+            try
             {
-                ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(
-                    new object[] { ARow.BudgetSequence, i });
-
-                if (budgetPeriodRow != null)
+                //Write to Budget custom fields
+                for (int i = 1; i <= FNumberOfPeriods; i++)
                 {
-                    string customColumn = "Period" + i.ToString("00") + "Amount";
+                    ABudgetPeriodRow budgetPeriodRow = (ABudgetPeriodRow)FMainDS.ABudgetPeriod.Rows.Find(
+                        new object[] { ARow.BudgetSequence, i });
 
-                    if ((decimal)ARow[customColumn] != budgetPeriodRow.BudgetBase)
+                    if (budgetPeriodRow != null)
                     {
-                        ARow[customColumn] = budgetPeriodRow.BudgetBase;
+                        CurrentCustomPeriodColumn = "Period" + i.ToString("00") + "Amount";
+
+                        if (ARow.Table.Columns.Contains(CurrentCustomPeriodColumn))
+                        {
+                            if ((decimal)ARow[CurrentCustomPeriodColumn] != budgetPeriodRow.BudgetBase)
+                            {
+                                ARow[CurrentCustomPeriodColumn] = budgetPeriodRow.BudgetBase;
+                            }
+                        }
+                        else
+                        {
+                            throw new Exception(Catalog.GetString("Custom column " + CurrentCustomPeriodColumn + " does not exist!"));
+                        }
                     }
                 }
-
-                budgetPeriodRow = null;
+            }
+            catch (Exception ex)
+            {
+                TLogging.Log(
+                    "Error in MaintainBudget.UpdatePeriodAmountsFromControls(). CurrentCustomPeriodColumn is value: " + CurrentCustomPeriodColumn);
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
         }
 
@@ -410,6 +427,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     //Change of year clears boxes in some circumstances so need to save
                     SaveChanges();
                 }
+
+                //Don't allow prior year changes
+                bool allowChanges = (FSelectedBudgetYear >= FCurrentFinancialYear);
+                btnDelete.Enabled = allowChanges;
+                pnlFilter.Enabled = allowChanges;
             }
         }
 

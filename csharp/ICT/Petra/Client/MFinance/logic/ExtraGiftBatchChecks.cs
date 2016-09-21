@@ -608,10 +608,11 @@ namespace Ict.Petra.Client.MFinance.Logic
                 GiftBatchTDSAGiftDetailTable.GetDetailNumberDBName());
             DataTable sortedDT = dv.ToTable();
 
-            ReturnValue = String.Format(Catalog.GetString("The {0}gift(s) listed below have recipient(s) with a Special Type beginning with {1}:{2}"),
-                ((AAction == GiftBatchAction.POSTING) || (AAction == GiftBatchAction.SUBMITTING)) ? "" : "unsaved ",
-                AExWorkerSpecialType,
-                Environment.NewLine);
+            ReturnValue =
+                String.Format(Catalog.GetString("The {0}gift(s) listed below have recipient(s) with a Special Type beginning with {1}:{2}{2}"),
+                    ((AAction == GiftBatchAction.POSTING) || (AAction == GiftBatchAction.SUBMITTING)) ? "" : "unsaved ",
+                    AExWorkerSpecialType,
+                    Environment.NewLine);
 
             ReturnValue += new String('-', 86) + Environment.NewLine;
 
