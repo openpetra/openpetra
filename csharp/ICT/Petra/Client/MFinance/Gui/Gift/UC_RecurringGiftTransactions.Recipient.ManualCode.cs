@@ -155,10 +155,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 return;
             }
 
-            Int64 RecipientLedgerNumber = 0;
-            FPreviouslySelectedDetailRow.BeginEdit();
-
             // get the recipient ledger number
+            Int64 RecipientLedgerNumber = 0;
+
             if (APartnerKey > 0)
             {
                 RecipientLedgerNumber = TRemote.MFinance.Gift.WebConnectors.GetRecipientFundNumber(APartnerKey,
@@ -166,10 +165,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FRecipientKeyChangedInProcess = true;
-            txtDetailRecipientKeyMinistry.Text = string.Empty;
 
             try
             {
+                FPreviouslySelectedDetailRow.BeginEdit();
+                txtDetailRecipientKeyMinistry.Text = string.Empty;
                 FPreviouslySelectedDetailRow.RecipientKey = APartnerKey;
                 FPreviouslySelectedDetailRow.RecipientDescription = APartnerShortName;
                 FPreviouslySelectedDetailRow.RecipientClass = txtDetailRecipientKey.CurrentPartnerClass.ToString();

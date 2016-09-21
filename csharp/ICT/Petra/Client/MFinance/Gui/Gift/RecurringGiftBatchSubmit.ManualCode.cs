@@ -255,8 +255,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             try
             {
+                Cursor = Cursors.WaitCursor;
+
                 if (TRemote.MFinance.Gift.WebConnectors.SubmitRecurringGiftBatch(requestParams, out CreatedGiftBatchNumber))
                 {
+                    Cursor = Cursors.Default;
+
                     string successMessage =
                         String.Format(Catalog.GetString(
                                 "Your recurring batch was submitted successfully as new Gift Batch {0}!{1}{1}" +
@@ -277,6 +281,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
+                    Cursor = Cursors.Default;
+
                     MessageBox.Show(Catalog.GetString("The recurring Gift Batch failed to submit!"),
                         Catalog.GetString("Submit Recurring Gift Batch"),
                         MessageBoxButtons.OK,
@@ -298,6 +304,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
 

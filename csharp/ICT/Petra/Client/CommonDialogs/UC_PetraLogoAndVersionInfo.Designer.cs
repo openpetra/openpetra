@@ -138,7 +138,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.lblCopyrightNotice.Name = "lblCopyrightNotice";
             this.lblCopyrightNotice.Size = new System.Drawing.Size(238, 18);
             this.lblCopyrightNotice.TabIndex = 8;
-            this.lblCopyrightNotice.Text = "© 1995 - 2015 by OM International";
+            this.lblCopyrightNotice.Text = "© 1995 - 2016 by OM International";
             this.lblCopyrightNotice.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             //
             // lblInstallationKind

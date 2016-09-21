@@ -12,7 +12,7 @@
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK
         READCONTROLSVERIFICATION:BLANK
-        READCONTROLSLOCALVARS: ACalc.AddParameter("param_today", new TVariant(DateTime.Now));
+        READCONTROLSLOCALVARS: ReadControlsVerify(ACalc, AReportAction);
         SETCONTROLSLOCALVARS: BLANK
         REPORTSETTINGSDIRECTORY: Finance
     Security:

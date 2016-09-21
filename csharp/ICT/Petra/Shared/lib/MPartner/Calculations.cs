@@ -200,6 +200,21 @@ namespace Ict.Petra.Shared.MPartner
                     return names[1];
                 }
             }
+            else if (AFormat == eShortNameFormat.eOnlySurnameFirstNameInitial)
+            {
+                if (names.Count > 2)
+                {
+                    // remove the title
+                    names.RemoveAt(names.Count - 1);
+                }
+
+                if (names.Count > 1)
+                {
+                    return names[0] + ", " + names[1].Substring(0, 1) + ".";
+                }
+
+                return names[0];
+            }
             else if (AFormat == eShortNameFormat.eReverseWithoutTitle)
             {
                 if (names.Count > 1)

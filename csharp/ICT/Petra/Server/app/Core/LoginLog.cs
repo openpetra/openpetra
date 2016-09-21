@@ -29,11 +29,9 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
-
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-
 
 namespace Ict.Petra.Server.App.Core.Security
 {
@@ -49,12 +47,14 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="ALoginSuccesful"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
             String ALoginStatus,
-            out Int32 AProcessID)
+            out Int32 AProcessID,
+            TDBTransaction ATransaction)
         {
-            AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatus, false, out AProcessID);
+            AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatus, false, out AProcessID, ATransaction);
         }
 
         /// <summary>
@@ -65,15 +65,14 @@ namespace Ict.Petra.Server.App.Core.Security
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
             String ALoginStatus,
             Boolean AImmediateLogout,
-            out Int32 AProcessID)
+            out Int32 AProcessID,
+            TDBTransaction ATransaction)
         {
-            TDBTransaction ReadTransaction;
-            TDBTransaction WriteTransaction;
-
             SLoginTable LoginTable;
             SLoginRow NewLoginRow;
 
@@ -99,26 +98,19 @@ namespace Ict.Petra.Server.App.Core.Security
 
             LoginTable.Rows.Add(NewLoginRow);
 
-            // Save DataRow
-            WriteTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.Serializable);
-
             try
             {
                 // especially in the unit tests, we need to allow several logins per minute, without unique key violation
-                while (SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate, NewLoginRow.LoginTime, WriteTransaction))
+                while (SLoginAccess.Exists(NewLoginRow.UserId, NewLoginRow.LoginDate, NewLoginRow.LoginTime, ATransaction))
                 {
                     NewLoginRow.LoginTime++;
                 }
 
-                SLoginAccess.SubmitChanges(LoginTable, WriteTransaction);
-
-                DBAccess.GDBAccessObj.CommitTransaction();
+                SLoginAccess.SubmitChanges(LoginTable, ATransaction);
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Login Log (#1):" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
 
                 throw;
             }
@@ -135,26 +127,20 @@ namespace Ict.Petra.Server.App.Core.Security
             ParametersArray[3] = new OdbcParameter("", OdbcType.VarChar, 500);
             ParametersArray[3].Value = (System.Object)(ALoginStatus);
 
-            ReadTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.ReadCommitted);
-
             try
             {
                 // ROWID for postgresql: see http://archives.postgresql.org/sydpug/2005-05/msg00002.php
                 AProcessID =
-                    Convert.ToInt32(DBAccess.GDBAccessObj.ExecuteScalar("SELECT " + SLoginTable.GetLoginProcessIdDBName() + " FROM PUB_" +
+                    Convert.ToInt32(ATransaction.DataBaseObj.ExecuteScalar("SELECT " + SLoginTable.GetLoginProcessIdDBName() + " FROM PUB_" +
                             TTypedDataTable.GetTableNameSQL(SLoginTable.TableId) +
                             ' ' +
                             "WHERE " + SLoginTable.GetUserIdDBName() + " = ? AND " + SLoginTable.GetLoginDateDBName() + " = ? AND " +
-                            SLoginTable.GetLoginTimeDBName() + " = ? AND " + SLoginTable.GetLoginStatusDBName() + " = ?", ReadTransaction,
+                            SLoginTable.GetLoginTimeDBName() + " = ? AND " + SLoginTable.GetLoginStatusDBName() + " = ?", ATransaction,
                             ParametersArray));
-
-                DBAccess.GDBAccessObj.CommitTransaction();
             }
             catch (Exception Exc)
             {
                 TLogging.Log("An Exception occured during the saving of the Login Log (#2):" + Environment.NewLine + Exc.ToString());
-
-                DBAccess.GDBAccessObj.RollbackTransaction();
 
                 throw;
             }

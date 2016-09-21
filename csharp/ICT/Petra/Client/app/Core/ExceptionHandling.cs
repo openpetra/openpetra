@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,14 +23,14 @@
 //
 using System;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
-
-//using GNU.Gettext;
 
 using Ict.Common;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -38,6 +38,50 @@ namespace Ict.Petra.Client.App.Core
     /// todoComment
     /// </summary>
     public delegate void TApplicationShutdownCallback();
+
+    internal static class TExceptionHandlingCommon
+    {
+        public static void ProcessEDBAccessLackingCoordinationExc(EDBAccessLackingCoordinationException AException)
+        {
+            string Reason = String.Empty;
+
+            //Would normally use the code below but cannot due to circular referencing.
+            //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
+
+            if (Application.OpenForms.Count != 0)              // in the Main Menu Form Test this will be false...
+            {
+                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+
+                // Ensure MessageBox is shown on the UI Thread!
+                if (MainMenuForm.InvokeRequired)
+                {
+                    MainMenuForm.Invoke((MethodInvoker) delegate
+                        {
+                            TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                                AException, out Reason);
+                        });
+                }
+                else
+                {
+                    TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                        AException, out Reason);
+                }
+            }
+            else
+            {
+                TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
+                    AException, out Reason);
+            }
+
+            if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
+            {
+                TLogging.Log(String.Format(Catalog.GetString(
+                            TLogging.LOG_PREFIX_INFO + "The OpenPetra Server was too busy to perform the requested action. (Reason: {0})"),
+                        Reason));
+                TLogging.Log(AException.StackTrace);
+            }
+        }
+    }
 
     /// <summary>
     /// contains procedures for structured Exception handling. They are
@@ -90,65 +134,64 @@ namespace Ict.Petra.Client.App.Core
             TUnhandledExceptionForm UEDialogue;
             string FunctionalityNotImplementedMsg = AppCoreResourcestrings.StrFunctionalityNotAvailableYet;
             string Reason = String.Empty;
+            Exception TheException;
 
-            if (((Exception)AEventArgs.ExceptionObject is NotImplementedException))
+            TheException = ((Exception)AEventArgs.ExceptionObject);
+
+            // 'Unwrap' the Exception if it is contained inside a TargetInvocationException
+            if ((TheException is TargetInvocationException)
+                && (TheException.InnerException != null))
             {
-                if (((Exception)AEventArgs.ExceptionObject).Message != String.Empty)
+                TheException = TheException.InnerException;
+            }
+
+            if (TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionClientSide(TheException))
+            {
+                TExceptionHelper.ShowExceptionCausedByUnavailableDBConnectionMessage(false);
+
+                return;
+            }
+
+            if (TheException is NotImplementedException)
+            {
+                if (TheException.Message != String.Empty)
                 {
-                    FunctionalityNotImplementedMsg = ((Exception)AEventArgs.ExceptionObject).Message;
+                    FunctionalityNotImplementedMsg = TheException.Message;
                 }
 
                 TLogging.Log(FunctionalityNotImplementedMsg);
-                TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
+                TLogging.Log(TheException.StackTrace);
 
                 MessageBox.Show(FunctionalityNotImplementedMsg, AppCoreResourcestrings.StrFunctionalityNotAvailableYetTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else if (((Exception)AEventArgs.ExceptionObject is EDBAccessLackingCoordinationException))
+            else if ((TheException is EOPDBException)
+                     && ((TheException.InnerException != null)
+                         && (TheException.InnerException is EDBAccessLackingCoordinationException)))
             {
-                //Would normally use the code below but cannot due to circular referencing.
-                //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
-                Form MainMenuForm = Application.OpenForms[0];
-
-                // Ensure MessageBox is shown on the UI Thread!
-                if (MainMenuForm.InvokeRequired)
-                {
-                    MainMenuForm.Invoke((MethodInvoker) delegate {
-                            TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
-                                (EDBAccessLackingCoordinationException)AEventArgs.ExceptionObject, out Reason);
-                        });
-                }
-                else
-                {
-                    TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
-                        (EDBAccessLackingCoordinationException)AEventArgs.ExceptionObject, out Reason);
-                }
-
-                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
-                {
-                    TLogging.Log(String.Format(Catalog.GetString(
-                                TLogging.LOG_PREFIX_INFO + "The OpenPetra Server was too busy to perform the requested action. (Reason: {0})"),
-                            Reason));
-                    TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
-                }
+                TExceptionHandlingCommon.ProcessEDBAccessLackingCoordinationExc((EDBAccessLackingCoordinationException)TheException.InnerException);
             }
-            else if (((Exception)AEventArgs.ExceptionObject is ECachedDataTableLoadingRetryGotCancelledException))
+            else if (TheException is EDBAccessLackingCoordinationException)
+            {
+                TExceptionHandlingCommon.ProcessEDBAccessLackingCoordinationExc((EDBAccessLackingCoordinationException)TheException);
+            }
+            else if (TheException is ECachedDataTableLoadingRetryGotCancelledException)
             {
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
                 {
                     TLogging.Log(Catalog.GetString(
                             TLogging.LOG_PREFIX_INFO +
                             "The OpenPetra Server was too busy to retrieve the data for a Cacheable DataTable and the user cancelled the loading after the retry attempts were exhausted."));
-                    TLogging.Log(((Exception)AEventArgs.ExceptionObject).StackTrace);
+                    TLogging.Log(TheException.StackTrace);
                 }
 
                 TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
             }
-            else if (((Exception)AEventArgs.ExceptionObject is ESecurityAccessDeniedException))
+            else if (TheException is ESecurityAccessDeniedException)
             {
                 if (ProcessSecurityAccessDeniedException != null)
                 {
-                    ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)AEventArgs.ExceptionObject, ASender.GetType());
+                    ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)TheException, ASender.GetType());
                 }
                 else
                 {
@@ -163,24 +206,35 @@ namespace Ict.Petra.Client.App.Core
             else
             {
                 //      MessageBox.Show("UnhandledExceptionHandler  Unhandled Exception: \r\n\r\n" +
-                //                      ((Exception)(AEventArgs.ExceptionObject)).ToString() + "\r\n\r\n"+
+                //                      TheException.ToString() + "\r\n\r\n"+
                 //      "IsTerminating: " + AEventArgs.IsTerminating.ToString());
 
-                LogException((Exception)AEventArgs.ExceptionObject,
+                LogException(TheException,
                     "Reported by UnhandledExceptionHandler: (Application is terminating: " + AEventArgs.IsTerminating.ToString() + ')');
                 UEDialogue = new TUnhandledExceptionForm();
 
                 UEDialogue.NonRecoverable = AEventArgs.IsTerminating;
-                UEDialogue.TheException = (Exception)AEventArgs.ExceptionObject;
+                UEDialogue.TheException = TheException;
 
                 //Would normally use the code below but cannot due to circular referencing.
                 //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
-                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
 
-                // Ensure UEDialogue is shown on the UI Thread!
-                if (MainMenuForm.InvokeRequired)
+                if (Application.OpenForms.Count != 0)              // in the Main Menu Form Test this will be false...
                 {
-                    MainMenuForm.Invoke((MethodInvoker) delegate { UEDialogue.ShowDialog(); });
+                    Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+
+                    // Ensure UEDialogue is shown on the UI Thread!
+                    if (MainMenuForm.InvokeRequired)
+                    {
+                        MainMenuForm.Invoke((MethodInvoker) delegate
+                            {
+                                UEDialogue.ShowDialog();
+                            });
+                    }
+                    else
+                    {
+                        UEDialogue.ShowDialog();
+                    }
                 }
                 else
                 {
@@ -212,65 +266,62 @@ namespace Ict.Petra.Client.App.Core
             TUnhandledExceptionForm UEDialogue;
             string FunctionalityNotImplementedMsg = AppCoreResourcestrings.StrFunctionalityNotAvailableYet;
             string Reason = String.Empty;
+            Exception TheException = ((Exception)AEventArgs.Exception);
 
-            if ((AEventArgs.Exception is NotImplementedException))
+            // 'Unwrap' the Exception if it is contained inside a TargetInvocationException
+            if ((TheException is TargetInvocationException)
+                && (TheException.InnerException != null))
             {
-                if (AEventArgs.Exception.Message != String.Empty)
+                TheException = TheException.InnerException;
+            }
+
+            if (TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionClientSide(TheException))
+            {
+                TExceptionHelper.ShowExceptionCausedByUnavailableDBConnectionMessage(false);
+
+                return;
+            }
+
+            if (TheException is NotImplementedException)
+            {
+                if (TheException.Message != String.Empty)
                 {
-                    FunctionalityNotImplementedMsg = AEventArgs.Exception.Message;
+                    FunctionalityNotImplementedMsg = TheException.Message;
                 }
 
                 TLogging.Log(FunctionalityNotImplementedMsg);
-                TLogging.Log(AEventArgs.Exception.StackTrace);
+                TLogging.Log(TheException.StackTrace);
 
                 MessageBox.Show(FunctionalityNotImplementedMsg, AppCoreResourcestrings.StrFunctionalityNotAvailableYetTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-            else if ((AEventArgs.Exception is EDBAccessLackingCoordinationException))
+            else if ((TheException is EOPDBException)
+                     && ((TheException.InnerException != null)
+                         && (TheException.InnerException is EDBAccessLackingCoordinationException)))
             {
-                //Would normally use the code below but cannot due to circular referencing.
-                //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
-                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
-
-                // Ensure MessageBox is shown on the UI Thread!
-                if (MainMenuForm.InvokeRequired)
-                {
-                    MainMenuForm.Invoke((MethodInvoker) delegate {
-                            TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
-                                (EDBAccessLackingCoordinationException)AEventArgs.Exception, out Reason);
-                        });
-                }
-                else
-                {
-                    TServerBusyHelperGui.ShowDBAccessLackingActionNotPossibleDialog(
-                        (EDBAccessLackingCoordinationException)AEventArgs.Exception, out Reason);
-                }
-
-                if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
-                {
-                    TLogging.Log(String.Format(Catalog.GetString(
-                                TLogging.LOG_PREFIX_INFO + "The OpenPetra Server was too busy to perform the requested action. (Reason: {0})"),
-                            Reason));
-                    TLogging.Log((AEventArgs.Exception).StackTrace);
-                }
+                TExceptionHandlingCommon.ProcessEDBAccessLackingCoordinationExc((EDBAccessLackingCoordinationException)TheException.InnerException);
             }
-            else if (((Exception)AEventArgs.Exception is ECachedDataTableLoadingRetryGotCancelledException))
+            else if (TheException is EDBAccessLackingCoordinationException)
+            {
+                TExceptionHandlingCommon.ProcessEDBAccessLackingCoordinationExc((EDBAccessLackingCoordinationException)TheException);
+            }
+            else if (TheException is ECachedDataTableLoadingRetryGotCancelledException)
             {
                 if (TLogging.DebugLevel >= TLogging.DEBUGLEVEL_COORDINATED_DB_ACCESS)
                 {
                     TLogging.Log(Catalog.GetString(
                             TLogging.LOG_PREFIX_INFO +
                             "The OpenPetra Server was too busy to retrieve the data for a Cacheable DataTable and the user cancelled the loading after the retry attempts were exhausted."));
-                    TLogging.Log(((Exception)AEventArgs.Exception).StackTrace);
+                    TLogging.Log(TheException.StackTrace);
                 }
 
                 TServerBusyHelperGui.ShowLoadingOfDataGotCancelledDialog();
             }
-            else if ((AEventArgs.Exception is ESecurityAccessDeniedException))
+            else if (TheException is ESecurityAccessDeniedException)
             {
                 if (ProcessSecurityAccessDeniedException != null)
                 {
-                    ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)AEventArgs.Exception, ASender.GetType());
+                    ProcessSecurityAccessDeniedException((ESecurityAccessDeniedException)TheException, ASender.GetType());
                 }
                 else
                 {
@@ -284,23 +335,34 @@ namespace Ict.Petra.Client.App.Core
             }
             else
             {
-//                MessageBox.Show(
-//                    "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + AEventArgs.Exception.ToString());
+                //                MessageBox.Show(
+                //                    "TUnhandledThreadExceptionHandler.OnThreadException  Unhandled Exception: \r\n\r\n" + TheException.ToString());
 
-                ExceptionHandling.LogException(AEventArgs.Exception, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
+                ExceptionHandling.LogException(TheException, "Reported by TUnhandledThreadExceptionHandler.OnThreadException");
                 UEDialogue = new TUnhandledExceptionForm();
 
                 UEDialogue.NonRecoverable = false;
-                UEDialogue.TheException = AEventArgs.Exception;
+                UEDialogue.TheException = TheException;
 
                 //Would normally use the code below but cannot due to circular referencing.
                 //Form MainMenuForm = TFormsList.GFormsList.MainMenuForm;
-                Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
 
-                // Ensure UEDialogue is shown on the UI Thread!
-                if (MainMenuForm.InvokeRequired)
+                if (Application.OpenForms.Count != 0)              // in the Main Menu Form Test this will be false...
                 {
-                    MainMenuForm.Invoke((MethodInvoker) delegate { UEDialogue.ShowDialog(); });
+                    Form MainMenuForm = Application.OpenForms[0];  // This gets the first ever opened Form, which is the Main Menu
+
+                    // Ensure UEDialogue is shown on the UI Thread!
+                    if (MainMenuForm.InvokeRequired)
+                    {
+                        MainMenuForm.Invoke((MethodInvoker) delegate
+                            {
+                                UEDialogue.ShowDialog();
+                            });
+                    }
+                    else
+                    {
+                        UEDialogue.ShowDialog();
+                    }
                 }
                 else
                 {

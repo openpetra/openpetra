@@ -802,20 +802,20 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     FWarnings110Collector.Count) + Environment.NewLine +
                 "  -> Found in file '" + PartnerKeysWhereCurrentWasntSetFileName + "'" + Environment.NewLine + Environment.NewLine +
                 String.Format("* Warning 'CHECK-310': Number of Current Partners whose PartnerKeys start with {0}: {1}",
-                    35,
+                    TAppSettingsManager.GetValue("siteledgernumber"),
                     FWarnings310CollectorFieldCurrentPartnerKeys.Count) + Environment.NewLine +
                 "  -> Found in file '" + FieldCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
                 String.Format("* Warning 'CHECK-310': Number of non-Current Contact Details whose PartnerKeys start with {0}: {1}",
-                    35,
+                    TAppSettingsManager.GetValue("siteledgernumber"),
                     FWarnings310CollectorFieldNonCurrentPartnerKeys.Count) + Environment.NewLine +
                 "  -> Found in file '" + FieldNonCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
                 String.Format("* Warning 'CHECK-310': Number of Current Contact Details whose PartnerKeys don't start with {0}: {1}",
-                    35,
+                    TAppSettingsManager.GetValue("siteledgernumber"),
                     FFWarnings310CollectorNonFieldCurrentPartnerKeys.Count) + Environment.NewLine +
                 "  -> Found in file '" + NonFieldCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
                 String.Format(
                     "* Warning 'CHECK-310': Number of non-Current Contact Details whose PartnerKeys don't start with {0}: {1}",
-                    35,
+                    TAppSettingsManager.GetValue("siteledgernumber"),
                     FFWarnings310CollectorNonFieldNonCurrentPartnerKeys.Count + Environment.NewLine +
                     "  -> Found in file '" + NonFieldNonCurrentPartnerKeysAffectedByWarningFileName + "'" + Environment.NewLine +
                     Environment.NewLine +
@@ -1779,8 +1779,7 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                 AAttributeType,
                                 TelephoneNumberOrig, APartnerKey, ACountryCode, FSiteCountryCode, APPARecord.Current));
 
-                        // TODO: Make hard-coded number '35' (first two digits of a PartnerKey for Switzerland) variable!
-                        if (!APartnerKey.ToString().StartsWith("35", StringComparison.InvariantCulture))
+                        if (!APartnerKey.ToString().StartsWith(TAppSettingsManager.GetValue("siteledgernumber"), StringComparison.InvariantCulture))
                         {
                             if (APPARecord.Current)
                             {

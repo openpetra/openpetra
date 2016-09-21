@@ -239,9 +239,16 @@ namespace Ict.Tools.DevelopersAssistant
 
             PlatformID platform = Environment.OSVersion.Platform;
 
-            if ((platform == PlatformID.MacOSX) || (platform == PlatformID.Unix))
+            // Unix does not support the redirect character, so we use the logfile command line - but this gives less output
+            // Also (and this is interesting!), if we use the redirect character when the task is to start the client we get a problem in that
+            //  while the login screen is displayed nant has 'finished' so we appear to return from launching the exe,
+            //  but part of nant is still running - the part that is outputting to opda.txt.  So if you then call nant again,
+            //  for example to start the server while the login screen is displayed, it doesn't work (nant cannot have two concurrent tasks).
+            // Also, for the same reason, it is not possible to start two clients using the redirect character.
+            // HOWEVER, it is often important in other scenarios to use the redirect because it gives ALL the output and sometimes we need that
+            //  so that we can parse the output and look for key strings.  So we need to pick and choose carefully...
+            if ((platform == PlatformID.MacOSX) || (platform == PlatformID.Unix) || (NantTarget == NantTask.TaskItem.startPetraClient.ToString()))
             {
-                // Unix does not support the redirect character, so we use the logfile command line - but this gives less output
                 return LaunchExe("nant.bat", String.Format("{0}  -logfile:opda.txt", NantTarget), BranchLocation);
             }
             else
@@ -300,10 +307,10 @@ namespace Ict.Tools.DevelopersAssistant
         /// <returns>True if nant.bat was launched successfully.  Check the log file to see if the command actually succeeded.</returns>
         public static bool RunServerAdminConsole(string BranchLocation, string CommandArgs)
         {
-            string initialDir = System.IO.Path.Combine(BranchLocation, "delivery\\bin");
+            string initialDir = System.IO.Path.Combine(BranchLocation, "delivery", "bin");
 
             // We have to ensure there is a config file
-            string cfgFile = initialDir + "PetraServerAdminConsole.exe.config";
+            string cfgFile = initialDir + "\\PetraServerAdminConsole.exe.config";
 
             if (!System.IO.File.Exists(cfgFile))
             {
@@ -332,20 +339,26 @@ namespace Ict.Tools.DevelopersAssistant
                 sw.Close();
             }
 
-            bool bWaitForExit = (CommandArgs != String.Empty);
-            bool bHideWindow = (CommandArgs != String.Empty);
-            return LaunchExe("PetraServerAdminConsole.exe", CommandArgs, initialDir, bWaitForExit, bHideWindow);
+            bool bWaitForExit = (CommandArgs == null);
+            bool bHideWindow = (CommandArgs != null);
+            return LaunchExe("PetraServerAdminConsole.exe", CommandArgs, initialDir, bWaitForExit, bHideWindow, false);
         }
 
         //  Helper function to launch an executable file.
         //  Returns true if the executable is launched successfully.
-        private static bool LaunchExe(string ExeName, string Params, string StartDirectory, bool WaitForExit = true, bool HideWindow = true)
+        private static bool LaunchExe(string ExeName,
+            string Params,
+            string StartDirectory,
+            bool WaitForExit = true,
+            bool HideWindow = true,
+            bool UseShellExecute = true)
         {
             bool ret = true;
             ProcessStartInfo si = new ProcessStartInfo(ExeName, Params);
 
             si.WorkingDirectory = StartDirectory;
             si.WindowStyle = (HideWindow) ? ProcessWindowStyle.Hidden : ProcessWindowStyle.Normal;
+            si.UseShellExecute = UseShellExecute;
 
             try
             {

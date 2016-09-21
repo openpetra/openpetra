@@ -558,6 +558,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 Thread.Sleep(500);
             }
+
+            TLogging.Log("", TLoggingType.ToStatusBar);
         }
 
         private void ThreadFunctionViaDelegate(Object Delgt)
@@ -592,11 +594,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// Show The template for the report
+        /// Temporily remove focus from active control. This ensures OnLeave event is fired for control.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void MI_ShowTemplate_Click(System.Object sender, System.EventArgs e)
+        /// <returns>The control that was active, so focus can be reapplied later.</returns>
+        private Control ReleaseActiveControl()
         {
             // Find the currently active control
             Control CurrentActiveControl;
@@ -610,6 +611,18 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             // Momentarily remove focus from active control. This ensures OnLeave event is fired for control.
             GetForm().ActiveControl = null;
+            return CurrentActiveControl;
+        }
+
+        /// <summary>
+        /// Show The template for the report
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        public void MI_ShowTemplate_Click(System.Object sender, System.EventArgs e)
+        {
+            Control CurrentActiveControl = ReleaseActiveControl();
+
             GetForm().ActiveControl = CurrentActiveControl;
 
             if (FDelegateViewReportOverride != null)
@@ -623,8 +636,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 if ((FGenerateReportThread == null) || (!FGenerateReportThread.IsAlive))
                 {
                     TLogging.SetStatusBarProcedure(WriteToStatusBar);
-                    FWinForm.Cursor = Cursors.WaitCursor;
-                    FormCursor = FWinForm.Cursor;
+                    GetForm().Cursor = Cursors.WaitCursor;
+                    FormCursor = GetForm().Cursor;
                     ((IFrmReporting)FTheForm).EnableBusy(true);
                     FGenerateReportThread = new Thread(ThreadFunctionViaDelegate);
                     FGenerateReportThread.SetApartmentState(ApartmentState.STA);
@@ -672,17 +685,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             // Find the currently active control
-            Control CurrentActiveControl;
-            ContainerControl ParentControl = GetForm();
-
-            do
-            {
-                CurrentActiveControl = ParentControl.ActiveControl;
-                ParentControl = CurrentActiveControl as ContainerControl;
-            } while (ParentControl != null);
-
-            // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
-            GetForm().ActiveControl = null;
+            Control CurrentActiveControl = ReleaseActiveControl();
 
             try
             {
@@ -699,8 +702,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                     FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
                 }
 
-                this.FWinForm.Cursor = Cursors.WaitCursor;
-                FormCursor = FWinForm.Cursor;
+                GetForm().Cursor = Cursors.WaitCursor;
+                FormCursor = GetForm().Cursor;
                 TLogging.SetStatusBarProcedure(WriteToStatusBar);
 
                 if (DoEditTemplate && (FDelegateViewReportOverride != null))
@@ -750,17 +753,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             // Find the currently active control
-            Control CurrentActiveControl;
-            ContainerControl ParentControl = GetForm();
-
-            do
-            {
-                CurrentActiveControl = ParentControl.ActiveControl;
-                ParentControl = CurrentActiveControl as ContainerControl;
-            } while (ParentControl != null);
-
-            // Temporarily remove focus from the active control. This ensures OnLeave event will be fired for control.
-            GetForm().ActiveControl = null;
+            Control CurrentActiveControl = ReleaseActiveControl();
 
             try
             {
@@ -777,7 +770,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 else
                 {
                     // open dialog to prompt the user to enter a name for new extract
-                    TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(this.FWinForm);
+                    TFrmExtractNamingDialog ExtractNameDialog = new TFrmExtractNamingDialog(GetForm());
                     string ExtractName;
                     string ExtractDescription;
 
@@ -806,15 +799,15 @@ namespace Ict.Petra.Client.MReporting.Gui
                         FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
                     }
 
-                    this.FWinForm.Cursor = Cursors.WaitCursor;
-                    FormCursor = FWinForm.Cursor;
+                    GetForm().Cursor = Cursors.WaitCursor;
+                    FormCursor = GetForm().Cursor;
                     TLogging.SetStatusBarProcedure(this.WriteToStatusBar);
 
                     // Open Extract Mast Screen if not already open.
                     // (If being opened, the screen will not actually be shown at theis stage.)
                     if (TCommonScreensForwarding.OpenExtractMasterScreen != null)
                     {
-                        TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(((ToolStripButton)sender).GetCurrentParent().FindForm());
+                        TCommonScreensForwarding.OpenExtractMasterScreenHidden.Invoke(GetForm());
                     }
 
                     if ((FGenerateExtractThread == null) || (!FGenerateExtractThread.IsAlive))
@@ -1264,17 +1257,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             // Find the currently active control
-            Control CurrentActiveControl;
-            ContainerControl ParentControl = GetForm();
-
-            do
-            {
-                CurrentActiveControl = ParentControl.ActiveControl;
-                ParentControl = CurrentActiveControl as ContainerControl;
-            } while (ParentControl != null);
-
-            // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
-            GetForm().ActiveControl = null;
+            Control CurrentActiveControl = ReleaseActiveControl();
 
             try
             {
@@ -1340,17 +1323,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             else
             {
                 // Find the currently active control
-                Control CurrentActiveControl;
-                ContainerControl ParentControl = GetForm();
-
-                do
-                {
-                    CurrentActiveControl = ParentControl.ActiveControl;
-                    ParentControl = CurrentActiveControl as ContainerControl;
-                } while (ParentControl != null);
-
-                // Temporily remove focus from active control. This ensures OnLeave event is fired for control.
-                GetForm().ActiveControl = null;
+                Control CurrentActiveControl = ReleaseActiveControl();
 
                 try
                 {

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -208,7 +208,7 @@ namespace Ict.Common.Exceptions
         /// that is the cause of this <see cref="Exception" />.
         /// </summary>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EOPDBException(Exception AInnerException) : base("Database Access Exception occured", AInnerException)
+        public EOPDBException(Exception AInnerException) : base("Database Access Exception occurred", AInnerException)
         {
         }
 

@@ -588,18 +588,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         }
                     }
 
+                    //TODO: Maybe add a user preference to determine what to do with inactive values on importing
                     // cost centre must not be inactive
-                    if ((foundRow != null) && !foundRow.CostCentreActiveFlag)
-                    {
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
-                                new TVerificationResult(ValidationContext,
-                                    String.Format(Catalog.GetString("Cost centre code '{0}' is an inactive cost centre."), ARow.CostCentreCode),
-                                    TResultSeverity.Resv_Critical),
-                                ValidationColumn))
-                        {
-                            VerifResultCollAddedCount++;
-                        }
-                    }
+                    //if ((foundRow != null) && !foundRow.CostCentreActiveFlag)
+                    //{
+                    //    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
+                    //            new TVerificationResult(ValidationContext,
+                    //                String.Format(Catalog.GetString("Cost centre code '{0}' is an inactive cost centre."), ARow.CostCentreCode),
+                    //                TResultSeverity.Resv_Critical),
+                    //            ValidationColumn))
+                    //    {
+                    //        VerifResultCollAddedCount++;
+                    //    }
+                    //}
                 }
             }
 
@@ -641,18 +642,19 @@ namespace Ict.Petra.Shared.MFinance.Validation
                         }
                     }
 
+                    //TODO: Maybe add a user preference to determine what to do with inactive values on importing
                     // Account code must not be inactive
-                    if ((foundRow != null) && !foundRow.AccountActiveFlag)
-                    {
-                        if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
-                                new TVerificationResult(ValidationContext,
-                                    String.Format(Catalog.GetString("Account code '{0}' is an inactive account."), ARow.AccountCode),
-                                    TResultSeverity.Resv_Critical),
-                                ValidationColumn))
-                        {
-                            VerifResultCollAddedCount++;
-                        }
-                    }
+                    //if ((foundRow != null) && !foundRow.AccountActiveFlag)
+                    //{
+                    //    if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(ValidationContext,
+                    //            new TVerificationResult(ValidationContext,
+                    //                String.Format(Catalog.GetString("Account code '{0}' is an inactive account."), ARow.AccountCode),
+                    //                TResultSeverity.Resv_Critical),
+                    //            ValidationColumn))
+                    //    {
+                    //        VerifResultCollAddedCount++;
+                    //    }
+                    //}
                 }
             }
 

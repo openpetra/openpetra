@@ -71,6 +71,7 @@ namespace Ict.Petra.Client.CommonControls.Logic
     public delegate bool TDelegateOpenExtractFindScreen(out int AExtractId,
         out String AExtractName,
         out String AExtractDesc,
+        out int AExtractKeyCount,
         Form AParentForm);
 
     /// <summary>Delegate for a call to open the Extract Master screen</summary>

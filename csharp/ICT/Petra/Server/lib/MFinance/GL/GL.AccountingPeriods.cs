@@ -619,12 +619,12 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 
                         ALedgerRow ledgerRow = (ALedgerRow)LedgerTable[0];
 
+                        currentFinancialYear = ledgerRow.CurrentFinancialYear;
+
                         currentYearEndDate = GetPeriodEndDate(ALedgerNumber,
-                            ledgerRow.CurrentFinancialYear,
+                            currentFinancialYear,
                             ADiffPeriod,
                             ledgerRow.NumberOfAccountingPeriods);
-
-                        currentFinancialYear = ledgerRow.CurrentFinancialYear;
 
                         //Filter to highest period number
                         AccountingPeriods.DefaultView.RowFilter = String.Format("{0}={1}",

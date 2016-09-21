@@ -276,8 +276,8 @@ namespace {#NAMESPACE}
 
         if (ABusy == false)
         {
-            mniGenerateReport.Text = Catalog.GetString("&Generate Report...");
-            tbbGenerateReport.Text = Catalog.GetString("Generate");
+            mniGenerateReport.Text = Catalog.GetString("&Generate Report");
+            tbbGenerateReport.Text = Catalog.GetString("&Generate Report");
             tbbGenerateReport.ToolTipText = Catalog.GetString("Generate a report and display the preview");
         }
         else

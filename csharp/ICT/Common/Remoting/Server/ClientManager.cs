@@ -23,18 +23,18 @@
 //
 using System;
 using System.Collections;
-using System.Configuration;
 using System.Data;
 using System.Reflection;
 using System.Security.Principal;
-using System.Resources;
-using GNU.Gettext;
+using System.Threading;
+
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
-using System.Threading;
+using GNU.Gettext;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -76,6 +76,7 @@ namespace Ict.Common.Remoting.Server
         private static IUserManager UUserManager = null;
         private static IErrorLog UErrorLog = null;
         private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
+        private static TDelegateDBConnectionBroken UDelegateDBConnectionBroken = null;
 
         /// <summary>Used for ThreadLocking a critical part of the Client Connection code to make sure that this code is executed by exactly one Client at any given time</summary>
         private static System.Object UConnectClientMonitor = new System.Object();
@@ -279,12 +280,14 @@ namespace Ict.Common.Remoting.Server
         public static void InitializeStaticVariables(ISystemDefaultsCache ASystemDefaultsCache,
             IUserManager AUserManager,
             IErrorLog AErrorLog,
-            IMaintenanceLogonMessage AMaintenanceLogonMessage)
+            IMaintenanceLogonMessage AMaintenanceLogonMessage,
+            TDelegateDBConnectionBroken ADelegateDBConnectionBroken)
         {
             USystemDefaultsCache = ASystemDefaultsCache;
             UUserManager = AUserManager;
             UErrorLog = AErrorLog;
             UMaintenanceLogonMessage = AMaintenanceLogonMessage;
+            UDelegateDBConnectionBroken = ADelegateDBConnectionBroken;
         }
 
         /// <summary>
@@ -295,12 +298,14 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AClientComputerName"></param>
         /// <param name="AClientIPAddress"></param>
         /// <param name="ASystemEnabled"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
         static public IPrincipal PerformLoginChecks(String AUserName,
             String APassword,
             String AClientComputerName,
             String AClientIPAddress,
-            out Boolean ASystemEnabled)
+            out Boolean ASystemEnabled,
+            TDBTransaction ATransaction)
         {
             IPrincipal ReturnValue;
 
@@ -314,7 +319,8 @@ namespace Ict.Common.Remoting.Server
                 // This function call will throw various Exceptions if the User doesn't exist or cannot be authenticated!
                 ReturnValue = UUserManager.PerformUserAuthentication(AUserName,
                     APassword, AClientComputerName, AClientIPAddress,
-                    out ASystemEnabled);
+                    out ASystemEnabled,
+                    ATransaction);
             }
             catch (EUserNotExistantException)
             {
@@ -367,6 +373,13 @@ namespace Ict.Common.Remoting.Server
             catch (ESystemDisabledException)
             {
                 LogFailedUserAuthentication(AUserName, "The System is currently Disabled",
+                    AClientComputerName, AClientIPAddress);
+
+                throw;
+            }
+            catch (EDBConnectionBrokenException)
+            {
+                LogFailedUserAuthentication(AUserName, "The database connection is currently not available",
                     AClientComputerName, AClientIPAddress);
 
                 throw;
@@ -873,6 +886,10 @@ namespace Ict.Common.Remoting.Server
             out Boolean ASystemEnabled,
             out IPrincipal AUserInfo)
         {
+            TDataBase DBConnectionObj = null;
+            TDBTransaction ReadWriteTransaction = null;
+            bool CommitLoginTransaction = false;
+
             TConnectedClient ConnectedClient = null;
 
             if (TLogging.DL >= 10)
@@ -920,6 +937,7 @@ namespace Ict.Common.Remoting.Server
                     }
 
                     #endregion
+
                     #region Variable assignments
                     AClientID = (short)FClientsConnectedTotal;
                     FClientsConnectedTotal++;
@@ -975,65 +993,98 @@ namespace Ict.Common.Remoting.Server
                     #endregion
 
                     #region Login request verification (incl. User authentication)
-
-                    // Perform login checks such as User authentication and Site Key check
                     try
                     {
-                        AUserInfo = PerformLoginChecks(AUserName,
-                            APassword,
-                            AClientComputerName,
-                            AClientIPAddress,
-                            out ASystemEnabled);
-                    }
-                    catch (EPetraSecurityException)
-                    #region Exception handling
-                    {
-                        #region Logging
+                        // Open a separate DB Connection for the client login...
+                        DBConnectionObj = DBAccess.SimpleEstablishDBConnection("ConnectClient (User Login)");
 
-                        if (TLogging.DL >= 4)
-                        {
-                            TLogging.Log("Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
-                                TLoggingType.ToConsole | TLoggingType.ToLogfile);
-                        }
-                        else
-                        {
-                            TLogging.Log("Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
-                                TLoggingType.ToLogfile);
-                        }
+                        // ...and start a DB Transaction on that separate DB Connection
+                        ReadWriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "ConnectClient (User Login)");
 
+                        // Perform login checks such as User authentication and Site Key check
+                        try
+                        {
+                            AUserInfo = PerformLoginChecks(AUserName,
+                                APassword,
+                                AClientComputerName,
+                                AClientIPAddress,
+                                out ASystemEnabled,
+                                ReadWriteTransaction);
+                        }
+                        #region Exception handling
+                        catch (EPetraSecurityException)
+                        {
+                            #region Logging
+
+                            if (TLogging.DL >= 4)
+                            {
+                                TLogging.Log(
+                                    "Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
+                                    TLoggingType.ToConsole | TLoggingType.ToLogfile);
+                            }
+                            else
+                            {
+                                TLogging.Log(
+                                    "Client '" + AUserName + "' tried to connect, but it failed the Login Checks. Aborting Client Connection!",
+                                    TLoggingType.ToLogfile);
+                            }
+
+                            #endregion
+
+                            ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
+
+                            // We need to set this flag to true here to get the failed login to be stored in the DB!!!
+                            CommitLoginTransaction = true;
+
+                            throw;
+                        }
+                        catch (Exception)
+                        {
+                            ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
+                            throw;
+                        }
                         #endregion
-                        ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
-                        throw;
+
+                        // Login Checks were successful!
+                        ConnectedClient.SessionStatus = TSessionStatus.adsConnectingLoginOK;
+
+                        // Retrieve Welcome message
+                        try
+                        {
+                            if (UMaintenanceLogonMessage != null)
+                            {
+                                AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserInfo, true, ReadWriteTransaction);
+                            }
+                            else
+                            {
+                                AWelcomeMessage = "Welcome";
+                           }
+                        }
+                        catch (Exception)
+                        {
+                            ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
+                            throw;
+                        }
+
+                        CommitLoginTransaction = true;
                     }
-                    catch (Exception)
+                    finally
                     {
-                        ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
-                        throw;
+                        if (DBConnectionObj != null)
+                        {
+                            if (CommitLoginTransaction)
+                            {
+                                DBConnectionObj.CommitTransaction();
+                            }
+                            else
+                            {
+                                DBConnectionObj.RollbackTransaction();
+                            }
+
+                            DBConnectionObj.CloseDBConnection();
+                        }
                     }
                     #endregion
-
-                    // Login Checks were successful!
-                    ConnectedClient.SessionStatus = TSessionStatus.adsConnectingLoginOK;
-
-                    #endregion
-
-                    // Retrieve Welcome message
-                    try
-                    {
-                        if (UMaintenanceLogonMessage != null)
-                        {
-                            AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserInfo, true);
-                        }
-                        else
-                        {
-                            AWelcomeMessage = "Welcome";
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        ConnectedClient.SessionStatus = TSessionStatus.adsStopped;
-                        throw;
-                    }
 
                     /*
                      * Uncomment the following statement to be able to better test how the

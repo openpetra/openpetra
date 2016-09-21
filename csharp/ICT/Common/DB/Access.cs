@@ -178,6 +178,70 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
+        /// Checks if the 'globally available' DBAccess.GDBAccessObj is idle, i.e. that it is currently
+        /// not running any DB Transactions.
+        /// </summary>
+        /// <returns>True if the 'globally available' DBAccess.GDBAccessObj is idle, i.e. that it is
+        /// currently not running any DB Transactions., otherwise false.</returns>
+        public static bool IsGDBAccessObjIdle()
+        {
+            return IsDBAccessObjIdle(DBAccess.GDBAccessObj);
+        }
+
+        /// <summary>
+        /// Checks if the <see cref="TDataBase"/> object passed in with <paramref name="ADBAccessObj"/>
+        /// is idle, i.e. that it is currently not running any DB Transactions.
+        /// </summary>
+        /// <returns>True if the the <see cref="TDataBase"/> object passed in with <paramref name="ADBAccessObj"/>
+        /// is idle, i.e. that it is currently not running any DB Transactions, otherwise false.</returns>
+        public static bool IsDBAccessObjIdle(TDataBase ADBAccessObj)
+        {
+            bool ReturnValue = false;
+            bool LockObtained = false;
+
+            try
+            {
+                // Obtain a 'lock' on ADBAccessObj to ensure thread safety
+                ADBAccessObj.WaitForCoordinatedDBAccess();
+
+                LockObtained = true;
+            }
+            catch (EDBCoordinatedDBAccessWaitingTimeExceededException)
+            {
+                // DELIBERATE 'swallowing' of this particular Exception as we are dealing with the consequences correctly here!
+                // We can get that particular Exception if the DB connection in ADBAccessObj
+                // is performing longer-running queries and we for that reason run into a timeout when trying to obtain the
+                // 'lock' on ADBAccessObj.
+            }
+
+            try
+            {
+                // Check if there is a DB Transaction running on the ADBAccessObj instance
+                if (LockObtained
+                    && (ADBAccessObj.TransactionNonThreadSafe == null))
+                {
+                    ReturnValue = true;
+                }
+            }
+            catch (Exception Exc)
+            {
+                TLogging.Log("DBAccess.IsDBAccessObjIdle encountered an Exception: " + Exc.ToString());
+
+                throw;
+            }
+            finally
+            {
+                if (LockObtained)
+                {
+                    // Release the 'lock' on the ADBAccessObj that we obtained earlier to allow other threads again
+                    ADBAccessObj.ReleaseCoordinatedDBAccess();
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Begins a DB Transaction on a <see cref="TDataBase"/> instance that has currently not got a DB Transaction
         /// running and hence can be used to start a DB Transaction. If the <see cref="DBAccess.GDBAccessObj"/> instance
         /// has currently not got a DB Transaction running then this will be used and a new DB Transaction will be started
@@ -263,8 +327,14 @@ namespace Ict.Common.DB
                     }
                     catch (Exception Exc)
                     {
-                        TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception while establishing " +
-                            "a Database Connection:" + Exc.ToString());
+                        // The 'EDBConnectionNotEstablishedException' Exception will be picked up by the FirstChanceHandler and
+                        // the DB reconnection mechanism will jump into gear, hence we are not logging this Exception to keep
+                        // the log file clean (we are not 'swallowing it', though!!!)
+                        if (!(Exc is EDBConnectionNotEstablishedException))
+                        {
+                            TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception while establishing " +
+                                "a Database Connection:" + Exc.ToString());
+                        }
 
                         throw;
                     }
@@ -275,7 +345,14 @@ namespace Ict.Common.DB
             }
             catch (Exception Exc)
             {
-                TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception: " + Exc.ToString());
+                // The 'EDBConnectionNotEstablishedException' and 'EDBConnectionBrokenException' Exceptions will be picked up
+                // by the FirstChanceHandler and the DB reconnection mechanism will jump into gear, hence we are not logging
+                // this Exception to keep the log file clean (we are not 'swallowing it', though!!!)
+                if (!(Exc is EDBConnectionNotEstablishedException)
+                    && !(Exc is EDBConnectionBrokenException))
+                {
+                    TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception: " + Exc.ToString());
+                }
 
                 throw;
             }
@@ -377,8 +454,14 @@ namespace Ict.Common.DB
                     }
                     catch (Exception Exc)
                     {
-                        TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception while establishing " +
-                            "a Database Connection:" + Exc.ToString());
+                        // The 'EDBConnectionNotEstablishedException' Exception will be picked up by the FirstChanceHandler and
+                        // the DB reconnection mechanism will jump into gear, hence we are not logging this Exception to keep
+                        // the log file clean (we are not 'swallowing it', though!!!)
+                        if (!(Exc is EDBConnectionNotEstablishedException))
+                        {
+                            TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception while establishing " +
+                                "a Database Connection:" + Exc.ToString());
+                        }
 
                         throw;
                     }
@@ -389,7 +472,14 @@ namespace Ict.Common.DB
             }
             catch (Exception Exc)
             {
-                TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception: " + Exc.ToString());
+                // The 'EDBConnectionNotEstablishedException' and 'EDBConnectionBrokenException' Exceptions will be picked up
+                // by the FirstChanceHandler and the DB reconnection mechanism will jump into gear, hence we are not logging
+                // this Exception to keep the log file clean (we are not 'swallowing it', though!!!)
+                if (!(Exc is EDBConnectionNotEstablishedException)
+                    && !(Exc is EDBConnectionBrokenException))
+                {
+                    TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception: " + Exc.ToString());
+                }
 
                 throw;
             }
@@ -1189,6 +1279,8 @@ namespace Ict.Common.DB
             bool AMustCoordinateDBAccess,
             String AConnectionName = "")
         {
+            bool ExceptionCausedByUnavailableDBConn;
+
             if (AMustCoordinateDBAccess)
             {
                 WaitForCoordinatedDBAccess();
@@ -1282,7 +1374,7 @@ namespace Ict.Common.DB
                     FThreadThatConnectionWasEstablishedOn = Thread.CurrentThread;
                     FLastDBAction = DateTime.Now;
                 }
-                catch (Exception exp)
+                catch (Exception Exc)
                 {
                     if (FSqlConnection != null)
                     {
@@ -1291,11 +1383,20 @@ namespace Ict.Common.DB
 
                     FSqlConnection = null;
 
-                    LogException(exp,
-                        String.Format("Exception occured while establishing a connection to Database Server. DB Type: {0}", FDbType));
+                    ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(Exc);
+
+                    if (!ExceptionCausedByUnavailableDBConn)
+                    {
+                        LogException(Exc,
+                            String.Format("Exception occured while establishing a connection to the Database (Server). DB Type: {0}", FDbType));
+                    }
+                    else
+                    {
+                        TLogging.Log("    FAILED to establish DB Connection because the DB (Server) is unavailable.");
+                    }
 
                     throw new EDBConnectionNotEstablishedException(TDBConnection.GetConnectionStringWithHiddenPwd(
-                            FConnectionString) + ' ' + exp.ToString());
+                            FConnectionString) + ' ' + Exc.ToString(), Exc, !ExceptionCausedByUnavailableDBConn);
                 }
 
                 // only check database version once when working with multiple connections
@@ -1349,10 +1450,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that
         /// calls this Method is the Thread that established the DB Connection. <em>WARNING:
-        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will
-        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
+        /// To be set to true only by 1) Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it
+        /// will occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
         /// that Thread will be different from the Thread that established the 'globally available' DB Connection
-        /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
+        /// (DBAccess.GDBAccessObj) for the Client's AppDomain; 2) Method 'CloseDBPollingConnection' of TServerManager
+        /// as this will be called when the Server is shutting down and at this stage we want to unconditionally
+        /// close the Server's DB Polling Connection; 3) Method 'EstablishDBPollingConnection' of TServerManager
+        /// because there we want to at least try to close a broken DB Connection and that happens on a different
+        /// Thread!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
         public void CloseDBConnection(bool ASuppressThreadCompatibilityCheck = false)
@@ -1377,10 +1482,14 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="ASuppressThreadCompatibilityCheck">Set to true to suppress a check whether the Thread that
         /// calls this Method is the Thread that established the DB Connection. <em>WARNING:
-        /// To be set to true only by Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it will
-        /// occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
+        /// To be set to true only by 1) Method 'Ict.Petra.Server.App.Core.CloseDBConnection()' because there it
+        /// will occur if not set to true because the Client Disconnection occurs on a separately started Thread, and
         /// that Thread will be different from the Thread that established the 'globally available' DB Connection
-        /// (DBAccess.GDBAccessObj) for the Client's AppDomain!!!!</em></param>
+        /// (DBAccess.GDBAccessObj) for the Client's AppDomain; 2) Method 'CloseDBPollingConnection' of TServerManager
+        /// as this will be called when the Server is shutting down and at this stage we want to unconditionally
+        /// close the Server's DB Polling Connection; 3) Method 'EstablishDBPollingConnection' of TServerManager
+        /// because there we want to at least try to close a broken DB Connection and that happens on a different
+        /// Thread!!!!</em></param>
         /// <exception cref="EDBConnectionNotAvailableException">Thrown if an attempt is made to close an
         /// already/still closed connection.</exception>
         private void CloseDBConnectionInternal(bool ASuppressThreadCompatibilityCheck = false)
@@ -2870,11 +2979,15 @@ namespace Ict.Common.DB
         /// currently running DB Transaction to be finished).</param>
         /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
         /// debugging (also useful for Unit Testing).</param>
+        /// <param name="ADBReconnectionAttempt">This must only be set to anything higher than 0 by the recursive call
+        /// inside the Method; set to -1 to suppress an automatic DB reconnection attempt (this automatic behaviour
+        /// should only be turned off if there is a very specific reason for that!).</param>
         /// <returns>Started Transaction (null if an error occured).</returns>
         internal TDBTransaction BeginTransaction(bool AMustCoordinateDBAccess,
-            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "")
+            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "", int ADBReconnectionAttempt = 0)
         {
             string NestedTransactionProblemError;
+            bool ExceptionCausedByUnavailableDBConn;
 
             if (AMustCoordinateDBAccess)
             {
@@ -2916,66 +3029,104 @@ namespace Ict.Common.DB
 
                 try
                 {
-                    ExtendedLoggingInfoOnHigherDebugLevels("Trying to start a DB Transaction... ");
+                    if ((FSqlConnection == null)
+                        && (ADBReconnectionAttempt > 0))
+                    {
+                        throw new EDBConnectionBrokenException();
+                    }
+                    else
+                    {
+                        ExtendedLoggingInfoOnHigherDebugLevels("Trying to start a DB Transaction... ");
 
-                    FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(), ConnectionIdentifier, this,
-                        false, ATransactionName);
+                        FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(), ConnectionIdentifier, this,
+                            false, ATransactionName);
 
-                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
-                            "DB Transaction started{0})", FTransaction.GetDBTransactionIdentifier()),
-                        DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
+                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                                "DB Transaction started{0})", FTransaction.GetDBTransactionIdentifier()),
+                            DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
+                    }
                 }
-                catch (Exception exp)
+                catch (Exception Exc)
                 {
+                    ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(Exc);
+
                     if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken)
-                        || (FSqlConnection.State == ConnectionState.Closed))
+                        || (FSqlConnection.State == ConnectionState.Closed)
+                        || (ExceptionCausedByUnavailableDBConn && (ADBReconnectionAttempt <= 1)))
                     {
                         //
-                        // Reconnect to the database
+                        // Attempt to reconnect the database connection (one attempt only!)
                         //
-                        TLogging.Log("BeginTransaction: Trying to reconnect to the Database because an Exception occured: " + exp.ToString());
 
-                        if (FSqlConnection == null)
+                        if (FSqlConnection != null)
                         {
-                            TLogging.Log(
-                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
-                        }
-                        else
-                        {
-                            TLogging.Log(
-                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
-                                +
-                                FSqlConnection.State.ToString("G") + ")");
-
-                            if (FSqlConnection.State == ConnectionState.Broken)
+                            if (!ExceptionCausedByUnavailableDBConn)
                             {
-                                FSqlConnection.Close();
+                                TLogging.Log("BeginTransaction encountered an Exception:\r\n" + Exc.ToString());
+
+                                TLogging.Log(
+                                    "BeginTransaction: Attempting to reconnect to the database because the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
+                                    +
+                                    FSqlConnection.State.ToString("G") + ")");
+
+                                if (FSqlConnection.State == ConnectionState.Broken)
+                                {
+                                    FSqlConnection.Close();
+                                }
+                            }
+                            else
+                            {
+                                TLogging.Log("BeginTransaction: Attempting to reconnect to the database because the DB connection is broken...");
                             }
 
                             FSqlConnection.Dispose();
                             FSqlConnection = null;
                         }
 
-                        try
+                        if (ADBReconnectionAttempt < 1)
                         {
-                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
-                                FConnectionString, false);
-                        }
-                        catch (Exception e2)
-                        {
-                            LogExceptionAndThrow(e2,
-                                "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-                        }
+                            ADBReconnectionAttempt++;
 
-                        // Retry again to begin a transaction (=RECURSIVE call!).
-                        return BeginTransaction(false, ARetryAfterXSecWhenUnsuccessful, ATransactionName);
+                            TLogging.Log(String.Format("BeginTransaction: DB Reconnection attempt #{0} underway...",
+                                    ADBReconnectionAttempt));
+
+                            try
+                            {
+                                EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
+                                    FConnectionString, false);
+                            }
+                            catch (Exception e2)
+                            {
+                                ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(e2);
+
+                                if (!ExceptionCausedByUnavailableDBConn)
+                                {
+                                    LogExceptionAndThrow(e2,
+                                        "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.ToString());
+                                }
+                                else
+                                {
+                                    TLogging.Log("    FAILED to begin a DB Transaction because the DB (Server) is unavailable.");
+                                }
+                            }
+
+                            // Retry again to begin a transaction (=RECURSIVE call!).
+                            return BeginTransaction(false, ARetryAfterXSecWhenUnsuccessful, ATransactionName,
+                                ADBReconnectionAttempt);
+                        }
                     }
 
-                    LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
+                    if (!(Exc is EDBConnectionBrokenException))
+                    {
+                        LogExceptionAndThrow(Exc, "BeginTransaction: Error creating Transaction - Server-side error.");
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
 
                 FLastDBAction = DateTime.Now;
-
 
                 return FTransaction;
             }
@@ -3019,11 +3170,15 @@ namespace Ict.Common.DB
         /// set to false if the calling Method already takes care of this.</param>
         /// <param name="ATransactionName">Name of the DB Transaction (optional). It gets logged and hence can aid
         /// debugging (also useful for Unit Testing).</param>
+        /// <param name="ADBReconnectionAttempt">This must only be set to anything higher than 0 by the recursive call
+        /// inside the Method; set to -1 to suppress an automatic DB reconnection attempt (this automatic behaviour
+        /// should only be turned off if there is a very specific reason for that!).</param>
         /// <returns>Started Transaction (null if an error occured).</returns>
         internal TDBTransaction BeginTransaction(IsolationLevel AIsolationLevel, bool AMustCoordinateDBAccess,
-            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "")
+            Int16 ARetryAfterXSecWhenUnsuccessful = -1, string ATransactionName = "", int ADBReconnectionAttempt = 0)
         {
             string NestedTransactionProblemError;
+            bool ExceptionCausedByUnavailableDBConn;
 
             if (AMustCoordinateDBAccess)
             {
@@ -3073,63 +3228,102 @@ namespace Ict.Common.DB
 
                 try
                 {
-                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
-                            "Trying to start a DB Transaction with IsolationLevel '{0}'...", AIsolationLevel));
+                    if ((FSqlConnection == null)
+                        && (ADBReconnectionAttempt > 0))
+                    {
+                        throw new EDBConnectionBrokenException();
+                    }
+                    else
+                    {
+                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                                "Trying to start a DB Transaction with IsolationLevel '{0}'...", AIsolationLevel));
 
-                    FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(AIsolationLevel),
-                        ConnectionIdentifier, this, false, ATransactionName);
+                        FTransaction = new TDBTransaction(FSqlConnection.BeginTransaction(AIsolationLevel),
+                            ConnectionIdentifier, this, false, ATransactionName);
 
-                    ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
-                            "DB Transaction{0} with IsolationLevel '{1}' got started", FTransaction.GetDBTransactionIdentifier(),
-                            AIsolationLevel), DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
+                        ExtendedLoggingInfoOnHigherDebugLevels(String.Format(
+                                "DB Transaction{0} with IsolationLevel '{1}' got started", FTransaction.GetDBTransactionIdentifier(),
+                                AIsolationLevel), DBAccess.DB_DEBUGLEVEL_TRANSACTION, true);
+                    }
                 }
-                catch (Exception exp)
+                catch (Exception Exc)
                 {
+                    ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(Exc);
+
                     if ((FSqlConnection == null) || (FSqlConnection.State == ConnectionState.Broken)
-                        || (FSqlConnection.State == ConnectionState.Closed))
+                        || (FSqlConnection.State == ConnectionState.Closed)
+                        || (ExceptionCausedByUnavailableDBConn && (ADBReconnectionAttempt <= 1)))
                     {
                         //
-                        // Reconnect to the database
+                        // Attempt to reconnect the database connection (one attempt only!)
                         //
-                        TLogging.Log(exp.Message);
 
-                        if (FSqlConnection == null)
+                        if (FSqlConnection != null)
                         {
-                            TLogging.Log(
-                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't available! (FSqlConnection is null!)");
-                        }
-                        else
-                        {
-                            TLogging.Log(
-                                "BeginTransaction: Attempting to reconnect to the database as the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
-                                +
-                                FSqlConnection.State.ToString("G") + ")");
-
-                            if (FSqlConnection.State == ConnectionState.Broken)
+                            if (!ExceptionCausedByUnavailableDBConn)
                             {
-                                FSqlConnection.Close();
+                                TLogging.Log("BeginTransaction encountered an Exception:\r\n" + Exc.ToString());
+
+                                TLogging.Log(
+                                    "BeginTransaction: Attempting to reconnect to the database because the DB connection isn't allowing the start of a DB Transaction! (Connection State: "
+                                    +
+                                    FSqlConnection.State.ToString("G") + ")");
+
+                                if (FSqlConnection.State == ConnectionState.Broken)
+                                {
+                                    FSqlConnection.Close();
+                                }
+                            }
+                            else
+                            {
+                                TLogging.Log("BeginTransaction: Attempting to reconnect to the database because the DB connection is broken...");
                             }
 
                             FSqlConnection.Dispose();
                             FSqlConnection = null;
                         }
 
-                        try
+                        if (ADBReconnectionAttempt < 1)
                         {
-                            EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
-                                FConnectionString, false);
-                        }
-                        catch (Exception e2)
-                        {
-                            LogExceptionAndThrow(e2,
-                                "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.Message);
-                        }
+                            ADBReconnectionAttempt++;
 
-                        // Retry again to begin a transaction (=RECURSIVE call!).
-                        return BeginTransaction(AIsolationLevel, false, ARetryAfterXSecWhenUnsuccessful);
+                            TLogging.Log(String.Format("BeginTransaction: DB Reconnection attempt #{0} underway...",
+                                    ADBReconnectionAttempt));
+
+                            try
+                            {
+                                EstablishDBConnection(FDbType, FDsnOrServer, FDBPort, FDatabaseName, FUsername, FPassword,
+                                    FConnectionString, false);
+                            }
+                            catch (Exception e2)
+                            {
+                                ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(e2);
+
+                                if (!ExceptionCausedByUnavailableDBConn)
+                                {
+                                    LogExceptionAndThrow(e2,
+                                        "BeginTransaction: Another Exception occured while trying to establish the connection: " + e2.ToString());
+                                }
+                                else
+                                {
+                                    TLogging.Log("    FAILED to begin a DB Transaction because the DB (Server) is unavailable.");
+                                }
+                            }
+
+                            // Retry again to begin a transaction (=RECURSIVE call!).
+                            return BeginTransaction(AIsolationLevel, false, ARetryAfterXSecWhenUnsuccessful, ATransactionName,
+                                ADBReconnectionAttempt);
+                        }
                     }
 
-                    LogExceptionAndThrow(exp, "BeginTransaction: Error creating Transaction - Server-side error.");
+                    if (!(Exc is EDBConnectionBrokenException))
+                    {
+                        LogExceptionAndThrow(Exc, "BeginTransaction: Error creating Transaction - Server-side error.");
+                    }
+                    else
+                    {
+                        throw;
+                    }
                 }
 
                 FLastDBAction = DateTime.Now;
@@ -4098,13 +4292,21 @@ namespace Ict.Common.DB
                             TLogging.Log(this.GetType().FullName + ".ExecuteScalar: finished calling Command.ExecuteScalar");
                         }
                     }
-                    catch (EOPDBException exp)
+                    catch (EOPDBException Exc)
                     {
-                        LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
+                        LogExceptionAndThrow(Exc, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
                     }
-                    catch (Exception exp)
+                    catch (Exception Exc)
                     {
-                        LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
+                        if ((!Exc.StackTrace.Contains("IsDBConnectionOK"))
+                            && (!Exc.StackTrace.Contains("The Connection is broken")))
+                        {
+                            LogExceptionAndThrow(Exc, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
+                        }
+                        else
+                        {
+                            throw new EOPDBException(Exc);
+                        }
                     }
 
                     if (ACommitTransaction)

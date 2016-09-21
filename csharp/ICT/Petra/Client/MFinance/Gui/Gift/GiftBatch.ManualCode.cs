@@ -48,6 +48,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TFrmGiftBatch : IFrmPetraEditManual
     {
+        /// <summary>Store the current action on the batch</summary>
+        public TExtraGiftBatchChecks.GiftBatchAction FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.NONE;
+
         private Int32 FLedgerNumber;
 
         private int DefaultTabIndex = 0;
@@ -227,20 +230,36 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Check for ExWorkers before saving or cancelling
         /// </summary>
+        /// <param name="AAction"></param>
+        /// <param name="AGetOnlyTransDataFromControls"></param>
+        /// <param name="ABatchLevelAction"></param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction)
+        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction,
+            bool AGetOnlyTransDataFromControls = false,
+            bool ABatchLevelAction = true)
         {
-            if (AAction != TExtraGiftBatchChecks.GiftBatchAction.CANCELLING)
+            if (AAction == TExtraGiftBatchChecks.GiftBatchAction.NONE)
+            {
+                AAction = TExtraGiftBatchChecks.GiftBatchAction.SAVING;
+                FCurrentGiftBatchAction = AAction;
+            }
+
+            if ((AAction != TExtraGiftBatchChecks.GiftBatchAction.CANCELLING)
+                && (AAction != TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS))
             {
                 GetDataFromControls();
-
-                // first alert the user to any recipients who are Ex-Workers
-                if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
-                {
-                    return SaveChanges();
-                }
             }
-            else
+            else if (ABatchLevelAction && AGetOnlyTransDataFromControls) //Only applicable when cancelling current batch
+            {
+                //If in cancelling but trans tab is showing data from an earlier viewed batch with changes
+                // then still need to get data from controls on Transaction tab.
+                ucoTransactions.GetDataFromControls();
+            }
+
+            //First alert the user to any recipients who are Ex-Workers
+            // For cancelled batches this data would already have been deleted and so will
+            //  only affect other unsaved batches.
+            if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
             {
                 return SaveChanges();
             }
@@ -276,11 +295,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
         {
+            if (FCurrentGiftBatchAction == TExtraGiftBatchChecks.GiftBatchAction.NONE)
+            {
+                FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.SAVING;
+            }
+
             //Check if the user has made a Bank Cost Centre or Account Code inactive
             // on saving
             bool ActionConfirmed = false;
 
-            if (!ucoBatches.AllowInactiveFieldValues(ref ActionConfirmed, false))
+            if (!ucoBatches.AllowInactiveFieldValues(ref ActionConfirmed, FCurrentGiftBatchAction))
             {
                 e.Cancel = true;
             }
@@ -486,7 +510,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// disable the transactions tab if we have no active journal
+        /// disable the details tab if we have no active batch selected
         /// </summary>
         public void DisableTransactions()
         {
@@ -592,6 +616,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPreviouslySelectedTab = eGiftTabs.Batches;
 
                 FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
+
                 this.tabGiftBatch.SelectedTab = this.tpgBatches;
                 this.tpgTransactions.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
                 this.ucoBatches.SetFocusToGrid();
@@ -701,6 +726,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// </summary>
         public void FindGiftDetail(AGiftDetailRow gdr)
         {
+            //TODO add to other forms
             ucoBatches.SelectBatchNumber(gdr.BatchNumber);
             ucoTransactions.SelectGiftDetailNumber(gdr.GiftTransactionNumber, gdr.DetailNumber);
             DefaultTabIndex = 1;     // later we switch to the detail tab
@@ -905,6 +931,135 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
+        /// Checks to be made before saving and posting
+        /// </summary>
+        /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesForPosting(DataTable APostingGiftDetails)
+        {
+            // alert the user to any recipients who are Ex-Workers
+            // or alert the user to any gift that are not marked confidential but have an anonymous donor
+            if (GiftHasExWorkerOrAnon(APostingGiftDetails))
+            {
+                return false;
+            }
+
+            return SaveChanges();
+        }
+
+        /// <summary>
+        /// Check for ex-worker or anonymous gift
+        /// </summary>
+        /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
+        /// <returns></returns>
+        public bool GiftHasExWorkerOrAnon(DataTable APostingGiftDetails)
+        {
+            // alert the user to any recipients who are Ex-Workers
+            // or alert the user to any gift that are not marked confidential but have an anonymous donor
+            if (!TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.POSTING,
+                    FMainDS,
+                    FPetraUtilsObject,
+                    APostingGiftDetails)
+                || !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS)
+                )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Needs to be called prior to posting the current batch to ensure all data is up-to-date
+        /// </summary>
+        public void GetLatestControlData()
+        {
+            GetDataFromControls();
+        }
+
+        /// <summary>
+        /// Get Unsaved Batch Rows in a list
+        /// </summary>
+        /// <param name="ABatchToInclude">If > 0 then include in list even if unchanged</param>
+        /// <returns></returns>
+        public List <AGiftBatchRow>GetUnsavedBatchRowsList(int ABatchToInclude = 0)
+        {
+            List <AGiftBatchRow>RetVal = new List <AGiftBatchRow>();
+            List <int>BatchesWithChangesList = new List <int>();
+            string BatchesWithChangesString = string.Empty;
+
+            DataView GiftBatchesDV = new DataView(FMainDS.AGiftBatch);
+            GiftBatchesDV.RowFilter = String.Format("{0}='{1}'",
+                AGiftBatchTable.GetBatchStatusDBName(),
+                MFinanceConstants.BATCH_UNPOSTED);
+            GiftBatchesDV.Sort = AGiftBatchTable.GetBatchNumberDBName() + " ASC";
+
+            DataView GiftDV = new DataView(FMainDS.AGift);
+            DataView GiftDetailsDV = new DataView(FMainDS.AGiftDetail);
+
+            GiftDV.Sort = String.Format("{0} ASC, {1} ASC",
+                AGiftTable.GetBatchNumberDBName(),
+                AGiftTable.GetGiftTransactionNumberDBName());
+
+            GiftDetailsDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
+
+            //Add the batch number(s) of changed gift rows
+            foreach (DataRowView dRV in GiftDV)
+            {
+                AGiftRow gR = (AGiftRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(gR.BatchNumber)
+                    && (gR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(gR.BatchNumber);
+                }
+            }
+
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
+
+                //Add any other batch number(s) of changed gift details
+                GiftDetailsDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    AGiftDetailTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
+
+            foreach (DataRowView dRV in GiftDetailsDV)
+            {
+                AGiftDetailRow gDR = (AGiftDetailRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(gDR.BatchNumber)
+                    && (gDR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(gDR.BatchNumber);
+                }
+            }
+
+            BatchesWithChangesList.Sort();
+
+            //Get batch rows
+            foreach (DataRowView dRV in GiftBatchesDV)
+            {
+                AGiftBatchRow giftBatchRow = (AGiftBatchRow)dRV.Row;
+
+                if ((giftBatchRow.BatchStatus == MFinanceConstants.BATCH_UNPOSTED)
+                    && ((giftBatchRow.BatchNumber == ABatchToInclude)
+                        || BatchesWithChangesList.Contains(giftBatchRow.BatchNumber)
+                        || (giftBatchRow.RowState != DataRowState.Unchanged)))
+                {
+                    RetVal.Add(giftBatchRow);
+                }
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
         /// Set up the screen to highlight this batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
@@ -977,43 +1132,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             return IntlToBaseCurrencyExchRate;
-        }
-
-        /// <summary>
-        /// Checks to be made before saving and posting
-        /// </summary>
-        /// <param name="APostingGiftDetails">GiftDetails for the batch that is to be posted</param>
-        /// <param name="ACancelledDueToExWorkerOrAnonDonor">True if batch posting has been cancelled by the user because of an Ex-Worker recipient
-        /// or an anonymous donor for a gift that is not marked as confidential</param>
-        /// <returns>True if Save is successful</returns>
-        public bool SaveChangesForPosting(DataTable APostingGiftDetails, out bool ACancelledDueToExWorkerOrAnonDonor)
-        {
-            // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.POSTING,
-                FMainDS,
-                FPetraUtilsObject,
-                APostingGiftDetails);
-
-            // if save is continuing then alert the user to any gift that are not marked confidential but have an anonymous donor
-            if (!ACancelledDueToExWorkerOrAnonDonor)
-            {
-                ACancelledDueToExWorkerOrAnonDonor = !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS);
-            }
-
-            if (!ACancelledDueToExWorkerOrAnonDonor)
-            {
-                return SaveChanges();
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Needs to be called prior to posting current batch to ensure all data is up-to-date
-        /// </summary>
-        public void GetControlDataForPosting()
-        {
-            GetDataFromControls();
         }
 
         #region Forms Messaging Interface Implementation

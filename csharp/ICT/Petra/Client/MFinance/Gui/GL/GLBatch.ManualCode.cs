@@ -50,67 +50,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmGLBatch
     {
-        /// <summary>
-        /// This window contains 3 tabs
-        /// </summary>
-        public enum eGLTabs
-        {
-            /// list of batches
-            Batches,
-
-            /// list of journals
-            Journals,
-
-            /// list of transactions
-            Transactions,
-
-            /// None
-            None
-        };
-
-        /// <summary>
-        /// GL contains 3 levels
-        /// </summary>
-        public enum eGLLevel
-        {
-            /// batch level
-            Batch,
-
-            /// journal level
-            Journal,
-
-            /// transaction level
-            Transaction,
-
-            /// analysis attribute level
-            Analysis
-        };
-
-        /// <summary>
-        /// List of Gift Batch Actions
-        /// </summary>
-        public enum GLBatchAction
-        {
-            /// <summary>Saving GLBatch or RecurringGLBatch</summary>
-            SAVING,
-            /// <summary>A New GLBatch or RecurringGLBatch</summary>
-            NEWBATCH,
-            /// <summary>Posting a GLBatch</summary>
-            POSTING,
-            /// <summary>Cancelling a GLBatch</summary>
-            CANCELLING,
-            /// <summary>Submitting a RecurringGLBatch</summary>
-            SUBMITTING,
-            /// <summary>Deleting a RecurringGLBatch</summary>
-            DELETING,
-            /// <summary>No action being taken</summary>
-            NONE
-        };
-
         /// <summary>Store the current action on the batch</summary>
-        public GLBatchAction FCurrentGLBatchAction = GLBatchAction.NONE;
+        public TGLBatchEnums.GLBatchAction FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
 
-        private eGLTabs FPreviouslySelectedTab = eGLTabs.None;
+        private TGLBatchEnums.eGLTabs FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.None;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
         private bool FChangesDetected = false;
@@ -279,6 +222,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(FPetraUtilsObject_DataSaved);
             this.tpgJournals.Enabled = false;
             this.tpgTransactions.Enabled = false;
+
+            // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
+            tbbSave.Click -= FileSave;
+            mniFileSave.Click -= FileSave;
+            tbbSave.Click += FileSaveManual;
+            mniFileSave.Click += FileSaveManual;
         }
 
         private void tabGLBatch_GotFocus(Object Sender, EventArgs e)
@@ -360,7 +309,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ATab"></param>
         /// <param name="AAllowRepeatEvent"></param>
-        public void SelectTab(eGLTabs ATab, bool AAllowRepeatEvent = false)
+        public void SelectTab(TGLBatchEnums.eGLTabs ATab, bool AAllowRepeatEvent = false)
         {
             //Between the tab changing and seleted events changes are incorrectly detected on Journal controls
             // TODO: find cause but use this field for now
@@ -377,15 +326,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                if (ATab == eGLTabs.Batches)
+                if (ATab == TGLBatchEnums.eGLTabs.Batches)
                 {
-                    if ((FPreviouslySelectedTab == eGLTabs.Batches) && !AAllowRepeatEvent)
+                    if ((FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Batches) && !AAllowRepeatEvent)
                     {
                         //Repeat event
                         return;
                     }
 
-                    FPreviouslySelectedTab = eGLTabs.Batches;
+                    FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.Batches;
 
                     this.tabGLBatch.SelectedTab = this.tpgBatches;
                     this.tpgJournals.Enabled = (ucoBatches.GetSelectedDetailRow() != null);
@@ -400,9 +349,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ucoBatches.AutoEnableTransTabForBatch();
                     ucoBatches.SetInitialFocus();
                 }
-                else if (ATab == eGLTabs.Journals)
+                else if (ATab == TGLBatchEnums.eGLTabs.Journals)
                 {
-                    if ((FPreviouslySelectedTab == eGLTabs.Journals) && !AAllowRepeatEvent)
+                    if ((FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Journals) && !AAllowRepeatEvent)
                     {
                         //Repeat event
                         return;
@@ -410,7 +359,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (this.tpgJournals.Enabled)
                     {
-                        FPreviouslySelectedTab = eGLTabs.Journals;
+                        FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.Journals;
 
                         this.tabGLBatch.SelectedTab = this.tpgJournals;
 
@@ -423,9 +372,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         this.ucoJournals.UpdateHeaderTotals(ucoBatches.GetSelectedDetailRow());
                     }
                 }
-                else if (ATab == eGLTabs.Transactions)
+                else if (ATab == TGLBatchEnums.eGLTabs.Transactions)
                 {
-                    if ((FPreviouslySelectedTab == eGLTabs.Transactions) && !AAllowRepeatEvent)
+                    if ((FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Transactions) && !AAllowRepeatEvent)
                     {
                         //Repeat event
                         return;
@@ -436,9 +385,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ABatchRow batchRow = ucoBatches.GetSelectedDetailRow();
 
                         string loadingMessage = string.Empty;
-                        bool batchWasPreviousTab = (FPreviouslySelectedTab == eGLTabs.Batches);
+                        bool batchWasPreviousTab = (FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Batches);
 
-                        FPreviouslySelectedTab = eGLTabs.Transactions;
+                        FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.Transactions;
 
                         // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                         this.tabGLBatch.SelectedTab = this.tpgTransactions;
@@ -499,16 +448,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             switch (ASelectedTabIndex)
             {
-                case (int)eGLTabs.Batches:
-                    SelectTab(eGLTabs.Batches);
+                case (int)TGLBatchEnums.eGLTabs.Batches:
+                    SelectTab(TGLBatchEnums.eGLTabs.Batches);
                     break;
 
-                case (int)eGLTabs.Journals:
-                    SelectTab(eGLTabs.Journals);
+                case (int)TGLBatchEnums.eGLTabs.Journals:
+                    SelectTab(TGLBatchEnums.eGLTabs.Journals);
                     break;
 
-                default: //(ASelectedTabIndex == (int)eGLTabs.Transactions)
-                    SelectTab(eGLTabs.Transactions);
+                default: //(ASelectedTabIndex == (int)TGLBatchEnums.eGLTabs.Transactions)
+                    SelectTab(TGLBatchEnums.eGLTabs.Transactions);
                     break;
             }
         }
@@ -853,6 +802,73 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return TRemote.MFinance.GL.WebConnectors.SaveGLBatchTDS(ref SubmitDS, out AVerificationResult);
         }
 
+        private void FileSaveManual(object sender, EventArgs e)
+        {
+            SaveChangesManual();
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual()
+        {
+            FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
+            return SaveChangesManual(FCurrentGLBatchAction);
+        }
+
+        /// <summary>
+        /// Save according to current batch action
+        /// </summary>
+        /// <param name="AAction"></param>
+        /// <param name="AGetJournalDataFromControls"></param>
+        /// <param name="AGetTransDataFromControls"></param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual(TGLBatchEnums.GLBatchAction AAction,
+            bool AGetJournalDataFromControls = false,
+            bool AGetTransDataFromControls = false)
+        {
+            if (AAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                AAction = TGLBatchEnums.GLBatchAction.SAVING;
+                FCurrentGLBatchAction = AAction;
+            }
+
+            if (AAction == TGLBatchEnums.GLBatchAction.CANCELLING)
+            {
+                if (AGetJournalDataFromControls)
+                {
+                    ucoJournals.GetDataFromControls();
+                }
+
+                if (AGetTransDataFromControls)
+                {
+                    ucoTransactions.GetDataFromControls();
+                }
+            }
+            else if (AAction == TGLBatchEnums.GLBatchAction.CANCELLINGJOURNAL)
+            {
+                ucoBatches.GetDataFromControls();
+
+                if (AGetTransDataFromControls)
+                {
+                    ucoTransactions.GetDataFromControls();
+                }
+            }
+            else if ((AAction == TGLBatchEnums.GLBatchAction.DELETINGTRANS)
+                     || (AAction == TGLBatchEnums.GLBatchAction.DELETINGALLTRANS))
+            {
+                ucoBatches.GetDataFromControls();
+                ucoJournals.GetDataFromControls();
+            }
+            else
+            {
+                GetDataFromControls();
+            }
+
+            return SaveChanges();
+        }
+
         // Before the dataset is saved, check for correlation between batch and transactions
         private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
         {
@@ -863,13 +879,29 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
         {
+            int BatchNumber = GetBatchControl().GetCurrentBatchRow().BatchNumber;
+            int JournalNumber = 0;
+            int TransactionNumber = 0;
+
+            if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
+            }
+            else if ((FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.CANCELLINGJOURNAL)
+                     || (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGALLTRANS))
+            {
+                JournalNumber = GetJournalsControl().GetCurrentJournalRow().JournalNumber;
+            }
+            else if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGTRANS)
+            {
+                JournalNumber = GetJournalsControl().GetCurrentJournalRow().JournalNumber;
+                TransactionNumber = GetTransactionsControl().GetCurrentTransactionRow().TransactionNumber;
+            }
+
             //Check if the user has made a Bank Cost Centre or Account Code inactive
             // on saving
-            int NumInactiveValues = 0;
-
-            if ((FCurrentGLBatchAction != GLBatchAction.POSTING)
-                && !ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, GetBatchControl().GetCurrentBatchRow().BatchNumber, out NumInactiveValues,
-                    false))
+            if (!ucoTransactions.AllowInactiveFieldValues(FLedgerNumber, BatchNumber, FCurrentGLBatchAction,
+                    JournalNumber, TransactionNumber))
             {
                 e.Cancel = true;
             }
@@ -885,24 +917,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void FileSaveManual(object sender, EventArgs e)
-        {
-            SaveChangesManual();
-        }
-
         /// <summary>
-        /// Check for ExWorkers before saving
-        /// </summary>
-        /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual()
-        {
-            //Do manual checks here
-
-            return SaveChanges();
-        }
-
-        /// <summary>
-        /// find a special gift detail
+        /// find a specific transaction
         /// </summary>
         public void FindGLTransaction(int ABatchNumber, int AJournalNumber, int ATransactionNumber)
         {
@@ -940,6 +956,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void RefreshAll(bool AIsFromMessage = false)
         {
             ucoBatches.ReloadBatches(AIsFromMessage);
+        }
+
+        /// <summary>
+        /// Needs to be called prior to posting current batch to ensure all data is up-to-date
+        /// </summary>
+        public void GetLatestControlData()
+        {
+            GetDataFromControls();
         }
 
         #region Menu and command key handlers for our user controls

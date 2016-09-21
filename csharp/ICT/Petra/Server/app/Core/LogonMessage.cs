@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -24,6 +24,7 @@
 using System;
 using System.Data;
 using System.Security.Principal;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Remoting.Server;
@@ -40,15 +41,15 @@ namespace Ict.Petra.Server.App.Core
     {
         /// <summary>
         /// Returns the Logon Message for a certain LanguageCode.
-        ///
         /// </summary>
         /// <param name="ALanguageCode">LanguageCode for which the LogonMessage should be returned</param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns>The LogonMessage, or an empty String if no LogonMessage was found for
         /// the specified LanguageCode
         /// </returns>
-        public String GetLogonMessage(String ALanguageCode)
+        public String GetLogonMessage(String ALanguageCode, TDBTransaction ATransaction)
         {
-            return GetLogonMessage(ALanguageCode, false);
+            return GetLogonMessage(ALanguageCode, false, ATransaction);
         }
 
         /// <summary>
@@ -56,67 +57,53 @@ namespace Ict.Petra.Server.App.Core
         /// </summary>
         /// <param name="AUserInfo"></param>
         /// <param name="AReturnEnglishIfNotFound"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public String GetLogonMessage(IPrincipal AUserInfo, Boolean AReturnEnglishIfNotFound)
+        public String GetLogonMessage(IPrincipal AUserInfo, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction)
         {
-            return GetLogonMessage(((TPetraPrincipal)AUserInfo).PetraIdentity.LanguageCode, false);
+            return GetLogonMessage(((TPetraPrincipal)AUserInfo).PetraIdentity.LanguageCode, false, ATransaction);
         }
 
         /// <summary>
         /// Returns the Logon Message for a certain LanguageCode.
-        ///
         /// </summary>
         /// <param name="ALanguageCode">LanguageCode for which the LogonMessage should be returned</param>
         /// <param name="AReturnEnglishIfNotFound">Returns the LogonMessage in English if no
         /// LogonMessage was found for the specified LanguageCode</param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns>The LogonMessage
         /// </returns>
-        public String GetLogonMessage(String ALanguageCode, Boolean AReturnEnglishIfNotFound)
+        public String GetLogonMessage(String ALanguageCode, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction)
         {
             String ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             SLogonMessageTable LogonMessageTable;
 
             try
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
-                    TEnforceIsolationLevel.eilMinimum,
-                    out NewTransaction);
-                try
+                if (SLogonMessageAccess.Exists(ALanguageCode, ATransaction))
                 {
-                    if (SLogonMessageAccess.Exists(ALanguageCode, ReadTransaction))
+                    LogonMessageTable = SLogonMessageAccess.LoadByPrimaryKey(ALanguageCode, ATransaction);
+                    ReturnValue = LogonMessageTable[0].LogonMessage;
+                }
+                else
+                {
+                    if (AReturnEnglishIfNotFound)
                     {
-                        LogonMessageTable = SLogonMessageAccess.LoadByPrimaryKey(ALanguageCode, ReadTransaction);
+                        LogonMessageTable = SLogonMessageAccess.LoadByPrimaryKey("EN", ATransaction);
                         ReturnValue = LogonMessageTable[0].LogonMessage;
                     }
                     else
                     {
-                        if (AReturnEnglishIfNotFound)
-                        {
-                            LogonMessageTable = SLogonMessageAccess.LoadByPrimaryKey("EN", ReadTransaction);
-                            ReturnValue = LogonMessageTable[0].LogonMessage;
-                        }
-                        else
-                        {
-                            ReturnValue = "";
-                        }
+                        ReturnValue = "";
                     }
                 }
-                catch (Exception exp)
-                {
-                    TLogging.Log("TMaintenanceLogonMessage.GetLogonMessage: Error loading Logon Message! " + "Possible cause: " + exp.ToString());
-                    return "";
-                }
             }
-            finally
+            catch (Exception exp)
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(8, "TMaintenanceLogonMessage.GetLogonMessage: committed own transaction.");
-                }
+                TLogging.Log("TMaintenanceLogonMessage.GetLogonMessage: Error loading Logon Message! " + "Possible cause: " + exp.ToString());
+                return "";
             }
+
             return ReturnValue;
         }
     }

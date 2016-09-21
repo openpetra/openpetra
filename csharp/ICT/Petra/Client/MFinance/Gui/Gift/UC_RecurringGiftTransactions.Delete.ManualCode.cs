@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Delete data from current recurring gift batch
         /// </summary>
         /// <param name="ABatchNumber"></param>
-        public void DeleteCurrentRecurringBatchGiftData(Int32 ABatchNumber)
+        public void DeleteRecurringBatchGiftData(Int32 ABatchNumber)
         {
             DataView RecurringGiftDetailView = new DataView(FMainDS.ARecurringGiftDetail);
 
@@ -79,6 +79,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void DeleteAllGifts(System.Object sender, EventArgs e)
         {
+            TFrmRecurringGiftBatch FMyForm = (TFrmRecurringGiftBatch) this.ParentForm;
+
             string CompletionMessage = string.Empty;
             int BatchNumberToClear = FBatchNumber;
 
@@ -95,68 +97,77 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
+            GiftBatchTDS BackupDS = (GiftBatchTDS)FMainDS.Copy();
+            BackupDS.Merge(FMainDS);
 
             if (MessageBox.Show(String.Format(Catalog.GetString(
-                            "You have chosen to delete all Gifts from Recurring Batch ({0}).{1}{1}Are you sure you want to delete all?"),
+                            "You have chosen to delete all Gifts from Recurring Batch: {0}.{1}{1}Are you sure you want to delete all?"),
                         BatchNumberToClear,
                         Environment.NewLine),
                     Catalog.GetString("Confirm Delete All"),
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question,
-                    MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes)
+                    MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes)
             {
-                try
+                return;
+            }
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                //Specify current action
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS;
+
+                //clear any transactions currently being editied in the Transaction Tab
+                ClearCurrentSelection(0, false);
+
+                //Now delete all Recurring Gift data for current batch
+                DeleteRecurringBatchGiftData(BatchNumberToClear);
+
+                FBatchRow.BatchTotal = 0;
+                txtBatchTotal.NumberValueDecimal = 0;
+
+                // Be sure to set the last Recurring Gift number in the parent table before saving all the changes
+                FBatchRow.LastGiftNumber = 0;
+
+                FPetraUtilsObject.SetChangedFlag();
+
+                // save changes
+                if (((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual())
                 {
-                    this.Cursor = Cursors.WaitCursor;
+                    CompletionMessage = Catalog.GetString("All Recurring Gifts and their details deleted successfully.");
 
-                    //Normally need to set the message parameters before the delete is performed if requiring any of the row values
-                    CompletionMessage = String.Format(Catalog.GetString("All Recurring Gifts and details deleted successfully."),
-                        FPreviouslySelectedDetailRow.BatchNumber);
-
-                    //clear any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection(false);
-
-                    //Now delete all Recurring Gift data for current batch
-                    DeleteCurrentRecurringBatchGiftData(BatchNumberToClear);
-
-                    FBatchRow.BatchTotal = 0;
-                    txtBatchTotal.NumberValueDecimal = 0;
-
-                    // Be sure to set the last Recurring Gift number in the parent table before saving all the changes
-                    FBatchRow.LastGiftNumber = 0;
-
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    // save first, then post
-                    if (((TFrmRecurringGiftBatch)ParentForm).SaveChangesManual())
-                    {
-                        MessageBox.Show(CompletionMessage,
-                            "All Recurring Gifts Deleted.",
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Information);
-                    }
-                    else
-                    {
-                        throw new Exception("Unable to save after deleting all Recurring Gifts!");
-                    }
+                    MessageBox.Show(CompletionMessage,
+                        Catalog.GetString("Recurring Gifts Deletion"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
                 }
-                catch (Exception ex)
+                else
                 {
-                    //Revert to previous state
-                    RevertDataSet(FMainDS, BackupMainDS);
+                    CompletionMessage = Catalog.GetString("All Recurring Gifts and their details have been deleted but saving the changes failed!");
 
-                    TLogging.LogException(ex, Utilities.GetMethodSignature());
-                    throw;
-                }
-                finally
-                {
-                    SetGiftDetailDefaultView();
-                    FFilterAndFindObject.ApplyFilter();
-                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(CompletionMessage,
+                        Catalog.GetString("All Gifts Deletion"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
                 }
             }
+            catch (Exception ex)
+            {
+                //Revert to previous state
+                RevertDataSet(FMainDS, BackupDS);
+
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+            finally
+            {
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.NONE;
+                this.Cursor = Cursors.Default;
+            }
+
+            SetGiftDetailDefaultView();
+            FFilterAndFindObject.ApplyFilter();
 
             if (grdDetails.Rows.Count < 2)
             {
@@ -173,7 +184,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private bool OnPreDeleteManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ADeletionQuestion)
         {
-            bool allowDeletion = true;
+            // Using a button's keyboard shortcut results in a different sequence of Events from clicking it with the mouse. If the current control is in pnlDetails,
+            // then when the New or Delete button's processing attempts to save the current record and calls TFrmPetraUtils.ForceOnLeaveForActiveControl(),
+            // it inadvertently re-raises the pnlDetails.Enter event which activates BeginEditMode() at a point when it's not supposed to be activated, putting
+            // TCmbAutoComplete controls in a state they're not supposed to be in, resulting in a NullReferenceException from FPreviouslySelectedDetailRow
+            // in UC_RecurringGiftTransactions.Motivation.ManualCode.cs, MotivationDetailChanged().
+            // To fix it, put the focus outside pnlDetails, preventing the whole chain of events from happening.
+            grdDetails.Focus();
+
+            bool AllowDeletion = true;
 
             FGift = GetRecurringGiftRow(ARowToDelete.GiftTransactionNumber);
             FFilterAllDetailsOfGift = String.Format("{0}={1} and {2}={3}",
@@ -223,59 +242,40 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             "Gift no. {0} in Recurring Gift Batch no. {1} has no detail rows in the Recurring Gift Detail table!"),
                         ARowToDelete.GiftTransactionNumber,
                         ARowToDelete.BatchNumber);
-                allowDeletion = false;
+                AllowDeletion = false;
             }
 
-            return allowDeletion;
+            return AllowDeletion;
         }
 
         private bool OnDeleteRowManual(GiftBatchTDSARecurringGiftDetailRow ARowToDelete, ref string ACompletionMessage)
         {
+            //TODO: Make this like deleton on GL Transactions form
+            // e.g. pass copy to delete method on server...
+            //GiftBatchTDS TempDS = (GiftBatchTDS)FMainDS.Copy();
+            //TempDS.Merge(FMainDS);
+
             bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
 
+            if (FBatchRow == null)
+            {
+                FBatchRow = GetRecurringBatchRow();
+            }
+
             if (ARowToDelete == null)
             {
-                return DeletionSuccessful;
+                return false;
             }
 
+            int CurrentBatchNo = ARowToDelete.BatchNumber;
             bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
+            int CurrentRowIndex = GetSelectedRowIndex();
 
-            if (!RowToDeleteIsNew)
-            {
-                try
-                {
-                    // temporarily disable  New Donor Warning
-                    ((TFrmRecurringGiftBatch) this.ParentForm).NewDonorWarning = false;
+            TFrmRecurringGiftBatch FMyForm = (TFrmRecurringGiftBatch) this.ParentForm;
 
-                    //Return modified row to last saved state to avoid validation failures
-                    ARowToDelete.RejectChanges();
-                    ShowDetails(ARowToDelete);
-
-                    if (!((TFrmRecurringGiftBatch) this.ParentForm).SaveChanges())
-                    {
-                        MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current Gift detail!"),
-                            Catalog.GetString("Deletion Error"),
-                            MessageBoxButtons.OK,
-                            MessageBoxIcon.Error);
-
-                        return DeletionSuccessful;
-                    }
-                }
-                finally
-                {
-                    ((TFrmRecurringGiftBatch) this.ParentForm).NewDonorWarning = true;
-                }
-            }
-
-            //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
-
-            //To be used later....Pass copy to delete method.
-            //RecurringGiftBatchTDS TempDS = (RecurringGiftBatchTDS)FMainDS.Copy();
-            //TempDS.Merge(FMainDS);
+            GiftBatchTDS BackupMainDS = null;
 
             int SelectedDetailNumber = ARowToDelete.DetailNumber;
             int RecurringGiftToDeleteTransNo = 0;
@@ -287,11 +287,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             try
             {
                 this.Cursor = Cursors.WaitCursor;
-
-                //Speeds up deletion of larger Recurring Gift sets
+                //Specify current action
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS;
+                //Speeds up deletion of larger gift sets
                 FMainDS.EnforceConstraints = false;
+                // temporarily disable  New Donor Warning
+                FMyForm.NewDonorWarning = false;
 
-                //Delete current detail row
+                //Backup the Dataset for reversion purposes
+                BackupMainDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
+
+                //Don't run an inactive fields check on this batch
+                FMyForm.GetBatchControl().UpdateRecurringBatchDictionary(CurrentBatchNo);
+
+                //Delete current row
+                ARowToDelete.RejectChanges();
+
+                if (!RowToDeleteIsNew)
+                {
+                    ShowDetails(ARowToDelete);
+                }
+
                 ARowToDelete.Delete();
 
                 //If there existed (before the delete row above) more than one detail row, then no need to delete Recurring Gift header row
@@ -312,8 +328,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FGift.LastDetailNumber--;
-
-                    FPetraUtilsObject.SetChangedFlag();
                 }
                 else
                 {
@@ -390,43 +404,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     FPreviouslySelectedDetailRow = null;
-
-                    FPetraUtilsObject.SetChangedFlag();
-
                     FGiftSelectedForDeletionFlag = true;
-
                     FBatchRow.LastGiftNumber--;
                 }
 
-                //Try to save changes
-                if (((TFrmRecurringGiftBatch) this.ParentForm).SaveChangesManual())
+                //Save and check for inactive values and ex-workers and anonymous gifts
+                //  in other unsaved Batches
+                FPetraUtilsObject.SetChangedFlag();
+
+                if (!FMyForm.SaveChangesManual(Logic.TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS, false, false))
                 {
-                    //Clear current batch's Recurring Gift data and reload from server
-                    RefreshCurrentRecurringBatchGiftData(FBatchNumber, true);
+                    FMyForm.GetBatchControl().UpdateRecurringBatchDictionary();
+
+                    MessageBox.Show(Catalog.GetString("The gift detail has been deleted but the changes are not saved!"),
+                        Catalog.GetString("Deletion Warning"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    ACompletionMessage = string.Empty;
+
+                    if (FGiftSelectedForDeletionFlag)
+                    {
+                        FGiftSelectedForDeletionFlag = false;
+                        SetBatchLastGiftNumber();
+                        UpdateControlsProtection();
+                    }
+
+                    UpdateTotals();
+
+                    return false;
                 }
-                else
-                {
-                    throw new Exception("Unable to save after deleting a Recurring Gift!");
-                }
+
+                //Clear current batch's gift data and reload from server
+                RefreshRecurringBatchGiftData(FBatchNumber, true);
 
                 DeletionSuccessful = true;
             }
             catch (Exception ex)
             {
                 //Revert to previous state
-                RevertDataSet(FMainDS, BackupMainDS);
+                RevertDataSet(FMainDS, BackupMainDS, CurrentRowIndex);
 
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
             finally
             {
+                FMyForm.NewDonorWarning = true;
                 FMainDS.EnforceConstraints = true;
-                SetGiftDetailDefaultView();
-                FFilterAndFindObject.ApplyFilter();
+                FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.NONE;
                 this.Cursor = Cursors.Default;
             }
 
+            SetGiftDetailDefaultView();
+            FFilterAndFindObject.ApplyFilter();
             UpdateRecordNumberDisplay();
 
             return DeletionSuccessful;
@@ -442,9 +473,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 if (FGiftSelectedForDeletionFlag)
                 {
                     FGiftSelectedForDeletionFlag = false;
-
                     SetBatchLastGiftNumber();
-
                     UpdateControlsProtection();
                 }
 
@@ -480,14 +509,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         #region revert to backup
 
-        private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS)
+        private void RevertDataSet(GiftBatchTDS AMainDS, GiftBatchTDS ABackupDS, int ASelectRowInGrid = 0)
         {
-            AMainDS.ALedger.Clear();
-            AMainDS.ARecurringGiftDetail.Clear();
-            AMainDS.ARecurringGift.Clear();
-            AMainDS.ARecurringGiftBatch.Clear();
+            if ((ABackupDS != null) && (AMainDS != null))
+            {
+                AMainDS.RejectChanges();
+                AMainDS.Merge(ABackupDS);
 
-            AMainDS.Merge(ABackupDS);
+                if (ASelectRowInGrid > 0)
+                {
+                    SelectRowInGrid(ASelectRowInGrid);
+                }
+            }
         }
 
         #endregion revert to backup

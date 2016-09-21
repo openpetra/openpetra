@@ -285,6 +285,36 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// return extract id for given extract name
+        /// </summary>
+        /// <param name="AExtractId"></param>
+        /// <returns>returns extract name or "" if extract does not exist</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String GetExtractName(Int32 AExtractId)
+        {
+            TDBTransaction Transaction = null;
+            bool SubmissionOK = true;
+            MExtractMasterTable ResultTable;
+            MExtractMasterRow ResultRow;
+            String ReturnValue = "";
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction, ref SubmissionOK,
+                delegate
+                {
+                    ResultTable = MExtractMasterAccess.LoadByPrimaryKey(AExtractId, Transaction);
+
+                    if (ResultTable.Count > 0)
+                    {
+                        ResultRow = (MExtractMasterRow)ResultTable.Rows[0];
+                        ReturnValue = ResultRow.ExtractName;
+                    }
+                });
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// create an empty extract with given name and description
         /// </summary>
         /// <param name="AExtractId"></param>

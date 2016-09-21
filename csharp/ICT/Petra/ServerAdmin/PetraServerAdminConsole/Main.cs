@@ -22,12 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using Ict.Common;
-using Ict.Common.Remoting.Shared;
-using System.Reflection;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+
+using Ict.Common;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
+using Ict.Petra.Shared;
 using Ict.Petra.ServerAdmin.App.Core.RemoteObjects;
 
 namespace PetraServerAdminConsole
@@ -329,6 +331,7 @@ namespace PetraServerAdminConsole
             String ConsoleInput;
             String ClientTaskCode;
             String ClientTaskGroup;
+            String AdministrativeMessage;
 
             System.Int16 ClientID = 0;                                      // assignment only to make code compile; has no functional implication
             System.Int16 ClientTaskPriority = 1;                    // assignment only to make code compile; has no functional implication
@@ -383,6 +386,7 @@ namespace PetraServerAdminConsole
                                 Console.WriteLine("     r: Mark all Cached Tables for Refreshing");
                             }
 
+                            Console.WriteLine("     a: send administrative message to all connected clients");
                             Console.WriteLine("     o: controlled Server shutdown (gets all connected clients to disconnect)");
                             Console.WriteLine("     u: unconditional Server shutdown (forces 'hard' disconnection of all Clients!)");
 #if DEBUG
@@ -478,6 +482,15 @@ namespace PetraServerAdminConsole
                         case 'P':
 #if TODORemoting
                             string resp = "";
+
+                            if (!TRemote.ServerTimedProcessingSetup)
+                            {
+                                Console.WriteLine("  Server Timed Processing Status: NOT SET UP YET - processing cannot be done!");
+
+                                Console.Write(ServerAdminPrompt);
+
+                                break;
+                            }
 
                             Console.WriteLine("  Server Timed Processing Status: " +
                             "runs daily at " + TRemote.GetTimedProcessingDailyStartTime24Hrs + ".");
@@ -593,10 +606,10 @@ namespace PetraServerAdminConsole
                                 {
                                 }
 
-                                // goto ReadClientTaskPriority;
                                 try
                                 {
-                                    if (TRemote.QueueClientTask(ClientID, ClientTaskGroup, ClientTaskCode, ClientTaskPriority))
+                                    if (TRemote.QueueClientTask(ClientID, ClientTaskGroup, ClientTaskCode, null, null, null, null,
+                                            ClientTaskPriority))
                                     {
                                         TLogging.Log("Client Task queued for Client #" + ClientID.ToString() + " on admin request.");
                                     }
@@ -631,6 +644,39 @@ namespace PetraServerAdminConsole
                         case 'G':
                             GC.Collect();
                             Console.WriteLine("GarbageCollection performed. Server memory: " + TRemote.PerformGC().ToString());
+                            Console.Write(ServerAdminPrompt);
+                            break;
+
+                        case 'a':
+                        case 'A':
+                            Console.Write("     Enter Administrative Message (leave blank not to send a message): ");
+                            AdministrativeMessage = Console.ReadLine();
+
+                            if (AdministrativeMessage.Trim() != String.Empty)
+                            {
+                                try
+                                {
+                                    if (TRemote.QueueClientTask(-1, SharedConstants.CLIENTTASKGROUP_USERMESSAGE,
+                                            AdministrativeMessage, "MODAL", null, Catalog.GetString("Administrative Message"), null,
+                                            ClientTaskPriority))
+                                    {
+                                        TLogging.Log("Administrative message queued for all connected clients.");
+                                    }
+                                    else
+                                    {
+                                        TLogging.Log("An error occured when trying to queue an administrative message for all clients.");
+                                    }
+                                }
+                                catch (Exception exp)
+                                {
+                                    TLogging.Log(
+                                        Environment.NewLine +
+                                        "Exception occured while queueing a Client Task for sending an administrative message on admin request:" +
+                                        Environment.NewLine +
+                                        exp.ToString());
+                                }
+                            }
+
                             Console.Write(ServerAdminPrompt);
                             break;
 
@@ -676,11 +722,16 @@ namespace PetraServerAdminConsole
         /// <param name="ACurrentlyConnectedClients">Number of currently
         /// connected Clients.</param>
         /// <param name="ASiteKey">The SiteKey</param>
-        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey)
+        /// <param name="DBReconnectionAttemptsCounter">counter of db reconnection attempts</param>
+        /// <param name="DBConnectionCheckInterval">interval for checking the db connection</param>
+        static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey,
+            out Int64 DBReconnectionAttemptsCounter, out Int64 DBConnectionCheckInterval)
         {
             ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
             ACurrentlyConnectedClients = TRemote.GetClientsConnected();
             ASiteKey = TRemote.GetSiteKey();
+            DBReconnectionAttemptsCounter = TRemote.GetDBReconnectionAttemptsCounter();
+            DBConnectionCheckInterval = TRemote.GetDBConnectionCheckInterval();
         }
 
         private static string SecurityToken = string.Empty;
@@ -714,15 +765,26 @@ namespace PetraServerAdminConsole
             int TotalConnectedClients;
             int CurrentlyConnectedClients;
             Int64 SiteKey;
+            Int64 DBReconnectionAttemptsCounter;
+            Int64 DBConnectionCheckInterval;
 
-            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients, out SiteKey);
+            RetrieveConnectedClients(out TotalConnectedClients, out CurrentlyConnectedClients, out SiteKey,
+                out DBReconnectionAttemptsCounter, out DBConnectionCheckInterval);
 
             TLogging.Log(TRemote.GetServerInfoVersion());
             TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
-            TLogging.Log("  * Clients connections since Server start: " + TotalConnectedClients.ToString());
-            TLogging.Log("  * Clients currently connected: " + CurrentlyConnectedClients.ToString());
+            TLogging.Log("  * " + Catalog.GetString(String.Format("DB Connection State: {0}",
+                        ((DBReconnectionAttemptsCounter == -1) ? String.Format("Not yet connected") :
+                         ((DBReconnectionAttemptsCounter == 0) ? String.Format("OK") :
+                          String.Format("BROKEN / Reconnection Attempt #" + DBReconnectionAttemptsCounter.ToString()))))) +
+                ((DBReconnectionAttemptsCounter == 0) ? (DBConnectionCheckInterval == 0) ?
+                 Catalog.GetString("  (at last DB action)") : Catalog.GetString("  (polling enabled)") : ""));
+            TLogging.Log("  * " +
+                String.Format(Catalog.GetString("Client connections since Server start: {0}"), TotalConnectedClients.ToString()));
+            TLogging.Log("  * " + String.Format(Catalog.GetString("Clients currently connected: {0}"), CurrentlyConnectedClients));
             TLogging.Log("  * " + String.Format(Catalog.GetString("SiteKey of OpenPetra Installation: {0}{1}"),
-                     SiteKey, (SiteKey == 99000000) ? Catalog.GetString("  (SiteKey not yet set up)") : String.Empty));
+                    (SiteKey != -1) ? SiteKey.ToString() : Catalog.GetString("N/A"),
+                    (SiteKey == 99000000) ? Catalog.GetString("  (SiteKey not yet set up)") : String.Empty));
 
             TLogging.Log(TRemote.GetServerInfoState());
         }

@@ -402,21 +402,23 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 }
 
                 String MyCostCentreCode = String.Format("{0:##00}00", FLedgerNumber);
-                String PeriodEnd = Params.Get("param_end_date").ToDate().ToString("dd/MM/yyyy");
+                DateTime paramEndDate = Params.Get("param_end_date").ToDate();
+                String PeriodEnd = paramEndDate.ToString("dd/MM/yyyy");
                 Int32 RunNumber = Params.Get("param_cmbICHNumber").ToInt32();
-                String CsvAttachment = String.Format("\"{0}\",{1},\"{2}\",{3},\"{4}\",{5}\n", // "** Header **",30/11/2014,\"0200\",09/12/2014,\"USD\",0"
+                String CsvAttachment = String.Format("ICH-CSV,{0},{1},{2},{3},{4},{5},{6:F0}\n", // ICH-CSV,<ledger number>,<calendar year>,<calendar month number>,<run number>,<currency code>,<date of report>,<time of report in number of seconds>
 
-                    "** Header **",                                     // software originator and version ID
-                    PeriodEnd,
-                    MyCostCentreCode,                           // Field Cost Centre Code
-                    DateTime.Now.ToString("dd/MM/yyyy"),
+                    FLedgerRow.LedgerNumber,                    // <Ledger Number>
+                    paramEndDate.Year,                          // <calendar year>
+                    paramEndDate.Month,                         // <calendar month number>
+                    RunNumber,                                  // <run number>
                     FLedgerRow.BaseCurrency,                    // Stewardship Report CSV always in Base Currency
-                    RunNumber                                   // Run number
+                    DateTime.Now.ToString("dd/MM/yyyy"),        // <date of report>
+                    DateTime.Now.TimeOfDay.TotalSeconds         // <time of report in number of seconds>
                     );
 
-                foreach (DataRow Row in ReportTable.Rows)
+                foreach (DataRow Row in ReportTable.Rows) // <cost centre>,<income amount>,<expense amount>,<transfer amount>
                 {
-                    CsvAttachment += String.Format("\"{0}\",{1},{2},{3}\n",
+                    CsvAttachment += String.Format("{0},{1},{2},{3}\n",
                         Row["CostCentreCode"].ToString(),
                         Convert.ToDecimal(Row["Income"]).ToString("0.00", CultureInfo.InvariantCulture),  // Stewardship Report CSV always in Base Currency
                         Convert.ToDecimal(Row["Expense"]).ToString("0.00", CultureInfo.InvariantCulture),
@@ -424,7 +426,9 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                         );
                 }
 
-                // Andrea wants this systemj default to be manually added to database when we are ready for a system to send ICH emails
+                //
+                // This System Default must be present to send ICH emails
+
                 if (!TSystemDefaults.IsSystemDefaultDefined(STEWARDSHIP_EMAIL_ADDRESS))
                 {
                     FStatusMsg += Catalog.GetString("\r\n Stewardship email address not configured in System Defaults.");

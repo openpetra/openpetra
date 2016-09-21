@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,11 +22,11 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Data;
-using System.Threading;
-using Ict.Common;
-using Ict.Common.Remoting.Shared;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Ict.Common;
+using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Shared;
 
@@ -37,6 +37,18 @@ namespace Ict.Petra.Client.App.Core
     /// </summary>
     public class TClientTaskInstance : TClientTaskInstanceBase
     {
+        [DllImport("user32.dll")]
+        private static extern int FindWindow(string classname, string windowname);
+        [DllImport("user32.dll")]
+        private static extern int PostMessage(
+            int hWnd,                    // handle to destination window
+            uint Msg,                    // message
+            long wParam,                 // first message parameter
+            long lParam                  // second message parameter
+            );
+
+        private const string MODALDELEGATETYPE_DBCONNBROKEN = "DBConnectionBroken";
+
         /// <summary></summary>
         public delegate void FastReportsPrintReportNoUi(String ReportName, String ParamStr);
         /// <summary></summary>
@@ -52,6 +64,7 @@ namespace Ict.Petra.Client.App.Core
             int AIcon,
             bool AEntryOptionSelected,
             out bool AExitOptionSelected);
+
         /// <summary></summary>
         public static TShowExtendedMessageBox ShowExtendedMessageBox;
 
@@ -104,8 +117,11 @@ namespace Ict.Petra.Client.App.Core
                     // MessageBox.Show('Executing Client Task #' + FClientTaskDataRow['TaskID'].ToString + ' in Thread.');
                     case SharedConstants.CLIENTTASKGROUP_USERMESSAGE:
                     {
-                        // MessageBox.Show(CLIENTTASKGROUP_USERMESSAGE + ' (Client Task #' + FClientTaskDataRow['TaskID'].ToString + '): ' + FClientTaskDataRow['TaskCode'].ToString, 'Client #' + UClientID.ToString + ' received a ClientTask.');
-                        ShowMessageBoxOnTopOfAllForms();
+                        //MessageBox.Show(SharedConstants.CLIENTTASKGROUP_USERMESSAGE + " (Client Task #" +
+                        //    FClientTaskDataRow["TaskID"].ToString() + "): " + FClientTaskDataRow["TaskCode"].ToString(),
+                        //    "Client #" + UserInfo.GUserInfo.ProcessID.ToString() + " received a ClientTask.");
+
+                        ShowMessageBoxOnTopOfAllFormsAutoParsed();
 
                         break;
                     }
@@ -182,6 +198,17 @@ namespace Ict.Petra.Client.App.Core
                         FastReportsPrintReportNoUiDelegate(FClientTaskDataRow["TaskCode"].ToString(), FClientTaskDataRow["TaskParameter1"].ToString());
                         break;
                     }
+
+                    case SharedConstants.CLIENTTASKGROUP_DBCONNECTIONBROKEN:
+                    {
+                        //MessageBox.Show(SharedConstants.CLIENTTASKGROUP_DBCONNECTIONBROKEN + " (Client Task #" +
+                        //    FClientTaskDataRow["TaskID"].ToString() + "): " + FClientTaskDataRow["TaskCode"].ToString(),
+                        //    "Client #" + UserInfo.GUserInfo.ProcessID.ToString() + " received a ClientTask.");
+
+                        ShowMessageBoxOnTopOfAllFormsDBConnectionBroken();
+
+                        break;
+                    }
                 }
             }
             catch (Exception Exp)
@@ -216,15 +243,61 @@ namespace Ict.Petra.Client.App.Core
         /// Gets round the issue that a MessageBox that gets shown from a Thread does not appear in front of all
         /// open Forms and isn't modal.
         /// </summary>
-        private void ShowMessageBoxOnTopOfAllForms()
+        private void ShowMessageBoxOnTopOfAllFormsAutoParsed()
         {
+            string MessageBoxTitle;
             bool ModalRequested;
             bool BlockingRequested;
-            string MessageBoxTitle;
 
             ParseMessageBoxOptions(out MessageBoxTitle, out ModalRequested, out BlockingRequested);
 
-            if (ModalRequested)
+            ShowMessageBoxOnTopOfAllForms(FClientTaskDataRow["TaskCode"].ToString(), MessageBoxTitle, ModalRequested);
+        }
+
+        private void ShowMessageBoxOnTopOfAllFormsDBConnectionBroken()
+        {
+            if (FClientTaskDataRow["TaskCode"].ToString() == "BROKEN")
+            {
+                ShowMessageBoxOnTopOfAllForms(TExceptionHelper.StrDBConnectionBroken +
+                    TExceptionHelper.StrDBConnectionBrokenRemedyWhenLoggedIn1 +
+                    TExceptionHelper.StrDBConnectionBrokenContactITSupport +
+                    Environment.NewLine + Environment.NewLine + Catalog.GetString(String.Format(
+                            TExceptionHelper.StrDBConnectionIssueDateTimeFooter, DateTime.Now)),
+                    TExceptionHelper.StrDBConnectionBrokenTitle, true, MessageBoxIcon.Error,
+                    MODALDELEGATETYPE_DBCONNBROKEN);
+            }
+            else
+            {
+                // Attempt to close the previously displayed message that was about the fact that the DB connection has broken before
+                // displaying the new message that the DB connection has been restored in order to reduce confusion.
+                int wHandle = FindWindow(null, TExceptionHelper.StrDBConnectionBrokenTitle);
+
+                if (wHandle > 0)
+                {
+                    // 0x10 is the WM_CLOSE message
+                    PostMessage(wHandle, 0x10, 0, 0);
+                }
+
+                ShowMessageBoxOnTopOfAllForms(
+                    TExceptionHelper.StrDBConnectionBrokenRestored + TExceptionHelper.StrDBConnectionBrokenAdvice +
+                    TExceptionHelper.StrDBConnectionBrokenRemedyWhenLoggedIn3 +
+                    TExceptionHelper.StrDBConnectionBrokenRemedyWhenLoggedInFollowUpAction2 +
+                    Environment.NewLine + Catalog.GetString(String.Format(
+                            TExceptionHelper.StrDBConnectionIssueDateTimeFooter, DateTime.Now)),
+                    TExceptionHelper.StrDBConnectionBrokenRecoveredTitlePrefix +
+                    TExceptionHelper.StrDBConnectionBrokenTitle, true, MessageBoxIcon.Information,
+                    MODALDELEGATETYPE_DBCONNBROKEN);
+            }
+        }
+
+        /// <summary>
+        /// Gets round the issue that a MessageBox that gets shown from a Thread does not appear in front of all
+        /// open Forms and isn't modal.
+        /// </summary>
+        private void ShowMessageBoxOnTopOfAllForms(string AMessageBoxText = "", string AMessageBoxTitle = "",
+            bool AModalRequested = false, MessageBoxIcon AMessageBoxIcon = MessageBoxIcon.None, string AModalDelegateType = "")
+        {
+            if (AModalRequested)
             {
                 // We are requested to show the MessageBox modally and in front of all other Forms - i.e.
                 // get the 'normal' MessageBox behaviour.
@@ -237,18 +310,35 @@ namespace Ict.Petra.Client.App.Core
                 // necessary to execute this procedure in the Thread of the GUI
                 if (MainMenuForm.InvokeRequired)
                 {
-                    MainMenuForm.Invoke(new TMyShowMessageBoxDelegate(ShowMessageBoxOnTopOfAllForms));
+                    if (AModalDelegateType == String.Empty)
+                    {
+                        MainMenuForm.Invoke(new TMyShowMessageBoxDelegate(ShowMessageBoxOnTopOfAllFormsAutoParsed));
+                    }
+                    else if (AModalDelegateType == MODALDELEGATETYPE_DBCONNBROKEN)
+                    {
+                        MainMenuForm.Invoke(new TMyShowMessageBoxDelegate(ShowMessageBoxOnTopOfAllFormsDBConnectionBroken));
+                    }
+                    else
+                    {
+                        throw new ArgumentException(String.Format(
+                                "Argument 'AModalDelegateType' got passed with value '{0}' but this isnt' supported", AModalDelegateType),
+                            "AModalDelegateType");
+                    }
                 }
                 else
                 {
-                    MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), MessageBoxTitle);
+                    TLogging.Log(AMessageBoxText);
+
+                    MessageBox.Show(AMessageBoxText, AMessageBoxTitle, MessageBoxButtons.OK, AMessageBoxIcon);
                 }
             }
             else
             {
+                TLogging.Log(AMessageBoxText);
+
                 // We are requested to show the MessageBox non-modally, but still in front of all other Forms!
-                MessageBox.Show(FClientTaskDataRow["TaskCode"].ToString(), MessageBoxTitle,
-                    MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1,
+                MessageBox.Show(AMessageBoxText, AMessageBoxTitle,
+                    MessageBoxButtons.OK, AMessageBoxIcon, MessageBoxDefaultButton.Button1,
                     (MessageBoxOptions)0x40000); // this is the 'MB_TOPMOST' Flag...
             }
         }

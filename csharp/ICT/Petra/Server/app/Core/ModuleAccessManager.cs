@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,16 +23,16 @@
 //
 using System;
 using System.Collections;
+using System.Data;
 using System.Reflection;
-using GNU.Gettext;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-
-using System.Data;
+using GNU.Gettext;
 
 namespace Ict.Petra.Server.App.Core.Security
 {
@@ -48,78 +48,63 @@ namespace Ict.Petra.Server.App.Core.Security
         /// load the modules available to the given user
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public static string[] LoadUserModules(String AUserID)
+        public static string[] LoadUserModules(String AUserID, TDBTransaction ATransaction)
         {
             string[] ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
             SUserModuleAccessPermissionTable UserModuleAccessPermissionsDT;
             Int32 CounterOverall;
             Int32 CounterAdded;
             ArrayList UserModuleAccessPermissions;
 
-            // ModulesList: string;
-            // Counter: Int32;
-            try
+            if (SUserModuleAccessPermissionAccess.CountViaSUser(AUserID, ATransaction) > 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
-
-                if (SUserModuleAccessPermissionAccess.CountViaSUser(AUserID, ReadTransaction) > 0)
-                {
-                    UserModuleAccessPermissionsDT = SUserModuleAccessPermissionAccess.LoadViaSUser(AUserID, ReadTransaction);
+                UserModuleAccessPermissionsDT = SUserModuleAccessPermissionAccess.LoadViaSUser(AUserID, ATransaction);
 
 //TLogging.Log("UserModuleAccessPermissionsDT.Rows.Count - 1: " + (UserModuleAccessPermissionsDT.Rows.Count - 1).ToString());
 
-                    // Dimension the ArrayList with the maximum number of ModuleAccessPermissions first
-                    UserModuleAccessPermissions = new ArrayList(UserModuleAccessPermissionsDT.Rows.Count - 1);
+                // Dimension the ArrayList with the maximum number of ModuleAccessPermissions first
+                UserModuleAccessPermissions = new ArrayList(UserModuleAccessPermissionsDT.Rows.Count - 1);
 
-                    CounterAdded = 0;
+                CounterAdded = 0;
 
-                    for (CounterOverall = 0; CounterOverall <= UserModuleAccessPermissionsDT.Rows.Count - 1; CounterOverall += 1)
+                for (CounterOverall = 0; CounterOverall <= UserModuleAccessPermissionsDT.Rows.Count - 1; CounterOverall += 1)
+                {
+                    if (UserModuleAccessPermissionsDT[CounterOverall].CanAccess)
                     {
-                        if (UserModuleAccessPermissionsDT[CounterOverall].CanAccess)
-                        {
 //TLogging.Log("UserModuleAccessPermissionsDT[" + CounterOverall.ToString() + "].ModuleId: " + UserModuleAccessPermissionsDT[CounterOverall].ModuleId + ": CounterAdded: " + CounterAdded.ToString());
 
-                            UserModuleAccessPermissions.Add(UserModuleAccessPermissionsDT[CounterOverall].ModuleId);
-                            CounterAdded = CounterAdded + 1;
-                        }
+                        UserModuleAccessPermissions.Add(UserModuleAccessPermissionsDT[CounterOverall].ModuleId);
+                        CounterAdded = CounterAdded + 1;
                     }
+                }
 
-                    if (CounterAdded != 0)
-                    {
-                        // Copy contents of the ArrayList into the ReturnValue
-                        ReturnValue = new string[CounterAdded];
-                        Array.Copy(UserModuleAccessPermissions.ToArray(), ReturnValue, CounterAdded);
+                if (CounterAdded != 0)
+                {
+                    // Copy contents of the ArrayList into the ReturnValue
+                    ReturnValue = new string[CounterAdded];
+                    Array.Copy(UserModuleAccessPermissions.ToArray(), ReturnValue, CounterAdded);
 
-                        // ModulesList := '';
-                        //
-                        // for Counter := 0 to CounterAdded  1 do
-                        // begin
-                        // Console.WriteLine('ModulesList: working on Counter ' + Counter.ToString());
-                        // ModulesList := ModulesList + UserModuleAccessPermissionsArray[Counter].ToString() + #10#13;
-                        // end;
-                        // Console.WriteLine(ModulesList);
-                    }
-                    else
-                    {
-                        ReturnValue = new string[0];
-                    }
+                    // ModulesList := '';
+                    //
+                    // for Counter := 0 to CounterAdded  1 do
+                    // begin
+                    // Console.WriteLine('ModulesList: working on Counter ' + Counter.ToString());
+                    // ModulesList := ModulesList + UserModuleAccessPermissionsArray[Counter].ToString() + #10#13;
+                    // end;
+                    // Console.WriteLine(ModulesList);
                 }
                 else
                 {
                     ReturnValue = new string[0];
                 }
             }
-            finally
+            else
             {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(8, "TModuleAccessManager.LoadUserModules: committed own transaction.");
-                }
+                ReturnValue = new string[0];
             }
+
             return ReturnValue;
         }
 

@@ -727,8 +727,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         (int)CurrentlySelectedRow["a_journal_number_i"], (int)CurrentlySelectedRow["a_batch_year_i"],
                         (int)CurrentlySelectedRow["a_batch_period_i"]);
 
-                    GLb.SelectTab(TFrmGLBatch.eGLTabs.Journals);
-                    GLb.SelectTab(TFrmGLBatch.eGLTabs.Transactions);
+                    GLb.SelectTab(TGLBatchEnums.eGLTabs.Journals);
+                    GLb.SelectTab(TGLBatchEnums.eGLTabs.Transactions);
                     GLb.FindGLTransaction((int)CurrentlySelectedRow["a_batch_number_i"],
                         (int)CurrentlySelectedRow["a_journal_number_i"], (int)CurrentlySelectedRow["a_transaction_number_i"]);
                 }

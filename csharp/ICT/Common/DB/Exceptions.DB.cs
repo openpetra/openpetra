@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -60,12 +60,17 @@ namespace Ict.Common.DB.Exceptions
         /// </summary>
         /// <param name="AConnectionString">Database connection string.</param>
         /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
-        public EDBConnectionNotEstablishedException(string AConnectionString, Exception AInnerException) : base(AConnectionString, AInnerException)
+        /// <param name="ALogException">Set to false to not log the Exception (default=true).</param>
+        public EDBConnectionNotEstablishedException(string AConnectionString, Exception AInnerException,
+            bool ALogException = true) : base(AConnectionString, AInnerException)
         {
-            string ErrorString = (("Error opening Database Connection. The connection string is [ " + AConnectionString) + " ].");
+            if (ALogException)
+            {
+                string ErrorString = (("Error opening Database Connection. The connection string is [ " + AConnectionString) + " ].");
 
-            Console.WriteLine();
-            TLogging.Log(ErrorString);
+                Console.WriteLine();
+                TLogging.Log(ErrorString);
+            }
         }
 
         #region Remoting and serialization
@@ -307,6 +312,89 @@ namespace Ict.Common.DB.Exceptions
         /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
         /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
         public EDBConnectionNotAvailableException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region EDBConnectionBrokenException
+
+    /// <summary>
+    /// Thrown if the DB Connection was found to be broken in the 'BeginTransaction' Methods
+    /// (determined with a call to Method
+    /// 'TExceptionHandler.IsExceptionCausedByUnavailableDBConnectionServerSide') AND the
+    /// the one retry attempt to re-establish the broken DB Connection in those Methods
+    /// didn't overcome the situation.
+    /// </summary>
+    [Serializable()]
+    public class EDBConnectionBrokenException : EOPDBException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBConnectionBrokenException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBConnectionBrokenException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a a reference to the inner <see cref="Exception" />
+        /// that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBConnectionBrokenException(Exception AInnerException) : base("Database Connection Broken Exception occurred", AInnerException)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and a reference to the inner <see cref="Exception" /> that is the cause of this <see cref="Exception" />.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException">The <see cref="Exception" /> that is the cause of the current <see cref="Exception" />, or a null reference if no inner <see cref="Exception" /> is specified.</param>
+        public EDBConnectionBrokenException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBConnectionBrokenException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
         {
         }
 

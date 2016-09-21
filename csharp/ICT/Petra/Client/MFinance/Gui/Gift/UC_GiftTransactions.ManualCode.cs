@@ -209,16 +209,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //ALT Key Combinations for setting focus
 
             //Find Donor Dialog
+            // For Donor and Recipient controls, the shortcut key is not on the button text, therefore it should not activate the button. Finance users often
+            // work from memory, or lists showing the partner key not name, so automatically activating the Find button actually hinders them. Best compromise is to set
+            // focus to the button. From there it's a single keypress either way: <space> to activate the button or <tab> to enter a partner key.
             if (keyData == (Keys.O | Keys.Alt))
             {
-                txtDetailDonorKey.PerformButtonClick();
+                if (txtDetailDonorKey.CanFocus)
+                {
+                    txtDetailDonorKey.Focus();
+                }
+
                 return true;
             }
 
             //Find Recipient Dialog
+            //See comment above
             if (keyData == (Keys.P | Keys.Alt))
             {
-                txtDetailRecipientKey.PerformButtonClick();
+                if (txtDetailRecipientKey.CanFocus)
+                {
+                    txtDetailRecipientKey.Focus();
+                }
+
                 return true;
             }
 
@@ -520,11 +532,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         }
 
         /// <summary>
-        /// reset the control
+        /// Clear the current selection
         /// </summary>
+        /// <param name="ABatchToClear"></param>
         /// <param name="AResetFBatchNumber"></param>
-        public void ClearCurrentSelection(bool AResetFBatchNumber = true)
+        public void ClearCurrentSelection(int ABatchToClear = 0, bool AResetFBatchNumber = true)
         {
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (FPreviouslySelectedDetailRow.BatchNumber != ABatchToClear))
+            {
+                return;
+            }
+
+            //Set selection to null
             this.FPreviouslySelectedDetailRow = null;
 
             if (AResetFBatchNumber)

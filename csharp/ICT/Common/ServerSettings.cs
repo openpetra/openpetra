@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.IO;
+
 using Ict.Common;
 
 namespace Ict.Common
@@ -63,6 +64,7 @@ namespace Ict.Common
         private string FIntranetDataSenderEmail;
         private bool FRunAsStandalone;
         private String FApplicationBinFolder;
+        private int FDBConnectionCheckInterval;
 
         #region Properties
         private static TSrvSetting USingletonSrvSetting = null;
@@ -127,6 +129,18 @@ namespace Ict.Common
             get
             {
                 return USingletonSrvSetting.FDBPassword;
+            }
+        }
+
+        /// <summary>
+        /// Polling interval in which to check whether the DB Connection is still OK
+        /// (default = 0 = no such checks).
+        /// </summary>
+        public static int DBConnectionCheckInterval
+        {
+            get
+            {
+                return USingletonSrvSetting.FDBConnectionCheckInterval;
             }
         }
 
@@ -346,6 +360,7 @@ namespace Ict.Common
             FDatabaseName = ACopyFrom.FDatabaseName;
             FDBUsername = ACopyFrom.FDBUsername;
             FDBPassword = ACopyFrom.FDBPassword;
+            FDBConnectionCheckInterval = ACopyFrom.FDBConnectionCheckInterval;
             FIPBasePort = ACopyFrom.FIPBasePort;
             FServerLogFile = ACopyFrom.FServerLogFile;
             FHostName = ACopyFrom.FHostName;
@@ -388,6 +403,7 @@ namespace Ict.Common
             FDatabaseName = TAppSettingsManager.GetValue("Server.DBName", "openpetra");
             FDBUsername = TAppSettingsManager.GetValue("Server.DBUserName", "petraserver");
             FDBPassword = TAppSettingsManager.GetValue("Server.DBPassword", string.Empty, false);
+            FDBConnectionCheckInterval = TAppSettingsManager.GetInt32("Server.DBConnectionCheckInterval", 0);
 
             FApplicationBinFolder = TAppSettingsManager.GetValue("Server.ApplicationBinDirectory", string.Empty, false);
 

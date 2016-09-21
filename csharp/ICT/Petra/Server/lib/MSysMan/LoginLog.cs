@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+
+using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -43,14 +45,15 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="ALoginSuccesful"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
             String ALoginStatus,
-            out Int32 AProcessID)
+            out Int32 AProcessID,
+            TDBTransaction ATransaction)
         {
             Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful,
-                ALoginStatus,
-                out AProcessID);
+                ALoginStatus, out AProcessID, ATransaction);
         }
 
         /// <summary>
@@ -61,16 +64,18 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
             String ALoginStatus,
             Boolean AImmediateLogout,
-            out Int32 AProcessID)
+            out Int32 AProcessID,
+            TDBTransaction ATransaction)
         {
             Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful,
                 ALoginStatus,
                 AImmediateLogout,
-                out AProcessID);
+                out AProcessID, ATransaction);
         }
     }
 }

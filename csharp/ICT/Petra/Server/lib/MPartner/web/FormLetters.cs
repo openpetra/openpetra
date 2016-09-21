@@ -546,6 +546,54 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             }
                         }
 
+                        // retrieve Contact Detail information
+                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContactDetail))
+                        {
+                            PPartnerAttributeTable ContactDetailTable;
+                            TFormDataContactDetail ContactDetailRecord;
+
+                            ContactDetailTable = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
+
+                            foreach (PPartnerAttributeRow ContactDetailRow in ContactDetailTable.Rows)
+                            {
+                                // find attribute type row
+                                TPartnerCacheable CachePopulator = new TPartnerCacheable();
+                                PPartnerAttributeTypeTable TypeTable =
+                                    (PPartnerAttributeTypeTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.ContactTypeList);
+                                PPartnerAttributeTypeRow TypeRow = (PPartnerAttributeTypeRow)TypeTable.Rows.Find(
+                                    ContactDetailRow.AttributeType);
+
+                                if (TypeRow != null)
+                                {
+                                    // find attribute category row from type row
+                                    PPartnerAttributeCategoryTable CategoryTable =
+                                        (PPartnerAttributeCategoryTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.
+                                            ContactCategoryList);
+                                    PPartnerAttributeCategoryRow CategoryRow =
+                                        (PPartnerAttributeCategoryRow)CategoryTable.Rows.Find(TypeRow.CategoryCode);
+
+                                    // only add to contact details if category is a contact category
+                                    if (CategoryRow.PartnerContactCategory)
+                                    {
+                                        ContactDetailRecord = new TFormDataContactDetail();
+
+                                        // retrieve category from attribute type row
+                                        ContactDetailRecord.Category = TypeRow.CategoryCode;
+
+                                        ContactDetailRecord.Type = ContactDetailRow.AttributeType;
+                                        ContactDetailRecord.Value = ContactDetailRow.Value;
+                                        ContactDetailRecord.IsCurrent = ContactDetailRow.Current;
+
+                                        ContactDetailRecord.IsBusiness = ContactDetailRow.Specialised;
+                                        ContactDetailRecord.IsConfidential = ContactDetailRow.Confidential;
+                                        ContactDetailRecord.Comment = ContactDetailRow.Comment;
+
+                                        formData.AddContactDetail(ContactDetailRecord);
+                                    }
+                                }
+                            }
+                        }
+
                         // retrieve Subscription information
                         if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription)
                             || ((AFormLetterInfo.FormLetterPrintOptions != null)
@@ -665,7 +713,9 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             {
                                 ContactLogRecord = new TFormDataContactLog();
 
+                                ContactLogRecord.Date = ContactLogRow.ContactDate;
                                 ContactLogRecord.Contactor = ContactLogRow.Contactor;
+                                ContactLogRecord.ContactCode = ContactLogRow.ContactCode;
                                 ContactLogRecord.Notes = ContactLogRow.ContactComment;
 
                                 formData.AddContactLog(ContactLogRecord);

@@ -30,9 +30,10 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -51,6 +52,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private TFrmRecurringGiftBatch FMyForm = null;
 
         private Boolean FSubmittingInProgress = false;
+        private Int32 FSelectedBatchNumber = 0;
 
         #region Properties
 
@@ -89,22 +91,39 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Main method to Submit a specified batch
         /// </summary>
         /// <param name="ACurrentRecurringBatchRow">The batch row to Submit</param>
-        /// <param name="ATxtDetailHashTotal">True means ask user if they want to Submit</param>
-        /// <param name="ASubmittingAlreadyConfirmed">True means ask user if they want to Submit</param>
+        /// <param name="AWarnOfInactiveValues">True means user is warned if inactive values exist</param>
+        /// <param name="ADonorZeroIsValid"></param>
+        /// <param name="ARecipientZeroIsValid"></param>
         /// <returns>True if the batch was successfully Submited</returns>
         public bool SubmitBatch(ARecurringGiftBatchRow ACurrentRecurringBatchRow,
-            Ict.Common.Controls.TTxtCurrencyTextBox ATxtDetailHashTotal,
-            ref bool ASubmittingAlreadyConfirmed)
+            bool AWarnOfInactiveValues = true,
+            bool ADonorZeroIsValid = false,
+            bool ARecipientZeroIsValid = false)
         {
-            int SelectedBatchNumber = ACurrentRecurringBatchRow.BatchNumber;
+            if (ACurrentRecurringBatchRow == null)
+            {
+                return false;
+            }
 
+            FSelectedBatchNumber = ACurrentRecurringBatchRow.BatchNumber;
+
+            //Make sure that all control data is in dataset
+            FMyForm.GetLatestControlData();
+
+            //Copy all batch data to new table
             GiftBatchTDSARecurringGiftDetailTable RecurringBatchGiftDetails = new GiftBatchTDSARecurringGiftDetailTable();
 
+            //Filter ARecurringGiftDetail
             DataView RecurringGiftDetailDV = new DataView(FMainDS.ARecurringGiftDetail);
 
             RecurringGiftDetailDV.RowFilter = string.Format("{0}={1}",
                 ARecurringGiftDetailTable.GetBatchNumberDBName(),
-                SelectedBatchNumber);
+                FSelectedBatchNumber);
+
+            RecurringGiftDetailDV.Sort = string.Format("{0} ASC, {1} ASC, {2} ASC",
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                ARecurringGiftDetailTable.GetDetailNumberDBName());
 
             foreach (DataRowView dRV in RecurringGiftDetailDV)
             {
@@ -112,26 +131,29 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 RecurringBatchGiftDetails.Rows.Add((object[])rGBR.ItemArray.Clone());
             }
 
+            //Save and check for inactive values and ex-workers and anonymous gifts
             if (FPetraUtilsObject.HasChanges)
             {
-                bool CancelledDueToExWorker;
-
-                // save first, then submit
-                if (!FMyForm.SaveChangesForSubmitting(RecurringBatchGiftDetails, out CancelledDueToExWorker))
+                //Keep this conditional check separate from the one above so that it only gets called
+                // when necessary and doesn't result in the executon of the same method
+                if (!FMyForm.SaveChangesForSubmitting(RecurringBatchGiftDetails))
                 {
-                    if (!CancelledDueToExWorker)
-                    {
-                        // saving failed, therefore do not try to submit
-                        MessageBox.Show(Catalog.GetString(
-                                "The recurring batch was not submitted due to problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please fix the batch first and then submit it."),
-                            Catalog.GetString("Submit Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
+                    return false;
+                }
+            }
+            else
+            {
+                //This has to be called here because if there are no changes then the DataSavingValidating
+                // method which calls the method below, will not run.
+                if (!FMyForm.GetBatchControl().AllowInactiveFieldValues(TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING)
+                    || FMyForm.GiftHasExWorkerOrAnon(RecurringBatchGiftDetails)
+                    )
+                {
                     return false;
                 }
             }
 
+            //Check hash total validity
             if ((ACurrentRecurringBatchRow.HashTotal != 0)
                 && (ACurrentRecurringBatchRow.BatchTotal != ACurrentRecurringBatchRow.HashTotal))
             {
@@ -142,15 +164,107 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         StringHelper.FormatUsingCurrencyCode(ACurrentRecurringBatchRow.HashTotal, ACurrentRecurringBatchRow.CurrencyCode)),
                     "Submit Recurring Gift Batch");
 
-                ATxtDetailHashTotal.Focus();
-                ATxtDetailHashTotal.SelectAll();
+                FMyForm.GetBatchControl().Controls["txtDetailHashTotal"].Focus();
+                FMyForm.GetBatchControl().Controls["txtDetailHashTotal"].Select();
                 return false;
+            }
+
+            //Check for zero Donors or Recipients
+            if (!ADonorZeroIsValid)
+            {
+                DataView recurringBatchGiftDV = new DataView(FMainDS.ARecurringGift);
+
+                recurringBatchGiftDV.RowFilter = string.Format("{0}={1} And {2}=0",
+                    ARecurringGiftTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber,
+                    ARecurringGiftTable.GetDonorKeyDBName());
+
+                int numDonorZeros = recurringBatchGiftDV.Count;
+
+                if (numDonorZeros > 0)
+                {
+                    string messageListOfOffendingGifts =
+                        String.Format(Catalog.GetString(
+                                "Recurring Gift Batch {0} contains {1} gift detail(s) with Donor 0000000. Please fix before posting!{2}{2}"),
+                            FSelectedBatchNumber,
+                            numDonorZeros,
+                            Environment.NewLine);
+
+                    string listOfOffendingRows = string.Empty;
+
+                    listOfOffendingRows += "Gift" + Environment.NewLine;
+                    listOfOffendingRows += "------------";
+
+                    foreach (DataRowView drv in recurringBatchGiftDV)
+                    {
+                        ARecurringGiftRow giftRow = (ARecurringGiftRow)drv.Row;
+
+                        listOfOffendingRows += String.Format("{0}{1:0000}",
+                            Environment.NewLine,
+                            giftRow.GiftTransactionNumber);
+                    }
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
+                    extendedMessageBox.ShowDialog((messageListOfOffendingGifts + listOfOffendingRows),
+                        Catalog.GetString("Submit Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
+
+                    return false;
+                }
+            }
+
+            if (!ARecipientZeroIsValid)
+            {
+                DataView recurringBatchGiftDetailsDV = new DataView(FMainDS.ARecurringGiftDetail);
+
+                recurringBatchGiftDetailsDV.RowFilter = string.Format("{0}={1} And {2}=0",
+                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                    FSelectedBatchNumber,
+                    ARecurringGiftDetailTable.GetRecipientKeyDBName());
+
+                int numRecipientZeros = recurringBatchGiftDetailsDV.Count;
+
+                if (numRecipientZeros > 0)
+                {
+                    string messageListOfOffendingGifts =
+                        String.Format(Catalog.GetString(
+                                "Recurring Gift Batch {0} contains {1} gift detail(s) with Recipient 0000000. Please fix before posting!{2}{2}"),
+                            FSelectedBatchNumber,
+                            numRecipientZeros,
+                            Environment.NewLine);
+
+                    string listOfOffendingRows = string.Empty;
+
+                    listOfOffendingRows += "Gift   Detail" + Environment.NewLine;
+                    listOfOffendingRows += "-------------------";
+
+                    foreach (DataRowView drv in recurringBatchGiftDetailsDV)
+                    {
+                        ARecurringGiftDetailRow giftDetailRow = (ARecurringGiftDetailRow)drv.Row;
+
+                        listOfOffendingRows += String.Format("{0}{1:0000}  {2:00}",
+                            Environment.NewLine,
+                            giftDetailRow.GiftTransactionNumber,
+                            giftDetailRow.DetailNumber);
+                    }
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
+
+                    extendedMessageBox.ShowDialog((messageListOfOffendingGifts + listOfOffendingRows),
+                        Catalog.GetString("Submit Batch Error"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbOK,
+                        TFrmExtendedMessageBox.TIcon.embiWarning);
+
+                    return false;
+                }
             }
 
             //Check for inactive KeyMinistries
             DataTable GiftsWithInactiveKeyMinistries;
 
-            if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, SelectedBatchNumber,
+            if (TRemote.MFinance.Gift.WebConnectors.InactiveKeyMinistriesFoundInBatch(FLedgerNumber, FSelectedBatchNumber,
                     out GiftsWithInactiveKeyMinistries, true))
             {
                 int numInactiveValues = GiftsWithInactiveKeyMinistries.Rows.Count;
@@ -159,7 +273,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     String.Format(Catalog.GetString(
                             "{0} inactive key ministries found in Recurring Gift Batch {1}. Do you still want to submit?{2}{2}"),
                         numInactiveValues,
-                        SelectedBatchNumber,
+                        FSelectedBatchNumber,
                         Environment.NewLine);
 
                 listOfOffendingRows += "Gift      Detail   Recipient          KeyMinistry" + Environment.NewLine;

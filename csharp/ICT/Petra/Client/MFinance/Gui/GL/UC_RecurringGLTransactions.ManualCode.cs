@@ -23,9 +23,10 @@
 //
 using System;
 using System.ComponentModel;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 
 using GNU.Gettext;
@@ -39,6 +40,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Client.CommonForms;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
@@ -52,10 +54,18 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_RecurringGLTransactions : IBoundImageEvaluator
     {
+        /// <summary>
+        /// Currently selected Batch number
+        /// </summary>
+        public Int32 FBatchNumber = -1;
+        /// <summary>
+        /// Currently selected journal number
+        /// </summary>
+        public Int32 FJournalNumber = -1;
+
+        private GLSetupTDS FCacheDS = null;
         private bool FLoadCompleted = false;
         private Int32 FLedgerNumber = -1;
-        private Int32 FBatchNumber = -1;
-        private Int32 FJournalNumber = -1;
         private Int32 FTransactionNumber = -1;
         private bool FActiveOnly = false; //opposite of GL Transactions form
         private string FTransactionCurrency = string.Empty;
@@ -67,7 +77,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private AAccountTable FAccountList;
         private ACostCentreTable FCostCentreList;
 
-        private GLSetupTDS FCacheDS;
         private GLBatchTDSARecurringJournalRow FJournalRow = null;
         private ARecurringTransAnalAttribRow FPSAttributesRow = null;
         private TAnalysisAttributes FAnalysisAttributesLogic;
@@ -113,6 +122,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //  to debit or credit accordingly to achieve the same effect
             txtDebitAmount.NegativeValueAllowed = false;
             txtCreditAmount.NegativeValueAllowed = false;
+        }
+
+        /// <summary>
+        /// Get current transaction row
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDSARecurringTransactionRow GetCurrentTransactionRow()
+        {
+            return (GLBatchTDSARecurringTransactionRow) this.GetSelectedDetailRow();
         }
 
         /// <summary>
@@ -247,7 +265,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             AJournalNumber));
                 }
 
-                // We need to call this because we have not called ShowData(), which would have set it.  This differs from the Gift screen.
+                //We need to call this because we have not called ShowData(), which would have set it.
+                // This differs from the Gift screen.
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(FMainDS.ARecurringTransaction.DefaultView);
 
                 // Now we set the full filter
@@ -1108,7 +1127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue, BoundGridImage.DisplayImageEnum.Inactive);
         }
 
-        private bool AccountIsActive(string AAccountCode = "")
+        private bool AccountIsActive(int ALedgerNumber, string AAccountCode = "")
         {
             bool AccountActive = false;
             bool AccountExists = true;
@@ -1128,20 +1147,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            AccountActive = TFinanceControls.AccountIsActive(FLedgerNumber, AAccountCode, FAccountList, out AccountExists);
+            if (FAccountList == null)
+            {
+                SetupAccountCostCentreVariables(ALedgerNumber);
+            }
 
-            if (!AccountExists)
+            AccountActive = TFinanceControls.AccountIsActive(ALedgerNumber, AAccountCode, FAccountList, out AccountExists);
+
+            if (!AccountExists && (AAccountCode.Length > 0))
             {
                 string errorMessage = String.Format(Catalog.GetString("Account {0} does not exist in Ledger {1}!"),
                     AAccountCode,
-                    FLedgerNumber);
+                    ALedgerNumber);
                 TLogging.Log(errorMessage);
             }
 
             return AccountActive;
         }
 
-        private bool CostCentreIsActive(string ACostCentreCode = "")
+        private bool CostCentreIsActive(int ALedgerNumber, string ACostCentreCode = "")
         {
             bool CostCentreActive = false;
             bool CostCentreExists = true;
@@ -1161,17 +1185,58 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
-            CostCentreActive = TFinanceControls.CostCentreIsActive(FLedgerNumber, ACostCentreCode, FCostCentreList, out CostCentreExists);
+            if (FCostCentreList == null)
+            {
+                SetupAccountCostCentreVariables(ALedgerNumber);
+            }
 
-            if (!CostCentreExists)
+            CostCentreActive = TFinanceControls.CostCentreIsActive(ALedgerNumber, ACostCentreCode, FCostCentreList, out CostCentreExists);
+
+            if (!CostCentreExists && (ACostCentreCode.Length > 0))
             {
                 string errorMessage = String.Format(Catalog.GetString("Cost Centre {0} does not exist in Ledger {1}!"),
                     ACostCentreCode,
-                    FLedgerNumber);
+                    ALedgerNumber);
                 TLogging.Log(errorMessage);
             }
 
             return CostCentreActive;
+        }
+
+        private void SetupAccountCostCentreVariables(int ALedgerNumber)
+        {
+            DataTable CostCentreListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList, ALedgerNumber);
+
+            ACostCentreTable tmpCostCentreTable = new ACostCentreTable();
+
+            FMainDS.Tables.Add(tmpCostCentreTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref CostCentreListTable, FMainDS.Tables[tmpCostCentreTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpCostCentreTable.TableName);
+
+            if ((CostCentreListTable == null) || (CostCentreListTable.Rows.Count == 0))
+            {
+                FCostCentreList = null;
+            }
+            else
+            {
+                FCostCentreList = (ACostCentreTable)CostCentreListTable;
+            }
+
+            DataTable AccountListTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList, ALedgerNumber);
+
+            AAccountTable tmpAccountTable = new AAccountTable();
+            FMainDS.Tables.Add(tmpAccountTable);
+            DataUtilities.ChangeDataTableToTypedDataTable(ref AccountListTable, FMainDS.Tables[tmpAccountTable.TableName].GetType(), "");
+            FMainDS.RemoveTable(tmpAccountTable.TableName);
+
+            if ((AccountListTable == null) || (AccountListTable.Rows.Count == 0))
+            {
+                FAccountList = null;
+            }
+            else
+            {
+                FAccountList = (AAccountTable)AccountListTable;
+            }
         }
 
         private void ControlHasChanged(System.Object sender, EventArgs e)
@@ -1262,6 +1327,49 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             btnNew.Enabled = changeable;
         }
 
+        /// <summary>
+        /// Delete transaction data from current recurring GL Batch
+        /// </summary>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AJournalNumber"></param>
+        public void DeleteRecurringTransactionData(Int32 ABatchNumber, Int32 AJournalNumber = 0)
+        {
+            DataView TransAnalAttribDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            TransAnalAttribDV.RowFilter = String.Format("{0}={1} And " + (AJournalNumber > 0 ? "{2}={3}" : "{2}>{3}"),
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            TransAnalAttribDV.Sort = String.Format("{0} DESC, {1} DESC, {2} DESC",
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+            foreach (DataRowView dr in TransAnalAttribDV)
+            {
+                dr.Delete();
+            }
+
+            DataView TransactionDV = new DataView(FMainDS.ARecurringTransaction);
+
+            TransactionDV.RowFilter = String.Format("{0}={1} And " + (AJournalNumber > 0 ? "{2}={3}" : "{2}>{3}"),
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            TransactionDV.Sort = String.Format("{0} DESC, {1} DESC",
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                ARecurringTransactionTable.GetTransactionNumberDBName());
+
+            foreach (DataRowView dr in TransactionDV)
+            {
+                dr.Delete();
+            }
+        }
+
         private void DeleteAllTrans(System.Object sender, EventArgs e)
         {
             if (FPreviouslySelectedDetailRow == null)
@@ -1282,91 +1390,108 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      Catalog.GetString("Confirm Deletion"),
                      MessageBoxButtons.YesNo,
                      MessageBoxIcon.Question,
-                     MessageBoxDefaultButton.Button2) == System.Windows.Forms.DialogResult.Yes))
+                     MessageBoxDefaultButton.Button2) != System.Windows.Forms.DialogResult.Yes))
             {
+                return;
+            }
+
+            //Backup the Dataset for reversion purposes
+            GLBatchTDS BackupMainDS = null;
+
+            TFrmRecurringGLBatch FMyForm = (TFrmRecurringGLBatch) this.ParentForm;
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                //Specify current action
+                FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.DELETINGALLTRANS;
+
                 //Backup the Dataset for reversion purposes
-                GLBatchTDS FTempDS = (GLBatchTDS)FMainDS.Copy();
-                FTempDS.Merge(FMainDS);
+                BackupMainDS = (GLBatchTDS)FMainDS.GetChangesTyped(false);
 
-                try
+                //Unbind any transactions currently being editied in the Transaction Tab
+                // but do not reset FBatchNumber to -1
+                ClearCurrentSelection(0, 0, false);
+
+                //Delete transactions
+                DataView TransDV = new DataView(FMainDS.ARecurringTransaction);
+                DataView TransAttribDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+                TransDV.AllowDelete = true;
+                TransAttribDV.AllowDelete = true;
+
+                TransAttribDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    FBatchNumber,
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    FJournalNumber);
+
+                TransAttribDV.Sort = String.Format("{0} ASC, {1} ASC",
+                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                    ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                for (int i = TransAttribDV.Count - 1; i >= 0; i--)
                 {
-                    //Unbind any transactions currently being editied in the Transaction Tab
-                    ClearCurrentSelection();
-
-                    //Delete transactions
-                    DataView TransDV = new DataView(FMainDS.ARecurringTransaction);
-                    DataView TransAttribDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
-
-                    TransDV.AllowDelete = true;
-                    TransAttribDV.AllowDelete = true;
-
-                    TransDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ARecurringTransactionTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ARecurringTransactionTable.GetJournalNumberDBName(),
-                        FJournalNumber);
-
-                    TransDV.Sort = String.Format("{0} ASC",
-                        ARecurringTransactionTable.GetTransactionNumberDBName());
-
-                    TransAttribDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
-                        ARecurringTransactionTable.GetBatchNumberDBName(),
-                        FBatchNumber,
-                        ARecurringTransactionTable.GetJournalNumberDBName(),
-                        FJournalNumber);
-
-                    TransAttribDV.Sort = String.Format("{0} ASC, {1} ASC",
-                        ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
-                        ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
-
-                    for (int i = TransAttribDV.Count - 1; i >= 0; i--)
-                    {
-                        TransAttribDV.Delete(i);
-                    }
-
-                    for (int i = TransDV.Count - 1; i >= 0; i--)
-                    {
-                        TransDV.Delete(i);
-                    }
-
-                    //Set last journal number
-                    GetJournalRow().LastTransactionNumber = 0;
-
-                    FPetraUtilsObject.SetChangedFlag();
-
-                    //Need to call save
-                    if (((TFrmRecurringGLBatch)ParentForm).SaveChanges())
-                    {
-                        MessageBox.Show(Catalog.GetString("The recurring journal has been cleared successfully!"),
-                            Catalog.GetString("Success"),
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                        UpdateTransactionTotals();
-                        ((TFrmRecurringGLBatch)ParentForm).SaveChanges();
-                    }
-                    else
-                    {
-                        // saving failed, therefore do not try to post
-                        MessageBox.Show(Catalog.GetString(
-                                "The journal has been cleared but there were problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please try and save immediately."),
-                            Catalog.GetString("Failure"), MessageBoxButtons.OK, MessageBoxIcon.Error);
-
-                        SelectRowInGrid(1);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                    FMainDS.Merge(FTempDS);
+                    TransAttribDV.Delete(i);
                 }
 
-                //If some row(s) still exist after deletion
-                if (grdDetails.Rows.Count < 2)
+                TransDV.RowFilter = String.Format("{0}={1} AND {2}={3}",
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    FBatchNumber,
+                    ARecurringTransactionTable.GetJournalNumberDBName(),
+                    FJournalNumber);
+
+                TransDV.Sort = String.Format("{0} ASC",
+                    ARecurringTransactionTable.GetTransactionNumberDBName());
+
+                for (int i = TransDV.Count - 1; i >= 0; i--)
+                {
+                    TransDV.Delete(i);
+                }
+
+                //Set last journal number
+                GetJournalRow().LastTransactionNumber = 0;
+
+                FPetraUtilsObject.SetChangedFlag();
+
+                //Need to call save
+                if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction, true, false))
+                {
+                    FMyForm.GetBatchControl().UpdateRecurringBatchDictionary();
+
+                    MessageBox.Show(Catalog.GetString("The transactions have been deleted but the changes are not saved!"),
+                        Catalog.GetString("Deletion Warning"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
+
+                    SelectRowInGrid(1);
+                }
+                else
                 {
                     UpdateChangeableStatus();
                     ClearControls();
+
+                    MessageBox.Show(Catalog.GetString("All transactions have been deleted successfully!"),
+                        Catalog.GetString("Success"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    //Update transaction totals and save the new figures
+                    UpdateTransactionTotals();
+                    FMyForm.SaveChanges();
                 }
+            }
+            catch (Exception ex)
+            {
+                //Revert to previous state
+                RevertDataSet(FMainDS, BackupMainDS, 1);
+
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
+            }
+            finally
+            {
+                FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
+                this.Cursor = Cursors.Default;
             }
         }
 
@@ -1396,50 +1521,61 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool ADeletionPerformed,
             string ACompletionMessage)
         {
-            if (ADeletionPerformed)
+            TFrmRecurringGLBatch FMyForm = (TFrmRecurringGLBatch) this.ParentForm;
+
+            try
             {
-                UpdateChangeableStatus();
-
-                if (!pnlDetails.Enabled)
+                if (ADeletionPerformed)
                 {
-                    ClearControls();
+                    UpdateChangeableStatus();
+
+                    if (!pnlDetails.Enabled)
+                    {
+                        ClearControls();
+                    }
+
+                    //Always update LastTransactionNumber first before updating totals
+                    GLRoutines.UpdateRecurringJournalLastTransaction(ref FMainDS, ref FJournalRow);
+                    UpdateTransactionTotals();
+
+                    if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction))
+                    {
+                        FMyForm.GetBatchControl().UpdateRecurringBatchDictionary();
+
+                        MessageBox.Show(Catalog.GetString("The transaction has been deleted but the changes are not saved!"),
+                            Catalog.GetString("Deletion Warning"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+                    }
+                    else
+                    {
+                        //message to user
+                        MessageBox.Show(ACompletionMessage,
+                            "Deletion Successful",
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+                    }
                 }
-
-                //Always update LastTransactionNumber first before updating totals
-                GLRoutines.UpdateRecurringJournalLastTransaction(ref FMainDS, ref FJournalRow);
-                UpdateTransactionTotals();
-
-                if (((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
+                else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
                 {
                     //message to user
                     MessageBox.Show(ACompletionMessage,
-                        Catalog.GetString("Deletion Successful"),
+                        "Deletion not allowed",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Information);
+                        MessageBoxIcon.Error);
                 }
-                else
+                else if (!ADeletionPerformed && (ACompletionMessage.Length > 0))
                 {
-                    MessageBox.Show(Catalog.GetString("Error attempting to save after deleting a recurring transaction!"),
-                        "Deletion Unsuccessful",
+                    //message to user
+                    MessageBox.Show(ACompletionMessage,
+                        "Deletion failed",
                         MessageBoxButtons.OK,
-                        MessageBoxIcon.Exclamation);
+                        MessageBoxIcon.Error);
                 }
             }
-            else if (!AAllowDeletion && (ACompletionMessage.Length > 0))
+            finally
             {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion not allowed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-            }
-            else if (!ADeletionPerformed && (ACompletionMessage.Length > 0))
-            {
-                //message to user
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion failed",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
             }
         }
 
@@ -1451,7 +1587,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <returns>true if row deletion is successful</returns>
         private bool DeleteRowManual(GLBatchTDSARecurringTransactionRow ARowToDelete, ref string ACompletionMessage)
         {
-            //Assign default value(s)
             bool DeletionSuccessful = false;
 
             ACompletionMessage = string.Empty;
@@ -1461,39 +1596,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 return DeletionSuccessful;
             }
 
+            //Check if row to delete is on server or not
             bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
 
-            if (!RowToDeleteIsNew)
-            {
-                //Reject any changes which may fail validation
-                ARowToDelete.RejectChanges();
-                ShowDetails(ARowToDelete);
-
-                if (!((TFrmRecurringGLBatch) this.ParentForm).SaveChanges())
-                {
-                    MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current recurring transaction!"),
-                        Catalog.GetString("Deletion Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return DeletionSuccessful;
-                }
-            }
-
-            //Backup the Dataset for reversion purposes
-            GLBatchTDS BackupMainDS = (GLBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
-
-            //Pass copy to delete method.
-            GLBatchTDS TempDS = (GLBatchTDS)FMainDS.Copy();
-            TempDS.Merge(FMainDS);
+            //Take a backup of FMainDS
+            GLBatchTDS BackupMainDS = null;
 
             int TransactionNumberToDelete = ARowToDelete.TransactionNumber;
             int TopMostTransNo = FJournalRow.LastTransactionNumber;
 
+            TFrmRecurringGLBatch FMyForm = (TFrmRecurringGLBatch) this.ParentForm;
+
             try
             {
                 this.Cursor = Cursors.WaitCursor;
+                //Specify current action
+                FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.DELETINGTRANS;
+
+                //Backup the Dataset for reversion purposes
+                BackupMainDS = (GLBatchTDS)FMainDS.GetChangesTyped(false);
 
                 if (RowToDeleteIsNew)
                 {
@@ -1501,11 +1622,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else
                 {
-                    TempDS.AcceptChanges();
+                    //Return modified row to last saved state to avoid validation failures
+                    ARowToDelete.RejectChanges();
+                    ShowDetails(ARowToDelete);
+
+                    //Accept changes for other newly added rows, which by definition would have passed validation
+                    if (OtherUncommittedRowsExist(FBatchNumber, FJournalNumber, TransactionNumberToDelete)
+                        && !FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction))
+                    {
+                        FMyForm.GetBatchControl().UpdateRecurringBatchDictionary();
+
+                        MessageBox.Show(Catalog.GetString("The transaction has not been deleted!"),
+                            Catalog.GetString("Deletion Warning"),
+                            MessageBoxButtons.OK,
+                            MessageBoxIcon.Warning);
+
+                        return false;
+                    }
+
+                    GLBatchTDS TempDS = CopyTransDataToNewDataset(ARowToDelete.BatchNumber, ARowToDelete.JournalNumber);
 
                     //Clear the transactions and load newly saved dataset
-                    FMainDS.ARecurringTransAnalAttrib.Clear();
-                    FMainDS.ARecurringTransaction.Clear();
+                    RemoveTransDataFromFMainDS(ARowToDelete.BatchNumber);
                     FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.ProcessRecurringTransAndAttributesForDeletion(TempDS, FLedgerNumber, FBatchNumber,
                             FJournalNumber, TopMostTransNo, TransactionNumberToDelete));
                 }
@@ -1520,14 +1658,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ex.Message,
-                    Catalog.GetString("Deletion Error"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                //Normally set in PostDeleteManual
+                FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
 
                 //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                RevertDataSet(FMainDS, BackupMainDS);
+
+                TLogging.LogException(ex, Utilities.GetMethodSignature());
+                throw;
             }
             finally
             {
@@ -1539,12 +1677,139 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             return DeletionSuccessful;
         }
 
+        private bool OtherUncommittedRowsExist(int ABatchNumber, int AJournalNumber, int ATransactionNumber)
+        {
+            bool UncommittedRowsExist = false;
+
+            DataView TransDV = new DataView(FMainDS.ARecurringTransaction);
+            DataView TransAnalDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            TransDV.RowFilter = String.Format("{0}={1} And {2}={3} And {4}<>{5}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                AJournalNumber,
+                ARecurringTransactionTable.GetTransactionNumberDBName(),
+                ATransactionNumber);
+
+            foreach (DataRowView drv in TransDV)
+            {
+                DataRow dr = (DataRow)drv.Row;
+
+                if (dr.RowState == DataRowState.Added)
+                {
+                    UncommittedRowsExist = true;
+                    break;
+                }
+            }
+
+            if (!UncommittedRowsExist)
+            {
+                TransAnalDV.RowFilter = String.Format("{0}={1} And {2}={3} And {4}<>{5}",
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    ABatchNumber,
+                    ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                    AJournalNumber,
+                    ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                    ATransactionNumber);
+
+                foreach (DataRowView drv in TransAnalDV)
+                {
+                    DataRow dr = (DataRow)drv.Row;
+
+                    if (dr.RowState == DataRowState.Added)
+                    {
+                        UncommittedRowsExist = true;
+                        break;
+                    }
+                }
+            }
+
+            return UncommittedRowsExist;
+        }
+
+        private void RemoveTransDataFromFMainDS(int ABatchNumber)
+        {
+            DataView TransDV = new DataView(FMainDS.ARecurringTransaction);
+            DataRowCollection TransRowsCollection = FMainDS.ARecurringTransaction.Rows;
+            DataView TransAnalDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
+            DataRowCollection TransAnalRowsCollection = FMainDS.ARecurringTransAnalAttrib.Rows;
+
+            //In reverse order REMOVE rows from tables ready for delete process
+            TransAnalDV.RowFilter = String.Format("{0}={1}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            foreach (DataRowView drv in TransAnalDV)
+            {
+                DataRow dr = (DataRow)drv.Row;
+                TransAnalRowsCollection.Remove(dr);
+            }
+
+            TransDV.RowFilter = String.Format("{0}={1}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ABatchNumber);
+
+            foreach (DataRowView drv in TransDV)
+            {
+                DataRow dr = (DataRow)drv.Row;
+                TransRowsCollection.Remove(dr);
+            }
+        }
+
+        private GLBatchTDS CopyTransDataToNewDataset(int ABatchNumber, int AJournalNumber)
+        {
+            GLBatchTDS TempDS = (GLBatchTDS)FMainDS.Copy();
+
+            TempDS.Merge(FMainDS);
+
+            DataView TransDV = new DataView(TempDS.ARecurringTransaction);
+            DataView TransAnalDV = new DataView(TempDS.ARecurringTransAnalAttrib);
+
+            //In reverse order
+            TransAnalDV.RowFilter = String.Format("{0}<>{1} Or {2}<>{3}",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            foreach (DataRowView drv in TransAnalDV)
+            {
+                drv.Delete();
+            }
+
+            TransDV.RowFilter = String.Format("{0}<>{1} Or {2}<>{3}",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ABatchNumber,
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                AJournalNumber);
+
+            foreach (DataRowView drv in TransDV)
+            {
+                drv.Delete();
+            }
+
+            TempDS.AcceptChanges();
+
+            return TempDS;
+        }
+
+        private void RevertDataSet(GLBatchTDS AMainDS, GLBatchTDS ABackupDS, int ASelectRowInGrid = 0)
+        {
+            if ((ABackupDS != null) && (AMainDS != null))
+            {
+                AMainDS.RejectChanges();
+                AMainDS.Merge(ABackupDS);
+
+                if (ASelectRowInGrid > 0)
+                {
+                    SelectRowInGrid(ASelectRowInGrid);
+                }
+            }
+        }
+
         private void ProcessNewlyAddedTransactionRowForDeletion(Int32 ATransactionNumberToDelete)
         {
-            GLBatchTDS BackupDS = (GLBatchTDS)FMainDS.Copy();
-
-            BackupDS.Merge(FMainDS);
-
             try
             {
                 // Delete the associated recurring transaction analysis attributes
@@ -1614,19 +1879,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             catch (Exception ex)
             {
-                FMainDS.Merge(BackupDS);
-
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
-        }
-
-        /// <summary>
-        /// clear the current selection
-        /// </summary>
-        public void ClearCurrentSelection()
-        {
-            this.FPreviouslySelectedDetailRow = null;
         }
 
         private void ClearControls()
@@ -1636,8 +1891,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             //Clear combos
             cmbDetailAccountCode.SelectedIndex = -1;
+            cmbDetailAccountCode.Text = string.Empty;
             cmbDetailCostCentreCode.SelectedIndex = -1;
+            cmbDetailCostCentreCode.Text = string.Empty;
             cmbDetailKeyMinistryKey.SelectedIndex = -1;
+            cmbDetailKeyMinistryKey.Text = string.Empty;
             //Clear Textboxes
             txtDetailNarrative.Clear();
             txtDetailReference.Clear();
@@ -1815,6 +2073,530 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// clear the current selection
+        /// </summary>
+        /// <param name="ABatchToClear"></param>
+        /// <param name="AJournalToClear"></param>
+        /// <param name="AResetFBatchNumber"></param>
+        public void ClearCurrentSelection(int ABatchToClear = 0, int AJournalToClear = 0, bool AResetFBatchNumber = true)
+        {
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (AJournalToClear == 0)
+                     && (FPreviouslySelectedDetailRow.BatchNumber != ABatchToClear))
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (AJournalToClear > 0)
+                     && !((FPreviouslySelectedDetailRow.BatchNumber == ABatchToClear)
+                          && (FPreviouslySelectedDetailRow.JournalNumber == AJournalToClear)))
+            {
+                return;
+            }
+            else if ((ABatchToClear == 0) && (AJournalToClear > 0))
+            {
+                return;
+            }
+
+            //Set selection to null
+            this.FPreviouslySelectedDetailRow = null;
+
+            if (AResetFBatchNumber)
+            {
+                FBatchNumber = -1;
+                FJournalNumber = -1;
+            }
+        }
+
+        /// <summary>
+        /// Confirm with the user concerning the presence of inactive fields
+        ///  before saving changes to all changed batches
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ABatchNumber"></param>
+        /// <param name="AAction"></param>
+        /// <param name="AJournalNumber"></param>
+        /// <param name="ATransactionNumber"></param>
+        /// <returns></returns>
+        public bool AllowInactiveFieldValues(int ALedgerNumber,
+            int ABatchNumber,
+            TGLBatchEnums.GLBatchAction AAction,
+            int AJournalNumber = 0,
+            int ATransactionNumber = 0)
+        {
+            if (AAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                AAction = TGLBatchEnums.GLBatchAction.SAVING;
+            }
+
+            TUC_RecurringGLBatches MainForm = ((TFrmRecurringGLBatch)ParentForm).GetBatchControl();
+
+            bool InSaving = (AAction == TGLBatchEnums.GLBatchAction.SAVING);
+            bool InSubmitting = false;
+            bool InDeletingBatch = false;
+            bool InDeletingJournal = false;
+            bool InDeletingAllTrans = false;
+            bool InDeletingTrans = false;
+
+            if (!InSaving)
+            {
+                switch (AAction)
+                {
+                    case TGLBatchEnums.GLBatchAction.SUBMITTING:
+                        InSubmitting = true;
+                        break;
+
+                    case TGLBatchEnums.GLBatchAction.DELETING:
+                        InDeletingBatch = true;
+                        break;
+
+                    case TGLBatchEnums.GLBatchAction.DELETINGJOURNAL:
+                        InDeletingJournal = true;
+                        break;
+
+                    case TGLBatchEnums.GLBatchAction.DELETINGALLTRANS:
+                        InDeletingAllTrans = true;
+                        break;
+
+                    case TGLBatchEnums.GLBatchAction.DELETINGTRANS:
+                        InDeletingTrans = true;
+                        break;
+                }
+            }
+
+            bool InDeletingData = (InDeletingJournal || InDeletingAllTrans || InDeletingTrans);
+
+            bool WarnOfInactiveForSubmittingCurrentBatch = InSubmitting && MainForm.FInactiveValuesWarningOnGLSubmitting;
+
+            //Variables for building warning message
+            string WarningMessage = string.Empty;
+            string WarningHeader = string.Empty;
+            StringBuilder WarningList = new StringBuilder();
+
+            //Find batches that have changed
+            List <ARecurringBatchRow>BatchesToCheck = GetUnsavedBatchRowsList(ABatchNumber);
+            List <int>BatchesWithInactiveValues = new List <int>();
+
+            if (BatchesToCheck.Count > 0)
+            {
+                int currentBatchListNo;
+                string batchNoList = string.Empty;
+
+                int numInactiveFieldsPresent = 0;
+                int numInactiveAccounts = 0;
+                int numInactiveCostCentres = 0;
+                int numInactiveAccountTypes = 0;
+                int numInactiveAccountValues = 0;
+
+                foreach (ARecurringBatchRow gBR in BatchesToCheck)
+                {
+                    currentBatchListNo = gBR.BatchNumber;
+
+                    bool checkingCurrentBatch = (currentBatchListNo == ABatchNumber);
+
+                    //in a deleting process
+                    bool noNeedToLoadDataForThisBatch = (InDeletingData && checkingCurrentBatch && (AJournalNumber > 0));
+
+                    bool batchVerified = false;
+                    bool batchExistsInDict = MainForm.FRecurringBatchesVerifiedOnSavingDict.TryGetValue(currentBatchListNo, out batchVerified);
+
+                    if (batchExistsInDict)
+                    {
+                        if (batchVerified && !(InSubmitting && checkingCurrentBatch && WarnOfInactiveForSubmittingCurrentBatch))
+                        {
+                            continue;
+                        }
+                    }
+                    else if (!(InDeletingBatch && checkingCurrentBatch))
+                    {
+                        MainForm.FRecurringBatchesVerifiedOnSavingDict.Add(currentBatchListNo, false);
+                    }
+
+                    //If processing batch about to be submitted, only warn according to user preferences
+                    if ((InSubmitting && checkingCurrentBatch && !WarnOfInactiveForSubmittingCurrentBatch)
+                        || (InDeletingBatch && checkingCurrentBatch))
+                    {
+                        continue;
+                    }
+
+                    DataView journalDV = new DataView(FMainDS.ARecurringJournal);
+                    DataView transDV = new DataView(FMainDS.ARecurringTransaction);
+                    DataView attribDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+                    //Make sure that journal and transaction data etc. is loaded for the current batch
+                    journalDV.RowFilter = String.Format("{0}={1}",
+                        ARecurringJournalTable.GetBatchNumberDBName(),
+                        currentBatchListNo);
+
+                    transDV.RowFilter = String.Format("{0}={1}",
+                        ARecurringTransactionTable.GetBatchNumberDBName(),
+                        currentBatchListNo);
+
+                    attribDV.RowFilter = String.Format("{0}={1}",
+                        ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                        currentBatchListNo);
+
+                    if (FCacheDS == null)
+                    {
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(ALedgerNumber, FActiveOnly);
+                    }
+
+                    if (!noNeedToLoadDataForThisBatch)
+                    {
+                        if (journalDV.Count == 0)
+                        {
+                            FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringJournalAndRelatedTablesForBatch(ALedgerNumber,
+                                    currentBatchListNo));
+
+                            if (journalDV.Count == 0)
+                            {
+                                continue;
+                            }
+                        }
+                        else
+                        {
+                            if (transDV.Count == 0)
+                            {
+                                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransactionAndRelatedTablesForBatch(ALedgerNumber,
+                                        currentBatchListNo));
+
+                                if (transDV.Count == 0)
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                if (attribDV.Count == 0)
+                                {
+                                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringTransAnalAttribForBatch(ALedgerNumber,
+                                            currentBatchListNo));
+                                }
+                            }
+                        }
+                    }
+
+                    //Check for inactive account or cost centre codes
+                    transDV.Sort = String.Format("{0} ASC, {1} ASC",
+                        ARecurringTransactionTable.GetJournalNumberDBName(),
+                        ARecurringTransactionTable.GetTransactionNumberDBName());
+
+                    foreach (DataRowView drv in transDV)
+                    {
+                        ARecurringTransactionRow transRow = (ARecurringTransactionRow)drv.Row;
+
+                        //No need to record inactive values in transactions about to be deleted
+                        if (checkingCurrentBatch
+                            && ((InDeletingJournal && (AJournalNumber > 0) && (transRow.JournalNumber == AJournalNumber))
+                                || (InDeletingTrans && (ATransactionNumber > 0) && (transRow.TransactionNumber == ATransactionNumber))))
+                        {
+                            continue;
+                        }
+
+                        if (!AccountIsActive(ALedgerNumber, transRow.AccountCode))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Account '{0}'{4}",
+                                transRow.AccountCode,
+                                transRow.BatchNumber,
+                                transRow.JournalNumber,
+                                transRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            numInactiveAccounts++;
+
+                            if (!BatchesWithInactiveValues.Contains(transRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(transRow.BatchNumber);
+                            }
+                        }
+
+                        if (!CostCentreIsActive(ALedgerNumber, transRow.CostCentreCode))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Cost Centre '{0}'{4}",
+                                transRow.CostCentreCode,
+                                transRow.BatchNumber,
+                                transRow.JournalNumber,
+                                transRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            numInactiveCostCentres++;
+
+                            if (!BatchesWithInactiveValues.Contains(transRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(transRow.BatchNumber);
+                            }
+                        }
+                    }
+
+                    //Check anlysis attributes
+                    attribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                        ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                        ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                        ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                    foreach (DataRowView drv2 in attribDV)
+                    {
+                        ARecurringTransAnalAttribRow analAttribRow = (ARecurringTransAnalAttribRow)drv2.Row;
+
+                        //No need to record inactive values in transactions about to be deleted
+                        if (checkingCurrentBatch
+                            && ((InDeletingJournal && (AJournalNumber > 0) && (analAttribRow.JournalNumber == AJournalNumber))
+                                || (InDeletingTrans && (ATransactionNumber > 0) && (analAttribRow.TransactionNumber == ATransactionNumber))))
+                        {
+                            continue;
+                        }
+
+                        if (!AnalysisCodeIsActive(analAttribRow.AccountCode, analAttribRow.AnalysisTypeCode))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Analysis Code '{0}'{4}",
+                                analAttribRow.AnalysisTypeCode,
+                                analAttribRow.BatchNumber,
+                                analAttribRow.JournalNumber,
+                                analAttribRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            numInactiveAccountTypes++;
+
+                            if (!BatchesWithInactiveValues.Contains(analAttribRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(analAttribRow.BatchNumber);
+                            }
+                        }
+
+                        if (!AnalysisAttributeValueIsActive(analAttribRow.AnalysisTypeCode, analAttribRow.AnalysisAttributeValue))
+                        {
+                            WarningList.AppendFormat(" Batch:{1} Journal:{2} Transaction:{3:00} has Analysis Value '{0}'{4}",
+                                analAttribRow.AnalysisAttributeValue,
+                                analAttribRow.BatchNumber,
+                                analAttribRow.JournalNumber,
+                                analAttribRow.TransactionNumber,
+                                Environment.NewLine);
+
+                            numInactiveAccountValues++;
+
+                            if (!BatchesWithInactiveValues.Contains(analAttribRow.BatchNumber))
+                            {
+                                BatchesWithInactiveValues.Add(analAttribRow.BatchNumber);
+                            }
+                        }
+                    }
+                }
+
+                numInactiveFieldsPresent = (numInactiveAccounts + numInactiveCostCentres + numInactiveAccountTypes + numInactiveAccountValues);
+
+                if (numInactiveFieldsPresent > 0)
+                {
+                    string batchList = string.Empty;
+                    string otherChangedBatches = string.Empty;
+
+                    BatchesWithInactiveValues.Sort();
+
+                    //Update the dictionary
+                    foreach (int batch in BatchesWithInactiveValues)
+                    {
+                        if (batch == ABatchNumber)
+                        {
+                            if ((!InSubmitting && (MainForm.FRecurringBatchesVerifiedOnSavingDict[batch] == false))
+                                || (InSubmitting && WarnOfInactiveForSubmittingCurrentBatch))
+                            {
+                                MainForm.FRecurringBatchesVerifiedOnSavingDict[batch] = true;
+                                batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
+                            }
+                        }
+                        else if (MainForm.FRecurringBatchesVerifiedOnSavingDict[batch] == false)
+                        {
+                            MainForm.FRecurringBatchesVerifiedOnSavingDict[batch] = true;
+                            batchList += (string.IsNullOrEmpty(batchList) ? "" : ", ") + batch.ToString();
+                            //Build a list of all batches except current batch
+                            otherChangedBatches += (string.IsNullOrEmpty(otherChangedBatches) ? "" : ", ") + batch.ToString();
+                        }
+                    }
+
+                    //Create header message
+                    WarningHeader = "{0} inactive value(s) found in recurring batch{1}{4}{4}Do you still want to continue with ";
+
+                    if (InDeletingJournal)
+                    {
+                        WarningHeader += String.Format("deleting journal {0} and saving changes to", AJournalNumber);
+                    }
+                    else if (InDeletingAllTrans)
+                    {
+                        WarningHeader += String.Format("deleting all transactions from journal {0} and saving changes to", AJournalNumber);
+                    }
+                    else if (InDeletingTrans)
+                    {
+                        WarningHeader += String.Format("deleting transaction {0} and saving changes to", ATransactionNumber);
+                    }
+                    else
+                    {
+                        WarningHeader += AAction.ToString().ToLower();
+                    }
+
+                    WarningHeader += " batch: {2}" + (otherChangedBatches.Length > 0 ? " and with saving: {3}" : "") + " ?{4}";
+
+                    if (!InSubmitting || (otherChangedBatches.Length > 0))
+                    {
+                        WarningHeader += "{4}(You will only be warned once about inactive values when saving any batch!){4}";
+                    }
+
+                    //Handle plural
+                    batchList = (otherChangedBatches.Length > 0 ? "es: " : ": ") + batchList;
+
+                    WarningMessage = String.Format(Catalog.GetString(WarningHeader + "{4}Inactive values:{4}{5}{4}{6}{5}"),
+                        numInactiveFieldsPresent,
+                        batchList,
+                        ABatchNumber,
+                        otherChangedBatches,
+                        Environment.NewLine,
+                        new String('-', 80),
+                        WarningList);
+
+                    TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox((TFrmRecurringGLBatch)ParentForm);
+
+                    string header = string.Empty;
+
+                    switch (AAction)
+                    {
+                        case TGLBatchEnums.GLBatchAction.SUBMITTING:
+                            header = "Submit";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.DELETING:
+                            header = "Delete";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.DELETINGJOURNAL:
+                            header = "Delete Journal In";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.DELETINGALLTRANS:
+                            header = "Delete All Transaction Detail From";
+                            break;
+
+                        case TGLBatchEnums.GLBatchAction.DELETINGTRANS:
+                            header = "Delete Transaction Detail From";
+                            break;
+
+                        default:
+                            header = "Save";
+                            break;
+                    }
+
+                    return extendedMessageBox.ShowDialog(WarningMessage,
+                        Catalog.GetString(header + " Recurring GL Batch"), string.Empty,
+                        TFrmExtendedMessageBox.TButtons.embbYesNo,
+                        TFrmExtendedMessageBox.TIcon.embiQuestion) == TFrmExtendedMessageBox.TResult.embrYes;
+                }
+            }
+
+            return true;
+        }
+
+        private List <ARecurringBatchRow>GetUnsavedBatchRowsList(int ABatchToInclude = 0)
+        {
+            List <ARecurringBatchRow>RetVal = new List <ARecurringBatchRow>();
+            List <int>BatchesWithChangesList = new List <int>();
+            string BatchesWithChangesString = string.Empty;
+
+            DataView BatchesDV = new DataView(FMainDS.ARecurringBatch);
+            BatchesDV.Sort = ARecurringBatchTable.GetBatchNumberDBName() + " ASC";
+
+            DataView JournalDV = new DataView(FMainDS.ARecurringJournal);
+            DataView TransDV = new DataView(FMainDS.ARecurringTransaction);
+            DataView AttribDV = new DataView(FMainDS.ARecurringTransAnalAttrib);
+
+            //Make sure that journal and transaction data etc. is loaded for the current batch
+            JournalDV.Sort = String.Format("{0} ASC, {1} ASC",
+                ARecurringJournalTable.GetBatchNumberDBName(),
+                ARecurringJournalTable.GetJournalNumberDBName());
+
+            TransDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                ARecurringTransactionTable.GetBatchNumberDBName(),
+                ARecurringTransactionTable.GetJournalNumberDBName(),
+                ARecurringTransactionTable.GetTransactionNumberDBName());
+
+            AttribDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC, {3} ASC",
+                ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                ARecurringTransAnalAttribTable.GetJournalNumberDBName(),
+                ARecurringTransAnalAttribTable.GetTransactionNumberDBName(),
+                ARecurringTransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+            //Add the batch number(s) of changed journals
+            foreach (DataRowView dRV in JournalDV)
+            {
+                ARecurringJournalRow jR = (ARecurringJournalRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(jR.BatchNumber)
+                    && (jR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(jR.BatchNumber);
+                }
+            }
+
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
+
+                //Add any other batch number(s) of changed transactions
+                TransDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    ARecurringTransactionTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
+
+            foreach (DataRowView dRV in TransDV)
+            {
+                ARecurringTransactionRow tR = (ARecurringTransactionRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(tR.BatchNumber)
+                    && (tR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(tR.BatchNumber);
+                }
+            }
+
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
+
+                //Add any other batch number(s) of changed analysis attributes
+                AttribDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
+
+            foreach (DataRowView dRV in AttribDV)
+            {
+                ARecurringTransAnalAttribRow aR = (ARecurringTransAnalAttribRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(aR.BatchNumber)
+                    && (aR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(aR.BatchNumber);
+                }
+            }
+
+            BatchesWithChangesList.Sort();
+
+            foreach (DataRowView dRV in BatchesDV)
+            {
+                ARecurringBatchRow batchRow = (ARecurringBatchRow)dRV.Row;
+
+                if ((batchRow.BatchNumber == ABatchToInclude)
+                    || BatchesWithChangesList.Contains(batchRow.BatchNumber)
+                    || (batchRow.RowState != DataRowState.Unchanged))
+                {
+                    RetVal.Add(batchRow);
+                }
+            }
+
+            return RetVal;
+        }
+
+        /// <summary>
         /// Set focus to the gid controltab
         /// </summary>
         public void FocusGrid()
@@ -1944,11 +2726,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (cmb.Name.StartsWith("cmbDetailCostCentre"))
             {
-                brush = CostCentreIsActive(content) ? Brushes.Black : Brushes.Red;
+                brush = CostCentreIsActive(FLedgerNumber, content) ? Brushes.Black : Brushes.Red;
             }
             else if (cmb.Name.StartsWith("cmbDetailAccount"))
             {
-                brush = AccountIsActive(content) ? Brushes.Black : Brushes.Red;
+                brush = AccountIsActive(FLedgerNumber, content) ? Brushes.Black : Brushes.Red;
             }
             else
             {
@@ -1957,6 +2739,54 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             Font font = new Font(((Control)sender).Font, (brush == Brushes.Red) ? FontStyle.Bold : FontStyle.Regular);
             e.Graphics.DrawString(content, font, brush, new PointF(e.Bounds.X, e.Bounds.Y));
+        }
+
+        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
+
+            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
+                AAnalysisAttributeTable.GetLedgerNumberDBName(),
+                FLedgerNumber,
+                AAnalysisAttributeTable.GetAccountCodeDBName(),
+                AAccountCode,
+                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AAnalysisAttributeTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
+        }
+
+        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
+        {
+            bool retVal = true;
+
+            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
+            {
+                return retVal;
+            }
+
+            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
+
+            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
+                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
+                AAnalysisCode,
+                AFreeformAnalysisTable.GetAnalysisValueDBName(),
+                AAnalysisAttributeValue,
+                AFreeformAnalysisTable.GetActiveDBName());
+
+            retVal = (dv.Count > 0);
+
+            return retVal;
         }
 
         #region BoundImage interface implementation
@@ -1973,11 +2803,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 case BoundGridImage.AnnotationContextEnum.AccountCode:
                     ARecurringTransactionRow row = (ARecurringTransactionRow)ADataRowView.Row;
-                    return !AccountIsActive(row.AccountCode);
+                    return !AccountIsActive(FLedgerNumber, row.AccountCode);
 
                 case BoundGridImage.AnnotationContextEnum.CostCentreCode:
                     ARecurringTransactionRow row2 = (ARecurringTransactionRow)ADataRowView.Row;
-                    return !CostCentreIsActive(row2.CostCentreCode);
+                    return !CostCentreIsActive(FLedgerNumber, row2.CostCentreCode);
 
                 case BoundGridImage.AnnotationContextEnum.AnalysisTypeCode:
                     ARecurringTransAnalAttribRow row3 = (ARecurringTransAnalAttribRow)ADataRowView.Row;

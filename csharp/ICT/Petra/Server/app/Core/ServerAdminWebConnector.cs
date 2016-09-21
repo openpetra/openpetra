@@ -112,6 +112,24 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         }
 
         /// <summary>
+        /// get the count of attemts to reconnect to the database
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static Int64 GetDBReconnectionAttemptsCounter()
+        {
+            return TServerManagerBase.TheServerManager.DBReconnectionAttemptsCounter;
+        }
+
+        /// <summary>
+        /// get the interval of checking the DB connection
+        /// </summary>
+        [RequireModulePermission("SYSMAN")]
+        public static Int64 GetDBConnectionCheckInterval()
+        {
+            return TServerManagerBase.TheServerManager.DBConnectionCheckInterval;
+        }
+
+        /// <summary>
         /// get list of clients
         /// </summary>
         [RequireModulePermission("SYSMAN")]
@@ -204,11 +222,20 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// <param name="ATaskGroup"></param>
         /// <param name="ATaskCode"></param>
         /// <param name="ATaskPriority"></param>
+        /// <param name="ATaskParameter1">Parameter #1 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter2">Parameter #2 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter3">Parameter #3 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter4">Parameter #4 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
         /// <returns></returns>
         [RequireModulePermission("SYSMAN")]
-        public static bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority)
+        public static bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, object ATaskParameter1,
+            object ATaskParameter2, object ATaskParameter3, object ATaskParameter4, System.Int16 ATaskPriority)
         {
-            return TServerManagerBase.TheServerManager.QueueClientTask(AClientID, ATaskGroup, ATaskCode, ATaskPriority);
+            return TServerManagerBase.TheServerManager.QueueClientTask(AClientID, ATaskGroup, ATaskCode, ATaskParameter1, ATaskParameter2, ATaskParameter3, ATaskParameter4, ATaskPriority);
         }
 
         /// <summary>

@@ -164,6 +164,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             String LedgerFilter = "a_ledger_number_i=" + pm.Get("param_ledger_number_i").ToInt32();
             String TranctDateFilter = string.Empty; // Optional Date Filter, as periods or dates
             String CostCentreCodes = pm.Get("param_cost_centre_codes").ToString();
+            Int32 IchNumber = pm.Get("param_ich_number").ToInt32();
+            String IchRunNumberFilter = "";
+
+            if (IchNumber != 0)
+            {
+                IchRunNumberFilter = " AND a_transaction.a_ich_number_i = " + IchNumber;
+            }
 
             if (CostCentreCodes == String.Empty)
             {
@@ -251,12 +258,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 "   AND a_transaction." + LedgerFilter +
                 TranctDateFilter +
                 CostCentreFilter +
+                IchRunNumberFilter +
                 "   AND a_journal.a_journal_status_c = '" + MFinanceConstants.BATCH_POSTED + "'" +
                 "   AND NOT (a_transaction.a_system_generated_l = true" +
                 "           AND (a_transaction.a_narrative_c LIKE 'Gifts received - Gift Batch%'" +
                 "                OR a_transaction.a_narrative_c LIKE 'GB - Gift Batch%'" +
                 "                OR a_transaction.a_narrative_c LIKE 'Year end re-allocation%'))" +
-                " ORDER BY a_transaction.a_account_code_c, a_transaction.a_transaction_date_d");
+                " ORDER BY a_transaction.a_account_code_c, a_transaction.a_transaction_date_d, " +
+                " a_transaction.a_batch_number_i, a_transaction.a_journal_number_i, a_transaction.a_transaction_number_i");
 
             GLReportingTDS ReportDs = TRemote.MReporting.WebConnectors.GetReportingDataSet(Csv);
             ArrayList reportParam = ACalc.GetParameters().Elems;

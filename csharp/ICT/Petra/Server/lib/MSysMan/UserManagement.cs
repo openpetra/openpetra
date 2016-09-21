@@ -63,6 +63,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
         private static readonly string StrUserChangedOtherUsersRetiredState = Catalog.GetString(
             "User {0} changed the 'Retired' state of the user account of user {1}: the latter user is now {2}.");
 
+        private static readonly string StrPasswordHashingVersionGotUpgraded = Catalog.GetString(
+            "The Password Scheme of User {0} got upgraded to {1}; previously it was {2}.");
+
         /// <summary>
         /// Sets the password of any existing user. This Method takes into consideration how users are authenticated in
         /// this system by using an optional authentication plugin DLL.
@@ -100,7 +103,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     ref SubmissionResult,
                     delegate
                     {
-                        SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal);
+                        SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal,
+                            SubmitChangesTransaction);
                         SUserTable UserTable = (SUserTable)UserDR.Table;
 
                         // Note: We are on purpose NOT checking here whether the new password is the same as the existing
@@ -108,7 +112,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                         // if we would do that then the SYSADMIN could try to find out what the password of a user is by
                         // seeing if (s)he would get a message that the new password must be different from the old password...!
 
-                        SetNewPasswordHashAndSaltForExistingUser(UserDR, ANewPassword);
+                        SetNewPasswordHashAndSaltForUser(UserDR, ANewPassword);
 
                         UserDR.PasswordNeedsChange = APasswordNeedsChanged;
 
@@ -165,6 +169,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
             TVerificationResult VerificationResult;
+            TVerificationResultCollection VerificationResultColl = null;
+            SUserRow UserDR = null;
+            SUserTable UserTable = null;
 
             AVerification = new TVerificationResultCollection();
 
@@ -189,27 +196,28 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 TDBTransaction SubmitChangesTransaction = null;
                 bool SubmissionResult = false;
 
-                SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUserID.ToUpper(), out tempPrincipal);
-                SUserTable UserTable = (SUserTable)UserDR.Table;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    ref SubmissionResult,
+                    delegate
+                    {
+                        UserDR = TUserManagerWebConnector.LoadUser(AUserID.ToUpper(), out tempPrincipal,
+                            SubmitChangesTransaction);
+                        UserTable = (SUserTable)UserDR.Table;
 
-                // Security check: Is the supplied current password correct?
-                if (TUserManagerWebConnector.CreateHashOfPassword(ACurrentPassword,
-                        UserDR.PasswordSalt) != UserDR.PasswordHash)
-                {
-                    AVerification = new TVerificationResultCollection();
-                    AVerification.Add(new TVerificationResult("Password Verification",
-                            String.Format(Catalog.GetString(
-                                    "The current password was entered incorrectly! The password did not get changed.")),
-                            TResultSeverity.Resv_Critical));
-
-                    AppendAccountActivity(UserDR,
-                        String.Format("User {0} supplied the wrong current password while attempting to change his/her password!",
-                            UserInfo.GUserInfo.UserID));
-
-                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                        ref SubmissionResult,
-                        delegate
+                        // Security check: Is the supplied current password correct?
+                        if (TUserManagerWebConnector.CreateHashOfPassword(ACurrentPassword,
+                                UserDR.PasswordSalt, UserDR.PwdSchemeVersion) != UserDR.PasswordHash)
                         {
+                            VerificationResultColl = new TVerificationResultCollection();
+                            VerificationResultColl.Add(new TVerificationResult("Password Verification",
+                                    String.Format(Catalog.GetString(
+                                            "The current password was entered incorrectly! The password did not get changed.")),
+                                    TResultSeverity.Resv_Critical));
+
+                            AppendAccountActivity(UserDR,
+                                String.Format("User {0} supplied the wrong current password while attempting to change his/her password!",
+                                    UserInfo.GUserInfo.UserID));
+
                             try
                             {
                                 SUserAccess.SubmitChanges(UserTable, SubmitChangesTransaction);
@@ -224,8 +232,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                                 throw;
                             }
-                        });
+                        }
+                    });
 
+                if (VerificationResultColl != null)
+                {
+                    AVerification = VerificationResultColl;
                     return false;
                 }
 
@@ -241,7 +253,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 // All checks passed: We go aheand and change the user's password!
                 //
 
-                SetNewPasswordHashAndSaltForExistingUser(UserDR, ANewPassword);
+                SetNewPasswordHashAndSaltForUser(UserDR, ANewPassword);
 
                 UserDR.PasswordNeedsChange = false;
 
@@ -291,9 +303,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             out TVerificationResult AVerificationResult)
         {
             string NewPasswordHashWithOldSalt = TUserManagerWebConnector.CreateHashOfPassword(ANewPassword,
-                AUserDR.PasswordSalt, "Scrypt");
+                AUserDR.PasswordSalt, AUserDR.PwdSchemeVersion);
 
-            if (PasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(AUserDR.PasswordHash),
+            if (TPasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(AUserDR.PasswordHash),
                     Convert.FromBase64String(NewPasswordHashWithOldSalt)))
             {
                 AVerificationResult = new TVerificationResult("Password change",
@@ -307,7 +319,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             return false;
         }
 
-        private static void AppendAccountActivity(SUserRow AUserDR, string AAccountActivity)
+        internal static void AppendAccountActivity(SUserRow AUserDR, string AAccountActivity)
         {
             string NewAccountActivity = String.Empty;
             bool LengthOK = false;
@@ -345,6 +357,13 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
             // Also log this to the server log
             TLogging.Log(AAccountActivity);
+        }
+
+        private static void AppendAccountActivityPasswordHashingVersionUpgraded(SUserRow AUserDR, int APwdSchemeVersionUpTillNow)
+        {
+            AppendAccountActivity(AUserDR, String.Format(
+                    StrPasswordHashingVersionGotUpgraded, AUserDR.UserId,
+                    TPasswordHelper.CurrentPasswordSchemeNumber, APwdSchemeVersionUpTillNow));
         }
 
         /// <summary>
@@ -390,6 +409,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 return false;
             }
 
+            newUser.PwdSchemeVersion = TPasswordHelper.CurrentPasswordSchemeNumber;
+
+            AppendAccountActivity(newUser,
+                String.Format("The user record for the new user {0} got created by user {1}.",
+                    newUser.UserId, UserInfo.GUserInfo.UserID));
+
             userTable.Rows.Add(newUser);
 
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
@@ -398,7 +423,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 if (APassword.Length > 0)
                 {
-                    SetNewPasswordHashAndSaltForNewUser(newUser);
+                    SetNewPasswordHashAndSaltForUser(newUser, APassword);
+
+                    newUser.PasswordNeedsChange = true;
                 }
             }
             else
@@ -553,6 +580,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             bool CanCreateUser;
             bool CanChangePassword;
             bool CanChangePermissions;
+            int PwdSchemeVersionUpTillNow;
+            int CurrentPwdSchemeVersion = TPasswordHelper.CurrentPasswordSchemeNumber;
 
             GetAuthenticationFunctionality(out CanCreateUser, out CanChangePassword, out CanChangePermissions);
 
@@ -593,12 +622,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     }
                     else
                     {
-                        // If a password has been added for the first time there will be a (unecrypted) password and no Salt.
-                        // --> Create Salt and hash.
-                        if ((user.PasswordHash.Length > 0) && user.IsPasswordSaltNull())
-                        {
-                            SetNewPasswordHashAndSaltForNewUser(user);
-                        }
+                        PwdSchemeVersionUpTillNow = user.PwdSchemeVersion;
 
                         // Has the 'Account Locked' state changed?
                         if (Convert.ToBoolean(user[SUserTable.GetAccountLockedDBName(), DataRowVersion.Original]) != user.AccountLocked)
@@ -614,10 +638,23 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 AppendAccountActivity(user, String.Format(
                                         StrUserChangedOtherUsersLockedState, UserInfo.GUserInfo.UserID,
                                         user.UserId, Catalog.GetString("no longer locked")));
+
+                                // If the user account got locked when a Password Hashing Scheme was in place that isn't
+                                // the current one then require the user to change his/her password on next login. This is to
+                                // ensure that the Password Hash and Salt that gets placed in the s_user table record of this
+                                // user at his/her next logon isn't just the new Password Hash and Salt of the password that
+                                // the user had used when the user account got Locked (the Password Hashing Scheme of that user
+                                // will get upgraded to the current one then, but in case the system administrator locked the user
+                                // account because (s)he suspects a security breach then any future attempts to use the previous
+                                // password will be thwarted).
+                                if (PwdSchemeVersionUpTillNow != CurrentPwdSchemeVersion)
+                                {
+                                    user.PasswordNeedsChange = true;
+                                }
                             }
                         }
 
-                        // Has the 'Account Locked' state changed?
+                        // Has the 'Retired' state changed?
                         if (Convert.ToBoolean(user[SUserTable.GetRetiredDBName(), DataRowVersion.Original]) != user.Retired)
                         {
                             if (user.Retired)
@@ -631,6 +668,19 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                                 AppendAccountActivity(user, String.Format(
                                         StrUserChangedOtherUsersRetiredState, UserInfo.GUserInfo.UserID,
                                         user.UserId, Catalog.GetString("no longer retired")));
+
+                                // If the user account got retired when a Password Hashing Scheme was in place that isn't
+                                // the current one then require the user to change his/her password on next login. This is to
+                                // ensure that the Password Hash and Salt that gets placed in the s_user table record of this
+                                // user at his/her next logon isn't just the new Password Hash and Salt of the password that
+                                // the user had used when the user account got Retired (the Password Hashing Scheme of that user
+                                // will get upgraded to the current one then, but in case the system administrator retired the user
+                                // account because (s)he suspects a security breach then any future attempts to use the previous
+                                // password will be thwarted).
+                                if (PwdSchemeVersionUpTillNow != CurrentPwdSchemeVersion)
+                                {
+                                    user.PasswordNeedsChange = true;
+                                }
                             }
                         }
                     }
@@ -647,66 +697,51 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
-                ReturnValue = TSubmitChangesResult.scrError;
+
+                throw;
             }
 
             return ReturnValue;
         }
 
-        private static void SetNewPasswordHashAndSaltForNewUser(SUserRow AUserRow)
+        internal static void SetNewPasswordHashAndSaltForUser(SUserRow AUserDR, string ANewPassword)
         {
-            bool StringsWithoutNullBytes = false;
+            byte[] Salt;
+            int PwdSchemeVersionUpTillNow = AUserDR.PwdSchemeVersion;
+            int CurrentPwdSchemeVersion = TPasswordHelper.CurrentPasswordSchemeNumber;
 
-            // PostgreSQL cannot deal with null bytes in strings, hence we need to ensure that we don't have
-            // any in either the Salt or the password Hash before trying to store them to the DB (if we were
-            // attempting to do that we would get NpgsqlException: 08P01, 'invalid message format' - see
-            // https://github.com/npgsql/npgsql/issues/488)
-            while (!StringsWithoutNullBytes)
+            EnsurePasswordHashingSchemeChangeIsAllowed(AUserDR.UserId, PwdSchemeVersionUpTillNow);
+
+            // Note: In this Method we deliberately ignore the present value of the PwdSchemeVersion Column of AUserDR
+            // because we *always* want to save the new password with the password hash of the current (=newest) version!
+
+            // We always assign a new 'Salt' with every password change (best practice)!
+            Salt = TPasswordHelper.CurrentPasswordScheme.GetNewPasswordSalt();
+
+            AUserDR.PasswordSalt = Convert.ToBase64String(Salt);
+            AUserDR.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(ANewPassword,
+                Convert.ToBase64String(Salt), CurrentPwdSchemeVersion);
+
+            if (PwdSchemeVersionUpTillNow != CurrentPwdSchemeVersion)
             {
-                AUserRow.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
-                AUserRow.PasswordHash = PasswordHelper.GetPasswordHash(AUserRow.PasswordHash, AUserRow.PasswordSalt);
+                // Ensure AUserDR.PwdSchemeVersion gets set to the current (=newest) version!
+                AUserDR.PwdSchemeVersion = CurrentPwdSchemeVersion;
 
-                if (!AUserRow.PasswordSalt.Contains("\0")
-                    && !AUserRow.PasswordHash.Contains("\0"))
-                {
-                    StringsWithoutNullBytes = true;
-                }
-                else
-                {
-                    TLogging.LogAtLevel(1, "PasswordSalt or PasswordSalt contained null byte(s), therefore generating " +
-                        "new ones for the new user to avoid PostgreSQL problems");
-                }
+                AppendAccountActivityPasswordHashingVersionUpgraded(AUserDR, PwdSchemeVersionUpTillNow);
             }
-
-            AUserRow.PasswordNeedsChange = true;
         }
 
-        private static void SetNewPasswordHashAndSaltForExistingUser(SUserRow AUserRow, string ANewPassword)
+        private static void EnsurePasswordHashingSchemeChangeIsAllowed(string AUserId, int APwdSchemeVersionUpTillNow)
         {
-            bool StringsWithoutNullBytes = false;
+            string Message = String.Format("Unsupported downgrade of Password Hashing Scheme for User '{0}' encountered; aborting " +
+                "(Password Hashing Scheme is {1} at present and an attempt was made to downgrade it to {2})",
+                AUserId, APwdSchemeVersionUpTillNow, TPasswordHelper.CurrentPasswordSchemeNumber);
 
-            // PostgreSQL cannot deal with null bytes in strings, hence we need to ensure that we don't have
-            // any in either the Salt or the password Hash before trying to store them to the DB (if we were
-            // attempting to do that we would get NpgsqlException: 08P01, 'invalid message format' - see
-            // https://github.com/npgsql/npgsql/issues/488)
-            while (!StringsWithoutNullBytes)
+            if (TPasswordHelper.CurrentPasswordSchemeNumber < APwdSchemeVersionUpTillNow)
             {
-                // We always assign a new 'Salt' with every password change (best practice)!
-                AUserRow.PasswordSalt = PasswordHelper.GetNewPasswordSalt();
+                TLogging.Log(Message);
 
-                AUserRow.PasswordHash = TUserManagerWebConnector.CreateHashOfPassword(ANewPassword,
-                    AUserRow.PasswordSalt, "Scrypt");
-
-                if (!AUserRow.PasswordSalt.Contains("\0")
-                    && !AUserRow.PasswordHash.Contains("\0"))
-                {
-                    StringsWithoutNullBytes = true;
-                }
-                else
-                {
-                    TLogging.LogAtLevel(1, "PasswordSalt or PasswordSalt contained null byte(s), therefore generating " +
-                        "new ones for the same password to avoid PostgreSQL problems");
-                }
+                throw new EPetraSecurityException(Message);
             }
         }
     }

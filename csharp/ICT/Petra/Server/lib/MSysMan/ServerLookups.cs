@@ -167,7 +167,7 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
                 // The password is converted from a byte array (rather than being compiled into this DLL as plain text).
                 // The username and password are stored in different server DLL's.
                 ALoginUsername = TSmtpSender.EMAIL_USER_LOGIN_NAME;
-                ALoginPassword = Encoding.ASCII.GetString(PasswordHelper.EmailUserPassword);
+                ALoginPassword = Encoding.ASCII.GetString(TPasswordHelper.EmailUserPassword);
             }
         }
     }

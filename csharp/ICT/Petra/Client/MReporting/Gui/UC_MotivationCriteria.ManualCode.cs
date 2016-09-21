@@ -277,6 +277,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             string Group_Detail_Pairs = string.Empty;
             string Group_Detail_Individual = string.Empty;
+            string Group_Detail_Individual_quotes = string.Empty;
 
             // are all motivation details selected?
             if (clbMotivationDetail.GetAllStringList() == clbMotivationDetail.GetCheckedStringList())
@@ -285,6 +286,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 Group_Detail_Pairs = "All";
                 Group_Detail_Individual = "All";
+                Group_Detail_Individual_quotes = "All";
             }
             else
             {
@@ -303,6 +305,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         {
                             Group_Detail_Pairs += ",";
                             Group_Detail_Individual += ",";
+                            Group_Detail_Individual_quotes += ",";
                         }
 
                         // even Index: Group Code
@@ -312,7 +315,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                     {
                         // odd Index: Detail Code
                         Group_Detail_Pairs += KeyPart + "')";
-                        Group_Detail_Individual += ("'" + KeyPart + "'");
+                        Group_Detail_Individual += KeyPart;
+                        Group_Detail_Individual_quotes += ("'" + KeyPart + "'");
                     }
 
                     // increase Index for next element
@@ -321,7 +325,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             ACalc.AddParameter("param_motivation_group_detail_pairs", Group_Detail_Pairs);
-            ACalc.AddParameter("param_motivation_details_quotes", Group_Detail_Individual);
+            ACalc.AddParameter("param_motivation_details", Group_Detail_Individual);
+            ACalc.AddParameter("param_motivation_details_quotes", Group_Detail_Individual_quotes);
 
             ACalc.AddParameter("param_number_of_mot_details", clbMotivationDetail.CheckedItemsCount);
 

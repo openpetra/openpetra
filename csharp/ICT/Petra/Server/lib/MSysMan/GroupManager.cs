@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,6 +23,7 @@
 //
 using System;
 using System.Data;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
@@ -40,34 +41,21 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// load the groups of the given user
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public static SUserGroupTable LoadUserGroups(String AUserID)
+        public static SUserGroupTable LoadUserGroups(String AUserID, TDBTransaction ATransaction)
         {
             SUserGroupTable ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
 
-            try
+            if (SUserGroupAccess.CountViaSUser(AUserID, ATransaction) > 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                ReturnValue = SUserGroupAccess.LoadViaSUser(AUserID, ATransaction);
+            }
+            else
+            {
+                ReturnValue = new SUserGroupTable();
+            }
 
-                if (SUserGroupAccess.CountViaSUser(AUserID, ReadTransaction) > 0)
-                {
-                    ReturnValue = SUserGroupAccess.LoadViaSUser(AUserID, ReadTransaction);
-                }
-                else
-                {
-                    ReturnValue = new SUserGroupTable();
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(9, "TGroupManager.LoadUserGroups: committed own transaction.");
-                }
-            }
             return ReturnValue;
         }
     }

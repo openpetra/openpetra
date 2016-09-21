@@ -236,10 +236,22 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             }
             else if (ATablename == SGroupTable.GetTableDBName())
             {
+                if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_SYSADMIN) == false)
+                {
+                    throw new ESecurityAccessDeniedException(string.Format("No access for user {0} to Module {1}.",
+                            UserInfo.GUserInfo.UserID, SharedConstants.PETRAMODULE_SYSADMIN));
+                }
+
                 AResultTable = SGroupAccess.LoadAll(AReadTransaction);
             }
             else if (ATablename == SSystemDefaultsTable.GetTableDBName())
             {
+                if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_SYSADMIN) == false)
+                {
+                    throw new ESecurityAccessDeniedException(string.Format("No access for user {0} to Module {1}.",
+                            UserInfo.GUserInfo.UserID, SharedConstants.PETRAMODULE_SYSADMIN));
+                }
+
                 AResultTable = SSystemDefaultsAccess.LoadAll(AReadTransaction);
             }
             else if (ATablename == SSystemDefaultsGuiTable.GetTableDBName())

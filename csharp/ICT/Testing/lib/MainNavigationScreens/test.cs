@@ -32,6 +32,7 @@ using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.IO;
+using Ict.Common.Exceptions;
 using Ict.Common.Controls;
 using Ict.Testing.NUnitForms;
 using Ict.Testing.NUnitPetraClient;
@@ -163,8 +164,10 @@ namespace Tests.MainNavigationScreens
                     "user DEMO should not have permissions for TFrmMaintainUsers");
 
                 // open the screen. should return an error message
-                Assert.AreEqual(Catalog.GetString("Sorry, you don't have enough permissions to do this"),
-                    TLstTasks.ExecuteAction(ActionNode, null));
+                bool gotServerException;
+                string errorResult = ExecuteAction(ActionNode, out gotServerException);
+
+                Assert.AreEqual(Catalog.GetString("Sorry, you don't have enough permissions to do this"), errorResult);
             }
         }
 
@@ -249,12 +252,14 @@ namespace Tests.MainNavigationScreens
 
             //create counter variables to keep track of number of failures (might do with lists soon...for modules(?))
             int NoSysManPermissionCount = 0;
+            int NoPtnrAdminPermissionCount = 0;
             int NoOtherPermissionCount = 0;
             int BadFailures = 0;
             int TotalWindowsOpened = 0;
 
             List <String>notOpened = new List <String>();
             List <String>sysManPermissions = new List <String>();
+            List <String>ptnrAdminPermissions = new List <String>();
             List <String>otherPermissions = new List <String>();
             List <String>workingWindows = new List <String>();
 
@@ -276,12 +281,14 @@ namespace Tests.MainNavigationScreens
                     string Module = TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
 
                     TLstTasks.CurrentLedger = TFrmMainWindowNew.CurrentLedger;
+                    bool gotServerException;
+                    string executeResult = string.Empty;
 
                     // Try to open each screen and log the screens that cannot open
                     try
                     {
-                        Assert.AreEqual(String.Empty,
-                            TLstTasks.ExecuteAction(ActionNode, null));
+                        executeResult = ExecuteAction(ActionNode, out gotServerException);
+                        Assert.AreEqual(String.Empty, executeResult);
 
                         if (TLstTasks.LastOpenedScreen != null)
                         {
@@ -306,8 +313,7 @@ namespace Tests.MainNavigationScreens
                             Environment.NewLine + e.ToString());
 
                         // if the failure is a permission failure, just log it but don't fail the test
-                        if (Catalog.GetString("Sorry, you don't have enough permissions to do this") ==
-                            TLstTasks.ExecuteAction(ActionNode, null))
+                        if (Catalog.GetString("Sorry, you don't have enough permissions to do this") == executeResult)
                         {
                             // make sure user didn't have the necessary permissions to open that window
                             // true means user should have been able to open without error
@@ -327,6 +333,11 @@ namespace Tests.MainNavigationScreens
                                 {
                                     NoSysManPermissionCount++;
                                     sysManPermissions.Add(WindowAndModule);
+                                }
+                                else if (permissions.Contains("PTNRADMIN"))
+                                {
+                                    NoPtnrAdminPermissionCount++;
+                                    ptnrAdminPermissions.Add(WindowAndModule);
                                 }
                                 else
                                 {
@@ -386,6 +397,7 @@ namespace Tests.MainNavigationScreens
             //feel free to change any formatting, I'm not in love with it right now
             string notOpenedString = string.Join(Environment.NewLine + "      ", notOpened.ToArray());
             string sysManPermissionsString = string.Join(Environment.NewLine + "      ", sysManPermissions.ToArray());
+            string ptnrAdminPermissionsString = string.Join(Environment.NewLine + "      ", ptnrAdminPermissions.ToArray());
             string otherPermissionsString = string.Join(Environment.NewLine + "      ", otherPermissions.ToArray());
             string workingWindowsString = string.Join(Environment.NewLine + "      ", workingWindows.ToArray());
 
@@ -397,14 +409,17 @@ namespace Tests.MainNavigationScreens
                 TotalWindowsOpened + Environment.NewLine + "      " + workingWindowsString + Environment.NewLine +
                 Environment.NewLine + Environment.NewLine + Environment.NewLine + "SYSMAN Permission Exceptions: " +
                 sysManPermissions.Count + Environment.NewLine + "      " + sysManPermissionsString + Environment.NewLine +
+                Environment.NewLine + Environment.NewLine + Environment.NewLine + "PTNRADMIN Permission Exceptions: " +
+                ptnrAdminPermissions.Count + Environment.NewLine + "      " + ptnrAdminPermissionsString + Environment.NewLine +
                 Environment.NewLine + Environment.NewLine + Environment.NewLine + "Other Permission Exceptions: " +
                 otherPermissions.Count + Environment.NewLine + "      " + otherPermissionsString + Environment.NewLine +
                 Environment.NewLine + Environment.NewLine + "Windows that should be opened but couldn't: " +
                 notOpened.Count + Environment.NewLine + "      " + notOpenedString + Environment.NewLine);
 
             //Now the loop is finished so fail if there were exceptions
-            Assert.GreaterOrEqual(TotalWindowsOpened, 190, "Expected to open at least 190 windows");
-            Assert.GreaterOrEqual(sysManPermissions.Count, 3, "Expected to fail to open at least 3 windows requiring SYSMAN permissions");
+            Assert.GreaterOrEqual(TotalWindowsOpened, 198, "Expected to open at least 198 windows");
+            Assert.GreaterOrEqual(sysManPermissions.Count, 5, "Expected to fail to open at least 5 windows requiring SYSMAN permissions");
+            Assert.GreaterOrEqual(ptnrAdminPermissions.Count, 1, "Expected to fail to open at least 1 window requiring PTNRADMIN permissions");
             Assert.AreEqual(notOpened.Count, 0, "Failed to open at least one window for unexplained reasons");
             Assert.AreEqual(otherPermissions.Count,
                 0,
@@ -442,8 +457,16 @@ namespace Tests.MainNavigationScreens
             // Check that the user is 'demo'
             Assert.AreEqual("demo", UserInfo.GUserInfo.UserID.ToLower(), "Test should be run with DEMO user");
 
+            // Now run the individual tests
+            TestIndividualBrokenClientPermission("//*[@ActionOpenScreen='TFrmMaintainUsers']", "TFrmMaintainUsers");
+            TestIndividualBrokenClientPermission("//*[@ActionOpenScreen='TFrmSystemSettingsSetup']", "TFrmSystemSettingsSetup");
+            TestIndividualBrokenClientPermission("//*[@ActionOpenScreen='TFrmSecurityGroupSetup']", "TFrmSecurityGroupSetup");
+        }
+
+        private void TestIndividualBrokenClientPermission(string XPath, string ScreenName)
+        {
             // get the node that opens the screen TFrmMaintainUsers
-            XPathExpression expr = FNavigator.Compile("//*[@ActionOpenScreen='TFrmMaintainUsers']");
+            XPathExpression expr = FNavigator.Compile(XPath);
             XPathNodeIterator iterator = FNavigator.Select(expr);
 
             iterator.MoveNext();
@@ -456,15 +479,56 @@ namespace Tests.MainNavigationScreens
 
                 // Check that the node does not give permission to user 'demo'
                 Assert.AreEqual(false, TFrmMainWindowNew.HasAccessPermission(ActionNode, UserInfo.GUserInfo.UserID, false),
-                    "user DEMO should not have permissions for TFrmMaintainUsers");
+                    "user DEMO should not have permissions for " + ScreenName);
 
-                string errorResult = TLstTasks.ExecuteAction(ActionNode, null);
+                bool gotServerException;
+                string errorResult = ExecuteAction(ActionNode, out gotServerException);
 
                 // The server should have rejected us
-                Assert.AreNotEqual(String.Empty, errorResult, "Demo was able to open the screen!");
+                Assert.IsTrue(gotServerException, "Demo was able to open the screen!");
                 Assert.IsTrue(errorResult.Equals(
                         "No access for user DEMO to Module SYSMAN."), "Expected the fail reason to be module access permission");
             }
+        }
+
+        private string ExecuteAction(XmlNode ActionNode, out bool GotServerException)
+        {
+            string ReturnValue = string.Empty;
+            Exception TheException = null;
+
+            GotServerException = false;
+
+            try
+            {
+                // Execute the action by calling the TLstTasks static method
+                // If the call goes through to the server we may get an exception.
+                // It really ought to be one of our Ict.Common.Exceptions.EAccessDeniedExceptions
+                //  but Remoting turns that into a TargetInvocationException (sadly).  Microsoft may change this in the future.
+                ReturnValue = TLstTasks.ExecuteAction(ActionNode, null);
+                GotServerException = false;
+            }
+            catch (System.Reflection.TargetInvocationException ex)
+            {
+                // Get the InnerException, if we can
+                TheException = (ex.InnerException == null) ? ex : ex.InnerException;
+            }
+            catch (Exception ex)
+            {
+                // This would include a real Ict.Common.Exceptions.EAccessDeniedException if we ever got one
+                TheException = ex;
+            }
+
+            if (TheException != null)
+            {
+                if (TheException is ESecurityAccessDeniedException)
+                {
+                    GotServerException = true;
+                }
+
+                ReturnValue = TheException.Message;
+            }
+
+            return ReturnValue;
         }
     }
 }

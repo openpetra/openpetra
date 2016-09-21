@@ -42,22 +42,27 @@ namespace Ict.Common.IO
         /// Select a path and filename for file export
         /// </summary>
         /// <param name="ADialogTitle"></param>
+        /// <param name="ASuggestedFileName"></param>
         /// <returns>Local path, or empty sctring if no path selected.</returns>
-        public static String GetExportFilename(string ADialogTitle)
+        public static String GetExportFilename(string ADialogTitle, string ASuggestedFileName = "")
         {
             SaveFileDialog DialogSave = new SaveFileDialog();
 
             DialogSave.DefaultExt = "ext";
             DialogSave.Filter = Catalog.GetString(
-                "Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv");
-            DialogSave.FilterIndex = 3; // pre-select .ext extension
+                //"Text file (*.yml)|*.yml|XML file (*.xml)|*.xml|Petra Export (*.ext)|*.ext|Spreadsheet file (*.csv)|*.csv"); // at the moment we only support .ext format
+                "Petra Export (*.ext)|*.ext");
+            //DialogSave.FilterIndex = 3; // pre-select .ext extension
+            DialogSave.FilterIndex = 1; // pre-select .ext extension
             DialogSave.AddExtension = true;
             DialogSave.RestoreDirectory = true;
             DialogSave.Title = ADialogTitle;
+            DialogSave.FileName = ASuggestedFileName;
 
             if (DialogSave.ShowDialog() == DialogResult.OK)
             {
-                return DialogSave.FileName.ToLower();
+                //return DialogSave.FileName.ToLower();
+                return DialogSave.FileName;
             }
             else
             {

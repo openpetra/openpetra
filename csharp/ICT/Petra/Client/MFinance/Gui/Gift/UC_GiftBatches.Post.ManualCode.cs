@@ -30,9 +30,10 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 
+using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
-using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
@@ -90,74 +91,85 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Main method to post a specified batch
         /// </summary>
         /// <param name="ACurrentBatchRow">The batch row to post</param>
-        /// <param name="APostingAlreadyConfirmed">True means ask user if they want to post</param>
         /// <param name="AWarnOfInactiveValues">True means user is warned if inactive values exist</param>
         /// <param name="ADonorZeroIsValid"></param>
         /// <param name="ARecipientZeroIsValid"></param>
+        /// <param name="APostingAlreadyConfirmed">True means ask user if they want to post</param>
         /// <returns>True if the batch was successfully posted</returns>
         public bool PostBatch(AGiftBatchRow ACurrentBatchRow,
-            bool APostingAlreadyConfirmed = false,
             bool AWarnOfInactiveValues = true,
             bool ADonorZeroIsValid = false,
-            bool ARecipientZeroIsValid = false)
+            bool ARecipientZeroIsValid = false,
+            bool APostingAlreadyConfirmed = false)
         {
-            //This assumes that all gift data etc is loaded into the batch before arriving here
-
-            bool RetVal = false;
-
             if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
-                return RetVal;
+                return false;
             }
 
             FSelectedBatchNumber = ACurrentBatchRow.BatchNumber;
-            TVerificationResultCollection Verifications;
 
-            try
+            //Make sure that all control data is in dataset
+            FMyForm.GetLatestControlData();
+
+            //Copy all batch data to new table
+            GiftBatchTDSAGiftDetailTable BatchGiftDetails = new GiftBatchTDSAGiftDetailTable();
+            DataView BatchGiftDetailsDV = new DataView(FMainDS.AGiftDetail);
+
+            BatchGiftDetailsDV.RowFilter = string.Format("{0}={1}",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                FSelectedBatchNumber);
+
+            BatchGiftDetailsDV.Sort = string.Format("{0} ASC, {1} ASC, {2} ASC",
+                AGiftDetailTable.GetBatchNumberDBName(),
+                AGiftDetailTable.GetGiftTransactionNumberDBName(),
+                AGiftDetailTable.GetDetailNumberDBName());
+
+            foreach (DataRowView drv in BatchGiftDetailsDV)
             {
-                //Make sure that all control data is in dataset
-                FMyForm.GetControlDataForPosting();
+                GiftBatchTDSAGiftDetailRow gBRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
+                BatchGiftDetails.Rows.Add((object[])gBRow.ItemArray.Clone());
+            }
 
-                GiftBatchTDSAGiftDetailTable batchGiftDetails = new GiftBatchTDSAGiftDetailTable();
-                DataView batchGiftDetailsDV = new DataView(FMainDS.AGiftDetail);
-
-                batchGiftDetailsDV.RowFilter = string.Format("{0}={1}",
-                    AGiftDetailTable.GetBatchNumberDBName(),
-                    FSelectedBatchNumber);
-
-                batchGiftDetailsDV.Sort = string.Format("{0} ASC, {1} ASC, {2} ASC",
-                    AGiftDetailTable.GetBatchNumberDBName(),
-                    AGiftDetailTable.GetGiftTransactionNumberDBName(),
-                    AGiftDetailTable.GetDetailNumberDBName());
-
-                foreach (DataRowView drv in batchGiftDetailsDV)
+            //Save and check for inactive values and ex-workers and anonymous gifts
+            if (FPetraUtilsObject.HasChanges)
+            {
+                //Keep this conditional check separate from the one above so that it only gets called
+                // when necessary and doesn't result in the executon of the same method
+                if (!FMyForm.SaveChangesForPosting(BatchGiftDetails))
                 {
-                    GiftBatchTDSAGiftDetailRow gBRow = (GiftBatchTDSAGiftDetailRow)drv.Row;
-
-                    batchGiftDetails.Rows.Add((object[])gBRow.ItemArray.Clone());
+                    return false;
                 }
-
-                bool CancelledDueToExWorkerOrAnonDonor;
-
-                // save first, then post
-                if (!FMyForm.SaveChangesForPosting(batchGiftDetails, out CancelledDueToExWorkerOrAnonDonor))
+                else
                 {
-                    FMyForm.Cursor = Cursors.Default;
-
-                    if (!CancelledDueToExWorkerOrAnonDonor)
-                    {
-                        // saving failed, therefore do not try to post
-                        MessageBox.Show(Catalog.GetString("The batch was not posted due to problems during saving; ") + Environment.NewLine +
-                            Catalog.GetString("Please first correct and save the batch, and then post it!"));
-                    }
-
-                    return RetVal;
+                    APostingAlreadyConfirmed = true;
                 }
             }
-            catch (Exception ex)
+            else
             {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                //This has to be called here because if there are no changes then the DataSavingValidating
+                // method which calls the method below, will not run.
+                if (!FMyForm.GetBatchControl().AllowInactiveFieldValues(ref APostingAlreadyConfirmed,
+                        TExtraGiftBatchChecks.GiftBatchAction.POSTING)
+                    || FMyForm.GiftHasExWorkerOrAnon(BatchGiftDetails)
+                    )
+                {
+                    return false;
+                }
+            }
+
+            //Check hash total validity
+            if ((ACurrentBatchRow.HashTotal != 0)
+                && (ACurrentBatchRow.BatchTotal != ACurrentBatchRow.HashTotal))
+            {
+                MessageBox.Show(String.Format(Catalog.GetString(
+                            "The gift batch total ({0}) for batch {1} does not equal the hash total ({2})!"),
+                        StringHelper.FormatUsingCurrencyCode(ACurrentBatchRow.BatchTotal, ACurrentBatchRow.CurrencyCode),
+                        ACurrentBatchRow.BatchNumber,
+                        StringHelper.FormatUsingCurrencyCode(ACurrentBatchRow.HashTotal, ACurrentBatchRow.CurrencyCode)),
+                    "Post Gift Batch");
+
+                return false;
             }
 
             //Check for missing international exchange rate
@@ -166,7 +178,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (FMyForm.InternationalCurrencyExchangeRate(ACurrentBatchRow, out IsTransactionInIntlCurrency, true) == 0)
             {
-                return RetVal;
+                return false;
             }
 
             //Check for zero Donors or Recipients
@@ -211,7 +223,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         TFrmExtendedMessageBox.TButtons.embbOK,
                         TFrmExtendedMessageBox.TIcon.embiWarning);
 
-                    return RetVal;
+                    return false;
                 }
             }
 
@@ -257,7 +269,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         TFrmExtendedMessageBox.TButtons.embbOK,
                         TFrmExtendedMessageBox.TIcon.embiWarning);
 
-                    return RetVal;
+                    return false;
                 }
             }
 
@@ -317,7 +329,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
                     else
                     {
-                        return RetVal;
+                        return false;
                     }
                 }
                 else
@@ -327,7 +339,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         TFrmExtendedMessageBox.TButtons.embbOK,
                         TFrmExtendedMessageBox.TIcon.embiWarning);
 
-                    return RetVal;
+                    return false;
                 }
             }
 
@@ -337,10 +349,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Catalog.GetString("Confirm posting of Gift Batch"),
                         MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes))
             {
-                return RetVal;
+                return false;
             }
 
-            Verifications = new TVerificationResultCollection();
+            TVerificationResultCollection Verifications = new TVerificationResultCollection();
 
             try
             {
@@ -379,8 +391,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
-
-                    RetVal = true;
                 }
             }
             catch (Exception ex)
@@ -393,7 +403,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPostingInProgress = false;
             }
 
-            return RetVal;
+            return true;
         }
 
         #endregion

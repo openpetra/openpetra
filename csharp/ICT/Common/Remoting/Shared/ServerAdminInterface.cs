@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+
 using Ict.Common;
 
 namespace Ict.Common.Remoting.Shared
@@ -33,6 +34,26 @@ namespace Ict.Common.Remoting.Shared
     /// <remarks>Comment Clients don't use this interface!</remarks>
     public interface IServerAdminInterface
     {
+        /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
+        Int64 DBReconnectionAttemptsCounter
+        {
+            get;
+        }
+
+        /// <summary>
+        /// DB Connection Check Interval (if this is 0 then no automatic checks are done).
+        /// </summary>
+        int DBConnectionCheckInterval
+        {
+            get;
+        }
+
+        /// <summary>SiteKey of the OpenPetra DB that the Server is connected to.</summary>
+        Int64 SiteKey
+        {
+            get;
+        }
+
         /// <summary>
         /// get number of connected clients including disconnected clients
         /// </summary>
@@ -45,14 +66,6 @@ namespace Ict.Common.Remoting.Shared
         /// get number of currently connected clients
         /// </summary>
         int ClientsConnected
-        {
-            get;
-        }
-
-        /// <summary>
-        /// get the site key
-        /// </summary>
-        Int64 SiteKey
         {
             get;
         }
@@ -141,9 +154,18 @@ namespace Ict.Common.Remoting.Shared
         /// <param name="AClientID"></param>
         /// <param name="ATaskGroup"></param>
         /// <param name="ATaskCode"></param>
+        /// <param name="ATaskParameter1">Parameter #1 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter2">Parameter #2 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter3">Parameter #3 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter4">Parameter #4 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
         /// <param name="ATaskPriority"></param>
         /// <returns></returns>
-        bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority);
+        bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, object ATaskParameter1,
+            object ATaskParameter2, object ATaskParameter3, object ATaskParameter4, System.Int16 ATaskPriority);
 
         /// <summary>
         /// disconnect a client
@@ -188,6 +210,14 @@ namespace Ict.Common.Remoting.Shared
         /// </summary>
         /// <returns></returns>
         bool AddUser(string AUserID, string APassword = "");
+
+        /// <summary>
+        /// Whether the 'Server Timed Processing' has been set up.
+        /// </summary>
+        bool ServerTimedProcessingSetup
+        {
+            get;
+        }
 
         /// Allows the server or admin console to run a timed job now
         void PerformTimedProcessingNow(string AProcessName);

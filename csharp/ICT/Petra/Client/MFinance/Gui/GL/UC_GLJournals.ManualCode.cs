@@ -95,6 +95,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         }
 
         /// <summary>
+        /// Get current Journal row
+        /// </summary>
+        /// <returns></returns>
+        public GLBatchTDSAJournalRow GetCurrentJournalRow()
+        {
+            return (GLBatchTDSAJournalRow) this.GetSelectedDetailRow();
+        }
+
+        /// <summary>
         /// load the journals into the grid
         /// </summary>
         /// <param name="ACurrentBatchRow"></param>
@@ -189,7 +198,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (jr.DateEffective != BatchDateEffective)
                     {
-                        ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Batch, true);
+                        ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TGLBatchEnums.eGLLevel.Batch, true);
                         break;
                     }
                 }
@@ -243,7 +252,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public void CheckBeforeSaving()
         {
-            //UpdateUnpostedBatchDictionary();
         }
 
         private void SetJournalDefaultView()
@@ -324,6 +332,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FPetraUtilsObject.EnableDataChangedEvent();
         }
 
+        /// <summary>
+        /// Call ShowDetails() from outside form
+        /// </summary>
+        public void ShowDetailsRefresh()
+        {
+            ShowDetails();
+        }
+
         private void ShowDetailsManual(AJournalRow ARow)
         {
             bool JournalRowIsNull = (ARow == null);
@@ -348,21 +364,98 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// Re-show the specified row
         /// </summary>
-        /// <param name="AModifiedJournalRow"></param>
+        /// <param name="ACurrentBatch"></param>
+        /// <param name="AJournalToCancel"></param>
         /// <param name="ARedisplay"></param>
-        public void UndoModifiedJournalRow(GLBatchTDSAJournalRow AModifiedJournalRow, bool ARedisplay)
+        public void PrepareJournalDataForCancelling(Int32 ACurrentBatch, Int32 AJournalToCancel, Boolean ARedisplay)
         {
-            //Check if new row or not
-            if (AModifiedJournalRow.RowState == DataRowState.Added)
+            //This code will only be called when the Journal tab is active.
+
+            DataView JournalDV = new DataView(FMainDS.AJournal);
+            DataView TransDV = new DataView(FMainDS.ATransaction);
+            DataView TransAnalDV = new DataView(FMainDS.ATransAnalAttrib);
+
+            JournalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                AJournalTable.GetBatchNumberDBName(),
+                ACurrentBatch,
+                AJournalTable.GetJournalNumberDBName(),
+                AJournalToCancel);
+
+            TransDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ATransactionTable.GetBatchNumberDBName(),
+                ACurrentBatch,
+                ATransactionTable.GetJournalNumberDBName(),
+                AJournalToCancel);
+
+            TransAnalDV.RowFilter = String.Format("{0}={1} And {2}={3}",
+                ATransAnalAttribTable.GetBatchNumberDBName(),
+                ACurrentBatch,
+                ATransAnalAttribTable.GetJournalNumberDBName(),
+                AJournalToCancel);
+
+            //Work from lowest level up
+            if (TransAnalDV.Count > 0)
             {
-                return;
+                TransAnalDV.Sort = String.Format("{0}, {1}",
+                    ATransAnalAttribTable.GetTransactionNumberDBName(),
+                    ATransAnalAttribTable.GetAnalysisTypeCodeDBName());
+
+                foreach (DataRowView drv in TransAnalDV)
+                {
+                    ATransAnalAttribRow transAnalRow = (ATransAnalAttribRow)drv.Row;
+
+                    if (transAnalRow.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (transAnalRow.RowState != DataRowState.Unchanged)
+                    {
+                        transAnalRow.RejectChanges();
+                    }
+                }
             }
 
-            AModifiedJournalRow.RejectChanges();
-
-            if (ARedisplay)
+            if (TransDV.Count > 0)
             {
-                ShowDetails(AModifiedJournalRow);
+                TransDV.Sort = String.Format("{0}", ATransactionTable.GetTransactionNumberDBName());
+
+                foreach (DataRowView drv in TransDV)
+                {
+                    ATransactionRow transRow = (ATransactionRow)drv.Row;
+
+                    if (transRow.RowState == DataRowState.Added)
+                    {
+                        //Do nothing
+                    }
+                    else if (transRow.RowState != DataRowState.Unchanged)
+                    {
+                        transRow.RejectChanges();
+                    }
+                }
+            }
+
+            if (JournalDV.Count > 0)
+            {
+                GLBatchTDSAJournalRow journalRow = (GLBatchTDSAJournalRow)JournalDV[0].Row;
+
+                //No need to check for Added state as new journals are always saved
+                // on creation
+                if (journalRow.RowState != DataRowState.Unchanged)
+                {
+                    journalRow.RejectChanges();
+                }
+
+                if (ARedisplay)
+                {
+                    ShowDetails(journalRow);
+                }
+            }
+
+            if (TransDV.Count == 0)
+            {
+                //Load all related data for journal ready to delete/cancel
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadATransactionAndRelatedTablesForJournal(FLedgerNumber, ACurrentBatch,
+                        AJournalToCancel));
             }
         }
 
@@ -378,7 +471,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="e"></param>
         public void NewRow(System.Object sender, EventArgs e)
         {
-            if (FPetraUtilsObject.HasChanges && !((TFrmGLBatch) this.ParentForm).SaveChanges())
+            TFrmGLBatch MainForm = (TFrmGLBatch) this.ParentForm;
+
+            if (FPetraUtilsObject.HasChanges && !MainForm.SaveChanges())
             {
                 return;
             }
@@ -387,12 +482,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             this.CreateNewAJournal();
 
-            if (grdDetails.Rows.Count > 1)
-            {
-                ((TFrmGLBatch) this.ParentForm).EnableTransactions();
-            }
-
+            //Copy description from Batch
             txtDetailJournalDescription.Text = FBatchRow.BatchDescription;
+
+            //Needed as GL journals can not be deleted
+            MainForm.SaveChanges();
+            MainForm.EnableTransactions();
+
+            txtDetailJournalDescription.Focus();
         }
 
         /// <summary>
@@ -438,7 +535,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ShowTransactionTab(Object sender, EventArgs e)
         {
-            ((TFrmGLBatch)ParentForm).SelectTab(TFrmGLBatch.eGLTabs.Transactions);
+            ((TFrmGLBatch)ParentForm).SelectTab(TGLBatchEnums.eGLTabs.Transactions);
         }
 
         /// <summary>
@@ -478,11 +575,28 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <summary>
         /// clear the current selection
         /// </summary>
-        public void ClearCurrentSelection()
+        /// <param name="ABatchToClear"></param>
+        /// <param name="AResetFBatchNumber"></param>
+        public void ClearCurrentSelection(int ABatchToClear = 0, bool AResetFBatchNumber = true)
         {
             //Called from Batch tab, so no need to check for GetDetailsFromControls()
             // as tab change does that and current tab is Batch tab.
+            if (this.FPreviouslySelectedDetailRow == null)
+            {
+                return;
+            }
+            else if ((ABatchToClear > 0) && (FPreviouslySelectedDetailRow.BatchNumber != ABatchToClear))
+            {
+                return;
+            }
+
+            //Set selection to null
             this.FPreviouslySelectedDetailRow = null;
+
+            if (AResetFBatchNumber)
+            {
+                FBatchNumber = -1;
+            }
         }
 
         private void ValidateDataDetailsManual(AJournalRow ARow)
@@ -630,19 +744,37 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void CancelRow(System.Object sender, EventArgs e)
         {
-            int CurrentJournalNumber = FPreviouslySelectedDetailRow.JournalNumber;
-
-            if (FCancelLogicObject.CancelRow(FPreviouslySelectedDetailRow))
+            if (FPreviouslySelectedDetailRow == null)
             {
-                UpdateHeaderTotals(FBatchRow);
-                SetFocusToDetailsGrid();
+                MessageBox.Show(Catalog.GetString("Select the row to cancel first"));
+                return;
             }
 
-            SetJournalDefaultView();
-            FFilterAndFindObject.ApplyFilter();
+            TFrmGLBatch MainForm = (TFrmGLBatch) this.ParentForm;
 
-            UpdateChangeableStatus();
-            ((TFrmGLBatch)ParentForm).DisableTransactions();
+            int CurrentlySelectedRow = grdDetails.GetFirstHighlightedRowIndex();
+
+            try
+            {
+                MainForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.CANCELLINGJOURNAL;
+
+                if (FCancelLogicObject.CancelRow(FPreviouslySelectedDetailRow))
+                {
+                    UpdateHeaderTotals(FBatchRow);
+                    SelectRowInGrid(CurrentlySelectedRow);
+                    UpdateRecordNumberDisplay();
+
+                    SetJournalDefaultView();
+                    FFilterAndFindObject.ApplyFilter();
+
+                    UpdateChangeableStatus();
+                    MainForm.DisableTransactions();
+                }
+            }
+            finally
+            {
+                MainForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
+            }
         }
 
         private void RefreshCurrencyAndExchangeRate()
@@ -653,7 +785,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (FPreviouslySelectedDetailRow.ExchangeRateToBase > 0.0m)
             {
-                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TFrmGLBatch.eGLLevel.Journal);
+                ((TFrmGLBatch)ParentForm).GetTransactionsControl().UpdateTransactionTotals(TGLBatchEnums.eGLLevel.Journal);
             }
         }
 

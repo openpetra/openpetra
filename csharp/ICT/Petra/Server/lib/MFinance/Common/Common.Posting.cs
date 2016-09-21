@@ -32,6 +32,7 @@ using GNU.Gettext;
 
 using Ict.Common;
 using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Common.Verification.Exceptions;
 using Ict.Common.Data;
@@ -41,6 +42,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MFinance.GL.Data.Access;
 
@@ -2251,6 +2253,10 @@ namespace Ict.Petra.Server.MFinance.Common
             TDBTransaction Transaction = null;
             bool SubmissionOK = false;
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Posting GL batches"),
+                ABatchNumbers.Count * 3 + 1);
+
             try
             {
                 DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
@@ -2264,6 +2270,10 @@ namespace Ict.Petra.Server.MFinance.Common
 
                         foreach (Int32 BatchNumber in ABatchNumbers)
                         {
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Posting GL batches"),
+                                ABatchNumbers.IndexOf(BatchNumber) * 3);
+
                             GLBatchTDS mainDS = null;
 
                             GLPostingTDS postingDS = PrepareGLBatchForPosting(out mainDS,
@@ -2281,6 +2291,10 @@ namespace Ict.Petra.Server.MFinance.Common
                                 return;
                             }
 
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                                Catalog.GetString("Posting GL batches"),
+                                ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
+
                             mainDS.ThrowAwayAfterSubmitChanges = true;
                             GLBatchTDSAccess.SubmitChanges(mainDS);
 
@@ -2290,6 +2304,10 @@ namespace Ict.Petra.Server.MFinance.Common
                             SubmitChanges(postingDS);
                         }  // foreach
 
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            Catalog.GetString("Posting GL batches"),
+                            ABatchNumbers.Count * 3 - 1);
+
                         SubmissionOK = true;
                     });
             }
@@ -2298,6 +2316,8 @@ namespace Ict.Petra.Server.MFinance.Common
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             AVerifications = VerificationResult;
 

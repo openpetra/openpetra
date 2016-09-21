@@ -103,8 +103,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, DBTransaction, ref VerificationResult,
                                     out NoRecordsToProcess);
 
-                            //If GenerateAdminFeeBatch is successful but no records to process in GenerateICHStewardshipBatch, then still commit
-                            SubmissionOK = (SubmissionOK || NoRecordsToProcess);
+                            //If Generate AdminFeeBatch was successful but no records to process in the Stewardship Batch, then still commit
+                            SubmissionOK |= NoRecordsToProcess;
                         }
                     });
 
@@ -128,7 +128,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APrintReport"></param>
         /// <param name="ADBTransaction"></param>
         /// <param name="AVerificationResults"></param>
-        /// <returns></returns>
+        /// <returns>true, unless PostGlBatch fails</returns>
+
         private static bool GenerateAdminFeeBatch(int ALedgerNumber,
             int APeriodNumber,
             bool APrintReport,
@@ -138,14 +139,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         {
             bool IsSuccessful = false;
 
-            bool CreatedSuccessfully = false;
-            decimal TransactionAmount;
+            bool feeTransactionCreated = false;
             string DrAccountCode;
             string DestCostCentreCode = string.Empty;
             string DestAccountCode = string.Empty;
             string FeeDescription = string.Empty;
             decimal DrFeeTotal = 0;
-            bool DrCrIndicator = true;
 
             //Error handling
             string ErrorContext = String.Empty;
@@ -158,10 +157,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 AVerificationResults = new TVerificationResultCollection();
             }
 
-            /* Make a temporary table to hold totals for gifts going to
-             *  each account. */
+            /* Make a temporary table to hold totals for gifts going to each account.
+             */
             GLStewardshipCalculationTDSCreditFeeTotalTable CreditFeeTotalDT = new GLStewardshipCalculationTDSCreditFeeTotalTable();
-            //int x = CreditFeeTotalDT.Count;
 
             /* Retrieve info on the ledger. */
             ALedgerTable AvailableLedger = ALedgerAccess.LoadByPrimaryKey(ALedgerNumber, ADBTransaction);
@@ -179,23 +177,18 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             "Cannot progress as Ledger {0} is at the provisional year-end point"), ALedgerNumber);
                     ErrorType = TResultSeverity.Resv_Critical;
 
-                    //Still throw a non-critical error here even though ErrorType is critical
                     AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                     return false;
                 }
 
-                /* 0003 Finds for ledger base currency format, for report currency format */
                 ACurrencyTable currencyInfo = ACurrencyAccess.LoadByPrimaryKey(LedgerRow.BaseCurrency, ADBTransaction);
                 ACurrencyRow currencyRow = (ACurrencyRow)currencyInfo.Rows[0];
-
-                /* 0001 Extract number of decimal places */
                 string numericFormat = currencyRow.DisplayFormat;
                 int numDecPlaces = THelperNumeric.CalcNumericFormatDecimalPlaces(numericFormat);
 
-                /* Create the journal to create the fee transactions in, if there are
-                 *  fees to charge.
-                 * NOTE: if the date in the processed fee table is ? then that fee
-                 *  hasn't been processed. */
+                /* Create the journal for fee transactions in, if there are fees to charge.
+                 * NOTE: if the date in the processed fee table is null then that fee hasn't been processed. */
+
                 AProcessedFeeTable processedFeeDataTable = new AProcessedFeeTable();
 
                 string sqlStmt = String.Format("SELECT * FROM {0} WHERE {1}={2} AND {3}={4} AND {5} IS NULL AND {6}<>0 ORDER BY {7}, {8}",
@@ -222,306 +215,282 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 TResultSeverity.Resv_Status));
                     }
 
-                    IsSuccessful = true;
+                    return true;
                 }
-                else
+
+                AAccountingPeriodTable accountingPeriodTable =
+                    AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber, APeriodNumber, ADBTransaction);
+                AAccountingPeriodRow accountingPeriodRow = (AAccountingPeriodRow)accountingPeriodTable.Rows[0];
+
+                // Create a Batch and journal. If no fees are to be charged, I'll delete this batch later.
+                GLBatchTDS adminFeeDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString(
+                        "Admin Fees & Grants"), 0, accountingPeriodRow.PeriodEndDate);
+
+                ABatchRow batchRow = adminFeeDS.ABatch[0];
+
+                AJournalRow journalRow = adminFeeDS.AJournal.NewRowTyped();
+                journalRow.LedgerNumber = ALedgerNumber;
+                journalRow.BatchNumber = batchRow.BatchNumber;
+                journalRow.JournalNumber = ++batchRow.LastJournal;
+
+                journalRow.JournalDescription = batchRow.BatchDescription;
+                journalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
+                journalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
+                journalRow.TransactionCurrency = LedgerRow.BaseCurrency;
+                journalRow.ExchangeRateToBase = 1;
+                journalRow.DateEffective = accountingPeriodRow.PeriodEndDate;
+                journalRow.JournalPeriod = APeriodNumber;
+                adminFeeDS.AJournal.Rows.Add(journalRow);
+
+                /*
+                 * Generate Admin Fee transactions.
+                 * Only one transaction is posted for each fee code/cost centre.
+                 */
+                int gLJournalNumber = journalRow.JournalNumber;
+                string currentFeeCode = string.Empty;
+                string costCentreCodeDBName = AProcessedFeeTable.GetCostCentreCodeDBName();
+
+                for (int i = 0; i < processedFeeDataTable.Count; i++)
                 {
-                    //Post to Ledger - Ln 132
-                    //****************4GL Transaction Starts Here********************
+                    AProcessedFeeRow feeRow = (AProcessedFeeRow)processedFeeDataTable.Rows[i];
 
-                    AAccountingPeriodTable accountingPeriodTable = AAccountingPeriodAccess.LoadByPrimaryKey(ALedgerNumber,
-                        APeriodNumber,
-                        ADBTransaction);
-                    AAccountingPeriodRow accountingPeriodRow = (AAccountingPeriodRow)accountingPeriodTable.Rows[0];
-
-                    // Create a Batch. If no fees are to be charged, I'll delete this batch later.
-                    GLBatchTDS adminFeeDS = TGLPosting.CreateABatch(ALedgerNumber, Catalog.GetString(
-                            "Admin Fees & Grants"), 0, accountingPeriodRow.PeriodEndDate);
-
-                    ABatchRow batchRow = adminFeeDS.ABatch[0];
-
-                    AJournalRow journalRow = adminFeeDS.AJournal.NewRowTyped();
-                    journalRow.LedgerNumber = ALedgerNumber;
-                    journalRow.BatchNumber = batchRow.BatchNumber;
-                    journalRow.JournalNumber = ++batchRow.LastJournal;
-
-                    journalRow.JournalDescription = batchRow.BatchDescription;
-                    journalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
-                    journalRow.TransactionTypeCode = CommonAccountingTransactionTypesEnum.STD.ToString();
-                    journalRow.TransactionCurrency = LedgerRow.BaseCurrency;
-                    journalRow.ExchangeRateToBase = 1;
-                    journalRow.DateEffective = accountingPeriodRow.PeriodEndDate;
-                    journalRow.JournalPeriod = APeriodNumber;
-                    adminFeeDS.AJournal.Rows.Add(journalRow);
-
-                    // ***************************
-                    // * Generate the transactions
-                    // ***************************
-
-                    /* M009 Changed the following loop for Petra 2.1 design changes. a_processed_fee
-                     * now has a record for each gift detail so it is necessary to sum up all the
-                     * totals for each fee code/cost centre so that only one transaction is posted
-                     * for each */
-                    int gLJournalNumber = journalRow.JournalNumber;
-                    int gLTransactionNumber = 0;
-                    string currentFeeCode = string.Empty;
-                    string costCentreCode = string.Empty;
-                    string costCentreCodeDBName = AProcessedFeeTable.GetCostCentreCodeDBName();
-
-                    for (int i = 0; i < processedFeeDataTable.Count; i++)
+                    if (currentFeeCode != feeRow.FeeCode)
                     {
-                        AProcessedFeeRow pFR = (AProcessedFeeRow)processedFeeDataTable.Rows[i];
+                        currentFeeCode = feeRow.FeeCode;
 
-                        if (currentFeeCode != pFR.FeeCode)
+                        AFeesPayableTable feesPayableTable = AFeesPayableAccess.LoadByPrimaryKey(ALedgerNumber, currentFeeCode, ADBTransaction);
+
+                        if (feesPayableTable.Count > 0)
                         {
-                            currentFeeCode = pFR.FeeCode;
+                            AFeesPayableRow feesPayableRow = (AFeesPayableRow)feesPayableTable.Rows[0];
+                            DrAccountCode = feesPayableRow.DrAccountCode;
+                            DestCostCentreCode = feesPayableRow.CostCentreCode;
+                            DestAccountCode = feesPayableRow.AccountCode;
+                            FeeDescription = feesPayableRow.FeeDescription;
+                        }
+                        else  // Try receivables instead
+                        {
+                            AFeesReceivableTable feesReceivableTable = AFeesReceivableAccess.LoadByPrimaryKey(ALedgerNumber,
+                                currentFeeCode,
+                                ADBTransaction);
 
-                            // Find first
-                            AFeesPayableTable feesPayableTable = AFeesPayableAccess.LoadByPrimaryKey(ALedgerNumber, currentFeeCode, ADBTransaction);
-
-                            if (feesPayableTable.Count > 0)  //if null try receivables instead
+                            if (feesReceivableTable.Count > 0)
                             {
-                                AFeesPayableRow feesPayableRow = (AFeesPayableRow)feesPayableTable.Rows[0];
-                                DrAccountCode = feesPayableRow.DrAccountCode;
-                                DestCostCentreCode = feesPayableRow.CostCentreCode;
-                                DestAccountCode = feesPayableRow.AccountCode;
-                                FeeDescription = feesPayableRow.FeeDescription;
+                                AFeesReceivableRow feesReceivableRow = (AFeesReceivableRow)feesReceivableTable.Rows[0];
+                                DrAccountCode = feesReceivableRow.DrAccountCode;
+                                DestCostCentreCode = feesReceivableRow.CostCentreCode;
+                                DestAccountCode = feesReceivableRow.AccountCode;
+                                FeeDescription = feesReceivableRow.FeeDescription;
                             }
                             else
                             {
-                                AFeesReceivableTable feesReceivableTable = AFeesReceivableAccess.LoadByPrimaryKey(ALedgerNumber,
-                                    currentFeeCode,
-                                    ADBTransaction);
+                                ErrorMessage = String.Format(
+                                    Catalog.GetString(
+                                        "Unable to access information for Fee Code '{1}' in either the Fees Payable or Fees Receivable Tables for Ledger {0}"),
+                                    ALedgerNumber, currentFeeCode);
 
-                                if (feesReceivableTable.Count > 0)
-                                {
-                                    AFeesReceivableRow feesReceivableRow = (AFeesReceivableRow)feesReceivableTable.Rows[0];
-                                    DrAccountCode = feesReceivableRow.DrAccountCode;
-                                    DestCostCentreCode = feesReceivableRow.CostCentreCode;
-                                    DestAccountCode = feesReceivableRow.AccountCode;
-                                    FeeDescription = feesReceivableRow.FeeDescription;
-                                }
-                                else
-                                {
-                                    //Petra error: X_0007
-                                    ErrorMessage =
-                                        String.Format(Catalog.GetString(
-                                                "Unable to access information for Fee Code '{1}' in either the Fees Payable & Receivable Tables for Ledger {0}"),
-                                            ALedgerNumber, currentFeeCode);
-
-                                    throw new Exception(ErrorMessage);
-                                }
+                                throw new Exception(ErrorMessage);
                             }
+                        }
 
-                            DrFeeTotal = 0;
+                        DrFeeTotal = 0;
 
-                            //Get all the distinct CostCentres
-                            DataView costCentreDV = processedFeeDataTable.DefaultView;
-                            costCentreDV.Sort = costCentreCodeDBName;
-                            costCentreDV.RowFilter = string.Format("{0} = '{1}'", AProcessedFeeTable.GetFeeCodeDBName(), currentFeeCode);
-                            DataTable processedFeeCostCentresTable = costCentreDV.ToTable(true, costCentreCodeDBName);
+                        //Get all the distinct CostCentres
+                        DataView costCentreDV = processedFeeDataTable.DefaultView;
+                        costCentreDV.Sort = costCentreCodeDBName;
+                        costCentreDV.RowFilter = string.Format("{0} = '{1}'", AProcessedFeeTable.GetFeeCodeDBName(), currentFeeCode);
+                        DataTable processedFeeCostCentresTable = costCentreDV.ToTable(true, costCentreCodeDBName);
 
-                            foreach (DataRow r in processedFeeCostCentresTable.Rows)
+                        foreach (DataRow r in processedFeeCostCentresTable.Rows)
+                        {
+                            String costCentreCode = r[0].ToString();
+                            DataView view = processedFeeDataTable.DefaultView;
+                            view.Sort = costCentreCodeDBName;
+                            view.RowFilter = string.Format("{0}='{1}' And {2}='{3}'",
+                                AProcessedFeeTable.GetFeeCodeDBName(),
+                                currentFeeCode,
+                                costCentreCodeDBName,
+                                costCentreCode);
+
+                            DataTable processedFeeDataTable2 = view.ToTable();
+
+                            Int32 feeCodeRowCount = processedFeeDataTable2.Rows.Count;
+
+                            for (int j = 0; j < feeCodeRowCount; j++)
                             {
-                                costCentreCode = r[0].ToString();
-                                DataView view = processedFeeDataTable.DefaultView;
-                                view.Sort = costCentreCodeDBName;
-                                view.RowFilter = string.Format("{0}='{1}' And {2}='{3}'",
-                                    AProcessedFeeTable.GetFeeCodeDBName(),
-                                    currentFeeCode,
-                                    costCentreCodeDBName,
-                                    costCentreCode);
+                                DataRow pFR2 = processedFeeDataTable2.Rows[j];
 
-                                //ProcessedFeeDataTable2 = ProcessedFeeDataTable2.Clone();
-                                DataTable processedFeeDataTable2 = view.ToTable();
+                                DrFeeTotal = DrFeeTotal + Math.Round(Convert.ToDecimal(
+                                        pFR2[AProcessedFeeTable.GetPeriodicAmountDBName()]), numDecPlaces);
 
-                                Int32 feeCodeRowCount = processedFeeDataTable2.Rows.Count;
-
-                                for (int j = 0; j < feeCodeRowCount; j++)
+                                if (j == (feeCodeRowCount - 1))   // The last CostCentre row for this feecode?
                                 {
-                                    DataRow pFR2 = processedFeeDataTable2.Rows[j];
-
-                                    DrFeeTotal = DrFeeTotal + Math.Round(Convert.ToDecimal(
-                                            pFR2[AProcessedFeeTable.GetPeriodicAmountDBName()]), numDecPlaces);        //pFR2.PeriodicAmount; //ROUND(pFR2.PeriodicAmount,
-                                                                                                                       // lv_dp)
-
-                                    if (j == (feeCodeRowCount - 1))                                      //implies last of the CostCentre rows for this feecode
+                                    if (DrFeeTotal != 0)
                                     {
-                                        if (DrFeeTotal != 0)
-                                        {
-                                            if (DrFeeTotal < 0)
-                                            {
-                                                DrCrIndicator = false;     //Credit
-                                                DrFeeTotal = -DrFeeTotal;
-                                            }
-                                            else
-                                            {
-                                                DrCrIndicator = true;     //Debit
-                                                //lv_dr_fee_total remains unchanged
-                                            }
+                                        Boolean DrCrIndicator = true; // Debit?
 
-                                            /*
-                                             * Generate the transaction to deduct the fee amount from the source cost centre. (Expense leg)
-                                             */
-                                            //RUN gl1130o.p -> gl1130.i
-                                            //Create a transaction
-                                            if (!TGLPosting.CreateATransaction(adminFeeDS,
+                                        if (DrFeeTotal < 0)
+                                        {
+                                            DrCrIndicator = false;  // Credit
+                                            DrFeeTotal = -DrFeeTotal;
+                                        }
+
+                                        /*
+                                         * Generate the transaction to deduct the fee amount from the source cost centre. (Expense leg)
+                                         */
+                                        //RUN gl1130o.p -> gl1130.i
+                                        //Create a transaction
+                                        Int32 gLTransactionNumber = 0;
+
+                                        if (!TGLPosting.CreateATransaction(adminFeeDS,
+                                                ALedgerNumber,
+                                                batchRow.BatchNumber,
+                                                gLJournalNumber,
+                                                "Fee: " + FeeDescription + " (" + currentFeeCode + ")",
+                                                DrAccountCode,
+                                                costCentreCode,
+                                                DrFeeTotal,
+                                                accountingPeriodRow.PeriodEndDate,
+                                                DrCrIndicator,
+                                                "AG",
+                                                true,
+                                                DrFeeTotal,
+                                                out gLTransactionNumber))
+                                        {
+                                            ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
+                                            ErrorMessage =
+                                                String.Format(Catalog.GetString(
+                                                        "Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                                     ALedgerNumber,
                                                     batchRow.BatchNumber,
-                                                    gLJournalNumber,
-                                                    "Fee: " + FeeDescription + " (" + currentFeeCode + ")",
-                                                    DrAccountCode,
-                                                    costCentreCode,
-                                                    DrFeeTotal,
-                                                    accountingPeriodRow.PeriodEndDate,
-                                                    DrCrIndicator,
-                                                    "AG",
-                                                    true,
-                                                    DrFeeTotal,
-                                                    out gLTransactionNumber))
-                                            {
-                                                ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
-                                                ErrorMessage =
-                                                    String.Format(Catalog.GetString(
-                                                            "Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-                                                        ALedgerNumber,
-                                                        batchRow.BatchNumber,
-                                                        gLJournalNumber);
-                                                ErrorType = TResultSeverity.Resv_Noncritical;
+                                                    gLJournalNumber);
+                                            ErrorType = TResultSeverity.Resv_Noncritical;
 
-                                                AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                                                return false;
-                                            }
-
-                                            DrFeeTotal = 0;
+                                            AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                                            return false;
                                         }
+
+                                        DrFeeTotal = 0;
                                     }
                                 }
                             }
                         }
-
-                        /* Mark each fee entry as processed. */
-                        pFR.ProcessedDate = DateTime.Today.Date;
-                        pFR.Timestamp =
-                            (DateTime.Today.TimeOfDay.Hours * 3600 + DateTime.Today.TimeOfDay.Minutes * 60 + DateTime.Today.TimeOfDay.Seconds);
-
-                        /* Add the charges on this account to the fee total,
-                         * creating an entry if necessary. (This is for the income total)
-                         */
-                        GLStewardshipCalculationTDSCreditFeeTotalRow creditFeeTotalRow = (GLStewardshipCalculationTDSCreditFeeTotalRow)
-                                                                                         CreditFeeTotalDT.Rows.Find(new object[] { DestCostCentreCode,
-                                                                                                                                   DestAccountCode });
-
-                        if (creditFeeTotalRow != null)
-                        {
-                            creditFeeTotalRow.TransactionAmount += Math.Round(pFR.PeriodicAmount, numDecPlaces);
-                        }
-                        else
-                        {
-                            creditFeeTotalRow = CreditFeeTotalDT.NewRowTyped();
-                            creditFeeTotalRow.CostCentreCode = DestCostCentreCode;
-                            creditFeeTotalRow.AccountCode = DestAccountCode;
-                            creditFeeTotalRow.TransactionAmount = Math.Round(pFR.PeriodicAmount, numDecPlaces);
-                            CreditFeeTotalDT.Rows.Add(creditFeeTotalRow);
-                        }
                     }
 
-                    /* Generate the transaction to credit the fee amounts to
-                     * the destination accounts. (Income leg)
+                    /* Mark each fee entry as processed. */
+                    feeRow.ProcessedDate = DateTime.Today.Date;
+                    feeRow.Timestamp =
+                        (DateTime.Today.TimeOfDay.Hours * 3600 + DateTime.Today.TimeOfDay.Minutes * 60 + DateTime.Today.TimeOfDay.Seconds);
+
+                    /* Add the charges on this account to the fee total,
+                     * creating an entry if necessary. (This is for the income total)
                      */
-                    for (int k = 0; k < CreditFeeTotalDT.Count; k++)
+                    GLStewardshipCalculationTDSCreditFeeTotalRow creditFeeTotalRow = (GLStewardshipCalculationTDSCreditFeeTotalRow)
+                                                                                     CreditFeeTotalDT.Rows.Find(new object[] { DestCostCentreCode,
+                                                                                                                               DestAccountCode });
+
+                    if (creditFeeTotalRow != null)
                     {
-                        GLStewardshipCalculationTDSCreditFeeTotalRow cFT = (GLStewardshipCalculationTDSCreditFeeTotalRow)
-                                                                           CreditFeeTotalDT.Rows[k];
-
-                        if (cFT.TransactionAmount < 0)
-                        {
-                            /* The case of a negative gift total should be very rare.
-                             * It would only happen if, for instance, the was only
-                             * a reversal but no new gifts for a certain ledger.
-                             */
-                            DrCrIndicator = true; //Debit
-                            TransactionAmount = -cFT.TransactionAmount;
-                        }
-                        else
-                        {
-                            DrCrIndicator = false; //Credit
-                            TransactionAmount = cFT.TransactionAmount;
-                        }
-
-                        /* 0002 - Ok for it to be 0 as just a correction */
-
-                        if (cFT.TransactionAmount != 0)
-                        {
-                            gLTransactionNumber = 0;
-                            CreatedSuccessfully = TGLPosting.CreateATransaction(adminFeeDS,
-                                ALedgerNumber,
-                                batchRow.BatchNumber,
-                                journalRow.JournalNumber,
-                                "Collected admin charges",
-                                cFT.AccountCode,
-                                cFT.CostCentreCode,
-                                TransactionAmount,
-                                accountingPeriodRow.PeriodEndDate,
-                                DrCrIndicator,
-                                "AG",
-                                true,
-                                TransactionAmount,
-                                out gLTransactionNumber);
-                        }
-                    }
-
-                    TVerificationResultCollection verification = null;
-
-                    /* check that something has been posted - we know this if the IsSuccessful flag is still false */
-                    if (!CreatedSuccessfully)
-                    {
-                        IsSuccessful = true;
-                        AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
-                                String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
-                                TResultSeverity.Resv_Status));
-
-                        // An empty GL Batch now exists, which I need to delete.
-                        TVerificationResultCollection batchCancelResult = new TVerificationResultCollection();
-
-                        TGLPosting.DeleteGLBatch(
-                            ALedgerNumber,
-                            batchRow.BatchNumber,
-                            out batchCancelResult);
-
-                        AVerificationResults.AddCollection(batchCancelResult);
+                        creditFeeTotalRow.TransactionAmount += Math.Round(feeRow.PeriodicAmount, numDecPlaces);
                     }
                     else
                     {
-                        //Post the batch just created
-                        GLBatchTDSAccess.SubmitChanges(adminFeeDS);
-
-                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, batchRow.BatchNumber, out verification);
-
-                        if (IsSuccessful)
-                        {
-                            AProcessedFeeAccess.SubmitChanges(processedFeeDataTable, ADBTransaction);
-                        }
-                    }
-
-                    if (!TVerificationHelper.IsNullOrOnlyNonCritical(verification))
-                    {
-                        //Petra error: GL0067
-                        ErrorContext = Catalog.GetString("Posting Admin Fee Batch");
-                        ErrorMessage = String.Format(Catalog.GetString("The posting of the admin fee batch failed."));
-                        ErrorType = TResultSeverity.Resv_Noncritical;
-
-                        AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                        return false;
-                    }
-
-                    /* Print the Admin Fee Calculations report, if requested */
-                    if (APrintReport && IsSuccessful)
-                    {
-                        //TODO
+                        creditFeeTotalRow = CreditFeeTotalDT.NewRowTyped();
+                        creditFeeTotalRow.CostCentreCode = DestCostCentreCode;
+                        creditFeeTotalRow.AccountCode = DestAccountCode;
+                        creditFeeTotalRow.TransactionAmount = Math.Round(feeRow.PeriodicAmount, numDecPlaces);
+                        CreditFeeTotalDT.Rows.Add(creditFeeTotalRow);
                     }
                 }
-            }
+
+                /* Generate the transaction to credit the fee amounts to
+                 * the destination accounts. (Income leg)
+                 */
+                for (int k = 0; k < CreditFeeTotalDT.Count; k++)
+                {
+                    GLStewardshipCalculationTDSCreditFeeTotalRow cFT = (GLStewardshipCalculationTDSCreditFeeTotalRow)
+                                                                       CreditFeeTotalDT.Rows[k];
+                    Boolean DrCrIndicator = false; // Credit?
+
+                    decimal transactionAmount = cFT.TransactionAmount;
+
+                    if (transactionAmount < 0)
+                    {
+                        /* The case of a negative gift total should be very rare.
+                         * It would only happen if, for instance, the was only
+                         * a reversal but no new gifts for a certain ledger.
+                         */
+                        DrCrIndicator = true; //Debit
+                        transactionAmount = -transactionAmount;
+                    }
+
+                    if (transactionAmount != 0)
+                    {
+                        Int32 gLTransactionNumber = 0;
+                        feeTransactionCreated |= TGLPosting.CreateATransaction(adminFeeDS,
+                            ALedgerNumber,
+                            batchRow.BatchNumber,
+                            journalRow.JournalNumber,
+                            "Collected admin charges",
+                            cFT.AccountCode,
+                            cFT.CostCentreCode,
+                            transactionAmount,
+                            accountingPeriodRow.PeriodEndDate,
+                            DrCrIndicator,
+                            "AG",
+                            true,
+                            transactionAmount,
+                            out gLTransactionNumber);
+                    }
+                } // for
+
+                TVerificationResultCollection verification = null;
+
+                if (!feeTransactionCreated)
+                {
+                    AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
+                            String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                            TResultSeverity.Resv_Status));
+
+                    // An empty GL Batch now exists, which I need to delete.
+                    TVerificationResultCollection batchCancelResult = new TVerificationResultCollection();
+
+                    TGLPosting.DeleteGLBatch(
+                        ALedgerNumber,
+                        batchRow.BatchNumber,
+                        out batchCancelResult);
+
+                    AVerificationResults.AddCollection(batchCancelResult);
+                }
+                else
+                {
+                    //Post the batch just created
+                    GLBatchTDSAccess.SubmitChanges(adminFeeDS);
+
+                    IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, batchRow.BatchNumber, out verification);
+
+                    if (IsSuccessful)
+                    {
+                        AProcessedFeeAccess.SubmitChanges(processedFeeDataTable, ADBTransaction);
+                    }
+                }
+
+                if (!TVerificationHelper.IsNullOrOnlyNonCritical(verification))
+                {
+                    ErrorContext = Catalog.GetString("Posting Admin Fee Batch");
+                    ErrorMessage = String.Format(Catalog.GetString("The posting of the admin fee batch failed."));
+                    ErrorType = TResultSeverity.Resv_Noncritical;
+
+                    AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                    return false;
+                }
+
+                /* Print the Admin Fee Calculations report, if requested */
+                if (APrintReport && IsSuccessful)
+                {
+                    //TODO
+                }
+            } // try
             catch (Exception ex)
             {
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
@@ -529,12 +498,10 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             }
 
             return IsSuccessful;
-        }
+        } // Generate AdminFeeBatch
 
         /// <summary>
-        /// Relates to gl2160.p, line 178 Post_To_Ledger:
-        /// If we're working in an open period, make sure the summary data is up to date.
-        ///  Check that there are amounts to be transferred to the clearing house.
+        ///  Check that there are amounts to be transferred to ICH.
         ///  I.e., there are debits or credits to foreign cost centres.
         ///  Create the journal to create the transfer transactions in,
         ///  if there are amounts to transfer.
@@ -662,7 +629,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 ALedgerRow ledgerRow = (ALedgerRow)mainDS.ALedger.Rows[0];
 
                 //Create a new journal in the Batch
-                //Run gl1120o.p
                 AJournalRow newJournalRow = mainDS.AJournal.NewRowTyped();
                 newJournalRow.LedgerNumber = ALedgerNumber;
                 newJournalRow.BatchNumber = gLBatchNumber;
@@ -753,8 +719,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     return false;
                 }
 
-                // find out the stewardship number - Ln 275
-                // Increment the Last ICH No.
+                // Increment the ICH stewardship number in the Ledger.
                 int iCHProcessing = ++ledgerRow.LastIchNumber;
                 decimal iCHTotal = 0;
                 bool postICHBatch = false;
@@ -772,7 +737,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 foreach (ACostCentreRow costCentreRow in postingDS.ACostCentre.Rows)
                 {
-                    // To do this work I will need to have a clearling account specified:
+                    // To do this work I will need to have a clearing account specified:
                     if (costCentreRow.ClearingAccount == "")
                     {
                         AVerificationResults.Add(new TVerificationResult("Generate ICH Stewardship Batch",
@@ -793,34 +758,29 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     Boolean transferFound = false;
 
-                    /* 0008 Go through all of the transactions. Ln:301 */
-                    string transSQLWhereClause = string.Format("{0}='{1}' And {2}=true And {3}=0",
-                        ATransactionTable.GetCostCentreCodeDBName(),
-                        costCentreRow.CostCentreCode,
-                        ATransactionTable.GetTransactionStatusDBName(),
-                        ATransactionTable.GetIchNumberDBName());
+                    /* Go through all the transactions.
+                     */
+                    string transSQLWhereClause =
+                        "a_cost_centre_code_c = '" + costCentreRow.CostCentreCode +
+                        "' AND a_transaction_status_l = true" +
+                        " AND a_ich_number_i = 0";
 
-                    string transRowOrder = string.Format("{0}, {1}, {2}",
-                        ATransactionTable.GetBatchNumberDBName(),
-                        ATransactionTable.GetJournalNumberDBName(),
-                        ATransactionTable.GetTransactionNumberDBName());
+                    string transRowOrder = "a_batch_number_i, a_journal_number_i, a_transaction_number_i";
 
                     DataRow[] foundTransRows = mainDS.ATransaction.Select(transSQLWhereClause, transRowOrder);
-
-                    string journalSQLWhereClause;
-                    string journalRowOrder = AJournalTable.GetJournalNumberDBName();
 
                     foreach (DataRow untypedTransRow in foundTransRows)
                     {
                         ATransactionRow transRow = (ATransactionRow)untypedTransRow;
 
-                        journalSQLWhereClause = string.Format("{0}={1} And {2}={3}",
-                            AJournalTable.GetBatchNumberDBName(),
-                            transRow.BatchNumber,
-                            AJournalTable.GetJournalNumberDBName(),
-                            transRow.JournalNumber);
+                        DataRow[] foundJournalRows = mainDS.AJournal.Select(
+                            "a_batch_number_i = " + transRow.BatchNumber +
+                            " AND a_journal_number_i = " + transRow.JournalNumber
+                            );
 
-                        DataRow[] foundJournalRows = mainDS.AJournal.Select(journalSQLWhereClause, journalRowOrder);
+                        //
+                        // There should certainly be a journal for this transaction.
+                        // If there isn't, that's weird.
 
                         if (foundJournalRows != null)
                         {
@@ -886,7 +846,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         }
                     }  //end of foreach transaction
 
-                    /* now mark all the gifts as processed */
+                    /* Mark all the original gifts with the iCHProcessing value
+                     */
                     if (transferFound)
                     {
                         AGiftDetailTable giftDetailTable = new AGiftDetailTable();
@@ -908,7 +869,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                             AGiftDetailAccess.SubmitChanges(giftDetailTable, ADBTransaction);
                         }
-                    } // if TransferFound
+                    } // if transferFound
 
                     if ((settlementAmount == 0) // If there's no activity in this CC,
                         && (incomeAmount == 0)  // bail to the next one.
@@ -1018,8 +979,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             || (xferAmount != 0)))
                     {
                         AIchStewardshipRow iCHStewardshipRow = iCHStewardshipTable.NewRowTyped(true);
-
-                        //MainDS.Tables.Add(IchStewardshipTable);
 
                         iCHStewardshipRow.LedgerNumber = ALedgerNumber;
                         iCHStewardshipRow.Year = ledgerRow.CurrentFinancialYear;

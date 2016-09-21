@@ -2,7 +2,7 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
 // Copyright 2004-2016 by OM International
 //
@@ -27,16 +27,18 @@ using System.Configuration;
 using System.IO;
 using System.Security.Principal;
 using System.Threading;
+
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
-using Ict.Testing.NUnitTools;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Delegates;
 using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Testing.NUnitTools;
 
 namespace Ict.Testing.NUnitPetraServer
 {
@@ -68,6 +70,13 @@ namespace Ict.Testing.NUnitPetraServer
         /// <param name="AConfigName">just provide the server config file, plus AutoLogin and AutoLoginPasswd</param>
         public static TServerManager Connect(string AConfigName)
         {
+            TDBTransaction LoginTransaction;
+            bool CommitLoginTransaction = false;
+            bool SystemEnabled;
+            string WelcomeMessage;
+            IPrincipal ThisUserInfo;
+            Int32 ClientID;
+
             if (File.Exists(AConfigName))
             {
                 new TAppSettingsManager(AConfigName);
@@ -88,12 +97,36 @@ namespace Ict.Testing.NUnitPetraServer
             DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                 TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
                 TSrvSetting.PostgreSQLDatabaseName,
-                TSrvSetting.DBUsername, TSrvSetting.DBPassword, "", "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
+                TSrvSetting.DBUsername, TSrvSetting.DBPassword, "",
+                "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect DB Connection");
 
-            bool SystemEnabled;
-            string WelcomeMessage;
-            IPrincipal ThisUserInfo;
-            Int32 ClientID;
+            LoginTransaction = DBAccess.GDBAccessObj.BeginTransaction(IsolationLevel.RepeatableRead,
+ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (Unit Test Login)");
+
+            try
+            {
+                TClientManager.PerformLoginChecks(TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
+                    TAppSettingsManager.GetValue("AutoLoginPasswd"),
+                    "NUNITTEST", "127.0.0.1", out SystemEnabled, LoginTransaction);
+
+                CommitLoginTransaction = true;
+            }
+            catch (EPetraSecurityException)
+            {
+                // We need to set this flag to true here to get the failed login to be stored in the DB!!!
+                CommitLoginTransaction = true;
+            }
+            finally
+            {
+                if (CommitLoginTransaction)
+                {
+                    DBAccess.GDBAccessObj.CommitTransaction();
+                }
+                else
+                {
+                    DBAccess.GDBAccessObj.RollbackTransaction();
+                }
+            }
 
             TConnectedClient CurrentClient = TClientManager.ConnectClient(
                 TAppSettingsManager.GetValue("AutoLogin").ToUpper(),

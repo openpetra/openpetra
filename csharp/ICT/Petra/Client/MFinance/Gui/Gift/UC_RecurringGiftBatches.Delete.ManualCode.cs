@@ -76,56 +76,68 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         {
             bool DeletionSuccessful = false;
 
+            ACompletionMessage = string.Empty;
+
             if (ARowToDelete == null)
             {
-                return DeletionSuccessful;
+                return false;
             }
 
-            ACompletionMessage = string.Empty;
-            int BatchNumber = ARowToDelete.BatchNumber;
-
-            bool RowToDeleteIsNew = (ARowToDelete.RowState == DataRowState.Added);
+            int CurrentBatchNo = ARowToDelete.BatchNumber;
+            bool CurrentBatchTransactionsLoadedAndCurrent = false;
 
             //Backup the Dataset for reversion purposes
-            GiftBatchTDS BackupMainDS = (GiftBatchTDS)FMainDS.Copy();
-            BackupMainDS.Merge(FMainDS);
-
-            if (!RowToDeleteIsNew)
-            {
-                //Return modified row to last saved state to avoid validation failures
-                ARowToDelete.RejectChanges();
-
-                if (!FMyForm.SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.DELETING))
-                {
-                    MessageBox.Show(Catalog.GetString("Error in trying to save prior to deleting current recurring gift batch!"),
-                        Catalog.GetString("Deletion Error"),
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Error);
-
-                    return DeletionSuccessful;
-                }
-            }
+            GiftBatchTDS BackupMainDS = null;
 
             try
             {
                 FMyForm.Cursor = Cursors.WaitCursor;
 
-                ACompletionMessage = String.Format(Catalog.GetString("Batch no.: {0} deleted successfully."),
-                    BatchNumber);
+                //Backup the changes to allow rollback
+                BackupMainDS = (GiftBatchTDS)FMainDS.GetChangesTyped(false);
 
-                //clear any transactions currently being editied in the Transaction Tab
-                FMyForm.GetTransactionsControl().ClearCurrentSelection();
+                //Don't run an inactive fields check on this batch
+                FMyForm.GetBatchControl().UpdateRecurringBatchDictionary(CurrentBatchNo);
 
-                if (!RowToDeleteIsNew)
+                //Check if current batch gift details are currently loaded
+                CurrentBatchTransactionsLoadedAndCurrent = (FMyForm.GetTransactionsControl().FBatchNumber == CurrentBatchNo);
+
+                //Save and check for inactive values and ex-workers and anonymous gifts
+                //  in other unsaved Batches
+                FPetraUtilsObject.SetChangedFlag();
+
+                if (!FMyForm.SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction.DELETING, !CurrentBatchTransactionsLoadedAndCurrent))
                 {
-                    //Load tables afresh
-                    FMainDS.Merge(TRemote.MFinance.Gift.WebConnectors.LoadRecurringGiftTransactionsForBatch(FLedgerNumber, BatchNumber));
+                    FMyForm.GetBatchControl().UpdateRecurringBatchDictionary();
+
+                    string msg = String.Format(Catalog.GetString("Recurring Batch {0} has not been deleted."),
+                        CurrentBatchNo);
+
+                    MessageBox.Show(msg,
+                        "Recurring Gift Batch Deleted",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
+                    return false;
                 }
 
-                FMyForm.GetTransactionsControl().DeleteCurrentRecurringBatchGiftData(BatchNumber);
+                //Remove any changes to current batch that may cause validation issues
+                FMyForm.GetBatchControl().PrepareBatchDataForDeleting(CurrentBatchNo, true);
 
-                // Delete the recurring batch row.
+                if (CurrentBatchTransactionsLoadedAndCurrent)
+                {
+                    //Clear any transactions currently being edited in the Transaction Tab
+                    FMyForm.GetTransactionsControl().ClearCurrentSelection(CurrentBatchNo);
+                }
+
+                //Delete transactions
+                FMyForm.GetTransactionsControl().DeleteRecurringBatchGiftData(CurrentBatchNo);
+
+                // Delete the recurring batch row and save again after deleting the batch row.
                 ARowToDelete.Delete();
+
+                ACompletionMessage = String.Format(Catalog.GetString("Recurring Gift Batch no.: {0} deleted successfully."),
+                    CurrentBatchNo);
 
                 AFPrevRow = null;
 
@@ -134,13 +146,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             catch (Exception ex)
             {
                 //Revert to previous state
-                FMainDS.Merge(BackupMainDS);
+                if (BackupMainDS != null)
+                {
+                    FMainDS.RejectChanges();
+                    FMainDS.Merge(BackupMainDS);
 
-                ACompletionMessage = ex.Message;
-                MessageBox.Show(ACompletionMessage,
-                    "Deletion Error",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                    FMyForm.GetBatchControl().ShowDetailsRefresh();
+                }
 
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;

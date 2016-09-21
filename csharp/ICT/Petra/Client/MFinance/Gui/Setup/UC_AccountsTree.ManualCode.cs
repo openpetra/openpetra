@@ -280,12 +280,12 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     return;
                 }
 
-                AAccountRow ParentRow = ((AccountNodeDetails)ANewParent.Tag).AccountRow;
+                AAccountRow newParentRow = ((AccountNodeDetails)ANewParent.Tag).AccountRow;
 
-                if (ParentRow.PostingStatus)
+                if (newParentRow.PostingStatus)
                 {
                     if (MessageBox.Show(String.Format(Catalog.GetString("Do you want to promote {0} to a summary Account?"),
-                                ParentRow.AccountCode), Catalog.GetString("Move Account"), MessageBoxButtons.YesNo)
+                                newParentRow.AccountCode), Catalog.GetString("Move Account"), MessageBoxButtons.YesNo)
                         == System.Windows.Forms.DialogResult.No)
                     {
                         ShowNodeSelected(null);
@@ -296,17 +296,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FParentForm.SetSelectedAccount(null);
                 String PrevParent = AChild.Parent.Text;
                 AccountNodeDetails DraggedAccount = (AccountNodeDetails)AChild.Tag;
-                String NewParentAccountCode = ((AccountNodeDetails)ANewParent.Tag).AccountRow.AccountCode;
 
                 TreeNode NewNode = (TreeNode)AChild.Clone(); // A new TreeNode is made (and the previous will be deleted),
                                                              // but the actual DataRows are only tweaked to show the new parent.
 
                 DraggedAccount.linkedTreeNode = NewNode;
-                DraggedAccount.DetailRow.AccountCodeToReportTo = NewParentAccountCode;
+                DraggedAccount.DetailRow.AccountCodeToReportTo = newParentRow.AccountCode;
                 InsertInOrder(ANewParent, NewNode);
                 NewNode.Expand();
                 ANewParent.Expand();
-                ((AccountNodeDetails)ANewParent.Tag).AccountRow.PostingStatus = false; // The parent is now a summary account!
+                newParentRow.PostingStatus = false; // The parent is now a summary account!
+                ((AccountNodeDetails)ANewParent.Tag).CanDelete = false;
                 ANewParent.BackColor = Color.White;
                 FParentForm.ShowStatus(String.Format(Catalog.GetString("{0} was moved from {1} to {2}."),
                         AChild.Text, PrevParent, ANewParent.Text));

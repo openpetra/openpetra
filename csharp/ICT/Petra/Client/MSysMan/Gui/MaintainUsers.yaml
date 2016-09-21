@@ -7,7 +7,8 @@
     UsingNamespaces: [Ict.Petra.Shared.MSysMan.Data,Ict.Petra.Shared.MSysMan.Validation]
     FormType: edit
     Template: windowEdit
-    WindowHeight: 600
+    WindowHeight: 700
+    WindowWidth: 810
     Actions:
         actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
         actLockUnlock: {ActionClick=LockUnlockUser}
@@ -32,14 +33,17 @@
             Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
             ExpandedWidth: 175
-            FilterControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName, Column:Retired]
+            FilterControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName, Column:AccountLocked, Column:Retired]
             FindControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName]
+            ControlAttributes: 
+                chkAccountLocked: {Text=Account Locked}
+                chkRetired: {Text=User Retired}
         pnlDetailButtons:
             Dock: Bottom
             Controls: [btnNewUser, btnLockUnlock, btnRetireUnretire, btnChangePassword]
             ControlsOrientation: horizontal
         btnNewUser: {Width=110}
-        btnLockUnlock: {Label=Lock/Unlock, Width=130}
+        btnLockUnlock: {Label=Lock/Unlock, Width=130, StartNewButtonGroup=true}
         btnRetireUnretire: {Label=Retire/Unretire, Width=130}
         btnChangePassword: {Width=130, StartNewButtonGroup=true}
         grdDetails:

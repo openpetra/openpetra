@@ -1318,18 +1318,23 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 AMainDS.PInterest.DefaultView.RowFilter = String.Format("{0}='{1}'",
                     PInterestTable.GetInterestDBName(),
                     PartnerInterestRow.Interest);
-                PInterestRow tempRow = (PInterestRow)AMainDS.PInterest.DefaultView[0].Row;
 
-                Write("INTEREST");
-                WriteLine();
-                Write(PartnerInterestRow.IsInterestNumberNull() ? 0 : PartnerInterestRow.InterestNumber);
-                Write(PartnerInterestRow.IsFieldKeyNull() ? 0 : PartnerInterestRow.FieldKey);
-                Write(PartnerInterestRow.IsCountryNull() ? "" : PartnerInterestRow.Country);
-                Write(PartnerInterestRow.IsInterestNull() ? "" : PartnerInterestRow.Interest);
-                Write(tempRow.IsCategoryNull() ? "" : tempRow.Category);
-                Write(PartnerInterestRow.IsLevelNull() ? 0 : PartnerInterestRow.Level);
-                Write(PartnerInterestRow.IsCommentNull() ? "" : PartnerInterestRow.Comment);
-                WriteLine();
+                // only export if interest exists in setup table
+                if (AMainDS.PInterest.DefaultView.Count > 0)
+                {
+                    PInterestRow tempRow = (PInterestRow)AMainDS.PInterest.DefaultView[0].Row;
+
+                    Write("INTEREST");
+                    WriteLine();
+                    Write(PartnerInterestRow.IsInterestNumberNull() ? 0 : PartnerInterestRow.InterestNumber);
+                    Write(PartnerInterestRow.IsFieldKeyNull() ? 0 : PartnerInterestRow.FieldKey);
+                    Write(PartnerInterestRow.IsCountryNull() ? "" : PartnerInterestRow.Country);
+                    Write(PartnerInterestRow.IsInterestNull() ? "" : PartnerInterestRow.Interest);
+                    Write(tempRow.IsCategoryNull() ? "" : tempRow.Category);
+                    Write(PartnerInterestRow.IsLevelNull() ? 0 : PartnerInterestRow.Level);
+                    Write(PartnerInterestRow.IsCommentNull() ? "" : PartnerInterestRow.Comment);
+                    WriteLine();
+                }
             }
 
             // Gift Destination new for OpenPetra

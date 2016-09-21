@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
 
@@ -47,6 +48,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TFrmRecurringGiftBatch : IFrmPetraEditManual
     {
+        /// <summary>Store the current action on the batch</summary>
+        public TExtraGiftBatchChecks.GiftBatchAction FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.NONE;
+
         private Int32 FLedgerNumber;
 
         private int DefaultTabIndex = 0;
@@ -109,6 +113,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 //Enable below if want code to run before standard Save() is executed
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(FPetraUtilsObject_DataSavingValidated);
             }
         }
 
@@ -148,12 +153,35 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <summary>
         /// Check for ExWorkers before saving or cancelling
         /// </summary>
+        /// <param name="AAction"></param>
+        /// <param name="AGetOnlyTransDataFromControls"></param>
+        /// <param name="ABatchLevelAction"></param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction)
+        public bool SaveChangesManual(TExtraGiftBatchChecks.GiftBatchAction AAction,
+            bool AGetOnlyTransDataFromControls = false,
+            bool ABatchLevelAction = true)
         {
-            GetDataFromControls();
+            if (AAction == TExtraGiftBatchChecks.GiftBatchAction.NONE)
+            {
+                AAction = TExtraGiftBatchChecks.GiftBatchAction.SAVING;
+                FCurrentGiftBatchAction = AAction;
+            }
 
-            // first alert the user to any recipients who are Ex-Workers
+            if ((AAction != TExtraGiftBatchChecks.GiftBatchAction.DELETING)
+                && (AAction != TExtraGiftBatchChecks.GiftBatchAction.DELETINGTRANS))
+            {
+                GetDataFromControls();
+            }
+            else if (ABatchLevelAction && AGetOnlyTransDataFromControls) //Only applicable when cancelling current batch
+            {
+                //If in deletion but trans tab is showing data from an earlier viewed batch with changes
+                // then still need to get data from controls on Transaction tab.
+                ucoRecurringTransactions.GetDataFromControls();
+            }
+
+            //First alert the user to any recipients who are Ex-Workers
+            // For deleted batches this data would already have been deleted and so will
+            //  only affect other unsaved batches.
             if (TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(AAction, FMainDS, FPetraUtilsObject))
             {
                 return SaveChanges();
@@ -185,6 +213,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             if (FNewDonorWarning)
             {
                 FPetraUtilsObject_DataSavingStarted_NewDonorWarning();
+            }
+        }
+
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
+        {
+            if (FCurrentGiftBatchAction == TExtraGiftBatchChecks.GiftBatchAction.NONE)
+            {
+                FCurrentGiftBatchAction = TExtraGiftBatchChecks.GiftBatchAction.SAVING;
+            }
+
+            //Check if the user has made a Bank Cost Centre or Account Code inactive
+            // on saving
+            if (!ucoRecurringBatches.AllowInactiveFieldValues(FCurrentGiftBatchAction))
+            {
+                e.Cancel = true;
             }
         }
 
@@ -242,8 +285,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //If user is FINANCE-3 level then their user settings can override system level setting
             FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, DonorZeroIsValid);
             FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, RecipientZeroIsValid);
-            //Use the same setting as for posting
-            FWarnOfInactiveValuesOnSubmitting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+            //Always warn until an option is added if required
+            FWarnOfInactiveValuesOnSubmitting = true;
+            // Keep this code for future option:
+            // TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_SUBMITTING, true);
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 
@@ -581,6 +626,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             DefaultTabIndex = 1;     // later we switch to the detail tab
         }
 
+        /// <summary>
+        /// find a special gift detail
+        /// </summary>
+        public void FindGiftDetail(int ABatchNumber, int ATransactionNumber, int ADetailNumber)
+        {
+            ucoRecurringBatches.SelectRecurringBatchNumber(ABatchNumber);
+            ucoRecurringTransactions.SelectRecurringGiftDetailNumber(ATransactionNumber, ADetailNumber);
+            DefaultTabIndex = 1;     // later we switch to the detail tab
+        }
+
         private int GetChangedRecordCountManual(out string AMessage)
         {
             //For Gift Batch we will get a mix of some batches, gifts and gift details.
@@ -773,22 +828,125 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Check for Ex-Worker before saving and submitting
         /// </summary>
         /// <param name="ASubmittingGiftDetails">GiftDetails for the recurring batch that is to be submitted</param>
-        /// <param name="ACancelledDueToExWorker">True if batch posting has been cancelled by the user because of an Ex-Worker recipient</param>
         /// <returns>True if Save is successful</returns>
-        public bool SaveChangesForSubmitting(DataTable ASubmittingGiftDetails, out bool ACancelledDueToExWorker)
+        public bool SaveChangesForSubmitting(DataTable ASubmittingGiftDetails)
         {
-            GetDataFromControls();
-
-            // first alert the user to any recipients who are Ex-Workers
-            ACancelledDueToExWorker = !TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(
-                TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING, FMainDS, FPetraUtilsObject, ASubmittingGiftDetails);
-
-            if (!ACancelledDueToExWorker)
+            // alert the user to any recipients who are Ex-Workers
+            // or alert the user to any gift that are not marked confidential but have an anonymous donor
+            if (GiftHasExWorkerOrAnon(ASubmittingGiftDetails))
             {
-                return SaveChanges();
+                return false;
+            }
+
+            return SaveChanges();
+        }
+
+        /// <summary>
+        /// Check for ex-worker or anonymous gift
+        /// </summary>
+        /// <param name="AGiftDetailsDT">GiftDetails for the recurring batch that is to be submitted</param>
+        /// <returns></returns>
+        public bool GiftHasExWorkerOrAnon(DataTable AGiftDetailsDT)
+        {
+            // alert the user to any recipients who are Ex-Workers
+            // or alert the user to any gift that are not marked confidential but have an anonymous donor
+            if (!TExtraGiftBatchChecks.CanContinueWithAnyExWorkers(TExtraGiftBatchChecks.GiftBatchAction.SUBMITTING,
+                    FMainDS,
+                    FPetraUtilsObject,
+                    AGiftDetailsDT)
+                || !TExtraGiftBatchChecks.CanContinueWithAnyAnonymousDonors(FMainDS)
+                )
+            {
+                return true;
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Needs to be called prior to submitting the current batch to ensure all data is up-to-date
+        /// </summary>
+        public void GetLatestControlData()
+        {
+            GetDataFromControls();
+        }
+
+        /// <summary>
+        /// Get Unsaved Recurring Batch Rows in a list
+        /// </summary>
+        /// <param name="ABatchToInclude">If > 0 then include in list even if unchanged</param>
+        /// <returns></returns>
+        public List <ARecurringGiftBatchRow>GetUnsavedBatchRowsList(int ABatchToInclude = 0)
+        {
+            List <ARecurringGiftBatchRow>RetVal = new List <ARecurringGiftBatchRow>();
+            List <int>BatchesWithChangesList = new List <int>();
+            string BatchesWithChangesString = string.Empty;
+
+            DataView GiftBatchesDV = new DataView(FMainDS.ARecurringGiftBatch);
+            GiftBatchesDV.Sort = ARecurringGiftBatchTable.GetBatchNumberDBName() + " ASC";
+
+            DataView GiftDV = new DataView(FMainDS.ARecurringGift);
+            DataView GiftDetailsDV = new DataView(FMainDS.ARecurringGiftDetail);
+
+            GiftDV.Sort = String.Format("{0} ASC, {1} ASC",
+                ARecurringGiftTable.GetBatchNumberDBName(),
+                ARecurringGiftTable.GetGiftTransactionNumberDBName());
+
+            GiftDetailsDV.Sort = String.Format("{0} ASC, {1} ASC, {2} ASC",
+                ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                ARecurringGiftDetailTable.GetGiftTransactionNumberDBName(),
+                ARecurringGiftDetailTable.GetDetailNumberDBName());
+
+            //Add the batch number(s) of changed gift rows
+            foreach (DataRowView dRV in GiftDV)
+            {
+                ARecurringGiftRow gR = (ARecurringGiftRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(gR.BatchNumber)
+                    && (gR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(gR.BatchNumber);
+                }
+            }
+
+            //Generate string of all batches found with changes
+            if (BatchesWithChangesList.Count > 0)
+            {
+                BatchesWithChangesString = String.Join(",", BatchesWithChangesList);
+
+                //Add any other batch number(s) of changed gift details
+                GiftDetailsDV.RowFilter = String.Format("{0} NOT IN ({1})",
+                    ARecurringGiftDetailTable.GetBatchNumberDBName(),
+                    BatchesWithChangesString);
+            }
+
+            foreach (DataRowView dRV in GiftDetailsDV)
+            {
+                ARecurringGiftDetailRow gDR = (ARecurringGiftDetailRow)dRV.Row;
+
+                if (!BatchesWithChangesList.Contains(gDR.BatchNumber)
+                    && (gDR.RowState != DataRowState.Unchanged))
+                {
+                    BatchesWithChangesList.Add(gDR.BatchNumber);
+                }
+            }
+
+            BatchesWithChangesList.Sort();
+
+            //Get batch rows
+            foreach (DataRowView dRV in GiftBatchesDV)
+            {
+                ARecurringGiftBatchRow giftBatchRow = (ARecurringGiftBatchRow)dRV.Row;
+
+                if ((giftBatchRow.BatchNumber == ABatchToInclude)
+                    || BatchesWithChangesList.Contains(giftBatchRow.BatchNumber)
+                    || (giftBatchRow.RowState != DataRowState.Unchanged))
+                {
+                    RetVal.Add(giftBatchRow);
+                }
+            }
+
+            return RetVal;
         }
 
         #region Forms Messaging Interface Implementation

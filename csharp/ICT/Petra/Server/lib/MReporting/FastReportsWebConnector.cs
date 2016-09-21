@@ -421,6 +421,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                                        " AND GiftBatch.a_batch_status_c = 'Posted'";
 
                         DataTable Results = ADbAdapter.RunQuery(Query, "RecipientTotals", Transaction);
+
                         if (Results == null)
                         {
                             break;
@@ -518,6 +519,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
                 // Get recipient information for each donor
                 tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
+
                 if (tempTable != null)
                 {
                     Recipients.Merge(tempTable);
@@ -535,6 +537,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
             {
                 // get best address for each donor
                 tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+
                 if (tempTable != null)
                 {
                     DonorAddresses.Merge(tempTable);
@@ -608,6 +611,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
 
                 // get donor information for each recipient
                 DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, -1, recipientKey);
+
                 if (DonorTemp != null)
                 {
                     Donors.Merge(DonorTemp);
@@ -635,6 +639,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 {
                     // get best address for each distinct donor
                     DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+
                     if (DonorTemp != null)
                     {
                         DonorAddresses.Merge(DonorTemp);

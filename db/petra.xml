@@ -361,9 +361,15 @@
                 type="varchar"
                 descr="The Salt value used for hashing the password (two identical passwords will not yield the same Hash value with different Salt values)"
                 format="X(32)"/>
+    <tablefield name="s_pwd_scheme_version_i"
+                type="integer"
+                descr="Version Number of the password hashing scheme (source code gives details about what algorithm/parameters combination is used for each number)."
+                format="&gt;9"
+                label="Password Hashing Scheme Version"
+                initial="1"/>
     <tablefield name="s_password_needs_change_l"
                 type="bit"
-                descr="Forces change of password at next login. Set when the SYSADMIN changes a password for a user. Also, data migration from legacy system will set this, and it will need to be set if the password hashing scheme should get changed."
+                descr="Forces change of password at next login. Set when the SYSADMIN changes a password for a user. Also, data migration from legacy system will set this. Further to this it can *optionally* be set if a new password hashing scheme got introduced and the user should be forced to change to it by means of an enforced password change."
                 format="Yes/No"
                 label="Password needs change"
                 help="Forces change of password at next login"
@@ -10988,6 +10994,11 @@
                 thisFields="s_user_id_c"
                 otherTable="s_user"
                 otherFields="s_user_id_c"/>
+    <foreignkey name="a_recurring_transaction_fk8"
+                descr=""
+                thisFields="a_ledger_number_i, a_batch_number_i"
+                otherTable="a_recurring_batch"
+                otherFields="a_ledger_number_i, a_batch_number_i"/>
     <!-- Explicit Indexes on table a_recurring_transaction  -->
   </table>
   <table name="a_recurring_trans_anal_attrib"

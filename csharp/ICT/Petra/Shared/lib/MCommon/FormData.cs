@@ -96,9 +96,14 @@ namespace Ict.Petra.Shared.MCommon
             eLocationBlock,
 
         /// <summary>
-        /// retrieve info from Contacts Table
+        /// retrieve info from Contacts Table (primary information)
         /// </summary>
             eContact,
+
+        /// <summary>
+        /// retrieve info from Contact Details Table
+        /// </summary>
+            eContactDetail,
 
         /// <summary>
         /// retrieve info from Contact Log Table
@@ -148,7 +153,17 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>
         /// retrieve info from Personal Data Table
         /// </summary>
-            ePersonalData
+            ePersonalData,
+
+        /// <summary>
+        /// retrieve info from Commitment Table
+        /// </summary>
+            eCommitment,
+
+        /// <summary>
+        /// retrieve info from Commitment Table (only future commitment needed)
+        /// </summary>
+            eFutureCommitment
     }
 
     /// <summary>
@@ -559,6 +574,11 @@ namespace Ict.Petra.Shared.MCommon
                 AddRetrievalSection(TFormDataRetrievalSection.eContact);
             }
 
+            if (TagList.Exists(x => x.StartsWith("ContactDetail.")))
+            {
+                AddRetrievalSection(TFormDataRetrievalSection.eContactDetail);
+            }
+
             if (TagList.Exists(x => x.StartsWith("ContactLog.")))
             {
                 AddRetrievalSection(TFormDataRetrievalSection.eContactLog);
@@ -601,7 +621,8 @@ namespace Ict.Petra.Shared.MCommon
                 AddRetrievalSection(TFormDataRetrievalSection.eGiftDetail);
             }
 
-            if (TagList.Exists(x => x.StartsWith("Skill")))
+            if ((TagList.Exists(x => x.StartsWith("Skill")))
+                || (TagList.Exists(x => x.StartsWith("Degree."))))
             {
                 AddRetrievalSection(TFormDataRetrievalSection.eSkill);
             }
@@ -625,6 +646,16 @@ namespace Ict.Petra.Shared.MCommon
             if (TagList.Exists(x => x.Contains("Believer")))
             {
                 AddRetrievalSection(TFormDataRetrievalSection.ePersonalData);
+            }
+
+            if (TagList.Exists(x => x.StartsWith("Commitment.")))
+            {
+                AddRetrievalSection(TFormDataRetrievalSection.eCommitment);
+            }
+
+            if (TagList.Exists(x => x.StartsWith("Future")))
+            {
+                AddRetrievalSection(TFormDataRetrievalSection.eFutureCommitment);
             }
         }
 
@@ -1040,6 +1071,7 @@ namespace Ict.Petra.Shared.MCommon
         /// </summary>
         public TFormDataPartner()
         {
+            ContactDetail = new List <TFormDataContactDetail>();
             ContactLog = new List <TFormDataContactLog>();
             Subscription = new List <TFormDataSubscription>();
             Gift = new List <TFormDataGift>();
@@ -1341,6 +1373,9 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// list of contact details
+        public List <TFormDataContactDetail>ContactDetail;
+
         /// list of contact logs
         public List <TFormDataContactLog>ContactLog;
 
@@ -1354,6 +1389,14 @@ namespace Ict.Petra.Shared.MCommon
         /// for Family: all members
         /// for Person: all members except this Person
         public List <TFormDataFamilyMember>FamilyMember;
+
+        /// <summary>
+        ///  add contact detail record to list
+        /// </summary>
+        public void AddContactDetail(TFormDataContactDetail ARecord)
+        {
+            ContactDetail.Add(ARecord);
+        }
 
         /// <summary>
         ///  add contact log record to list
@@ -1404,9 +1447,11 @@ namespace Ict.Petra.Shared.MCommon
             Skill = new List <TFormDataSkill>();
             SkillP = new List <TFormDataSkill>();
             SkillNP = new List <TFormDataSkill>();
+            Degree = new List <TFormDataDegree>();
             WorkExp = new List <TFormDataWorkExperience>();
             WorkExpNonProfit = new List <TFormDataWorkExperience>();
             WorkExpOther = new List <TFormDataWorkExperience>();
+            Commitment = new List <TFormDataCommitment>();
         }
 
         ///
@@ -1521,6 +1566,21 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Future Field Name (from Commitment)
+        public String FutureFieldName {
+            get; set;
+        }
+
+        /// Future Commitment Start Date
+        public DateTime ? FutureCommitStartDate {
+            get; set;
+        }
+
+        /// Future Commitment End Date
+        public DateTime ? FutureCommitEndDate {
+            get; set;
+        }
+
         /// list of passports
         public List <TFormDataPassport>Passport;
 
@@ -1536,6 +1596,9 @@ namespace Ict.Petra.Shared.MCommon
         /// list of non professional skills
         public List <TFormDataSkill>SkillNP;
 
+        /// list of degrees (taken from skill table)
+        public List <TFormDataDegree>Degree;
+
         /// list of work experience
         public List <TFormDataWorkExperience>WorkExp;
 
@@ -1544,6 +1607,9 @@ namespace Ict.Petra.Shared.MCommon
 
         /// list of work experience (other than non-profit)
         public List <TFormDataWorkExperience>WorkExpOther;
+
+        /// list of commitments
+        public List <TFormDataCommitment>Commitment;
 
         /// <summary>
         ///  add passport record to list
@@ -1579,6 +1645,14 @@ namespace Ict.Petra.Shared.MCommon
         }
 
         /// <summary>
+        ///  add degree record to list
+        /// </summary>
+        public void AddDegree(TFormDataDegree ARecord)
+        {
+            Degree.Add(ARecord);
+        }
+
+        /// <summary>
         ///  add work experience record to list
         /// </summary>
         public void AddWorkExperience(TFormDataWorkExperience ARecord)
@@ -1594,6 +1668,14 @@ namespace Ict.Petra.Shared.MCommon
             {
                 WorkExpOther.Add(ARecord);
             }
+        }
+
+        /// <summary>
+        ///  add commitment record to list
+        /// </summary>
+        public void AddCommitment(TFormDataCommitment ARecord)
+        {
+            Commitment.Add(ARecord);
         }
     }
 
@@ -1759,13 +1841,65 @@ namespace Ict.Petra.Shared.MCommon
     }
 
     /// <summary>
+    /// Contains data for a contact detail entry for a partner
+    /// </summary>
+    [Serializable()]
+    public class TFormDataContactDetail : TFormData
+    {
+        /// Category
+        public String Category {
+            get; set;
+        }
+
+        /// Type
+        public String Type {
+            get; set;
+        }
+
+        /// Contact Detail Value (e.g. the actual phone number/email)
+        public String Value {
+            get; set;
+        }
+
+        /// Is Contact Detail currently valid?
+        public Boolean IsCurrent {
+            get; set;
+        }
+
+        /// Is Contact Detail business entry?
+        public Boolean IsBusiness {
+            get; set;
+        }
+
+        /// Is Contact Detail confidential?
+        public Boolean IsConfidential {
+            get; set;
+        }
+
+        /// Notes / Comment
+        public String Comment {
+            get; set;
+        }
+    }
+
+    /// <summary>
     /// Contains data for a contact log entry for a partner
     /// </summary>
     [Serializable()]
     public class TFormDataContactLog : TFormData
     {
+        /// Date of Contact
+        public DateTime ? Date {
+            get; set;
+        }
+
         /// Contactor
         public String Contactor {
+            get; set;
+        }
+
+        /// Contact Code
+        public String ContactCode {
             get; set;
         }
 
@@ -1995,6 +2129,80 @@ namespace Ict.Petra.Shared.MCommon
         }
 
         ///  Comment
+        public String Comment {
+            get; set;
+        }
+    }
+
+    /// <summary>
+    /// Contains data for a degree record for a person
+    /// </summary>
+    [Serializable()]
+    public class TFormDataDegree : TFormData
+    {
+        ///  Degree name
+        public String Name {
+            get; set;
+        }
+
+        ///  Degree year
+        public String Year {
+            get; set;
+        }
+    }
+
+    /// <summary>
+    /// Contains data for a commitment record for a person
+    /// </summary>
+    [Serializable()]
+    public class TFormDataCommitment : TFormData
+    {
+        /// Start date
+        public DateTime ? StartDate {
+            get; set;
+        }
+
+        /// End date
+        public DateTime ? EndDate {
+            get; set;
+        }
+
+        /// Status
+        public String Status {
+            get; set;
+        }
+
+        /// Receiving Field Key (10 digits)
+        public String ReceivingFieldKey {
+            get; set;
+        }
+
+        /// Receiving Field Name
+        public String ReceivingFieldName {
+            get; set;
+        }
+
+        /// Sending Field Key (10 digits)
+        public String SendingFieldKey {
+            get; set;
+        }
+
+        /// Sending Field Name
+        public String SendingFieldName {
+            get; set;
+        }
+
+        /// Recruiting Field Key (10 digits)
+        public String RecruitingFieldKey {
+            get; set;
+        }
+
+        /// Recruiting Field Name
+        public String RecruitingFieldName {
+            get; set;
+        }
+
+        /// Notes / Comment
         public String Comment {
             get; set;
         }

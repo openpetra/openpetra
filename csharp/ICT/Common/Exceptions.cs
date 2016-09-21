@@ -22,7 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections;
+using System.IO;
+using System.Net.Sockets;
 using System.Runtime.Serialization;
+using System.Windows.Forms;
+
+using Npgsql;
 
 namespace Ict.Common.Exceptions
 {
@@ -31,6 +37,7 @@ namespace Ict.Common.Exceptions
     /// <summary>
     /// Security violation (eg. access permissions etc).
     /// </summary>
+    [Serializable()]
     public class EPetraSecurityException : EOPAppException
     {
         /// <summary>
@@ -796,4 +803,237 @@ namespace Ict.Common.Exceptions
     }
 
     #endregion
+
+    /// <summary>
+    /// Helper Class for handling Exceptions.
+    /// </summary>
+    public class TExceptionHelper
+    {
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBroken = Catalog.GetString(
+            "The OpenPetra server has encountered a problem while accessing the OpenPetra database.\r\n\r\n" +
+            "We are sorry about this!  Automatic attempts at restoring the database connection are underway.\r\n\r\n");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRestored = Catalog.GetString(
+            "The OpenPetra server has successfully recovered from a database access problem!\r\n\r\n");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenAdvice = Catalog.GetString(
+            "If you have seen an error message just before you got to see this message then you should definitely close " +
+            "the OpenPetra Client, if you haven't then you are still advised to close the OpenPetra Client because it might " +
+            "not be working stable anymore.\r\n");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRemedyWhenLoggingIn = Catalog.GetString(
+            "Unfortunately a login to OpenPetra is not possible while this is being addressed. Please retry the login in " +
+            "a minute or so to see if is already possible again. ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRemedyWhenLoggedIn1 = Catalog.GetString(
+            "Please do not attempt to do any work with OpenPetra until you are told that the problem got rectified!!! ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRemedyWhenLoggedIn2 = Catalog.GetString(
+            "   In case you have entered data that has not been saved then you can copy data that you see on " +
+            "screen(s) and paste it in a text document so that you can have it to hand later, or take a screenshot to preserve data " +
+            "that you still can see.\r\n\r\n");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRemedyWhenLoggedIn3 = Catalog.GetString(
+            "   In case you have entered data that has not been saved yet do try to save it now. Should this not be possible " +
+            "then you can copy data that you see on " +
+            "screen(s) and paste it in a text document so that you can have it to hand later, or take a screenshot to preserve data " +
+            "that you still can see.\r\n\r\n");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRemedyWhenLoggedInFollowUpAction1 = Catalog.GetString(
+            "Once you have closed and restarted the OpenPetra Client you can attempt to log in to OpenPetra again. " +
+            "At that point you will find out if the login is already possible. ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRemedyWhenLoggedInFollowUpAction2 = Catalog.GetString(
+            "Once you have closed and restarted the OpenPetra Client you can log in to OpenPetra again.\r\n");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenTitle = Catalog.GetString(
+            "Temporary Service Outage (OpenPetra Database Problem)");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenRecoveredTitlePrefix = Catalog.GetString(
+            "RECOVERED: ");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionBrokenContactITSupport = Catalog.GetString(
+            "In case the problem should persist for longer than a few minutes please contact your IT support staff.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDBConnectionIssueDateTimeFooter = Catalog.GetString(
+            "\r\nSorry for any inconvenience caused.   (Message issued on {0:F})");
+
+        /// <summary>Used as a way of marking any Exception as being caused by the DB becoming unavilable.</summary>
+        public const string EXCEPTION_DATA_DBUNAVAILABLE = "DB_UNAVAILABLE";
+
+        /// <summary>
+        /// Checks if a given Exception is caused by the fact that the DB Connection of the PetraServer isn't available.
+        /// </summary>
+        /// <remarks>There is a Method with nearly the same name, <see cref="IsExceptionCausedByUnavailableDBConnectionServerSide"/>
+        /// which evaluates Exceptions that get thrown on the server side. That Method checks if a given Exception is
+        /// caused by the fact that the DB Connection isn't available and if so adds a specific Item to the Exception's
+        /// Data Property. This Item is checked for by <see cref="IsExceptionCausedByUnavailableDBConnectionClientSide"/>.</remarks>
+        /// <param name="AException">Exception to check.</param>
+        /// <returns>True if the Exception is caused by the fact that the DB Connection of the PetraServer isn't available,
+        /// false if not.</returns>
+        public static bool IsExceptionCausedByUnavailableDBConnectionClientSide(Exception AException)
+        {
+            bool ExceptionHierachyFullyTraversed = false;
+            IDictionary ExceptionData;
+            bool DBUnavailable = false;
+
+            while (!ExceptionHierachyFullyTraversed)
+            {
+                ExceptionData = AException.Data;
+
+                if ((ExceptionData != null)
+                    && (ExceptionData.Contains(EXCEPTION_DATA_DBUNAVAILABLE)))
+                {
+                    DBUnavailable = true;
+
+                    break;
+                }
+
+                if (AException.InnerException != null)
+                {
+                    AException = AException.InnerException;
+                }
+                else
+                {
+                    ExceptionHierachyFullyTraversed = true;
+                }
+            }
+
+            return DBUnavailable;
+        }
+
+        /// <summary>
+        /// Checks if a given Exception is caused by the fact that the DB Connection isn't available and if so
+        /// adds a specific Item to the Exception's Data Property.
+        /// </summary>
+        /// <remarks>There is a Method with nearly the same name, <see cref="IsExceptionCausedByUnavailableDBConnectionClientSide"/>
+        /// which evaluates Exceptions that get thrown from the server side to the client side. That Method checks for
+        /// the presence of the <see cref="TExceptionHelper.EXCEPTION_DATA_DBUNAVAILABLE"/> entry in the Exception's
+        /// Data Property, which the Method here <see cref="IsExceptionCausedByUnavailableDBConnectionServerSide"/> adds to
+        /// Exceptions that are caused by the fact that the DB Connection isn't available.</remarks>
+        /// <param name="AException">Exception to check.</param>
+        /// <returns>True if the Exception is caused by the fact that the DB Connection isn't available,
+        /// false if not.</returns>
+        public static bool IsExceptionCausedByUnavailableDBConnectionServerSide(Exception AException)
+        {
+            bool ProcessNpgsqlException = true;
+
+            if (AException is NpgsqlException)
+            {
+                if (AException.Message.StartsWith("Failed to establish a connection to")  // Unfortnately there's no Code available for this Message so we have to check for the string...
+                    || (AException.Message.StartsWith("A timeout has occured. If you were establishing a connection, "))  // Unfortnately there's no Code available for this Message so we have to check for the string...
+                    || (((NpgsqlException)AException).Code == "57P03"))  // Message: 'the database system is starting up'
+                {
+                    if (AException.Message.StartsWith("A timeout has occured. If you were establishing a connection, "))
+                    {
+                        if (!AException.StackTrace.Contains("IsDBConnectionOK"))
+                        {
+                            ProcessNpgsqlException = false;
+                        }
+                    }
+
+                    if (ProcessNpgsqlException)
+                    {
+                        if (TLogging.DebugLevel >= 1)
+                        {
+                            TLogging.Log(String.Format("NpgsqlException with Message {0} raised by Npgql in {1}: {2}",
+                                    ((NpgsqlException)AException).Code == "57P03" ? "'The database system is starting up...'" :
+                                    "'" + AException.Message + "'",
+                                    AppDomain.CurrentDomain.FriendlyName, AException.Message));
+                            TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                        }
+
+                        AddDBUnavailableItemToDataPropertyOfException(AException);
+
+                        return true;
+                    }
+                }
+            }
+            else if ((AException is SocketException)
+                     || (AException is IOException))
+            {
+                if (AException.StackTrace.Contains("Npgsql"))
+                {
+                    if (TLogging.DebugLevel >= 1)
+                    {
+                        TLogging.Log(String.Format("SocketException or IOException raised by Npgql in {0}: {1}",
+                                AppDomain.CurrentDomain.FriendlyName, AException.Message));
+                        TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                    }
+
+                    AddDBUnavailableItemToDataPropertyOfException(AException);
+
+                    return true;
+                }
+            }
+            else if ((AException.GetType().ToString() == "Ict.Common.DB.Exceptions.EDBConnectionBrokenException")
+                     || (AException.GetType().ToString() == "Ict.Common.DB.Exceptions.EDBConnectionNotEstablishedException"))
+            {
+                if (TLogging.DebugLevel >= 1)
+                {
+                    TLogging.Log(String.Format("{0} got raised in {1}: {2}",
+                            AException.GetType().ToString(), AppDomain.CurrentDomain.FriendlyName, AException.Message));
+                    TLogging.LogStackTrace(TLoggingType.ToLogfile);
+                }
+
+                AddDBUnavailableItemToDataPropertyOfException(AException);
+
+                return true;
+            }
+
+            return false;
+        }
+
+        private static void AddDBUnavailableItemToDataPropertyOfException(Exception AException)
+        {
+            if ((AException.Data != null)
+                && !AException.Data.Contains(TExceptionHelper.EXCEPTION_DATA_DBUNAVAILABLE))
+            {
+                try
+                {
+                    AException.Data.Add(TExceptionHelper.EXCEPTION_DATA_DBUNAVAILABLE, true);
+                }
+                catch (System.ArgumentException)
+                {
+                    // Swallow this as it will get thrown in case the Dictionary Entry was already
+                    // present (I know I am checking for this just above, but somehow it still
+                    // can happen because the caller of this Method is not 'reentrancy-safe'...
+                }
+            }
+        }
+
+        /// <summary>
+        /// Shows a MessageBox to the user that explains to the user that the DB Connection is broken. Advice is given
+        /// on how to proceed, depending on the value of <paramref name="AClientLogin"/>. The same message gets logged, too.
+        /// </summary>
+        /// <param name="AClientLogin">Set this to true if the Exception was encountered at Client login time, otherwise
+        /// to false.</param>
+        public static void ShowExceptionCausedByUnavailableDBConnectionMessage(bool AClientLogin)
+        {
+            string Message = StrDBConnectionBroken + (AClientLogin ?
+                                                      StrDBConnectionBrokenRemedyWhenLoggingIn + StrDBConnectionBrokenContactITSupport :
+                                                      StrDBConnectionBrokenAdvice + StrDBConnectionBrokenRemedyWhenLoggedIn2 +
+                                                      StrDBConnectionBrokenRemedyWhenLoggedInFollowUpAction1 +
+                                                      StrDBConnectionBrokenContactITSupport);
+
+            TLogging.Log(Message);
+
+            MessageBox.Show(Message + Environment.NewLine + Environment.NewLine + Catalog.GetString(String.Format(
+                        TExceptionHelper.StrDBConnectionIssueDateTimeFooter, DateTime.Now)),
+                StrDBConnectionBrokenTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
 }

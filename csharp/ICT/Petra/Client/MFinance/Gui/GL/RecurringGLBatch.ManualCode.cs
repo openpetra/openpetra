@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -47,39 +48,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TFrmRecurringGLBatch
     {
-        /// this window contains 3 tabs
-        public enum eGLTabs
-        {
-            /// list of batches
-            RecurringBatches,
+        /// <summary>Store the current action on the batch</summary>
+        public TGLBatchEnums.GLBatchAction FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.NONE;
 
-            /// list of journals
-            RecurringJournals,
-
-            /// list of transactions
-            RecurringTransactions,
-
-            /// None
-            None
-        };
-
-        /// GL contains 3 levels
-        public enum eGLLevel
-        {
-            /// batch level
-            Batch,
-
-            /// journal level
-            Journal,
-
-            /// transaction level
-            Transaction,
-
-            /// analysis attribute level
-            Analysis
-        };
-
-        private eGLTabs FPreviouslySelectedTab = eGLTabs.None;
+        private TGLBatchEnums.eGLTabs FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.None;
         private Int32 FLedgerNumber = -1;
         private Int32 FStandardTabIndex = 0;
         private bool FChangesDetected = false;
@@ -98,7 +70,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 // Setting the ledger number of the batch control will automatically load the current financial year batches
                 ucoRecurringBatches.LedgerNumber = value;
 
-                //ucoRecurringBatches.LoadBatches(FLedgerNumber);
+                FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
+                FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(FPetraUtilsObject_DataSavingValidated);
 
                 ucoRecurringJournals.WorkAroundInitialization();
                 ucoRecurringTransactions.WorkAroundInitialization();
@@ -130,6 +103,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             tabRecurringGLBatch.GotFocus += new EventHandler(tabRecurringGLBatch_GotFocus);
             this.tpgRecurringJournals.Enabled = false;
             this.tpgRecurringTransactions.Enabled = false;
+
+            // change the event that gets called when 'Save' is clicked (i.e. changed from generated code)
+            tbbSave.Click -= FileSave;
+            mniFileSave.Click -= FileSave;
+            tbbSave.Click += FileSaveManual;
+            mniFileSave.Click += FileSaveManual;
         }
 
         void tabRecurringGLBatch_GotFocus(object sender, EventArgs e)
@@ -211,7 +190,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         /// <param name="ATab"></param>
         /// <param name="AAllowRepeatEvent"></param>
-        public void SelectTab(eGLTabs ATab, bool AAllowRepeatEvent = false)
+        public void SelectTab(TGLBatchEnums.eGLTabs ATab, bool AAllowRepeatEvent = false)
         {
             //Between the tab changing and seleted events changes are incorrectly detected on Journal controls
             // TODO: find cause but use this field for now
@@ -228,15 +207,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 this.Cursor = Cursors.WaitCursor;
 
-                if (ATab == eGLTabs.RecurringBatches)
+                if (ATab == TGLBatchEnums.eGLTabs.Batches)
                 {
-                    if ((FPreviouslySelectedTab == eGLTabs.RecurringBatches) && !AAllowRepeatEvent)
+                    if ((FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Batches) && !AAllowRepeatEvent)
                     {
                         //Repeat event
                         return;
                     }
 
-                    FPreviouslySelectedTab = eGLTabs.RecurringBatches;
+                    FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.Batches;
 
                     this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringBatches;
                     this.tpgRecurringJournals.Enabled = (ucoRecurringBatches.GetSelectedDetailRow() != null);
@@ -245,9 +224,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ucoRecurringBatches.AutoEnableTransTabForBatch();
                     ucoRecurringBatches.SetInitialFocus();
                 }
-                else if (ATab == eGLTabs.RecurringJournals)
+                else if (ATab == TGLBatchEnums.eGLTabs.Journals)
                 {
-                    if ((FPreviouslySelectedTab == eGLTabs.RecurringJournals) && !AAllowRepeatEvent)
+                    if ((FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Journals) && !AAllowRepeatEvent)
                     {
                         //Repeat event
                         return;
@@ -255,7 +234,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (this.tpgRecurringJournals.Enabled)
                     {
-                        FPreviouslySelectedTab = eGLTabs.RecurringJournals;
+                        FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.Journals;
 
                         this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringJournals;
 
@@ -266,9 +245,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         this.ucoRecurringJournals.UpdateHeaderTotals(ucoRecurringBatches.GetSelectedDetailRow());
                     }
                 }
-                else if (ATab == eGLTabs.RecurringTransactions)
+                else if (ATab == TGLBatchEnums.eGLTabs.Transactions)
                 {
-                    if ((FPreviouslySelectedTab == eGLTabs.RecurringTransactions) && !AAllowRepeatEvent)
+                    if ((FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Transactions) && !AAllowRepeatEvent)
                     {
                         //Repeat event
                         return;
@@ -276,8 +255,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     if (this.tpgRecurringTransactions.Enabled)
                     {
-                        bool batchWasPreviousTab = (FPreviouslySelectedTab == eGLTabs.RecurringBatches);
-                        FPreviouslySelectedTab = eGLTabs.RecurringTransactions;
+                        bool batchWasPreviousTab = (FPreviouslySelectedTab == TGLBatchEnums.eGLTabs.Batches);
+                        FPreviouslySelectedTab = TGLBatchEnums.eGLTabs.Transactions;
 
                         // Note!! This call may result in this (SelectTab) method being called again (but no new transactions will be loaded the second time)
                         this.tabRecurringGLBatch.SelectedTab = this.tpgRecurringTransactions;
@@ -309,16 +288,16 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             switch (ASelectedTabIndex)
             {
-                case (int)eGLTabs.RecurringBatches:
-                    SelectTab(eGLTabs.RecurringBatches);
+                case (int)TGLBatchEnums.eGLTabs.Batches:
+                    SelectTab(TGLBatchEnums.eGLTabs.Batches);
                     break;
 
-                case (int)eGLTabs.RecurringJournals:
-                    SelectTab(eGLTabs.RecurringJournals);
+                case (int)TGLBatchEnums.eGLTabs.Journals:
+                    SelectTab(TGLBatchEnums.eGLTabs.Journals);
                     break;
 
-                default: //(ASelectedTabIndex == (int)eGLTabs.RecurringTransactions)
-                    SelectTab(eGLTabs.RecurringTransactions);
+                default: //(ASelectedTabIndex == (int)TGLBatchEnums.eGLTabs.Transactions)
+                    SelectTab(TGLBatchEnums.eGLTabs.Transactions);
                     break;
             }
         }
@@ -516,6 +495,124 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             return AllChangesCount;
+        }
+
+        #region # saving
+
+        private void FileSaveManual(object sender, EventArgs e)
+        {
+            SaveChangesManual();
+        }
+
+        /// <summary>
+        /// Check for ExWorkers before saving
+        /// </summary>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual()
+        {
+            FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
+            return SaveChangesManual(FCurrentGLBatchAction);
+        }
+
+        /// <summary>
+        /// Save according to current batch action
+        /// </summary>
+        /// <param name="AAction"></param>
+        /// <param name="AGetJournalDataFromControls"></param>
+        /// <param name="AGetTransDataFromControls"></param>
+        /// <returns>True if Save is successful</returns>
+        public bool SaveChangesManual(TGLBatchEnums.GLBatchAction AAction,
+            bool AGetJournalDataFromControls = false,
+            bool AGetTransDataFromControls = false)
+        {
+            if (AAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                AAction = TGLBatchEnums.GLBatchAction.SAVING;
+                FCurrentGLBatchAction = AAction;
+            }
+
+            if (AAction == TGLBatchEnums.GLBatchAction.DELETING)
+            {
+                if (AGetJournalDataFromControls)
+                {
+                    ucoRecurringJournals.GetDataFromControls();
+                }
+
+                if (AGetTransDataFromControls)
+                {
+                    ucoRecurringTransactions.GetDataFromControls();
+                }
+            }
+            else if (AAction == TGLBatchEnums.GLBatchAction.DELETINGJOURNAL)
+            {
+                ucoRecurringBatches.GetDataFromControls();
+
+                if (AGetTransDataFromControls)
+                {
+                    ucoRecurringTransactions.GetDataFromControls();
+                }
+            }
+            else if ((AAction == TGLBatchEnums.GLBatchAction.DELETINGTRANS)
+                     || (AAction == TGLBatchEnums.GLBatchAction.DELETINGALLTRANS))
+            {
+                ucoRecurringBatches.GetDataFromControls();
+                ucoRecurringJournals.GetDataFromControls();
+            }
+            else
+            {
+                GetDataFromControls();
+            }
+
+            return SaveChanges();
+        }
+
+        // Before the dataset is saved, check for correlation between batch and transactions
+        private void FPetraUtilsObject_DataSavingStarted(object Sender, EventArgs e)
+        {
+            ucoRecurringBatches.CheckBeforeSaving();
+            //Add below if necessary
+            //ucoRecurringJournals.CheckBeforeSaving();
+            //ucoRecurringTransactions.CheckBeforeSaving();
+        }
+
+        private void FPetraUtilsObject_DataSavingValidated(object Sender, CancelEventArgs e)
+        {
+            int BatchNumber = GetBatchControl().GetCurrentBatchRow().BatchNumber;
+            int JournalNumber = 0;
+            int TransactionNumber = 0;
+
+            if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.NONE)
+            {
+                FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.SAVING;
+            }
+            else if ((FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGJOURNAL)
+                     || (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGALLTRANS))
+            {
+                JournalNumber = GetJournalsControl().GetCurrentJournalRow().JournalNumber;
+            }
+            else if (FCurrentGLBatchAction == TGLBatchEnums.GLBatchAction.DELETINGTRANS)
+            {
+                JournalNumber = GetJournalsControl().GetCurrentJournalRow().JournalNumber;
+                TransactionNumber = GetTransactionsControl().GetCurrentTransactionRow().TransactionNumber;
+            }
+
+            //Check if the user has made a Bank Cost Centre or Account Code inactive
+            // on saving
+            if (!ucoRecurringTransactions.AllowInactiveFieldValues(FLedgerNumber, BatchNumber, FCurrentGLBatchAction,
+                    JournalNumber, TransactionNumber))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        #endregion saving
+
+        /// <summary>
+        /// Needs to be called prior to posting current batch to ensure all data is up-to-date
+        /// </summary>
+        public void GetLatestControlData()
+        {
+            GetDataFromControls();
         }
 
         #region Menu and command key handlers for our user controls

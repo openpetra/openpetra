@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,10 +30,9 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
+using Ict.Common.DB.Exceptions;
 using Npgsql;
 using NpgsqlTypes;
-
-using Ict.Common.DB.Exceptions;
 
 namespace Ict.Common.DB
 {
@@ -90,11 +89,14 @@ namespace Ict.Common.DB
                     throw new ArgumentException("APassword", "APassword must not be null or an empty string!");
                 }
 
-                // TODO: Make 'ConnectionLifeTime' and 'CommandTimeout' configurable somehow. That would allow
-                // us to cater better for server environments where the server is quite busy and the RDBMS could
-                // therefore be slow to respond! See https://tracker.openpetra.org/view.php?id=2330.
-                AConnectionString = "Server=" + AServer + ";Port=" + APort + ";User Id=" + AUsername +
-                                    ";Database=" + ADatabaseName + ";ConnectionLifeTime=60;CommandTimeout=3600;Password=";
+                AConnectionString = String.Format(
+                    "Server={0};Port={1};User Id={2};Database={3};Timeout={4};ConnectionLifeTime={5};CommandTimeout={6}" +
+                    ";Password=", AServer, APort, AUsername, ADatabaseName,
+                    TAppSettingsManager.GetInt32("Server.DBConnectionTimeout", 10),
+                    TAppSettingsManager.GetInt32("Server.DBConnectionLifeTime", 60),
+                    TAppSettingsManager.GetInt32("Server.DBCommandTimeout", 3600));
+                // Note: We must use TAppSettingsManager above and not TSrvSetting because if we would be using the latter
+                // somehow some NUnit Tests fail with extremely weird timeouts...
             }
 
             try
@@ -102,6 +104,7 @@ namespace Ict.Common.DB
                 // TLogging.Log('Full ConnectionString (with Password!): ''' + ConnectionString + '''');
                 // TLogging.Log('Full ConnectionString (with Password!): ''' + ConnectionString + '''');
                 // TLogging.Log('ConnectionStringBuilder.ToString (with Password!): ''' + ConnectionStringBuilder.ToString + '''');
+
                 // Now try to connect to the DB
                 TheConnection = new NpgsqlConnection();
                 TheConnection.ConnectionString = AConnectionString + APassword + ";";

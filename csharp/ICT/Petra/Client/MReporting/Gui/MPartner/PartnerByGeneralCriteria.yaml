@@ -46,6 +46,7 @@ RootNode:
             Height: 120
         grpLocationType:
             Controls: [clbLocationType]
+            Label: Location Type (leave clear for 'all')
         clbLocationType:
             NoLabel: true 
             ParameterName: param_location_type

@@ -270,35 +270,35 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 bRevision + ", " + bCostCentreCode + ", " + bAccountCode + ", " + bBudgetTypeCode + ", " +
                 bBudgetStatus + ", " + bComment + ", " + bDateCreated + ", " + bCreatedBy + ", " +
                 bDateModified + ", " + bModifiedBy + ", " + bModificationId + ", " +
-                "min(case when " + bpPeriodNumber + " = 1 then " + bpBudgetBase + " end) Period01Amount, " +
-                "min(case when " + bpPeriodNumber + " = 2 then " + bpBudgetBase + " end) Period02Amount, " +
-                "min(case when " + bpPeriodNumber + " = 3 then " + bpBudgetBase + " end) Period03Amount, " +
-                "min(case when " + bpPeriodNumber + " = 4 then " + bpBudgetBase + " end) Period04Amount, " +
-                "min(case when " + bpPeriodNumber + " = 5 then " + bpBudgetBase + " end) Period05Amount, " +
-                "min(case when " + bpPeriodNumber + " = 6 then " + bpBudgetBase + " end) Period06Amount, " +
-                "min(case when " + bpPeriodNumber + " = 7 then " + bpBudgetBase + " end) Period07Amount, " +
-                "min(case when " + bpPeriodNumber + " = 8 then " + bpBudgetBase + " end) Period08Amount, " +
-                "min(case when " + bpPeriodNumber + " = 9 then " + bpBudgetBase + " end) Period09Amount, " +
-                "min(case when " + bpPeriodNumber + " = 10 then " + bpBudgetBase + " end) Period10Amount, " +
-                "min(case when " + bpPeriodNumber + " = 11 then " + bpBudgetBase + " end) Period11Amount, " +
-                "min(case when " + bpPeriodNumber + " = 12 then " + bpBudgetBase + " end) Period12Amount";
+                "min(case when " + bpPeriodNumber + " = 1 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period01Amount, " +
+                "min(case when " + bpPeriodNumber + " = 2 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period02Amount, " +
+                "min(case when " + bpPeriodNumber + " = 3 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period03Amount, " +
+                "min(case when " + bpPeriodNumber + " = 4 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period04Amount, " +
+                "min(case when " + bpPeriodNumber + " = 5 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period05Amount, " +
+                "min(case when " + bpPeriodNumber + " = 6 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period06Amount, " +
+                "min(case when " + bpPeriodNumber + " = 7 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period07Amount, " +
+                "min(case when " + bpPeriodNumber + " = 8 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period08Amount, " +
+                "min(case when " + bpPeriodNumber + " = 9 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period09Amount, " +
+                "min(case when " + bpPeriodNumber + " = 10 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period10Amount, " +
+                "min(case when " + bpPeriodNumber + " = 11 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period11Amount, " +
+                "min(case when " + bpPeriodNumber + " = 12 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period12Amount";
 
             if (ANumberOfPeriods > 12)
             {
-                SQLStatement += ", min(case when " + bpPeriodNumber + " = 13 then " + bpBudgetBase + " end) Period13Amount";
+                SQLStatement += ", min(case when " + bpPeriodNumber + " = 13 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period13Amount";
             }
             else
             {
-                SQLStatement += ", 0 Period13Amount";
+                SQLStatement += ", CAST(0 AS NUMERIC(24,10)) Period13Amount";
             }
 
             if (ANumberOfPeriods > 13)
             {
-                SQLStatement += ", min(case when " + bpPeriodNumber + " = 14 then " + bpBudgetBase + " end) Period14Amount";
+                SQLStatement += ", min(case when " + bpPeriodNumber + " = 14 then CAST(" + bpBudgetBase + " AS NUMERIC(24,10)) end) Period14Amount";
             }
             else
             {
-                SQLStatement += ", 0 Period14Amount";
+                SQLStatement += ", CAST(0 AS NUMERIC(24,10)) Period14Amount";
             }
 
             SQLStatement +=
