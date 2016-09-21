@@ -24,7 +24,9 @@
 using System;
 using System.Collections;
 using System.Security.Principal;
+
 using Ict.Common;
+using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 
@@ -45,7 +47,8 @@ namespace Ict.Common.Remoting.Server
         /// </summary>
         IPrincipal PerformUserAuthentication(string AUserName, string APassword,
             string AClientComputerName, string AClientIPAddress,
-            out Boolean ASystemEnabled);
+            out Boolean ASystemEnabled,
+            TDBTransaction ATransaction);
 
         /// <summary>
         /// Call this Method when a log-in is attempted for a non-existing user (!) so that the time that is spent on
@@ -117,7 +120,7 @@ namespace Ict.Common.Remoting.Server
         /// <summary>
         /// get a welcome message
         /// </summary>
-        string GetLogonMessage(IPrincipal UserInfo, Boolean AReturnEnglishIfNotFound);
+        string GetLogonMessage(IPrincipal UserInfo, Boolean AReturnEnglishIfNotFound, TDBTransaction ATransaction);
     }
 
     /// an interface for system defaults cache

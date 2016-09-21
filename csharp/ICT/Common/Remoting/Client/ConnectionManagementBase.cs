@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,14 +23,15 @@
 //
 using System;
 using System.Collections;
-using System.Net.Sockets;
-using System.Security.Principal;
 using System.IO;
+using System.Net.Sockets;
+using System.Reflection;
+using System.Security.Principal;
+
 using Ict.Common;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Shared;
-using System.Reflection;
 
 namespace Ict.Common.Remoting.Client
 {
@@ -167,10 +168,18 @@ namespace Ict.Common.Remoting.Client
 
                 return result;
             }
-            catch (Exception exp)
+            catch (Exception Exc)
             {
-                TLogging.Log(exp.ToString() + Environment.NewLine + exp.StackTrace, TLoggingType.ToLogfile);
-                AError = exp.Message;
+                if (TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionClientSide(Exc))
+                {
+                    TExceptionHelper.ShowExceptionCausedByUnavailableDBConnectionMessage(true);
+
+                    AError = Exc.Message;
+                    return eLoginEnum.eLoginFailedForUnspecifiedError;
+                }
+
+                TLogging.Log(Exc.ToString() + Environment.NewLine + Exc.StackTrace, TLoggingType.ToLogfile);
+                AError = Exc.Message;
                 return eLoginEnum.eLoginFailedForUnspecifiedError;
             }
         }

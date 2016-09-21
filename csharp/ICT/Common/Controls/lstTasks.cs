@@ -586,14 +586,7 @@ namespace Ict.Common.Controls
                 {
                     TLogging.Log(E.ToString());
 
-                    String msg = E.Message;
-
-                    if (E.InnerException != null)
-                    {
-                        msg = E.InnerException.Message;
-                    }
-
-                    return msg;
+                    throw;
                 }
 
                 if (!FormWasAlreadyOpened)

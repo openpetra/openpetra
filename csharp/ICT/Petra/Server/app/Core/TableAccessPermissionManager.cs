@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,12 +22,12 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data;
+
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-
-using System.Data;
 
 namespace Ict.Petra.Server.App.Core.Security
 {
@@ -41,34 +41,21 @@ namespace Ict.Petra.Server.App.Core.Security
         /// get the list of access permissions to database tables for the user
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public static SUserTableAccessPermissionTable LoadTableAccessPermissions(String AUserID)
+        public static SUserTableAccessPermissionTable LoadTableAccessPermissions(String AUserID, TDBTransaction ATransaction)
         {
             SUserTableAccessPermissionTable ReturnValue;
-            TDBTransaction ReadTransaction;
-            Boolean NewTransaction = false;
 
-            try
+            if (SUserTableAccessPermissionAccess.CountViaSUser(AUserID, ATransaction) > 0)
             {
-                ReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+                ReturnValue = SUserTableAccessPermissionAccess.LoadViaSUser(AUserID, ATransaction);
+            }
+            else
+            {
+                ReturnValue = new SUserTableAccessPermissionTable();
+            }
 
-                if (SUserTableAccessPermissionAccess.CountViaSUser(AUserID, ReadTransaction) > 0)
-                {
-                    ReturnValue = SUserTableAccessPermissionAccess.LoadViaSUser(AUserID, ReadTransaction);
-                }
-                else
-                {
-                    ReturnValue = new SUserTableAccessPermissionTable();
-                }
-            }
-            finally
-            {
-                if (NewTransaction)
-                {
-                    DBAccess.GDBAccessObj.CommitTransaction();
-                    TLogging.LogAtLevel(8, "TTableAccessPermissionManager.LoadTableAccessPermissions: committed own transaction.");
-                }
-            }
             return ReturnValue;
         }
     }

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+
+using Ict.Common.DB;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core.Security;
 
@@ -42,10 +44,12 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// call Server.App.Core.Security.TTableAccessPermissionManager.LoadTableAccessPermissions
         /// </summary>
         /// <param name="AUserID"></param>
+        /// <param name="ATransaction">Instantiated DB Transaction.</param>
         /// <returns></returns>
-        public static SUserTableAccessPermissionTable LoadTableAccessPermissions(String AUserID)
+        public static SUserTableAccessPermissionTable LoadTableAccessPermissions(String AUserID, TDBTransaction ATransaction)
         {
-            return Ict.Petra.Server.App.Core.Security.TTableAccessPermissionManager.LoadTableAccessPermissions(AUserID);
+            return Ict.Petra.Server.App.Core.Security.TTableAccessPermissionManager.LoadTableAccessPermissions(AUserID,
+                ATransaction);
         }
     }
 }

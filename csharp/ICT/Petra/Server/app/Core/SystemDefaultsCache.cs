@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -542,48 +542,56 @@ namespace Ict.Petra.Server.App.Core
         /// <param name="AValue">Value of the System Default.</param>
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
         /// <remarks>SystemDefault Names are not case sensitive.</remarks>
-
         public void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
-            Boolean NewTransaction = false;
-            Boolean ShouldCommit = false;
+            TDataBase DBConnectionObj = null;
+            TDBTransaction WriteTransaction = null;
+            Boolean SubmissionOK = false;
             SSystemDefaultsTable SystemDefaultsDT;
+            Boolean Added = false;
 
             try
             {
-                TDBTransaction ReadWriteTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(
-                    IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum, out NewTransaction);
+                // Open a separate DB Connection...
+                DBConnectionObj = DBAccess.SimpleEstablishDBConnection("SetSystemDefault");
 
-                SystemDefaultsDT = SSystemDefaultsAccess.LoadAll(ReadWriteTransaction);
+                // ...and start a DB Transaction on that separate DB Connection
+                DBConnectionObj.BeginAutoTransaction(IsolationLevel.ReadCommitted, ref WriteTransaction, ref SubmissionOK,
+                    "SetSystemDefault", delegate
+                    {
+                        SystemDefaultsDT = SSystemDefaultsAccess.LoadAll(WriteTransaction);
 
-                // This will find the row that matches a case-insensitive search of the table primary keys
-                SystemDefaultsDT.CaseSensitive = false;     // It is anyway
-                SSystemDefaultsRow match = (SSystemDefaultsRow)SystemDefaultsDT.Rows.Find(AKey);
+                        // This will find the row that matches a case-insensitive search of the table primary keys
+                        SystemDefaultsDT.CaseSensitive = false;     // It is anyway
+                        SSystemDefaultsRow match = (SSystemDefaultsRow)SystemDefaultsDT.Rows.Find(AKey);
 
-                if (match != null)
-                {
-                    // I already have this System Default in the DB --> simply update the Value in the DB.
-                    // (This will often be the case!)
-                    match.DefaultValue = AValue;
+                        if (match != null)
+                        {
+                            // I already have this System Default in the DB --> simply update the Value in the DB.
+                            // (This will often be the case!)
+                            match.DefaultValue = AValue;
 
-                    AAdded = false;
-                }
-                else
-                {
-                    // The System Default isn't in the DB yet --> store it in the DB.
-                    var SystemDefaultsDR = SystemDefaultsDT.NewRowTyped(true);
-                    SystemDefaultsDR.DefaultCode = AKey;
-                    SystemDefaultsDR.DefaultDescription = "Created in OpenPetra";
-                    SystemDefaultsDR.DefaultValue = AValue;
+                            Added = false;
+                        }
+                        else
+                        {
+                            // The System Default isn't in the DB yet --> store it in the DB.
+                            var SystemDefaultsDR = SystemDefaultsDT.NewRowTyped(true);
+                            SystemDefaultsDR.DefaultCode = AKey;
+                            SystemDefaultsDR.DefaultDescription = "Created in OpenPetra";
+                            SystemDefaultsDR.DefaultValue = AValue;
 
-                    SystemDefaultsDT.Rows.Add(SystemDefaultsDR);
+                            SystemDefaultsDT.Rows.Add(SystemDefaultsDR);
 
-                    AAdded = true;
-                }
+                            Added = true;
+                        }
 
-                SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, ReadWriteTransaction);
+                        SSystemDefaultsAccess.SubmitChanges(SystemDefaultsDT, WriteTransaction);
 
-                ShouldCommit = true;
+                        SubmissionOK = true;
+                    });
+
+                AAdded = Added;
             }
             catch (Exception Exc)
             {
@@ -592,31 +600,25 @@ namespace Ict.Petra.Server.App.Core
                     "'. Value to be saved: + '" + AValue + "'" +
                     Environment.NewLine + Exc.ToString());
 
-                ShouldCommit = false;
-
                 throw;
             }
             finally
             {
-                if (NewTransaction)
+                if (SubmissionOK)
                 {
-                    if (ShouldCommit)
-                    {
-                        DBAccess.GDBAccessObj.CommitTransaction();
+                    // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
 
-                        // We need to ensure that the next time the System Defaults Caches gets accessed it is refreshed from the DB!!!
-
-                        // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
-                        // FTableCached value!
-                        lock (FTableCachedLockCookie)
-                        {
-                            FTableCached = false;
-                        }
-                    }
-                    else
+                    // Obtain thread-safe access to the FTableCached Field to prevent two (or more) Threads from getting a different
+                    // FTableCached value!
+                    lock (FTableCachedLockCookie)
                     {
-                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        FTableCached = false;
                     }
+                }
+
+                if (DBConnectionObj != null)
+                {
+                    DBConnectionObj.CloseDBConnection();
                 }
             }
         }

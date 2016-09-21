@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,11 +26,10 @@ using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 
-//using GNU.Gettext;
-
 using Ict.Common;
 using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -90,6 +89,16 @@ namespace Ict.Petra.Client.App.Core
             TUnhandledExceptionForm UEDialogue;
             string FunctionalityNotImplementedMsg = AppCoreResourcestrings.StrFunctionalityNotAvailableYet;
             string Reason = String.Empty;
+            Exception TheException;
+
+            TheException = ((Exception)AEventArgs.ExceptionObject);
+
+            if (TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionClientSide(TheException))
+            {
+                TExceptionHelper.ShowExceptionCausedByUnavailableDBConnectionMessage(false);
+
+                return;
+            }
 
             if (((Exception)AEventArgs.ExceptionObject is NotImplementedException))
             {
@@ -212,6 +221,14 @@ namespace Ict.Petra.Client.App.Core
             TUnhandledExceptionForm UEDialogue;
             string FunctionalityNotImplementedMsg = AppCoreResourcestrings.StrFunctionalityNotAvailableYet;
             string Reason = String.Empty;
+            Exception TheException = ((Exception)AEventArgs.Exception);
+
+            if (TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionClientSide(TheException))
+            {
+                TExceptionHelper.ShowExceptionCausedByUnavailableDBConnectionMessage(false);
+
+                return;
+            }
 
             if ((AEventArgs.Exception is NotImplementedException))
             {

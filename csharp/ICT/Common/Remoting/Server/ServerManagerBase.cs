@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,13 +35,14 @@ using System.Security.Cryptography;
 using System.Security.Permissions;
 using System.Text;
 using System.Threading;
-using GNU.Gettext;
 using System.Web;
 
 using Ict.Common;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Session;
+using GNU.Gettext;
 
 namespace Ict.Common.Remoting.Server
 {
@@ -63,12 +64,75 @@ namespace Ict.Common.Remoting.Server
         /// <summary>this is to know if this is the real instance; for displaying the message SERVER STOPPED at the right time</summary>
         private Boolean FFirstInstance;
 
+        /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
+        protected static Int64 FDBReconnectionAttemptsCounter = -1;
+
+        /// <summary>Whether the Timed Processing has been set up already.</summary>
+        protected static bool FServerTimedProcessingSetup = false;
+
+        /// <summary>DB Reconnection attempts (-1 = no connection established yet at all; 0 = none are being made).</summary>
+        public Int64 DBReconnectionAttemptsCounter
+        {
+            get
+            {
+                return FDBReconnectionAttemptsCounter;
+            }
+
+            set
+            {
+                FDBReconnectionAttemptsCounter = value;
+            }
+        }
+
+        /// <summary>
+        /// DB Connection Check Interval (if this is 0 then no automatic checks are done).
+        /// </summary>
+        public int DBConnectionCheckInterval
+        {
+            get
+            {
+                return TSrvSetting.DBConnectionCheckInterval;
+            }
+        }
+
+        /// <summary>SiteKey of the OpenPetra DB that the Server is connected to.</summary>
+        public Int64 SiteKey
+        {
+            get
+            {
+                Int64 ReturnValue = -1;
+
+                try
+                {
+                    ReturnValue = DomainManagerBase.GSiteKey;
+                }
+                catch (EDBConnectionNotEstablishedException)
+                {
+                    // Swallow this Exception here on purpose - we don't want to throw anything if the DB Connection
+                    // isn't established yet...
+                }
+
+                return ReturnValue;
+            }
+        }
+
         /// <summary>Number of Clients that are currently connected to the Petra Server.</summary>
         public int ClientsConnected
         {
             get
             {
                 return TClientManager.ClientsConnected;
+            }
+        }
+
+        /// <summary>
+        /// Whether the 'Server Timed Processing' has been set up.
+        /// </summary>
+        public bool ServerTimedProcessingSetup
+        {
+            get
+            {
+                return FServerTimedProcessingSetup;
             }
         }
 
@@ -261,7 +325,7 @@ namespace Ict.Common.Remoting.Server
         public void HookupProperShutdownProcessing()
         {
             AppDomain.CurrentDomain.UnhandledException +=
-                new UnhandledExceptionEventHandler(ExceptionHandling.UnhandledExceptionHandler);
+                new UnhandledExceptionEventHandler(TExceptionHandling.UnhandledExceptionHandler);
         }
 
         /// <summary>
@@ -291,6 +355,9 @@ namespace Ict.Common.Remoting.Server
             Console.WriteLine();
             TLogging.Log(Catalog.GetString("CONTROLLED SHUTDOWN PROCEDURE INITIATED"));
 
+            // Stop the DB Connection check Timer (only if a check interval is specified).
+            StopCheckDBConnectionTimer();
+
             // Check if there are still Clients connected
             if (ClientsConnected > 0)
             {
@@ -300,7 +367,7 @@ namespace Ict.Common.Remoting.Server
                         ClientsConnected, ClientsConnected > 1 ? "Clients" : "Client"));
 
                 // Queue a ClientTask for all connected Clients that asks them to save the UserDefaults,  to disconnect from the Server and to close
-                QueueClientTask(-1, RemotingConstants.CLIENTTASKGROUP_DISCONNECT, "IMMEDIATE", 1);
+                QueueClientTask(-1, RemotingConstants.CLIENTTASKGROUP_DISCONNECT, "IMMEDIATE", null, null, null, null, 1);
 
                 // Loop that checks if all Clients have responded by disconnecting or if at least one Client didn't respond and a timeout was exceeded
 CheckAllClientsDisconnected:
@@ -346,7 +413,7 @@ CheckAllClientsDisconnected:
                                     ClientsConnected, ClientsConnected > 1 ? "Clients" : "Client"));
 
                             // Queue a ClienTasks for all Clients that are still connected that asks them to close (no saving of UserDefaults and no disconnection from the server!). This is a fallback mechanism.
-                            QueueClientTask(-1, RemotingConstants.CLIENTTASKGROUP_DISCONNECT, "IMMEDIATE-HARDEXIT", 1);
+                            QueueClientTask(-1, RemotingConstants.CLIENTTASKGROUP_DISCONNECT, "IMMEDIATE-HARDEXIT", null, null, null, null, 1);
 
                             // Loop as long as TSrvSetting.ClientKeepAliveCheckIntervalInSeconds is to ensure that all Clients will have got the chance to pick up the queued Client Task
                             // (since it would not be easy to determine that every connected Client has picked up this message, this is the easy way of ensuring that).
@@ -381,6 +448,12 @@ CheckAllClientsDisconnected:
             {
                 // No Clients connected anymore -> we can shut down the server.
                 TLogging.Log("  " + Catalog.GetString("CONTROLLED SHUTDOWN: There were no Clients connected, proceeding with shutdown immediately."));
+            }
+
+            if (DBConnectionCheckInterval != 0)
+            {
+                // Close the server's DB Polling Connection in an orderly fashion
+                CloseDBPollingConnection();
             }
 
             // We are now ready to stop the server.
@@ -420,6 +493,22 @@ CheckAllClientsDisconnected:
         }
 
         /// <summary>
+        /// Stops the DB Connection check Timer (only if a check interval is specified).
+        /// </summary>
+        public virtual void StopCheckDBConnectionTimer()
+        {
+            // This needs to be implemented by an inheriting class in order for it to do something!
+        }
+
+        /// <summary>
+        /// Closes the DB Connection in an orderly fashion.
+        /// </summary>
+        public virtual void CloseDBPollingConnection()
+        {
+            // This needs to be implemented by an inheriting class in order for it to do something!
+        }
+
+        /// <summary>
         /// Requests disconnection of a certain Client from the Petra Server.
         ///
         /// </summary>
@@ -438,11 +527,21 @@ CheckAllClientsDisconnected:
         /// <param name="AClientID">Server-assigned ID of the Client</param>
         /// <param name="ATaskGroup">Group of the Task</param>
         /// <param name="ATaskCode">Code of the Task</param>
+        /// <param name="ATaskParameter1">Parameter #1 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter2">Parameter #2 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter3">Parameter #3 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
+        /// <param name="ATaskParameter4">Parameter #4 for the Task (depending on the TaskGroup
+        /// this can be left empty)</param>
         /// <param name="ATaskPriority">Priority of the Task</param>
         /// <returns>true if ClientTask was queued, otherwise false.</returns>
-        public bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, System.Int16 ATaskPriority)
+        public bool QueueClientTask(System.Int16 AClientID, String ATaskGroup, String ATaskCode, object ATaskParameter1,
+            object ATaskParameter2, object ATaskParameter3, object ATaskParameter4, System.Int16 ATaskPriority)
         {
-            return TClientManager.QueueClientTask(AClientID, ATaskGroup, ATaskCode, null, null, null, null, ATaskPriority) >= 0;
+            return TClientManager.QueueClientTask(AClientID, ATaskGroup, ATaskCode, ATaskParameter1, ATaskParameter2,
+                                                  ATaskParameter3, ATaskParameter4, ATaskPriority) >= 0;
         }
 
         /// <summary>

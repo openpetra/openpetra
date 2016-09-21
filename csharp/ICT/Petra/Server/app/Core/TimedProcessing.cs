@@ -22,16 +22,16 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Threading;
-using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Remoting.Server;
-using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -98,21 +98,28 @@ namespace Ict.Petra.Server.App.Core
 
             TDataBase db = EstablishDBConnection();
 
-            TPetraIdentity PetraIdentity = new TPetraIdentity(
-                "SYSADMIN", "", "", "", "", DateTime.MinValue,
-                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
-
-            UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
-
-            TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];
-
-            TypedDelegate(db, ARunManually);
-
-            CloseDBConnection(db);
-
-            if (TLogging.DebugLevel >= 9)
+            if (db != null)
             {
-                TLogging.Log("delegate " + ADelegateName + " has run.");
+                TPetraIdentity PetraIdentity = new TPetraIdentity(
+                    "SYSADMIN", "", "", "", "", DateTime.MinValue,
+                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
+
+                UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
+
+                TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];
+
+                TypedDelegate(db, ARunManually);
+
+                CloseDBConnection(db);
+
+                if (TLogging.DebugLevel >= 9)
+                {
+                    TLogging.Log("Timed Processing: Delegate " + ADelegateName + " has run.");
+                }
+            }
+            else
+            {
+                TLogging.Log("Timed Processing: Delegate " + ADelegateName + " could not be run because no database connection is available!");
             }
         }
 
@@ -128,24 +135,27 @@ namespace Ict.Petra.Server.App.Core
         /// <returns>the database connection object</returns>
         private static TDataBase EstablishDBConnection()
         {
-            TDataBase FDBAccessObj = new Ict.Common.DB.TDataBase();
+            TDataBase FDBAccessObj;
+            bool ExceptionCausedByUnavailableDBConn;
 
             try
             {
-                FDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                    TSrvSetting.PostgreSQLServer,
-                    TSrvSetting.PostgreSQLServerPort,
-                    TSrvSetting.PostgreSQLDatabaseName,
-                    TSrvSetting.DBUsername,
-                    TSrvSetting.DBPassword,
-                    "",
-                    "Servers's DB Connection for TimedProcessing");
+                FDBAccessObj = DBAccess.SimpleEstablishDBConnection("Servers's DB Connection for TimedProcessing");
             }
             catch (Exception Exc)
             {
-                TLogging.Log("Timed Processing: Exception occured while establishing connection to Database Server: " + Exc.ToString());
+                ExceptionCausedByUnavailableDBConn = TExceptionHelper.IsExceptionCausedByUnavailableDBConnectionServerSide(Exc);
 
-                throw;
+                if (!ExceptionCausedByUnavailableDBConn)
+                {
+                    TLogging.Log("Timed Processing: Exception occured while establishing connection to Database Server: " + Exc.ToString());
+
+                    throw;
+                }
+                else
+                {
+                    FDBAccessObj = null;  // This gets handled in the calling Method!
+                }
             }
 
             return FDBAccessObj;
@@ -176,9 +186,9 @@ namespace Ict.Petra.Server.App.Core
         /// run this job now
         /// </summary>
         /// <param name="ADelegateName"></param>
-        public static void RunJobManually(string ADelegateName)
+        public static void RunJobManually(object ADelegateName)
         {
-            GenericProcessor(ADelegateName, true);
+            GenericProcessor(ADelegateName.ToString(), true);
         }
 
         /// <summary>
@@ -201,6 +211,8 @@ namespace Ict.Petra.Server.App.Core
             DateTime TomorrowsStartTime;
             TimeSpan InitialSleepTime;
             TimeSpan TwentyfourHrs;
+
+            TLogging.LogAtLevel(1, "TTimedProcessing.StartProcessing got called");
 
             // Check if any Processing is enabled at all
             if (FProcessDelegates.Count == 0)

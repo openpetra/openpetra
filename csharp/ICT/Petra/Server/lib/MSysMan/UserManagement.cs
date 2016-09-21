@@ -100,7 +100,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                     ref SubmissionResult,
                     delegate
                     {
-                        SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal);
+                        SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUsername.ToUpper(), out tempPrincipal,
+                            SubmitChangesTransaction);
                         SUserTable UserTable = (SUserTable)UserDR.Table;
 
                         // Note: We are on purpose NOT checking here whether the new password is the same as the existing
@@ -165,6 +166,9 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
             TVerificationResult VerificationResult;
+            TVerificationResultCollection VerificationResultColl = null;
+            SUserRow UserDR = null;
+            SUserTable UserTable = null;
 
             AVerification = new TVerificationResultCollection();
 
@@ -189,27 +193,28 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
                 TDBTransaction SubmitChangesTransaction = null;
                 bool SubmissionResult = false;
 
-                SUserRow UserDR = TUserManagerWebConnector.LoadUser(AUserID.ToUpper(), out tempPrincipal);
-                SUserTable UserTable = (SUserTable)UserDR.Table;
+                DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
+                    ref SubmissionResult,
+                    delegate
+                    {
+                        UserDR = TUserManagerWebConnector.LoadUser(AUserID.ToUpper(), out tempPrincipal,
+                            SubmitChangesTransaction);
+                        UserTable = (SUserTable)UserDR.Table;
 
-                // Security check: Is the supplied current password correct?
-                if (TUserManagerWebConnector.CreateHashOfPassword(ACurrentPassword,
-                        UserDR.PasswordSalt) != UserDR.PasswordHash)
-                {
-                    AVerification = new TVerificationResultCollection();
-                    AVerification.Add(new TVerificationResult("Password Verification",
-                            String.Format(Catalog.GetString(
-                                    "The current password was entered incorrectly! The password did not get changed.")),
-                            TResultSeverity.Resv_Critical));
-
-                    AppendAccountActivity(UserDR,
-                        String.Format("User {0} supplied the wrong current password while attempting to change his/her password!",
-                            UserInfo.GUserInfo.UserID));
-
-                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref SubmitChangesTransaction,
-                        ref SubmissionResult,
-                        delegate
+                        // Security check: Is the supplied current password correct?
+                        if (TUserManagerWebConnector.CreateHashOfPassword(ACurrentPassword,
+                                UserDR.PasswordSalt) != UserDR.PasswordHash)
                         {
+                            VerificationResultColl = new TVerificationResultCollection();
+                            VerificationResultColl.Add(new TVerificationResult("Password Verification",
+                                    String.Format(Catalog.GetString(
+                                            "The current password was entered incorrectly! The password did not get changed.")),
+                                    TResultSeverity.Resv_Critical));
+
+                            AppendAccountActivity(UserDR,
+                                String.Format("User {0} supplied the wrong current password while attempting to change his/her password!",
+                                    UserInfo.GUserInfo.UserID));
+
                             try
                             {
                                 SUserAccess.SubmitChanges(UserTable, SubmitChangesTransaction);
@@ -224,8 +229,12 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 
                                 throw;
                             }
-                        });
+                        }
+                    });
 
+                if (VerificationResultColl != null)
+                {
+                    AVerification = VerificationResultColl;
                     return false;
                 }
 
@@ -647,7 +656,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             {
                 TLogging.Log(e.Message);
                 TLogging.Log(e.StackTrace);
-                ReturnValue = TSubmitChangesResult.scrError;
+
+                throw;
             }
 
             return ReturnValue;

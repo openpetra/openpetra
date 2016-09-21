@@ -226,6 +226,9 @@ namespace Ict.Petra.Shared
         /// <summary>ClientTask TaskGroups</summary>
         public const String CLIENTTASKGROUP_REPORT = "REPORT";
 
+        /// <summary>ClientTask TaskGroups</summary>
+        public const String CLIENTTASKGROUP_DBCONNECTIONBROKEN = "DBCONNECTIONBROKEN";
+
         /// <summary>Securityrelated</summary>
         public const String SECURITY_CAN_LOCATIONTYPE = "-CAN";
 
