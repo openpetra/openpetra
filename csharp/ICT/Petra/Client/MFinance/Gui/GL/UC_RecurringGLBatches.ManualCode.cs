@@ -62,7 +62,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private DateTime FDefaultDate = DateTime.Today;
         private bool FInitialFocusActionComplete = false;
 
-        private GLSetupTDS FCacheDS;
         private ACostCentreTable FCostCentreTable = null;
         private AAccountTable FAccountTable = null;
 
@@ -109,11 +108,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadARecurringBatch(FLedgerNumber, TFinanceBatchFilterEnum.fbfAll));
-
-            if (FCacheDS == null)
-            {
-                FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(FLedgerNumber, false);
-            }
 
             btnNew.Enabled = true;
 
@@ -633,11 +627,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 txtDetailBatchControlTotal.CurrencyCode = TTxtCurrencyTextBox.CURRENCY_STANDARD_2_DP;
 
                 LoadBatches(FLedgerNumber);
-
                 SetInitialFocus();
 
-                FInactiveValuesWarningOnGLSubmitting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_POSTING,
-                    true);
+                //Always warn until an option is added if required
+                FInactiveValuesWarningOnGLSubmitting = true;
+                // Keep this code for future option:
+                // TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GL_WARN_OF_INACTIVE_VALUES_ON_SUBMITTING, true);
             }
             finally
             {
@@ -877,92 +872,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             FMainDS.RemoveTable(tmpAccountTable.TableName);
 
             FAccountTable = (AAccountTable)AccountListTable;
-        }
-
-        private bool AnalysisCodeIsActive(String AAccountCode, String AAnalysisCode = "")
-        {
-            bool retVal = true;
-
-            if ((AAnalysisCode == string.Empty) || (AAccountCode == string.Empty))
-            {
-                return retVal;
-            }
-
-            DataView dv = new DataView(FCacheDS.AAnalysisAttribute);
-
-            dv.RowFilter = String.Format("{0}={1} AND {2}='{3}' AND {4}='{5}' AND {6}=true",
-                AAnalysisAttributeTable.GetLedgerNumberDBName(),
-                FLedgerNumber,
-                AAnalysisAttributeTable.GetAccountCodeDBName(),
-                AAccountCode,
-                AAnalysisAttributeTable.GetAnalysisTypeCodeDBName(),
-                AAnalysisCode,
-                AAnalysisAttributeTable.GetActiveDBName());
-
-            retVal = (dv.Count > 0);
-
-            return retVal;
-        }
-
-        private bool AnalysisAttributeValueIsActive(String AAnalysisCode = "", String AAnalysisAttributeValue = "")
-        {
-            bool retVal = true;
-
-            if ((AAnalysisCode == string.Empty) || (AAnalysisAttributeValue == string.Empty))
-            {
-                return retVal;
-            }
-
-            DataView dv = new DataView(FCacheDS.AFreeformAnalysis);
-
-            dv.RowFilter = String.Format("{0}='{1}' AND {2}='{3}' AND {4}=true",
-                AFreeformAnalysisTable.GetAnalysisTypeCodeDBName(),
-                AAnalysisCode,
-                AFreeformAnalysisTable.GetAnalysisValueDBName(),
-                AAnalysisAttributeValue,
-                AFreeformAnalysisTable.GetActiveDBName());
-
-            retVal = (dv.Count > 0);
-
-            return retVal;
-        }
-
-        private bool AccountIsActive(string AAccountCode)
-        {
-            bool retVal = true;
-
-            AAccountRow currentAccountRow = null;
-
-            if (FAccountTable != null)
-            {
-                currentAccountRow = (AAccountRow)FAccountTable.Rows.Find(new object[] { FLedgerNumber, AAccountCode });
-            }
-
-            if (currentAccountRow != null)
-            {
-                retVal = currentAccountRow.AccountActiveFlag;
-            }
-
-            return retVal;
-        }
-
-        private bool CostCentreIsActive(string ACostCentreCode)
-        {
-            bool retVal = true;
-
-            ACostCentreRow currentCostCentreRow = null;
-
-            if (FCostCentreTable != null)
-            {
-                currentCostCentreRow = (ACostCentreRow)FCostCentreTable.Rows.Find(new object[] { FLedgerNumber, ACostCentreCode });
-            }
-
-            if (currentCostCentreRow != null)
-            {
-                retVal = currentCostCentreRow.CostCentreActiveFlag;
-            }
-
-            return retVal;
         }
 
         private bool EnsureNewBatchIsVisible()

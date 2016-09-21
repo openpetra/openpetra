@@ -285,8 +285,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             //If user is FINANCE-3 level then their user settings can override system level setting
             FDonorZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_DONOR_ZERO_IS_VALID, DonorZeroIsValid);
             FRecipientZeroIsValid = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_RECIPIENT_ZERO_IS_VALID, RecipientZeroIsValid);
-            //Use the same setting as for posting
-            FWarnOfInactiveValuesOnSubmitting = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_POSTING, true);
+            //Always warn until an option is added if required
+            FWarnOfInactiveValuesOnSubmitting = true;
+            // Keep this code for future option:
+            // TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_WARN_OF_INACTIVE_VALUES_ON_SUBMITTING, true);
             FNewDonorWarning = TUserDefaults.GetBooleanDefault(TUserDefaults.FINANCE_GIFT_NEW_DONOR_ALERT, true);
             mniNewDonorWarning.Checked = FNewDonorWarning;
 

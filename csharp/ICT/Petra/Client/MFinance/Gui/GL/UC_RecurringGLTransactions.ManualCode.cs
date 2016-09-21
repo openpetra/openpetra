@@ -63,6 +63,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         public Int32 FJournalNumber = -1;
 
+        private GLSetupTDS FCacheDS = null;
         private bool FLoadCompleted = false;
         private Int32 FLedgerNumber = -1;
         private Int32 FTransactionNumber = -1;
@@ -76,7 +77,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private AAccountTable FAccountList;
         private ACostCentreTable FCostCentreList;
 
-        private GLSetupTDS FCacheDS;
         private GLBatchTDSARecurringJournalRow FJournalRow = null;
         private ARecurringTransAnalAttribRow FPSAttributesRow = null;
         private TAnalysisAttributes FAnalysisAttributesLogic;
@@ -2237,6 +2237,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     attribDV.RowFilter = String.Format("{0}={1}",
                         ARecurringTransAnalAttribTable.GetBatchNumberDBName(),
                         currentBatchListNo);
+
+                    if (FCacheDS == null)
+                    {
+                        FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(ALedgerNumber, FActiveOnly);
+                    }
 
                     if (!noNeedToLoadDataForThisBatch)
                     {
