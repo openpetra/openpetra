@@ -71,14 +71,6 @@ namespace Ict.Common.Remoting.Shared
         }
 
         /// <summary>
-        /// get the site key
-        /// </summary>
-        Int64 SiteKey
-        {
-            get;
-        }
-
-        /// <summary>
         /// get list of clients
         /// </summary>
         ArrayList ClientList

@@ -1053,7 +1053,7 @@ namespace Ict.Common.Remoting.Server
                         {
                             if (UMaintenanceLogonMessage != null)
                             {
-                                AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserInfo, true);
+                                AWelcomeMessage = UMaintenanceLogonMessage.GetLogonMessage(AUserInfo, true, ReadWriteTransaction);
                             }
                             else
                             {

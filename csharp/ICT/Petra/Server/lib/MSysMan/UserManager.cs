@@ -350,6 +350,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 			UserDR.LastLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
 			UserDR.FailedLogins = 0;  // this needs resetting!
 
+			// Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
+			if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
+			{
+				TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword);
+			}
+
 			SaveUser(AUserID, (SUserTable)UserDR.Table, ATransaction);
 
 			PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
@@ -382,11 +388,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 				// The user needs to change their password before they can use OpenPetra
 				PetraPrincipal.LoginMessage = SharedConstants.LOGINMUSTCHANGEPASSWORD;
 			}
-            }
-            finally
-            {
-                DBAccess.GDBAccessObj.RollbackTransaction();
-            }
 
             return PetraPrincipal;
         }
@@ -431,12 +432,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                     "Account Locked: now {1}, User Retired: {2})  ", UserDR.FailedLogins, UserDR.AccountLocked, UserDR.Retired) +
                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                 out AProcessID, ATransaction);
-
-            // Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
-            if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
-            {
-                TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword);
-            }
 
             SaveUser(AUserID, (SUserTable)UserDR.Table, ATransaction);
         }

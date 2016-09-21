@@ -72,7 +72,10 @@ namespace Ict.Testing.NUnitPetraServer
         {
             TDBTransaction LoginTransaction;
             bool CommitLoginTransaction = false;
-            TPetraPrincipal MyUserInfo = null;
+            bool SystemEnabled;
+            string WelcomeMessage;
+            IPrincipal ThisUserInfo;
+            Int32 ClientID;
 
             if (File.Exists(AConfigName))
             {
@@ -102,24 +105,10 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
 
             try
             {
-                bool SystemEnabled;
-                string WelcomeMessage;
-                IPrincipal ThisUserInfo;
-                Int32 ClientID;
-
-                TConnectedClient CurrentClient = TClientManager.ConnectClient(
-                    TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
+                TClientManager.PerformLoginChecks(TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
                     TAppSettingsManager.GetValue("AutoLoginPasswd"),
-                    "NUNITTEST", "127.0.0.1",
-                    TFileVersionInfo.GetApplicationVersion().ToVersion(),
-                    TClientServerConnectionType.csctLocal,
-                    out ClientID,
-                    out WelcomeMessage,
-                    out SystemEnabled,
-                    out ThisUserInfo,
-                    LoginTransaction);
+                    "NUNITTEST", "127.0.0.1", out SystemEnabled, LoginTransaction);
 
-                MyUserInfo = (TPetraPrincipal)ThisUserInfo;
                 CommitLoginTransaction = true;
             }
             catch (EPetraSecurityException)
@@ -139,11 +128,21 @@ ATransactionName: "Ict.Testing.NUnitPetraServer.TPetraServerConnector.Connect (U
                 }
             }
 
+            TConnectedClient CurrentClient = TClientManager.ConnectClient(
+                TAppSettingsManager.GetValue("AutoLogin").ToUpper(),
+                TAppSettingsManager.GetValue("AutoLoginPasswd"),
+                "NUNITTEST", "127.0.0.1",
+                TFileVersionInfo.GetApplicationVersion().ToVersion(),
+                TClientServerConnectionType.csctLocal,
+                out ClientID,
+                out WelcomeMessage,
+                out SystemEnabled,
+                out ThisUserInfo);
 
             // the following values are stored in the session object
             DomainManager.GClientID = ClientID;
             DomainManager.CurrentClient = CurrentClient;
-            UserInfo.GUserInfo = MyUserInfo;
+            UserInfo.GUserInfo = (TPetraPrincipal)ThisUserInfo;
 
             TSetupDelegates.Init();
             TSystemDefaultsCache.GSystemDefaultsCache = new TSystemDefaultsCache();

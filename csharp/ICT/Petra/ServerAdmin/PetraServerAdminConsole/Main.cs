@@ -725,7 +725,7 @@ namespace PetraServerAdminConsole
         /// <param name="DBReconnectionAttemptsCounter">counter of db reconnection attempts</param>
         /// <param name="DBConnectionCheckInterval">interval for checking the db connection</param>
         static void RetrieveConnectedClients(out int ATotalConnectedClients, out int ACurrentlyConnectedClients, out Int64 ASiteKey,
-            out int DBReconnectionAttemptsCounter, out int DBConnectionCheckInterval)
+            out Int64 DBReconnectionAttemptsCounter, out Int64 DBConnectionCheckInterval)
         {
             ATotalConnectedClients = TRemote.GetClientsConnectedTotal();
             ACurrentlyConnectedClients = TRemote.GetClientsConnected();

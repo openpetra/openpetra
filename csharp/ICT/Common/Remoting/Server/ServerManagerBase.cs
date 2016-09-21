@@ -104,7 +104,7 @@ namespace Ict.Common.Remoting.Server
 
                 try
                 {
-                    ReturnValue = DomainManagerBase.GSiteKey;
+                    ReturnValue = DomainManager.GSiteKey;
                 }
                 catch (EDBConnectionNotEstablishedException)
                 {
@@ -144,15 +144,6 @@ namespace Ict.Common.Remoting.Server
             get
             {
                 return TClientManager.ClientsConnectedTotal;
-            }
-        }
-
-        /// <summary>The Site Key</summary>
-        public Int64 SiteKey
-        {
-            get
-            {
-                return DomainManager.GSiteKey;
             }
         }
 

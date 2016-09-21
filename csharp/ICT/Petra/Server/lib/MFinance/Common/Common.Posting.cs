@@ -32,6 +32,7 @@ using GNU.Gettext;
 
 using Ict.Common;
 using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Common.Verification.Exceptions;
 using Ict.Common.Data;

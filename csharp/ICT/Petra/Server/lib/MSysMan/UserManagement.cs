@@ -305,7 +305,7 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string NewPasswordHashWithOldSalt = TUserManagerWebConnector.CreateHashOfPassword(ANewPassword,
                 AUserDR.PasswordSalt, AUserDR.PwdSchemeVersion);
 
-            if (PasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(AUserDR.PasswordHash),
+            if (TPasswordHelper.EqualsAntiTimingAttack(Convert.FromBase64String(AUserDR.PasswordHash),
                     Convert.FromBase64String(NewPasswordHashWithOldSalt)))
             {
                 AVerificationResult = new TVerificationResult("Password change",

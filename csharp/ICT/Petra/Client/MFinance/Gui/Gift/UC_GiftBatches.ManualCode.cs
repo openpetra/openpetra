@@ -1347,7 +1347,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         FSelectedBatchNumber,
                         false);
 
-                    FReceiptingLogicObject.PrintGiftBatchReceiptsTemplater(PostedGiftTDS);
+                    FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
 
                     // Now we need to get the data back from the server to pick up all the changes
                     RefreshAllData();

@@ -491,6 +491,26 @@ namespace Ict.Petra.Server.App.Core
             }
         }
 
+        /// <summary>
+        /// Opens a Database connection to the main Database.
+        /// </summary>
+        /// <returns>void</returns>
+        public void EstablishDBConnection()
+        {
+            DBAccess.GDBAccessObj = new TDataBase();
+
+            DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
+                TSrvSetting.PostgreSQLServer,
+                TSrvSetting.PostgreSQLServerPort,
+                TSrvSetting.PostgreSQLDatabaseName,
+                TSrvSetting.DBUsername,
+                TSrvSetting.DBPassword,
+                "",
+                "Server's DB Connection");
+
+            TLogging.Log("  " + Catalog.GetString("Connected to Database."));
+        }
+
         private IImportExportManager FImportExportManager = null;
         private IDBUpgrades FDBUpgrades = null;
 
