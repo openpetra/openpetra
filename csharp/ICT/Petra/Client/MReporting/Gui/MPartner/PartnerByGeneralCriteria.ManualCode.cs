@@ -29,6 +29,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Common.Controls;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
@@ -47,6 +48,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             ucoChkFilter.ShowFamiliesOnly(false);
             ucoChkFilter.ShowPersonsOnly(false);
+            ucoChkFilter.AddChkActivePartnersChangedEventHandler(this.OnActivePartnersCheckedChanged);
             ucoAddress.ShowCountyStateField(true);
             ucoAddress.ShowAddressDateFields(true);
 
@@ -72,6 +74,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             FPetraUtilsObject.LoadDefaultSettings();
 
             cmbPartnerClass.cmbCombobox.AllowBlankValue = true;
+            cmbPartnerStatus.cmbCombobox.AllowBlankValue = true;
+            cmbPartnerStatus.Enabled = false;
+            cmbPartnerStatus.SetSelectedString("ACTIVE");
             cmbDenomination.cmbCombobox.AllowBlankValue = true;
             cmbBusiness.cmbCombobox.AllowBlankValue = true;
             cmbLanguage.cmbCombobox.AllowBlankValue = true;
@@ -140,6 +145,25 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             // add verification here if needed
+        }
+
+        private void OnActivePartnersCheckedChanged(object sender, EventArgs e)
+        {
+            if (sender is TchkVisibleFocus)
+            {
+                TchkVisibleFocus chkActivePartners = (TchkVisibleFocus)sender;
+
+                if (chkActivePartners.CheckState == System.Windows.Forms.CheckState.Checked)
+                {
+                    cmbPartnerStatus.SetSelectedString("ACTIVE");
+                    cmbPartnerStatus.Enabled = false;
+                }
+                else
+                {
+                    cmbPartnerStatus.SelectedIndex = -1;
+                    cmbPartnerStatus.Enabled = true;
+                }
+            }
         }
     }
 }
