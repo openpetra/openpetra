@@ -163,6 +163,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         Row.DateEntered = GiftRow.DateEntered;
                         Row.DonorKey = GiftRow.DonorKey;
+                        Row.IchNumber = 0;
                         Row.DonorName = PPartnerAccess.LoadByPrimaryKey(Row.DonorKey, Transaction)[0].PartnerShortName;
                     }
                 });

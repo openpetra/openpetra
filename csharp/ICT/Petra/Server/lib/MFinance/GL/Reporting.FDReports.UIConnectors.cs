@@ -288,7 +288,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 , a_gift_detail."
                         +
                         CurrencyField + @" AS GiftAmount
-                                , sum(a_gift_detail."                                                           + CurrencyField +
+                                , sum(a_gift_detail."                                                          + CurrencyField +
                         @") OVER (PARTITION BY a_gift.p_donor_key_n) AS TotalAmount
                             FROM
                                 a_gift
@@ -312,7 +312,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                 a_gift.a_ledger_number_i = "
                         +
                         LedgerNumber + @"
-                                AND a_gift.a_date_entered_d BETWEEN '"                                            + StartDate + "' AND '" +
+                                AND a_gift.a_date_entered_d BETWEEN '"                                           + StartDate + "' AND '" +
                         EndDate +
                         @"'
                                 -- I hope a_dont_report_l gets converted to a_report_l to avoid this horrible double negative:
@@ -342,7 +342,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ORDER BY
                             Details.DonorName
                         ;
-                    "                                                                                                                                        ;
+                    "                                                                                                                                    ;
 
                     Gifts = DbAdapter.RunQuery(Query, "GiftsOverMinimum", Transaction);
 
@@ -477,7 +477,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             Contacts.RowID <= "
                         +
                         AParameters["param_max_contacts"] + @";
-                    "                                                                 ;
+                    "                                                                ;
 
                     Contacts = DbAdapter.RunQuery(Query, "Contacts", Transaction);
 

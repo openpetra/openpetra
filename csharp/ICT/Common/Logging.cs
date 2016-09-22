@@ -28,6 +28,7 @@ using System.Diagnostics;
 using System.Text;
 
 using Ict.Common.Exceptions;
+using System.Data;
 
 namespace Ict.Common
 {
@@ -560,6 +561,34 @@ namespace Ict.Common
 
                 ULogTextAsString = String.Format("Log was truncated.  Starting Page {0} ...{1}{2}",
                     ULogPageNumber.ToString(), Environment.NewLine, newString);
+            }
+        }
+
+        /// <summary>
+        /// Writes the contents of a DataTable to the log file.
+        /// Useful to have this available for debugging.
+        /// </summary>
+        /// <param name="DT"></param>
+        public static void LogDataTable(DataTable DT)
+        {
+            Log(String.Format("{0} contains:", DT.TableName), TLoggingType.ToLogfile);
+            var items = new string[DT.Columns.Count];
+
+            for (int i = 0; i < items.Length; i++)
+            {
+                items[i] = DT.Columns[i].ToString();
+            }
+
+            Log(String.Join(";", items), TLoggingType.ToLogfile);
+
+            foreach (DataRow r in DT.Rows)
+            {
+                for (int i = 0; i < items.Length; i++)
+                {
+                    items[i] = r[i].ToString();
+                }
+
+                Log(String.Join(";", items), TLoggingType.ToLogfile);
             }
         }
     }

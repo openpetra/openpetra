@@ -150,13 +150,14 @@
 
     <target name="createDatabaseUser" depends="init">
         <if test="${DBMS.Type=='postgresql'}">
+            <!-- To allow mixed-case database names (e.g. nantTest) we must quote DBMS.DBName in a way that the command line will pass into psql -->
             <if test="${platform::is-unix()}">
                 <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE USER ${DBMS.UserName} WITH CREATEDB PASSWORD '${DBMS.Password}';" database="template1" failonerror="false" username="postgres"/>
-                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" host="${DBMS.DBHostOrFile}"  port="${DBMS.DBPort}" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE &#92;&quot;${DBMS.DBName}&#92;&quot; WITH OWNER=${DBMS.UserName};" host="${DBMS.DBHostOrFile}"  port="${DBMS.DBPort}" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>
             </if>
             <if test="${platform::is-windows()}">
                 <echo message="If this fails, make sure you have already manually created a database user in pgAdmin, username ${DBMS.UserName} and password ${DBMS.Password}, that has permissions to create databases."/>
-                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE ${DBMS.DBName} WITH OWNER=${DBMS.UserName};" host="${DBMS.DBHostOrFile}"  port="${DBMS.DBPort}" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>               
+                <psql exe="${PostgreSQL.exe}" sqlcommand="CREATE DATABASE &quot;&quot;${DBMS.DBName}&quot;&quot; WITH OWNER=${DBMS.UserName};" host="${DBMS.DBHostOrFile}"  port="${DBMS.DBPort}" database="template1" username="${DBMS.UserName}" password="${DBMS.Password}"/>               
             </if>
         </if>
     </target>
