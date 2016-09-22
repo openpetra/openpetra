@@ -93,13 +93,6 @@ namespace Ict.Petra.Server.App.Core.Security
 
             try
             {
-                // We need to allow several user account activity log entries per minute, without unique key violation
-                while (SLoginAccess.Exists(NewActivityRow.UserId, NewActivityRow.ActivityDate, NewActivityRow.ActivityTime,
-                           ATransaction))
-                {
-                    NewActivityRow.ActivityTime++;
-                }
-
                 SUserAccountActivityAccess.SubmitChanges(ActivityTable, ATransaction);
 
                 // Also log this to the server log

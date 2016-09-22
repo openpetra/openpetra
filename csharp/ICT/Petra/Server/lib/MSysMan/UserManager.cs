@@ -227,7 +227,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             catch (EUserNotExistantException)
             {
                 // Logging
-                TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
+                TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
                     String.Format(Catalog.GetString(
                             "User with User ID '{0}' attempted to log in, but there is no user account for this user! "),
                         AUserID) + String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
@@ -303,7 +303,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 if (PetraPrincipal.PetraIdentity.AccountLocked)
                 {
                     // Logging
-                    TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_LOCKED_USER,
+                    TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_LOCKED_USER,
                         Catalog.GetString("User attempted to log in, but the user account was locked! ") +
                         String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                         out AProcessID, ATransaction);
@@ -314,7 +314,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 else
                 {
                     // Logging
-                    TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_RETIRED_USER,
+                    TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_RETIRED_USER,
                         Catalog.GetString("User attempted to log in, but the user is retired! ") +
                         String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                         out AProcessID, ATransaction);
@@ -351,10 +351,12 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 }
                 else
                 {
-                    TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
+                    TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
                         Catalog.GetString("User wanted to log in, but the System was disabled. ") +
                         String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
-                        true, out AProcessID, ATransaction);
+                        out AProcessID, ATransaction);
+
+                    TLoginLog.RecordUserLogout(AUserID, AProcessID, ATransaction);
 
                     throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
                             SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
@@ -388,14 +390,14 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             if (PetraPrincipal.IsInGroup("SYSADMIN"))
             {
-                TLoginLog.AddLoginLogEntry(AUserID, true, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN,
+                TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN,
                     Catalog.GetString("User login - SYSADMIN privileges. ") +
                     String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     out AProcessID, ATransaction);
             }
             else
             {
-                TLoginLog.AddLoginLogEntry(AUserID, true, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL,
+                TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL,
                     Catalog.GetString("User login. ") +
                     String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     out AProcessID, ATransaction);
@@ -457,7 +459,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             }
 
             // Logging
-            TLoginLog.AddLoginLogEntry(AUserID, false,
+            TLoginLog.AddLoginLogEntry(AUserID,
                 AccountLockedAtThisAttempt ? TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG_ACCOUNT_GOT_LOCKED :
                 TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG,
                 String.Format(Catalog.GetString("User supplied wrong password{0}!  (Failed Logins: now {1}; " +

@@ -124,7 +124,11 @@ namespace Ict.Common.Remoting.Server
         /// <param name="AProcessID">ProcessID of the User for which a logout should be recorded.
         /// This will need to be the number that got returned from an earlier call to
         /// AddLoginLogEntry(string, bool, string, bool, out int, TDBTransaction)!</param>
-        void RecordUserLogout(String AUserID, int AProcessID);
+        /// <param name="ATransaction">Either an instantiated DB Transaction, or null. In the latter case
+        /// a separate DB Connection gets opened, a DB Transaction on that separate DB Connection gets started,
+        /// then committed/rolled back and the separate DB Connection gets closed. This is needed when this Method
+        /// gets called from Method 'Ict.Common.Remoting.Server.TDisconnectClientThread.StartClientDisconnection()'!</param>
+        void RecordUserLogout(String AUserID, int AProcessID, TDBTransaction ATransaction);
     }
 
     /// <summary>

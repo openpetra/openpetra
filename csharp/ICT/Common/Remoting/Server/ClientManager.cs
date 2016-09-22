@@ -679,7 +679,7 @@ namespace Ict.Common.Remoting.Server
             if (ULoginLog != null)
             {
                 ULoginLog.RecordUserLogout(AUserID,
-                    AProcessID);
+                    AProcessID, null);
             }
         }
 

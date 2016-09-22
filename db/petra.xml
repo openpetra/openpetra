@@ -497,7 +497,7 @@
     <tablefield name="s_activity_type_c"
                 type="varchar"
                 descr="Type of the recorded account activity. This is a hard-coded constant value (there's no 'lookup table' for it); for available values and their meaning please check program code (TUserAccountActivityLog Class)."
-                format="X(20)"
+                format="X(25)"
                 label="Account Activity Type"
                 notnull="yes"/>
     <tablefield name="s_activity_details_c"
@@ -1185,7 +1185,7 @@
     <!-- Explicit Indexes on table s_language_specific  -->
   </table>
   <table name="s_login"
-         descr="Log file of all the log in attempts to the system"
+         descr="Log of all the log-ins/log-in attempts to the system, and of log-outs from the system (activities on user accounts themselves are recorded in s_user_account_activity)."
          area="Petra Data"
          label="Login"
          dumpname="s_login"
@@ -1193,7 +1193,7 @@
     <tablefield name="s_login_process_id_r"
                 type="integer"
                 sequence="seq_login_process_id"
-                descr="Petra process ID; this is a unique key"
+                descr="OpenPetra process ID; this is a unique key"
                 notnull="yes" />
     <tablefield name="s_user_id_c"
                 type="varchar"
@@ -1201,61 +1201,43 @@
                 format="X(10)"
                 label="User ID"
                 notnull="yes" />
-    <tablefield name="s_login_time_i"
+    <tablefield name="s_time_i"
                 type="integer"
-                descr="The time a user logged in."
+                descr="Time of the login/login attempt/logout."
                 format="-&gt;,&gt;&gt;&gt;,&gt;&gt;9"
                 label="Login Time"
                 notnull="yes"
                 initial="0"/>
-    <tablefield name="s_login_date_d"
+    <tablefield name="s_date_d"
                 type="date"
-                descr="The date a user logged in."
+                descr="Date of the login/login attempt/logout."
                 format="99/99/9999"
                 label="Login Date"
                 notnull="yes"/>
-    <tablefield name="s_login_successful_l"
-                type="bit"
-                descr="Was the login successful?"
-                label="Login Successful"
-                format="Yes/No"
-                initial="no"
-                notnull="yes"/>
-    <tablefield name="s_login_status_type_c"
+    <tablefield name="s_login_type_c"
                 type="varchar"
-                descr="Type of the login status. This is a hard-coded constant value (there's no 'lookup table' for it); for available values and their meaning please check program code (TLoginLog Class)."
-                format="X(20)"
-                label="Login Status Type"
+                descr="Type of the login/logout record. This is a hard-coded constant value (there's no 'lookup table' for it); for available values and their meaning please check program code (TLoginLog Class)."
+                format="X(25)"
+                label="Login Type"
                 notnull="yes"/>
-    <tablefield name="s_login_status_c"
+    <tablefield name="s_login_details_c"
                 type="varchar"
-                descr="Description of the login attempt."
+                descr="Details/description of the login/login attempt/logout. This is a localised string, i.e. it can be recorded in the language of the Site! Refer to s_login_type_c for exact identification of what the recorded account activity is about if text in here can't be understood because it is recorded in a foreign language."
                 format="X(250)"
                 label="Login Status"/>
-    <tablefield name="s_logout_time_i"
+    <tablefield name="s_login_process_id_ref_i"
                 type="integer"
-                descr="The time a user logged out."
-                format="-&gt;,&gt;&gt;&gt;,&gt;&gt;9"
-                label="Logout Time"
-                initial="0"/>
-    <tablefield name="s_logout_date_d"
-                type="date"
-                descr="The date a user logged out."
-                format="99/99/9999"
-                label="Logout Date"/>
+                descr="Reference to s_login_process_id_r (OpenPetra process ID of the login record) - only set for a record of s_login_status_type_c 'LOGOUT' (connects the logout log entry with the corresponding login log entry.)" />
     <!-- Constraints on table s_login -->
     <primarykey name="s_login_pk"
                 descr=""
                 thisFields="s_login_process_id_r"/>
-    <uniquekey name="s_login_uk"
-                 descr=""
-                 thisFields="s_user_id_c, s_login_date_d, s_login_time_i"/>
     <!-- Explicit Indexes on table s_login  -->
-    <index name="s_login_date"
+    <index name="s_date"
            descr=""
            area="Petra Index"
            primary="yes">
-      <indexfield name="s_logout_date_d" order="ascending"/>
+      <indexfield name="s_date_d" order="descending"/>
     </index>
     <index name="s_login_user"
            descr=""
