@@ -1019,7 +1019,27 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     FPreviouslySelectedDetailRow.TaxDeductible = true;
-                    FPreviouslySelectedDetailRow.TaxDeductiblePct = txtDeductiblePercentage.NumberValueDecimal.Value;
+
+                    try
+                    {
+                        decimal percentageVal = txtDeductiblePercentage.NumberValueDecimal.Value;
+
+                        if (percentageVal > 100)
+                        {
+                            //Avoid repeat event code running past initial check (see above)
+                            FSETUseTaxDeductiblePercentageFlag = false;
+
+                            //Reset the control
+                            txtDeductiblePercentage.NumberValueDecimal = 100m;
+                            percentageVal = 100m;
+                        }
+
+                        FPreviouslySelectedDetailRow.TaxDeductiblePct = percentageVal;
+                    }
+                    finally
+                    {
+                        FSETUseTaxDeductiblePercentageFlag = true;
+                    }
 
                     AGiftDetailRow giftDetails = (AGiftDetailRow)FPreviouslySelectedDetailRow;
                     TaxDeductibility.UpdateTaxDeductibiltyAmounts(ref giftDetails);

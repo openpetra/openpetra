@@ -518,6 +518,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                     ValidationControlsData.ValidationControlLabel + (ImportInProcess ? String.Empty : " of " + ValidationContext),
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
 
+                if (VerificationResult != null)
+                {
+                    VerificationResult.SuppressValidationToolTip = true;
+                }
+
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))
                 {
@@ -1487,6 +1492,11 @@ namespace Ict.Petra.Shared.MFinance.Validation
                 VerificationResult = (TScreenVerificationResult)TNumericalChecks.IsPositiveDecimal(ARow.GiftAmount,
                     ValidationControlsData.ValidationControlLabel + " of " + ValidationContext,
                     AContext, ValidationColumn, ValidationControlsData.ValidationControl);
+
+                if (VerificationResult != null)
+                {
+                    VerificationResult.SuppressValidationToolTip = true;
+                }
 
                 // Handle addition/removal to/from TVerificationResultCollection
                 if (AVerificationResultCollection.Auto_Add_Or_AddOrRemove(AContext, VerificationResult, ValidationColumn))

@@ -953,6 +953,19 @@ namespace Ict.Petra.Client.MFinance.Logic
             // Allow NULL for the code in this table
             Table.Columns[PMailingTable.ColumnMailingCodeId].AllowDBNull = true;
 
+            //Highlight inactive mailing codes
+            if (!AActiveOnly)
+            {
+                foreach (DataRow rw in Table.Rows)
+                {
+                    if ((rw[PMailingTable.ColumnViewableId] != null) && (rw[PMailingTable.ColumnViewableId].ToString() == "False"))
+                    {
+                        rw[PMailingTable.ColumnMailingDescriptionId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
+                                                                       rw[PMailingTable.ColumnMailingDescriptionId];
+                    }
+                }
+            }
+
             // Now add the row
             DataRow Dr = Table.NewRow();
             Dr[PMailingTable.GetMailingCodeDBName()] = DBNull.Value;
