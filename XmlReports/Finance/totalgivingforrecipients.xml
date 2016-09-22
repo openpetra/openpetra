@@ -14,7 +14,7 @@
     <reportheader/>
     <pageheader>
       <field whichfield="title1">
-        <value text="Total Giving For Selected Recipients" />
+        <value text="Historic Donors Per Recipient" />
       </field>
 
       <field whichfield="title2">

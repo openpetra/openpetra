@@ -2116,6 +2116,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     String Query = "SELECT " +
                                    "GiftBatch.a_gl_effective_date_d AS date, " +
+                                   "GiftBatch.a_batch_number_i AS BatchNumber, " +
+                                   "Gift.a_gift_transaction_number_i AS TransactionNumber, " +
                                    "GiftDetail.a_cost_centre_code_c AS CostCentreCode, " +
                                    "GiftDetail.a_gift_amount_n AS GiftBaseAmount, " +
                                    "GiftDetail.a_gift_amount_intl_n AS GiftIntlAmount, " +
@@ -2131,7 +2133,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    +
                                    "CASE WHEN GiftDetail.a_comment_three_type_c='Donor' THEN '' ELSE GiftDetail.a_gift_comment_three_c END AS Comment3 "
                                    +
-
                                    "FROM a_gift_detail AS GiftDetail, a_gift AS Gift, a_gift_batch AS GiftBatch, ";
 
                     if (CostCentreCodes == "ALL")
@@ -2161,7 +2162,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         Query += "AND GiftDetail.a_ich_number_i = " + IchNumber + " ";
                     }
 
-                    Query += "ORDER BY CostCentreCode, RecipientType Desc, RecipientKey, DonorKey";
+                    Query += "ORDER BY CostCentreCode, RecipientType Desc, RecipientKey, date, BatchNumber, TransactionNumber";
 
 
                     TLogging.Log(Catalog.GetString("Loading data.."), TLoggingType.ToStatusBar);
