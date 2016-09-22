@@ -1874,7 +1874,9 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 rowView = (DataRowView)grdResult.Rows.IndexToDataSourceRow(RowNum);
                             }
 
-                            if ((rowView != null) && (Convert.ToInt64(rowView.Row["p_partner_key_n"]) == FSelectPartnerAfterSearch))
+                            if ((rowView != null)
+                                && (rowView.Row["p_partner_key_n"].GetType() != typeof(DBNull))
+                                && (Convert.ToInt64(rowView.Row["p_partner_key_n"]) == FSelectPartnerAfterSearch))
                             {
                                 grdResult.Selection.SelectRow(RowNum, true);
 

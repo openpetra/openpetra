@@ -219,6 +219,18 @@ namespace Ict.Petra.Client.MPartner.Gui
                                                                                                                                  ColumnContactLogIdId
                         ]))
                 {
+                    // make sure to delete any contact attributes existing for this contact
+                    DataView PartnerContactAttribute = new DataView(FMainDS.PPartnerContactAttribute);
+                    PartnerContactAttribute.RowFilter = String.Format("{0} = {1}",
+                        PPartnerContactAttributeTable.GetContactIdDBName(),
+                        ContactLogRow.Row[PContactLogTable.ColumnContactLogIdId]);
+
+                    // Delete the Contact Attribute records
+                    foreach (DataRowView attributeRow in PartnerContactAttribute)
+                    {
+                        attributeRow.Delete();
+                    }
+
                     ContactLogRow.Row.Delete();
                 }
             }
