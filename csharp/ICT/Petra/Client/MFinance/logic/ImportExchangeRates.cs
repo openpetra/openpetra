@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Text;
 using System.Data;
 using System.Xml;
 using System.Windows.Forms;
@@ -112,6 +113,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                         DlgSeparator.NumberFormat,
                         DlgSeparator.DateFormat,
                         AImportMode,
+                        DlgSeparator.CurrentEncoding,
                         AResultCollection);
                 }
             }
@@ -143,6 +145,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN,
                 "MM/dd/yyyy",
                 AImportMode,
+                Encoding.Default,
                 AResultCollection);
         }
 
@@ -156,6 +159,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ANumberFormat"></param>
         /// <param name="ADateFormat"></param>
         /// <param name="AImportMode">Daily or Corporate</param>
+        /// <param name="ATextEncoding">The encoding of the file</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
         /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
         /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
@@ -165,6 +169,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             string ANumberFormat,
             string ADateFormat,
             string AImportMode,
+            Encoding ATextEncoding,
             TVerificationResultCollection AResultCollection)
         {
             // Keep a list of errors/warnings and severity
@@ -259,7 +264,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             allCurrencies.CaseSensitive = true;
 
             // Start reading the file
-            using (StreamReader DataFile = new StreamReader(ADataFilename, System.Text.Encoding.Default))
+            using (StreamReader DataFile = new StreamReader(ADataFilename, ATextEncoding))
             {
                 string ThousandsSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "," : ".");
                 string DecimalSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "." : ",");

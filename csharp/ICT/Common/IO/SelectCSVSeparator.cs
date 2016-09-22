@@ -147,6 +147,17 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// Returns the selected encoding of the current file
+        /// </summary>
+        public Encoding CurrentEncoding
+        {
+            get
+            {
+                return FCurrentEncoding;
+            }
+        }
+
+        /// <summary>
         /// constructor
         /// TODO: select if first row contains captions? or use a parameter to avoid or request captions?
         /// </summary>
@@ -261,15 +272,11 @@ namespace Ict.Common.IO
         {
             set
             {
-                FCSVRows = new List <string>();
-                string[] lines = value.Split(new char[] { '\n' });
+                FFileContent = value;
+                FCurrentEncoding = Encoding.Unicode;
 
-                while (FCSVRows.Count < MAXLINESPARSE && FCSVRows.Count < lines.Length)
-                {
-                    FCSVRows.Add(lines[FCSVRows.Count].Trim());
-                }
-
-                RbtCheckedChanged(null, null);
+                TTextFileEncoding.SetComboBoxProperties(cmbTextEncoding, true, false, FCurrentEncoding);
+                DisplayGrid();
             }
         }
 

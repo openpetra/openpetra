@@ -98,7 +98,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ImportBatches(TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
-            String importString;
             String impOptions;
             OpenFileDialog dialog = null;
 
@@ -118,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
                 {
-                    importString = Clipboard.GetText(TextDataFormat.UnicodeText);
+                    string importString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
                     if ((importString == null) || (importString.Length == 0))
                     {
@@ -129,7 +128,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                    FdlgSeparator = new TDlgSelectCSVSeparator(false);
                     FdlgSeparator.SelectedSeparator = "\t";
                     FdlgSeparator.CSVData = importString;
                     FdlgSeparator.DateFormat = dateFormatString;
@@ -168,8 +166,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             return;
                         }
 
-                        importString = File.ReadAllText(dialog.FileName, Encoding.Default);
-
                         String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                         FdlgSeparator.DateFormat = dateFormatString;
 
@@ -189,7 +185,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 {
                     // unknown source!!  The following need a value...
                     impOptions = String.Empty;
-                    importString = String.Empty;
                 }
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
@@ -202,12 +197,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
-
                     TVerificationResultCollection AMessages = new TVerificationResultCollection();
 
                     Thread ImportThread = new Thread(() => ImportGLBatches(
                             requestParams,
-                            importString,
+                            FdlgSeparator.FileContent,
                             out AMessages,
                             out ok));
 
@@ -249,7 +243,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ImportTransactions(ABatchRow ACurrentBatchRow, AJournalRow ACurrentJournalRow, TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
-            String importString;
             String impOptions;
             OpenFileDialog dialog = null;
 
@@ -287,7 +280,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
             {
-                importString = Clipboard.GetText(TextDataFormat.UnicodeText);
+                string importString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
                 if ((importString == null) || (importString.Length == 0))
                 {
@@ -298,7 +291,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
                 String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.SelectedSeparator = "\t";
                 FdlgSeparator.CSVData = importString;
                 FdlgSeparator.DateFormat = dateFormatString;
@@ -337,8 +329,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         return;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
-
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                     FdlgSeparator.DateFormat = dateFormatString;
 
@@ -358,7 +348,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 // unknown source!!  The following need a value...
                 impOptions = String.Empty;
-                importString = String.Empty;
             }
 
             if (FdlgSeparator.ShowDialog() == DialogResult.OK)
@@ -374,7 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 TVerificationResultCollection AMessages = new TVerificationResultCollection();
 
                 Thread ImportThread = new Thread(() => ImportGLTransactions(requestParams,
-                        importString,
+                        FdlgSeparator.FileContent,
                         ACurrentBatchRow.BatchNumber,
                         ACurrentJournalRow.JournalNumber,
                         out AMessages,

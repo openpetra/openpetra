@@ -45,7 +45,7 @@ RootNode:
                 Row2: [cmbDetailCountryCode]
                 Row3: [txtDetailDisplayFormat]
         txtDetailCurrencyCode: {Label=Currency Code, CharacterCasing=Upper}
-        txtDetailCurrencyName: {Label=Currency Name}
+        txtDetailCurrencyName: {Label=Currency Name, Width=220}
         txtDetailCurrencySymbol: {Label=Currency Symbol, Width=50}
         cmbDetailCountryCode: {Label=Country Code, List=CountryList, ColSpan=2}
         # TODO: should be nudNumberOfDecimals

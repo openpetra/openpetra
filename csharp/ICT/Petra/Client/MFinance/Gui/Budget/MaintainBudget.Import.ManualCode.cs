@@ -150,12 +150,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                         dlgStatus.Heading = Catalog.GetString("Budget Import");
                         dlgStatus.CurrentStatus = Catalog.GetString("Importing budgets from '" + fileTitle + "' ...");
 
-                        // read contents of file
-                        string ImportString = File.ReadAllText(OFDialog.FileName);
-
                         //TODO return the budget from the year, and -99 for fail
                         BudgetsImported = TRemote.MFinance.Budget.WebConnectors.ImportBudgets(FLedgerNumber,
-                            ImportString,
+                            FdlgSeparator.FileContent,
                             OFDialog.FileName,
                             FdlgSeparatorVal,
                             ref AMainDS,
