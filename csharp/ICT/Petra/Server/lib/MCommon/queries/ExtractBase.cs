@@ -380,7 +380,7 @@ namespace Ict.Petra.Server.MCommon.queries
                 {
                     List <String>param_location_type = new List <String>();
 
-                    foreach (TVariant choice in AParameters.Get("param_location_type").ToComposite())
+                    foreach (var choice in AParameters.Get("param_location_type").ToString().Split(','))
                     {
                         param_location_type.Add(choice.ToString());
                     }

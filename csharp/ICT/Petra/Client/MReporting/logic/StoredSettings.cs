@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections.Specialized;
+using System.Windows.Forms;
 using Ict.Petra.Shared.MReporting;
 using System.IO;
 using System.Data.Odbc;
@@ -281,12 +282,27 @@ namespace Ict.Petra.Client.MReporting.Logic
                 return null;
             }
 
-            if (!System.IO.Directory.Exists(FUserSettingsDirectory + FReportName))
+            string pathToFile = FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml";
+
+            try
             {
-                System.IO.Directory.CreateDirectory(FUserSettingsDirectory + FReportName);
+                if (!System.IO.Directory.Exists(FUserSettingsDirectory + FReportName))
+                {
+                    System.IO.Directory.CreateDirectory(FUserSettingsDirectory + FReportName);
+                }
+
+                AParameters.Save(pathToFile);
+            }
+            catch (Exception ex)
+            {
+                string msg = string.Format(Catalog.GetString(
+                        "An error occurred while trying to save the settings to file location:{0}  {1}{0}The message from the system was: {2}"),
+                    Environment.NewLine,
+                    pathToFile,
+                    ex.Message);
+                MessageBox.Show(msg, Catalog.GetString("Save Settings"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
 
-            AParameters.Save(FUserSettingsDirectory + FReportName + System.IO.Path.DirectorySeparatorChar + ASettingsName + ".xml");
             return UpdateRecentlyUsedSettings(ASettingsName);
         }
 

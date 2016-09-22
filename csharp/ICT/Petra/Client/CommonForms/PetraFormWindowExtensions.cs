@@ -58,6 +58,8 @@ namespace Ict.Petra.Client.CommonForms
 
         private Form FWinForm;
         private Form FCallerForm;
+        private bool FIsWindowInitiallyMaximised = false;
+        private bool FIsShownEventDefined = false;
 
         /// <summary>
         /// The main constructor for this helper class.  It gets instantiated by TFrmPetraUtils
@@ -367,6 +369,7 @@ namespace Ict.Petra.Client.CommonForms
 
                     if ((windowState == "Maximized") && !ignoreLocation)
                     {
+                        FIsWindowInitiallyMaximised = true;
                         FWinForm.WindowState = FormWindowState.Maximized;
                     }
                 }
@@ -382,6 +385,15 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // we can set the positions for this window
                 string[] items = FWindowPositions[FWinForm.Name].Split(';');
+
+                if ((items.Length > 5) && FIsWindowInitiallyMaximised && !FIsShownEventDefined)
+                {
+                    // The screen does have splitters and is going to be initially maximised (but is not visible yet).
+                    // We have to come back here and run this method again to do the splitters in the Shown event
+                    FIsShownEventDefined = true;
+                    FWinForm.Shown += FWinForm_Shown;
+                    return;
+                }
 
                 for (int i = 5; i < items.Length; i++)
                 {
@@ -427,6 +439,11 @@ namespace Ict.Petra.Client.CommonForms
                     }
                 }
             }
+        }
+
+        private void FWinForm_Shown(object sender, EventArgs e)
+        {
+            RestoreAdditionalWindowPositionProperties();
         }
 
         #region Helper methods
@@ -589,6 +606,14 @@ namespace Ict.Petra.Client.CommonForms
             string splitterProperties = String.Empty;
             GetSplitterPropertiesAsString(FWinForm, ref splitterProperties, String.Empty);
 
+            bool treatAsMaximized = false;
+
+            if (FWinForm.WindowState == FormWindowState.Minimized)
+            {
+                // If the window has splitters and is minimized we may have a problem if it was minimized from maximized
+                treatAsMaximized = IsWindowMinimizedFromMaximized(splitterProperties);
+            }
+
             // We handle the splitter properties one of two ways...
             // depending on whether the form uses dynamically loaded controls or not
             if (FWinForm.Name == "TFrmPartnerEdit")
@@ -657,6 +682,16 @@ namespace Ict.Petra.Client.CommonForms
                     "Normal",
                     splitterProperties);
             }
+            else if (treatAsMaximized)
+            {
+                windowProperties = String.Format("{0};{1};{2};{3};{4}{5}",
+                    FWinForm.RestoreBounds.Left,
+                    FWinForm.RestoreBounds.Top,
+                    FWinForm.RestoreBounds.Width,
+                    FWinForm.RestoreBounds.Height,
+                    "Maximized",
+                    splitterProperties);
+            }
             else
             {
                 windowProperties = String.Format("{0};{1};{2};{3};{4}{5}",
@@ -676,6 +711,55 @@ namespace Ict.Petra.Client.CommonForms
             {
                 FWindowPositions.Add(FWinForm.Name, windowProperties);
             }
+        }
+
+        /// <summary>
+        /// If a window is minimized we need to know if it was minimized from maximized or minimized from Normal
+        /// </summary>
+        /// <param name="ASplitterProperties">The current splitter properties string</param>
+        /// <returns>True if it looks  like the window was minimized from maximized.</returns>
+        private bool IsWindowMinimizedFromMaximized(string ASplitterProperties)
+        {
+            if (ASplitterProperties.Length > 0)
+            {
+                string[] items = ASplitterProperties.Split(';');
+
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].Length == 0)
+                    {
+                        continue;
+                    }
+
+                    string[] extraItems = items[i].Split(':');
+                    Control splitterControl = FindControlByName(extraItems[0], FWinForm);
+
+                    if (splitterControl != null)
+                    {
+                        SplitContainer splitter = (SplitContainer)splitterControl;
+                        int distance = int.Parse(extraItems[2]);
+
+                        // Our best guess is that if the splitter position is significantly more than the normal window position
+                        //  then we say it must be minimized from maximized.  But this is open to debate!
+                        if (splitter.Orientation == Orientation.Horizontal)
+                        {
+                            if (distance > FWinForm.RestoreBounds.Height - splitter.Panel2MinSize - 60)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            if (distance > FWinForm.RestoreBounds.Width - splitter.Panel2MinSize - 60)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         #endregion
