@@ -38,21 +38,43 @@ namespace Ict.Petra.Server.MSysMan.Security
     ///</summary>
     public class TLoginLog
     {
+        /// <summary>User login was successful.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL = "LOGIN_SUCCESSFUL";
+        /// <summary>User login of a user that has got SYSAMIN privileges was successful.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN = "LOGIN_SUCCESSFUL_SYSADMIN";
+        /// <summary>A login attempt was made for a User ID but the password provided was wrong.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG = "LOGIN_ATTEMPT_PWD_WRONG";
+        /// <summary>A login attempt was made for a User ID but the password provided was wrong
+        /// and the permitted number of failed logins in a row got exceeded. Because of this the user
+        /// account for the user got locked!</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG_ACCOUNT_GOT_LOCKED =
+            "LOGIN_ATTEMPT_PWD_WRONG_ACCOUNT_GOT_LOCKED";
+        /// <summary>A login attempt was made for a UserID that doesn't exist.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER = "LOGIN_ATTEMPT_FOR_NONEXISTING_USER";
+        /// <summary>A login attempt was made for a UserID whose user account is Locked.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_LOCKED_USER = "LOGIN_ATTEMPT_FOR_LOCKED_USER";
+        /// <summary>A login attempt was made for a UserID that is Retired.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_RETIRED_USER = "LOGIN_ATTEMPT_FOR_RETIRED_USER";
+        /// <summary>A login attempt was made while the System was Disabled.</summary>
+        public const string LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED = "LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED";
+
         /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AUserID"></param>
         /// <param name="ALoginSuccesful"></param>
+        /// <param name="ALoginStatusType"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
+            String ALoginStatusType,
             String ALoginStatus,
             out Int32 AProcessID,
             TDBTransaction ATransaction)
         {
-            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful,
+            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatusType,
                 ALoginStatus, out AProcessID, ATransaction);
         }
 
@@ -61,18 +83,20 @@ namespace Ict.Petra.Server.MSysMan.Security
         /// </summary>
         /// <param name="AUserID"></param>
         /// <param name="ALoginSuccesful"></param>
+        /// <param name="ALoginStatusType"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
+            String ALoginStatusType,
             String ALoginStatus,
             Boolean AImmediateLogout,
             out Int32 AProcessID,
             TDBTransaction ATransaction)
         {
-            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful,
+            Ict.Petra.Server.App.Core.Security.TLoginLog.AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatusType,
                 ALoginStatus,
                 AImmediateLogout,
                 out AProcessID, ATransaction);

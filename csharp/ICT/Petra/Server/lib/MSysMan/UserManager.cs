@@ -200,6 +200,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             string AClientComputerName, string AClientIPAddress, out Boolean ASystemEnabled,
             TDBTransaction ATransaction)
         {
+            SUserRow UserDR;
             DateTime LoginDateTime;
             TPetraPrincipal PetraPrincipal = null;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
@@ -219,7 +220,22 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                           Replace("_", string.Empty).ToUpper();
             }
 
-            SUserRow UserDR = LoadUser(AUserID, out PetraPrincipal, ATransaction);
+            try
+            {
+                UserDR = LoadUser(AUserID, out PetraPrincipal, ATransaction);
+            }
+            catch (EUserNotExistantException)
+            {
+                // Logging
+                TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
+                    String.Format(Catalog.GetString(
+                            "User with User ID '{0}' attempted to log in, but there is no user account for this user! "),
+                        AUserID) + String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                    out AProcessID, ATransaction);
+
+                // Only now throw the Exception!
+                throw;
+            }
 
             UserInfo.GUserInfo = PetraPrincipal;
 
@@ -236,158 +252,166 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                              Convert.FromBase64String(
                                   CreateHashOfPassword(APassword, UserDR.PasswordSalt, UserDR.PwdSchemeVersion)), 
                              Convert.FromBase64String(UserDR.PasswordHash)))
-				{
-					// The password that the user supplied is wrong!!! --> Save failed user login attempt!
-					// If the number of permitted failed logins in a row gets exceeded then also lock the user account!
-					SaveFailedLogin(AUserID, UserDR, AClientComputerName, AClientIPAddress, ATransaction);
+                {
+                    // The password that the user supplied is wrong!!! --> Save failed user login attempt!
+                    // If the number of permitted failed logins in a row gets exceeded then also lock the user account!
+                    SaveFailedLogin(AUserID, UserDR, AClientComputerName, AClientIPAddress, ATransaction);
 
-					if (UserDR.AccountLocked)
-					{
-						// User Account just got locked!
-						throw new EUserAccountGotLockedException(StrInvalidUserIDPassword);
-					}
-					else
-					{
-						throw new EPasswordWrongException(StrInvalidUserIDPassword);
-					}
-				}
-			}
-			else
-			{
-				AuthenticationAssembly = LoadAuthAssembly(UserAuthenticationMethod);
+                    if (UserDR.AccountLocked
+                        && (Convert.ToBoolean(UserDR[SUserTable.GetAccountLockedDBName(), DataRowVersion.Original]) != UserDR.AccountLocked))
+                    {
+                        // User Account just got locked!
+                        throw new EUserAccountGotLockedException(StrInvalidUserIDPassword);
+                    }
+                    else
+                    {
+                        throw new EPasswordWrongException(StrInvalidUserIDPassword);
+                    }
+                }
+            }
+            else
+            {
+                AuthenticationAssembly = LoadAuthAssembly(UserAuthenticationMethod);
 
-				if (!AuthenticationAssembly.AuthenticateUser(EmailAddress, APassword, out AuthAssemblyErrorMessage))
-				{
-					// The password that the user supplied is wrong!!! --> Save failed user login attempt!
-					// If the number of permitted failed logins in a row gets exceeded then also lock the user account!
-					SaveFailedLogin(AUserID, UserDR, AClientComputerName, AClientIPAddress, ATransaction);
+                if (!AuthenticationAssembly.AuthenticateUser(EmailAddress, APassword, out AuthAssemblyErrorMessage))
+                {
+                    // The password that the user supplied is wrong!!! --> Save failed user login attempt!
+                    // If the number of permitted failed logins in a row gets exceeded then also lock the user account!
+                    SaveFailedLogin(AUserID, UserDR, AClientComputerName, AClientIPAddress, ATransaction);
 
-					if (UserDR.AccountLocked)
-					{
-						// User Account just got locked!
-						throw new EUserAccountGotLockedException(StrInvalidUserIDPassword);
-					}
-					else
-					{
-						throw new EPasswordWrongException(AuthAssemblyErrorMessage);
-					}
-				}
-			}
+                    if (UserDR.AccountLocked
+                        && (Convert.ToBoolean(UserDR[SUserTable.GetAccountLockedDBName(), DataRowVersion.Original]) != UserDR.AccountLocked))
+                    {
+                        // User Account just got locked!
+                        throw new EUserAccountGotLockedException(StrInvalidUserIDPassword);
+                    }
+                    else
+                    {
+                        throw new EPasswordWrongException(AuthAssemblyErrorMessage);
+                    }
+                }
+            }
 
-			//
-			// (2) Check if the User Account is Locked or if the user is 'Retired'. If either is true then deny the login!!!
-			//
-			// IMPORTANT: We perform these checks only AFTER the check for the correctness of the password so that every
-			// log-in attempt that gets rejected on grounds of a wrong password takes the same amount of time (to help prevent
-			// an attack vector called 'timing attack')
-			if (PetraPrincipal.PetraIdentity.AccountLocked || PetraPrincipal.PetraIdentity.Retired)
-			{
-				if (PetraPrincipal.PetraIdentity.AccountLocked)
-				{
-					// Logging
-					TLoginLog.AddLoginLogEntry(AUserID, false, "User attempted to log in, but the user account was locked!  " +
-						String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
-						out AProcessID, ATransaction);
+            //
+            // (2) Check if the User Account is Locked or if the user is 'Retired'. If either is true then deny the login!!!
+            //
+            // IMPORTANT: We perform these checks only AFTER the check for the correctness of the password so that every
+            // log-in attempt that gets rejected on grounds of a wrong password takes the same amount of time (to help prevent
+            // an attack vector called 'timing attack')
+            if (PetraPrincipal.PetraIdentity.AccountLocked || PetraPrincipal.PetraIdentity.Retired)
+            {
+                if (PetraPrincipal.PetraIdentity.AccountLocked)
+                {
+                    // Logging
+                    TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_LOCKED_USER,
+                        Catalog.GetString("User attempted to log in, but the user account was locked! ") +
+                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        out AProcessID, ATransaction);
 
-					// Only now throw the Exception!
-					throw new EUserAccountLockedException(StrInvalidUserIDPassword);
-				}
-				else
-				{
-					// Logging
-					TLoginLog.AddLoginLogEntry(AUserID, false, "User attempted to log in, but the user is retired!  " +
-						String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
-						out AProcessID, ATransaction);
+                    // Only now throw the Exception!
+                    throw new EUserAccountLockedException(StrInvalidUserIDPassword);
+                }
+                else
+                {
+                    // Logging
+                    TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_RETIRED_USER,
+                        Catalog.GetString("User attempted to log in, but the user is retired! ") +
+                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        out AProcessID, ATransaction);
 
-					// Only now throw the Exception!
-					throw new EUserRetiredException(StrInvalidUserIDPassword);
-				}
-			}
+                    // Only now throw the Exception!
+                    throw new EUserRetiredException(StrInvalidUserIDPassword);
+                }
+            }
 
-			//
-			// (3) Check SystemLoginStatus (whether the general use of the OpenPetra application is enabled/disabled) in the
-			// SystemStatus table (this table always holds only a single record)
-			//
-			Boolean NewTransaction = false;
-			SSystemStatusTable SystemStatusDT;
+            //
+            // (3) Check SystemLoginStatus (whether the general use of the OpenPetra application is enabled/disabled) in the
+            // SystemStatus table (this table always holds only a single record)
+            //
+            Boolean NewTransaction = false;
+            SSystemStatusTable SystemStatusDT;
 
-			SystemStatusDT = SSystemStatusAccess.LoadAll(ATransaction);
+            SystemStatusDT = SSystemStatusAccess.LoadAll(ATransaction);
 
-			if (SystemStatusDT[0].SystemLoginStatus)
-			{
-				ASystemEnabled = true;
-			}
-			else
-			{
-				ASystemEnabled = false;
+            if (SystemStatusDT[0].SystemLoginStatus)
+            {
+                ASystemEnabled = true;
+            }
+            else
+            {
+                ASystemEnabled = false;
 
-				// TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
-				if (PetraPrincipal.IsInGroup("SYSADMIN"))
-				{
-					PetraPrincipal.LoginMessage =
-						String.Format(StrSystemDisabled1,
-							SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
-						StrSystemDisabled2Admin;
-				}
-				else
-				{
-					TLoginLog.AddLoginLogEntry(AUserID, false, "User wanted to log in, but the System was disabled.  " +
-						String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
-						true, out AProcessID, ATransaction);
+                // TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
+                if (PetraPrincipal.IsInGroup("SYSADMIN"))
+                {
+                    PetraPrincipal.LoginMessage =
+                        String.Format(StrSystemDisabled1,
+                            SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
+                        StrSystemDisabled2Admin;
+                }
+                else
+                {
+                    TLoginLog.AddLoginLogEntry(AUserID, false, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_WHEN_SYSTEM_WAS_DISABLED,
+                        Catalog.GetString("User wanted to log in, but the System was disabled. ") +
+                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        true, out AProcessID, ATransaction);
 
-					throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
-							SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
-						String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate.Value),
-							SystemStatusDT[0].SystemAvailableDate.Value.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
-				}
-			}
+                    throw new ESystemDisabledException(String.Format(StrSystemDisabled1,
+                            SystemStatusDT[0].SystemDisabledReason) + Environment.NewLine + Environment.NewLine +
+                        String.Format(StrSystemDisabled2, StringHelper.DateToLocalizedString(SystemStatusDT[0].SystemAvailableDate.Value),
+                            SystemStatusDT[0].SystemAvailableDate.Value.AddSeconds(SystemStatusDT[0].SystemAvailableTime).ToShortTimeString()));
+                }
+            }
 
-			//
-			// (4) Save successful login!
-			//
-			LoginDateTime = DateTime.Now;
-			UserDR.LastLoginDate = LoginDateTime;
-			UserDR.LastLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
-			UserDR.FailedLogins = 0;  // this needs resetting!
+            //
+            // (4) Save successful login!
+            //
+            LoginDateTime = DateTime.Now;
+            UserDR.LastLoginDate = LoginDateTime;
+            UserDR.LastLoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
+            UserDR.FailedLogins = 0;  // this needs resetting!
 
-			// Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
-			if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
-			{
-				TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword);
-			}
+            // Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
+            if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
+            {
+                TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword,
+                    AClientComputerName, AClientIPAddress, ATransaction);
+            }
 
-			SaveUser(AUserID, (SUserTable)UserDR.Table, ATransaction);
+            SaveUser(AUserID, (SUserTable)UserDR.Table, ATransaction);
 
-			PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
+            PetraPrincipal.PetraIdentity.CurrentLogin = LoginDateTime;
 
-			//PetraPrincipal.PetraIdentity.FailedLogins = 0;
+            //PetraPrincipal.PetraIdentity.FailedLogins = 0;
 
-			// TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
+            // TODO: Check for Security Group membership might need reviewal when security model of OpenPetra might get reviewed...
 
-			if (PetraPrincipal.IsInGroup("SYSADMIN"))
-			{
-				TLoginLog.AddLoginLogEntry(AUserID, true, "User login - SYSADMIN privileges.  " +
-					String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+            if (PetraPrincipal.IsInGroup("SYSADMIN"))
+            {
+                TLoginLog.AddLoginLogEntry(AUserID, true, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL_SYSADMIN,
+                    Catalog.GetString("User login - SYSADMIN privileges. ") +
+                    String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     out AProcessID, ATransaction);
-			}
-			else
-			{
-				TLoginLog.AddLoginLogEntry(AUserID, true, "User login.  " +
-					String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+            }
+            else
+            {
+                TLoginLog.AddLoginLogEntry(AUserID, true, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_SUCCESSFUL,
+                    Catalog.GetString("User login. ") +
+                    String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                     out AProcessID, ATransaction);
-			}
+            }
 
-			PetraPrincipal.ProcessID = AProcessID;
-			AProcessID = 0;
+            PetraPrincipal.ProcessID = AProcessID;
+            AProcessID = 0;
 
-			//
-			// (5) Check if a password change is requested for this user
-			//
-			if (UserDR.PasswordNeedsChange)
-			{
-				// The user needs to change their password before they can use OpenPetra
-				PetraPrincipal.LoginMessage = SharedConstants.LOGINMUSTCHANGEPASSWORD;
-			}
+            //
+            // (5) Check if a password change is requested for this user
+            //
+            if (UserDR.PasswordNeedsChange)
+            {
+                // The user needs to change their password before they can use OpenPetra
+                PetraPrincipal.LoginMessage = SharedConstants.LOGINMUSTCHANGEPASSWORD;
+            }
 
             return PetraPrincipal;
         }
@@ -407,6 +431,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             int AProcessID;
             int FailedLoginsUntilAccountGetsLocked =
                 TSystemDefaults.GetInt32Default(SharedConstants.SYSDEFAULT_FAILEDLOGINS_UNTIL_ACCOUNT_GETS_LOCKED, 10);
+            bool AccountLockedAtThisAttempt = false;
 
             // Console.WriteLine('PetraPrincipal.PetraIdentity.FailedLogins: ' + PetraPrincipal.PetraIdentity.FailedLogins.ToString +
             // '; PetraPrincipal.PetraIdentity.AccountLocked: ' + PetraPrincipal.PetraIdentity.AccountLocked.ToString);
@@ -421,15 +446,26 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             {
                 // Lock User Account (this user will no longer be able to log in until a Sysadmin resets this flag!)
                 UserDR.AccountLocked = true;
+                AccountLockedAtThisAttempt = true;
 
-                TMaintenanceWebConnector.AppendAccountActivity(UserDR,
-                    String.Format("The permitted number of failed logins in a row got exceeded and the user account for the user {0} got locked!",
-                        UserDR.UserId));
+                TUserAccountActivityLog.AddUserAccountActivityLogEntry(UserDR.UserId,
+                    TUserAccountActivityLog.USER_ACTIVITY_PERMITTED_FAILED_LOGINS_EXCEEDED,
+                    String.Format(Catalog.GetString(
+                            "The permitted number of failed logins in a row got exceeded and the user account for the user {0} got locked! ") +
+                        String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
+                        UserDR.UserId), ATransaction);
             }
 
             // Logging
-            TLoginLog.AddLoginLogEntry(AUserID, false, String.Format("User supplied wrong password!  (Failed Logins: now {0}; " +
-                    "Account Locked: now {1}, User Retired: {2})  ", UserDR.FailedLogins, UserDR.AccountLocked, UserDR.Retired) +
+            TLoginLog.AddLoginLogEntry(AUserID, false,
+                AccountLockedAtThisAttempt ? TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG_ACCOUNT_GOT_LOCKED :
+                TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_PWD_WRONG,
+                String.Format(Catalog.GetString("User supplied wrong password{0}!  (Failed Logins: now {1}; " +
+                        "Account Locked: now {2}, User Retired: {3}) "),
+                    (AccountLockedAtThisAttempt ?
+                     Catalog.GetString("; because the permitted number of failed logins in a row got exceeded the user account " +
+                         "for the user got locked! ") : String.Empty),
+                    UserDR.FailedLogins, UserDR.AccountLocked, UserDR.Retired) +
                 String.Format(ResourceTexts.StrRequestCallerInfo, AClientComputerName, AClientIPAddress),
                 out AProcessID, ATransaction);
 
@@ -590,10 +626,14 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserManagement
         /// <summary>
         /// Adds a new user.
         /// </summary>
+        /// <remarks>Gets called from TServerManager.AddUser() Method, which in turn gets utilised by the
+        /// PetraMultiStart.exe application for the creation of test users for that application.</remarks>
         public bool AddUser(string AUserID, string APassword = "")
         {
             return TMaintenanceWebConnector.CreateUser(AUserID,
                 APassword,
+                string.Empty,
+                string.Empty,
                 string.Empty,
                 string.Empty,
                 TMaintenanceWebConnector.DEMOMODULEPERMISSIONS);

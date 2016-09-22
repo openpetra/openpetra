@@ -113,6 +113,21 @@ namespace Ict.Common.Remoting.Server
     }
 
     /// <summary>
+    /// an interface for login logging to the database
+    /// </summary>
+    public interface ILoginLog
+    {
+        /// <summary>
+        /// Records the logging-out (=disconnection) of a Client.
+        /// </summary>
+        /// <param name="AUserID">UserID of the User for which a logout should be recorded.</param>
+        /// <param name="AProcessID">ProcessID of the User for which a logout should be recorded.
+        /// This will need to be the number that got returned from an earlier call to
+        /// AddLoginLogEntry(string, bool, string, bool, out int, TDBTransaction)!</param>
+        void RecordUserLogout(String AUserID, int AProcessID);
+    }
+
+    /// <summary>
     /// an interface for retrieving a welcome message from the databse
     /// </summary>
     public interface IMaintenanceLogonMessage

@@ -35,6 +35,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MSysMan.Validation;
+using Ict.Common.Remoting.Client;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -53,6 +54,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private readonly string StrWillBeStillNotBeAbleToLogin = Catalog.GetString("will still not be able to log in because {0}");
 
         #endregion
+
+        bool FNewRecordBeingAdded = false;
+        ToolTip FTipPwd = new ToolTip();
 
         private void InitializeManualCode()
         {
@@ -84,9 +88,28 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             LoadUsers();
 
+            txtDetailPasswordHash.Enter += TxtDetailPasswordHash_Enter;
+            txtDetailPasswordHash.Click += TxtDetailPasswordHash_Click;
+            txtDetailPasswordHash.KeyUp += TxtDetailPasswordHash_KeyUp;
+
             // SModuleTable is loaded with the users, therefore we can only now fill the checked list box.
             // TODO: should use cached table instead?
             LoadAvailableModulesIntoCheckedListBox();
+        }
+
+        private void TxtDetailPasswordHash_Enter(object sender, EventArgs e)
+        {
+            txtDetailPasswordHash.SelectAll();
+        }
+
+        private void TxtDetailPasswordHash_Click(object sender, EventArgs e)
+        {
+            txtDetailPasswordHash.SelectAll();
+        }
+
+        private void TxtDetailPasswordHash_KeyUp(object sender, KeyEventArgs e)
+        {
+            FTipPwd.Hide(txtDetailPasswordHash);
         }
 
         private void LoadAvailableModulesIntoCheckedListBox()
@@ -123,7 +146,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
         {
             AVerificationResult = new TVerificationResultCollection();
 
-            TSubmitChangesResult Result = TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS);
+            TSubmitChangesResult Result = TRemote.MSysMan.Maintenance.WebConnectors.SaveSUser(ref ASubmitDS,
+                TClientInfo.ClientComputerName, TClientInfo.ClientIPAddress);
 
             if (Result == TSubmitChangesResult.scrOK)
             {
@@ -139,13 +163,18 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
                 ASubmitDS = FMainDS;
 
-                btnChangePassword.Enabled = true;
+                btnResetPassword.Enabled = true;
                 txtDetailPasswordHash.Enabled = false;
             }
 
             return Result;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <remarks></remarks>
+        /// <param name="ARow"></param>
         private void ShowDetailsManual(SUserRow ARow)
         {
             string currentPermissions = String.Empty;
@@ -167,17 +196,34 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     }
                 }
 
-                // If a password has been saved for a user it can be changed using btnChangePassword.
+                // If a password has been saved for a user it can be changed using btnResetPassword.
                 // If a password has not been saved then it can be added using txtDetailPasswordHash.
                 if (string.IsNullOrEmpty(ARow.PasswordHash) || (string.IsNullOrEmpty(ARow.PasswordSalt) && (ARow.RowState != DataRowState.Unchanged)))
                 {
-                    btnChangePassword.Enabled = false;
+                    btnResetPassword.Enabled = false;
                     txtDetailPasswordHash.Enabled = true;
+
+                    if (FNewRecordBeingAdded)
+                    {
+                        FNewRecordBeingAdded = false;
+                        FTipPwd.Show(Catalog.GetString(
+                                "A 'random, secure' password got assigned.\r\nCopy it with the provided hyperlink!"),
+                            txtDetailPasswordHash, 0, 25, 5000);
+                    }
+                    else
+                    {
+                        FTipPwd.Hide(txtDetailPasswordHash);
+                    }
+
+                    llbCopyPassword.Visible = true;
                 }
                 else
                 {
-                    btnChangePassword.Enabled = true;
+                    btnResetPassword.Enabled = true;
                     txtDetailPasswordHash.Enabled = false;
+
+                    llbCopyPassword.Visible = false;
+                    FTipPwd.Hide(txtDetailPasswordHash);
                 }
             }
 
@@ -248,6 +294,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             ARow.UserId = newName;
+            ARow.PasswordHash = TPasswordHelper.GetRandomSecurePassword();
+
+            FNewRecordBeingAdded = true;
         }
 
         private void LockUnlockUser(Object Sender, EventArgs e)
@@ -312,9 +361,37 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
         }
 
-        private void SetPassword(Object Sender, EventArgs e)
+        private void CopyPassword(Object Sender, EventArgs e)
+        {
+            if (FPreviouslySelectedDetailRow.RowState == DataRowState.Added)
+            {
+                CopyPasswordIntoClipboard(txtDetailPasswordHash.Text);
+            }
+        }
+
+        private void CopyPasswordIntoClipboard(string APassword)
+        {
+            Clipboard.SetDataObject(APassword);
+
+            MessageBox.Show(Catalog.GetString(
+                    "The Password of this user record got copied to the clipboard.\r\n\r\nImmediately...\r\n  * Paste the password elsewhere; " +
+                    "\r\n  * After you have done this click 'OK' to overwrite the password in the clipboard!!!"),
+                Catalog.GetString("User Password Copied to Clipboard!"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+
+            Clipboard.SetDataObject(String.Empty);
+        }
+
+        private void ShowResettingOfUserPwdCancelledMessage()
+        {
+            MessageBox.Show(Catalog.GetString("Resetting of User Password cancelled."),
+                Catalog.GetString("User Password Reset Cancelled"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ResetPassword(Object Sender, EventArgs e)
         {
             TVerificationResultCollection VerificationResultCollection = null;
+            string OneTimePassword = String.Empty;
+            bool RandomSecurePasswordUtilised = false;
 
             if (FPreviouslySelectedDetailRow == null)
             {
@@ -326,7 +403,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 MessageBox.Show(
                     Catalog.GetString("It is necessary to save any changes before a user's password can be changed." +
                         Environment.NewLine + "Please save changes now and then repeat the operation."),
-                    CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
+                    CommonDialogsResourcestrings.StrResetUserPasswordTitle,
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Stop);
                 return;
@@ -334,55 +411,95 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             string username = GetSelectedDetailRow().UserId;
 
-            // only request the password once, since this is the sysadmin changing it.
-            // see http://bazaar.launchpad.net/~openpetracore/openpetraorg/trunkhosted/view/head:/csharp/ICT/Petra/Client/MSysMan/Gui/SysManMain.cs
-            // for the change password dialog for the normal user
-            PetraInputBox input = new PetraInputBox(
-                CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
-                String.Format(Catalog.GetString("Please enter a new password for user {0}:"), username),
-                "", true);
+            var UserChoice = MessageBox.Show(Catalog.GetString(
+                    "The resetting of a User Password requires the creation of a one-time password that the user will need to enter.\r\n" +
+                    "OpenPetra can generate a 'random secure' password for this purpose (recommended!). Alternatively, you can come up with such a password manually.\r\n\r\nCreate 'random secure' User Password?"),
+                Catalog.GetString("User Password Reset"), MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
+                MessageBoxDefaultButton.Button1);
 
-            if (input.ShowDialog() == DialogResult.OK)
+            switch (UserChoice)
             {
-                string password = input.GetAnswer();
+                case DialogResult.Yes:
+                    OneTimePassword = TPasswordHelper.GetRandomSecurePassword();
+                    RandomSecurePasswordUtilised = true;
 
-                try
-                {
-                    this.Cursor = Cursors.WaitCursor;
-                    Application.DoEvents();  // give Windows a chance to update the Cursor
+                    break;
 
-                    // Request the setting of the new password (incl. server-side checks)
-                    if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, password, true, true,
-                            out VerificationResultCollection))
+                case DialogResult.No:
+                    // only request the password once, since this is the sysadmin changing it.
+                    // see http://bazaar.launchpad.net/~openpetracore/openpetraorg/trunkhosted/view/head:/csharp/ICT/Petra/Client/MSysMan/Gui/SysManMain.cs
+                    // for the change password dialog for the normal user
+                    PetraInputBox input = new PetraInputBox(
+                    CommonDialogsResourcestrings.StrResetUserPasswordTitle,
+                    String.Format(Catalog.GetString("Please enter a one-time password for user {0}:"), username),
+                    "", true);
+
+                    if (input.ShowDialog() == DialogResult.OK)
                     {
-                        MessageBox.Show(String.Format(Catalog.GetString(CommonDialogsResourcestrings.StrChangePasswordSuccess +
-                                    Environment.NewLine + Environment.NewLine +
-                                    "(The user must change this password for a password of his/her choice the next time (s)he logs on.)"),
-                                username), CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        OneTimePassword = input.GetAnswer();
 
-                        // This has been saved on the server so my data is out-of-date - re-loading needed to get new ModificationId etc:
-                        FPreviouslySelectedDetailRow = null;
-                        Int32 rowIdx = GetSelectedRowIndex();
-
-                        LoadUsers();
-
-                        grdDetails.SelectRowInGrid(rowIdx);
+                        break;
                     }
                     else
                     {
-                        MessageBox.Show(String.Format(CommonDialogsResourcestrings.StrChangePasswordError, username) +
-                            Environment.NewLine + Environment.NewLine +
-                            VerificationResultCollection.BuildVerificationResultString(),
-                            CommonDialogsResourcestrings.StrChangeUserPasswordTitle,
-                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        ShowResettingOfUserPwdCancelledMessage();
+
                         return;
                     }
-                }
-                finally
+
+                case DialogResult.Cancel:
+                    ShowResettingOfUserPwdCancelledMessage();
+
+                    return;
+            }
+
+            try
+            {
+                this.Cursor = Cursors.WaitCursor;
+                Application.DoEvents();  // give Windows a chance to update the Cursor
+
+                // Save the new password (server-side checks get performed)
+                if (TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(username, OneTimePassword, true, true,
+                        TClientInfo.ClientComputerName, TClientInfo.ClientIPAddress,
+                        out VerificationResultCollection))
                 {
-                    this.Cursor = Cursors.Default;
+                    MessageBox.Show(String.Format(Catalog.GetString(CommonDialogsResourcestrings.StrChangePasswordSuccess +
+                                Environment.NewLine +
+                                (RandomSecurePasswordUtilised ? Catalog.GetString(
+                                     "The 'random secure' password will get copied to the clipboard after you have closed this message. Follow the steps lined out in the next message!")
+                                 + Environment.NewLine : String.Empty) +
+                                Environment.NewLine +
+                                "(The user must change the new password for a password of his/her choice the next time (s)he logs on.)"),
+                            username), CommonDialogsResourcestrings.StrResetUserPasswordTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    if (RandomSecurePasswordUtilised)
+                    {
+                        CopyPasswordIntoClipboard(OneTimePassword);
+                    }
+
+                    // This has been saved on the server so my data is out-of-date - re-loading needed to get new
+                    // ModificationId etc:
+                    FPreviouslySelectedDetailRow = null;
+                    Int32 rowIdx = GetSelectedRowIndex();
+
+                    LoadUsers();
+
+                    grdDetails.SelectRowInGrid(rowIdx);
                 }
+                else
+                {
+                    MessageBox.Show(String.Format(CommonDialogsResourcestrings.StrChangePasswordError, username) +
+                        Environment.NewLine + Environment.NewLine +
+                        VerificationResultCollection.BuildVerificationResultString(),
+                        CommonDialogsResourcestrings.StrResetUserPasswordTitle,
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            finally
+            {
+                this.Cursor = Cursors.Default;
             }
         }
 

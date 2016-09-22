@@ -134,6 +134,7 @@ namespace Ict.Petra.Server.App.Core
             TClientManager.InitializeStaticVariables(TSystemDefaultsCache.GSystemDefaultsCache,
                 FUserManager,
                 new TErrorLog(),
+                new TLoginLog(),
                 new TMaintenanceLogonMessage(),
                 ExceptionHandling_DBConnectionBrokenCallback);
 

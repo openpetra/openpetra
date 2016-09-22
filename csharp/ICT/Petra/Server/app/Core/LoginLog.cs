@@ -32,29 +32,33 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Common.Exceptions;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.App.Core.Security
 {
     /// <summary>
-    /// Reads and saves entries in the Login Log table.
+    /// Saves entries in the Login Log table.
     /// </summary>
-    public class TLoginLog
+    public class TLoginLog : ILoginLog
     {
         /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AUserID"></param>
         /// <param name="ALoginSuccesful"></param>
+        /// <param name="ALoginStatusType"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AProcessID"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
+            String ALoginStatusType,
             String ALoginStatus,
             out Int32 AProcessID,
             TDBTransaction ATransaction)
         {
-            AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatus, false, out AProcessID, ATransaction);
+            AddLoginLogEntry(AUserID, ALoginSuccesful, ALoginStatusType, ALoginStatus, false, out AProcessID, ATransaction);
         }
 
         /// <summary>
@@ -62,30 +66,30 @@ namespace Ict.Petra.Server.App.Core.Security
         /// </summary>
         /// <param name="AUserID"></param>
         /// <param name="ALoginSuccesful"></param>
+        /// <param name="ALoginStatusType"></param>
         /// <param name="ALoginStatus"></param>
         /// <param name="AImmediateLogout"></param>
         /// <param name="AProcessID"></param>
         /// <param name="ATransaction">Instantiated DB Transaction.</param>
         public static void AddLoginLogEntry(String AUserID,
             Boolean ALoginSuccesful,
+            String ALoginStatusType,
             String ALoginStatus,
             Boolean AImmediateLogout,
             out Int32 AProcessID,
             TDBTransaction ATransaction)
         {
-            SLoginTable LoginTable;
-            SLoginRow NewLoginRow;
+            SLoginTable LoginTable = new SLoginTable();
+            SLoginRow NewLoginRow = LoginTable.NewRowTyped(false);
 
             OdbcParameter[] ParametersArray;
-            DateTime LoginDateTime;
-            LoginTable = new SLoginTable();
-            NewLoginRow = LoginTable.NewRowTyped(false);
-            LoginDateTime = DateTime.Now;
+            DateTime LoginDateTime = DateTime.Now;
 
             // Set DataRow values
             NewLoginRow.LoginProcessId = -1;
             NewLoginRow.UserId = AUserID.ToUpper();
             NewLoginRow.LoginSuccessful = ALoginSuccesful;
+            NewLoginRow.LoginStatusType = ALoginStatusType;
             NewLoginRow.LoginStatus = ALoginStatus;
             NewLoginRow.LoginDate = LoginDateTime.Date;
             NewLoginRow.LoginTime = Conversions.DateTimeToInt32Time(LoginDateTime);
@@ -110,7 +114,8 @@ namespace Ict.Petra.Server.App.Core.Security
             }
             catch (Exception Exc)
             {
-                TLogging.Log("An Exception occured during the saving of the Login Log (#1):" + Environment.NewLine + Exc.ToString());
+                TLogging.Log("An Exception occured during the saving of a Login Log entry (Situation #1):" +
+                    Environment.NewLine + Exc.ToString());
 
                 throw;
             }
@@ -140,9 +145,79 @@ namespace Ict.Petra.Server.App.Core.Security
             }
             catch (Exception Exc)
             {
-                TLogging.Log("An Exception occured during the saving of the Login Log (#2):" + Environment.NewLine + Exc.ToString());
+                TLogging.Log("An Exception occured during the saving of the a Login Log entry (Situation #2):" +
+                    Environment.NewLine + Exc.ToString());
 
                 throw;
+            }
+        }
+
+        /// <summary>
+        /// Records the logging-out (=disconnection) of a Client.
+        /// </summary>
+        /// <param name="AUserID">UserID of the User for which a logout should be recorded.</param>
+        /// <param name="AProcessID">ProcessID of the User for which a logout should be recorded.
+        /// This will need to be the number that got returned from an earlier call to
+        /// <see cref="AddLoginLogEntry(string, bool, string, string, bool, out int, TDBTransaction)"/>!</param>
+        public void RecordUserLogout(String AUserID, int AProcessID)
+        {
+            TDataBase DBConnectionObj;
+            TDBTransaction ReadWriteTransaction = null;
+            SLoginTable LoginTable;
+            SLoginRow TemplateRow;
+            SLoginRow LoginRowForUser;
+            bool SubmissionOK = false;
+            DateTime LogoutDateTime = DateTime.Now;
+
+            TemplateRow = new SLoginTable().NewRowTyped(false);
+            TemplateRow.LoginProcessId = AProcessID;
+            TemplateRow.UserId = AUserID;
+
+            // Open a separate DB Connection (necessary because this Method gets executed in the Server's (Main) AppDomain
+            // which hasn't got an instance of DBAccess.GDBAccess!) ...
+            DBConnectionObj = DBAccess.SimpleEstablishDBConnection("RecordUserLogout");
+
+            // ...and start a DB Transaction on that separate DB Connection
+            ReadWriteTransaction = DBConnectionObj.BeginTransaction(IsolationLevel.Serializable, 0, "RecordUserLogout");
+
+            try
+            {
+                LoginTable = SLoginAccess.LoadUsingTemplate(TemplateRow, ReadWriteTransaction);
+                LoginTable.AcceptChanges();
+
+                if (LoginTable.Rows.Count != 1)
+                {
+                    throw new EOPAppException(String.Format(
+                            "An attempt was made to record the logout of user {0} but no login record was found with ProcessID {1}",
+                            AUserID, AProcessID));
+                }
+                else
+                {
+                    LoginRowForUser = LoginTable[0];
+
+                    LoginRowForUser.LogoutDate = LogoutDateTime;
+                    LoginRowForUser.LogoutTime = Conversions.DateTimeToInt32Time(LogoutDateTime);
+                }
+
+                SLoginAccess.SubmitChanges(LoginTable, ReadWriteTransaction);
+
+                SubmissionOK = true;
+            }
+            finally
+            {
+                if (DBConnectionObj != null)
+                {
+                    if (SubmissionOK)
+                    {
+                        DBConnectionObj.CommitTransaction();
+                    }
+                    else
+                    {
+                        DBConnectionObj.RollbackTransaction();
+                    }
+
+                    DBConnectionObj.CloseDBConnection();
+                }
             }
         }
     }

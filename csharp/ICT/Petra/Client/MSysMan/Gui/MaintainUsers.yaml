@@ -8,12 +8,13 @@
     FormType: edit
     Template: windowEdit
     WindowHeight: 700
-    WindowWidth: 810
+    WindowWidth: 845
     Actions:
         actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
         actLockUnlock: {ActionClick=LockUnlockUser}
         actRetireUnretire: {ActionClick=RetireUnretireUser}
-        actChangePassword: {ActionClick=SetPassword}
+        actResetPassword: {ActionClick=ResetPassword}
+        actCopyPasswordClicked: {ActionClick=CopyPassword}
         cndChangePermissions:
     Controls:
         pnlContent:
@@ -40,12 +41,12 @@
                 chkRetired: {Text=User Retired}
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNewUser, btnLockUnlock, btnRetireUnretire, btnChangePassword]
+            Controls: [btnNewUser, btnLockUnlock, btnRetireUnretire, btnResetPassword]
             ControlsOrientation: horizontal
         btnNewUser: {Width=110}
-        btnLockUnlock: {Label=Lock/Unlock, Width=130, StartNewButtonGroup=true}
-        btnRetireUnretire: {Label=Retire/Unretire, Width=130}
-        btnChangePassword: {Width=130, StartNewButtonGroup=true}
+        btnLockUnlock: {Label=Lock/Unlock..., Width=130, StartNewButtonGroup=true}
+        btnRetireUnretire: {Label=Retire/Unretire..., Width=130}
+        btnResetPassword: {Label=Reset Password..., Width=130, StartNewButtonGroup=true}
         grdDetails:
             Dock: Fill
             Columns: [DetailUserId, DetailFirstName, DetailLastName, DetailAccountLocked, DetailFailedLogins, DetailRetired, DetailLastLoginDate, DetailFailedLoginDate]
@@ -55,14 +56,19 @@
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
             Controls:
-                Row0: [txtDetailUserId, txtDetailPasswordHash, chkDetailAccountLocked]
-                Row1: [txtDetailFirstName, txtDetailLastName, chkDetailRetired]
+                Row0: [txtDetailUserId, txtDetailPasswordHash, llbCopyPassword, chkDetailAccountLocked]
+                Row1: [txtDetailFirstName, txtDetailLastName, Empty, chkDetailRetired]
                 Row2: [txtDetailEmailAddress]
                 Row3: [clbUserGroup]
         txtDetailUserId:
         txtDetailPasswordHash:
             Label: Password
             PasswordEntry: true
+            Tooltip: User's Password
+        llbCopyPassword:
+            Label: Copy Password
+            Tooltip: Copy User's Password to the Clipboard
+            Action: actCopyPasswordClicked
         txtDetailFirstName:
         txtDetailLastName:
         txtDetailEmailAddress:
@@ -70,7 +76,7 @@
         chkDetailRetired: {Label=User Retired, ReadOnly=true}
         clbUserGroup:
             Label: This User can access
-            ColSpan: 2
+            ColSpan: 3
             Width: 500
             Height: 155
             Stretch: fully
