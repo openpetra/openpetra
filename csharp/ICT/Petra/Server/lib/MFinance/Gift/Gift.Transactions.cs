@@ -2571,8 +2571,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             // if motivation cost centre is a summary cost centre, make sure the transaction costcentre is reporting to that summary cost centre
             // Careful: modify gift cost centre and account and recipient field only when the amount is positive.
             // adjustments and reversals must remain on the original value
+
+//
+// Modified July 2016 Tim Ingham: whereas it is possible for the user to specify the "Bank Cost Centre",
+// This was ignored by the use of the standard Cost Centre in the line below.
+// (The change disregards the TODO: comment above, which may be incorrect - this is the "totals" or "Debit" leg of the batch,
+// and the BankCostCentre is not affected by the GiftDetail motivation details.)
+//
+//          transactionForTotals.CostCentreCode = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+
             transactionForTotals.AccountCode = giftBatch.BankAccountCode;
-            transactionForTotals.CostCentreCode = TLedgerInfo.GetStandardCostCentre(ALedgerNumber);
+            transactionForTotals.CostCentreCode = giftBatch.BankCostCentre;
             transactionForTotals.Narrative = "Deposit from receipts - Gift Batch " + giftBatch.BatchNumber.ToString();
             transactionForTotals.Reference = "GB" + giftBatch.BatchNumber.ToString();
 

@@ -1,226 +1,226 @@
 99,BAD COUNTRY CODE,false,0,88,QQ,0,0,yes,0,BAD COUNTRY CODE,?,?,?,?,?
-AD,ANDORRA,false,376,EUR,0,1,1,false,1,ANDORRA,?,?,?,?,?
-AE,UNITED ARAB EMIRATES,false,971,ME,0,4,4,false,0,UNITED ARAB EMIRATES,?,?,?,?,?
-AF,AFGHANISTAN,false,93,SWACA,0,4.5,4.5,false,0,AFGHANISTAN,?,?,?,?,?
-AG,ANTIGUA AND BARBUDA,false,1268,NAMC,11,-4,-4,false,0,ANTIGUA AND BARBUDA,?,?,?,?,?
-AI,ANGUILLA,false,1264,NAMC,11,-4,-4,false,0,ANGUILLA,?,?,?,?,?
-AL,ALBANIA,false,355,EUR,0,1,1,false,1,ALBANIA,?,?,?,?,?
-AM,ARMENIA,false,374,EUR,0,4,4,false,0,ARMENIA,?,?,?,?,?
-AN,NETHERLANDS ANTILLES,false,599,EA,0,-4,-4,false,0,NETHERLANDS ANTILLES,?,?,?,?,?
-AO,ANGOLA,false,244,AFR,0,1,1,false,0,ANGOLA,?,?,?,?,?
+AD,ANDORRA,false,376,EUR,00,1,1,false,1,ANDORRA,?,?,?,?,?
+AE,UNITED ARAB EMIRATES,false,971,ME,00,4,4,false,0,UNITED ARAB EMIRATES,?,?,?,?,?
+AF,AFGHANISTAN,false,93,SWACA,00,4.5,4.5,false,0,AFGHANISTAN,?,?,?,?,?
+AG,ANTIGUA AND BARBUDA,false,1268,NAMC,011,-4,-4,false,0,ANTIGUA AND BARBUDA,?,?,?,?,?
+AI,ANGUILLA,false,1264,NAMC,011,-4,-4,false,0,ANGUILLA,?,?,?,?,?
+AL,ALBANIA,false,355,EUR,00,1,1,false,1,ALBANIA,?,?,?,?,?
+AM,ARMENIA,false,374,EUR,00,4,4,false,0,ARMENIA,?,?,?,?,?
+AN,NETHERLANDS ANTILLES,false,599,EA,00,-4,-4,false,0,NETHERLANDS ANTILLES,?,?,?,?,?
+AO,ANGOLA,false,244,AFR,00,1,1,false,0,ANGOLA,?,?,?,?,?
 AQ,ANTARCTICA,false,672,88,XX,4.5,10,false,0,ANTARCTICA,?,?,?,?,?
-AR,ARGENTINA,false,54,LAM,0,-3,-3,false,0,ARGENTINA,?,?,?,?,?
-AS,AMERICAN SAMOA,false,684,AUS,0,-11,-11,false,0,AMERICAN SAMOA,?,?,?,?,?
-AT,AUSTRIA,false,43,EC,0,1,1,false,1,AUSTRIA,?,?,?,?,?
-AU,AUSTRALIA,false,61,AUS,0,8,10,false,0,AUSTRALIA,?,?,?,?,?
-AW,ARUBA,false,297,NAMC,0,-4,-4,false,0,ARUBA,?,?,?,?,?
-AZ,AZERBAIJAN,false,994,SWACA,8~10,5,5,false,0,AZERBAIJAN,?,?,?,?,?
-BA,BOSNIA-HERCEGOVINA,false,387,EUR,0,1,1,false,0,BOSNIA-HERCEGOVINA,?,?,?,?,?
-BB,BARBADOS,false,1246,NAMC,11,-4,-4,false,0,BARBADOS,?,?,?,?,?
-BD,BANGLADESH,false,880,SWACA,0,6,6,false,0,BANGLADESH,?,?,?,?,?
-BE,BELGIUM,false,32,EC,0,1,1,false,1,BELGIUM,?,?,?,?,?
-BF,BURKINA FASO,false,226,AFR,0,0,0,false,0,BURKINA FASO,?,?,?,?,?
-BG,BULGARIA,false,359,EUR,0,2,2,false,1,BULGARIA,?,?,?,?,?
-BH,BAHRAIN,false,973,ME,0,3,3,false,0,BAHRAIN,?,?,?,?,?
-BI,BURUNDI,false,257,AFR,90,2,2,false,0,BURUNDI,?,?,?,?,?
-BJ,BENIN,false,229,AFR,0,1,1,false,0,BENIN,?,?,?,?,?
-BM,BERMUDA,false,1441,NAMC,11,-4,-4,false,0,BERMUDA,?,?,?,?,?
-BN,BRUNEI DARUSSALAM,false,673,EA,0,8,8,false,0,BRUNEI DARUSSALAM,?,?,?,?,?
-BO,BOLIVIA,false,591,LAM,0,-4,-4,false,0,BOLIVIA,?,?,?,?,?
-BR,BRAZIL,false,55,LAM,0,-3,-3,false,0,BRAZIL,?,?,?,?,?
-BS,BAHAMAS,false,1242,NAMC,11,-5,-5,false,0,BAHAMAS,?,?,?,?,?
-BT,BHUTAN,false,975,SWACA,0,6,6,false,0,BHUTAN,?,?,?,?,?
-BW,BOTSWANA,false,267,AFR,0,2,2,false,0,BOTSWANA,?,?,?,?,?
-BY,BELARUS,false,375,EUR,8~10,2,2,false,0,BELARUS,?,?,?,?,?
-BZ,BELIZE,false,501,LAM,0,-6,-6,false,0,BELIZE,?,?,?,?,?
-CA,CANADA,false,1,NAMC,11,-9,-3,false,0,CANADA,?,?,?,?,?
-CD,"CONGO, THE DEMOCRATIC REPUBLIC OF THE",false,243,AFR,0,1,1,false,0,"CONGO, THE DEMOCRATIC REPUBLIC OF THE",?,?,?,?,?
-CF,CENTRAL AFRICAN REPUBLIC,false,236,AFR,19,1,1,false,0,CENTRAL AFRICAN REPUBLIC,?,?,?,?,?
-CG,CONGO,false,242,AFR,0,1,1,false,0,CONGO,?,?,?,?,?
-CH,SWITZERLAND,false,41,EUR,0,1,1,false,1,SWITZERLAND,?,?,?,?,?
-CI,COTE D'IVOIRE,false,225,AFR,0,0,0,false,0,COTE D'IVOIRE,?,?,?,?,?
-CK,COOK ISLANDS,false,682,AUS,0,-10,-10,false,0,COOK ISLANDS,?,?,?,?,?
-CL,CHILE,false,56,LAM,0,-4,-4,false,0,CHILE,?,?,?,?,?
-CM,CAMEROON,false,237,AFR,0,1,1,false,0,CAMEROON,?,?,?,?,?
-CN,CHINA,false,86,EA,0,8,8,false,0,CHINA,?,?,?,?,?
-CO,COLOMBIA,false,57,LAM,90,-5,-5,false,0,COLOMBIA,?,?,?,?,?
-CR,COSTA RICA,false,506,NAMC,0,-6,-6,false,0,COSTA RICA,?,?,?,?,?
+AR,ARGENTINA,false,54,LAM,00,-3,-3,false,0,ARGENTINA,?,?,?,?,?
+AS,AMERICAN SAMOA,false,1684,AUS,011,-11,-11,false,0,AMERICAN SAMOA,?,?,?,?,?
+AT,AUSTRIA,false,43,EC,00,1,1,false,1,AUSTRIA,?,?,?,?,?
+AU,AUSTRALIA,false,61,AUS,0011,8,10,false,0,AUSTRALIA,?,?,?,?,?
+AW,ARUBA,false,297,NAMC,00,-4,-4,false,0,ARUBA,?,?,?,?,?
+AZ,AZERBAIJAN,false,994,SWACA,00,5,5,false,0,AZERBAIJAN,?,?,?,?,?
+BA,BOSNIA-HERCEGOVINA,false,387,EUR,00,1,1,false,0,BOSNIA-HERCEGOVINA,?,?,?,?,?
+BB,BARBADOS,false,1246,NAMC,011,-4,-4,false,0,BARBADOS,?,?,?,?,?
+BD,BANGLADESH,false,880,SWACA,00,6,6,false,0,BANGLADESH,?,?,?,?,?
+BE,BELGIUM,false,32,EC,00,1,1,false,1,BELGIUM,?,?,?,?,?
+BF,BURKINA FASO,false,226,AFR,00,0,0,false,0,BURKINA FASO,?,?,?,?,?
+BG,BULGARIA,false,359,EUR,00,2,2,false,1,BULGARIA,?,?,?,?,?
+BH,BAHRAIN,false,973,ME,00,3,3,false,0,BAHRAIN,?,?,?,?,?
+BI,BURUNDI,false,257,AFR,00,2,2,false,0,BURUNDI,?,?,?,?,?
+BJ,BENIN,false,229,AFR,00,1,1,false,0,BENIN,?,?,?,?,?
+BM,BERMUDA,false,1441,NAMC,011,-4,-4,false,0,BERMUDA,?,?,?,?,?
+BN,BRUNEI DARUSSALAM,false,673,EA,00,8,8,false,0,BRUNEI DARUSSALAM,?,?,?,?,?
+BO,BOLIVIA,false,591,LAM,00,-4,-4,false,0,BOLIVIA,?,?,?,?,?
+BR,BRAZIL,false,55,LAM,0014,-3,-3,false,0,BRAZIL,?,?,?,?,?
+BS,BAHAMAS,false,1242,NAMC,011,-5,-5,false,0,BAHAMAS,?,?,?,?,?
+BT,BHUTAN,false,975,SWACA,00,6,6,false,0,BHUTAN,?,?,?,?,?
+BW,BOTSWANA,false,267,AFR,00,2,2,false,0,BOTSWANA,?,?,?,?,?
+BY,BELARUS,false,375,EUR,810,2,2,false,0,BELARUS,?,?,?,?,?
+BZ,BELIZE,false,501,LAM,00,-6,-6,false,0,BELIZE,?,?,?,?,?
+CA,CANADA,false,1,NAMC,011,-9,-3,false,0,CANADA,?,?,?,?,?
+CD,"CONGO, THE DEMOCRATIC REPUBLIC OF THE",false,243,AFR,00,1,1,false,0,"CONGO, THE DEMOCRATIC REPUBLIC OF THE",?,?,?,?,?
+CF,CENTRAL AFRICAN REPUBLIC,false,236,AFR,00,1,1,false,0,CENTRAL AFRICAN REPUBLIC,?,?,?,?,?
+CG,CONGO,false,242,AFR,00,1,1,false,0,CONGO,?,?,?,?,?
+CH,SWITZERLAND,false,41,EUR,00,1,1,false,1,SWITZERLAND,?,?,?,?,?
+CI,COTE D'IVOIRE,false,225,AFR,00,0,0,false,0,COTE D'IVOIRE,?,?,?,?,?
+CK,COOK ISLANDS,false,682,AUS,00,-10,-10,false,0,COOK ISLANDS,?,?,?,?,?
+CL,CHILE,false,56,LAM,1230,-4,-4,false,0,CHILE,?,?,?,?,?
+CM,CAMEROON,false,237,AFR,00,1,1,false,0,CAMEROON,?,?,?,?,?
+CN,CHINA,false,86,EA,00,8,8,false,0,CHINA,?,?,?,?,?
+CO,COLOMBIA,false,57,LAM,005,-5,-5,false,0,COLOMBIA,?,?,?,?,?
+CR,COSTA RICA,false,506,NAMC,00,-6,-6,false,0,COSTA RICA,?,?,?,?,?
 CU,CUBA,false,53,NAMC,119,-5,-5,false,0,CUBA,?,?,?,?,?
-CV,CAPE VERDE,false,238,EUR,0,-1,-1,false,1,CAPE VERDE,?,?,?,?,?
-CY,CYPRUS,false,357,EC,0,2,2,false,1,CYPRUS,?,?,?,?,?
-CZ,CZECH REPUBLIC,false,420,EUR,0,1,1,false,1,CZECH REPUBLIC,?,?,?,?,?
-DE,GERMANY,false,49,EC,0,1,1,false,1,GERMANY,?,?,?,?,?
-DJ,DJIBOUTI,false,253,AFR,0,3,3,false,0,DJIBOUTI,?,?,?,?,?
-DK,DENMARK,false,45,EC,0,1,1,false,1,DENMARK,?,?,?,?,?
-DM,DOMINICA,false,1767,NAMC,11,-4,-4,false,0,DOMINICA,?,?,?,?,?
-DO,DOMINICAN REPUBLIC,false,1809,NAMC,11,-4,-4,false,0,DOMINICAN REPUBLIC,?,?,?,?,?
-DU,DUBAI,false,0,ME,0,0,0,false,0,DUBAI,?,?,?,?,?
-DZ,ALGERIA,false,213,AFR,00~,1,1,false,0,ALGERIA,?,?,?,?,?
-EC,ECUADOR,false,593,LAM,0,-5,-5,false,0,ECUADOR,?,?,?,?,?
-EE,ESTONIA,false,372,EUR,8~00,2,2,false,0,ESTONIA,?,?,?,?,?
-EG,EGYPT,false,20,AFR,0,2,2,false,0,EGYPT,?,?,?,?,?
-ER,ERITREA,false,291,AFR,0,3,3,false,0,ERITREA,?,?,?,?,?
-ES,SPAIN,false,34,EC,0,1,1,false,1,SPAIN,?,?,?,?,?
-ET,ETHIOPIA,false,251,AFR,0,3,3,false,0,ETHIOPIA,?,?,?,?,?
-FI,FINLAND,false,358,EC,0,2,2,false,1,FINLAND,?,?,?,?,?
-FJ,FIJI,false,679,AUS,5,12,12,false,0,FIJI,?,?,?,?,?
-FK,FALKLAND ISLANDS (MALVINAS),false,500,LAM,0,-4,-4,false,0,FALKLAND ISLANDS (MALVINAS),?,?,?,?,?
-FM,MICRONESIA (FEDERATE STATES OF),false,691,AUS,11,10,11,false,0,MICRONESIA (FEDERATE STATES OF),?,?,?,?,?
-FO,FAROE ISLANDS,false,298,EC,9,0,0,false,1,FAROE ISLANDS,?,?,?,?,?
-FR,FRANCE,false,33,EC,0,1,1,false,1,FRANCE,?,?,?,?,?
-GA,GABON,false,241,AFR,0,1,1,false,0,GABON,?,?,?,?,?
-GB,UNITED KINGDOM,false,44,EC,0,0,0,false,0,UNITED KINGDOM,?,?,?,?,?
-GD,GRENADA,false,1473,NAMC,11,-4,-4,false,0,GRENADA,?,?,?,?,?
-GE,GEORGIA,false,995,EUR,8~10,4,4,false,0,GEORGIA,?,?,?,?,?
-GF,FRENCH GUIANA,false,594,LAM,0,-3,-3,false,0,FRENCH GUIANA,?,?,?,?,?
-GH,GHANA,false,233,AFR,0,0,0,false,0,GHANA,?,?,?,?,?
-GI,GIBRALTAR,false,350,EUR,0,1,1,false,0,GIBRALTAR,?,?,?,?,?
-GL,GREENLAND,false,299,EUR,9,-4,-1,false,0,GREENLAND,?,?,?,?,?
-GM,GAMBIA,false,220,AFR,0,0,0,false,0,GAMBIA,?,?,?,?,?
-GN,GUINEA,false,224,LAM,0,0,0,false,0,GUINEA,?,?,?,?,?
-GP,GUADELOUPE,false,590,NAMC,0,-4,-4,false,0,GUADELOUPE,?,?,?,?,?
-GQ,EQUATORIAL GUINEA,false,240,LAM,0,1,1,false,0,EQUATORIAL GUINEA,?,?,?,?,?
-GR,GREECE,false,30,EC,0,2,2,false,1,GREECE,?,?,?,?,?
-GT,GUATEMALA,false,502,LAM,0,-6,-6,false,0,GUATEMALA,?,?,?,?,?
-GW,GUINEA-BISSAU,false,245,AFR,0,0,0,false,0,GUINEA-BISSAU,?,?,?,?,?
-GY,GUYANA,false,592,NAMC,1,-4,-4,false,0,GUYANA,?,?,?,?,?
-GZ,GUERNSEY (GB),false,44,EC,0,0,0,false,0,GUERNSEY (GB),?,?,?,?,?
-HK,HONG KONG,false,852,EA,1,8,8,false,0,HONG KONG,?,?,?,?,?
-HN,HONDURAS,false,504,LAM,0,-6,-6,false,0,HONDURAS,?,?,?,?,?
-HR,CROATIA,false,385,EUR,0,1,1,false,1,Hrvatska,?,?,?,?,?
-HT,HAITI,false,509,NAMC,0,-5,-5,false,0,HAITI,?,?,?,?,?
-HU,HUNGARY,false,36,EUR,0,1,1,false,1,HUNGARY,?,?,?,?,?
-ID,INDONESIA,false,62,EA,0,7,8,false,0,INDONESIA,?,?,?,?,?
-IE,IRELAND,false,353,EC,0,0,0,false,0,IRELAND,?,?,?,?,?
-IL,ISRAEL,false,972,ME,0,2,2,false,0,ISRAEL,?,?,?,?,?
-IN,INDIA,false,91,SWACA,0,5.5,5.5,false,0,INDIA,?,?,?,?,?
-IQ,IRAQ,false,964,ME,0,3,3,false,0,IRAQ,?,?,?,?,?
-IR,IRAN (ISLAMIC REPUBLIC OF),false,98,ME,0,3.5,3.5,false,0,IRAN (ISLAMIC REPUBLIC OF),?,?,?,?,?
-IS,ICELAND,false,354,EUR,0,0,0,false,1,ICELAND,?,?,?,?,?
-IT,ITALY,false,39,EC,0,1,1,false,1,ITALY,?,?,?,?,?
-JM,JAMAICA,false,1876,NAMC,11,-5,-5,false,0,JAMAICA,?,?,?,?,?
-JO,JORDAN,false,962,ME,0,2,2,false,0,JORDAN,?,?,?,?,?
-JP,JAPAN,false,81,EA,1,9,9,false,0,JAPAN,?,?,?,?,?
-JY,JERSEY (GB),false,44,EC,0,0,0,false,0,JERSEY (GB),?,?,?,?,?
-KE,KENYA,false,254,AFR,0,3,3,false,0,KENYA,?,?,?,?,?
-KG,KYRGYZSTAN,false,996,SWACA,8~10,6,6,false,0,KYRGYZSTAN,?,?,?,?,?
-KH,CAMBODIA,false,855,EA,0,7,7,false,0,CAMBODIA,?,?,?,?,?
-KI,KIRIBATI,false,686,AUS,0,12,12,false,0,KIRIBATI,?,?,?,?,?
-KM,COMOROS,false,269,EA,10,3,3,false,0,COMOROS,?,?,?,?,?
-KN,SAINT KITTS AND NEVIS,false,1869,NAMC,11,-4,-4,false,0,SAINT KITTS AND NEVIS,?,?,?,?,?
-KP,"KOREA, NORTH (PEOPLE'S REPUBLIC)",false,850,EA,0,9,9,false,0,"KOREA, NORTH (PEOPLE'S REPUBLIC)",?,?,?,?,?
-KR,"KOREA, SOUTH (REPUBLIC OF)",false,82,EA,1,9,9,false,0,"KOREA, SOUTH (REPUBLIC OF)",?,?,?,?,?
-KW,KUWAIT,false,965,ME,0,3,3,false,0,KUWAIT,?,?,?,?,?
-KY,CAYMAN ISLANDS,false,1345,NAMC,11,-5,-5,false,0,CAYMAN ISLANDS,?,?,?,?,?
+CV,CAPE VERDE,false,238,EUR,00,-1,-1,false,1,CAPE VERDE,?,?,?,?,?
+CY,CYPRUS,false,357,EC,00,2,2,false,1,CYPRUS,?,?,?,?,?
+CZ,CZECH REPUBLIC,false,420,EUR,00,1,1,false,1,CZECH REPUBLIC,?,?,?,?,?
+DE,GERMANY,false,49,EC,00,1,1,false,1,GERMANY,?,?,?,?,?
+DJ,DJIBOUTI,false,253,AFR,00,3,3,false,0,DJIBOUTI,?,?,?,?,?
+DK,DENMARK,false,45,EC,00,1,1,false,1,DENMARK,?,?,?,?,?
+DM,DOMINICA,false,1767,NAMC,011,-4,-4,false,0,DOMINICA,?,?,?,?,?
+DO,DOMINICAN REPUBLIC,false,1809,NAMC,011,-4,-4,false,0,DOMINICAN REPUBLIC,?,?,?,?,?
+DU,DUBAI,false,971,ME,00,0,0,false,0,DUBAI,?,?,?,?,?
+DZ,ALGERIA,false,213,AFR,00,1,1,false,0,ALGERIA,?,?,?,?,?
+EC,ECUADOR,false,593,LAM,00,-5,-5,false,0,ECUADOR,?,?,?,?,?
+EE,ESTONIA,false,372,EUR,00,2,2,false,0,ESTONIA,?,?,?,?,?
+EG,EGYPT,false,20,AFR,00,2,2,false,0,EGYPT,?,?,?,?,?
+ER,ERITREA,false,291,AFR,00,3,3,false,0,ERITREA,?,?,?,?,?
+ES,SPAIN,false,34,EC,00,1,1,false,1,SPAIN,?,?,?,?,?
+ET,ETHIOPIA,false,251,AFR,00,3,3,false,0,ETHIOPIA,?,?,?,?,?
+FI,FINLAND,false,358,EC,00,2,2,false,1,FINLAND,?,?,?,?,?
+FJ,FIJI,false,679,AUS,00,12,12,false,0,FIJI,?,?,?,?,?
+FK,FALKLAND ISLANDS (MALVINAS),false,500,LAM,00,-4,-4,false,0,FALKLAND ISLANDS (MALVINAS),?,?,?,?,?
+FM,MICRONESIA (FEDERATE STATES OF),false,691,AUS,011,10,11,false,0,MICRONESIA (FEDERATE STATES OF),?,?,?,?,?
+FO,FAROE ISLANDS,false,298,EC,00,0,0,false,1,FAROE ISLANDS,?,?,?,?,?
+FR,FRANCE,false,33,EC,00,1,1,false,1,FRANCE,?,?,?,?,?
+GA,GABON,false,241,AFR,00,1,1,false,0,GABON,?,?,?,?,?
+GB,UNITED KINGDOM,false,44,EC,00,0,0,false,0,UNITED KINGDOM,?,?,?,?,?
+GD,GRENADA,false,1473,NAMC,011,-4,-4,false,0,GRENADA,?,?,?,?,?
+GE,GEORGIA,false,995,EUR,00,4,4,false,0,GEORGIA,?,?,?,?,?
+GF,FRENCH GUIANA,false,594,LAM,00,-3,-3,false,0,FRENCH GUIANA,?,?,?,?,?
+GH,GHANA,false,233,AFR,00,0,0,false,0,GHANA,?,?,?,?,?
+GI,GIBRALTAR,false,350,EUR,00,1,1,false,0,GIBRALTAR,?,?,?,?,?
+GL,GREENLAND,false,299,EUR,00,-4,-1,false,0,GREENLAND,?,?,?,?,?
+GM,GAMBIA,false,220,AFR,00,0,0,false,0,GAMBIA,?,?,?,?,?
+GN,GUINEA,false,224,LAM,00,0,0,false,0,GUINEA,?,?,?,?,?
+GP,GUADELOUPE,false,590,NAMC,00,-4,-4,false,0,GUADELOUPE,?,?,?,?,?
+GQ,EQUATORIAL GUINEA,false,240,LAM,00,1,1,false,0,EQUATORIAL GUINEA,?,?,?,?,?
+GR,GREECE,false,30,EC,00,2,2,false,1,GREECE,?,?,?,?,?
+GT,GUATEMALA,false,502,LAM,00,-6,-6,false,0,GUATEMALA,?,?,?,?,?
+GW,GUINEA-BISSAU,false,245,AFR,00,0,0,false,0,GUINEA-BISSAU,?,?,?,?,?
+GY,GUYANA,false,592,NAMC,001,-4,-4,false,0,GUYANA,?,?,?,?,?
+GZ,GUERNSEY (GB),false,441481,EC,00,0,0,false,0,GUERNSEY (GB),?,?,?,?,?
+HK,HONG KONG,false,852,EA,001,8,8,false,0,HONG KONG,?,?,?,?,?
+HN,HONDURAS,false,504,LAM,00,-6,-6,false,0,HONDURAS,?,?,?,?,?
+HR,CROATIA,false,385,EUR,00,1,1,false,1,Hrvatska,?,?,?,?,?
+HT,HAITI,false,509,NAMC,00,-5,-5,false,0,HAITI,?,?,?,?,?
+HU,HUNGARY,false,36,EUR,00,1,1,false,1,HUNGARY,?,?,?,?,?
+ID,INDONESIA,false,62,EA,001,7,8,false,0,INDONESIA,?,?,?,?,?
+IE,IRELAND,false,353,EC,00,0,0,false,0,IRELAND,?,?,?,?,?
+IL,ISRAEL,false,972,ME,00,2,2,false,0,ISRAEL,?,?,?,?,?
+IN,INDIA,false,91,SWACA,00,5.5,5.5,false,0,INDIA,?,?,?,?,?
+IQ,IRAQ,false,964,ME,00,3,3,false,0,IRAQ,?,?,?,?,?
+IR,IRAN (ISLAMIC REPUBLIC OF),false,98,ME,00,3.5,3.5,false,0,IRAN (ISLAMIC REPUBLIC OF),?,?,?,?,?
+IS,ICELAND,false,354,EUR,00,0,0,false,1,ICELAND,?,?,?,?,?
+IT,ITALY,false,39,EC,00,1,1,false,1,ITALY,?,?,?,?,?
+JM,JAMAICA,false,1876,NAMC,011,-5,-5,false,0,JAMAICA,?,?,?,?,?
+JO,JORDAN,false,962,ME,00,2,2,false,0,JORDAN,?,?,?,?,?
+JP,JAPAN,false,81,EA,010,9,9,false,0,JAPAN,?,?,?,?,?
+JY,JERSEY (GB),false,441534,EC,00,0,0,false,0,JERSEY (GB),?,?,?,?,?
+KE,KENYA,false,254,AFR,000,3,3,false,0,KENYA,?,?,?,?,?
+KG,KYRGYZSTAN,false,996,SWACA,00,6,6,false,0,KYRGYZSTAN,?,?,?,?,?
+KH,CAMBODIA,false,855,EA,001,7,7,false,0,CAMBODIA,?,?,?,?,?
+KI,KIRIBATI,false,686,AUS,00,12,12,false,0,KIRIBATI,?,?,?,?,?
+KM,COMOROS,false,269,EA,00,3,3,false,0,COMOROS,?,?,?,?,?
+KN,SAINT KITTS AND NEVIS,false,1869,NAMC,011,-4,-4,false,0,SAINT KITTS AND NEVIS,?,?,?,?,?
+KP,"KOREA, NORTH (PEOPLE'S REPUBLIC)",false,850,EA,99,9,9,false,0,"KOREA, NORTH (PEOPLE'S REPUBLIC)",?,?,?,?,?
+KR,"KOREA, SOUTH (REPUBLIC OF)",false,82,EA,001,9,9,false,0,"KOREA, SOUTH (REPUBLIC OF)",?,?,?,?,?
+KW,KUWAIT,false,965,ME,00,3,3,false,0,KUWAIT,?,?,?,?,?
+KY,CAYMAN ISLANDS,false,1345,NAMC,011,-5,-5,false,0,CAYMAN ISLANDS,?,?,?,?,?
 KZ,KAZAKHSTAN,false,7,SWACA,8~10,5,6,false,0,KAZAKHSTAN,?,?,?,?,?
-LA,LAO PEOPLE'S DEMOCRATIC REPUBLIC,false,856,EA,14,7,7,false,0,LAO PEOPLE'S DEMOCRATIC REPUBLIC,?,?,?,?,?
-LB,LEBANON,false,961,ME,0,2,2,false,0,LEBANON,?,?,?,?,?
-LC,SAINT LUCIA,false,1758,NAMC,11,-4,-4,false,0,SAINT LUCIA,?,?,?,?,?
-LI,LIECHTENSTEIN,false,423,EUR,0,1,1,false,1,LIECHTENSTEIN,?,?,?,?,?
-LK,SRI LANKA,false,94,SWACA,0,6,6,false,0,SRI LANKA,?,?,?,?,?
-LR,LIBERIA,false,231,AFR,0,0,0,false,0,LIBERIA,?,?,?,?,?
-LS,LESOTHO,false,266,AFR,0,2,2,false,0,LESOTHO,?,?,?,?,?
-LT,LITHUANIA,false,370,EUR,8~10,2,2,false,0,LITHUANIA,?,?,?,?,?
-LU,LUXEMBOURG,false,352,EC,0,1,1,false,1,LUXEMBOURG,?,?,?,?,?
-LV,LATVIA,false,371,EUR,0,2,2,false,0,LATVIA,?,?,?,?,?
-LY,LIBYAN ARAB JAMAHIRIYA,false,218,AFR,0,0,0,false,0,LIBYAN ARAB JAMAHIRIYA,?,?,?,?,?
-MA,MOROCCO,false,212,AFR,00~,0,0,false,0,MOROCCO,?,?,?,?,?
-MC,MONACO,false,377,EUR,0,1,1,false,1,MONACO,?,?,?,?,?
-MD,MOLDOVA (REPUBLIC OF),false,373,EUR,8~10,2,2,false,0,MOLDOVA (REPUBLIC OF),?,?,?,?,?
-ME,MONTENEGRO (REPUBLIC OF),false,382,EUR,0,2,2,false,1,MONTENEGRO (REPUBLIC OF),?,?,?,?,?
-MG,MADAGASCAR,false,261,AFR,0,3,3,false,0,MADAGASCAR,?,?,?,?,?
-MH,MARSHALL ISLANDS,false,692,AUS,11,12,12,false,0,MARSHALL ISLANDS,?,?,?,?,?
-MK,"MACEDONIA, FORMER YUGOSLAVIA",false,389,EUR,0,1,1,false,1,"MACEDONIA, FORMER YUGOSLAVIA",?,?,?,?,?
-ML,MALI,false,223,SWACA,0,0,0,false,0,MALI,?,?,?,?,?
-MM,MYANMAR (BURMA),false,95,EA,0,6.5,6.5,false,0,MYANMAR (BURMA),?,?,?,?,?
-MN,MONGOLIA,false,976,EA,0,8,8,false,0,MONGOLIA,?,?,?,?,?
-MO,MACAU,false,853,EA,0,8,8,false,0,MACAU,?,?,?,?,?
-MP,NORTHERN MARIANA ISLANDS,false,1670,EA,11,10,10,false,0,NORTHERN MARIANA ISLANDS,?,?,?,?,?
-MQ,MARTINIQUE,false,963,NAMC,0,-4,-4,false,0,MARTINIQUE,?,?,?,?,?
-MR,MAURITANIA,false,222,AFR,0,0,0,false,0,MAURITANIA,?,?,?,?,?
-MS,MONTSERRAT,false,1664,NAMC,11,-4,-4,false,0,MONTSERRAT,?,?,?,?,?
-MT,MALTA,false,356,EUR,0,1,1,false,1,MALTA,?,?,?,?,?
-MU,MAURITIUS,false,230,AFR,0,4,4,false,0,MAURITIUS,?,?,?,?,?
-MV,MALDIVES,false,960,EA,0,5,5,false,0,MALDIVES,?,?,?,?,?
-MW,MALAWI,false,265,AFR,101,2,2,false,0,MALAWI,?,?,?,?,?
-MX,MEXICO,false,52,LAM,0,-7,-6,false,0,MEXICO,?,?,?,?,?
-MY,MALAYSIA,false,60,EA,0,8,8,false,0,MALAYSIA,?,?,?,?,?
-MZ,MOZAMBIQUE,false,258,AFR,0,2,2,false,0,MOZAMBIQUE,?,?,?,?,?
-NA,NAMIBIA,false,264,AFR,9,2,2,false,0,NAMIBIA,?,?,?,?,?
-NC,NEW CALEDONIA,false,687,AUS,0,11,11,false,0,NEW CALEDONIA,?,?,?,?,?
-NE,NIGER,false,227,AFR,0,1,1,false,0,NIGER,?,?,?,?,?
-NF,NORFOLK ISLAND,false,672,AUS,0,11.5,11.5,false,0,NORFOLK ISLAND,?,?,?,?,?
-NG,NIGERIA,false,234,AFR,9,1,1,false,0,NIGERIA,?,?,?,?,?
-NI,NICARAGUA,false,505,LAM,0,-6,-6,false,0,NICARAGUA,?,?,?,?,?
-NL,NETHERLANDS,false,31,EC,0,1,1,false,1,NETHERLANDS,?,?,?,?,?
-NO,NORWAY,false,47,EUR,0,1,1,false,1,NORWAY,?,?,?,?,?
-NP,NEPAL,false,977,SWACA,0,5.75,5.75,false,0,NEPAL,?,?,?,?,?
-NR,NAURU,false,674,EA,0,12,12,false,0,NAURU,?,?,?,?,?
-NU,NIUE,false,683,AUS,0,-11,-11,false,0,NIUE,?,?,?,?,?
-NZ,NEW ZEALAND,false,64,AUS,0,12,12,false,0,NEW ZEALAND,?,?,?,?,?
-OM,OMAN,false,968,ME,0,4,4,false,0,OMAN,?,?,?,?,?
-PA,PANAMA,false,507,LAM,0,-5,-5,false,0,PANAMA,?,?,?,?,?
-PE,PERU,false,51,LAM,0,-5,-5,false,0,PERU,?,?,?,?,?
-PF,FRENCH POLYNESIA,false,689,AUS,0,-10,-10,false,0,FRENCH POLYNESIA,?,?,?,?,?
-PG,PAPUA NEW GUINEA,false,675,EA,5,10,10,false,0,PAPUA NEW GUINEA,?,?,?,?,?
-PH,PHILIPPINES,false,63,EA,0,8,8,false,0,PHILIPPINES,?,?,?,?,?
-PK,PAKISTAN,false,92,SWACA,0,5,5,false,0,PAKISTAN,?,?,?,?,?
-PL,POLAND,false,48,EUR,0~0,1,1,false,1,POLAND,?,?,?,?,?
-PR,PUERTO RICO,false,1787,NAMC,1,-4,-4,false,0,PUERTO RICO,?,?,?,?,?
-PT,PORTUGAL,false,351,EC,0,0,0,false,1,PORTUGAL,?,?,?,?,?
-PW,PALAU,false,680,AUS,11,9,9,false,0,PALAU,?,?,?,?,?
-PY,PARAGUAY,false,595,LAM,0,-4,-4,false,0,PARAGUAY,?,?,?,?,?
-QA,QATAR,false,974,ME,0,3,3,false,0,QATAR,?,?,?,?,?
-RE,REUNION,false,262,LAM,0,4,4,false,0,REUNION,?,?,?,?,?
-RO,ROMANIA,false,40,EUR,0,2,2,false,1,ROMANIA,?,?,?,?,?
-RS,SERBIA (REPUBLIC OF),false,381,EUR,0,2,2,false,1,SERBIA (REPUBLIC OF),?,?,?,?,?
+LA,LAO PEOPLE'S DEMOCRATIC REPUBLIC,false,856,EA,00,7,7,false,0,LAO PEOPLE'S DEMOCRATIC REPUBLIC,?,?,?,?,?
+LB,LEBANON,false,961,ME,00,2,2,false,0,LEBANON,?,?,?,?,?
+LC,SAINT LUCIA,false,1758,NAMC,011,-4,-4,false,0,SAINT LUCIA,?,?,?,?,?
+LI,LIECHTENSTEIN,false,423,EUR,00,1,1,false,1,LIECHTENSTEIN,?,?,?,?,?
+LK,SRI LANKA,false,94,SWACA,00,6,6,false,0,SRI LANKA,?,?,?,?,?
+LR,LIBERIA,false,231,AFR,00,0,0,false,0,LIBERIA,?,?,?,?,?
+LS,LESOTHO,false,266,AFR,00,2,2,false,0,LESOTHO,?,?,?,?,?
+LT,LITHUANIA,false,370,EUR,00,2,2,false,0,LITHUANIA,?,?,?,?,?
+LU,LUXEMBOURG,false,352,EC,00,1,1,false,1,LUXEMBOURG,?,?,?,?,?
+LV,LATVIA,false,371,EUR,00,2,2,false,0,LATVIA,?,?,?,?,?
+LY,LIBYAN ARAB JAMAHIRIYA,false,218,AFR,00,0,0,false,0,LIBYAN ARAB JAMAHIRIYA,?,?,?,?,?
+MA,MOROCCO,false,212,AFR,00,0,0,false,0,MOROCCO,?,?,?,?,?
+MC,MONACO,false,377,EUR,00,1,1,false,1,MONACO,?,?,?,?,?
+MD,MOLDOVA (REPUBLIC OF),false,373,EUR,00,2,2,false,0,MOLDOVA (REPUBLIC OF),?,?,?,?,?
+ME,MONTENEGRO (REPUBLIC OF),false,382,EUR,00,2,2,false,1,MONTENEGRO (REPUBLIC OF),?,?,?,?,?
+MG,MADAGASCAR,false,261,AFR,00,3,3,false,0,MADAGASCAR,?,?,?,?,?
+MH,MARSHALL ISLANDS,false,692,AUS,011,12,12,false,0,MARSHALL ISLANDS,?,?,?,?,?
+MK,"MACEDONIA, FORMER YUGOSLAVIA",false,389,EUR,00,1,1,false,1,"MACEDONIA, FORMER YUGOSLAVIA",?,?,?,?,?
+ML,MALI,false,223,SWACA,00,0,0,false,0,MALI,?,?,?,?,?
+MM,MYANMAR (BURMA),false,95,EA,00,6.5,6.5,false,0,MYANMAR (BURMA),?,?,?,?,?
+MN,MONGOLIA,false,976,EA,001,8,8,false,0,MONGOLIA,?,?,?,?,?
+MO,MACAU,false,853,EA,00,8,8,false,0,MACAU,?,?,?,?,?
+MP,NORTHERN MARIANA ISLANDS,false,1670,EA,011,10,10,false,0,NORTHERN MARIANA ISLANDS,?,?,?,?,?
+MQ,MARTINIQUE,false,596,NAMC,00,-4,-4,false,0,MARTINIQUE,?,?,?,?,?
+MR,MAURITANIA,false,222,AFR,00,0,0,false,0,MAURITANIA,?,?,?,?,?
+MS,MONTSERRAT,false,1664,NAMC,011,-4,-4,false,0,MONTSERRAT,?,?,?,?,?
+MT,MALTA,false,356,EUR,00,1,1,false,1,MALTA,?,?,?,?,?
+MU,MAURITIUS,false,230,AFR,00,4,4,false,0,MAURITIUS,?,?,?,?,?
+MV,MALDIVES,false,960,EA,00,5,5,false,0,MALDIVES,?,?,?,?,?
+MW,MALAWI,false,265,AFR,00,2,2,false,0,MALAWI,?,?,?,?,?
+MX,MEXICO,false,52,LAM,00,-7,-6,false,0,MEXICO,?,?,?,?,?
+MY,MALAYSIA,false,60,EA,00,8,8,false,0,MALAYSIA,?,?,?,?,?
+MZ,MOZAMBIQUE,false,258,AFR,00,2,2,false,0,MOZAMBIQUE,?,?,?,?,?
+NA,NAMIBIA,false,264,AFR,00,2,2,false,0,NAMIBIA,?,?,?,?,?
+NC,NEW CALEDONIA,false,687,AUS,00,11,11,false,0,NEW CALEDONIA,?,?,?,?,?
+NE,NIGER,false,227,AFR,00,1,1,false,0,NIGER,?,?,?,?,?
+NF,NORFOLK ISLAND,false,6723,AUS,00,11.5,11.5,false,0,NORFOLK ISLAND,?,?,?,?,?
+NG,NIGERIA,false,234,AFR,009,1,1,false,0,NIGERIA,?,?,?,?,?
+NI,NICARAGUA,false,505,LAM,00,-6,-6,false,0,NICARAGUA,?,?,?,?,?
+NL,NETHERLANDS,false,31,EC,00,1,1,false,1,NETHERLANDS,?,?,?,?,?
+NO,NORWAY,false,47,EUR,00,1,1,false,1,NORWAY,?,?,?,?,?
+NP,NEPAL,false,977,SWACA,00,5.75,5.75,false,0,NEPAL,?,?,?,?,?
+NR,NAURU,false,674,EA,00,12,12,false,0,NAURU,?,?,?,?,?
+NU,NIUE,false,683,AUS,00,-11,-11,false,0,NIUE,?,?,?,?,?
+NZ,NEW ZEALAND,false,64,AUS,00,12,12,false,0,NEW ZEALAND,?,?,?,?,?
+OM,OMAN,false,968,ME,00,4,4,false,0,OMAN,?,?,?,?,?
+PA,PANAMA,false,507,LAM,00,-5,-5,false,0,PANAMA,?,?,?,?,?
+PE,PERU,false,51,LAM,00,-5,-5,false,0,PERU,?,?,?,?,?
+PF,FRENCH POLYNESIA,false,689,AUS,00,-10,-10,false,0,FRENCH POLYNESIA,?,?,?,?,?
+PG,PAPUA NEW GUINEA,false,675,EA,00,10,10,false,0,PAPUA NEW GUINEA,?,?,?,?,?
+PH,PHILIPPINES,false,63,EA,00,8,8,false,0,PHILIPPINES,?,?,?,?,?
+PK,PAKISTAN,false,92,SWACA,00,5,5,false,0,PAKISTAN,?,?,?,?,?
+PL,POLAND,false,48,EUR,00,1,1,false,1,POLAND,?,?,?,?,?
+PR,PUERTO RICO,false,1787,NAMC,011,-4,-4,false,0,PUERTO RICO,?,?,?,?,?
+PT,PORTUGAL,false,351,EC,00,0,0,false,1,PORTUGAL,?,?,?,?,?
+PW,PALAU,false,680,AUS,011,9,9,false,0,PALAU,?,?,?,?,?
+PY,PARAGUAY,false,595,LAM,00,-4,-4,false,0,PARAGUAY,?,?,?,?,?
+QA,QATAR,false,974,ME,00,3,3,false,0,QATAR,?,?,?,?,?
+RE,REUNION,false,262,LAM,00,4,4,false,0,REUNION,?,?,?,?,?
+RO,ROMANIA,false,40,EUR,00,2,2,false,1,ROMANIA,?,?,?,?,?
+RS,SERBIA (REPUBLIC OF),false,381,EUR,00,2,2,false,1,SERBIA (REPUBLIC OF),?,?,?,?,?
 RU,RUSSIAN FEDERATION,false,7,EUR,8~10,2,12,false,0,RUSSIAN FEDERATION,?,?,?,?,?
-RW,RWANDA,false,250,AFR,0,2,2,false,0,RWANDA,?,?,?,?,?
-SA,SAUDI ARABIA,false,966,ME,0,3,3,false,0,SAUDI ARABIA,?,?,?,?,?
-SB,SOLOMON ISLANDS,false,677,AUS,0,11,11,false,0,SOLOMON ISLANDS,?,?,?,?,?
-SC,SEYCHELLES,false,248,EA,0,4,4,false,0,SEYCHELLES,?,?,?,?,?
-SD,SUDAN,false,249,AFR,0,2,2,false,0,SUDAN,?,?,?,?,?
-SE,SWEDEN,false,46,EC,0,1,1,false,1,SWEDEN,?,?,?,?,?
-SG,SINGAPORE,false,65,EA,1,8,8,false,0,SINGAPORE,?,?,?,?,?
-SI,SLOVENIA,false,386,EUR,0,1,1,false,1,SLOVENIA,?,?,?,?,?
-SK,SLOVAKIA (SLOVAK REPUBLIC),false,421,EUR,0,1,1,false,1,SLOVAKIA (SLOVAK REPUBLIC),?,?,?,?,?
-SL,SIERRA LEONE,false,232,AFR,0,0,0,false,0,SIERRA LEONE,?,?,?,?,?
-SM,SAN MARINO,false,378,EUR,0,1,1,false,1,SAN MARINO,?,?,?,?,?
-SN,SENEGAL,false,221,AFR,0,0,0,false,0,SENEGAL,?,?,?,?,?
-SO,SOMALIA,false,252,AFR,19,3,3,false,0,SOMALIA,?,?,?,?,?
-SR,SURINAM(E),false,597,EA,0,-3,-3,false,0,SURINAM(E),?,?,?,?,?
-ST,SAO TOME AND PRINCIPE,false,239,AUS,0,0,0,false,0,SAO TOME AND PRINCIPE,?,?,?,?,?
-SV,EL SALVADOR,false,503,LAM,0,-6,-6,false,0,EL SALVADOR,?,?,?,?,?
+RW,RWANDA,false,250,AFR,00,2,2,false,0,RWANDA,?,?,?,?,?
+SA,SAUDI ARABIA,false,966,ME,00,3,3,false,0,SAUDI ARABIA,?,?,?,?,?
+SB,SOLOMON ISLANDS,false,677,AUS,00,11,11,false,0,SOLOMON ISLANDS,?,?,?,?,?
+SC,SEYCHELLES,false,248,EA,00,4,4,false,0,SEYCHELLES,?,?,?,?,?
+SD,SUDAN,false,249,AFR,00,2,2,false,0,SUDAN,?,?,?,?,?
+SE,SWEDEN,false,46,EC,00,1,1,false,1,SWEDEN,?,?,?,?,?
+SG,SINGAPORE,false,65,EA,001,8,8,false,0,SINGAPORE,?,?,?,?,?
+SI,SLOVENIA,false,386,EUR,00,1,1,false,1,SLOVENIA,?,?,?,?,?
+SK,SLOVAKIA (SLOVAK REPUBLIC),false,421,EUR,00,1,1,false,1,SLOVAKIA (SLOVAK REPUBLIC),?,?,?,?,?
+SL,SIERRA LEONE,false,232,AFR,00,0,0,false,0,SIERRA LEONE,?,?,?,?,?
+SM,SAN MARINO,false,378,EUR,00,1,1,false,1,SAN MARINO,?,?,?,?,?
+SN,SENEGAL,false,221,AFR,00,0,0,false,0,SENEGAL,?,?,?,?,?
+SO,SOMALIA,false,252,AFR,00,3,3,false,0,SOMALIA,?,?,?,?,?
+SR,SURINAM(E),false,597,EA,00,-3,-3,false,0,SURINAM(E),?,?,?,?,?
+ST,SAO TOME AND PRINCIPE,false,239,AUS,00,0,0,false,0,SAO TOME AND PRINCIPE,?,?,?,?,?
+SV,EL SALVADOR,false,503,LAM,00,-6,-6,false,0,EL SALVADOR,?,?,?,?,?
 SY,SYRIAN ARAB REPUBLIC,false,963,ME,XX,2,2,false,0,SYRIAN ARAB REPUBLIC,?,?,?,?,?
-SZ,SWAZILAND,false,268,AFR,0,2,2,false,0,SWAZILAND,?,?,?,?,?
-TC,TURKS AND CAICOS ISLANDS,false,1649,NAMC,11,-5,-5,false,0,TURKS AND CAICOS ISLANDS,?,?,?,?,?
-TD,CHAD,false,235,AFR,15,1,1,false,0,CHAD,?,?,?,?,?
-TG,TOGO,false,228,AUS,0,0,0,false,0,TOGO,?,?,?,?,?
-TH,THAILAND,false,66,EA,1,7,7,false,0,THAILAND,?,?,?,?,?
+SZ,SWAZILAND,false,268,AFR,00,2,2,false,0,SWAZILAND,?,?,?,?,?
+TC,TURKS AND CAICOS ISLANDS,false,1649,NAMC,0,-5,-5,false,0,TURKS AND CAICOS ISLANDS,?,?,?,?,?
+TD,CHAD,false,235,AFR,00,1,1,false,0,CHAD,?,?,?,?,?
+TG,TOGO,false,228,AUS,00,0,0,false,0,TOGO,?,?,?,?,?
+TH,THAILAND,false,66,EA,001,7,7,false,0,THAILAND,?,?,?,?,?
 TJ,TAJIKSTAN,false,992,SWACA,8~10,5,5,false,0,TAJIKSTAN,?,?,?,?,?
 TM,TURKMENISTAN,false,993,SWACA,8~10,5,5,false,0,TURKMENISTAN,?,?,?,?,?
-TN,TUNISIA,false,216,AFR,0,1,1,false,0,TUNISIA,?,?,?,?,?
-TO,TONGA,false,676,AUS,0,13,13,false,0,TONGA,?,?,?,?,?
-TR,TURKEY,false,90,EUR,0,2,2,false,1,TURKEY,?,?,?,?,?
-TT,TRINIDAD AND TOBAGO,false,1868,NAMC,11,-4,-4,false,0,TRINIDAD AND TOBAGO,?,?,?,?,?
-TV,TUVALU,false,688,AUS,0,12,12,false,0,TUVALU,?,?,?,?,?
-TW,TAIWAN,false,886,EA,2,8,8,false,0,TAIWAN,?,?,?,?,?
-TZ,TANZANIA (UNITED REPUBLIC OF),false,255,AFR,0,3,3,false,0,TANZANIA (UNITED REPUBLIC OF),?,?,?,?,?
-UA,UKRAINE,false,380,EUR,8~10,2,2,false,0,UKRAINE,?,?,?,?,?
-UG,UGANDA,false,256,AFR,0,3,3,false,0,UGANDA,?,?,?,?,?
-US,UNITED STATES OF AMERICA,false,1,NAMC,11,-8,-5,false,2,UNITED STATES OF AMERICA,?,?,?,?,?
-UY,URUGUAY,false,598,LAM,0,-3,-3,false,0,URUGUAY,?,?,?,?,?
-UZ,UZBEKISTAN,false,998,SWACA,8~10,5,6,false,0,UZBEKISTAN,?,?,?,?,?
-VA,VATICAN CITY STATE (HOLY SEE),false,39,EUR,0,1,1,false,1,VATICAN CITY STATE (HOLY SEE),?,?,?,?,?
-VC,SAINT VINCENT AND THE GRENADINES,false,1784,NAMC,11,-4,-4,false,0,SAINT VINCENT AND THE GRENADINES,?,?,?,?,?
-VE,VENEZUELA,false,58,LAM,0,-4,-4,false,0,VENEZUELA,?,?,?,?,?
-VG,VIRGIN ISLANDS (BRITISH),false,1284,AUS,11,-4,-4,false,0,VIRGIN ISLANDS (BRITISH),?,?,?,?,?
-VI,VIRGIN ISLANDS (US),false,1340,AUS,11,-4,-4,false,0,VIRGIN ISLANDS (US),?,?,?,?,?
-VN,VIETNAM,false,84,EA,0,7,7,false,0,VIETNAM,?,?,?,?,?
-VU,VANUATU,false,678,AUS,0,11,11,false,0,VANUATU,?,?,?,?,?
+TN,TUNISIA,false,216,AFR,00,1,1,false,0,TUNISIA,?,?,?,?,?
+TO,TONGA,false,676,AUS,00,13,13,false,0,TONGA,?,?,?,?,?
+TR,TURKEY,false,90,EUR,00,2,2,false,1,TURKEY,?,?,?,?,?
+TT,TRINIDAD AND TOBAGO,false,1868,NAMC,011,-4,-4,false,0,TRINIDAD AND TOBAGO,?,?,?,?,?
+TV,TUVALU,false,688,AUS,00,12,12,false,0,TUVALU,?,?,?,?,?
+TW,TAIWAN,false,886,EA,002,8,8,false,0,TAIWAN,?,?,?,?,?
+TZ,TANZANIA (UNITED REPUBLIC OF),false,255,AFR,000,3,3,false,0,TANZANIA (UNITED REPUBLIC OF),?,?,?,?,?
+UA,UKRAINE,false,380,EUR,00,2,2,false,0,UKRAINE,?,?,?,?,?
+UG,UGANDA,false,256,AFR,000,3,3,false,0,UGANDA,?,?,?,?,?
+US,UNITED STATES OF AMERICA,false,1,NAMC,011,-8,-5,false,2,UNITED STATES OF AMERICA,?,?,?,?,?
+UY,URUGUAY,false,598,LAM,00,-3,-3,false,0,URUGUAY,?,?,?,?,?
+UZ,UZBEKISTAN,false,998,SWACA,00,5,6,false,0,UZBEKISTAN,?,?,?,?,?
+VA,VATICAN CITY STATE (HOLY SEE),false,379,EUR,00,1,1,false,1,VATICAN CITY STATE (HOLY SEE),?,?,?,?,?
+VC,SAINT VINCENT AND THE GRENADINES,false,1784,NAMC,011,-4,-4,false,0,SAINT VINCENT AND THE GRENADINES,?,?,?,?,?
+VE,VENEZUELA,false,58,LAM,00,-4,-4,false,0,VENEZUELA,?,?,?,?,?
+VG,VIRGIN ISLANDS (BRITISH),false,1284,AUS,011,-4,-4,false,0,VIRGIN ISLANDS (BRITISH),?,?,?,?,?
+VI,VIRGIN ISLANDS (US),false,1340,AUS,011,-4,-4,false,0,VIRGIN ISLANDS (US),?,?,?,?,?
+VN,VIETNAM,false,84,EA,00,7,7,false,0,VIETNAM,?,?,?,?,?
+VU,VANUATU,false,678,AUS,00,11,11,false,0,VANUATU,?,?,?,?,?
 WS,SAMOA,false,685,AUS,0,-11,-11,false,0,SAMOA,?,?,?,?,?
-YE,YEMEN,false,967,ME,0,3,3,false,0,YEMEN,?,?,?,?,?
-YT,MAYOTTE,false,269,EA,0,3,3,false,0,MAYOTTE,?,?,?,?,?
-ZA,SOUTH AFRICA,false,27,AFR,9,2,2,false,0,SOUTH AFRICA,?,?,?,?,?
-ZM,ZAMBIA,false,260,AFR,0,2,2,false,0,ZAMBIA,?,?,?,?,?
-ZW,ZIMBABWE,false,263,NAMC,0,2,2,false,0,ZIMBABWE,?,?,?,?,?
+YE,YEMEN,false,967,ME,00,3,3,false,0,YEMEN,?,?,?,?,?
+YT,MAYOTTE,false,262,EA,00,3,3,false,0,MAYOTTE,?,?,?,?,?
+ZA,SOUTH AFRICA,false,27,AFR,00,2,2,false,0,SOUTH AFRICA,?,?,?,?,?
+ZM,ZAMBIA,false,260,AFR,00,2,2,false,0,ZAMBIA,?,?,?,?,?
+ZW,ZIMBABWE,false,263,NAMC,00,2,2,false,0,ZIMBABWE,?,?,?,?,?

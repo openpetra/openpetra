@@ -550,6 +550,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="AImportFileFormat"></param>
         /// <param name="PartnerRow"></param>
         /// <param name="AReplaceAddress"></param>
+        /// <param name="AIgnoreImportAddress"></param>
         /// <param name="ASiteKeyToBeReplaced"></param>
         /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="ReferenceResults"></param>
@@ -558,12 +559,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             TImportFileFormat AImportFileFormat,
             PPartnerRow PartnerRow,
             Boolean AReplaceAddress,
+            Boolean AIgnoreImportAddress,
             Int64 ASiteKeyToBeReplaced,
             Int32 ALocationKeyToBeReplaced,
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
         {
             Boolean AddressIsReplaced = false;
+
+            if (AIgnoreImportAddress)
+            {
+                // remove rows to be imported as we don't need them
+                MainDS.PPartnerLocation.Rows.Clear();
+                return;
+            }
 
             if (AReplaceAddress)
             {
@@ -1842,6 +1851,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="MainDS"></param>
         /// <param name="AImportFileFormat"></param>
         /// <param name="AReplaceAddress"></param>
+        /// <param name="AIgnoreImportAddress"></param>
         /// <param name="ASiteKeyToBeReplaced"></param>
         /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="ReferenceResults"></param>
@@ -1850,6 +1860,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         private static bool CheckReferencedTables(PartnerImportExportTDS MainDS,
             TImportFileFormat AImportFileFormat,
             Boolean AReplaceAddress,
+            Boolean AIgnoreImportAddress,
             Int64 ASiteKeyToBeReplaced,
             Int32 ALocationKeyToBeReplaced,
             ref TVerificationResultCollection ReferenceResults,
@@ -1877,6 +1888,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                 AImportFileFormat,
                 PartnerRow,
                 AReplaceAddress,
+                AIgnoreImportAddress,
                 ASiteKeyToBeReplaced,
                 ALocationKeyToBeReplaced,
                 ref ReferenceResults,
@@ -1914,6 +1926,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <param name="MainDS"></param>
         /// <param name="AImportFileFormat"></param>
         /// <param name="AReplaceAddress"></param>
+        /// <param name="AIgnoreImportAddress"></param>
         /// <param name="ASiteKeyToBeReplaced"></param>
         /// <param name="ALocationKeyToBeReplaced"></param>
         /// <param name="AVerificationResult"></param>
@@ -1922,6 +1935,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         public static Boolean CommitChanges(PartnerImportExportTDS MainDS,
             TImportFileFormat AImportFileFormat,
             Boolean AReplaceAddress,
+            Boolean AIgnoreImportAddress,
             Int64 ASiteKeyToBeReplaced,
             Int32 ALocationKeyToBeReplaced,
             out TVerificationResultCollection AVerificationResult)
@@ -1942,7 +1956,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                     if (CanImport)
                     {
                         CanImport =
-                            CheckReferencedTables(MainDS, AImportFileFormat, AReplaceAddress, ASiteKeyToBeReplaced, ALocationKeyToBeReplaced,
+                            CheckReferencedTables(MainDS, AImportFileFormat, AReplaceAddress, AIgnoreImportAddress, ASiteKeyToBeReplaced,
+                                ALocationKeyToBeReplaced,
                                 ref ReferenceResults,
                                 Transaction);
                     }

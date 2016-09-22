@@ -74,7 +74,7 @@ namespace Tests.MPartner.Server.PartnerExports
         [Test]
         public void TestImportCSV()
         {
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml("../../demodata/partners/samplePartnerImport.csv", ";");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport.csv", ";");
             TVerificationResultCollection VerificationResult = null;
 
             PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), out VerificationResult);
@@ -95,7 +95,7 @@ namespace Tests.MPartner.Server.PartnerExports
         [Ignore("this does not work at all")]
         public void TestImportCSV2()
         {
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml("../../demodata/partners/samplefilepartnerimport2.csv", ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplefilepartnerimport2.csv", ",");
             TVerificationResultCollection VerificationResult = null;
 
             Console.WriteLine(TXMLParser.XmlToString(doc));

@@ -186,7 +186,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             TPartnerContactDetails.CountryTable = CountryTable;
             TPartnerContactDetails.SiteCountryCode = SiteCountryCode;
             TPartnerContactDetails.SiteInternatAccessCode = InternatAccessCode;
-            TPartnerContactDetails.PopulatePPartnerAttribute();
+            TPartnerContactDetails.PopulatePPartnerAttribute(false);
 
             Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerContactDetailAttributes(AMainDS.PPartnerAttribute);
         }

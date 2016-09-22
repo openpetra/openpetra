@@ -638,6 +638,9 @@ namespace Ict.Petra.Client.CommonDialogs
             {
                 txtPassword.Focus();
             }
+
+            // Attempt to stop the login dialog getting stuck behind other windows with no taskbar icon
+            Activate();
         }
 
         /// <summary>

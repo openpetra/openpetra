@@ -68,7 +68,7 @@ namespace Ict.Petra.Server.MPartner.queries
             // prepare list of selected publications
             List <String>param_explicit_publication = new List <String>();
 
-            foreach (TVariant choice in AParameters.Get("param_explicit_publication").ToComposite())
+            foreach (var choice in AParameters.Get("param_explicit_publication").ToString().Split(','))
             {
                 param_explicit_publication.Add(choice.ToString());
             }

@@ -1284,10 +1284,10 @@ namespace Ict.Petra.Client.CommonControls
         }
 
         /// <summary>
-        /// quick general way of setting the appearance of the combobox
-        /// assumption: the width of the combobox is equal the width of the first column in the list
-        /// assumption: if a value is not greater than 0, the default values are used
-        /// assumption: images are not being used when this function is called
+        /// Quick general way of setting the appearance of the combobox.
+        /// Assumption: the width of the combobox is equal the width of the first column in the list.
+        /// Assumption: if a value is not greater than 0, the default values are used.
+        /// Assumption: images are not being used when this function is called.
         /// </summary>
         /// <param name="AColumnWidth"></param>
         /// <param name="AMaxDropDownItems"></param>

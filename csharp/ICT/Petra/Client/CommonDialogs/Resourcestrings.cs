@@ -51,8 +51,8 @@ namespace Ict.Petra.Client.CommonDialogs
             Catalog.GetString("Change Password");
 
         /// <summary>todoComment</summary>
-        public static readonly string StrChangeUserPasswordTitle =
-            Catalog.GetString("Change User Password");
+        public static readonly string StrResetUserPasswordTitle =
+            Catalog.GetString("Reset User Password");
 
         #endregion
     }

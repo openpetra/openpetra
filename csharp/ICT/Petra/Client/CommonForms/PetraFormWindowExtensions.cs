@@ -50,6 +50,9 @@ namespace Ict.Petra.Client.CommonForms
         private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
         private static bool FWindowPositionsLoaded = false;
 
+        /// These forms will always be saved even though they are not launched by the main screen
+        private static List <string>FAlwaysSaveFormsList = null;
+
         /// dictionary to hold the most recent window position for floating (multi-use) windows
         private static Dictionary <string, Point>FDicFloatingWindowLocations = new Dictionary <string, Point>();
 
@@ -58,6 +61,8 @@ namespace Ict.Petra.Client.CommonForms
 
         private Form FWinForm;
         private Form FCallerForm;
+        private bool FIsWindowInitiallyMaximised = false;
+        private bool FIsShownEventDefined = false;
 
         /// <summary>
         /// The main constructor for this helper class.  It gets instantiated by TFrmPetraUtils
@@ -78,10 +83,24 @@ namespace Ict.Petra.Client.CommonForms
             // Are we saving/restoring the window position?  This option is stored in User Defaults.
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
+                if (FAlwaysSaveFormsList == null)
+                {
+                    FAlwaysSaveFormsList = new List <string>();
+                    FAlwaysSaveFormsList.AddRange(new string[]
+                        {
+                            "TFrmMainWindowNew",
+                            "TFrmPartnerEdit",
+                            "TFrmGiftBatch",
+                            "TFrmGLBatch",
+                            "TPartnerFindScreen",
+                            "TFrmExtFilePreviewDialog"
+                        }
+                        );
+                }
+
                 // Restore the window positions if we know them
                 // (Note: Nant tests do not have a caller so we need to allow for this possibility)
-                if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch")
-                    || (FWinForm.Name == "TFrmGLBatch") || (FWinForm.Name == "TPartnerFindScreen")
+                if (FAlwaysSaveFormsList.Contains(FWinForm.Name)
                     || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
@@ -141,8 +160,7 @@ namespace Ict.Petra.Client.CommonForms
                                 ex.Message), TLoggingType.ToLogfile);
                     }
                 }
-                else if ((FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch") || (FWinForm.Name == "TFrmGLBatch")
-                         || (FWinForm.Name == "TPartnerFindScreen"))
+                else if (FAlwaysSaveFormsList.Contains(FWinForm.Name))
                 {
                     // We always save the settings for these forms - they can be launched from the main window or from Partner/Find or several other ways
                     GetWindowPositionProperties();
@@ -367,6 +385,7 @@ namespace Ict.Petra.Client.CommonForms
 
                     if ((windowState == "Maximized") && !ignoreLocation)
                     {
+                        FIsWindowInitiallyMaximised = true;
                         FWinForm.WindowState = FormWindowState.Maximized;
                     }
                 }
@@ -382,6 +401,15 @@ namespace Ict.Petra.Client.CommonForms
             {
                 // we can set the positions for this window
                 string[] items = FWindowPositions[FWinForm.Name].Split(';');
+
+                if ((items.Length > 5) && FIsWindowInitiallyMaximised && !FIsShownEventDefined)
+                {
+                    // The screen does have splitters and is going to be initially maximised (but is not visible yet).
+                    // We have to come back here and run this method again to do the splitters in the Shown event
+                    FIsShownEventDefined = true;
+                    FWinForm.Shown += FWinForm_Shown;
+                    return;
+                }
 
                 for (int i = 5; i < items.Length; i++)
                 {
@@ -427,6 +455,11 @@ namespace Ict.Petra.Client.CommonForms
                     }
                 }
             }
+        }
+
+        private void FWinForm_Shown(object sender, EventArgs e)
+        {
+            RestoreAdditionalWindowPositionProperties();
         }
 
         #region Helper methods
@@ -589,6 +622,14 @@ namespace Ict.Petra.Client.CommonForms
             string splitterProperties = String.Empty;
             GetSplitterPropertiesAsString(FWinForm, ref splitterProperties, String.Empty);
 
+            bool treatAsMaximized = false;
+
+            if (FWinForm.WindowState == FormWindowState.Minimized)
+            {
+                // If the window has splitters and is minimized we may have a problem if it was minimized from maximized
+                treatAsMaximized = IsWindowMinimizedFromMaximized(splitterProperties);
+            }
+
             // We handle the splitter properties one of two ways...
             // depending on whether the form uses dynamically loaded controls or not
             if (FWinForm.Name == "TFrmPartnerEdit")
@@ -657,6 +698,16 @@ namespace Ict.Petra.Client.CommonForms
                     "Normal",
                     splitterProperties);
             }
+            else if (treatAsMaximized)
+            {
+                windowProperties = String.Format("{0};{1};{2};{3};{4}{5}",
+                    FWinForm.RestoreBounds.Left,
+                    FWinForm.RestoreBounds.Top,
+                    FWinForm.RestoreBounds.Width,
+                    FWinForm.RestoreBounds.Height,
+                    "Maximized",
+                    splitterProperties);
+            }
             else
             {
                 windowProperties = String.Format("{0};{1};{2};{3};{4}{5}",
@@ -676,6 +727,55 @@ namespace Ict.Petra.Client.CommonForms
             {
                 FWindowPositions.Add(FWinForm.Name, windowProperties);
             }
+        }
+
+        /// <summary>
+        /// If a window is minimized we need to know if it was minimized from maximized or minimized from Normal
+        /// </summary>
+        /// <param name="ASplitterProperties">The current splitter properties string</param>
+        /// <returns>True if it looks  like the window was minimized from maximized.</returns>
+        private bool IsWindowMinimizedFromMaximized(string ASplitterProperties)
+        {
+            if (ASplitterProperties.Length > 0)
+            {
+                string[] items = ASplitterProperties.Split(';');
+
+                for (int i = 0; i < items.Length; i++)
+                {
+                    if (items[i].Length == 0)
+                    {
+                        continue;
+                    }
+
+                    string[] extraItems = items[i].Split(':');
+                    Control splitterControl = FindControlByName(extraItems[0], FWinForm);
+
+                    if (splitterControl != null)
+                    {
+                        SplitContainer splitter = (SplitContainer)splitterControl;
+                        int distance = int.Parse(extraItems[2]);
+
+                        // Our best guess is that if the splitter position is significantly more than the normal window position
+                        //  then we say it must be minimized from maximized.  But this is open to debate!
+                        if (splitter.Orientation == Orientation.Horizontal)
+                        {
+                            if (distance > FWinForm.RestoreBounds.Height - splitter.Panel2MinSize - 60)
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            if (distance > FWinForm.RestoreBounds.Width - splitter.Panel2MinSize - 60)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         #endregion

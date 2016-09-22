@@ -35,7 +35,7 @@ RootNode:
             Controls:
                 Row0: [grpSelection]
 
-        grpSelection: {Width:410, Height:100}
+        grpSelection: {Width:450, Height:100}
             Controls: 
                 Row1: [cmbYearEnding]
                 Row2: [cmbReportPeriod]
@@ -71,6 +71,6 @@ RootNode:
         rbtSummary:{Label=By Field, ParameterValue=ByField}
         rbtFull:{Label=By Gift Detail, ParameterValue=ByGiftDetail}
 
-        cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList, Width=250}
-        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList, Width=250}
-        cmbICHNumber: {Label=Run Number (0=all), List=UserDefinedList, Width=250}
+        cmbYearEnding: {Label=Year End, List=UserDefinedList, OnChange=RefreshReportPeriodList, ComboBoxWidth=110, Width=250}
+        cmbReportPeriod: {Label=Report Period, List=UserDefinedList, OnChange=RefreshICHStewardshipNumberList, ComboBoxWidth=110, Width=250}
+        cmbICHNumber: {Label=Run Number (0=all), List=UserDefinedList, ComboBoxWidth=110, Width=250}

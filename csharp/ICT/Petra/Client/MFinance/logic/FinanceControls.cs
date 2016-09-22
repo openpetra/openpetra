@@ -42,6 +42,14 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 
+#region changehistory
+
+/*
+ * Widen Year combo on Stewardship Report so it doesn't chop the date off;
+ * Display Period without leading 0 in Stewardship Report options, just like on Stewardship Calculation: https://tracker.openpetra.org/view.php?id=5520 - Moray
+ */
+#endregion changehistory
+
 namespace Ict.Petra.Client.MFinance.Logic
 {
     /// <summary>
@@ -953,6 +961,19 @@ namespace Ict.Petra.Client.MFinance.Logic
             // Allow NULL for the code in this table
             Table.Columns[PMailingTable.ColumnMailingCodeId].AllowDBNull = true;
 
+            //Highlight inactive mailing codes
+            if (!AActiveOnly)
+            {
+                foreach (DataRow rw in Table.Rows)
+                {
+                    if ((rw[PMailingTable.ColumnViewableId] != null) && (rw[PMailingTable.ColumnViewableId].ToString() == "False"))
+                    {
+                        rw[PMailingTable.ColumnMailingDescriptionId] = SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS + " " +
+                                                                       rw[PMailingTable.ColumnMailingDescriptionId];
+                    }
+                }
+            }
+
             // Now add the row
             DataRow Dr = Table.NewRow();
             Dr[PMailingTable.GetMailingCodeDBName()] = DBNull.Value;
@@ -1306,7 +1327,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 DescriptionMember,
                 null);
 
-            AControl.AppearanceSetup(new int[] { 100, 150 }, -1);
+            // Change #5520
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth, 140 }, -1);
 
             if (Table.DefaultView.Count > 0)
             {
@@ -1388,14 +1410,8 @@ namespace Ict.Petra.Client.MFinance.Logic
 
             AControl.InitialiseUserControl(periods, "value", "display", "descr", null, null);
 
-            if (AShowCurrentAndForwarding)
-            {
-                AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
-            }
-            else
-            {
-                AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
-            }
+            // Change #5520
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth }, -1);
 
             if (AInitialSelectedIndex >= 0)
             {
@@ -1453,7 +1469,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = periodCounter.ToString("00");
+                    // Change #5520
+                    period[DisplayMember] = periodCounter.ToString();
                     period[DescrMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
@@ -1464,7 +1481,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 {
                     period = periods.NewRow();
                     period[ValueMember] = periodCounter;
-                    period[DisplayMember] = "(" + periodCounter.ToString("00") + ") ";
+                    // Change #5520
+                    period[DisplayMember] = "(" + periodCounter.ToString() + ") ";
                     period[DescrMember] = ((AAccountingPeriodRow)AccountingPeriods.DefaultView[periodCounter - 1].Row).AccountingPeriodDesc;
                     periods.Rows.Add(period);
                 }
@@ -1519,7 +1537,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AIchStewardshipTable.GetIchNumberDBName(),
                 "DateOnly",
                 null);
-            AControl.AppearanceSetup(new int[] { -1, 80 }, -1);
+            // Change #5520
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth, 80 }, -1);
 
             //Alternative way to filter the contents of the combo
             //AControl.Filter = AIchStewardshipTable.GetPeriodNumberDBName() + " = " + APeriodNumber.ToString();
@@ -1546,7 +1565,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                 AAccountingPeriodTable.GetAccountingPeriodDescDBName(),
                 null);
 
-            AControl.AppearanceSetup(new int[] { -1, 200 }, -1);
+            // Change #5520
+            AControl.AppearanceSetup(new int[] { AControl.ComboBoxWidth, 200 }, -1);
 
             AControl.Filter = String.Format("{0} >= {1} And {0} <= {2}",
                 AAccountingPeriodTable.GetAccountingPeriodNumberDBName(),

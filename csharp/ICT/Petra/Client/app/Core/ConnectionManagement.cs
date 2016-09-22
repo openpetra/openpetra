@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.App.Core
             }
 
             Ict.Petra.Shared.UserInfo.GUserInfo = (TPetraPrincipal)LocalUserInfo;
+            Ict.Common.IO.TDlgSelectCSVSeparator.UserID = ((TPetraPrincipal)LocalUserInfo).UserID;
 
             //
             // initialise object that holds references to all our remote object .NET Remoting Proxies

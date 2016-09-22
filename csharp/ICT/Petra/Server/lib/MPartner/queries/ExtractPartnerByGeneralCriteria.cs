@@ -81,6 +81,16 @@ namespace Ict.Petra.Server.MPartner.queries
                     Value = AParameters.Get("param_partner_class").ToString()
                 });
 
+            // Partner Status
+            ASQLParameterList.Add(new OdbcParameter("param_partner_status_unset", OdbcType.Bit)
+                {
+                    Value = AParameters.Get("param_partner_status").IsZeroOrNull()
+                });
+            ASQLParameterList.Add(new OdbcParameter("param_partner_status", OdbcType.VarChar)
+                {
+                    Value = AParameters.Get("param_partner_status").ToString()
+                });
+
             // Language Code
             ASQLParameterList.Add(new OdbcParameter("param_language_unset", OdbcType.Bit)
                 {
@@ -92,10 +102,10 @@ namespace Ict.Petra.Server.MPartner.queries
                 });
 
             // Active Partners and No Solicitations
-            ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
-                {
-                    Value = AParameters.Get("param_active").ToBool()
-                });
+            //ASQLParameterList.Add(new OdbcParameter("param_active", OdbcType.Bit)
+            //    {
+            //        Value = AParameters.Get("param_active").ToBool()
+            //    });
             ASQLParameterList.Add(new OdbcParameter("param_exclude_no_solicitations", OdbcType.Bit)
                 {
                     Value = AParameters.Get("param_exclude_no_solicitations").ToBool()

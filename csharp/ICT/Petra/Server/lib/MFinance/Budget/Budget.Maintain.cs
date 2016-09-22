@@ -1229,7 +1229,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             }
 
             //Calculate the total amount
-            ASb += (perPeriodAmount * (ANumPeriods - 1) + endPeriodAmount).ToString();
+            ASb += (perPeriodAmount * (ANumPeriods - 1) + endPeriodAmount).ToString("F2", CultureInfo.InvariantCulture);
         }
 
         private static void StringBudgetTypeAdhocAmounts(int ABudgetSequence,
@@ -1248,7 +1248,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                 if (budgetPeriodRow != null)
                 {
-                    ASb += budgetPeriodRow.BudgetBase.ToString();
+                    ASb += budgetPeriodRow.BudgetBase.ToString("F2", CultureInfo.InvariantCulture);
 
                     if (i < ANumPeriods)
                     {
@@ -1270,7 +1270,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
             if (budgetPeriodRow != null)
             {
-                ASb += budgetPeriodRow.BudgetBase.ToString();
+                ASb += budgetPeriodRow.BudgetBase.ToString("F2", CultureInfo.InvariantCulture);
             }
         }
 
@@ -1297,11 +1297,11 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
 
                     if (i == 1)
                     {
-                        ASb += currentPeriodAmount.ToString();
+                        ASb += currentPeriodAmount.ToString("F2", CultureInfo.InvariantCulture);
                     }
                     else
                     {
-                        ASb += ((currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100).ToString();
+                        ASb += ((currentPeriodAmount - priorPeriodAmount) / priorPeriodAmount * 100).ToString("F2", CultureInfo.InvariantCulture);
                     }
 
                     if (i < ANumPeriods)
@@ -1340,7 +1340,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                     if (i == 1)
                     {
                         firstPeriodAmount = currentPeriodAmount;
-                        ASb += currentPeriodAmount.ToString();
+                        ASb += currentPeriodAmount.ToString("F2", CultureInfo.InvariantCulture);
                         ASb += ASeparator.ToString();
                     }
                     else
@@ -1349,7 +1349,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         {
                             ASb += (i - 1).ToString();
                             ASb += ASeparator.ToString();
-                            ASb += ((currentPeriodAmount - firstPeriodAmount) / firstPeriodAmount * 100).ToString();
+                            ASb += ((currentPeriodAmount - firstPeriodAmount) / firstPeriodAmount * 100).ToString("F2", CultureInfo.InvariantCulture);
                             break;
                         }
                         else if (i == ANumPeriods)     // and by implication CurrentPeriodAmount == FirstPeriodAmount

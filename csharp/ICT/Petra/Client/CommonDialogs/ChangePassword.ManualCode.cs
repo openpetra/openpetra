@@ -140,7 +140,8 @@ namespace Ict.Petra.Client.CommonDialogs
 
                 // Request the setting of the new password (incl. server-side checks)
                 if (!TRemote.MSysMan.Maintenance.WebConnectors.SetUserPassword(UserName, txtNewPassword.Text,
-                        txtOldPassword.Text, PasswordNeedsChanged, out VerificationResultCollection))
+                        txtOldPassword.Text, PasswordNeedsChanged, TClientInfo.ClientComputerName, TClientInfo.ClientIPAddress,
+                        out VerificationResultCollection))
                 {
                     MessageBox.Show(String.Format(CommonDialogsResourcestrings.StrChangePasswordError, UserName) +
                         Environment.NewLine + Environment.NewLine +

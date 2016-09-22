@@ -667,6 +667,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveUserDefaultBoolean;
             Ict.Common.TypeConverter.TDecimalConverter.RetrieveUserDefaultBoolean =
                 @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveUserDefaultBoolean;
+            Ict.Common.IO.TTextFileEncoding.RetrieveUserDefaultBoolean =
+                @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveUserDefaultBoolean;
 
             // Set up Delegate for the set-up of various Colours of all SourceGrid DataGrid instances from UserDefaults
             Ict.Common.Controls.TSgrdDataGrid.SetColourInformation = @SetDataGridColoursFromUserDefaults;

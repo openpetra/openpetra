@@ -128,5 +128,13 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             chkPersonsOnly.Enabled = chkFamiliesOnly.Checked == false;
         }
+
+        /// <summary>
+        /// </summary>
+        /// <param name="AHandler"></param>
+        public void AddChkActivePartnersChangedEventHandler(EventHandler AHandler)
+        {
+            chkActivePartners.CheckedChanged += AHandler;
+        }
     }
 }

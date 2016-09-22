@@ -57,7 +57,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <param name="AFieldCSVFile"></param>
         public static void GenerateFields(string AFieldCSVFile)
         {
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AFieldCSVFile, ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AFieldCSVFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 
@@ -143,7 +143,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <param name="AFieldCSVFile"></param>
         public static void GenerateFieldsFinanceOnly(string AFieldCSVFile)
         {
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AFieldCSVFile, ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AFieldCSVFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 
@@ -197,7 +197,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         /// <param name="AKeyMinCSVFile"></param>
         public static void GenerateKeyMinistries(string AKeyMinCSVFile)
         {
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AKeyMinCSVFile, ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AKeyMinCSVFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 

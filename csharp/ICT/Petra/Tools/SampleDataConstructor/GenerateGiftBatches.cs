@@ -119,7 +119,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
         private static SortedList <DateTime, List <XmlNode>>SortGiftsByDate(string AInputBeneratorFile)
         {
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AInputBeneratorFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 

@@ -23,15 +23,27 @@ RootNode:
             Dock: Top
             Height: 114
             Controls:
-                Row0: [grpLeftMiscSettings, pnlRightMiscSettings]
+                Row0: [pnlLeftMiscSettings, pnlRightMiscSettings]
+        pnlLeftMiscSettings:
+            Controls:
+                Row0: [grpLeftMiscSettings]
+                Row1: [grpGovId]
+            Width: 310
+            Padding: -7,-7,0,-7
         grpLeftMiscSettings:
             Label: Gift Processing (for donors)
             Controls:
                 Row0: [cmbReceiptLetterFrequency]
                 Row1: [chkReceiptEachGift]
                 Row2: [chkAnonymousDonor]
-            Width: 310
-            Height: 95
+            Width: 305
+            Height: 90
+        grpGovId:
+            NoLabel: true
+            Controls:
+                Row0: [txtGovId]
+            Width: 305
+            Height: 40
         pnlRightMiscSettings:
             Controls:
                 Row0: [grpRecipientGiftReceipting]
@@ -111,6 +123,10 @@ RootNode:
         chkReceiptEachGift:
             Label: Printed Receipt for Each Gift
         chkAnonymousDonor:
+        txtGovId:
+            Label: bPK
+            Enabled: false
+            Width: 250
         chkEmailGiftStatement:
             Label: Email Recipient Gift Statement
         chkLimitTaxDeductibility:

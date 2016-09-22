@@ -97,6 +97,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private TPartnerClass FNewPartnerPartnerClass;
         private PartnerEditTDS FSubmissionDS;
         private bool FTaxDeductiblePercentageEnabled = false;
+        private bool FGovIdEnabled = false;
+        private String FGovIdLabel = "";
+        private String FGovId = "";
 
         #region TPartnerEditUIConnector
 
@@ -280,6 +283,10 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
             {
                 FTaxDeductiblePercentageEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
                     SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
+                FGovIdEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
+                FGovIdLabel = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_LABEL, "");
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -287,6 +294,27 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                 if (FTaxDeductiblePercentageEnabled)
                 {
                     PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                }
+
+                if (FGovIdEnabled)
+                {
+                    // set the GovId on the server so the client does not need to deal with it
+                    // The client can retrieve this later by calling "GetGovId()"
+                    PTaxAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+
+                    DataView TaxView = new DataView(localDS.PTax);
+
+                    TaxView.RowFilter = String.Format("{0}={1}",
+                        PTaxTable.GetTaxTypeDBName(),
+                        "'GovId'");
+
+                    FGovId = "";
+
+                    foreach (DataRowView tV in TaxView)
+                    {
+                        PTaxRow taxRowCurrent = (PTaxRow)tV.Row;
+                        FGovId = taxRowCurrent.TaxRef;
+                    }
                 }
             }
             catch (Exception)
@@ -323,6 +351,34 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public bool IsTaxDeductiblePercentageEnabled()
         {
             return FTaxDeductiblePercentageEnabled;
+        }
+
+        /// <summary>
+        /// gets system default GovIdEnabled (default false)
+        /// </summary>
+        /// <returns></returns>
+        public bool IsGovIdEnabled()
+        {
+            return FGovIdEnabled;
+        }
+
+        /// <summary>
+        /// gets system default GovIdLabel (default "")
+        /// </summary>
+        /// <returns></returns>
+        public String GetGovIdLabel()
+        {
+            return FGovIdLabel;
+        }
+
+        /// <summary>
+        /// gets the partners GovId (default "")
+        /// It is important that "GetBankingDetails" has been called before this call
+        /// </summary>
+        /// <returns></returns>
+        public String GetGovId()
+        {
+            return FGovId;
         }
 
         #endregion

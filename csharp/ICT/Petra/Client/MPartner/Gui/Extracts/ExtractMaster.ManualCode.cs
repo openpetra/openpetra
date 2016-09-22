@@ -419,8 +419,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 ReplaceMissingAddressList,
                 RemovePartnerNoAddressList,
                 AddressWillNotBeReplacedList);
-            MsgBox = new TFrmExtendedMessageBox(AForm);
-            MsgBox.ShowDialog(msg, msgTitle, string.Empty, TFrmExtendedMessageBox.TButtons.embbOK, TFrmExtendedMessageBox.TIcon.embiInformation);
+
+            if (msg.Length > 0)
+            {
+                MsgBox = new TFrmExtendedMessageBox(AForm);
+                MsgBox.ShowDialog(msg, msgTitle, string.Empty, TFrmExtendedMessageBox.TButtons.embbOK, TFrmExtendedMessageBox.TIcon.embiInformation);
+            }
         }
 
         #endregion

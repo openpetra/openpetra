@@ -95,6 +95,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             llbLaunchpadLink.Click += LaunchpadLinkClicked;
 
+            // Petra imports may use Chinese characters
+            chkImportAsianANSI.Checked = TUserDefaults.GetBooleanDefault(TTextFileEncoding.ALLOW_MBCS_TEXT_ENCODING, false);
+
             // Get the number of recent partners that the user has set, if not found take 10 as default value.
             nudNumberOfPartners.Value = TUserDefaults.GetInt16Default(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, 10);
             nudNumberOfPartners.Maximum = 10;
@@ -212,6 +215,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
                     MessageBoxIcon.Information);
             }
 
+            TUserDefaults.SetDefault(TTextFileEncoding.ALLOW_MBCS_TEXT_ENCODING, chkImportAsianANSI.Checked);
             TUserDefaults.SetDefault(MSysManConstants.USERDEFAULT_NUMBEROFRECENTPARTNERS, nudNumberOfPartners.Value);
             TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_ESC_CLOSES_SCREEN, chkEscClosesScreen.Checked);
             TUserDefaults.SetDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, chkSaveWindowProperties.Checked);

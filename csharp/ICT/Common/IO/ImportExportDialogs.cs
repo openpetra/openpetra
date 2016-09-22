@@ -318,7 +318,7 @@ namespace Ict.Common.IO
 
                     if (dlgSeparator.ShowDialog() == DialogResult.OK)
                     {
-                        XmlDocument doc = TCsv2Xml.ParseCSV2Xml(DialogOpen.FileName, dlgSeparator.SelectedSeparator);
+                        XmlDocument doc = TCsv2Xml.ParseCSVContent2Xml(dlgSeparator.FileContent, dlgSeparator.SelectedSeparator);
                         return doc;
                     }
                 }

@@ -75,6 +75,7 @@ namespace Ict.Common.Remoting.Server
 
         private static IUserManager UUserManager = null;
         private static IErrorLog UErrorLog = null;
+        private static ILoginLog ULoginLog = null;
         private static IMaintenanceLogonMessage UMaintenanceLogonMessage = null;
         private static TDelegateDBConnectionBroken UDelegateDBConnectionBroken = null;
 
@@ -280,12 +281,14 @@ namespace Ict.Common.Remoting.Server
         public static void InitializeStaticVariables(ISystemDefaultsCache ASystemDefaultsCache,
             IUserManager AUserManager,
             IErrorLog AErrorLog,
+            ILoginLog ALoginLog,
             IMaintenanceLogonMessage AMaintenanceLogonMessage,
             TDelegateDBConnectionBroken ADelegateDBConnectionBroken)
         {
             USystemDefaultsCache = ASystemDefaultsCache;
             UUserManager = AUserManager;
             UErrorLog = AErrorLog;
+            ULoginLog = ALoginLog;
             UMaintenanceLogonMessage = AMaintenanceLogonMessage;
             UDelegateDBConnectionBroken = ADelegateDBConnectionBroken;
         }
@@ -661,6 +664,22 @@ namespace Ict.Common.Remoting.Server
                     AMessageLine3,
                     AUserID,
                     AProcessID);
+            }
+        }
+
+        /// <summary>
+        /// Records the logging-out (=disconnection) of a Client, using ILoginLog
+        /// </summary>
+        /// <param name="AUserID">UserID of the User for which a logout should be recorded.</param>
+        /// <param name="AProcessID">ProcessID of the User for which a logout should be recorded.
+        /// This will need to be the number that got returned from an earlier call to
+        /// AddLoginLogEntry(string, bool, string, bool, out int, TDBTransaction)!</param>
+        public void RecordUserLogout(String AUserID, Int32 AProcessID)
+        {
+            if (ULoginLog != null)
+            {
+                ULoginLog.RecordUserLogout(AUserID,
+                    AProcessID, null);
             }
         }
 

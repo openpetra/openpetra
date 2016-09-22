@@ -96,7 +96,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ImportBatches(TGiftImportDataSourceEnum AImportSource, GiftBatchTDS AMainDS)
         {
             bool ImportOK = false;
-            String ImportString;
             String ImportOptions;
             OpenFileDialog OFileDialog = null;
 
@@ -119,7 +118,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
                 {
-                    ImportString = Clipboard.GetText(TextDataFormat.UnicodeText);
+                    string ImportString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
                     if ((ImportString == null) || (ImportString.Length == 0))
                     {
@@ -130,7 +129,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                    FdlgSeparator = new TDlgSelectCSVSeparator(false);
                     FdlgSeparator.SelectedSeparator = "\t";
                     FdlgSeparator.CSVData = ImportString;
                     FdlgSeparator.DateFormat = dateFormatString;
@@ -169,8 +167,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             return;
                         }
 
-                        ImportString = File.ReadAllText(OFileDialog.FileName, Encoding.Default);
-
                         String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                         FdlgSeparator.DateFormat = dateFormatString;
 
@@ -190,7 +186,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     // unknown source!!  The following need a value...
                     ImportOptions = String.Empty;
-                    ImportString = String.Empty;
                 }
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
@@ -214,7 +209,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                         Thread ImportThread = new Thread(() => ImportGiftBatches(
                                 requestParams,
-                                ImportString,
+                                FdlgSeparator.FileContent,
                                 out AMessages,
                                 out ImportOK,
                                 out NeedRecipientLedgerNumber));
@@ -347,7 +342,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public bool ImportTransactions(AGiftBatchRow ACurrentBatchRow, TGiftImportDataSourceEnum AImportSource)
         {
             bool ok = false;
-            String importString;
             String impOptions;
             OpenFileDialog dialog = null;
             Boolean IsPlainText = false;
@@ -384,7 +378,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
             {
-                importString = Clipboard.GetText(TextDataFormat.UnicodeText);
+                string importString = Clipboard.GetText(TextDataFormat.UnicodeText);
 
                 if ((importString == null) || (importString.Length == 0))
                 {
@@ -395,7 +389,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
                 String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                FdlgSeparator = new TDlgSelectCSVSeparator(false);
                 FdlgSeparator.SelectedSeparator = "\t";
                 FdlgSeparator.CSVData = importString;
                 FdlgSeparator.DateFormat = dateFormatString;
@@ -434,7 +427,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return false;
                     }
 
-                    importString = File.ReadAllText(dialog.FileName, Encoding.Default);
                     IsPlainText = (Path.GetExtension(dialog.FileName).ToLower() == ".txt");
 
                     String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
@@ -456,7 +448,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 // unknown source!!  The following need a value...
                 impOptions = String.Empty;
-                importString = String.Empty;
             }
 
             if (IsPlainText || (FdlgSeparator.ShowDialog() == DialogResult.OK))
@@ -480,7 +471,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     Thread ImportThread = new Thread(() => ImportGiftTransactions(
                             requestParams,
-                            importString,
+                            FdlgSeparator.FileContent,
                             ACurrentBatchRow.BatchNumber,
                             out AMessages,
                             out ok,
@@ -550,7 +541,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 // We save the defaults even if ok is false - because the client will probably want to try and import
                 //   the same file again after correcting any errors
-                SaveUserDefaults(dialog, impOptions);
+                if (!IsPlainText)
+                {
+                    SaveUserDefaults(dialog, impOptions);
+                }
             }
 
             if (ok)

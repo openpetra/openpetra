@@ -62,7 +62,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TLogging.Log("creating banks from file " + ABankCSVFile);
 
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(ABankCSVFile, ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(ABankCSVFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 

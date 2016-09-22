@@ -246,9 +246,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                  * Generate Admin Fee transactions.
                  * Only one transaction is posted for each fee code/cost centre.
                  */
-                int gLJournalNumber = journalRow.JournalNumber;
                 string currentFeeCode = string.Empty;
                 string costCentreCodeDBName = AProcessedFeeTable.GetCostCentreCodeDBName();
+                bool transactionOK;
 
                 for (int i = 0; i < processedFeeDataTable.Count; i++)
                 {
@@ -342,10 +342,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                         //Create a transaction
                                         Int32 gLTransactionNumber = 0;
 
-                                        if (!TGLPosting.CreateATransaction(adminFeeDS,
+                                        if (DrFeeTotal != 0)
+                                        {
+                                            transactionOK = TGLPosting.CreateATransaction(adminFeeDS,
                                                 ALedgerNumber,
                                                 batchRow.BatchNumber,
-                                                gLJournalNumber,
+                                                journalRow.JournalNumber,
                                                 "Fee: " + FeeDescription + " (" + currentFeeCode + ")",
                                                 DrAccountCode,
                                                 costCentreCode,
@@ -355,19 +357,26 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                 "AG",
                                                 true,
                                                 DrFeeTotal,
-                                                out gLTransactionNumber))
-                                        {
-                                            ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
-                                            ErrorMessage =
-                                                String.Format(Catalog.GetString(
-                                                        "Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-                                                    ALedgerNumber,
-                                                    batchRow.BatchNumber,
-                                                    gLJournalNumber);
-                                            ErrorType = TResultSeverity.Resv_Noncritical;
+                                                out gLTransactionNumber);
 
-                                            AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                                            return false;
+                                            if (transactionOK)
+                                            {
+                                                feeTransactionCreated |= transactionOK;
+                                            }
+                                            else
+                                            {
+                                                ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
+                                                ErrorMessage =
+                                                    String.Format(Catalog.GetString(
+                                                            "Unable to create a new expense transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                                        ALedgerNumber,
+                                                        batchRow.BatchNumber,
+                                                        journalRow.JournalNumber);
+                                                ErrorType = TResultSeverity.Resv_Noncritical;
+
+                                                AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                                                return false;
+                                            }
                                         }
 
                                         DrFeeTotal = 0;
@@ -427,7 +436,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     if (transactionAmount != 0)
                     {
                         Int32 gLTransactionNumber = 0;
-                        feeTransactionCreated |= TGLPosting.CreateATransaction(adminFeeDS,
+                        transactionOK = TGLPosting.CreateATransaction(adminFeeDS,
                             ALedgerNumber,
                             batchRow.BatchNumber,
                             journalRow.JournalNumber,
@@ -441,6 +450,25 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             true,
                             transactionAmount,
                             out gLTransactionNumber);
+
+                        if (transactionOK)
+                        {
+                            feeTransactionCreated |= transactionOK;
+                        }
+                        else
+                        {
+                            ErrorContext = Catalog.GetString("Generating the Admin Fee batch");
+                            ErrorMessage =
+                                String.Format(Catalog.GetString(
+                                        "Unable to create a new income transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                    ALedgerNumber,
+                                    batchRow.BatchNumber,
+                                    journalRow.JournalNumber);
+                            ErrorType = TResultSeverity.Resv_Noncritical;
+
+                            AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                            return false;
+                        }
                     }
                 } // for
 
@@ -523,7 +551,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             bool IsSuccessful = false;
 
             //Verification results handling
-            string ErrorContext = String.Empty;
+            string ErrorContext = Catalog.GetString("Generating the ICH batch");
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
@@ -594,7 +622,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 if ((batchesInAPeriod == null) || (batchesInAPeriod.Rows.Count == 0))
                 {
-                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("No Batches found to process in Ledger: {0}"),
                             ALedgerNumber);
@@ -658,7 +685,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Income Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -683,7 +709,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Expense Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -708,7 +733,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
-                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Profit & Loss Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -722,7 +746,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 // Increment the ICH stewardship number in the Ledger.
                 int iCHProcessing = ++ledgerRow.LastIchNumber;
                 decimal iCHTotal = 0;
-                bool postICHBatch = false;
 
                 ACostCentreRow cCTemplateRow = postingDS.ACostCentre.NewRowTyped(false);
                 cCTemplateRow.LedgerNumber = ALedgerNumber;
@@ -733,6 +756,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 //Iterate through the cost centres
                 AIchStewardshipTable iCHStewardshipTable = new AIchStewardshipTable();
+                Boolean ICHTransactionsIncluded = false;
                 Boolean nonICHTransactionsIncluded = false;
 
                 foreach (ACostCentreRow costCentreRow in postingDS.ACostCentre.Rows)
@@ -785,7 +809,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         if (foundJournalRows != null)
                         {
                             transferFound = true;
-                            postICHBatch = true;
                             transRow.IchNumber = iCHProcessing;
 
                             if (transRow.DebitCreditIndicator == accountDrCrIndicator)
@@ -882,24 +905,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     /* Balance the cost centre by entering an opposite transaction
                      * to ICH settlement. Use positive amounts only.
                      */
-
-                    /* Increment or decrement the ICH total to be transferred after this loop.
-                     * NOTE - if this is a "non-ICH fund", I need to balance it separately, and I'll do that right here.
-                     */
-                    drCrIndicator = accountRow.DebitCreditIndicator;
-
-                    if (costCentreRow.ClearingAccount == MFinanceConstants.ICH_ACCT_ICH)
-                    {
-                        if (drCrIndicator == MFinanceConstants.IS_DEBIT)
-                        {
-                            iCHTotal += settlementAmount;
-                        }
-                        else
-                        {
-                            iCHTotal -= settlementAmount;
-                        }
-                    }
-
                     drCrIndicator = accountDrCrIndicator;
 
                     if (settlementAmount < 0)
@@ -908,42 +913,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         settlementAmount = 0 - settlementAmount;
                     }
 
-                    if ((costCentreRow.ClearingAccount != MFinanceConstants.ICH_ACCT_ICH) && (settlementAmount != 0))
-                    {
-                        // I'm creating a transaction right here for this "non-ICH" CostCentre.
-                        // This potentially means that there will be multiple transactions to the "non-ICH" account,
-                        // whereas the ICH account has only a single transaction, but that's not big deal:
-
-                        if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
-                                Catalog.GetString("Non-ICH foreign fund Clearing"),
-                                costCentreRow.ClearingAccount,
-                                standardCostCentre, settlementAmount, periodEndDate, !drCrIndicator, Catalog.GetString("Non-ICH"),
-                                true, settlementAmount,
-                                out gLTransactionNumber))
-                        {
-                            ErrorContext = Catalog.GetString("Generating non-ICH transaction");
-                            ErrorMessage =
-                                String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-                                    ALedgerNumber,
-                                    gLBatchNumber,
-                                    gLJournalNumber);
-                            ErrorType = TResultSeverity.Resv_Noncritical;
-
-                            AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                            return false;
-                        }
-
-                        nonICHTransactionsIncluded = true;
-                    }
-
-                    /* Generate the transaction to 'balance' the foreign fund -
-                     *  in the ICH settlement account.
-                     */
-
-                    //RUN gl1130o.p ("new":U,
-                    //Create a transaction
                     if (settlementAmount > 0)
                     {
+                        /* Generate the transaction to 'balance' the foreign fund -
+                         *  in the ICH settlement account.
+                         */
+
+                        //RUN gl1130o.p ("new":U,
+                        //Create a transaction
                         if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
                                 Catalog.GetString("ICH Monthly Clearing"),
                                 MFinanceConstants.ICH_ACCT_SETTLEMENT, // DestinationAccount[CostCentreRow.CostCentreCode],
@@ -951,7 +928,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                 Catalog.GetString("ICH Process"), true, settlementAmount,
                                 out gLTransactionNumber))
                         {
-                            ErrorContext = Catalog.GetString("Generating the ICH batch");
                             ErrorMessage =
                                 String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                     ALedgerNumber,
@@ -968,6 +944,50 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             (ATransactionRow)mainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, gLBatchNumber, gLJournalNumber,
                                                                                           gLTransactionNumber });
                         transRow.IchNumber = iCHProcessing;
+
+                        /* Increment or decrement the ICH total to be transferred after this loop.
+                         * NOTE - if this is a "non-ICH fund", I need to balance it separately, and I'll do that in this loop.
+                         */
+                        if (costCentreRow.ClearingAccount == MFinanceConstants.ICH_ACCT_ICH)
+                        {
+                            if (drCrIndicator == MFinanceConstants.IS_DEBIT)
+                            {
+                                iCHTotal += settlementAmount;
+                            }
+                            else
+                            {
+                                iCHTotal -= settlementAmount;
+                            }
+
+                            ICHTransactionsIncluded = true;
+                        }
+                        else
+                        {
+                            // I'm creating a transaction right here for this "non-ICH" CostCentre.
+                            // This potentially means that there will be multiple transactions to the "non-ICH" account,
+                            // whereas the ICH account has only a single transaction, but that's not big deal:
+
+                            if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
+                                    Catalog.GetString("Non-ICH foreign fund Clearing"),
+                                    costCentreRow.ClearingAccount,
+                                    standardCostCentre, settlementAmount, periodEndDate, !drCrIndicator, Catalog.GetString("Non-ICH"),
+                                    true, settlementAmount,
+                                    out gLTransactionNumber))
+                            {
+                                ErrorMessage =
+                                    String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                        ALedgerNumber,
+                                        gLBatchNumber,
+                                        gLJournalNumber);
+                                ErrorType = TResultSeverity.Resv_Noncritical;
+
+                                AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Generating non-ICH transaction"), ErrorMessage,
+                                        ErrorType));
+                                return false;
+                            }
+
+                            nonICHTransactionsIncluded = true;
+                        }
                     }
 
                     /* Now create corresponding report row on stewardship table,
@@ -1012,13 +1032,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     AVerificationResults.AddCollection(batchCancelResult);
                 }
-                else
+                else // No critical errors
                 {
                     /* Update the balance of the ICH account (like a bank account).
                      * If the total is negative, it means the ICH batch has a
                      * credit total so far. Thus, we now balance it with the opposite
                      * transaction. */
-
                     if (iCHTotal < 0)
                     {
                         drCrIndicator = MFinanceConstants.IS_DEBIT;
@@ -1029,14 +1048,51 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         drCrIndicator = MFinanceConstants.IS_CREDIT;
                     }
 
-                    /* 0006 - If the balance is 0 then this is ok
-                     *  (eg last minute change of a gift from one field to another)
+                    /* Balance the ICH total.
+                     * If the total is already 0 then this is ok (eg last minute change of a gift from one field to another).
                      */
 
-                    if ((iCHTotal == 0) && !nonICHTransactionsIncluded)
+                    if (iCHTotal != 0)
                     {
-                        AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Generating the ICH batch"),
-                                Catalog.GetString("No ICH batch was required."), TResultSeverity.Resv_Status));
+                        //Create a transaction
+                        if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
+                                Catalog.GetString("ICH Monthly Clearing"),
+                                MFinanceConstants.ICH_ACCT_ICH, standardCostCentre, iCHTotal, periodEndDate, drCrIndicator,
+                                Catalog.GetString("ICH"),
+                                true, iCHTotal,
+                                out gLTransactionNumber))
+                        {
+                            ErrorMessage =
+                                String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
+                                    ALedgerNumber,
+                                    gLBatchNumber,
+                                    gLJournalNumber);
+                            ErrorType = TResultSeverity.Resv_Noncritical;
+
+                            AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
+                            return false;
+                        }
+                    }
+
+                    //Post the batch
+                    if (ICHTransactionsIncluded | nonICHTransactionsIncluded)
+                    {
+                        AIchStewardshipAccess.SubmitChanges(iCHStewardshipTable, ADBTransaction);
+
+                        mainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
+                        GLBatchTDSAccess.SubmitChanges(mainDS);
+
+                        // refresh cached ICHStewardship table
+                        TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
+                            TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
+
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, gLBatchNumber, out AVerificationResults);
+                    }
+                    else // There were no transactions
+                    {
+                        AVerificationResults.Add(new TVerificationResult(ErrorContext,
+                                Catalog.GetString("No Stewardship batch is required."),
+                                TResultSeverity.Resv_Status));
 
                         // An empty GL Batch now exists, which I need to delete.
                         //
@@ -1046,69 +1102,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             ALedgerNumber,
                             gLBatchNumber,
                             out BatchCancelResult);
+
                         AVerificationResults.AddCollection(BatchCancelResult);
 
                         IsSuccessful = true;
                     }
-                    else
-                    {
-                        if (iCHTotal != 0)
-                        {
-                            //Create a transaction
-                            if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
-                                    Catalog.GetString("ICH Monthly Clearing"),
-                                    MFinanceConstants.ICH_ACCT_ICH, standardCostCentre, iCHTotal, periodEndDate, drCrIndicator,
-                                    Catalog.GetString("ICH"),
-                                    true, iCHTotal,
-                                    out gLTransactionNumber))
-                            {
-                                ErrorContext = Catalog.GetString("Generating the ICH batch");
-                                ErrorMessage =
-                                    String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
-                                        ALedgerNumber,
-                                        gLBatchNumber,
-                                        gLJournalNumber);
-                                ErrorType = TResultSeverity.Resv_Noncritical;
-
-                                AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
-                                return false;
-                            }
-                        }
-
-                        //Post the batch
-                        if (postICHBatch)
-                        {
-                            AIchStewardshipAccess.SubmitChanges(iCHStewardshipTable, ADBTransaction);
-
-                            mainDS.ThrowAwayAfterSubmitChanges = true; // SubmitChanges will not return to me any changes made in MainDS.
-                            GLBatchTDSAccess.SubmitChanges(mainDS);
-
-                            // refresh cached ICHStewardship table
-                            TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
-                                TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
-
-                            IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, gLBatchNumber, out AVerificationResults);
-                        }
-                        else
-                        {
-                            AVerificationResults.Add(new TVerificationResult(ErrorContext,
-                                    Catalog.GetString("No Stewardship batch is required."),
-                                    TResultSeverity.Resv_Status));
-
-                            // An empty GL Batch now exists, which I need to delete.
-                            //
-                            TVerificationResultCollection BatchCancelResult = new TVerificationResultCollection();
-
-                            TGLPosting.DeleteGLBatch(
-                                ALedgerNumber,
-                                gLBatchNumber,
-                                out BatchCancelResult);
-
-                            AVerificationResults.AddCollection(BatchCancelResult);
-                        } // else
-
-                    } // else
-                } // else
+                }
             } // try
             catch (Exception ex)
             {

@@ -176,6 +176,12 @@ namespace Ict.Petra.Shared
         public const String SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE = "TaxDeduct%OnRecipient";
 
         /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GOVID_ENABLED = "GovIdEnabled";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GOVID_LABEL = "GovIdLabel";
+
+        /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_DONORZEROISVALID = "DonorZeroIsValid";
 
         /// <summary>System Defaults</summary>

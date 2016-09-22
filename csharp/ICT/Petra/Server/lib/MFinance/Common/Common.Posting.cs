@@ -1927,6 +1927,8 @@ namespace Ict.Petra.Server.MFinance.Common
         //
         // The full SummarizeData method, and its supporting CalculateTrees method, is still present,
         // and we could return to it if it became necessary.
+        // Note: SummarizeDataSimple sets a REVAL flag on foreign currency accounts which SummarizeData did
+        // not do. So if we _did_ return to it we'd need to make sure revaluation checks were handled correctly.
 
         private static void SummarizeInternal(Int32 ALedgerNumber,
             GLPostingTDS APostingDS,
@@ -2130,6 +2132,7 @@ namespace Ict.Petra.Server.MFinance.Common
                                                                   "(" + Catalog.GetString(" Batch: ") + originalTransaction.BatchNumber +
                                                                   Catalog.GetString(", Journal: ") + originalTransaction.JournalNumber +
                                                                   Catalog.GetString(", Transaction: ") + originalTransaction.TransactionNumber + ")";
+                                    newTransactionRow.IchNumber = 0;
 
                                     MainDS.ATransaction.Rows.Add(newTransactionRow);
 

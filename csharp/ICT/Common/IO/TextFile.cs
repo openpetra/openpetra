@@ -343,27 +343,24 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little or big endian), and local default codepage, and potentially other codepages.
+        /// Function to detect the encoding for UTF-7, UTF-8/16/32 (bom, no bom, little or big endian), and local default codepage
         /// </summary>
         /// <param name="AFilename">Filename to open</param>
-        /// <param name="AFallbackEncoding">An encoding that will be used if there is no explicit encoding.  If null the default encoding
-        /// for the active machine will be used.  Otherwise you could pass a specific CodePage using Encoding.GetEncoding(1252) for example.</param>
         /// <param name="AText">The content of the file using the discovered encoding.</param>
+        /// <param name="AEncoding">The discovered encoding.  One of the six UTF options or the user's default ANSI code page.</param>
+        /// <param name="AHasBOM">Will be set to true if the file has a BOM header</param>
+        /// <param name="AIsAmbiguousUTF">Will be set to true if the text that the method outputs is ambiguous.  This will be true if
+        ///  the determination of the UTF format was statistically not significant</param>
+        /// <param name="ARawBytes">The raw bytes read from the file.  This can be used to display alternative text for ambiguous options</param>
         /// <param name="ATestByteCount">Number of bytes to check of the file (to save processing).
         /// Higher value is slower, but more reliable (especially UTF-8 with special characters later on may appear to be ASCII initially).
         /// If ATestByteCount = 0, then ATestByteCount becomes the length of the file (for maximum reliability).</param>
-        /// <param name="AEncoding">The discovered encoding</param>
-        /// <param name="AHasBOM">Will be set to true if the file has a BOM header</param>
-        /// <param name="AIsAmbiguous">Will be set to true if the text that the method outputs is ambiguous.  This will be true if the encoding is ANSI
-        ///  so we don't know the Code Page for sure, or the determination of the UTF format was statistically not significant</param>
-        /// <param name="ARawBytes">The raw bytes read from the file.  This can be used to display alternative text for ambiguous options</param>
-        /// <returns>True if the file was opened and read successfully</returns>
+        /// <returns>True if the file was opened and read successfully.  False if the file could not be opened or if the file is empty.</returns>
         public static bool AutoDetectTextEncodingAndOpenFile(string AFilename,
-            Encoding AFallbackEncoding,
             out String AText,
             out Encoding AEncoding,
             out bool AHasBOM,
-            out bool AIsAmbiguous,
+            out bool AIsAmbiguousUTF,
             out byte[] ARawBytes,
             int ATestByteCount = 0)
         {
@@ -373,7 +370,7 @@ namespace Ict.Common.IO
             AText = string.Empty;
             AEncoding = null;
             AHasBOM = false;
-            AIsAmbiguous = false;
+            AIsAmbiguousUTF = false;
             ARawBytes = null;
 
             byte[] b;
@@ -398,7 +395,6 @@ namespace Ict.Common.IO
 
             // First check the low hanging fruit by checking if a BOM/signature exists (sourced from http://www.unicode.org/faq/utf_bom.html#bom4)
             AHasBOM = true;
-            AIsAmbiguous = false;
 
             if ((b.Length >= 4) && (b[0] == 0x00) && (b[1] == 0x00) && (b[2] == 0xFE) && (b[3] == 0xFF))
             {
@@ -437,15 +433,16 @@ namespace Ict.Common.IO
                 return true;
             }  // UTF-7
 
+            // So the file did NOT have a BOM
+            AHasBOM = false;
+            AIsAmbiguousUTF = true;
+
             // If the code reaches here, no BOM/signature was found, so now we need to 'taste' the file to see if can manually discover
             // the encoding. A high test byte count value is desired for UTF-8
             if ((ATestByteCount == 0) || (ATestByteCount > b.Length))
             {
                 ATestByteCount = b.Length;    // ATestByteCount size can't be bigger than the filesize obviously.
             }
-
-            // So the file did NOT have a BOM
-            AHasBOM = false;
 
             // Some text files are encoded in UTF8, but have no BOM/signature. Hence the below manually checks for a UTF8 pattern.
             // This code is based off the top answer at: http://stackoverflow.com/questions/6555015/check-for-invalid-utf8
@@ -502,7 +499,7 @@ namespace Ict.Common.IO
             if (utf8 == true)
             {
                 // Is ambiguous depends on statistics.  We invent our own values for this.  Provided we read the whole file the statistics are simple.
-                AIsAmbiguous = utfCpCount < 2;      // ambiguous if we only find one example?
+                AIsAmbiguousUTF = utfCpCount <= 2;      // ambiguous if we only find two examples?
 
                 AText = Encoding.UTF8.GetString(b);
                 AEncoding = Encoding.UTF8;
@@ -526,7 +523,7 @@ namespace Ict.Common.IO
             {
                 AText = Encoding.BigEndianUnicode.GetString(b);
                 AEncoding = Encoding.BigEndianUnicode;
-                AIsAmbiguous = false;
+                AIsAmbiguousUTF = false;
                 return true;
             }
 
@@ -544,7 +541,7 @@ namespace Ict.Common.IO
             {
                 AText = Encoding.Unicode.GetString(b);
                 AEncoding = Encoding.Unicode;
-                AIsAmbiguous = false;
+                AIsAmbiguousUTF = false;
                 return true;
             } // (little-endian)
 
@@ -553,18 +550,8 @@ namespace Ict.Common.IO
             //   http://stackoverflow.com/questions/8509339/what-is-the-most-common-encoding-of-each-language
             // A full list can be found using Encoding.GetEncodings();
 
-            AIsAmbiguous = true;
-
-            if (AFallbackEncoding == null)
-            {
-                AText = Encoding.Default.GetString(b);
-                AEncoding = Encoding.Default;
-            }
-            else
-            {
-                AText = AFallbackEncoding.GetString(b);
-                AEncoding = AFallbackEncoding;
-            }
+            AText = Encoding.Default.GetString(b);
+            AEncoding = Encoding.Default;
 
             return true;
         }

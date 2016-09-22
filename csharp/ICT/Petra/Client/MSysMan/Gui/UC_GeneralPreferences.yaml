@@ -12,9 +12,9 @@ RootNode:
             Dock: Fill
         grpLanguage:
             Controls: [pnlLanguage]
-            Label: Language and Culture
+            Label: Language, Culture and Text
             Width: 430
-            Height: 180
+            Height: 190
         grpNumberOfPartners:
             Controls: [pnlNumberOfPartners]
             Width: 430
@@ -33,8 +33,11 @@ RootNode:
                 Row2: [lblLanguageNotFound]
                 Row3: [lblLanguageNotFound2]
                 Row4: [llbLaunchpadLink]
-            Dock: Fill
-            Padding: 0, 10, 0, 10
+                Row5: [chkImportAsianANSI]
+            Width: 410
+            Height: 170
+            #Dock: Fill
+            #Padding: 0, 10, 0, 10
         pnlNumberOfPartners:
             Controls: 
                 Row0: [lblPartnerNumber, nudNumberOfPartners]
@@ -51,12 +54,17 @@ RootNode:
         lblLanguageNotFound2: 
             Text: "If your language is not available or the translation needs improving, please consider helping. See:"
             Multiline: true
-            Height: 40
+            Height: 32
             Width: 410
         llbLaunchpadLink: 
             Label: Launchpad Translation Platform
             Action: actLaunchpadLinkClicked
             Width: 410
+            Padding: 10, -5, 3, -5
+        chkImportAsianANSI:
+            CheckBoxAttachedLabel: right
+            Label: Files imported from Petra may contain Asian characters
+            Padding: 4, -4, 3, -3
         nudNumberOfPartners:
             NoLabel: true
             Width: 80

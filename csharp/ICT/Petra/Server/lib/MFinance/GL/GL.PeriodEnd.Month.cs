@@ -187,6 +187,20 @@ namespace Ict.Petra.Server.MFinance.GL
             TDBTransaction transaction = null;
             Boolean submissionOK = true;
 
+            if (ABatchPeriod == FledgerInfo.NumberOfAccountingPeriods)
+            {
+                if (FledgerInfo.NumberFwdPostingPeriods == 0)
+                {
+                    return;
+                }
+                else
+                {
+                    // If we're closing the final period, SetNextPeriod() doesn't update FledgerInfo.CurrentPeriod. But we still want to
+                    // check the next period for foreign forward-posted amounts, so we have to increment the period locally here.
+                    ABatchPeriod++;
+                }
+            }
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
                 ref transaction,
                 ref submissionOK,
@@ -202,7 +216,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     " AND GLM.a_year_i= " + AYear +
                                     " AND GLMP.a_glm_sequence_i=GLM.a_glm_sequence_i" +
                                     " AND GLMP.a_period_number_i=" + ABatchPeriod +
-                                    " GROUP BY Account.a_account_code_c, GLMP.a_actual_foreign_n";
+                                    " GROUP BY Account.a_account_code_c";
                     DataTable Balance = DBAccess.GDBAccessObj.SelectDT(strSQL, "Balance", transaction);
 
                     foreach (DataRow Row in Balance.Rows)
@@ -582,7 +596,8 @@ namespace Ict.Petra.Server.MFinance.GL
                     string strSQL = "SELECT * FROM PUB_" + AGiftBatchTable.GetTableDBName() +
                                     " WHERE " + AGiftBatchTable.GetLedgerNumberDBName() + " = ?" +
                                     " AND " + AGiftBatchTable.GetGlEffectiveDateDBName() + " <= ?" +
-                                    " AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? ";
+                                    " AND " + AGiftBatchTable.GetBatchStatusDBName() + " = ? " +
+                                    " ORDER BY " + AGiftBatchTable.GetBatchNumberDBName();
 
                     FDataTable = DBAccess.GDBAccessObj.SelectDT(
                         strSQL, AAccountingPeriodTable.GetTableDBName(), transaction, ParametersArray);
@@ -713,7 +728,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                     " AND a_batch_year_i=" + AYear +
                                     " AND a_batch_period_i=" + ABatchPeriod +
                                     " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_POSTED + "'" +
-                                    " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_CANCELLED + "'";
+                                    " AND a_batch_status_c <> '" + MFinanceConstants.BATCH_CANCELLED + "'" +
+                                    " ORDER BY a_batch_number_i";
                     DBAccess.GDBAccessObj.SelectDT(Fbatches, strSQL, transaction);
                 });
         }
