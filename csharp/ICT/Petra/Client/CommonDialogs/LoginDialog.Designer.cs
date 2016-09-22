@@ -124,7 +124,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnLogin.Location = new System.Drawing.Point(103, 7);
             this.btnLogin.Name = "btnLogin";
             this.btnLogin.Size = new System.Drawing.Size(95, 24);
-            this.btnLogin.TabIndex = 6;
+            this.btnLogin.TabIndex = 8;
             this.btnLogin.Text = " &Login";
             this.btnLogin.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnLogin.Click += new System.EventHandler(this.BtnLoginClick);
@@ -136,7 +136,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.btnCancel.Location = new System.Drawing.Point(202, 7);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(95, 24);
-            this.btnCancel.TabIndex = 7;
+            this.btnCancel.TabIndex = 9;
             this.btnCancel.Text = " &Quit";
             this.btnCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.btnCancel.Click += new System.EventHandler(this.BtnCancelClick);
@@ -166,7 +166,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.chkRememberUserName.Location = new System.Drawing.Point(77, 308);
             this.chkRememberUserName.Name = "chkRememberUserName";
             this.chkRememberUserName.Size = new System.Drawing.Size(188, 24);
-            this.chkRememberUserName.TabIndex = 12;
+            this.chkRememberUserName.TabIndex = 6;
             this.chkRememberUserName.Text = "&Remember the User ID";
             this.chkRememberUserName.UseVisualStyleBackColor = true;
             //

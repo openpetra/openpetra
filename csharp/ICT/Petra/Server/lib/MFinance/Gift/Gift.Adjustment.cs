@@ -552,6 +552,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             giftDetail.LedgerNumber = AGift.LedgerNumber;
             giftDetail.BatchNumber = AGift.BatchNumber;
             giftDetail.GiftTransactionNumber = AGift.GiftTransactionNumber;
+            giftDetail.IchNumber = 0;
 
             decimal signum = (AReversal) ? -1 : 1;
             giftDetail.GiftTransactionAmount = signum * AOldGiftDetail.GiftTransactionAmount;

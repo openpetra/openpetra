@@ -42,6 +42,13 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 
 #endregion usings
 
+#region changehistory
+
+/*
+ * The ChargeFlag for Admin Grants should always default to true: https://tracker.openpetra.org/view.php?id=5481 - Moray
+ */
+#endregion changehistory
+
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
     public partial class TUC_GiftTransactions
@@ -422,7 +429,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 txtDetailMotivationDetailCode.Text = giftDetailRow.MotivationDetailCode;
                 cmbMotivationDetailCode.SetSelectedString(giftDetailRow.MotivationDetailCode);
                 chkDetailConfidentialGiftFlag.Checked = giftDetailRow.ConfidentialGiftFlag;
-                chkDetailChargeFlag.Checked = giftDetailRow.ChargeFlag;
+                // Change #5481
+                chkDetailChargeFlag.Checked = true;
                 cmbDetailMethodOfPaymentCode.SetSelectedString(FBatchMethodOfPayment, -1);
                 cmbDetailMethodOfGivingCode.SetSelectedString(giftDetailRow.MethodOfGivingCode, -1);
 
@@ -526,6 +534,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         detailRow.MethodOfPaymentCode = FPreviouslySelectedDetailRow.MethodOfPaymentCode;
                         detailRow.ReceiptPrinted = false;
                         detailRow.ReceiptNumber = 0;
+                        // Change #5481
+                        detailRow.ChargeFlag = true;
 
                         if (!FSETAutoCopyIncludeMailingCodeFlag)
                         {
