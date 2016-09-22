@@ -927,47 +927,45 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PartnerFindTDS result = FindMatchingPartners(BestLocation, out FMatchingPartnersExplanation);
                 txtHint.Text = FMatchingPartnersExplanation;
 
-                if (result.SearchResult.DefaultView.Count > 0)
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass);
+                grdMatchingRecords.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), result.SearchResult.ColumnPartnerKey);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Partner Name"), result.SearchResult.ColumnPartnerShortName);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity);
+                grdMatchingRecords.AddTextColumn(Catalog.GetString("Post Code"), result.SearchResult.ColumnPostalCode);
+                grdMatchingRecords.SelectionMode = SourceGrid.GridSelectionMode.Row;
+
+                //
+                // For any partner class OTHER THAN Person, I only want to see matching records of the same class.
+                if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                 {
-                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Class"), result.SearchResult.ColumnPartnerClass);
-                    grdMatchingRecords.AddPartnerKeyColumn(Catalog.GetString("Partner Key"), result.SearchResult.ColumnPartnerKey);
-                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Partner Name"), result.SearchResult.ColumnPartnerShortName);
-                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Address"), result.SearchResult.ColumnStreetName);
-                    grdMatchingRecords.AddTextColumn(Catalog.GetString("City"), result.SearchResult.ColumnCity);
-                    grdMatchingRecords.AddTextColumn(Catalog.GetString("Post Code"), result.SearchResult.ColumnPostalCode);
-                    grdMatchingRecords.SelectionMode = SourceGrid.GridSelectionMode.Row;
-
-                    result.SearchResult.DefaultView.AllowNew = false;
-
-                    //
-                    // For any partner class OTHER THAN Person, I only want to see matching records of the same class.
-                    if (FCurrentPartner.PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
-                    {
-                        // For Person we allow to show Person and Family (as people could add a person to a different family)
-                        result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}' OR {2} = '{3}'",
-                            PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
-                            MPartnerConstants.PARTNERCLASS_PERSON,
-                            PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
-                            MPartnerConstants.PARTNERCLASS_FAMILY);
-                    }
-                    else
-                    {
-                        result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}'",
-                            PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
-                            FCurrentPartner.PartnerClass);
-                    }
-
-                    grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
-
-                    grdMatchingRecords.AutoResizeGrid();
-
-                    if (FFileFormat == TImportFileFormat.ext)
-                    {
-                        btnUseSelectedPerson.Enabled = true;
-                        btnFindOtherPartner.Enabled = false;
-                    }
+                    // For Person we allow to show Person and Family (as people could add a person to a different family)
+                    result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}' OR {2} = '{3}'",
+                        PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
+                        MPartnerConstants.PARTNERCLASS_PERSON,
+                        PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
+                        MPartnerConstants.PARTNERCLASS_FAMILY);
                 }
                 else
+                {
+                    result.SearchResult.DefaultView.RowFilter = String.Format("{0} = '{1}'",
+                        PartnerFindTDSSearchResultTable.GetPartnerClassDBName(),
+                        FCurrentPartner.PartnerClass);
+                }
+
+                result.SearchResult.DefaultView.AllowNew = false;
+
+                grdMatchingRecords.DataSource = new DevAge.ComponentModel.BoundDataView(result.SearchResult.DefaultView);
+
+                grdMatchingRecords.AutoResizeGrid();
+
+                if (FFileFormat == TImportFileFormat.ext)
+                {
+                    btnUseSelectedPerson.Enabled = true;
+                    btnFindOtherPartner.Enabled = false;
+                }
+
+                if (result.SearchResult.DefaultView.Count == 0)
                 {
                     btnCreateNewPartner.Enabled = true;
                     btnCreateNewPartner.Focus();
@@ -2141,7 +2139,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                 PmYearProgramApplicationTable.GetPartnerKeyDBName(), AOrigPartnerKey, ANewPartnerKey, AUpdateExistingRecord);
         }
 
-        private void AddAddresses(Int64 AOrigPartnerKey, Int64 ANewPartnerKey, ref PartnerImportExportTDS ANewPartnerDS, bool AUpdateExistingRecord)
+        private void AddAddresses(Int64 AOrigPartnerKey,
+            Int64 ANewPartnerKey,
+            ref PartnerImportExportTDS ANewPartnerDS,
+            bool AUpdateExistingRecord,
+            ref bool AIgnoreImportAddressForCsv)
         {
             FMainDS.PPartnerLocation.DefaultView.RowFilter = String.Format("{0}={1}",
                 PPartnerLocationTable.GetPartnerKeyDBName(), AOrigPartnerKey);
@@ -2150,7 +2152,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 PPartnerLocationRow PartnerLocationRow = (PPartnerLocationRow)rv.Row;
                 bool importingAlready = false;
-                bool IgnoreImportLocationForCsv = false;
+                AIgnoreImportAddressForCsv = false;
 
                 FMainDS.PLocation.DefaultView.RowFilter = String.Format("{0}={1} and {2}={3}",
                     PLocationTable.GetLocationKeyDBName(),
@@ -2170,12 +2172,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     foreach (DataRowView NewLocationRv in FMainDS.PLocation.DefaultView)
                     {
                         PLocationRow NewLocation = (PLocationRow)NewLocationRv.Row;
+
                         // Check address already being imported, comparing StreetName, City, PostalCode etc.
                         // If I'm already importing it, I'll ignore this row.
                         // (The address may still be already in the database.)
-
                         if ((FFileFormat == TImportFileFormat.csv)
-                            && chkReplaceAddress.Checked)
+                            && chkReplaceAddress.Checked
+                            && (UserSelectedRow != null)
+                            && AUpdateExistingRecord)
                         {
                             String CurrentAddress = UserSelectedRow.Locality + " - " + UserSelectedRow.StreetName + " - " +
                                                     UserSelectedRow.Address3 + " - " + UserSelectedRow.City + " - " +
@@ -2196,7 +2200,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                                 if (MessageBox.Show(AddressMessage, Catalog.GetString("Replace Address"), MessageBoxButtons.YesNo) == DialogResult.No)
                                 {
-                                    IgnoreImportLocationForCsv = true;
+                                    AIgnoreImportAddressForCsv = true;
                                 }
                             }
                         }
@@ -2227,7 +2231,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         //TODOWBxxx: is it ok that I took this out of the if statement above?
                         // if location already exists: make sure we point the partner location record to the existing location
-                        if (IgnoreImportLocationForCsv)
+                        if (AIgnoreImportAddressForCsv)
                         {
                             PartnerLocationRow.SiteKey = UserSelectedRow.SiteKey;
                             PartnerLocationRow.LocationKey = UserSelectedRow.LocationKey;
@@ -2586,6 +2590,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             Int64 OrigPartnerKey = APartnerRow.PartnerKey;
             Int64 NewPartnerKey = OrigPartnerKey;
             bool UpdateExistingRecord = false;
+            bool IgnoreImportAddressForCsv = false;
 
             // If the import file had a negative PartnerKey, I need to create a new one here,
             // and use it on all the dependent tables.
@@ -2763,7 +2768,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Add special types etc
             AddAbility(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddApplication(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
-            AddAddresses(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
+            AddAddresses(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord, ref IgnoreImportAddressForCsv);
             AddCommentSeq(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddStaffData(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
             AddJobAssignment(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
@@ -2796,10 +2801,19 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             AddBankingDetails(OrigPartnerKey, NewPartnerKey, ref NewPartnerDS, UpdateExistingRecord);
 
+            // address should not be replaced if existing record is not updated
+            Boolean ReplaceAddress = chkReplaceAddress.Checked;
+
+            if (!UpdateExistingRecord)
+            {
+                ReplaceAddress = false;
+            }
+
             TVerificationResultCollection VerificationResult;
             bool CommitRes = TRemote.MPartner.ImportExport.WebConnectors.CommitChanges(NewPartnerDS,
                 FFileFormat,
-                chkReplaceAddress.Checked,
+                ReplaceAddress,
+                IgnoreImportAddressForCsv,
                 0,
                 UserSelLocationKey,
                 out VerificationResult);

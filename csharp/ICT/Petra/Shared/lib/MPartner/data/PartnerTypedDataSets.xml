@@ -50,6 +50,7 @@
     </Table>
     <Table sqltable="p_partner_banking_details"/>
     <Table sqltable="p_banking_details_usage"/>
+    <Table sqltable="p_tax"/>
     <Table sqltable="p_venue"/>
     <Table sqltable="p_foundation"/>
     <Table sqltable="p_foundation_deadline"/>

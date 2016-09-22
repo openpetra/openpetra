@@ -495,8 +495,9 @@ namespace Ict.Petra.Shared.MPartner.Conversion
         /// <summary>
         /// Populate the empty table p_partner_attribute using selected data from p_partner_location.
         /// </summary>
+        /// <param name="ALogPartnerKeyStatistics">Switch on/off logging mechanism</param>
         /// <returns>Number of created PPartnerAttribute Rows.</returns>
-        public static int PopulatePPartnerAttribute()
+        public static int PopulatePPartnerAttribute(Boolean ALogPartnerKeyStatistics = false)
         {
             int RowCounter = 0;
             Int64 BestPartnerLocSiteKey;
@@ -737,7 +738,12 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             // ... and kindly ask .NET's Garbage Collector to really get it out of memory, if it's convenient.
             GC.Collect(0, GCCollectionMode.Optimized);
 
-            CustomLoggingOfPartnerKeysForWarning();
+            // only call this method if necessary so that logging does not automatically happen
+            // (as the directories for logging are only available during data conversion and not at normal runtime)
+            if (ALogPartnerKeyStatistics)
+            {
+                CustomLoggingOfPartnerKeysForWarning();
+            }
 
             return RowCounter;
         }

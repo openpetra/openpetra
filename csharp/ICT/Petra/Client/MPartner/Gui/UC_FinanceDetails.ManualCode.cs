@@ -55,6 +55,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         private IPartnerUIConnectorsPartnerEdit FPartnerEditUIConnector;
 
         private bool FTaxDeductiblePercentageEnabled = false;
+        private bool FGovIdEnabled = false;
 
         private bool FFirstTime = true;
 
@@ -123,13 +124,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             // set up Tax Deductibility (specifically for OM Switzerland)
             FTaxDeductiblePercentageEnabled = FPartnerEditUIConnector.IsTaxDeductiblePercentageEnabled();
 
+            // set up access to Government Id (e.g. bPK) when needed
+            FGovIdEnabled = FPartnerEditUIConnector.IsGovIdEnabled();
+
+            if (FGovIdEnabled)
+            {
+                lblGovId.Text = FPartnerEditUIConnector.GetGovIdLabel() + ":";
+            }
+            else
+            {
+                pnlLeftMiscSettings.Controls.Remove(this.grpGovId);
+            }
+
             if (FTaxDeductiblePercentageEnabled)
             {
                 chkLimitTaxDeductibility.Visible = true;
                 pnlTaxDeductible.Visible = true;
                 pnlMiscSettings.Height += 27;
                 grpRecipientGiftReceipting.Height += 27;
-                grpLeftMiscSettings.Height += 27;
+                pnlLeftMiscSettings.Height += 27;
                 pnlRightMiscSettings.Height += 27;
                 grpOther.Location = new System.Drawing.Point(grpOther.Location.X, grpOther.Location.Y + 27);
 
@@ -157,6 +170,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
+
+                // make sure we have enough space
+                if (FGovIdEnabled)
+                {
+                    pnlMiscSettings.Height += 27;
+                    pnlLeftMiscSettings.Height += 27;
+                }
             }
         }
 
@@ -306,6 +326,11 @@ namespace Ict.Petra.Client.MPartner.Gui
                         ((PPartnerTaxDeductiblePctRow)FMainDS.PPartnerTaxDeductiblePct.Rows[0]).PercentageTaxDeductible;
                     dtpTaxDeductibleValidFrom.Text = ((PPartnerTaxDeductiblePctRow)FMainDS.PPartnerTaxDeductiblePct.Rows[0]).DateValidFrom.ToString();
                 }
+            }
+
+            if (FGovIdEnabled)
+            {
+                txtGovId.Text = FPartnerEditUIConnector.GetGovId();
             }
 
             if (grdDetails.Rows.Count > 1)
