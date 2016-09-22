@@ -50,6 +50,9 @@ namespace Ict.Petra.Client.CommonForms
         private static SortedList <string, string>FWindowPositions = new SortedList <string, string>();
         private static bool FWindowPositionsLoaded = false;
 
+        /// These forms will always be saved even though they are not launched by the main screen
+        private static List <string>FAlwaysSaveFormsList = null;
+
         /// dictionary to hold the most recent window position for floating (multi-use) windows
         private static Dictionary <string, Point>FDicFloatingWindowLocations = new Dictionary <string, Point>();
 
@@ -80,10 +83,24 @@ namespace Ict.Petra.Client.CommonForms
             // Are we saving/restoring the window position?  This option is stored in User Defaults.
             if (TUserDefaults.GetBooleanDefault(TUserDefaults.NamedDefaults.USERDEFAULT_SAVE_WINDOW_POS_AND_SIZE, true))
             {
+                if (FAlwaysSaveFormsList == null)
+                {
+                    FAlwaysSaveFormsList = new List <string>();
+                    FAlwaysSaveFormsList.AddRange(new string[]
+                        {
+                            "TFrmMainWindowNew",
+                            "TFrmPartnerEdit",
+                            "TFrmGiftBatch",
+                            "TFrmGLBatch",
+                            "TPartnerFindScreen",
+                            "TFrmExtFilePreviewDialog"
+                        }
+                        );
+                }
+
                 // Restore the window positions if we know them
                 // (Note: Nant tests do not have a caller so we need to allow for this possibility)
-                if ((FWinForm.Name == "TFrmMainWindowNew") || (FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch")
-                    || (FWinForm.Name == "TFrmGLBatch") || (FWinForm.Name == "TPartnerFindScreen")
+                if (FAlwaysSaveFormsList.Contains(FWinForm.Name)
                     || ((FCallerForm != null) && (FCallerForm.Name == "TFrmMainWindowNew")))
                 {
                     // Either we are loading the main window or we have been opened by the main window
@@ -143,8 +160,7 @@ namespace Ict.Petra.Client.CommonForms
                                 ex.Message), TLoggingType.ToLogfile);
                     }
                 }
-                else if ((FWinForm.Name == "TFrmPartnerEdit") || (FWinForm.Name == "TFrmGiftBatch") || (FWinForm.Name == "TFrmGLBatch")
-                         || (FWinForm.Name == "TPartnerFindScreen"))
+                else if (FAlwaysSaveFormsList.Contains(FWinForm.Name))
                 {
                     // We always save the settings for these forms - they can be launched from the main window or from Partner/Find or several other ways
                     GetWindowPositionProperties();

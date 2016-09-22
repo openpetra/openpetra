@@ -56,7 +56,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             PartnerEditTDS MainDS = new PartnerEditTDS();
 
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",", Encoding.UTF8);
+            // AlanP: May 2016 - We may no longer need the UTF8 because the method now automatically discovers the encoding even with no BOM
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AInputBeneratorFile, ",", Encoding.UTF8);
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 

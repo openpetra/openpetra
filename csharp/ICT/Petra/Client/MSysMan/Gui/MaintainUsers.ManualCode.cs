@@ -467,7 +467,8 @@ namespace Ict.Petra.Client.MSysMan.Gui
                                 Environment.NewLine +
                                 (RandomSecurePasswordUtilised ? Catalog.GetString(
                                      "The 'random secure' password will get copied to the clipboard after you have closed this message. Follow the steps lined out in the next message!")
-                                 + Environment.NewLine : String.Empty) +
+                                 +
+                                 Environment.NewLine : String.Empty) +
                                 Environment.NewLine +
                                 "(The user must change the new password for a password of his/her choice the next time (s)he logs on.)"),
                             username), CommonDialogsResourcestrings.StrResetUserPasswordTitle,

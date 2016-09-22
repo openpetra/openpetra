@@ -322,7 +322,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 SaveUserDefaults(dlgSeparator);
                                 FSelectedSeparator = dlgSeparator.SelectedSeparator;
-                                XmlDocument doc = TCsv2Xml.ParseCSV2Xml(FFileName, FSelectedSeparator, Encoding.Default);
+                                XmlDocument doc = TCsv2Xml.ParseCSVContent2Xml(dlgSeparator.FileContent, FSelectedSeparator);
                                 FFileContent = TXMLParser.XmlToString(doc);
                                 GetImportIDHeaderText(doc);
                                 FillCSVColumnList(doc);
@@ -357,14 +357,45 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                         // Be sure the encoding imports accented characters correctly by getting the file encoding
                         Encoding fileEncoding;
-                        bool hasBOM, isAmbiguous;
+                        bool hasBOM, isAmbiguousUTF;
                         byte[] rawBytes;
 
-                        if (TTextFile.AutoDetectTextEncodingAndOpenFile(FFileName, null, out FFileContent,
-                                out fileEncoding, out hasBOM, out isAmbiguous, out rawBytes) == false)
+                        if (TTextFile.AutoDetectTextEncodingAndOpenFile(FFileName, out FFileContent,
+                                out fileEncoding, out hasBOM, out isAmbiguousUTF, out rawBytes) == false)
                         {
                             AddStatus(Catalog.GetString("Failed to open the file, or the file was empty.\r\n"));
                             return;
+                        }
+
+                        int codePage = fileEncoding.CodePage;
+                        bool allowMBCS = TUserDefaults.GetBooleanDefault(TTextFileEncoding.ALLOW_MBCS_TEXT_ENCODING, false);
+
+                        if ((isAmbiguousUTF == true) || TTextFileEncoding.IsWindowsANSICodePage(codePage)
+                            || (allowMBCS && (fileEncoding == Encoding.UTF8)))
+                        {
+                            // Show the Preview dialog and confirm the encoding
+                            using (TFrmExtFilePreviewDialog dialog = new TFrmExtFilePreviewDialog(ParentForm))
+                            {
+                                dialog.SetParameters(FFileContent, fileEncoding, hasBOM, isAmbiguousUTF, rawBytes);
+
+                                if (dialog.HasContent)
+                                {
+                                    // There is something that we can display to the user.
+                                    // If the dialog has no content all the characters in the file are less than 0x80
+                                    if (dialog.ShowDialog() == DialogResult.Cancel)
+                                    {
+                                        AddStatus(Catalog.GetString("No file loaded.\r\n"));
+                                        return;
+                                    }
+
+                                    dialog.GetResults(out fileEncoding);
+
+                                    if (fileEncoding.CodePage != codePage)
+                                    {
+                                        FFileContent = fileEncoding.GetString(rawBytes);
+                                    }
+                                }
+                            }
                         }
 
                         int lineCount = 1;

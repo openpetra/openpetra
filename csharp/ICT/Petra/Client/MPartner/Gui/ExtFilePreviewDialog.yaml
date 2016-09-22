@@ -1,0 +1,31 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Import Completion Options
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 780
+    WindowHeight: 550
+
+    Controls:
+        pnlDialogContent:
+            Dock: Fill
+            Controls: [pnlHeader, pnlPreview]
+        pnlPreview:
+            Dock: Fill
+            Controls:
+                Row0: [txtPreview]
+        pnlHeader:
+            Dock: Top
+            Height: 95
+            Controls:
+                Row0: [lblInfo]
+                Row1: [cmbTextEncoding]
+
+        txtPreview: {Multiline=true, ScrollBars=Vertical, Height=80, Stretch=fully}
+        lblInfo: {Text=Choose an encoding from the list that displays the lines in the preview window correctly.  Files exported from OpenPetra or Excel are usually in a Unicode format.  Files from Petra are in a Windows ANSI format.}
+            Height: 45
+            Stretch: horizontally
+            Align: Top
+        cmbTextEncoding: {Label=Text Encoding, Width=250}
+            Padding: 3,8,3,3

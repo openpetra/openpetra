@@ -435,7 +435,11 @@ namespace Ict.Common.IO
         /// the first line is expected to contain the column names/captions, in quotes.
         /// from the header line, the separator can be determined, if the parameter ASeparator is empty
         /// </summary>
-        public static XmlDocument ParseCSV2Xml(string ACSVFilename, string ASeparator = null, Encoding AFallbackEncoding = null)
+        /// <param name="ACSVFilename">The filename</param>
+        /// <param name="AFallbackEncoding">The file encoding will be automatically determined, but if a fallback is specified that does not match
+        /// the encoding that was determined, it will be used.  Usually this paramter can be null.</param>
+        /// <param name="ASeparator">A column separator</param>
+        public static XmlDocument ParseCSVFile2Xml(string ACSVFilename, string ASeparator = null, Encoding AFallbackEncoding = null)
         {
             string fileContent;
             Encoding fileEncoding;
@@ -443,23 +447,41 @@ namespace Ict.Common.IO
 
             byte[] rawBytes;
 
-            List <string>Lines = new List <string>();
-
-            if (TTextFile.AutoDetectTextEncodingAndOpenFile(ACSVFilename, AFallbackEncoding, out fileContent, out fileEncoding,
+            if (TTextFile.AutoDetectTextEncodingAndOpenFile(ACSVFilename, out fileContent, out fileEncoding,
                     out hasBOM, out isAmbiguous, out rawBytes))
             {
-                using (StringReader reader = new StringReader(fileContent))
+                if ((AFallbackEncoding != null) && !fileEncoding.Equals(AFallbackEncoding))
                 {
-                    string line = reader.ReadLine();
-
-                    while (line != null)
-                    {
-                        Lines.Add(line);
-                        line = reader.ReadLine();
-                    }
-
-                    reader.Close();
+                    fileContent = AFallbackEncoding.GetString(rawBytes);
                 }
+
+                return ParseCSVContent2Xml(fileContent, ASeparator);
+            }
+
+            // Either we could not open the file or it is empty
+            return ParseCSV2Xml(new List <string>(), ASeparator);
+        }
+
+        /// <summary>
+        /// convert the content of a CSV file to an XmlDocument.
+        /// the first line is expected to contain the column names/captions, in quotes.
+        /// from the header line, the separator can be determined, if the parameter ASeparator is empty
+        /// </summary>
+        public static XmlDocument ParseCSVContent2Xml(string AFileContent, string ASeparator = null)
+        {
+            List <string>Lines = new List <string>();
+
+            using (StringReader reader = new StringReader(AFileContent))
+            {
+                string line = reader.ReadLine();
+
+                while (line != null)
+                {
+                    Lines.Add(line);
+                    line = reader.ReadLine();
+                }
+
+                reader.Close();
             }
 
             return ParseCSV2Xml(Lines, ASeparator);

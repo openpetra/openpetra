@@ -63,7 +63,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
         {
             MaxInvoicesPerYear = (ASmallNumber ? 25 : 200);
 
-            XmlDocument doc = TCsv2Xml.ParseCSV2Xml(AInputBeneratorFile, ",");
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml(AInputBeneratorFile, ",");
 
             XmlNode RecordNode = doc.FirstChild.NextSibling.FirstChild;
 

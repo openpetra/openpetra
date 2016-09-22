@@ -166,7 +166,7 @@ namespace Ict.Common.IO.Testing
 
             // load from csv, is it the same xml code?
             string filename = PathToTestData + "test.csv";
-            XmlDocument docFromCSV = TCsv2Xml.ParseCSV2Xml(filename);
+            XmlDocument docFromCSV = TCsv2Xml.ParseCSVFile2Xml(filename);
 
             filename = PathToTestData + "test.xml";
             StreamWriter sw = new StreamWriter(filename + ".new");
