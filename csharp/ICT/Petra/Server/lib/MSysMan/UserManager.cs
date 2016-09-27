@@ -530,9 +530,9 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
         {
             if (APasswordSchemeVersion == 0)
             {
-                // MD5 - DO NOT USE ANYMORE as this password hash is completely unsafe nowadays!
+                // SHA1 - DO NOT USE ANYMORE as this password hash is not considered safe nowadays!
                 return BitConverter.ToString(
-                    MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(String.Concat(APassword,
+                    SHA1.Create().ComputeHash(Encoding.UTF8.GetBytes(String.Concat(APassword,
                                                        ASalt)))).Replace("-", "");
             }
             else
