@@ -56,8 +56,6 @@
 <target name="initConfigFiles-server">
   <property name="templateFile" value="${dir.incdir.template.etc}/Server-${DBMS.Type}.config"/>
   
-  <property name="DBMS.DBWaitingTimeForCoordinatedDBAccess" value="3000" overwrite="false"/>
-  
   <if test="${DBMS.Type == 'sqlite'}">
     <property name="DBMS.DBHostOrFile" value="${SQLitedbWork.file}"/>
   </if>
