@@ -122,6 +122,12 @@
     <if test="${(DBMS.Type=='sqlite') and (not file::exists(dir.bin + '/sqlite3.dll'))}">
         <copy file="${dir.3rdParty}/SQLite/sqlite3.dll" todir="${dir.bin}"/>
     </if>
+    <if test="${not file::exists(dir.bin + '/libsodium.dll')}">
+        <copy file="${dir.3rdParty}/libsodium-net/libsodium.dll" todir="${dir.bin}"/>
+    </if>
+    <if test="${not file::exists(dir.bin + '/libsodium-64.dll')}">
+        <copy file="${dir.3rdParty}/libsodium-net/libsodium-64.dll" todir="${dir.bin}"/>
+    </if>
     <if test="${file::exists(MonoBinPath+'/xsp4.bat')}">
       <delete file="${dir.bin}/Mono.Security.dll"/>
       <delete file="${dir.bin}/sqlite3.dll"/>
