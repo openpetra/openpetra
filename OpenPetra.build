@@ -572,7 +572,9 @@ useful parameters
         commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
     <call target="stopPetraServer"/>
 
-    <copy file="${dir.delivery}/bin/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
+    <copy file="${dir.bin}/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
+    <copy file="${dir.3rdParty}/libsodium-net/libsodium-64.dll" todir="${dir.bin}"/>
+    <copy file="${dir.3rdParty}/libsodium-net/libsodium.dll" todir="${dir.bin}"/>
 
     <script prefix="utils" language="C#">
          <code>

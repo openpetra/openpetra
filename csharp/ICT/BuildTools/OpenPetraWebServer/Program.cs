@@ -224,6 +224,11 @@ namespace Ict.Tools.OpenPetraWebServer
                             thread.Start();
                         }
 
+                        // make sure that the bin directory is on the PATH, so that we can find libsodium.dll
+                        string path = Environment.GetEnvironmentVariable("PATH");
+                        string binDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
+                        Environment.SetEnvironmentVariable("PATH", path + ";" + binDir);
+
                         _RunStyle = RunStyles.SmallUI;
                         TLogging.Log("Ict.Tools.OpenPetraWebServer is now running on port " + commandLineArgs.Port.ToString() + "...");
                         TLogging.Log("    Command line was: " + Environment.CommandLine);
