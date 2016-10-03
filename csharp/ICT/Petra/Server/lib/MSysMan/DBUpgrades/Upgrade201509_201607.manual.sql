@@ -1,4 +1,6 @@
 -- Need to run this manually as db user petraserver, otherwise the SYSADMIN cannot login to run the database upgrade...
+-- cat /home/openpetra/.pgpass
+-- psql -U petraserver openpetra < /usr/local/openpetra/sql30/Upgrade201509_201607.manual.sql
 
 --#################### s_login ###########################
 --
@@ -72,7 +74,7 @@ UPDATE s_login
     WHERE s_login_status_c ILIKE 'No login%';    -- Older style (no entry that corresponds with this will be written by OpenPetra anymore)
 
 ALTER TABLE s_login RENAME COLUMN s_login_time_i TO s_time_i;
-ALTER TABLE s_login RENAME COLUMN s_login_date_d TO s_date_i;
+ALTER TABLE s_login RENAME COLUMN s_login_date_d TO s_date_d;
 ALTER TABLE s_login ADD COLUMN s_login_details_c varchar(500);
 ALTER TABLE s_login ADD COLUMN s_login_process_id_ref_i integer;
 ALTER TABLE s_login DROP CONSTRAINT s_login_uk;
@@ -123,7 +125,7 @@ CREATE INDEX s_user_account_activity_type2
    (s_activity_type_c);
 
 --#################### s_user ###########################
-ALTER TABLE s_user ADD COLUMN s_pwd_scheme_version_i integer DEFAULT 1;
+ALTER TABLE s_user ADD COLUMN s_pwd_scheme_version_i integer DEFAULT 0;
 ALTER TABLE s_user ADD COLUMN s_account_locked_l boolean DEFAULT '0';
 
 --################################################################################################
