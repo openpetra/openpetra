@@ -293,13 +293,15 @@
 <property name="Server.DebugLevel" value="0" 
           overwrite="false" />
 <property name="Server.DBConnectionCheckInterval" value="0" 
-          overwrite="false" />          
+          overwrite="false" />
 <property name="DBMS.DBConnectionTimeout" value="10" 
-          overwrite="false" />          
+          overwrite="false" />
 <property name="DBMS.DBConnectionLifeTime" value="60" 
-          overwrite="false" />          
+          overwrite="false" />
 <property name="DBMS.DBCommandTimeout" value="3600" 
-          overwrite="false" />          
+          overwrite="false" />
+<property name="DBMS.DBWaitingTimeForCoordinatedDBAccess" value="3000"
+          overwrite="false"/>
 <property name="SelectedLanguage" value="en" overwrite="false" />
 
 <!-- database -->

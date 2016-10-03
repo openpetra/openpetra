@@ -36,7 +36,8 @@ start() {
     echo "Starting OpenPetra server"
     if [ "`whoami`" = "$userName" ]
     then
-      cd /var/www/openpetra; fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null
+      cd /var/www/openpetra
+      LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$OpenPetraPath/bin30 fastcgi-mono-server4 /socket=tcp:127.0.0.1:$OPENPETRA_PORT /applications=/:$documentroot /appconfigfile=/home/$userName/etc/PetraServerConsole.config /logfile=/home/$userName/log/mono.log /loglevels=Standard >& /dev/null
       # other options for loglevels: Debug Notice Warning Error Standard(=Notice Warning Error) All(=Debug Standard)
     else
       echo "Error: can only start the server as user $userName"
@@ -101,8 +102,9 @@ restore() {
 
     export PGOPTIONS='--client-min-messages=warning'
 
-    echo "creating tables..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
+    #if pgdump was called with data-only, we would need to create the tables here
+    #echo "creating tables..."
+    #su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
@@ -113,8 +115,9 @@ restore() {
         su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > /home/$userName/log/pgload.log"
     fi
 
-    echo "enabling indexes and constraints..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
+    #if pgdump was called with data-only, we would need to create the contraints and indexes here
+    #echo "enabling indexes and constraints..."
+    #su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
 
     echo `date` "Finished!"
 }

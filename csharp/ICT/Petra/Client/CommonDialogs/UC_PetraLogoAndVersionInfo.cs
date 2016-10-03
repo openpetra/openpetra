@@ -52,7 +52,7 @@ namespace Ict.Petra.Client.CommonDialogs
             // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.lblPetra.Text = Catalog.GetString("OpenPetra");
             this.lblPetraVersion.Text = Catalog.GetString("Version");
-            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2015 by OM International");
+            this.lblCopyrightNotice.Text = Catalog.GetString("© 1995 - 2016 by OM International");
             this.lblInstallationKind.Text = Catalog.GetString("Standalone / Network / Remote");
             #endregion
         }
