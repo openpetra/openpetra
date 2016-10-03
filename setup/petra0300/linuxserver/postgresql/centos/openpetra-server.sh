@@ -102,8 +102,9 @@ restore() {
 
     export PGOPTIONS='--client-min-messages=warning'
 
-    echo "creating tables..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
+    #if pgdump was called with data-only, we would need to create the tables here
+    #echo "creating tables..."
+    #su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createtables-PostgreSQL.sql"
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
@@ -114,8 +115,9 @@ restore() {
         su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $backupfile > /home/$userName/log/pgload.log"
     fi
 
-    echo "enabling indexes and constraints..."
-    su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
+    #if pgdump was called with data-only, we would need to create the contraints and indexes here
+    #echo "enabling indexes and constraints..."
+    #su - $userName -c "psql -h $OPENPETRA_DBHOST -p $OPENPETRA_DBPORT -U $OPENPETRA_DBUSER $OPENPETRA_DBNAME -q -f $OpenPetraPath/db30/createconstraints-PostgreSQL.sql"
 
     echo `date` "Finished!"
 }
