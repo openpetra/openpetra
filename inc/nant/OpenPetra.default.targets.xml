@@ -200,6 +200,11 @@
             workingdir="${dir.delivery}"
             commandline="-c &quot;for f in ../js/*;do ln -s $f; done&quot;"/>
       </if>
+      <if test="${not file::exists(dir.bin + '/libsodium.so')}">
+        <exec program="bash"
+            workingdir="${dir.bin}"
+            commandline="-c &quot;ln -s ${libsodium.so} libsodium.so&quot;"/>
+      </if>
       <delete file="${dir.bin}/Mono.Security.dll" failonerror="false"/>
       <delete file="${dir.bin}/Mono.Data.Sqlite.dll" failonerror="false"/>
       <delete file="${dir.bin}/sqlite3.dll"/>
@@ -212,6 +217,7 @@
               commandline="--verbose --nonstop --root . --port ${Server.Port} --applications /:."
               spawn="${spawnxsp}">
         <environment>
+          <variable name="LD_LIBRARY_PATH" path="${dir.bin}"/>
           <variable name="PATH" path="${environment::get-variable('PATH')};${MonoBinPath}"/>
           <variable name="MONO_PATH" path="${MonoBinPath}\.."/>
           <variable name="MONO_OPTIONS" value="--debug"/>
@@ -303,6 +309,9 @@
   </if>
 </target>
 
+<target name="startAdminConsole">
+  <call target="startAdmin"/>
+</target>
 <target name="startAdmin" depends="initConfigFiles-admin" description="start the OpenPetra Server Admin Console"> 
   <if test="${platform::is-windows()}" >
       <exec program="cmd.exe" 
@@ -318,14 +327,9 @@
      </exec>
   </if>
   <if test="${not platform::is-windows()}">
-      <exec program="${MonoExecutable.file}" 
-              workingdir="${dir.bin}"
-              commandline="PetraServerAdminConsole.exe -Command:Menu -C:${ServerAdminConfigFile}"
-              spawn="true">
-         <environment>
-            <variable name="LANGUAGE" value="${SelectedLanguage}"/>
-         </environment>
-      </exec>
+      <echo message="run this directly from the command line:"/>
+      <echo message="cd ${dir.bin} &amp;&amp; mono PetraServerAdminConsole.exe -Command:Menu -C:${ServerAdminConfigFile} &amp;&amp; cd -"/>
+      <!-- exec does not really work within nant, Console.Write does not print -->
   </if>
 </target> 
 
