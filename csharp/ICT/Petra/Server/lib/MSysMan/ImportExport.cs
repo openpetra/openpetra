@@ -567,7 +567,7 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
                         }
                         else if (col.DataType == typeof(String))
                         {
-                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar, strValue.Length);
+                            OdbcParameter p = new OdbcParameter(Parameters.Count.ToString(), OdbcType.VarChar);
                             p.Value = strValue.Replace("&quot;", "\"");
                             Parameters.Add(p);
                         }
