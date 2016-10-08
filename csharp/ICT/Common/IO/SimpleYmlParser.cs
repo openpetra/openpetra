@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -155,7 +155,15 @@ namespace Ict.Common.IO
                         {
                             string mapping = StringHelper.GetNextCSV(ref list, ",");
                             string mappingName = StringHelper.GetNextCSV(ref mapping, new string[] { "=", ":" }).Trim();
-                            string mappingValue = StripQuotes(mapping.Trim()).Replace("\\n", Environment.NewLine);
+                            string mappingValue = mapping.Trim();
+
+                            if (mappingValue.Length > 1 && mappingValue[0] == '"')
+                            {
+                                mappingValue = StripQuotes(mappingValue);
+                                mappingValue = mappingValue.Replace("\\\\", "\\");
+                            }
+
+                            mappingValue = mappingValue.Replace("\\n", Environment.NewLine);
                             Result.Add(mappingName, mappingValue);
                         }
 
