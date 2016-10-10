@@ -5,7 +5,7 @@
 //       timop
 //       cthomas
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -849,7 +849,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 DateTime currentYearEnd = TAccountingPeriodsWebConnector.GetPeriodEndDate(ALedgerNumber,
                     ledgerRow.CurrentFinancialYear,
                     0,
-                    ledgerRow.NumberOfAccountingPeriods);
+                    ledgerRow.NumberOfAccountingPeriods, DBAccess.GDBAccessObj);
 
                 RetVal = (BudgetYear - currentYearEnd.Year + ledgerRow.CurrentFinancialYear);
             }
