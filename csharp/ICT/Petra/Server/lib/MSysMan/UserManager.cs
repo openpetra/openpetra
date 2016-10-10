@@ -554,7 +554,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
 
             try
             {
-                DBAccess.SimpleAutoReadTransactionWrapper("ReloadCachedUserInfo", out ReadTransaction, delegate
+                DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "ReloadCachedUserInfo", out ReadTransaction, delegate
                     {
                         LoadUser(UserInfo.GUserInfo.UserID, out UserDetails, ReadTransaction);
                     });
