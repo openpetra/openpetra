@@ -5,8 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2013 by OM International
-// Copyright 2013-2014 by SolidCharity
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -126,16 +125,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         else
                         {
                             SortedList <string, string>Defines = new SortedList <string, string>();
+                            int CountParameters = 5;
 
                             if (!string.IsNullOrEmpty(AExtract))
                             {
                                 Defines.Add("BYEXTRACT", string.Empty);
+                                CountParameters += 1;
                             }
 
                             // first get all donors in the given date range
                             SqlStmt = TDataBase.ReadSqlFile("Gift.ReceiptPrinting.GetDonors.sql", Defines);
 
-                            OdbcParameter[] parameters = new OdbcParameter[6];
+                            OdbcParameter[] parameters = new OdbcParameter[CountParameters];
                             parameters[0] = new OdbcParameter("LedgerNumber", OdbcType.Int);
                             parameters[0].Value = ALedgerNumber;
                             parameters[1] = new OdbcParameter("StartDate", OdbcType.Date);
@@ -155,8 +156,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                             parameters[4] = new OdbcParameter("Frequency", OdbcType.VarChar);
                             parameters[4].Value = AFrequency;
-                            parameters[5] = new OdbcParameter("Extract", OdbcType.VarChar);
-                            parameters[5].Value = AExtract;
+
+                            if (!string.IsNullOrEmpty(AExtract))
+                            {
+                                parameters[5] = new OdbcParameter("Extract", OdbcType.VarChar);
+                                parameters[5].Value = AExtract;
+                            }
 
                             donorkeys = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "DonorKeys", Transaction, parameters);
 
