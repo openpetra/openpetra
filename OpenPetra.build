@@ -575,6 +575,8 @@ useful parameters
     <copy file="${dir.bin}/Ict.Tools.DevelopersAssistant.exe" todir="${dir.root}"/>
     <copy file="${dir.3rdParty}/libsodium-net/libsodium-64.dll" todir="${dir.bin}"/>
     <copy file="${dir.3rdParty}/libsodium-net/libsodium.dll" todir="${dir.bin}"/>
+    <!-- delete symbolic link -->
+    <delete file="${dir.bin}/libsodium.so"/>
 
     <script prefix="utils" language="C#">
          <code>
