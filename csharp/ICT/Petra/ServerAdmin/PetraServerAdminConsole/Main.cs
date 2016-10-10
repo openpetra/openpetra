@@ -825,11 +825,13 @@ namespace PetraServerAdminConsole
 
                 if ((!SilentSysadm))
                 {
+                    string ExePath = TAppSettingsManager.ApplicationDirectory + Path.DirectorySeparatorChar +
+                       "PetraServerAdminConsole.exe";
+
                     Console.WriteLine();
                     TLogging.Log(
                         "PETRAServerADMIN " + System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString() + ' ' + "Build " +
-                        System.IO.File.GetLastWriteTime(
-                            Process.GetCurrentProcess().MainModule.FileName).ToString() + " (OS: " +
+                        System.IO.File.GetLastWriteTime(ExePath).ToString() + " (OS: " +
                         CommonTypes.ExecutingOSEnumToString(Utilities.DetermineExecutingOS()) + ')');
 
                     TLogging.Log(Catalog.GetString("Configuration file: " + TAppSettingsManager.ConfigFileName));
