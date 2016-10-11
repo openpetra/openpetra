@@ -1,11 +1,11 @@
 sqlite3.dll has been downloaded from sqlite.org
 
 
-Version 3.8.11.1: https://www.sqlite.org/2015/sqlite-dll-win32-x86-3081101.zip
+Version 3.14.2: https://www.sqlite.org/2016/sqlite-dll-win32-x86-3140200.zip
 
 
 
-Mono.Data.Sqlite is from Mono 4.0.4 Linux
+Mono.Data.Sqlite is from Mono 4.2.1 Linux
 
 
 Version for .net 4.0 would not work on Windows. 

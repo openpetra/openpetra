@@ -201,7 +201,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // Connection where a DB Transaction can be exectued (only if that should be needed).
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.VerifyPartner", out ReadTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TPartnerServerLookups.VerifyPartner", out ReadTransaction,
                 delegate
                 {
                     ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
@@ -246,7 +246,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // Connection where a DB Transaction can be exectued (only if that should be needed).
             TDBTransaction readTransaction = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper("TPartnerServerLookups.PartnerHasActiveStatus", out readTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TPartnerServerLookups.PartnerHasActiveStatus", out readTransaction,
                 delegate
                 {
                     PPartnerTable partnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
@@ -877,6 +877,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             PPartnerTable PartnerTbl = null;
 
             DBAccess.SimpleAutoReadTransactionWrapper(
+                IsolationLevel.ReadCommitted,
                 "GetPartnerReceiptingInfo",
                 out ReadTransaction,
                 delegate

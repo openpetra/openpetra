@@ -254,132 +254,6 @@ namespace Ict.Common.DB
         /// <see cref="TDataBase.CloseDBConnection"/> on the <see cref="TDataBase"/> instance that the DB Transaction
         /// was started on - which is returned in <paramref name="ADBAccessObj"/>!!! Make sure you are using a try-finally
         /// clause to ensure that the closing will always happen when necessary!</remarks>
-        /// <param name="ADBAccessObj">The <see cref="TDataBase"/> instance that the DB Transaction was started on.
-        /// This will be the <see cref="DBAccess.GDBAccessObj"/> instance if
-        /// <paramref name="ANewDBConnectionEstablished"/> is false, otherwise a separate <see cref="TDataBase" />
-        /// instance!</param>
-        /// <param name="ANewDBConnectionEstablished">Will be true only if a separate <see cref="TDataBase" /> instance
-        /// was created and the DB Transaction got started on that, otherwise it will be false.</param>
-        /// <param name="ANameForANewDBConnection">Name of the DB Connection, should a new one be established
-        /// (default = "").</param>
-        /// <param name="ATransactionName">Name of the DB Transaction (default = "").</param>
-        /// <returns>A new DB Transaction that was started on a <see cref="TDataBase"/> instance that didn't have a
-        /// DB Transaction running at the time of calling this Method.</returns>
-        public static TDBTransaction BeginTransactionOnIdleDBAccessObj(out TDataBase ADBAccessObj,
-            out bool ANewDBConnectionEstablished, string ANameForANewDBConnection = "", string ATransactionName = "")
-        {
-            bool LockObtained = false;
-            bool LockAlreadyReleasedEarly = false;
-
-            try
-            {
-                // Obtain a 'lock' on the DBAccess.GDBAccessObj to ensure thread safety
-                DBAccess.GDBAccessObj.WaitForCoordinatedDBAccess();
-
-                LockObtained = true;
-            }
-            catch (EDBCoordinatedDBAccessWaitingTimeExceededException)
-            {
-                // DELIBERATE 'swallowing' of this particular Exception as we are dealing with the consequences correctly here!
-                // We can get that particular Exception if the 'globally available' DB connection in DBAccess.GDBAccessObj
-                // is performing longer-running queries and we for that reason run into a timeout when trying to obtain the
-                // 'lock' on DBAccess.GDBAccessObj.
-            }
-
-            try
-            {
-                // Check if there is a DB Transaction running on the DBAccess.GDBAccessObj instance
-                if (LockObtained
-                    && (DBAccess.GDBAccessObj.TransactionNonThreadSafe == null))
-                {
-                    // No DB Transaction running - we can use this DBAccess.GDBAccessObj instance and its DB Connection for
-                    // the starting of the new DB Transaction!
-                    ANewDBConnectionEstablished = false;
-
-                    ADBAccessObj = GDBAccessObj;
-                }
-                else
-                {
-                    if (LockObtained)
-                    {
-                        // Release the 'lock' on the DBAccess.GDBAccessObj that we obtained earlier to allow other threads again
-                        DBAccess.GDBAccessObj.ReleaseCoordinatedDBAccess();
-                        LockAlreadyReleasedEarly = true;
-                    }
-
-                    // There is a DB Transaction running on the DBAccess.GDBAccessObj instance = we need to create a separate
-                    // TDataBase instance...
-                    ADBAccessObj = new TDataBase();
-
-                    // ,.. and establish a separate DB Connection on that separate TDataBase instance.
-                    try
-                    {
-                        ADBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
-                            TSrvSetting.PostgreSQLServer,
-                            TSrvSetting.PostgreSQLServerPort,
-                            TSrvSetting.PostgreSQLDatabaseName,
-                            TSrvSetting.DBUsername,
-                            TSrvSetting.DBPassword,
-                            "",
-                            ANameForANewDBConnection);
-
-                        ANewDBConnectionEstablished = true;
-                    }
-                    catch (Exception Exc)
-                    {
-                        // The 'EDBConnectionNotEstablishedException' Exception will be picked up by the FirstChanceHandler and
-                        // the DB reconnection mechanism will jump into gear, hence we are not logging this Exception to keep
-                        // the log file clean (we are not 'swallowing it', though!!!)
-                        if (!(Exc is EDBConnectionNotEstablishedException))
-                        {
-                            TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception while establishing " +
-                                "a Database Connection:" + Exc.ToString());
-                        }
-
-                        throw;
-                    }
-                }
-
-                // Begin the DB Transaction - on whatever TDataBase instance we determined above!
-                return ADBAccessObj.BeginTransaction(false, ATransactionName : ATransactionName);
-            }
-            catch (Exception Exc)
-            {
-                // The 'EDBConnectionNotEstablishedException' and 'EDBConnectionBrokenException' Exceptions will be picked up
-                // by the FirstChanceHandler and the DB reconnection mechanism will jump into gear, hence we are not logging
-                // this Exception to keep the log file clean (we are not 'swallowing it', though!!!)
-                if (!(Exc is EDBConnectionNotEstablishedException)
-                    && !(Exc is EDBConnectionBrokenException))
-                {
-                    TLogging.Log("DBAccess.BeginTransactionOnIdleDBAccessObj encountered an Exception: " + Exc.ToString());
-                }
-
-                throw;
-            }
-            finally
-            {
-                if (LockObtained
-                    && (!LockAlreadyReleasedEarly))
-                {
-                    // Release the 'lock' on the DBAccess.GDBAccessObj that we obtained earlier to allow other threads again
-                    DBAccess.GDBAccessObj.ReleaseCoordinatedDBAccess();
-                }
-            }
-        }
-
-        /// <summary>
-        /// Begins a DB Transaction on a <see cref="TDataBase"/> instance that has currently not got a DB Transaction
-        /// running and hence can be used to start a DB Transaction. If the <see cref="DBAccess.GDBAccessObj"/> instance
-        /// has currently not got a DB Transaction running then this will be used and a new DB Transaction will be started
-        /// on that, otherwise a separate <see cref="TDataBase" /> instance will be created and a separate DB Connection
-        /// will be started on that, on which the new DB Transaction will be started on. (This process is completely
-        /// thread-safe!)
-        /// </summary>
-        /// <remarks><em>Important:</em> YOU are responsible to close a DB Connection that was started inside this Method!
-        /// The <paramref name="ANewDBConnectionEstablished"/> Argument will be true in that case, and you must call
-        /// <see cref="TDataBase.CloseDBConnection"/> on the <see cref="TDataBase"/> instance that the DB Transaction
-        /// was started on - which is returned in <paramref name="ADBAccessObj"/>!!! Make sure you are using a try-finally
-        /// clause to ensure that the closing will always happen when necessary!</remarks>
         /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" />.</param>
         /// <param name="ADBAccessObj">The <see cref="TDataBase"/> instance that the DB Transaction was started on.
         /// This will be the <see cref="DBAccess.GDBAccessObj"/> instance if
@@ -432,6 +306,13 @@ namespace Ict.Common.DB
                         // Release the 'lock' on the DBAccess.GDBAccessObj that we obtained earlier to allow other threads again
                         DBAccess.GDBAccessObj.ReleaseCoordinatedDBAccess();
                         LockAlreadyReleasedEarly = true;
+                    }
+
+                    if (TSrvSetting.RDMBSType == TDBType.SQLite)
+                    {
+                        // there is an issue with locked database file. therefore trying to avoid multiple database connections
+                        // see https://github.com/openpetra/openpetra/issues/182
+                        throw new Exception("should not get here, sqlite locks the database, use GetNewOrExistingTransaction instead");
                     }
 
                     // There is a DB Transaction running on the DBAccess.GDBAccessObj instance = we need to create a separate
@@ -502,35 +383,6 @@ namespace Ict.Common.DB
         /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction gets rolled back and the
         /// DB Connection gets closed if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
         /// </summary>
-        /// <param name="AContext">Context in which the Method runs (passed as Name to a newly established DB Connection
-        /// (if one indeed needs to be established) and as Name to the DB Transaction, too.</param>
-        /// <param name="AReadTransaction">DB Transaction that got started inside this Method. <em>WARNING: </em>
-        /// This gets rolled back automatically after the C# Delegate in <paramref name="AEncapsulatedDBAccessCode"/>
-        /// got executed!</param>
-        /// <param name="AEncapsulatedDBAccessCode">C# Delegate that encapsulates C# code that should be run inside the
-        /// automatic DB Transaction handling scope that this Method provides.</param>
-        public static void SimpleAutoReadTransactionWrapper(string AContext, out TDBTransaction AReadTransaction,
-            Action AEncapsulatedDBAccessCode)
-        {
-            TDataBase DBConnectionObj;
-            bool SeparateDBConnectionEstablished;
-
-            // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
-            // hence can be used to start a DB Transaction.
-            AReadTransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(out DBConnectionObj,
-                out SeparateDBConnectionEstablished, AContext + " DB Connection", AContext + " DB Transaction");
-
-            // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was
-            // established in the call above!
-            DBAccess.AutoReadTransaction(ref AReadTransaction, SeparateDBConnectionEstablished, AEncapsulatedDBAccessCode);
-        }
-
-        /// <summary>
-        /// Starts a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
-        /// hence can be used to start a DB Transaction and executes code that is passed in via a C# Delegate in
-        /// <paramref name="AEncapsulatedDBAccessCode"/>. After that the DB Transaction gets rolled back and the
-        /// DB Connection gets closed if a separate DB Connection got indeed opened, otherwise the DB Connection is left open.
-        /// </summary>
         /// <param name="AIsolationLevel">Desired <see cref="IsolationLevel" />.</param>
         /// <param name="AContext">Context in which the Method runs (passed as Name to a newly established DB Connection
         /// (if one indeed needs to be established) and as Name to the DB Transaction, too.</param>
@@ -542,6 +394,39 @@ namespace Ict.Common.DB
         public static void SimpleAutoReadTransactionWrapper(IsolationLevel AIsolationLevel, string AContext,
             out TDBTransaction AReadTransaction, Action AEncapsulatedDBAccessCode)
         {
+            if (TSrvSetting.RDMBSType == TDBType.SQLite && DBAccess.GDBAccessObj != null)
+            {
+                // there is an issue with locked database file. therefore trying to avoid multiple database connections
+                // see https://github.com/openpetra/openpetra/issues/182
+
+                bool NewTransaction;
+                AReadTransaction = DBAccess.GDBAccessObj.GetNewOrExistingTransaction(AIsolationLevel,
+                    TEnforceIsolationLevel.eilMinimum,
+                    out NewTransaction);
+                try
+                {
+                    AEncapsulatedDBAccessCode();
+                }
+                catch (Exception)
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.RollbackTransaction();
+                        NewTransaction = false;
+                        TLogging.LogAtLevel(7, "SimpleAutoReadTransactionWrapper: rolled back own transaction.");
+                    }
+                }
+                finally
+                {
+                    if (NewTransaction)
+                    {
+                        DBAccess.GDBAccessObj.CommitTransaction();
+                        TLogging.LogAtLevel(7, "SimpleAutoReadTransactionWrapper: committed own transaction.");
+                    }
+                }
+                return;
+            }
+
             TDataBase DBConnectionObj;
             bool SeparateDBConnectionEstablished;
 
@@ -581,7 +466,7 @@ namespace Ict.Common.DB
 
             // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
             // hence can be used to start a DB Transaction.
-            ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(out DBConnectionObj,
+            ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.ReadCommitted, out DBConnectionObj,
                 out SeparateDBConnectionEstablished, AContext + " DB Connection", AContext + " DB Transaction");
 
             // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was
@@ -616,7 +501,7 @@ namespace Ict.Common.DB
 
             // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction running and
             // hence can be used to start a DB Transaction.
-            ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(out DBConnectionObj,
+            ATransaction = DBAccess.BeginTransactionOnIdleDBAccessObj(IsolationLevel.ReadCommitted, out DBConnectionObj,
                 out SeparateDBConnectionEstablished, AContext + " DB Connection", AContext + " DB Transaction");
 
             // Automatic handling of a Read-only DB Transaction - and also the closing the DB Connection if one was

@@ -55,6 +55,8 @@ COPY p_address_block_element FROM '{#ABSOLUTEBASEDATAPATH}/p_address_block_eleme
 INSERT INTO s_system_status(s_user_id_c,s_system_login_status_l) VALUES('SYSADMIN', true);
 INSERT INTO p_partner(p_partner_key_n, p_partner_short_name_c, p_status_code_c) VALUES(0, 'INVALID PARTNER', 'INACTIVE');
 INSERT INTO s_system_defaults(s_default_code_c, s_default_description_c, s_default_value_c) VALUES ('LocalisedCountyLabel', 'LocalisedCountyLabel', 'County/St&ate');
+-- Whether or not the user should be allowed to enter Recipient key 0000000000
+INSERT INTO s_system_defaults(s_default_code_c, s_default_value_c) VALUES('RecipientZeroIsValid', 'true');
 
 -- setup initial user permissions
 INSERT INTO s_user_module_access_permission(s_user_id_c,s_module_id_c,s_can_access_l) VALUES('SYSADMIN', 'SYSMAN', true);

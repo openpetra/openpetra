@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,7 +76,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper("TCommonDataReader.GetData", out ReadTransaction,
+            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TCommonDataReader.GetData", out ReadTransaction,
                 delegate
                 {
                     GetData(ATablename, ASearchCriteria, out ResultTable, ReadTransaction);
