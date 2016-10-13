@@ -68,7 +68,6 @@ namespace Ict.Petra.Server.MFinance.Gift
     {
         String FDelimiter;
         Int32 FLedgerNumber;
-        String FDateFormatString;
         GiftBatchTDS FMainDS;
         CultureInfo FCultureInfoNumberFormat;
         CultureInfo FCultureInfoDate;
@@ -191,14 +190,13 @@ namespace Ict.Petra.Server.MFinance.Gift
             // Parse the supplied parameters
             FDelimiter = (String)ARequestParams["Delimiter"];
             FLedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FCultureInfoDate = new CultureInfo("en-GB");
-            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
@@ -919,14 +917,13 @@ namespace Ict.Petra.Server.MFinance.Gift
             // Parse the supplied parameters
             FDelimiter = (String)ARequestParams["Delimiter"];
             FLedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FCultureInfoDate = new CultureInfo("en-GB");
-            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             bool TaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);

@@ -56,7 +56,6 @@ namespace Ict.Petra.Server.MFinance.GL
     public class TGLImporting
     {
         String FDelimiter;
-        String FDateFormatString;
         CultureInfo FCultureInfoNumberFormat;
         CultureInfo FCultureInfoDate;
         String FImportLine;
@@ -144,14 +143,13 @@ namespace Ict.Petra.Server.MFinance.GL
             // Parse the supplied parameters
             FDelimiter = (String)ARequestParams["Delimiter"];
             Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FCultureInfoDate = new CultureInfo("en-GB");
-            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             // Initialise our working variables
             Int32 InitialTextLength = AImportString.Length;
@@ -843,13 +841,12 @@ namespace Ict.Petra.Server.MFinance.GL
 
             FDelimiter = (String)ARequestParams["Delimiter"];
             Int32 LedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
-            FDateFormatString = (String)ARequestParams["DateFormatString"];
+            String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
 
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            FCultureInfoDate = new CultureInfo("en-GB");
-            FCultureInfoDate.DateTimeFormat.ShortDatePattern = FDateFormatString;
+            FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             TDBTransaction Transaction = null;
             Int32 RowNumber = 0;

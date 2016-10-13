@@ -96,7 +96,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ImportBatches(TGiftImportDataSourceEnum AImportSource, GiftBatchTDS AMainDS)
         {
             bool ImportOK = false;
-            String ImportOptions;
             OpenFileDialog OFileDialog = null;
 
             if (FPetraUtilsObject.HasChanges)
@@ -127,16 +126,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         return;
                     }
 
-                    ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-                    String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                    FdlgSeparator.SelectedSeparator = "\t";
                     FdlgSeparator.CSVData = ImportString;
-                    FdlgSeparator.DateFormat = dateFormatString;
-
-                    if (ImportOptions.Length > 1)
-                    {
-                        FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
-                    }
                 }
                 else if (AImportSource == TGiftImportDataSourceEnum.FromFile)
                 {
@@ -149,7 +139,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     OFileDialog.Title = Catalog.GetString("Import Batches from CSV File");
                     OFileDialog.Filter = Catalog.GetString("Gift Batch Files(*.csv)|*.csv|Text Files(*.txt)|*.txt");
-                    ImportOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                     // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
                     TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
@@ -166,16 +155,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 MessageBoxIcon.Stop);
                             return;
                         }
-
-                        String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                        FdlgSeparator.DateFormat = dateFormatString;
-
-                        if (ImportOptions.Length > 1)
-                        {
-                            FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
-                        }
-
-                        FdlgSeparator.SelectedSeparator = ImportOptions.Substring(0, 1);
                     }
                     else
                     {
@@ -184,9 +163,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 }
                 else
                 {
-                    // unknown source!!  The following need a value...
-                    ImportOptions = String.Empty;
+                    // unknown source!!
+                    return;
                 }
+
+                String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+
+                FdlgSeparator.DateFormat = dateFormatString;
+                FdlgSeparator.NumberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+                FdlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(FdlgSeparator.FileContent) ??
+                                                  ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : ";");
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
@@ -295,11 +282,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             }
                         }
                     }
-
-                    // We save the defaults even if ok is false - because the client will probably want to try and import
-                    //   the same file again after correcting any errors
-                    SaveUserDefaults(OFileDialog, ImportOptions);
                 }
+
+                // We save the defaults even if ok is false - because the client will probably want to try and import
+                //   the same file again after correcting any errors
+                SaveUserDefaults(OFileDialog);
 
                 if (ImportOK)
                 {
@@ -342,7 +329,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public bool ImportTransactions(AGiftBatchRow ACurrentBatchRow, TGiftImportDataSourceEnum AImportSource)
         {
             bool ok = false;
-            String impOptions;
             OpenFileDialog dialog = null;
             Boolean IsPlainText = false;
 
@@ -387,16 +373,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     return false;
                 }
 
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                FdlgSeparator.SelectedSeparator = "\t";
                 FdlgSeparator.CSVData = importString;
-                FdlgSeparator.DateFormat = dateFormatString;
-
-                if (impOptions.Length > 1)
-                {
-                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                }
             }
             else if (AImportSource == TGiftImportDataSourceEnum.FromFile)
             {
@@ -409,7 +386,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                 dialog.Title = Catalog.GetString("Import Transactions from CSV File");
                 dialog.Filter = Catalog.GetString("Gift Transactions files (*.csv)|*.csv|Text Files (*.txt)|*.txt");
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
                 TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
@@ -428,16 +404,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     }
 
                     IsPlainText = (Path.GetExtension(dialog.FileName).ToLower() == ".txt");
-
-                    String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                    FdlgSeparator.DateFormat = dateFormatString;
-
-                    if (impOptions.Length > 1)
-                    {
-                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                    }
-
-                    FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
                 }
                 else
                 {
@@ -447,8 +413,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             else
             {
                 // unknown source!!  The following need a value...
-                impOptions = String.Empty;
+                return false;
             }
+
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+
+            FdlgSeparator.DateFormat = dateFormatString;
+            FdlgSeparator.NumberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+            FdlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(FdlgSeparator.FileContent) ??
+                                              ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : ";");
 
             if (IsPlainText || (FdlgSeparator.ShowDialog() == DialogResult.OK))
             {
@@ -538,13 +512,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         }
                     }
                 }
+            }
 
-                // We save the defaults even if ok is false - because the client will probably want to try and import
-                //   the same file again after correcting any errors
-                if (!IsPlainText)
-                {
-                    SaveUserDefaults(dialog, impOptions);
-                }
+            // We save the defaults even if ok is false - because the client will probably want to try and import
+            //   the same file again after correcting any errors
+            if (!IsPlainText)
+            {
+                SaveUserDefaults(dialog);
             }
 
             if (ok)
@@ -615,14 +589,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             AMessages = AResultMessages;
         }
 
-        private void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
+        private void SaveUserDefaults(OpenFileDialog dialog)
         {
             if (dialog != null)
             {
                 TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
             }
 
-            impOptions = FdlgSeparator.SelectedSeparator;
+            string impOptions = FdlgSeparator.SelectedSeparator;
             impOptions += FdlgSeparator.NumberFormat;
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);

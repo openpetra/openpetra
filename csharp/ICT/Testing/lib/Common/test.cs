@@ -204,18 +204,232 @@ namespace Ict.Common.Testing
         {
             // see https://sourceforge.net/apps/mantisbt/openpetraorg/view.php?id=840
 
-            string DateFormatString = "dd/MM/yyyy";
-            CultureInfo CultureInfoDate = new CultureInfo("en-GB");
+            const string badDate = "Incorrect date for ";
+            CultureInfo CultureInfoDate = StringHelper.GetCultureInfoForDateFormat("dd/MM/yyyy");   // actually it only matters that it does NOT start with M
 
-            CultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormatString;
             string sDate = "31/01/2012";
-            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), DateFormatString);
 
-            DateFormatString = "MM/dd/yyyy";
-            CultureInfoDate = new CultureInfo("en-GB");
-            CultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormatString;
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "31/1/12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "31-1-12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "31.1.12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "31 1 12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "5 1 2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "5.1.2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "5-1-2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "5/1/2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "5-Jan-2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "Jan-5-2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "2012-1-5";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "2012-01-05";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+
+            CultureInfoDate = StringHelper.GetCultureInfoForDateFormat("MM/dd/yyyy");   // actually it only matters that it starts with M
+
             sDate = "01/31/2012";
-            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), DateFormatString);
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1/31/12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1-31-12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1.31.12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1 31 12";
+            Assert.AreEqual(new DateTime(2012, 01, 31), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1 5 2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1.5.2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1-5-2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "1/5/2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "5-Jan-2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "Jan-5-2012";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "2012-1-5";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+            sDate = "2012-01-05";
+            Assert.AreEqual(new DateTime(2012, 01, 5), Convert.ToDateTime(sDate, CultureInfoDate), badDate + sDate);
+
+            const string badLooksLike = "Incorrect LooksLike for ";
+            const string badMonthFirst = "Incorrect month first for ";
+            const string badDayFirst = "Incorrect day first for ";
+
+            DateTime dtMonthFirst, dtDayFirst;
+            sDate = "1/2/12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "1-2-12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "1.2.12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "1 2 12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "01/02/12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "01-02-12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "01.02.12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+            sDate = "01 02 12";
+            Assert.IsTrue(StringHelper.LooksLikeAmbiguousShortDate(sDate, out dtMonthFirst, out dtDayFirst), badLooksLike + sDate);
+            Assert.AreEqual(dtMonthFirst, new DateTime(2012, 1, 2), badMonthFirst + sDate);
+            Assert.AreEqual(dtDayFirst, new DateTime(2012, 2, 1), badDayFirst + sDate);
+        }
+
+        /// <summary>
+        /// Test our unambiguous number parsing for 'LooksLikeFloat'
+        /// </summary>
+        [Test]
+        public void TestNumberParsing()
+        {
+            const string badLooksLike = "Incorrect number evaluation for ";
+            const string badDecimalSeparator = "Incorrect decimal separator for ";
+            const string badDecSepNull = "Decimal separator is null for ";
+            const string badConversion = "Incorrect float conversion for ";
+
+            NumberFormatInfo dotFormat = new CultureInfo("en-GB").NumberFormat;
+            NumberFormatInfo commaFormat = new CultureInfo("de-DE").NumberFormat;
+
+            string s;
+            bool? isDotDecimal;
+
+            // All these should look like unambiguous dot numbers
+            s = "1.234";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsTrue(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, dotFormat) - 1.234f, 0.001f, badConversion + s);
+            s = "1234.567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsTrue(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, dotFormat) - 1234.567f, 0.001f, badConversion + s);
+            s = "1,234.567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsTrue(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, dotFormat) - 1234.567f, 0.001f, badConversion + s);
+            s = "1 234.567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsTrue(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, dotFormat) - 1234.567f, 0.001f, badConversion + s);
+            s = "1,234,567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsTrue(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, dotFormat) - 1234567f, 0.1f, badConversion + s);
+            s = "1,234,567.89";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsTrue(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, dotFormat) - 1234567.89f, 0.01f, badConversion + s);
+
+            // All these should look like unambiguous comma numbers
+            s = "1,234";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);    // This is the one that we say is comma but .NET can take as dot
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1.234f, 0.001f, badConversion + s);
+            s = "1234,567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);    // This is the one that we say is comma but .NET can take as dot
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234.567f, 0.001f, badConversion + s);
+            s = "1.234,567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);    // This is the one that we say is comma but .NET can take as dot
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234.567f, 0.001f, badConversion + s);
+            s = "1 234,567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);    // This is the one that we say is comma but .NET can take as dot
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234.567f, 0.001f, badConversion + s);
+            s = "1.234.567,89";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234567.89f, 0.01f, badConversion + s);
+            s = "1 234 567,89";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234567.89f, 0.01f, badConversion + s);
+            s = "1'234'567,89";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234567.89f, 0.01f, badConversion + s);
+            s = "1.234.567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234567f, 0.1f, badConversion + s);
+            s = "1 234 567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234567f, 0.1f, badConversion + s);
+            s = "1'234'567";
+            Assert.IsTrue(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNotNull(isDotDecimal, badDecSepNull + s);
+            Assert.IsFalse(isDotDecimal.Value, badDecimalSeparator + s);
+            Assert.Less(ConvertToFloat(s, commaFormat) - 1234567f, 0.1f, badConversion + s);
+
+            // This is ambiguous
+            s = "1234";
+            Assert.IsFalse(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNull(isDotDecimal, badDecSepNull + s);
+
+            // These are not valid numbers
+            s = "1.234,567.89";
+            Assert.IsFalse(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNull(isDotDecimal, badDecSepNull + s);
+
+            s = "a.bcd";
+            Assert.IsFalse(StringHelper.LooksLikeFloat(s, out isDotDecimal), badLooksLike + s);
+            Assert.IsNull(isDotDecimal, badDecSepNull + s);
+        }
+
+        private float ConvertToFloat(string AString, NumberFormatInfo ANumberFormatInfo)
+        {
+            // Importing in OP always translates to Invariant culture and removes the thousands separators
+            if (ANumberFormatInfo.NumberDecimalSeparator == ",")
+            {
+                return Convert.ToSingle(AString.Replace(".", "").Replace(" ", "").Replace("'", "").Replace(",", "."), CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                return Convert.ToSingle(AString.Replace(",", "").Replace(" ", "").Replace("'", ""), CultureInfo.InvariantCulture);
+            }
         }
 
         /// test formatting currency values

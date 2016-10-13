@@ -265,13 +265,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
 
             // work out what the separator is...
-            string separator = StringHelper.GetCSVSeparator(dialog.FileContent);
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
-            if (separator == null)
-            {
-                // Just in case.  The user will have to decide on the Preview screen.
-                separator = ",";
-            }
+            string separator = StringHelper.GetCSVSeparator(dialog.FileContent) ??
+                               ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : ";");
+            string numberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
 
             // Now we need to convert the multi-column file/clipboard data to a simple two column list
             string twoColumnImport;
@@ -289,7 +287,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             dialog.DateFormat = "";         // This will make the combo box empty
 
             // Show the Preview dialog
-            if (dialog.ShowDialog() != DialogResult.OK)
+            DialogResult dialogResult = dialog.ShowDialog();
+
+            // Save the settings whether the result was OK or cancel
+            TUserDefaults.SetDefault("Imp Options", dialog.SelectedSeparator + numberFormat);
+            TUserDefaults.SaveChangedUserDefaults();
+
+            if (dialogResult != DialogResult.OK)
             {
                 // It was cancelled
                 return;

@@ -48,7 +48,6 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
-using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {

@@ -266,8 +266,18 @@ namespace Ict.Petra.Server.MFinance.Common
 
             try
             {
-                decimal dec = Convert.ToDecimal(sReturn, ACultureInfoNumberFormat);
-                return dec;
+                // Always use the invariant culture
+                if (ACultureInfoNumberFormat.NumberFormat.NumberDecimalSeparator == ".")
+                {
+                    // Decimal dot: just replace thousands with nothing (comma, space and apostrophe)
+                    return Convert.ToDecimal(sReturn.Replace(",", "").Replace(" ", "").Replace("'", ""), CultureInfo.InvariantCulture);
+                }
+                else
+                {
+                    // Decimal comma: replace thousands with nothing (dot, space and apostrophe) and then comma with dot
+                    return Convert.ToDecimal(sReturn.Replace(".", "").Replace(" ", "").Replace("'", "").Replace(",",
+                            "."), CultureInfo.InvariantCulture);
+                }
             }
             catch
             {

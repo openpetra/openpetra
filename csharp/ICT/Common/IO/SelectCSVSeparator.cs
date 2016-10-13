@@ -27,6 +27,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Data;
 using System.Reflection;
 using GNU.Gettext;
@@ -42,6 +43,13 @@ namespace Ict.Common.IO
         public static string NUMBERFORMAT_AMERICAN = "American";
         /// <summary>European number format: decimal comma, point for thousands separator</summary>
         public static string NUMBERFORMAT_EUROPEAN = "European";
+
+        /// <summary>american date format: month first **when the date is ambiguous**
+        /// This does not alter the ability to parse yyyy-MM-dd or dd-MMM-yy successfully</summary>
+        public static string DATEFORMAT_MONTH_FIRST = "MDY";
+        /// <summary>european date format: day first **when the date is ambiguous**
+        /// This does not alter the ability to parse yyyy-MM-dd or MMM-dd-yy successfully</summary>
+        public static string DATEFORMAT_DAY_FIRST = "DMY";
 
         /// <summary>The connected UserID</summary>
         private static string FUserID = null;
@@ -84,6 +92,8 @@ namespace Ict.Common.IO
             {
                 FSeparator = value;
                 UpdateRadioButtons();
+                DateFormatChanged();
+                NumberFormatChanged();
             }
         }
 
@@ -94,29 +104,12 @@ namespace Ict.Common.IO
         {
             get
             {
-                return cmbDateFormat.SelectedItem.ToString();
+                return cmbDateFormat.SelectedIndex == 0 ? DATEFORMAT_MONTH_FIRST : DATEFORMAT_DAY_FIRST;
             }
             set
             {
-                //Conversion of some old Petra Values
-                if (value.Equals("MDY"))
-                {
-                    value = "MM/dd/yyyy";
-                }
-                else
-                {
-                    if (value.Equals("DMY"))
-                    {
-                        value = "dd/MM/yyyy";
-                    }
-                }
-
-                if (!cmbDateFormat.Items.Contains(value))
-                {
-                    cmbDateFormat.Items.Add(value);
-                }
-
-                cmbDateFormat.SelectedItem = value;
+                // Note: Old Petra used MDY and DMY and it suits us to define our contsants the same way
+                cmbDateFormat.SelectedIndex = value.StartsWith("M") ? 0 : 1;
             }
         }
 
@@ -177,23 +170,25 @@ namespace Ict.Common.IO
             this.rbtSemicolon.Text = Catalog.GetString("Semicolon");
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.btnOK.Text = Catalog.GetString("OK");
-            this.lblDateFormat.Text = Catalog.GetString("Date format") + ":";
+            this.lblDateFormat.Text = Catalog.GetString("Ambiguous dates") + ":";
             this.lblNumberFormat.Text = Catalog.GetString("Number format") + ":";
+            this.lblTextEncoding.Text = Catalog.GetString("Text encoding") + ":";
             this.Text = Catalog.GetString("Select CSV Separator");
             #endregion
 
             FSeparator = TAppSettingsManager.GetValue("CSVSeparator",
                 System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator);
+
             System.Globalization.CultureInfo myCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
-            String regionalDateString = myCulture.DateTimeFormat.ShortDatePattern;
 
-            if (!cmbDateFormat.Items.Contains(regionalDateString))
-            {
-                cmbDateFormat.Items.Insert(0, regionalDateString);
-            }
+            //if (!cmbDateFormat.Items.Contains(regionalDateString))
+            //{
+            //    cmbDateFormat.Items.Insert(0, regionalDateString);
+            //}
 
-            cmbDateFormat.SelectedIndex = cmbDateFormat.Items.IndexOf(regionalDateString);
+            //cmbDateFormat.SelectedIndex = cmbDateFormat.Items.IndexOf(regionalDateString);
 
+            DateFormat = myCulture.DateTimeFormat.ShortDatePattern;
             cmbNumberFormat.SelectedIndex = cmbNumberFormat.Items.IndexOf(myCulture.NumberFormat.NumberDecimalSeparator);
 
             TTextFileEncoding dataSource = new TTextFileEncoding();
@@ -226,6 +221,8 @@ namespace Ict.Common.IO
             }
 
             cmbTextEncoding.SelectedIndexChanged += CmbTextEncoding_SelectedIndexChanged;
+            cmbDateFormat.SelectedIndexChanged += cmbDateFormat_SelectedIndexChanged;
+            cmbNumberFormat.SelectedIndexChanged += cmbNumberFormat_SelectedIndexChanged;
         }
 
         private void Form_Closing(object sender, FormClosingEventArgs e)
@@ -240,6 +237,294 @@ namespace Ict.Common.IO
             FFileContent = FCurrentEncoding.GetString(FRawBytes);
 
             DisplayGrid();
+        }
+
+        private void cmbNumberFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            NumberFormatChanged();
+        }
+
+        private void NumberFormatChanged()
+        {
+            if (cmbNumberFormat.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            this.Cursor = Cursors.WaitCursor;
+
+            StringReader sr = new StringReader(FFileContent);
+            int rowNumber = 0;
+            List <Tuple <string, int>>floatCandidates = new List <Tuple <string, int>>();
+
+            string line = sr.ReadLine();
+
+            while (line != null && rowNumber < 100)
+            {
+                line = line.Trim();
+
+                if ((line.Length == 0) || line.StartsWith("#") || line.StartsWith("/*"))
+                {
+                    line = sr.ReadLine();
+                    continue;
+                }
+
+                rowNumber++;
+
+                // Parse the line
+                StringCollection columns = StringHelper.GetCSVList(line, SelectedSeparator);
+                bool ? isDotDecimal;
+
+                foreach (string column in columns)
+                {
+                    if (StringHelper.LooksLikeFloat(column, out isDotDecimal) && isDotDecimal.HasValue)
+                    {
+                        // The Tuple int matches the ComboBox selected index
+                        floatCandidates.Add(new Tuple <string, int>(column, isDotDecimal.Value ? 0 : 1));
+                    }
+                }
+
+                line = sr.ReadLine();
+            }
+
+            // Did we find any float candidates?
+            if (floatCandidates.Count > 0)
+            {
+                int selectedIndex = cmbNumberFormat.SelectedIndex;
+                string msg = Catalog.GetString("Warning: ");
+                int itemCount = 0;
+
+                foreach (Tuple <string, int>candidate in floatCandidates)
+                {
+                    if (candidate.Item2 != selectedIndex)
+                    {
+                        if (itemCount > 0)
+                        {
+                            msg += ",  ";
+                        }
+
+                        msg += string.Format("'{0}'", candidate.Item1);
+                        itemCount++;
+
+                        if (itemCount > 5)
+                        {
+                            break;
+                        }
+                    }
+                }
+
+                if (itemCount > 0)
+                {
+                    msg = string.Format(Catalog.GetPluralString("{0} looks like a number", "{0} look like numbers", itemCount), msg);
+                    msg += Catalog.GetString(" but the selected Number Format does not match.");
+                    lblNumberFormatHint.Text = msg;
+                    lblNumberFormatHint.BackColor = Color.Yellow;
+                    this.Cursor = Cursors.Default;
+                    return;
+                }
+            }
+
+            lblNumberFormatHint.Text = string.Empty;
+            lblNumberFormatHint.BackColor = DefaultBackColor;
+            this.Cursor = Cursors.Default;
+        }
+
+        private void cmbDateFormat_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            DateFormatChanged();
+        }
+
+        private void DateFormatChanged()
+        {
+            if (cmbDateFormat.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            this.Cursor = Cursors.WaitCursor;
+
+            StringReader sr = new StringReader(FFileContent);
+            int rowNumber = 0;
+            int numDatesFound = 0;
+            List <Tuple <string, DateTime>>monthFirstOnlyCandidates = new List <Tuple <string, DateTime>>();
+            List <Tuple <string, DateTime>>dayFirstOnlyCandidates = new List <Tuple <string, DateTime>>();
+            string badFormatSuffix = Catalog.GetString(" but the selected Date Format does not match.");
+
+            DateTime minMonthFirstDate, maxMonthFirstDate, minDayFirstDate, maxDayFirstDate;
+            minMonthFirstDate = minDayFirstDate = DateTime.MaxValue;
+            maxMonthFirstDate = maxDayFirstDate = DateTime.MinValue;
+
+            string line = sr.ReadLine();
+
+            while (line != null && rowNumber < 100)
+            {
+                line = line.Trim();
+
+                if ((line.Length == 0) || line.StartsWith("#") || line.StartsWith("/*"))
+                {
+                    line = sr.ReadLine();
+                    continue;
+                }
+
+                rowNumber++;
+
+                // Parse the line
+                StringCollection columns = StringHelper.GetCSVList(line, SelectedSeparator);
+                DateTime monthFirstDate, dayFirstDate;
+
+                foreach (string column in columns)
+                {
+                    if (StringHelper.LooksLikeAmbiguousShortDate(column, out monthFirstDate, out dayFirstDate))
+                    {
+                        // We have a date column...
+                        numDatesFound++;
+
+                        // Note the information if the Date can only be parsed one way (i.e. ignoring dates like 1/2/16 which parse both ways)
+                        if ((monthFirstDate > DateTime.MinValue) && (dayFirstDate == DateTime.MinValue))
+                        {
+                            monthFirstOnlyCandidates.Add(new Tuple <string, DateTime>(column, monthFirstDate));
+                        }
+
+                        if ((dayFirstDate > DateTime.MinValue) && (monthFirstDate == DateTime.MinValue))
+                        {
+                            dayFirstOnlyCandidates.Add(new Tuple <string, DateTime>(column, dayFirstDate));
+                        }
+
+                        // Now work out the min and max dates that we discovered
+                        if (monthFirstDate > maxMonthFirstDate)
+                        {
+                            maxMonthFirstDate = monthFirstDate;
+                        }
+
+                        if ((monthFirstDate > DateTime.MinValue) && (monthFirstDate < minMonthFirstDate))
+                        {
+                            minMonthFirstDate = monthFirstDate;
+                        }
+
+                        if (dayFirstDate > maxDayFirstDate)
+                        {
+                            maxDayFirstDate = dayFirstDate;
+                        }
+
+                        if ((dayFirstDate > DateTime.MinValue) && (dayFirstDate < minDayFirstDate))
+                        {
+                            minDayFirstDate = dayFirstDate;
+                        }
+                    }
+                }
+
+                line = sr.ReadLine();
+            }
+
+            // What did we find?
+            string badMonthFirstCandidateString = string.Empty;
+            string badDayFirstCandidateString = string.Empty;
+            List <string>distinctItems = new List <string>();
+
+            // Build a string containing any bad date formats
+            if (DateFormat.StartsWith("M"))
+            {
+                // Current option starts with Month
+                int samples = 0;
+
+                foreach (Tuple <string, DateTime>candidate in dayFirstOnlyCandidates)
+                {
+                    // We add this to our message string if it is not a repeat of a date we already have
+                    if (!distinctItems.Contains(candidate.Item1))
+                    {
+                        distinctItems.Add(candidate.Item1);
+
+                        // This only works as d/M/y or y/M/d
+                        if (badMonthFirstCandidateString.Length > 0)
+                        {
+                            badMonthFirstCandidateString += ",  ";
+                        }
+
+                        badMonthFirstCandidateString += string.Format("'{0}'", candidate.Item1);
+                        samples++;
+
+                        if (samples > 5)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                // Current option starts with Day or Year
+                // Note that this is why it is important in OP that importing dates that start with y use en-GB Culture as a basis.
+                // Year parsing uses day-first parsing as a basis
+                int samples = 0;
+
+                foreach (Tuple <string, DateTime>candidate in monthFirstOnlyCandidates)
+                {
+                    // We add this to our message string if it is not a repeat of a date we already have
+                    if (!distinctItems.Contains(candidate.Item1))
+                    {
+                        distinctItems.Add(candidate.Item1);
+
+                        // This only works as M/d/y
+                        if (badDayFirstCandidateString.Length > 0)
+                        {
+                            badDayFirstCandidateString += ",  ";
+                        }
+
+                        badDayFirstCandidateString += string.Format("'{0}'", candidate.Item1);
+                        samples++;
+
+                        if (samples > 5)
+                        {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Work out what the Hint/Warning is going to be (if anything)
+            bool showHighlight = false;
+
+            if (badMonthFirstCandidateString.Length > 0)
+            {
+                lblDateFormatHint.Text = string.Format(Catalog.GetPluralString(
+                        "Warning: {0} looks like a date{1}", "Warning: {0} look like dates{1}", distinctItems.Count),
+                    badMonthFirstCandidateString, badFormatSuffix);
+                showHighlight = true;
+            }
+            else if (badDayFirstCandidateString.Length > 0)
+            {
+                lblDateFormatHint.Text = string.Format(Catalog.GetPluralString(
+                        "Warning: {0} looks like a date{1}", "Warning: {0} look like dates{1}", distinctItems.Count),
+                    badDayFirstCandidateString, badFormatSuffix);
+                showHighlight = true;
+            }
+            else if (DateFormat.StartsWith("M") && (minMonthFirstDate > DateTime.MinValue) && (maxMonthFirstDate > DateTime.MinValue))
+            {
+                lblDateFormatHint.Text = string.Format(Catalog.GetString(
+                        "Hint: The content appears to contain dates ranging from {0:D} to {1:D}"),
+                    minMonthFirstDate, maxMonthFirstDate);
+            }
+            else if ((minDayFirstDate > DateTime.MinValue) && (maxDayFirstDate > DateTime.MinValue))
+            {
+                lblDateFormatHint.Text = string.Format(Catalog.GetString(
+                        "Hint: The content appears to contain dates ranging from {0:D} to {1:D}"),
+                    minDayFirstDate, maxDayFirstDate);
+            }
+            else
+            {
+                lblDateFormatHint.Text = string.Empty;
+            }
+
+            if (showHighlight)
+            {
+                lblDateFormatHint.BackColor = Color.Yellow;
+            }
+            else
+            {
+                lblDateFormatHint.BackColor = DefaultBackColor;
+            }
+
+            this.Cursor = Cursors.Default;
         }
 
         private void UpdateRadioButtons()
@@ -419,6 +704,12 @@ namespace Ict.Common.IO
                 }
 
                 grdPreview.ResumeLayout();
+
+                if (FIsActivatedOnce)
+                {
+                    NumberFormatChanged();
+                    DateFormatChanged();
+                }
             }
         }
 

@@ -129,13 +129,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     }
 
                     FdlgSeparator.DateFormat = DateFormatString;
-
-                    if (ImportOptions.Length > 1)
-                    {
-                        FdlgSeparator.NumberFormat = ImportOptions.Substring(1);
-                    }
-
-                    FdlgSeparator.SelectedSeparator = ImportOptions.Substring(0, 1);
+                    FdlgSeparator.NumberFormat =
+                        (ImportOptions.Length > 1) ? ImportOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+                    FdlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(FdlgSeparator.FileContent) ??
+                                                      ((ImportOptions.Length > 0) ? ImportOptions.Substring(0, 1) : ";");
 
                     if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                     {

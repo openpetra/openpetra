@@ -316,6 +316,8 @@ namespace Ict.Common.IO
                         throw new Exception(String.Format(Catalog.GetString("File {0} Cannot be opened."), DialogOpen.FileName));
                     }
 
+                    dlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(dlgSeparator.FileContent);
+
                     if (dlgSeparator.ShowDialog() == DialogResult.OK)
                     {
                         XmlDocument doc = TCsv2Xml.ParseCSVContent2Xml(dlgSeparator.FileContent, dlgSeparator.SelectedSeparator);

@@ -54,7 +54,7 @@ RootNode:
         txtDetailCountryNameLocal: {ColSpan=2, Width=287}
         chkDetailUndercover: {ColSpan=2}
         txtDetailInternatAccessCode: {Label=Int'l Access Code, Width=45, Validation=true, RequiredField=true}
-        txtDetailInternatTelephoneCode: {Label=Int'l Dialling Code, Format=Integer, Width=30, Validation=true}
+        txtDetailInternatTelephoneCode: {Label=Int'l Dialling Code, Format=Integer, Width=45, Validation=true}
         cmbDetailAddressOrder: {ColSpan=2, Label=Address Display Order, List=AddressDisplayOrderList, Width=145}
         cmbDetailInternatPostalTypeCode: {ColSpan=2, Label=Int'l Postal Type, List=InternationalPostalTypeList, Validation=true}
         txtDetailTimeZoneMinimum: {Label=Time Zone From, Width=45, Format=Decimal, OnLeave=UpdateTimeZoneMaximum, Validation=Pair(txtDetailTimeZoneMaximum)}

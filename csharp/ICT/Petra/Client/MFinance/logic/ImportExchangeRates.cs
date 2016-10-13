@@ -89,32 +89,29 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 DlgSeparator.DateFormat = dateFormatString;
-
-                if (impOptions.Length > 1)
-                {
-                    DlgSeparator.NumberFormat = impOptions.Substring(1);
-                }
-
-                DlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
+                DlgSeparator.NumberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+                DlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(DlgSeparator.FileContent) ??
+                                                 ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : ";");
 
                 if (DlgSeparator.ShowDialog() == DialogResult.OK)
                 {
                     // Save the settings that we specified
-                    impOptions = DlgSeparator.SelectedSeparator;
-                    impOptions += DlgSeparator.NumberFormat;
-                    TUserDefaults.SetDefault("Imp Options", impOptions);
-                    TUserDefaults.SetDefault("Imp Date", DlgSeparator.DateFormat);
-                    TUserDefaults.SaveChangedUserDefaults();
+                    SaveOptions(DlgSeparator);
 
-                    // Do the import and retuen the number of rows imported and any messages
+                    // Do the import and return the number of rows imported and any messages
                     return ImportCurrencyExRatesFromCSV(AExchangeRateDT,
-                        DialogBox.FileName,
+                        DlgSeparator.FileContent,
                         DlgSeparator.SelectedSeparator,
                         DlgSeparator.NumberFormat,
                         DlgSeparator.DateFormat,
                         AImportMode,
-                        DlgSeparator.CurrentEncoding,
-                        AResultCollection);
+                        AResultCollection,
+                        Path.GetFileNameWithoutExtension(DialogBox.FileName));
+                }
+                else
+                {
+                    // Save the options anyway
+                    SaveOptions(DlgSeparator);
                 }
             }
 
@@ -139,14 +136,28 @@ namespace Ict.Petra.Client.MFinance.Logic
             TVerificationResultCollection AResultCollection)
         {
             // Test import always uses standard file with US formats
+            TDlgSelectCSVSeparator separatorDialog = new TDlgSelectCSVSeparator(false);
+
+            separatorDialog.OpenCsvFile(AImportFileName);
+
             return ImportCurrencyExRatesFromCSV(AExchangeRateDT,
-                AImportFileName,
+                separatorDialog.FileContent,
                 ACSVSeparator,
                 TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN,
                 "MM/dd/yyyy",
                 AImportMode,
-                Encoding.Default,
-                AResultCollection);
+                AResultCollection,
+                Path.GetFileNameWithoutExtension(AImportFileName));
+        }
+
+        private static void SaveOptions(TDlgSelectCSVSeparator ASeparatorDialog)
+        {
+            string impOptions = ASeparatorDialog.SelectedSeparator;
+
+            impOptions += ASeparatorDialog.NumberFormat;
+            TUserDefaults.SetDefault("Imp Options", impOptions);
+            TUserDefaults.SetDefault("Imp Date", ASeparatorDialog.DateFormat);
+            TUserDefaults.SaveChangedUserDefaults();
         }
 
         /// <summary>
@@ -154,23 +165,24 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// from a one-of-two-styles formatted CSV file
         /// </summary>
         /// <param name="AExchangeRDT">Daily or Corporate exchange rate table</param>
-        /// <param name="ADataFilename">The .CSV file to process</param>
+        /// <param name="ADataFileContent">The content of the .CSV file to process</param>
         /// <param name="ACSVSeparator"></param>
         /// <param name="ANumberFormat"></param>
         /// <param name="ADateFormat"></param>
         /// <param name="AImportMode">Daily or Corporate</param>
-        /// <param name="ATextEncoding">The encoding of the file</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
+        /// <param name="ACurrencyPair">The encoding of the file</param>
         /// <returns>The number of rows that were actually imported.  Rows that duplicate existing rows do not count.
         /// This is usually because this is an attempt to import again after a failed previous attempt.</returns>
         private static int ImportCurrencyExRatesFromCSV(TTypedDataTable AExchangeRDT,
-            string ADataFilename,
+            string ADataFileContent,
             string ACSVSeparator,
             string ANumberFormat,
             string ADateFormat,
             string AImportMode,
-            Encoding ATextEncoding,
-            TVerificationResultCollection AResultCollection)
+            TVerificationResultCollection AResultCollection,
+            string ACurrencyPair = ""
+            )
         {
             // Keep a list of errors/warnings and severity
             List <Tuple <string, TResultSeverity>>InvalidRows = new List <Tuple <string, TResultSeverity>>();
@@ -264,25 +276,21 @@ namespace Ict.Petra.Client.MFinance.Logic
             allCurrencies.CaseSensitive = true;
 
             // Start reading the file
-            using (StreamReader DataFile = new StreamReader(ADataFilename, ATextEncoding))
+            using (StringReader reader = new StringReader(ADataFileContent))
             {
-                string ThousandsSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "," : ".");
-                string DecimalSeparator = (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN ? "." : ",");
-
-                CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
-                MyCultureInfoDate.DateTimeFormat.ShortDatePattern = ADateFormat;
+                CultureInfo MyCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(ADateFormat);
 
                 // TODO: disconnect the grid from the datasource to avoid flickering?
 
-                string FileNameWithoutExtension = Path.GetFileNameWithoutExtension(ADataFilename).ToUpper();
-
-                if ((FileNameWithoutExtension.IndexOf("_") == 3)
-                    && (FileNameWithoutExtension.LastIndexOf("_") == 3)
-                    && (FileNameWithoutExtension.Length == 7))
+                if ((ACurrencyPair.IndexOf("_") == 3)
+                    && (ACurrencyPair.LastIndexOf("_") == 3)
+                    && (ACurrencyPair.Length == 7))
                 {
                     // File name format assumed to be like this: USD_HKD.csv
                     IsShortFileFormat = true;
-                    Currencies = FileNameWithoutExtension.Split(new char[] { '_' });
+                    string[] items = ACurrencyPair.Split(new char[] { '_' });
+                    Currencies[0] = items[0].ToUpper();
+                    Currencies[1] = items[1].ToUpper();
                 }
                 else
                 {
@@ -290,10 +298,10 @@ namespace Ict.Petra.Client.MFinance.Logic
                 }
 
                 int LineNumber = 0;
+                string Line = reader.ReadLine();
 
-                while (!DataFile.EndOfStream)
+                while (Line != null)
                 {
-                    string Line = DataFile.ReadLine();
                     LineNumber++;
 
                     // See if the first line is a special case??
@@ -317,16 +325,18 @@ namespace Ict.Petra.Client.MFinance.Logic
                         if (!bFoundDigit)
                         {
                             // No digits so we will assume the line is a header
+                            Line = reader.ReadLine();
                             continue;
                         }
                     }
 
-                    //Convert separator to a char
-                    char Sep = ACSVSeparator[0];
-                    //Turn current line into string array of column values
-                    string[] CsvColumns = Line.Split(Sep);
+                    if ((Line.Trim().Length == 0) || Line.StartsWith("#") || Line.StartsWith("/*"))
+                    {
+                        Line = reader.ReadLine();
+                        continue;
+                    }
 
-                    int NumCols = CsvColumns.Length;
+                    int NumCols = StringHelper.GetCSVList(Line, ACSVSeparator).Count;
 
                     // Do we have the correct number of columns?
                     int minColCount = IsShortFileFormat ? 2 : 4;
@@ -341,6 +351,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                         InvalidRows.Add(new Tuple <string, TResultSeverity>(resultText, TResultSeverity.Resv_Critical));
                         InvalidColumnCount = true;
+                        Line = reader.ReadLine();
                         continue;
                     }
 
@@ -370,6 +381,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 "Line {0}: invalid currency code ({1})"), LineNumber.ToString(), Currencies[0]);
 
                         InvalidRows.Add(new Tuple <string, TResultSeverity>(resultText, TResultSeverity.Resv_Critical));
+                        Line = reader.ReadLine();
                         continue;
                     }
                     else if (allCurrencies.Rows.Find(Currencies[1]) == null)
@@ -379,6 +391,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 "Line {0}: invalid currency code ({1})"), LineNumber.ToString(), Currencies[1]);
 
                         InvalidRows.Add(new Tuple <string, TResultSeverity>(resultText, TResultSeverity.Resv_Critical));
+                        Line = reader.ReadLine();
                         continue;
                     }
 
@@ -403,6 +416,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 "Line {0}: invalid date ({1})"), LineNumber.ToString(), DateEffectiveStr);
 
                         InvalidRows.Add(new Tuple <string, TResultSeverity>(resultText, TResultSeverity.Resv_Critical));
+                        Line = reader.ReadLine();
                         continue;
                     }
 
@@ -441,11 +455,20 @@ namespace Ict.Petra.Client.MFinance.Logic
                     decimal ExchangeRate = 0.0m;
                     try
                     {
-                        string ExchangeRateString =
-                            StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace(ThousandsSeparator, "").Replace(
-                                DecimalSeparator, ".").Replace("\"", String.Empty);
-
-                        ExchangeRate = Convert.ToDecimal(ExchangeRateString, System.Globalization.CultureInfo.InvariantCulture);
+                        if (ANumberFormat == TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN)
+                        {
+                            // Decimal dot: just replace thousands with nothing (comma, space and apostrophe)
+                            ExchangeRate = Convert.ToDecimal(StringHelper.GetNextCSV(
+                                    ref Line, ACSVSeparator, false, true).Replace(",", "").Replace(" ", "").Replace("'", ""),
+                                CultureInfo.InvariantCulture);
+                        }
+                        else
+                        {
+                            // Decimal comma: replace thousands with nothing (dot, space and apostrophe) and then comma with dot
+                            ExchangeRate = Convert.ToDecimal(StringHelper.GetNextCSV(
+                                    ref Line, ACSVSeparator, false, true).Replace(".", "").Replace(" ", "").Replace("'", "").Replace(",", "."),
+                                CultureInfo.InvariantCulture);
+                        }
 
                         if (ExchangeRate == 0)
                         {
@@ -459,6 +482,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                 "Line {0}: invalid rate of exchange ({1})"), LineNumber.ToString(), ExchangeRate);
 
                         InvalidRows.Add(new Tuple <string, TResultSeverity>(resultText, TResultSeverity.Resv_Critical));
+                        Line = reader.ReadLine();
                         continue;
                     }
 
@@ -495,6 +519,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                                         "Line {0}: invalid effective time ({1})"), LineNumber.ToString(), t);
 
                                 InvalidRows.Add(new Tuple <string, TResultSeverity>(resultText, TResultSeverity.Resv_Critical));
+                                Line = reader.ReadLine();
                                 continue;
                             }
                         }
@@ -569,6 +594,8 @@ namespace Ict.Petra.Client.MFinance.Logic
                             }
                         }
                     }
+
+                    Line = reader.ReadLine();
                 }
 
                 // if there are rows that could not be imported
@@ -648,8 +675,6 @@ namespace Ict.Petra.Client.MFinance.Logic
                         (errorCount > 0) ? TResultSeverity.Resv_Critical : TResultSeverity.Resv_Noncritical);
                     AResultCollection.Add(result);
                 }
-
-                DataFile.Close();
 
                 return RowsImported;
             }

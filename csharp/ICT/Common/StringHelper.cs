@@ -46,6 +46,9 @@ namespace Ict.Common
             ",", ";", "/", "|", "-", ":"
         };
 
+        private static CultureInfo monthFirstCulture = null;
+        private static CultureInfo dayFirstCulture = null;
+
         /// <summary>
         /// This string is returned by the CSV parser if it cannot successfully parse a text CSV field - usually due to mis-matched quote marks.
         /// </summary>
@@ -2481,6 +2484,284 @@ namespace Ict.Common
 //            }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// Get a CultureInfo object that is appropriate for the given Date Format.
+        /// The most important consideration is when parsing short date formats.  All other ones work fine in OpenPetra.
+        /// When parsing short dates it is important to base the CultureInfo on a relevant base culture.
+        /// We use en-US when the date format is month-first and en-GB otherwise (Day or Year first)
+        /// </summary>
+        public static CultureInfo GetCultureInfoForDateFormat(string ADateFormat)
+        {
+            CultureInfo ci = null;
+
+            if (ADateFormat.StartsWith("M"))
+            {
+                // The format is M/d/y
+                // It is best to use the en-US culture for month-first formats because it includes a number of useful formats
+                // over and above the one supplied as a parameter.
+                ci = new CultureInfo("en-US");
+                ci.DateTimeFormat.ShortDatePattern = "MM-dd-yy";
+            }
+            else
+            {
+                // The format is d/M/y or y/M/d
+                // It is best to use a day-first culture as the basis because this includes a number of other useful formats
+                ci = new CultureInfo("en-GB");
+                ci.DateTimeFormat.ShortDatePattern = "dd-MM-yy";
+            }
+
+            return ci;
+        }
+
+        /// <summary>
+        /// Evaluates a string and returns true if the text looks like a floating point number AND the decimal separator is unambiguous.
+        /// If it does look like a float the method works out if the decimal separator looks like a dot or a comma.
+        /// The method also considers whether dot or comma might be thousands separator.
+        /// </summary>
+        /// <param name="AString"></param>
+        /// <param name="AIsDotDecimalSeparator"></param>
+        /// <returns>Return false if the decimal separator is neither dot nor comma OR if it could be either</returns>
+        public static bool LooksLikeFloat(string AString, out bool ? AIsDotDecimalSeparator)
+        {
+            // ***********************************************************************
+            //CultureInfo dotCulture = CultureInfo.InvariantCulture;
+            //CultureInfo commaCulture = CultureInfo.GetCultureInfo("de-DE");
+            //CultureInfo apostropheCulture = CultureInfo.GetCultureInfo("de-CH");
+
+            //double dbl;
+            //NumberStyles style = NumberStyles.Any;
+
+            //if (double.TryParse(AString, style, dotCulture, out dbl))
+            //{
+            //    AIsDotDecimalSeparator = true;
+            //    return true;
+            //}
+
+            //if (double.TryParse(AString, style, commaCulture, out dbl))
+            //{
+            //    AIsDotDecimalSeparator = false;
+            //    return true;
+            //}
+
+            //if (double.TryParse(AString, style, apostropheCulture, out dbl))
+            //{
+            //    AIsDotDecimalSeparator = false;
+            //    return true;
+            //}
+
+            //AIsDotDecimalSeparator = true;
+            //return false;
+            // ***********************************************************************
+
+            // NOTE: AlanP.  I did think of using TryParse for this method using code such as above.
+            //   But it doesn't really make it any easier to deal with ambiguous cases.
+            //   And currency formats are handled differently in .NET from Open Petra
+            //   So I decided to use the code below
+
+            // All countries (except Arabia) use either dot or comma as decimal separator
+            // All countries use dot, comma, space or apostrophe for thousands
+            // The rules for the model we use for providing hints and warnings are ...
+            // To look like a float there must be 0 decimal separator with 2..n thousands separators
+            //   or there must be 1 decimal separator FOLLOWING 0..n thousands separators
+            // Note that a single separator may be a thousands one or a decimal one.  We will assume decimal is what is meant.
+
+            AIsDotDecimalSeparator = null;
+            AString = AString.Trim();
+            AString = AString.TrimStart(new char[] { '+', '-' });
+
+            if (AString.Length < 2)
+            {
+                return false;
+            }
+
+            int lastDotPos = AString.LastIndexOf('.');
+            int lastCommaPos = AString.LastIndexOf(',');
+            int lastSpacePos = AString.LastIndexOf(' ');
+            int lastApostrophePos = AString.LastIndexOf('\'');    // apostrophe is thousands in CH
+
+            if ((lastDotPos == -1) && (lastCommaPos == -1) && (lastSpacePos == -1) && (lastApostrophePos == -1))
+            {
+                // No decimal separators at all
+                return false;
+            }
+
+            // go through the whole string checking for valid characters
+            for (int i = 0; i < AString.Length; i++)
+            {
+                char ch = AString[i];
+                bool validCh = char.IsDigit(ch) || ch == '.' || ch == ',' || ch == ' ' || ch == '\'';
+
+                if (!validCh)
+                {
+                    return false;
+                }
+            }
+
+            int firstDotPos = AString.IndexOf('.');
+            int firstCommaPos = AString.IndexOf(',');
+            int firstSpacePos = AString.IndexOf(' ');
+            int firstApostrophePos = AString.IndexOf('\'');    // apostrophe is thousands in CH
+
+            // If there is more than one of each of these they could be thousands separators
+            // Note: some countries have 2, 3 or 4 digits between commas but comma is never a date separator
+            //   whereas dot and space can also be date separators but will always have 3 digits between when used in numbers
+            bool thousandsCanBeDot = (firstDotPos != lastDotPos) && ((lastDotPos - firstDotPos) % 4 == 0);
+            bool thousandsCanBeComma = (firstCommaPos != lastCommaPos);
+            bool thousandsCanBeSpace = (firstSpacePos != lastSpacePos) && ((lastSpacePos - firstSpacePos) % 4 == 0);
+            bool thousandsCanBeApostrophe = (firstApostrophePos != lastApostrophePos) && ((lastApostrophePos - firstApostrophePos) % 4 == 0);
+
+            // Only one of the above can be true
+            int countThousands = 0;
+            countThousands += thousandsCanBeDot ? 1 : 0;
+            countThousands += thousandsCanBeComma ? 1 : 0;
+            countThousands += thousandsCanBeSpace ? 1 : 0;
+            countThousands += thousandsCanBeApostrophe ? 1 : 0;
+
+            if (countThousands > 1)
+            {
+                return false;
+            }
+
+            // So if there is a thousands separator we know which it is
+            // A decimal separator is a dot if a single dot follows 0..n commas
+            //  OR there is no dot but the thousands separator is an unambiguous comma
+            bool decimalCanBeDot = (((lastDotPos >= 0) && (firstDotPos == lastDotPos) && (lastDotPos > lastCommaPos))
+                                    || ((lastDotPos == -1) && thousandsCanBeComma));
+
+            // A decimal separator is a comma if a single comma follows 0..n dots
+            //  OR there is a single comma following a space/apostrophe thousands separator
+            //  OR there is no comma but there is one of the other thousands separator
+            bool decimalCanBeComma = (((lastCommaPos >= 0) && (firstCommaPos == lastCommaPos) && (lastCommaPos > lastDotPos))
+                                      || ((lastCommaPos >= 0) && (firstCommaPos == lastCommaPos) && (thousandsCanBeSpace || thousandsCanBeApostrophe))
+                                      || ((lastCommaPos == -1) && (thousandsCanBeDot || thousandsCanBeSpace || thousandsCanBeApostrophe)));
+
+            // We return true if we know the result unambiguously
+            if (decimalCanBeDot && !decimalCanBeComma)
+            {
+                AIsDotDecimalSeparator = true;
+                return true;
+            }
+
+            if (decimalCanBeComma && !decimalCanBeDot)
+            {
+                AIsDotDecimalSeparator = false;
+                return true;
+            }
+
+            // Return false if the decimal separator is neither dot nor comma OR if it could be either
+            return false;
+        }
+
+        /// <summary>
+        /// Evaluates a string and returns true if the text looks like a date.
+        /// If it appears to be a date the method returns two values - the date value if the text is parsed as month-first
+        ///   and the date value if the text is parsed as day-first.  If either of them is an invalid date it will have DateTime.MinValue.
+        /// Dates can have a separator of / - . or space.
+        /// Note that .NET parses many date strings unambiguously even though the basic date format is quite simple.
+        /// For the date formats that OpenPetra works with we really only need to distinguish between month-first short dates and day-first short dates.
+        /// </summary>
+        /// <param name="AString"></param>
+        /// <param name="AMonthFirstDate"></param>
+        /// <param name="ADayFirstDate"></param>
+        /// <returns></returns>
+        public static bool LooksLikeAmbiguousShortDate(string AString, out DateTime AMonthFirstDate, out DateTime ADayFirstDate)
+        {
+            AMonthFirstDate = DateTime.MinValue;
+            ADayFirstDate = DateTime.MinValue;
+
+            string[] items;
+
+            // Possible separators for dates are / - . and space
+            items = AString.Split('/');
+
+            if (items.Length != 3)
+            {
+                items = AString.Split('-');
+
+                if (items.Length != 3)
+                {
+                    items = AString.Split('.');
+
+                    if (items.Length != 3)
+                    {
+                        items = AString.Split(' ');
+
+                        if (items.Length != 3)
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            // So we have three parts.  We are only interested if all parts are int's
+            int v0, v1, v2;
+            int numInts = 0;
+
+            //if ((int.TryParse(items[0], out v0) == false) || (int.TryParse(items[1], out v1) == false) || (int.TryParse(items[2], out v2) == false))
+            //{
+            //    return false;
+            //}
+
+            //// So we have three parts and they are all int's.  Now we are only interested if the first or second parts can be days.
+            //// .NET will always do a good job of yyyy-MM-dd whatever our date format choice
+            //bool isYYYY = v0 >= 1800 && v0 < 2200;
+
+            //if ((v0 < 0) || ((v0 > 31) && !isYYYY) || (v1 < 0) || ((v1 > 31) || ((v1 > 12) && isYYYY)))
+            //{
+            //    return false;
+            //}
+
+            if (int.TryParse(items[0], out v0))
+            {
+                numInts++;
+            }
+
+            if (int.TryParse(items[1], out v1))
+            {
+                numInts++;
+            }
+
+            if (int.TryParse(items[2], out v2))
+            {
+                numInts++;
+            }
+
+            if (numInts < 2)
+            {
+                return false;
+            }
+
+            // We will try and parse our 'date' in the two cultures that work well with month-first and day-first
+            // These are static variables so we only need to initialise them once for the application
+            if (monthFirstCulture == null)
+            {
+                monthFirstCulture = StringHelper.GetCultureInfoForDateFormat("M/d/y");
+            }
+
+            if (dayFirstCulture == null)
+            {
+                dayFirstCulture = StringHelper.GetCultureInfoForDateFormat("d/M/y");
+            }
+
+            // Note: When you examine the DateTimeFormats that these two cultures create there are more than 100 format strings
+            //   that get checked.  In particular the date separator is unimportant, as is M or MM and d or dd
+            bool success = false;
+
+            // If the parsing fails the date will be 'MinValue', which suits us very well
+            if (DateTime.TryParse(AString, monthFirstCulture, DateTimeStyles.None, out AMonthFirstDate))
+            {
+                success = true;
+            }
+
+            if (DateTime.TryParse(AString, dayFirstCulture, DateTimeStyles.None, out ADayFirstDate))
+            {
+                success = true;
+            }
+
+            return success;
         }
     }
 
