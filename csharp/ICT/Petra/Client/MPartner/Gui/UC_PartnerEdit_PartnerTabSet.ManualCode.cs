@@ -1135,15 +1135,6 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 FPetraUtilsObject.RestoreAdditionalWindowPositionProperties();
             }
-            else if (ATabPageEventArgs.Event == "SubsequentActivation")
-            {
-                if (ATabPageEventArgs.Tab == tpgAddresses)
-                {
-                    // Strangely, this is needed to make the ALT+N Keyboard shortcut work when switching from another Tab
-                    // to the Address Tab (this addresses an aspect of Note 10711 on Bug #5206).
-                    FUcoAddresses.Focus();
-                }
-            }
         }
 
         /// <summary>

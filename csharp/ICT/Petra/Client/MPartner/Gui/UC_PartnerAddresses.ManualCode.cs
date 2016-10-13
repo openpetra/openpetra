@@ -1126,6 +1126,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
+            // Workaround for Data Validation which happens automatically inside the call to 
+            // 'CreateNewPPartnerLocation': If there is no ActiveControl (this is the case e.g.
+            // when the Partner Edit screen was just openend) we set one - otherwise the call to 
+            // 'ValidateAllData' in that Method returns false, and we get no new record created!
+            if (this.ActiveControl == null)
+            {
+                txtLocationLocality.Focus();
+            }
+
             if (CreateNewPPartnerLocation())
             {
                 txtLocationLocality.Focus();
