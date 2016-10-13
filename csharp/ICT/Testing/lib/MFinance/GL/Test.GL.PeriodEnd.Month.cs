@@ -50,6 +50,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MFinance.Gift;
+using System.Collections.Generic;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -82,8 +83,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             //UnloadTestData_GetBatchInfo();
 
             TVerificationResultCollection verificationResult;
+            List <Int32>glBatchNumbers;
             bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
-                FLedgerNumber, true, out verificationResult);
+                FLedgerNumber, true,
+                out glBatchNumbers,
+                out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -124,8 +128,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             new ChangeSuspenseAccount(FLedgerNumber, strAccountBank).Suspense();
 
             TVerificationResultCollection verificationResult;
+            List <Int32>glBatchNumbers;
+
             bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(    // Changed to InfoMode because
-                FLedgerNumber, true, out verificationResult);               // the suspense accounts warning is now shown only in InfoMode.
+                FLedgerNumber, true,                                        // the suspense accounts warning is now shown only in InfoMode.
+                out glBatchNumbers,
+                out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -148,7 +156,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             while (!blnHasErrors && periodCounter < 12)
             {
                 blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
-                    FLedgerNumber, false, out verificationResult);
+                    FLedgerNumber, false,
+                    out glBatchNumbers,
+                    out verificationResult);
 
                 Assert.IsFalse(blnHasErrors, "there was an error closing period " + periodCounter.ToString());
                 periodCounter++;
@@ -156,7 +166,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
 
             blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
-                FLedgerNumber, false, out verificationResult);
+                FLedgerNumber, false,
+                out glBatchNumbers,
+                out verificationResult);
 
             blnStatusArrived = false;
 
@@ -217,8 +229,11 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             ImportGiftBatch(getAccountingPeriodInfo.PeriodStartDate);
 
             TVerificationResultCollection verificationResult;
+            List <Int32>glBatchNumbers;
             bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
-                FLedgerNumber, true, out verificationResult);
+                FLedgerNumber, true,
+                out glBatchNumbers,
+                out verificationResult);
             bool blnStatusArrived = false;
 
             for (int i = 0; i < verificationResult.Count; ++i)
@@ -268,27 +283,31 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult;
 
-/*
- * This error is no longer critical - it's OK to run month end even if a reval is required. (Mantis# 03905)
- *
- *          bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
- *              FLedgerNumber, true, out verificationResult);
- *
- *          for (int i = 0; i < verificationResult.Count; ++i)
- *          {
- *              if (verificationResult[i].ResultCode.Equals(
- *                      TPeriodEndErrorAndStatusCodes.PEEC_05.ToString()))
- *              {
- *                  blnStatusArrived = true;
- *                  Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
- *                      "A critical error is required: need to run revaluation first ...");
- *              }
- *          }
- */
+            /*
+             * This error is no longer critical - it's OK to run month end even if a reval is required. (Mantis# 03905)
+             *
+             *          bool blnHasErrors = TPeriodIntervalConnector.TPeriodMonthEnd(
+             *              FLedgerNumber, true, out verificationResult);
+             *
+             *          for (int i = 0; i < verificationResult.Count; ++i)
+             *          {
+             *              if (verificationResult[i].ResultCode.Equals(
+             *                      TPeriodEndErrorAndStatusCodes.PEEC_05.ToString()))
+             *              {
+             *                  blnStatusArrived = true;
+             *                  Assert.IsTrue(verificationResult[i].ResultSeverity == TResultSeverity.Resv_Critical,
+             *                      "A critical error is required: need to run revaluation first ...");
+             *              }
+             *          }
+             */
 
             // run revaluation
+            Int32 forexBatchNumber;
+            List <Int32>glBatchNumbers;
+
             Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
                 TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
+                out forexBatchNumber,
                 out verificationResult);
 
             if (!revalueOk)
@@ -300,7 +319,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Assert.IsTrue(revalueOk, "Problem running the revaluation");
 
             Boolean Err = TPeriodIntervalConnector.PeriodMonthEnd(
-                FLedgerNumber, true, out verificationResult);
+                FLedgerNumber, true,
+                out glBatchNumbers,
+                out verificationResult);
 
             if (Err)
             {
@@ -333,8 +354,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
                 // Run MonthEnd ...
                 TVerificationResultCollection verificationResult;
+                List <Int32>glBatchNumbers;
+
                 bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
-                    FLedgerNumber, false, out verificationResult);
+                    FLedgerNumber, false,
+                    out glBatchNumbers,
+                    out verificationResult);
 
                 if (!LedgerInfo.ProvisionalYearEndFlag)
                 {

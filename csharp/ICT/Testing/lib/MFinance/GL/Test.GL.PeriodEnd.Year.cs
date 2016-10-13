@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Collections.Generic;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -132,7 +133,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 else
                 {
                     TVerificationResultCollection VerificationResult;
-                    TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                    List <Int32>glBatchNumbers;
+
+                    TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out glBatchNumbers, out VerificationResult);
                     CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "Running MonthEnd gave critical error");
                 }
@@ -156,7 +159,8 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // because I'm about to call it again as part of YearEnd, below.
             // But a tweak in the reallocation code means that it should now cope with being called twice.
 
-            TReallocation reallocation = new TReallocation(LedgerInfo);
+            List <Int32>glBatches = new List <int>();
+            TReallocation reallocation = new TReallocation(LedgerInfo, glBatches);
             reallocation.VerificationResultCollection = verificationResult;
             reallocation.IsInInfoMode = false;
             reallocation.RunOperation();
@@ -170,12 +174,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 0, -100, 0, -200, 0, -300);
 
             // first run in info mode
-            TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, true, out verificationResult);
+            TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, true,
+                out glBatches,
+                out verificationResult);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd test should not have critical errors");
 
             // now run for real
-            TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, false, out verificationResult);
+            TPeriodIntervalConnector.PeriodYearEnd(intLedgerNumber, false,
+                out glBatches,
+                out verificationResult);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(verificationResult,
                 "YearEnd should not have critical errors");
 
@@ -256,14 +264,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     else
                     {
                         TVerificationResultCollection VerificationResult;
-                        TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out VerificationResult);
+                        List <Int32>glBatchNumbers;
+                        TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out glBatchNumbers, out VerificationResult);
                         CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                             "MonthEnd gave critical error at Period" + LedgerInfo.CurrentPeriod + ":\r\n");
                     }
                 }
 
                 TLogging.Log("Closing year number " + countYear.ToString());
-                TReallocation reallocation = new TReallocation(LedgerInfo);
+                List <Int32>glBatches = new List <int>();
+                TReallocation reallocation = new TReallocation(LedgerInfo, glBatches);
                 TVerificationResultCollection verificationResult = new TVerificationResultCollection();
                 reallocation.VerificationResultCollection = verificationResult;
                 reallocation.IsInInfoMode = false;

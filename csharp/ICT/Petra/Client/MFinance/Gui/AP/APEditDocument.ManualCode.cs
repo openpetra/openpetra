@@ -43,6 +43,7 @@ using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using SourceGrid;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -930,14 +931,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
             AOwnerForm.Cursor = Cursors.WaitCursor;
+            Int32 glBatchNumber;
 
             if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                     ALedgerNumber,
                     AApDocumentIds,
                     PostingDate,
                     false,
+                    out glBatchNumber,
                     out Verifications))
             {
+                //
+                // The GL Posting Register must be printed.
+                TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+                ReportGui.PrintReportNoUi(ALedgerNumber, glBatchNumber);
+
                 AOwnerForm.Cursor = Cursors.Default;
                 return true;
             }

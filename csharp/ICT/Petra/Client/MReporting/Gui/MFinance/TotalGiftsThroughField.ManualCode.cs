@@ -108,7 +108,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 LedgerName = LedgerView[0].Row["LedgerName"].ToString();
             }
 
-            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                FLedgerNumber);
             ALedgerRow Row = LedgerDetailsTable[0];
             String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
 

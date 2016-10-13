@@ -51,7 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private int FLedgerNumber = -1;
         private ALedgerRow FLedgerRow = null;
         Boolean OnlyEndPeriodShown = false;
-
+        Boolean FLocalCurrencyWhenMultiplePeriodSelected = false;
         /// <summary>
         /// Initialisation
         /// </summary>
@@ -176,16 +176,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             ACalculator.AddParameter("param_account_hierarchy_c", this.cmbAccountHierarchy.GetSelectedString());
 
-            String CurrencyName = "";
+            String CurrencyName = FLedgerRow.BaseCurrency;
 
             String CurrencySelection = this.cmbCurrency.GetSelectedString();
             ACalculator.AddParameter("param_currency", CurrencySelection);
 
-            if (CurrencySelection == Catalog.GetString("Base"))
-            {
-                CurrencyName = FLedgerRow.BaseCurrency;
-            }
-            else if (CurrencySelection == Catalog.GetString("International"))
+            if (CurrencySelection == Catalog.GetString("International"))
             {
                 CurrencyName = FLedgerRow.IntlCurrency;
             }
@@ -252,6 +248,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                             FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
                                     Catalog.GetString("Start Period must not be bigger than End Period."),
                                     Catalog.GetString("Invalid Data entered."),
+                                    TResultSeverity.Resv_Critical));
+                        }
+
+                        if ((StartPeriod != EndPeriod)
+                            && FLocalCurrencyWhenMultiplePeriodSelected
+                            && (CurrencySelection == Catalog.GetString("International"))
+                            )
+                        {
+                            FPetraUtilsObject.AddVerificationResult(new TVerificationResult(
+                                    Catalog.GetString("International report not available."),
+                                    Catalog.GetString("When International Currency is selected, only a single period can be reported."),
                                     TResultSeverity.Resv_Critical));
                         }
                     }
@@ -324,6 +331,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                         Catalog.GetString("Accounting Year was not specified"),
                         Catalog.GetString("Invalid Data entered."),
                         TResultSeverity.Resv_Critical));
+            }
+        }
+
+        /// <summary>
+        /// If it's not permitted to use International currency for multiple periods,
+        /// set this to true. The user will see a pop-up message.
+        /// </summary>
+        ///
+        public Boolean EnforceLocalCurrencyWhenMultiplePeriodSelected
+        {
+            set
+            {
+                FLocalCurrencyWhenMultiplePeriodSelected = value;
             }
         }
 

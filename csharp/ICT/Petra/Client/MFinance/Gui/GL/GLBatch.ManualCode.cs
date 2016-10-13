@@ -67,6 +67,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private Int32 FInitialBatchNumber = -1;
         private Int32 FInitialJournalNumber = -1;
         private Boolean FInitialBatchFound = false;
+        private Boolean FenablePostingReport = true;
 
         private Boolean FLatestSaveIncludedForex = false;
 
@@ -198,6 +199,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             get
             {
                 return FInitialBatchFound;
+            }
+        }
+
+        /// <summary>
+        /// If this is false, no report will be generated on Batch posting.
+        /// </summary>
+        public Boolean EnablePostingReport
+        {
+            get
+            {
+                TLogging.Log("GLBatch.ManualCode: Posting Report Enabled: " + FenablePostingReport);
+                return FenablePostingReport;
+            }
+            set
+            {
+                FenablePostingReport = value;
             }
         }
 
@@ -942,8 +959,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
             ABatchRow BatchRow = ucoBatches.GetSelectedDetailRow();
 
-//          PrintPostingRegister(FLedgerNumber, BatchRow.BatchNumber, ModifierKeys.HasFlag(Keys.Control));
             TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(this);
+//          ReportGui.PrintReportNoUi(FLedgerNumber, BatchRow.BatchNumber); // This alternative doesn't show the UI
 
             ReportGui.LedgerNumber = FLedgerNumber;
             ReportGui.BatchNumber = BatchRow.BatchNumber;

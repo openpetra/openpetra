@@ -380,12 +380,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         }
 
         /// <summary>
-        /// Get the name for this Ledger
+        /// Get the name for this Ledger, using a new DB connection
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static string GetLedgerName(int ALedgerNumber)
         {
-            return TLedgerInfo.GetLedgerName(ALedgerNumber);
+            return TLedgerInfo.GetLedgerNameUsingSeparateDb(ALedgerNumber);
         }
 
         /// <summary>
@@ -893,7 +893,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String RootCostCentre = AParameters["param_cost_centre_code"].ToString();
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
-            Decimal EffectiveExchangeRate = 1;
+            Decimal exchangeRateNow = 1;
             Decimal LastYearExchangeRate = 1;
 
             NumberOfAccountingPeriods = new TLedgerInfo(LedgerNumber, DbAdapter.FPrivateDatabaseObj).NumberOfAccountingPeriods;
@@ -926,11 +926,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             if (International)
             {
                 TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
-
-                EffectiveExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
+                exchangeRateNow = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
                     LedgerNumber,
-                    AccountingYear,
-                    ReportPeriodEnd,
+                    ledgerInfo.CurrentFinancialYear,
+                    ledgerInfo.CurrentPeriod,
                     -1);
 
                 if (ReportPeriodEnd > NumberOfAccountingPeriods)
@@ -973,7 +973,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                         " glm.a_account_code_c AS AccountCode," +
                                         " a_account.a_account_code_short_desc_c AS AccountName," +
                                         LastYearExchangeRate + " * (" + lastYearSelect + ") AS LastYearActual," +
-                                        EffectiveExchangeRate + " * (" + thisYearSelect + ") AS ActualYTD" +
+                                        exchangeRateNow + " * (" + thisYearSelect + ") AS ActualYTD" +
 
                                         " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account" +
                                         " WHERE glm.a_ledger_number_i=" + LedgerNumber +
@@ -1026,6 +1026,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         }
 
                         DataRow Row = resultTable.Rows[Idx];
+                        String accountCode = Row["AccountCode"].ToString();
                         String ParentAccountPath;
                         Int32 ParentAccountTypeOrder;
                         Int32 AccountLevel = AddTotalsToParentAccountRow(
@@ -1033,7 +1034,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             HierarchyTbl,
                             LedgerNumber,
                             "", // No Cost Centres on Balance Sheet
-                            Row["AccountCode"].ToString(),
+                            accountCode,
                             Row,
                             false,
                             0,
@@ -1041,7 +1042,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             out ParentAccountTypeOrder,
                             ReadTrans);
                         Row["AccountLevel"] = AccountLevel;
-                        Row["AccountPath"] = ParentAccountPath + Row["AccountCode"];
+                        Row["AccountPath"] = ParentAccountPath + accountCode;
                     }
                 }); // Get NewOrExisting AutoReadTransaction
 
@@ -1053,7 +1054,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String DepthFilter = " AND AccountLevel<=" + DetailLevel.ToString();
             resultTable.DefaultView.Sort = "AccountTypeOrder, AccountPath";
 
-            resultTable.DefaultView.RowFilter = "(Actual <> 0 OR LastYearActual <> 0 )" + // Only non-zero rows
+            resultTable.DefaultView.RowFilter = "(ActualYTD <> 0 OR LastYearActual <> 0 )" + // Only non-zero rows
                                                 DepthFilter;        // Nothing too detailed
 
             resultTable = resultTable.DefaultView.ToTable("BalanceSheet");
@@ -1322,17 +1323,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             String HierarchyName = AParameters["param_account_hierarchy_c"].ToString();
 
             Boolean International = AParameters["param_currency"].ToString().StartsWith("Int");
-            Decimal EffectiveExchangeRate = 1;
+            Decimal exchangeRateNow = 1;
             Decimal LastYearExchangeRate = 1;
 
             if (International)
             {
                 TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+                TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
 
-                EffectiveExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                exchangeRateNow = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
                     LedgerNumber,
-                    AccountingYear,
-                    ReportPeriodEnd,
+                    ledgerInfo.CurrentFinancialYear,
+                    ledgerInfo.CurrentPeriod,
                     -1);
                 LastYearExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
                     LedgerNumber,
@@ -1750,42 +1752,42 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         FilteredResults = FilteredResults.DefaultView.ToTable("IncomeExpense");
                     }
 
-                    if (EffectiveExchangeRate != 1)
+                    if (exchangeRateNow != 1)
                     {
                         if (WholeYearPeriodsBreakdown)
                         {
                             foreach (DataRow Row in FilteredResults.Rows)
                             {
-                                Row["p1"] = Convert.ToDecimal(Row["p1"]) * EffectiveExchangeRate;
-                                Row["p2"] = Convert.ToDecimal(Row["p2"]) * EffectiveExchangeRate;
-                                Row["p3"] = Convert.ToDecimal(Row["p3"]) * EffectiveExchangeRate;
-                                Row["p4"] = Convert.ToDecimal(Row["p4"]) * EffectiveExchangeRate;
-                                Row["p5"] = Convert.ToDecimal(Row["p5"]) * EffectiveExchangeRate;
-                                Row["p6"] = Convert.ToDecimal(Row["p6"]) * EffectiveExchangeRate;
-                                Row["p7"] = Convert.ToDecimal(Row["p7"]) * EffectiveExchangeRate;
-                                Row["p8"] = Convert.ToDecimal(Row["p8"]) * EffectiveExchangeRate;
-                                Row["p9"] = Convert.ToDecimal(Row["p9"]) * EffectiveExchangeRate;
-                                Row["p10"] = Convert.ToDecimal(Row["p10"]) * EffectiveExchangeRate;
-                                Row["p11"] = Convert.ToDecimal(Row["p11"]) * EffectiveExchangeRate;
-                                Row["p12"] = Convert.ToDecimal(Row["p12"]) * EffectiveExchangeRate;
+                                Row["p1"] = Convert.ToDecimal(Row["p1"]) * exchangeRateNow;
+                                Row["p2"] = Convert.ToDecimal(Row["p2"]) * exchangeRateNow;
+                                Row["p3"] = Convert.ToDecimal(Row["p3"]) * exchangeRateNow;
+                                Row["p4"] = Convert.ToDecimal(Row["p4"]) * exchangeRateNow;
+                                Row["p5"] = Convert.ToDecimal(Row["p5"]) * exchangeRateNow;
+                                Row["p6"] = Convert.ToDecimal(Row["p6"]) * exchangeRateNow;
+                                Row["p7"] = Convert.ToDecimal(Row["p7"]) * exchangeRateNow;
+                                Row["p8"] = Convert.ToDecimal(Row["p8"]) * exchangeRateNow;
+                                Row["p9"] = Convert.ToDecimal(Row["p9"]) * exchangeRateNow;
+                                Row["p10"] = Convert.ToDecimal(Row["p10"]) * exchangeRateNow;
+                                Row["p11"] = Convert.ToDecimal(Row["p11"]) * exchangeRateNow;
+                                Row["p12"] = Convert.ToDecimal(Row["p12"]) * exchangeRateNow;
                             }
                         }
                         else
                         {
                             foreach (DataRow Row in FilteredResults.Rows)
                             {
-                                Row["yearstart"] = Convert.ToDecimal(Row["yearstart"]) * EffectiveExchangeRate;
-                                Row["lastmonthytd"] = Convert.ToDecimal(Row["lastmonthytd"]) * EffectiveExchangeRate;
-                                Row["actualytd"] = Convert.ToDecimal(Row["actualytd"]) * EffectiveExchangeRate;
-                                Row["LastYearlastmonthytd"] = Convert.ToDecimal(Row["LastYearlastmonthytd"]) * EffectiveExchangeRate;
-                                Row["LastYearactualytd"] = Convert.ToDecimal(Row["LastYearactualytd"]) * EffectiveExchangeRate;
+                                Row["yearstart"] = Convert.ToDecimal(Row["yearstart"]) * exchangeRateNow;
+                                Row["lastmonthytd"] = Convert.ToDecimal(Row["lastmonthytd"]) * exchangeRateNow;
+                                Row["actualytd"] = Convert.ToDecimal(Row["actualytd"]) * exchangeRateNow;
+                                Row["LastYearlastmonthytd"] = Convert.ToDecimal(Row["LastYearlastmonthytd"]) * exchangeRateNow;
+                                Row["LastYearactualytd"] = Convert.ToDecimal(Row["LastYearactualytd"]) * exchangeRateNow;
                                 Row["LastYearEnd"] = Convert.ToDecimal(Row["LastYearEnd"]) * LastYearExchangeRate;
-                                Row["budget"] = Convert.ToDecimal(Row["budget"]) * EffectiveExchangeRate;
-                                Row["budgetytd"] = Convert.ToDecimal(Row["budgetytd"]) * EffectiveExchangeRate;
-                                Row["wholeyearbudget"] = Convert.ToDecimal(Row["wholeyearbudget"]) * EffectiveExchangeRate;
+                                Row["budget"] = Convert.ToDecimal(Row["budget"]) * exchangeRateNow;
+                                Row["budgetytd"] = Convert.ToDecimal(Row["budgetytd"]) * exchangeRateNow;
+                                Row["wholeyearbudget"] = Convert.ToDecimal(Row["wholeyearbudget"]) * exchangeRateNow;
                                 Row["LastYearBudget"] = Convert.ToDecimal(Row["LastYearBudget"]) * LastYearExchangeRate;
-                                Row["actual"] = Convert.ToDecimal(Row["actual"]) * EffectiveExchangeRate;
-                                Row["LastYearactual"] = Convert.ToDecimal(Row["LastYearactual"]) * EffectiveExchangeRate;
+                                Row["actual"] = Convert.ToDecimal(Row["actual"]) * exchangeRateNow;
+                                Row["LastYearactual"] = Convert.ToDecimal(Row["LastYearactual"]) * exchangeRateNow;
                             }
                         }
                     }
@@ -2576,6 +2578,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     AAccountHierarchyRow HierarchyRow = (AAccountHierarchyRow)AAccountHierarchyAccess.LoadByPrimaryKey(
                         LedgerNumber, AccountHierarchyCode, Transaction).Rows[0];
+                    TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
+
+                    Decimal exchangeRateNow = TExchangeRateTools.GetCorporateExchangeRate(
+                        ledgerInfo.BaseCurrency,
+                        ledgerInfo.InternationalCurrency,
+                        DateTime.Now.AddMonths(-1),
+                        DateTime.Now);
+
+                    if (exchangeRateNow == 0)
+                    {
+                        exchangeRateNow = 1;
+                    }
 
                     List <String>list = new List <string>();
 
@@ -2604,18 +2618,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                    "CASE WHEN debit=TRUE THEN Base ELSE 0-Base END"
                                                    :
                                                    "CASE WHEN debit=TRUE THEN 0-Base ELSE Base END";
-                        String subtractOrAddIntl = (Account.DebitCreditIndicator) ?
-                                                   "CASE WHEN debit=TRUE THEN Intl ELSE 0-Intl END"
-                                                   :
-                                                   "CASE WHEN debit=TRUE THEN 0-Intl ELSE Intl END";
 
                         String Query =
-                            "SELECT sum(" + subtractOrAddBase + ") AS Actual," +
-                            " sum(" + subtractOrAddIntl + ") AS ActualIntl" +
+                            "SELECT sum(" + subtractOrAddBase + ") AS Actual " +
                             " FROM" +
-                            " (SELECT DISTINCT a_account.a_account_code_c AS AccountCode, glm.a_cost_centre_code_c AS CostCentreCode, a_account.a_debit_credit_indicator_l AS debit,"
-                            +
-                            " glmp.a_actual_base_n AS Base, glmp.a_actual_intl_n AS Intl" +
+                            " (SELECT DISTINCT a_account.a_account_code_c AS AccountCode, " +
+                            " glm.a_cost_centre_code_c AS CostCentreCode, " +
+                            " a_account.a_debit_credit_indicator_l AS debit," +
+                            " glmp.a_actual_base_n AS Base" +
                             " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account" +
                             " WHERE glm.a_glm_sequence_i=glmp.a_glm_sequence_i" +
                             " AND glm.a_account_code_c=a_account.a_account_code_c" +
@@ -2628,13 +2638,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             ") AS AllGlm";
                         DataTable tempTable = DbAdapter.RunQuery(Query, "AFO", Transaction);
 
-                        DataRow NewRow = Results.NewRow();
-                        NewRow["a_account_code_c"] = Account.AccountCode;
-                        NewRow["a_account_code_short_desc_c"] = Account.AccountCodeShortDesc;
-                        NewRow["DebitCreditIndicator"] = Account.DebitCreditIndicator;
-                        NewRow[ActualField] = tempTable.Rows[0]["Actual"];
-                        NewRow[IntlField] = tempTable.Rows[0]["ActualIntl"];
-                        Results.Rows.Add(NewRow);
+                        Decimal actualBase;
+
+                        if (Decimal.TryParse(tempTable.Rows[0]["Actual"].ToString(), out actualBase))
+                        {
+                            DataRow NewRow = Results.NewRow();
+                            NewRow["a_account_code_c"] = Account.AccountCode;
+                            NewRow["a_account_code_short_desc_c"] = Account.AccountCodeShortDesc;
+                            NewRow["DebitCreditIndicator"] = Account.DebitCreditIndicator;
+                            NewRow[ActualField] = actualBase;
+                            NewRow[IntlField] = actualBase / exchangeRateNow;
+                            Results.Rows.Add(NewRow);
+                        }
                     }
                 });  // Get NewOrExisting AutoReadTransaction
 
@@ -3007,12 +3022,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             selectedFieldList = selectedFieldList.Replace('\'', ' ');
             String FieldFilter = " AND partnerfield.p_partner_key_n IN (" + selectedFieldList + ") ";
-            Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             DateTime PeriodStart = AParameters["param_from_date"].ToDate();
             DateTime PeriodEnd = AParameters["param_to_date"].ToDate();
             String PeriodRange = "BETWEEN '" + PeriodStart.ToString("yyyy-MM-dd") + "' AND '" + PeriodEnd.ToString("yyyy-MM-dd") + "'";
             Int32 PeriodYear = PeriodEnd.Year;
-            String amountField = (AParameters["param_currency"].ToString().StartsWith("Int")) ? "a_gift_amount_intl_n" : "a_gift_amount_n";
+
+
+            String exch = "";
+
+            if (AParameters["param_currency"].ToString().StartsWith("Int"))
+            {
+                //
+                // Read different DB fields according to currency setting
+                // NOTE: Modified August 2016 to return a_gift_amount_n * exchangeRate, rather than the recorded a_gift_amount_intl_n
+                TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
+                TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+                Decimal exchangeRateNow = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                    LedgerNumber,
+                    ledgerInfo.CurrentFinancialYear,
+                    ledgerInfo.CurrentPeriod,
+                    -1);
+                exch = " * " + exchangeRateNow;
+            }
 
             DateTime Year = new DateTime(AParameters["param_year0"].ToInt32(), 1, 1);
             String Year1Range = "BETWEEN '" + Year.ToString("yyyy-MM-dd") + "' AND '" + Year.AddYears(1).AddDays(-1).ToString("yyyy-MM-dd") + "'";
@@ -3046,11 +3078,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 + " partnerrecipient.p_partner_key_n AS RecipientKey," +
                 " partnerrecipient.p_partner_short_name_c AS RecipientName," +
                 " partnerrecipient.p_partner_class_c AS RecipientClass," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + PeriodRange + " THEN detail." + amountField + " ELSE 0 END) AS AmountPeriod," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year1Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear1," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year2Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear2," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year3Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear3," +
-                " SUM(CASE WHEN gift.a_date_entered_d " + Year4Range + " THEN detail." + amountField + " ELSE 0 END) AS AmountYear4"
+                " SUM(CASE WHEN gift.a_date_entered_d " + PeriodRange + " THEN detail.a_gift_amount_n ELSE 0 END) " + exch + " AS AmountPeriod," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year1Range + " THEN detail.a_gift_amount_n ELSE 0 END) " + exch + " AS AmountYear1," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year2Range + " THEN detail.a_gift_amount_n ELSE 0 END) " + exch + " AS AmountYear2," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year3Range + " THEN detail.a_gift_amount_n ELSE 0 END) " + exch + " AS AmountYear3," +
+                " SUM(CASE WHEN gift.a_date_entered_d " + Year4Range + " THEN detail.a_gift_amount_n ELSE 0 END) " + exch + " AS AmountYear4"
 
                 + " FROM" +
                 " PUB_p_partner as partnerfield," +
@@ -3063,12 +3095,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 " detail.a_batch_number_i = gift.a_batch_number_i" +
                 " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
                 " AND detail.a_recipient_ledger_number_n = partnerfield.p_partner_key_n" +
-                " AND detail.a_ledger_number_i = " + LedgerNum +
-                " AND gift.a_ledger_number_i = " + LedgerNum +
+                " AND detail.a_ledger_number_i = " + LedgerNumber +
+                " AND gift.a_ledger_number_i = " + LedgerNumber +
                 " AND gift.a_date_entered_d " + TotalDateRange +
                 " AND giftbatch.a_batch_status_c = 'Posted'" +
                 " AND giftbatch.a_batch_number_i = gift.a_batch_number_i" +
-                " AND giftbatch.a_ledger_number_i = " + LedgerNum
+                " AND giftbatch.a_ledger_number_i = " + LedgerNumber
 
                 + " AND partnerrecipient.p_partner_key_n = detail.p_recipient_key_n"
 
@@ -3096,7 +3128,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable TotalGiftsThroughField(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
-            Int32 LedgerNum = AParameters["param_ledger_number_i"].ToInt32();
+            Int32 LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             DateTime startDate = AParameters["param_StartDate"].ToDate();
             string strStartDate = startDate.ToString("#yyyy-MM-dd#");
             DateTime endDate = new DateTime(DateTime.Now.Year, 12, 31);
@@ -3107,7 +3139,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Int32 LedgerCurrentPeriod;
             Int32 LedgerCurrentYear;
 
-            GetLedgerPeriodDetails(LedgerNum,
+            GetLedgerPeriodDetails(LedgerNumber,
                 out LedgerAccountingPeriods,
                 out LedgerForwardPeriods,
                 out LedgerCurrentPeriod,
@@ -3130,27 +3162,39 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             }
             else
             {
-                SqlQuery += "detail.a_gift_amount_intl_n AS Amount";
+                //
+                // Read different DB fields according to currency setting
+                // NOTE: Modified August 2016 to return a_gift_amount_n * exchangeRate,
+                // rather than the recorded a_gift_amount_intl_n
+                TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
+                TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+                Decimal exchangeRateNow = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                    LedgerNumber,
+                    ledgerInfo.CurrentFinancialYear,
+                    ledgerInfo.CurrentPeriod,
+                    -1);
+
+                SqlQuery += "detail.a_gift_amount_n * " + exchangeRateNow + " AS Amount";
 
                 if (TaxDeductiblePercentageEnabled)
                 {
-                    SqlQuery += ", detail.a_tax_deductible_amount_intl_n AS TaxDeductAmount";
+                    SqlQuery += ", detail.a_tax_deductible_amount_base_n * " + exchangeRateNow + " AS TaxDeductAmount";
                 }
             }
 
             SqlQuery += (" FROM PUB_a_gift as gift, PUB_a_gift_detail as detail, PUB_a_gift_batch as batch, PUB_a_motivation_detail AS motive"
 
-                         + " WHERE detail.a_ledger_number_i = " + LedgerNum +
+                         + " WHERE detail.a_ledger_number_i = " + LedgerNumber +
                          " AND batch.a_batch_status_c = 'Posted'" +
                          " AND batch.a_batch_number_i = gift.a_batch_number_i" +
-                         " AND batch.a_ledger_number_i = " + LedgerNum +
+                         " AND batch.a_ledger_number_i = " + LedgerNumber +
                          " AND batch.a_gl_effective_date_d >= " + strStartDate +
 
-                         " AND gift.a_ledger_number_i = " + LedgerNum +
+                         " AND gift.a_ledger_number_i = " + LedgerNumber +
                          " AND detail.a_batch_number_i = gift.a_batch_number_i" +
                          " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i"
 
-                         + " AND motive.a_ledger_number_i = " + LedgerNum +
+                         + " AND motive.a_ledger_number_i = " + LedgerNumber +
                          " AND motive.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
                          " AND motive.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                          " AND motive.a_receipt_l=true"
@@ -3167,7 +3211,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String todaysDateSql = DateTime.Now.ToString("yyyy-MM-dd");
 
                     AAccountingPeriodTable periodTbl = AAccountingPeriodAccess.LoadAll(Transaction);
-                    periodTbl.DefaultView.RowFilter = "a_ledger_number_i=" + LedgerNum +
+                    periodTbl.DefaultView.RowFilter = "a_ledger_number_i=" + LedgerNumber +
                                                       " AND a_period_start_date_d<='" + todaysDateSql + "'" +
                                                       " AND a_period_end_date_d>='" + todaysDateSql + "'";
 
@@ -3858,7 +3902,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             //
             // Read different DB fields according to currency setting
-            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int") ? "a_actual_intl_n" : "a_actual_base_n";
+            // NOTE: Modified August 2016 to return base * exchangeRate, rather than the recorded a_actual_intl_n
+            TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+            TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
+
+            Decimal exchangeRateNow = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                LedgerNumber,
+                ledgerInfo.CurrentFinancialYear,
+                ledgerInfo.CurrentPeriod,
+                -1);
+
+            String ActualFieldName = AParameters["param_currency"].ToString().StartsWith("Int")
+                                     ?
+                                     "a_actual_base_n * " + exchangeRateNow
+                                     :
+                                     "a_actual_base_n";
 
             String CostCentreFilter;
             String AccountCodeFilter;
@@ -3981,15 +4039,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 delegate
                 {
                     TCorporateExchangeRateCache ExchangeRateCache = new TCorporateExchangeRateCache();
+                    TLedgerInfo ledgerInfo = new TLedgerInfo(LedgerNumber);
 
-                    decimal ExchangeRate = 1;
+                    decimal ExchangeRateNow = 1;
 
                     if (AParameters["param_currency"].ToString().StartsWith("Int"))
                     {
-                        ExchangeRate = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
+                        ExchangeRateNow = ExchangeRateCache.GetCorporateExchangeRate(DbAdapter.FPrivateDatabaseObj,
                             LedgerNumber,
-                            AccountingYear,
-                            ReportPeriodEnd,
+                            ledgerInfo.CurrentFinancialYear,
+                            ledgerInfo.CurrentPeriod,
                             -1);
                     }
 
@@ -4005,12 +4064,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " SUM (CASE" +
                                    " WHEN (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n > 0)" +
                                    " OR (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n < 0)" +
-                                   " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
+                                   " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRateNow +
                                    " ELSE 0 END) AS Credit," +
                                    " SUM (CASE" +
                                    " WHEN (a_account.a_debit_credit_indicator_l = true AND glmp.a_actual_base_n > 0)" +
                                    " OR (a_account.a_debit_credit_indicator_l = false AND glmp.a_actual_base_n < 0)" +
-                                   " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRate +
+                                   " THEN ABS(glmp.a_actual_base_n) * " + ExchangeRateNow +
                                    " ELSE 0 END) AS Debit" +
 
                                    " FROM a_general_ledger_master AS glm, a_general_ledger_master_period AS glmp, a_account, a_cost_centre" +

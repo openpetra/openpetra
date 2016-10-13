@@ -29,6 +29,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using System.Threading;
 using System.Runtime.Remoting.Messaging;
+using System.Collections.Generic;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -84,38 +86,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Close();
         }
 
-        private delegate bool AsyncOpCaller(bool AInInfoMode);
-
         private void PeriodEndButtonClick(object btn, EventArgs e)
         {
             tbxMessage.Text = "Running Period End operation - please wait.";
-            AsyncOpCaller AsyncOp = new AsyncOpCaller(RunPeriodEnd);
-            this.UseWaitCursor = true;
-            AsyncOp.BeginInvoke(false, AsyncOpEnd, this);
+            UseWaitCursor = true;
+            Thread periodEndThread = new Thread(() => periodEndThreadOp());
+            periodEndThread.SetApartmentState(ApartmentState.STA);
+            periodEndThread.Start();
+        }
+
+        private void periodEndThreadOp()
+        {
+            RunPeriodEnd(false);
+            PeriodEndTidyup();
         }
 
         delegate void CrossThreadUpdate ();
 
-        private static void AsyncOpEnd(IAsyncResult ar)
-        {
-            AsyncResult result = (AsyncResult)ar;
-            TPeriodEnd TheForm = (TPeriodEnd)result.AsyncState;
-            AsyncOpCaller caller = (AsyncOpCaller)result.AsyncDelegate;
-
-            TheForm.FOperationResult = caller.EndInvoke(ar);
-            TLogging.Log("AsyncOpEnd: " + TheForm.FOperationResult);
-
-            TheForm.TidyUpAfterAsyncOperation();
-        }
-
         /// <summary>Called after the operation</summary>
         /// <remarks>Uses an "invoke" to update screen controls.</remarks>
         ///
-        public void TidyUpAfterAsyncOperation()
+        public void PeriodEndTidyup()
         {
             if (InvokeRequired)
             {
-                Invoke(new CrossThreadUpdate(TidyUpAfterAsyncOperation));
+                Invoke(new CrossThreadUpdate(PeriodEndTidyup));
                 return;
             }
 
@@ -140,15 +135,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private bool RunPeriodEnd(bool AInInfoMode)
         {
+            List <Int32>glBatchNumbers;
+
             if (blnIsInMonthMode)
             {
                 FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodMonthEnd(
-                    FLedgerNumber, AInInfoMode, out FverificationResult);
+                    FLedgerNumber, AInInfoMode,
+                    out glBatchNumbers,
+                    out FverificationResult);
             }
             else
             {
                 FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodYearEnd(
-                    FLedgerNumber, AInInfoMode, out FverificationResult);
+                    FLedgerNumber, AInInfoMode,
+                    out glBatchNumbers,
+                    out FverificationResult);
+            }
+
+            TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+
+            foreach (Int32 glBatchNumber in glBatchNumbers)
+            {
+                if (glBatchNumber > 0)
+                {
+                    ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
+                }
             }
 
             TLogging.Log("RunPeriodEnd: " + FOperationResult);

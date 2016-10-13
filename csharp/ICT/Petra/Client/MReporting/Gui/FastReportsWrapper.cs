@@ -768,92 +768,15 @@ namespace Ict.Petra.Client.MReporting.Gui
             return SendReport;
         } // AutoEmailReports
 
-        private void ShowBadBatchNumMessageInUiThread(Int32 ABatchNumber)
-        {
-            if (FPetraUtilsObject == null)
-            {
-                return;
-            }
-
-            Form ParentForm = FPetraUtilsObject.GetCallerForm();
-
-            if (ParentForm.InvokeRequired)
-            {
-                ParentForm.Invoke((MethodInvoker) delegate
-                    {
-                        ShowBadBatchNumMessageInUiThread(ABatchNumber);
-                        return;
-                    });;
-            }
-            else
-            {
-                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} not found"), ABatchNumber),
-                    Catalog.GetString("Batch Posting Register"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        }
-
-        /// <summary>Get all the data for the report</summary>
-        /// <remarks>Called from the server during batch posting, and also from File/Print gui</remarks>
-        /// <param name="ACalc"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        public Boolean RegisterBatchPostingData(TRptCalculator ACalc, Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            GLBatchTDS BatchTDS = null;
-
-            try
-            {
-                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTablesUsingPrivateDb(ALedgerNumber, ABatchNumber);
-            }
-            catch
-            {
-            }         // Ignore this error and instead detect the empty batch, below:
-
-            if ((BatchTDS == null) || (BatchTDS.ABatch == null) || (BatchTDS.ABatch.Rows.Count < 1))
-            {
-                ShowBadBatchNumMessageInUiThread(ABatchNumber);
-                return false;
-            }
-
-            //Call RegisterData to give the data to the template
-            RegisterData(BatchTDS.ABatch, "ABatch");
-            RegisterData(BatchTDS.AJournal, "AJournal");
-            RegisterData(BatchTDS.ATransaction, "ATransaction");
-            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
-                    ALedgerNumber), "AAccount");
-            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                    ALedgerNumber), "ACostCentre");
-
-            ACalc.AddParameter("param_batch_number_i", ABatchNumber);
-            ACalc.AddParameter("param_ledger_number_i", ALedgerNumber);
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ALedgerTable LedgerTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
-
-            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
-            ACalc.AddParameter("param_currency_name", LedgerTable[0].BaseCurrency);
-            return true;
-        }
-
         /// <summary>Helper for the report printing ClientTask</summary>
         /// <param name="ReportName"></param>
         /// <param name="paramStr"></param>
         public static void PrintReportNoUi(String ReportName, String paramStr)
         {
             String[] Params = paramStr.Split(',');
-            Int32 LedgerNumber = -1;
-            Int32 BatchNumber = -1;
+            Int32 ledgerNumber = -1;
+            Int32 batchNumber = -1;
 
-/*
- *          String Msg = ReportName + "\n";
- *          foreach (String param in Params)
- *          {
- *              Msg += (param + "\n");
- *          }
- *          MessageBox.Show(Msg, "FastReportWrapper.PrintReportNoUi");
- */
             FastReportsWrapper ReportingEngine = new FastReportsWrapper(ReportName);
 
             if (!ReportingEngine.LoadedOK)
@@ -894,13 +817,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                             {
                                 case "param_ledger_number_i":
                                 {
-                                    LedgerNumber = IntTerm;
+                                    ledgerNumber = IntTerm;
                                     break;
                                 }
 
                                 case "param_batch_number_i":
                                 {
-                                    BatchNumber = IntTerm;
+                                    batchNumber = IntTerm;
                                     break;
                                 }
                             }
@@ -921,20 +844,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             // Get Data for report:
             switch (ReportName)
             {
-                case "Batch Posting Register":
-                {
-                    if ((LedgerNumber != -1) && (BatchNumber != -1))
-                    {
-                        ReportingEngine.RegisterBatchPostingData(Calc, LedgerNumber, BatchNumber);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error: Can't get data for Batch Posting Register", "FastReportWrapper.PrintReportNoUi");
-                    }
-
-                    break;
-                }
-
                 case "Gift Batch Detail":
                 {
                     DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("GiftBatchDetail", paramsDictionary);

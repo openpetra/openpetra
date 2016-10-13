@@ -97,8 +97,9 @@ namespace Tests.MFinance.Server.Gift
             }
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
+            Int32 generatedGlBatchNumber;
 
-            if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out generatedGlBatchNumber, out VerificationResult))
             {
                 CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
 

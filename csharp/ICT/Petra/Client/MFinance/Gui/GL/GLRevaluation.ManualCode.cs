@@ -50,7 +50,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 
 
 using Ict.Petra.Client.App.Core.RemoteObjects;
-
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -282,12 +282,23 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Cursor = Cursors.WaitCursor;
             this.Refresh();
             TVerificationResultCollection verificationResult;
+            Int32 forexBatchNumber;
             bool blnRevalutationState =
                 TRemote.MFinance.GL.WebConnectors.Revaluate(FLedgerNumber,
-                    foreignAccounts, rates, ToCostCentre, out verificationResult);
+                    foreignAccounts, rates, ToCostCentre, out forexBatchNumber, out verificationResult);
             this.Cursor = Cursors.Default;
 
             String Message = verificationResult.BuildVerificationResultString();
+
+            if (blnRevalutationState)
+            {
+                TFrmBatchPostingRegister glReportGui = new TFrmBatchPostingRegister(this);
+                glReportGui.PrintReportNoUi(FLedgerNumber, forexBatchNumber);
+
+                // Notify the exchange rate screen, if it is there
+                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
+                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
+            }
 
             if (Message == "")
             {
@@ -295,13 +306,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             MessageBox.Show(Message, Catalog.GetString("Revaluation"));
-
-            if (blnRevalutationState)
-            {
-                // Notify the exchange rate screen, if it is there
-                TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcGLOrGiftBatchSaved, this.ToString());
-                TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
-            }
 
             this.Close();
         }

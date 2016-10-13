@@ -38,6 +38,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -359,7 +360,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 FPostingInProgress = true;
 
                 Thread postingThread = new Thread(() => PostGiftBatch(out Verifications));
-
+                postingThread.SetApartmentState(ApartmentState.STA);
                 using (TProgressDialog dialog = new TProgressDialog(postingThread))
                 {
                     dialog.ShowDialog();
@@ -416,7 +417,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AVerifications"></param>
         private void PostGiftBatch(out TVerificationResultCollection AVerifications)
         {
-            TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(FLedgerNumber, FSelectedBatchNumber, out AVerifications);
+            Int32 generatedGlBatchNumber;
+
+            if (TRemote.MFinance.Gift.WebConnectors.PostGiftBatch(
+                    FLedgerNumber, FSelectedBatchNumber, out generatedGlBatchNumber, out AVerifications)
+                && FMyForm.EnablePostingReport
+                )
+            {
+                TFrmGiftBatchDetail giftReportForm = new TFrmGiftBatchDetail(null);
+                giftReportForm.PrintReportNoUi(FLedgerNumber, FSelectedBatchNumber);
+
+                TFrmBatchPostingRegister glReportForm = new TFrmBatchPostingRegister(null);
+                glReportForm.PrintReportNoUi(FLedgerNumber, generatedGlBatchNumber);
+            }
         }
 
         #endregion

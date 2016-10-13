@@ -46,6 +46,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Common.Data;
+using System.Collections.Generic;
 
 namespace Tests.MFinance.Server.ICH
 {
@@ -192,8 +193,12 @@ namespace Tests.MFinance.Server.ICH
 
             //Perform stewardship calculation
             TVerificationResultCollection VerificationResults;
+            List <Int32>glBatchNumbers;
+
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
-                PeriodNumber, out VerificationResults);
+                PeriodNumber,
+                out glBatchNumbers,
+                out VerificationResults);
 
             VerificationResults = new TVerificationResultCollection();
 

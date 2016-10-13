@@ -34,6 +34,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+using Ict.Petra.Client.App.Core;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -259,12 +260,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return false;
             }
 
+            Boolean useGovId = TSystemDefaults.GetBooleanDefault("GovIdEnabled", false);
+            ACalc.AddParameter("param_use_gov_id", useGovId);
+
             // Register datatables with the report
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Totals"], "Totals");
-
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["TaxRef"], "TaxRef");
             return true;
         }
     }

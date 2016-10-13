@@ -52,6 +52,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 uco_GeneralSettings.EnableDateSelection(true);
+                uco_GeneralSettings.EnforceLocalCurrencyWhenMultiplePeriodSelected = true;
 
                 FLedgerNumber = value;
 

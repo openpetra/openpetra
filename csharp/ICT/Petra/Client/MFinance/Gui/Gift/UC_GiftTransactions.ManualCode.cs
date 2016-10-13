@@ -955,8 +955,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     BankingDetailsRow = BankingDetailsTable[0];
                 }
 
+                if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
+                {
+                    DonorInfo += TSystemDefaults.GetStringDefault("GovIdLabel", "bPK") + ": ";
+                    FMainDS.PTax.DefaultView.RowFilter = "p_partner_key_n=" + DonorRow.PartnerKey;
+                    DonorInfo +=
+                        (FMainDS.PTax.DefaultView.Count > 0)
+                        ?
+                        ((PTaxRow)(FMainDS.PTax.DefaultView[0].Row)).TaxRef
+                        :
+                        "none";
+                }
+
                 if ((BankingDetailsRow != null) && !string.IsNullOrEmpty(BankingDetailsRow.BankAccountNumber))
                 {
+                    if (DonorInfo != string.Empty)
+                    {
+                        DonorInfo += "; ";
+                    }
+
                     DonorInfo = Catalog.GetString("Bank Account: ") + BankingDetailsRow.BankAccountNumber;
                 }
 

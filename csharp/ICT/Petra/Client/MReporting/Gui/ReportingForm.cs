@@ -729,6 +729,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         ((IFrmReporting)FTheForm).EnableBusy(true);
                         FGenerateReportThread = new Thread(GenerateReport);
                         FGenerateReportThread.IsBackground = true;
+                        FGenerateReportThread.SetApartmentState(ApartmentState.STA);
                         FGenerateReportThread.Start();
                     }
                 }

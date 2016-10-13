@@ -46,7 +46,8 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.Interfaces.MFinance;
-
+using System.Collections.Generic;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.ICH
 {
@@ -104,11 +105,23 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             try
             {
                 Cursor = Cursors.WaitCursor;
+                List <Int32>glBatchNumbers;
 
                 Boolean retVal = TRemote.MFinance.ICH.WebConnectors.PerformStewardshipCalculation(
                     FLedgerNumber,
                     cmbReportPeriod.GetSelectedInt32(),
+                    out glBatchNumbers,
                     out VerificationResult);
+
+                TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+
+                foreach (Int32 glBatchNumber in glBatchNumbers)
+                {
+                    if (glBatchNumber > 0)
+                    {
+                        ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
+                    }
+                }
 
                 Cursor = Cursors.Default;
                 String ResultMsg =

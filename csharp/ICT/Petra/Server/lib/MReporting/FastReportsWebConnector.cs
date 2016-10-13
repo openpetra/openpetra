@@ -22,7 +22,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Threading;
 using System.Data;
 using System.Collections.Generic;
 using Ict.Common;
@@ -33,6 +32,7 @@ using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
+using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -529,14 +529,17 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 {
                     return null;
                 }
-            }
+            } // foreach
 
             DataTable DonorAddresses = new DataTable("DonorAddresses");
+
+            String donorsWhereClause = "";
 
             foreach (DataRow Row in DistinctDonors.Rows)
             {
                 // get best address for each donor
-                tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
+                Int64 DonorKey = (Int64)Row["DonorKey"];
+                tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, DonorKey);
 
                 if (tempTable != null)
                 {
@@ -547,6 +550,13 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 {
                     return null;
                 }
+
+                if (donorsWhereClause != "")
+                {
+                    donorsWhereClause += ",";
+                }
+
+                donorsWhereClause += DonorKey.ToString();
             }
 
             if (ADbAdapter.IsCancelled)
@@ -554,11 +564,32 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 return null;
             }
 
+            DataTable taxRef = null;
+
+            if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
+            {
+                TDBTransaction Transaction = null;
+                ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+                    ref Transaction,
+                    delegate
+                    {
+                        String query = "SELECT p_partner_key_n, p_tax_ref_c FROM p_tax" +
+                                       " WHERE p_tax_type_c='GovId' AND p_partner_key_n IN (" +
+                                       donorsWhereClause + ")";
+                        taxRef = ADbAdapter.RunQuery(query, "TaxRef", Transaction);
+                    });
+            }
+            else
+            {
+                taxRef = new DataTable("TaxRef");
+            }
+
             DataSet ReturnDataSet = new DataSet();
             ReturnDataSet.Tables.Add(Recipients);
             ReturnDataSet.Tables.Add(Donors);
             ReturnDataSet.Tables.Add(DonorAddresses);
             ReturnDataSet.Tables.Add(Totals);
+            ReturnDataSet.Tables.Add(taxRef);
             return ReturnDataSet;
         } // Get DonorGiftStatement DataSet
 

@@ -179,7 +179,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
-            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                FLedgerNumber);
             ALedgerRow Row = LedgerDetailsTable[0];
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;

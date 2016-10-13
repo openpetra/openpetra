@@ -343,10 +343,14 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
                 ADocumentIds.Add(AMainDS.AApDocument[0].ApDocumentId);
             }
 
+            Int32 glBatchNumber;
+
             if (!TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber,
                     ADocumentIds,
                     APostingDate,
-                    AReversal, out VerificationResult))
+                    AReversal,
+                    out glBatchNumber,
+                    out VerificationResult))
             {
                 Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
@@ -504,8 +508,11 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             DocPayment.Amount = AAmount;
             DocPayment.PaymentNumber = Payment.PaymentNumber;
             MainDS.AApDocumentPayment.Rows.Add(DocPayment);
+            Int32 glBatchNumber;
 
-            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, APeriodEndDate, out VerificationResult))
+            if (!TAPTransactionWebConnector.PostAPPayments(ref MainDS, APeriodEndDate,
+                    out glBatchNumber,
+                    out VerificationResult))
             {
                 Assert.Fail(AssertFailMessage +
                     VerificationResult.BuildVerificationResultString());
@@ -524,10 +531,13 @@ namespace Ict.Testing.Petra.Server.MFinance.AP
             string AssertFailMessage = "Failed to reverse AP payment: ";
             TVerificationResultCollection VerificationResult;
 
+            List <Int32>glBatchNumbers;
+
             // "Un-pay" the specified invoice
             if (!TAPTransactionWebConnector.ReversePayment(FLedgerNumber,
                     APaymentNumber,
                     APeriodEndDate,
+                    out glBatchNumbers,
                     out VerificationResult))
             {
                 Assert.Fail(AssertFailMessage +

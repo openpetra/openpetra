@@ -2324,26 +2324,31 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AVerifications = VerificationResult;
 
-            if (SubmissionOK == true)
-            {
-                String ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+            //
+            // I previously used "Client Tasks" to ask the client to print the GL Posting Register,
+            // but now I don't - the client needs to do that itself.
 
-                // Generate posting reports (on the client!)
-                foreach (Int32 batchNumber in ABatchNumbers)
-                {
-                    String[] Params =
-                    {
-                        "param_ledger_number_i=" + ALedgerNumber,
-                        "param_batch_number_i=" + batchNumber,
-                        "param_ledger_name=\"" + ledgerName + "\"",
-                        "param_sortby=\"Transaction\""
-                    };
-
-                    String paramStr = String.Join(",", Params);
-                    PrintReportOnClientDelegate("Batch Posting Register", paramStr);
-                }
-            }
-
+            /*
+             * if (SubmissionOK == true)
+             * {
+             *  String ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+             *
+             *  // Generate posting reports (on the client!)
+             *  foreach (Int32 batchNumber in ABatchNumbers)
+             *  {
+             *      String[] Params =
+             *      {
+             *          "param_ledger_number_i=" + ALedgerNumber,
+             *          "param_batch_number_i=" + batchNumber,
+             *          "param_ledger_name=\"" + ledgerName + "\"",
+             *          "param_sortby=\"Transaction\""
+             *      };
+             *
+             *      String paramStr = String.Join(",", Params);
+             *      PrintReportOnClientDelegate("Batch Posting Register", paramStr);
+             *  }
+             * }
+             */
             return SubmissionOK;
         }
 

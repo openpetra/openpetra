@@ -119,8 +119,9 @@ namespace Tests.MFinance.Server.Gift
             int BatchNumber = importer.GetLastGiftBatchNumber();
 
             Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and returned a valid batch number");
+            Int32 generatedGlBatchNumber;
 
-            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out generatedGlBatchNumber, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not posted: " + VerificationResult.BuildVerificationResultString());
             }
@@ -369,7 +370,11 @@ namespace Tests.MFinance.Server.Gift
             //
             // Act: Post the batch
             //
-            bool result = TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, GiftBatchNumber, out VerificationResult);
+            Int32 generatedGlBatchNumber;
+            bool result = TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber,
+                GiftBatchNumber,
+                out generatedGlBatchNumber,
+                out VerificationResult);
 
             //
             // Assert
@@ -959,7 +964,8 @@ namespace Tests.MFinance.Server.Gift
             // Post a Gift Batch with ledger number less than 1
             try
             {
-                TGiftTransactionWebConnector.PostGiftBatch(-1, 1, out VerificationResult);
+                Int32 generatedGlBatchNumber;
+                TGiftTransactionWebConnector.PostGiftBatch(-1, 1, out generatedGlBatchNumber, out VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidLedgerNumberException e)
@@ -976,7 +982,8 @@ namespace Tests.MFinance.Server.Gift
             // Post a Gift Batch with batch number less than 1
             try
             {
-                TGiftTransactionWebConnector.PostGiftBatch(1, -1, out VerificationResult);
+                Int32 generatedGlBatchNumber;
+                TGiftTransactionWebConnector.PostGiftBatch(1, -1, out generatedGlBatchNumber, out VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)
@@ -998,14 +1005,15 @@ namespace Tests.MFinance.Server.Gift
         {
             TVerificationResultCollection VerificationResult = null;
 
-            List <Int32>BatchNumbers = new List <int>();
+            List <Int32>BatchNumbers = new List <Int32>();
 
             string Message = "Validation failed for posting a Gift Batch with ledger number less than 1.";
 
             // Post a Gift Batch with ledger number less than 1
             try
             {
-                TGiftTransactionWebConnector.PostGiftBatches(-1, BatchNumbers, out VerificationResult);
+                List <Int32>generatedGlBatchNumbers = new List <Int32>();
+                TGiftTransactionWebConnector.PostGiftBatches(-1, BatchNumbers, generatedGlBatchNumbers, out VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidLedgerNumberException e)
@@ -1023,7 +1031,8 @@ namespace Tests.MFinance.Server.Gift
             // Post a Gift Batch with batch number less than 1
             try
             {
-                TGiftTransactionWebConnector.PostGiftBatches(1, BatchNumbers, out VerificationResult);
+                List <Int32>generatedGlBatchNumbers = new List <Int32>();
+                TGiftTransactionWebConnector.PostGiftBatches(1, BatchNumbers, generatedGlBatchNumbers, out VerificationResult);
                 Assert.Fail(Message);
             }
             catch (EFinanceSystemInvalidBatchNumberException e)

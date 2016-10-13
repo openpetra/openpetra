@@ -48,6 +48,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MCommon.WebConnectors;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MFinance.GL.WebConnectors;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 {
@@ -994,6 +995,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AAPDocumentIds"></param>
         /// <param name="APostingDate"></param>
         /// <param name="Reversal"></param>
+        /// <param name="AglBatchNumber">If a GL batch was posted, this is the Batch Number.</param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
@@ -1001,10 +1003,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             List <Int32>AAPDocumentIds,
             DateTime APostingDate,
             Boolean Reversal,
+            out Int32 AglBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
             bool PostingWorkedOk = true;
-            ABatchRow batch;
+
+            AglBatchNumber = -1;
+            ABatchRow batch = null;
             TVerificationResultCollection ResultsCollection = new TVerificationResultCollection();
 
             TDBTransaction HighLevelTransaction = null;
@@ -1095,8 +1100,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     }
                 });
 
-            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate below cannot directly access
-                                                        // "out" parameters, so this intermediate variable was used.
+            AVerificationResult = ResultsCollection;    // The System.Action defined in the delegate cannot directly access
+
+            // "out" parameters, so this intermediate variable was used.
+            if (PostingWorkedOk)
+            {
+                AglBatchNumber = batch.BatchNumber;
+            }
+
             return PostingWorkedOk;
         }
 
@@ -1588,11 +1599,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         public static bool PostAPPayments(
             ref AccountsPayableTDS AMainDS,
             DateTime APostingDate,
+            out Int32 AglBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
             AccountsPayableTDS MainDS = AMainDS;
 
             TVerificationResultCollection VerificationResult = new TVerificationResultCollection();
+
+            AglBatchNumber = -1;
 
             AVerificationResult = VerificationResult;
 
@@ -1606,7 +1620,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
             }
 
             TDBTransaction transaction = null;
+            Boolean PostingWorkedOk = false;
             Boolean SubmissionOK = false;
+            ABatchRow batch = null;
+
             DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable, ref transaction, ref SubmissionOK,
                 delegate
                 {
@@ -1684,11 +1701,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         APostingDate,
                         ref MainDS);
 
-                    ABatchRow batch = GLDataset.ABatch[0];
+                    batch = GLDataset.ABatch[0];
 
                     // save the batch
-                    Boolean PostingWorkedOk = (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
-                                                   out VerificationResult) == TSubmitChangesResult.scrOK);
+                    PostingWorkedOk = (TGLTransactionWebConnector.SaveGLBatchTDS(ref GLDataset,
+                                           out VerificationResult) == TSubmitChangesResult.scrOK);
 
                     if (PostingWorkedOk)
                     {
@@ -1719,6 +1736,11 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                     SubmissionOK = true;
                 }); // Get NewOrExisting Auto Transaction
+
+            if (PostingWorkedOk)
+            {
+                AglBatchNumber = batch.BatchNumber;
+            }
 
             return SubmissionOK;
         } // Post AP Payments
@@ -1814,18 +1836,22 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APaymentNumber"></param>
         /// <param name="APostingDate"></param>
+        /// <param name="AglBatchNumbers">If GL Batches were generated, these are the Batch Numbers.</param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool ReversePayment(Int32 ALedgerNumber,
             Int32 APaymentNumber,
             DateTime APostingDate,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerifications)
         {
             //
             // I need to create new documents and post them.
             TVerificationResultCollection Verifications = new TVerificationResultCollection();
 
+            AglBatchNumbers = new List <Int32>();
+            List <Int32>internalGlBatchNumbers = AglBatchNumbers;
             AVerifications = Verifications;
 
             TDBTransaction ReversalTransaction = null;
@@ -1838,6 +1864,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     AccountsPayableTDS TempDS = LoadAPPayment(ALedgerNumber, APaymentNumber);
 
                     Int32 NewApNum = -1;
+                    Int32 batchNumber;
                     Boolean MustBeApproved = LedgerRquiresDocumentApproval(ALedgerNumber, ReversalTransaction);
 
                     List <Int32>PostTheseDocs = new List <Int32>();
@@ -1927,11 +1954,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                             PostTheseDocs,
                             APostingDate,
                             false,
+                            out batchNumber,
                             out Verifications))
                     {
                         return;
                     }
 
+                    internalGlBatchNumbers.Add(batchNumber);
                     CreatePaymentTableEntries(ref ReverseDS, ALedgerNumber, PostTheseDocs);
                     //              AccountsPayableTDSAApPaymentTable AApPayment = ReverseDS.AApPayment;
                     //              AccountsPayableTDSAApDocumentPaymentTable AApDocumentPayment = ReverseDS.AApDocumentPayment;
@@ -1954,10 +1983,13 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     if (!PostAPPayments(
                             ref ReverseDS,
                             APostingDate,
+                            out batchNumber,
                             out Verifications))
                     {
                         return;
                     }
+
+                    internalGlBatchNumbers.Add(batchNumber);
 
                     //
                     // Now I need to re-create and Post new documents that match the previous ones that were reversed!
@@ -2025,11 +2057,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         PostTheseDocs.Add(DocumentRow.ApDocumentId);
                     }
 
-                    if (!PostAPDocuments(ALedgerNumber, PostTheseDocs, APostingDate, false, out Verifications))
+                    if (!PostAPDocuments(ALedgerNumber, PostTheseDocs, APostingDate, false, out batchNumber, out Verifications))
                     {
                         return;
                     }
 
+                    internalGlBatchNumbers.Add(batchNumber);
                     SubmissionOK = true;
                 }); // Begin Auto Transaction
             return SubmissionOK;

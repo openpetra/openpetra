@@ -33,6 +33,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MReporting;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -103,6 +105,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
+
+            Decimal exchangeRateNow = 1;
+
+            if (cmbCurrency.SelectedItem.ToString().StartsWith("Int"))
+            {
+                ALedgerRow ledgerRow =
+                    ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+                exchangeRateNow = TRemote.MFinance.GL.WebConnectors.GetCorporateExchangeRate(
+                    ledgerRow.BaseCurrency,
+                    ledgerRow.IntlCurrency,
+                    DateTime.Now.AddMonths(-1),
+                    DateTime.Now);
+
+                if (exchangeRateNow == 0)
+                {
+                    exchangeRateNow = 1;
+                }
+            }
+
+            ACalc.AddParameter("param_exchange_rate", 1 / exchangeRateNow);
 
             ACalc.AddParameter("Year0", DateTime.Today.Year);
             ACalc.AddParameter("param_Year0", DateTime.Today.Year);

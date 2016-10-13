@@ -210,7 +210,8 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                         TYearEnd YearEndOperator = new TYearEnd(LedgerInfo);
                         // run year end
                         TVerificationResultCollection verificationResult = new TVerificationResultCollection();
-                        TReallocation reallocation = new TReallocation(LedgerInfo);
+                        List <Int32>glBatches = new List <int>();
+                        TReallocation reallocation = new TReallocation(LedgerInfo, glBatches);
                         reallocation.VerificationResultCollection = verificationResult;
                         reallocation.IsInInfoMode = false;
                         reallocation.RunOperation();

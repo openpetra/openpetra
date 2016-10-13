@@ -528,13 +528,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable GiftStatementDonorAddressesTable(TReportingDbAdapter DbAdapter, Int64 ADonorKey)
         {
-            TDBTransaction Transaction = null;
-
             // create new datatable
             DataTable Results = new DataTable();
 
             Results.Columns.Add("DonorKey", typeof(Int64));
 
+            TDBTransaction Transaction = null;
             DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate

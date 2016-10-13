@@ -93,6 +93,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             int countUnPosted = MainDS.AGiftBatch.Count;
 
             List <Int32>GiftBatchesToPost = new List <int>();
+            List <Int32>generatedGlBatches = new List <int>();
 
             foreach (AGiftBatchRow batch in MainDS.AGiftBatch.Rows)
             {
@@ -108,7 +109,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
 
             TVerificationResultCollection VerificationResult;
 
-            if (!TGiftTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatches(FLedgerNumber, GiftBatchesToPost, generatedGlBatches, out VerificationResult))
             {
                 TLogging.Log(VerificationResult.BuildVerificationResultString());
                 return false;

@@ -64,20 +64,22 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AForeignAccount">Account Codes (Array) of the selected foreign currency accounts</param>
         /// <param name="ANewExchangeRate">Array of the exchange rates</param>
         /// <param name="ACostCentre">Which Cost Centre should win / lose money in this process</param>
+        /// <param name="glBatchNumber">If a batch was generated, the caller should print it.</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
-        /// <returns>true if it seems to be OK.</returns>
+        /// <returns>true if a forex batch was posted.</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool Revaluate(
             int ALedgerNum,
             string[] AForeignAccount,
             decimal[] ANewExchangeRate,
             String ACostCentre,
+            out Int32 glBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
             CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum,
                 AForeignAccount, ANewExchangeRate, ACostCentre);
 
-            bool blnReturn = revaluation.RunRevaluation();
+            bool blnReturn = revaluation.RunRevaluation(out glBatchNumber);
 
             AVerificationResult = revaluation.VerificationResultCollection;
             return blnReturn;
@@ -139,10 +141,11 @@ namespace Ict.Petra.Server.MFinance.GL
 
         /// <summary>
         /// Run the revaluation and set the flag for the ledger
-        /// Returns true if it seems to be OK.
+        /// Returns true if a Reval batch was posted.
         /// </summary>
-        public Boolean RunRevaluation()
+        public Boolean RunRevaluation(out Int32 glBatchNumber)
         {
+            glBatchNumber = -1;
             try
             {
                 TLedgerInfo ledger = new TLedgerInfo(F_LedgerNum);
@@ -152,75 +155,69 @@ namespace Ict.Petra.Server.MFinance.GL
                 F_FinancialYear = ledger.CurrentFinancialYear;
                 F_AccountingPeriod = ledger.CurrentPeriod;
 
-                return RunRevaluationIntern();
+                TDBTransaction Transaction = null;
+
+                AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
+                AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
+                Boolean transactionsWereCreated = false;
+
+                glmTemplate.LedgerNumber = F_LedgerNum;
+                glmTemplate.Year = F_FinancialYear;
+
+                for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
+                {
+                    glmTemplate.AccountCode = F_ForeignAccount[i];
+                    DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                        ref Transaction,
+                        delegate
+                        {
+                            GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
+                        });
+
+                    if (GlmTable.Rows.Count > 0)
+                    {
+                        transactionsWereCreated |= RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
+                    }
+                }
+
+                Boolean batchPostedOK = true;
+
+                if (transactionsWereCreated)
+                {
+                    batchPostedOK = CloseRevaluationAccountingBatch(out glBatchNumber);
+                }
+
+                if (batchPostedOK)
+                {
+                    if (!transactionsWereCreated) // If no transactions were needed, I'll just advise the user:
+                    {
+                        FVerificationCollection.Add(new TVerificationResult(
+                                "Post Forex Batch",
+                                "Exchange rates are unchanged - no revaluation was required.",
+                                TResultSeverity.Resv_Status));
+                    }
+
+                    for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
+                    {
+                        TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
+                    }
+                }
+                else
+                {
+                    FVerificationCollection.Add(new TVerificationResult(
+                            "Post Forex Batch",
+                            "The Revaluation Batch could not be posted.",
+                            TResultSeverity.Resv_Critical));
+                }
+
+                return batchPostedOK;
             }
             catch (EVerificationException terminate)
             {
                 FVerificationCollection = terminate.ResultCollection();
                 return false;
             }
-        }
-
-        /// Returns true if it seems to be OK.
-        private Boolean RunRevaluationIntern()
-        {
-            TDBTransaction Transaction = null;
-
-            AGeneralLedgerMasterTable GlmTable = new AGeneralLedgerMasterTable();
-            AGeneralLedgerMasterRow glmTemplate = (AGeneralLedgerMasterRow)GlmTable.NewRowTyped(false);
-            Boolean transactionsWereCreated = false;
-
-            glmTemplate.LedgerNumber = F_LedgerNum;
-            glmTemplate.Year = F_FinancialYear;
-
-            for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
-            {
-                glmTemplate.AccountCode = F_ForeignAccount[i];
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
-                    ref Transaction,
-                    delegate
-                    {
-                        GlmTable = AGeneralLedgerMasterAccess.LoadUsingTemplate(glmTemplate, Transaction);
-                    });
-
-                if (GlmTable.Rows.Count > 0)
-                {
-                    transactionsWereCreated |= RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
-                }
-            }
-
-            Boolean batchPostedOK = true;
-
-            if (transactionsWereCreated)
-            {
-                batchPostedOK = CloseRevaluationAccountingBatch();
-            }
-
-            if (batchPostedOK)
-            {
-                if (!transactionsWereCreated) // If no transactions were needed, I'll just advise the user:
-                {
-                    FVerificationCollection.Add(new TVerificationResult(
-                            "Post Forex Batch",
-                            "Exchange rates are unchanged - no revaluation was required.",
-                            TResultSeverity.Resv_Status));
-                }
-
-                for (Int32 i = 0; i < F_ForeignAccount.Length; i++)
-                {
-                    TLedgerInitFlag.RemoveFlagComponent(F_LedgerNum, MFinanceConstants.LEDGER_INIT_FLAG_REVAL, F_ForeignAccount[i]);
-                }
-            }
-            else
-            {
-                FVerificationCollection.Add(new TVerificationResult(
-                        "Post Forex Batch",
-                        "The Revaluation Batch could not be posted.",
-                        TResultSeverity.Resv_Critical));
-            }
-
-            return batchPostedOK;
-        }
+        } // Run Revaluation
 
         private Boolean RevaluateAccount(AGeneralLedgerMasterTable AGlmTbl, decimal AExchangeRate, string ACurrencyCode)
         {
@@ -382,9 +379,11 @@ namespace Ict.Petra.Server.MFinance.GL
         }
 
         /// Returns true if it seems to be OK.
-        private Boolean CloseRevaluationAccountingBatch()
+        private Boolean CloseRevaluationAccountingBatch(out Int32 glBatchNumber)
         {
             Boolean blnReturnValue = false;
+
+            glBatchNumber = -1;
 
             if (F_GLDataset != null)
             {
@@ -403,10 +402,15 @@ namespace Ict.Petra.Server.MFinance.GL
 
                 blnReturnValue = (TGLTransactionWebConnector.PostGLBatch(
                                       F_batch.LedgerNumber, F_batch.BatchNumber, out AVerifications));
+
+                if (blnReturnValue)
+                {
+                    glBatchNumber = F_batch.BatchNumber;
+                }
             }
 
             return blnReturnValue;
-        }
+        } // Close Revaluation Accounting Batch
 
         /// <summary>
         /// In order to be able to use a unit test for the calculation, it is public ...

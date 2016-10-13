@@ -56,6 +56,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MFinance.GL;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.App.Core.Security;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 {
@@ -69,11 +70,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodNumber"></param>
+        /// <param name="AgeneratedBatches">The Client should print these batches.</param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if calculation succeeded, otherwise false.</returns>
         [RequireModulePermission("FINANCE-3")]
         public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
+            out List <Int32>AgeneratedBatches,
             out TVerificationResultCollection AVerificationResult)
         {
             /*
@@ -84,6 +87,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
              */
             bool NoRecordsToProcess = false;
 
+            List <Int32>batches = new List <Int32>();
+            AgeneratedBatches = batches;
             AVerificationResult = new TVerificationResultCollection();
             TVerificationResultCollection VerificationResult = AVerificationResult;
 
@@ -97,11 +102,31 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     ref SubmissionOK,
                     delegate
                     {
-                        if (GenerateAdminFeeBatch(ALedgerNumber, APeriodNumber, false, DBTransaction, ref VerificationResult))
+                        Int32 glBatchNum;
+
+                        if (GenerateAdminFeeBatch(
+                                ALedgerNumber,
+                                APeriodNumber,
+                                false,
+                                DBTransaction,
+                                out glBatchNum,
+                                ref VerificationResult))
                         {
+                            batches.Add(glBatchNum);
+
                             SubmissionOK =
-                                GenerateICHStewardshipBatch(ALedgerNumber, APeriodNumber, DBTransaction, ref VerificationResult,
+                                GenerateICHStewardshipBatch(
+                                    ALedgerNumber,
+                                    APeriodNumber,
+                                    DBTransaction,
+                                    out glBatchNum,
+                                    ref VerificationResult,
                                     out NoRecordsToProcess);
+
+                            if (SubmissionOK)
+                            {
+                                batches.Add(glBatchNum);
+                            }
 
                             //If Generate AdminFeeBatch was successful but no records to process in the Stewardship Batch, then still commit
                             SubmissionOK |= NoRecordsToProcess;
@@ -127,6 +152,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="APeriodNumber"></param>
         /// <param name="APrintReport"></param>
         /// <param name="ADBTransaction"></param>
+        /// <param name="AglBatchNumber">This Batch Number should be conveyed to the client for printing.</param>
         /// <param name="AVerificationResults"></param>
         /// <returns>true, unless PostGlBatch fails</returns>
 
@@ -134,11 +160,13 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             int APeriodNumber,
             bool APrintReport,
             TDBTransaction ADBTransaction,
+            out Int32 AglBatchNumber,
             ref TVerificationResultCollection AVerificationResults
             )
         {
             bool IsSuccessful = false;
 
+            AglBatchNumber = -1;
             bool feeTransactionCreated = false;
             string DrAccountCode;
             string DestCostCentreCode = string.Empty;
@@ -168,7 +196,8 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
             try
             {
                 /* Check that we have not closed all periods for the year yet.
-                 *  (Not at the provisional year end point) */
+                 *  (Not at the provisional year end point)
+                 */
                 if (LedgerRow.ProvisionalYearEndFlag)
                 {
                     //Petra ErrorCode = GL0071
@@ -246,6 +275,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                  * Generate Admin Fee transactions.
                  * Only one transaction is posted for each fee code/cost centre.
                  */
+                int gLJournalNumber = journalRow.JournalNumber;
                 string currentFeeCode = string.Empty;
                 string costCentreCodeDBName = AProcessedFeeTable.GetCostCentreCodeDBName();
                 bool transactionOK;
@@ -347,7 +377,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                             transactionOK = TGLPosting.CreateATransaction(adminFeeDS,
                                                 ALedgerNumber,
                                                 batchRow.BatchNumber,
-                                                journalRow.JournalNumber,
+                                                gLJournalNumber,
                                                 "Fee: " + FeeDescription + " (" + currentFeeCode + ")",
                                                 DrAccountCode,
                                                 costCentreCode,
@@ -371,7 +401,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                                                             "Unable to create a new expense transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                                         ALedgerNumber,
                                                         batchRow.BatchNumber,
-                                                        journalRow.JournalNumber);
+                                                        gLJournalNumber);
                                                 ErrorType = TResultSeverity.Resv_Noncritical;
 
                                                 AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
@@ -499,6 +529,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     if (IsSuccessful)
                     {
+                        AglBatchNumber = batchRow.BatchNumber;
                         AProcessedFeeAccess.SubmitChanges(processedFeeDataTable, ADBTransaction);
                     }
                 }
@@ -537,6 +568,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APeriodNumber"></param>
         /// <param name="ADBTransaction"></param>
+        /// <param name="AglBatchNumber"></param>
         /// <param name="AVerificationResults"></param>
         /// <param name="ANoRecordsToProcess"></param>
         /// <returns>True if successful</returns>
@@ -544,14 +576,15 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         private static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
             TDBTransaction ADBTransaction,
+            out Int32 AglBatchNumber,
             ref TVerificationResultCollection AVerificationResults,
             out bool ANoRecordsToProcess)
         {
             ANoRecordsToProcess = false;
             bool IsSuccessful = false;
-
+            AglBatchNumber = -1;
             //Verification results handling
-            string ErrorContext = Catalog.GetString("Generating the ICH batch");
+            string ErrorContext = String.Empty;
             string ErrorMessage = String.Empty;
             //Set default type as non-critical
             TResultSeverity ErrorType = TResultSeverity.Resv_Noncritical;
@@ -561,7 +594,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 bool drCrIndicator = true;
                 bool incomeDrCrIndicator;
                 bool expenseDrCrIndicator;
-                bool accountDrCrIndicator;
 
                 string incomeAccounts = string.Empty;
                 string expenseAccounts = string.Empty;
@@ -622,6 +654,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 if ((batchesInAPeriod == null) || (batchesInAPeriod.Rows.Count == 0))
                 {
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("No Batches found to process in Ledger: {0}"),
                             ALedgerNumber);
@@ -651,14 +684,14 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
 
                 ABatchRow newBatchRow = mainDS.ABatch[0];
-                int gLBatchNumber = newBatchRow.BatchNumber;
+                AglBatchNumber = newBatchRow.BatchNumber;
 
                 ALedgerRow ledgerRow = (ALedgerRow)mainDS.ALedger.Rows[0];
 
                 //Create a new journal in the Batch
                 AJournalRow newJournalRow = mainDS.AJournal.NewRowTyped();
                 newJournalRow.LedgerNumber = ALedgerNumber;
-                newJournalRow.BatchNumber = gLBatchNumber;
+                newJournalRow.BatchNumber = AglBatchNumber;
                 newJournalRow.JournalNumber = ++newBatchRow.LastJournal;
                 newJournalRow.JournalDescription = newBatchRow.BatchDescription;
                 newJournalRow.SubSystemCode = MFinanceConstants.SUB_SYSTEM_GL;
@@ -685,6 +718,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Income Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -709,6 +743,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 }
                 else
                 {
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Expense Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -726,13 +761,15 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                 //Process P&L accounts
                 accountRow = (AAccountRow)postingDS.AAccount.Rows.Find(new object[] { ALedgerNumber, MFinanceConstants.PROFIT_AND_LOSS_HEADING });
+                bool PlAccountDrCrIndicator;
 
                 if (accountRow != null)
                 {
-                    accountDrCrIndicator = accountRow.DebitCreditIndicator;
+                    PlAccountDrCrIndicator = accountRow.DebitCreditIndicator;
                 }
                 else
                 {
+                    ErrorContext = Catalog.GetString("Generating the ICH batch");
                     ErrorMessage =
                         String.Format(Catalog.GetString("Profit & Loss Account header: '{1}' not found in the accounts table for Ledger: {0}."),
                             ALedgerNumber,
@@ -811,7 +848,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             transferFound = true;
                             transRow.IchNumber = iCHProcessing;
 
-                            if (transRow.DebitCreditIndicator == accountDrCrIndicator)
+                            if (transRow.DebitCreditIndicator == PlAccountDrCrIndicator)
                             {
                                 settlementAmount -= transRow.AmountInBaseCurrency;
                             }
@@ -905,11 +942,11 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     /* Balance the cost centre by entering an opposite transaction
                      * to ICH settlement. Use positive amounts only.
                      */
-                    drCrIndicator = accountDrCrIndicator;
+                    drCrIndicator = PlAccountDrCrIndicator;
 
                     if (settlementAmount < 0)
                     {
-                        drCrIndicator = !accountDrCrIndicator;
+                        drCrIndicator = !PlAccountDrCrIndicator;
                         settlementAmount = 0 - settlementAmount;
                     }
 
@@ -921,7 +958,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         //RUN gl1130o.p ("new":U,
                         //Create a transaction
-                        if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
+                        if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, AglBatchNumber, gLJournalNumber,
                                 Catalog.GetString("ICH Monthly Clearing"),
                                 MFinanceConstants.ICH_ACCT_SETTLEMENT, // DestinationAccount[CostCentreRow.CostCentreCode],
                                 costCentreRow.CostCentreCode, settlementAmount, periodEndDate, drCrIndicator,
@@ -931,7 +968,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             ErrorMessage =
                                 String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                     ALedgerNumber,
-                                    gLBatchNumber,
+                                    AglBatchNumber,
                                     gLJournalNumber);
                             ErrorType = TResultSeverity.Resv_Noncritical;
 
@@ -941,12 +978,12 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         //Mark as processed
                         ATransactionRow transRow =
-                            (ATransactionRow)mainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, gLBatchNumber, gLJournalNumber,
+                            (ATransactionRow)mainDS.ATransaction.Rows.Find(new object[] { ALedgerNumber, AglBatchNumber, gLJournalNumber,
                                                                                           gLTransactionNumber });
                         transRow.IchNumber = iCHProcessing;
 
                         /* Increment or decrement the ICH total to be transferred after this loop.
-                         * NOTE - if this is a "non-ICH fund", I need to balance it separately, and I'll do that in this loop.
+                         * NOTE - if this is a "non-ICH fund", I need to balance it separately, and I'll do that right here.
                          */
                         if (costCentreRow.ClearingAccount == MFinanceConstants.ICH_ACCT_ICH)
                         {
@@ -967,22 +1004,22 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                             // This potentially means that there will be multiple transactions to the "non-ICH" account,
                             // whereas the ICH account has only a single transaction, but that's not big deal:
 
-                            if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
+                            if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, AglBatchNumber, gLJournalNumber,
                                     Catalog.GetString("Non-ICH foreign fund Clearing"),
                                     costCentreRow.ClearingAccount,
                                     standardCostCentre, settlementAmount, periodEndDate, !drCrIndicator, Catalog.GetString("Non-ICH"),
                                     true, settlementAmount,
                                     out gLTransactionNumber))
                             {
+                                ErrorContext = Catalog.GetString("Generating non-ICH transaction");
                                 ErrorMessage =
                                     String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                         ALedgerNumber,
-                                        gLBatchNumber,
+                                        AglBatchNumber,
                                         gLJournalNumber);
                                 ErrorType = TResultSeverity.Resv_Noncritical;
 
-                                AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Generating non-ICH transaction"), ErrorMessage,
-                                        ErrorType));
+                                AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                                 return false;
                             }
 
@@ -1027,9 +1064,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     TGLPosting.DeleteGLBatch(
                         ALedgerNumber,
-                        gLBatchNumber,
+                        AglBatchNumber,
                         out batchCancelResult);
-
+                    AglBatchNumber = -1;
                     AVerificationResults.AddCollection(batchCancelResult);
                 }
                 else // No critical errors
@@ -1038,6 +1075,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                      * If the total is negative, it means the ICH batch has a
                      * credit total so far. Thus, we now balance it with the opposite
                      * transaction. */
+
                     if (iCHTotal < 0)
                     {
                         drCrIndicator = MFinanceConstants.IS_DEBIT;
@@ -1049,23 +1087,25 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                     }
 
                     /* Balance the ICH total.
-                     * If the total is already 0 then this is ok (eg last minute change of a gift from one field to another).
+                     * If the total is already 0 then this is ok
+                     * (eg last minute change of a gift from one field to another).
                      */
 
                     if (iCHTotal != 0)
                     {
                         //Create a transaction
-                        if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, gLBatchNumber, gLJournalNumber,
+                        if (!TGLPosting.CreateATransaction(mainDS, ALedgerNumber, AglBatchNumber, gLJournalNumber,
                                 Catalog.GetString("ICH Monthly Clearing"),
                                 MFinanceConstants.ICH_ACCT_ICH, standardCostCentre, iCHTotal, periodEndDate, drCrIndicator,
                                 Catalog.GetString("ICH"),
                                 true, iCHTotal,
                                 out gLTransactionNumber))
                         {
+                            ErrorContext = Catalog.GetString("Generating the ICH batch");
                             ErrorMessage =
                                 String.Format(Catalog.GetString("Unable to create a new transaction for Ledger {0}, Batch {1} and Journal {2}."),
                                     ALedgerNumber,
-                                    gLBatchNumber,
+                                    AglBatchNumber,
                                     gLJournalNumber);
                             ErrorType = TResultSeverity.Resv_Noncritical;
 
@@ -1086,7 +1126,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
                             TCacheableFinanceTablesEnum.ICHStewardshipList.ToString());
 
-                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, gLBatchNumber, out AVerificationResults);
+                        IsSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, AglBatchNumber, out AVerificationResults);
                     }
                     else // There were no transactions
                     {
@@ -1100,9 +1140,9 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                         TGLPosting.DeleteGLBatch(
                             ALedgerNumber,
-                            gLBatchNumber,
+                            AglBatchNumber,
                             out BatchCancelResult);
-
+                        AglBatchNumber = -1;
                         AVerificationResults.AddCollection(BatchCancelResult);
 
                         IsSuccessful = true;

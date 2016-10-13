@@ -45,6 +45,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -58,19 +59,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
+        /// <param name="AglBatchNumbers"></param>
         /// <param name="AVerificationResults"></param>
         /// <returns>false if there's no problem</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool PeriodMonthEnd(
             Int32 ALedgerNumber,
             bool AInfoMode,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerificationResults)
         {
+            AglBatchNumbers = new List <int>();
             try
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
                 Int32 PeriodClosing = ledgerInfo.CurrentPeriod;
                 bool res = new TMonthEnd(ledgerInfo).RunMonthEnd(AInfoMode,
+                    out AglBatchNumbers,
                     out AVerificationResults);
 
                 if (!res && !AInfoMode)
@@ -131,6 +136,7 @@ namespace Ict.Petra.Server.MFinance.GL
         [NoRemoting]
         public delegate bool StewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerificationResult);
         private static StewardshipCalculation FStewardshipCalculationDelegate;
 
@@ -235,16 +241,19 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
         /// <param name="AInfoMode"></param>
+        /// <param name="AglBatchNumbers">The Client should print the generated Batches</param>
         /// <param name="AVRCollection"></param>
         /// <returns>false if it went OK</returns>
         public bool RunMonthEnd(
             bool AInfoMode,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
             FverificationResults = new TVerificationResultCollection();
             AVRCollection = FverificationResults;
             TPeriodEndOperations.FwasCancelled = false;
+            AglBatchNumbers = new List <int>();
 
             if (FledgerInfo.ProvisionalYearEndFlag)
             {
@@ -289,6 +298,7 @@ namespace Ict.Petra.Server.MFinance.GL
                 TVerificationResultCollection IchVerificationReults;
 
                 if (!StewardshipCalculationDelegate(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod,
+                        out AglBatchNumbers,
                         out IchVerificationReults))
                 {
                     FHasCriticalErrors = true;
