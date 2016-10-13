@@ -284,12 +284,12 @@ namespace Ict.Petra.Client.MPartner.Gui
                     StringHelper.DateToLocalizedString(dtLastModified.Value), Environment.NewLine);
             }
 
-            if (primaryPhone.Length > 0)
+            if ((primaryPhone != null) && (primaryPhone.Length > 0))
             {
                 AContact += String.Format(Catalog.GetString("Primary phone: {0}{1}"), primaryPhone, Environment.NewLine);
             }
 
-            if (primaryEmail.Length > 0)
+            if ((primaryEmail != null) && (primaryEmail.Length > 0))
             {
                 AContact += String.Format(Catalog.GetString("Primary email: {0}{1}"), primaryEmail, Environment.NewLine);
             }

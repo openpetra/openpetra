@@ -271,11 +271,7 @@ namespace Ict.Petra.Server.MPartner.DataAggregates
                 {
                     // Load all PPartnerAttribute records of the Partner and put them into a DataTable
                     ReturnValue = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
-
-                    if (ReturnValue.Rows.Count > 0)
-                    {
-                        Calculations.DeterminePartnerContactDetailAttributes(ReturnValue);
-                    }
+                    Calculations.DeterminePartnerContactDetailAttributes(ReturnValue);
                 });
 
             return ReturnValue;

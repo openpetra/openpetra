@@ -1460,6 +1460,12 @@ namespace Ict.Petra.Shared.MPartner
                 APPartnerAttributeDT.Columns.Add(new System.Data.DataColumn(PARTNERATTRIBUTE_PARTNERCONTACTDETAIL_COLUMN, typeof(Boolean)));
             }
 
+            // Exit quickly if APPartnerAttributeDT holds no rows because then it can't possibly hold Partner Contact Attributes!
+            if (APPartnerAttributeDT.Rows.Count == 0)
+            {
+                return 0;
+            }
+
             PartnerContactDetailAttributesConcatStr = TSharedDataCache.TMPartner.GetPartnerContactDetailAttributeTypesConcatStr();
 
             PartnerAttributeDV = new DataView(APPartnerAttributeDT,
