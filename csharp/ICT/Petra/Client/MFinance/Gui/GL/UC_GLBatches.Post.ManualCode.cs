@@ -43,6 +43,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -102,6 +103,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 return false;
             }
+
+            // Although the screen can be used with FINANCE-1, Posting requires FINANCE-2
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PostBatch [raised by Client Proxy for ModuleAccessManager]");
 
             int CurrentBatchNumber = ACurrentBatchRow.BatchNumber;
 

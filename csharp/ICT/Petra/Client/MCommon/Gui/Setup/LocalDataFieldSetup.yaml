@@ -7,6 +7,7 @@ RootNode:
     #DatasetType: Ict.Petra.Shared.MCommon.Data.OfficeSpecificDataLabelsTDS
     #CacheableTableSpecificFilter: Ledger
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Partner.Validation]
+    ModuleForSecurityDerminedByContext: true
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 800

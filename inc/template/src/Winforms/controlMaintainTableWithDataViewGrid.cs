@@ -112,6 +112,11 @@ namespace {#NAMESPACE}
     public void InitUserControl()
     {
       {#INITUSERCONTROLS}
+
+{#IFDEF AUTOAPPLYSECURITY}
+      FPetraUtilsObject.ApplySecurity();
+
+{#ENDIF AUTOAPPLYSECURITY}
 {#IFDEF ACTIONENABLING}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
@@ -333,6 +338,7 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// <summary>
@@ -387,3 +393,4 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE findandfilter.cs}
+{#INCLUDE security.cs}

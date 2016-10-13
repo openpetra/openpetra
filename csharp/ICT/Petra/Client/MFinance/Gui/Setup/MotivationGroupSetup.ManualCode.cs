@@ -35,6 +35,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 
 #region changelog
 
@@ -74,6 +75,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
         }
 

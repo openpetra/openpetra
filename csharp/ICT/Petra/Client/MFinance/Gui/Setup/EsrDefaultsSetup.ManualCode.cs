@@ -29,6 +29,7 @@ using System;
 using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
@@ -63,6 +64,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             txtNewPartnerKey.Enabled = false;
             cmbMotivGroup.Enabled = false;
             cmbMotivDetail.Enabled = false;
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
         }
 
         void UpdateGrid(object sender, EventArgs e)

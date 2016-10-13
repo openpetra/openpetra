@@ -543,9 +543,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 ucoAccountsList.RunOnceOnActivationManual(this);
                 ucoAccountsList.PopulateListView(FMainDS, FLedgerNumber, FSelectedHierarchy);
+
+                if (FPetraUtilsObject.SecurityReadOnly)
+                {
+                    tbbAddNewAccount.Enabled = false;
+                    mniAddNewAccount.Enabled = false;
+                    tbbDeleteAccount.Enabled = false;
+                    mniDeleteAccount.Enabled = false;
+                    tbbImportHierarchy.Enabled = false;
+                    mniImportHierarchy.Enabled = false;
+                }
             }
         }
-
 
         private void ValidateDataDetailsManual(GLSetupTDSAAccountRow ARow)
         {
@@ -952,8 +961,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             // FCurrentAccount is now the parent of the account that was just deleted.
             // If the parent account now has no accounts reporting to it (in any hierarchies), mark it as posting account.
             FCurrentAccount.GetAttrributes();
-            tbbDeleteAccount.Enabled = (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false);
-            mniDeleteAccount.Enabled = tbbDeleteAccount.Enabled;
+
+            if (!FPetraUtilsObject.SecurityReadOnly)
+            {
+                tbbDeleteAccount.Enabled = (FCurrentAccount.CanDelete.HasValue ? FCurrentAccount.CanDelete.Value : false);
+
+                mniDeleteAccount.Enabled = tbbDeleteAccount.Enabled;
+            }
+
             AAccountRow ParentAccountRow = FCurrentAccount.AccountRow;
             AHD_stillInUse.RowFilter = String.Format("a_ledger_number_i={0} AND a_account_code_to_report_to_c='{1}'",
                 FLedgerNumber, ParentAccountRow.AccountCode);
@@ -1055,7 +1070,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FCurrentAccount != null) && (FCurrentAccount.CanHaveChildren.HasValue))
             {
-                tbbAddNewAccount.Enabled = FCurrentAccount.CanHaveChildren.Value;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    tbbAddNewAccount.Enabled = FCurrentAccount.CanHaveChildren.Value;
+                }
+
                 tbbAddNewAccount.ToolTipText = (tbbAddNewAccount.Enabled) ? "New Account" : FCurrentAccount.Msg;
             }
             else
@@ -1068,7 +1087,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FCurrentAccount != null) && (FCurrentAccount.CanDelete.HasValue))
             {
-                tbbDeleteAccount.Enabled = FCurrentAccount.CanDelete.Value;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    tbbDeleteAccount.Enabled = FCurrentAccount.CanDelete.Value;
+                }
+
                 tbbDeleteAccount.ToolTipText = (tbbDeleteAccount.Enabled) ? "Delete Account" : FCurrentAccount.Msg;
             }
             else

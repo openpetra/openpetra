@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,11 +34,29 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmLocalDataOptionsSetup
     {
+        // Needed for Module-based Read-only security checks only.
+        private string FContext;
+
+        /// <summary>Needed for Module-based Read-only security checks only.</summary>
+        public string Context
+        {
+            get
+            {
+                return FContext;
+            }
+
+            set
+            {
+                FContext = value;
+            }
+        }
+
         private void NewRowManual(ref PDataLabelLookupRow ARow)
         {
             // Deal with the primary key - we need a unique Category code and value code
@@ -90,5 +108,24 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             CreateNewPDataLabelLookup();
         }
+
+        #region Security
+
+        private List <string>ApplySecurityManual()
+        {
+            // Whatever the Context is: the Module to check security for is *always* MPartner!
+            FPetraUtilsObject.SecurityScreenContext = "MPartner";
+
+            return new List <string>();
+        }
+
+        private void AfterRunOnceOnActivationManual()
+        {
+            TSetupScreensSecurityHelper.ShowMsgUserWillNeedToHaveDifferentAdminModulePermissionForEditing(
+                this, FPetraUtilsObject.SecurityReadOnly, FContext, Catalog.GetString("Partner"), "PTNRADMIN",
+                "LocalDataOptionsSetup_R-O_");
+        }
+
+        #endregion
     }
 }

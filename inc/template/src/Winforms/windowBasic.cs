@@ -16,6 +16,7 @@ using GNU.Gettext;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.Security;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -24,9 +25,13 @@ namespace {#NAMESPACE}
   /// auto generated: {#FORMTITLE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form
   {
+    private string FSecurityContext = String.Empty;
+    
     /// constructor
-    public {#CLASSNAME}(Form AParentForm) : base()
+    public {#CLASSNAME}(Form AParentForm, string ASecurityContext = "") : base()
     {
+      {#SETSECURITYCONTEXT}                   // this ^ gets dynamically set by the Winforms Generator!
+
       //
       // Required for Windows Form Designer support
       //
@@ -67,3 +72,4 @@ namespace {#NAMESPACE}
 }
 
 {#INCLUDE copyvalues.cs}
+{#INCLUDE security.cs}

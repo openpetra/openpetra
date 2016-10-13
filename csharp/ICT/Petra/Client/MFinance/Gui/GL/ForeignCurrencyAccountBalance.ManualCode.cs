@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared;
@@ -123,18 +124,27 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void EditAccount(System.Object sender, EventArgs e)
         {
-            this.Cursor = Cursors.WaitCursor;
+            if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE3))
+            {
+                this.Cursor = Cursors.WaitCursor;
 
-            try
-            {
-                TFrmGLAccountHierarchy GLAccountHierarchy = new TFrmGLAccountHierarchy(this);
-                GLAccountHierarchy.LedgerNumber = FLedgerNumber;
-                GLAccountHierarchy.SetSelectedAccountCode(FPreviouslySelectedDetailRow.AccountCode);
-                GLAccountHierarchy.Show();
+                try
+                {
+                    TFrmGLAccountHierarchy GLAccountHierarchy = new TFrmGLAccountHierarchy(this);
+                    GLAccountHierarchy.LedgerNumber = FLedgerNumber;
+                    GLAccountHierarchy.SetSelectedAccountCode(FPreviouslySelectedDetailRow.AccountCode);
+                    GLAccountHierarchy.Show();
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
             }
-            finally
+            else
             {
-                this.Cursor = Cursors.Default;
+                MessageBox.Show(String.Format(MCommonResourcestrings.StrDiffentPermissionRequiredForEditingData,
+                        SharedConstants.PETRAMODULE_FINANCE3), MCommonResourcestrings.StrReadOnlyInformationTitle,
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 

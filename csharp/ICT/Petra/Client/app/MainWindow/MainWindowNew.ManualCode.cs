@@ -135,11 +135,14 @@ namespace Ict.Petra.Client.App.PetraClient
             // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
             stbMain.UseOpenPetraToolStripRenderer = true;
 
-            // this is needed for one screen which should only be displayed if tax deductibility is enabled
+            // Show the logged-in user on the right hand side of the Status Bar
+            stbMain.AddExtraLabelOnTheRight(Catalog.GetString("User: ") + Ict.Petra.Shared.UserInfo.GUserInfo.UserID);
+
+            // This is needed for one screen which should only be displayed if tax deductibility is enabled
             FTaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
-            // this is needed for one screen which should only be displayed if this is a developers build of OpenPetra
+            // This is needed for one screen which should only be displayed if this is a developers build of OpenPetra
             FDevelopersOnly =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DEVELOPERSONLY, false);
 

@@ -38,6 +38,7 @@ using Ict.Common.IO;
 using Ict.Common.Printing;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
@@ -84,7 +85,7 @@ namespace Ict.Petra.Server.MConference.Applications
                 Int64 RegistrationOffice = Convert.ToInt64(officeRow[0]);
                 try
                 {
-                    if ((CountRegModules == 0) || TModuleAccessManager.CheckUserModulePermissions(String.Format("REG-{0:10}",
+                    if ((CountRegModules == 0) || TSecurityChecks.CheckUserModulePermissions(String.Format("REG-{0:10}",
                                 StringHelper.PartnerKeyToStr(RegistrationOffice))))
                     {
                         AllowedRegistrationOffices.Add(RegistrationOffice);

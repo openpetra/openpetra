@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
@@ -107,6 +108,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
                 {
                     SetupTaxDeductibilityControls();
                 }
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
         }
 

@@ -5,6 +5,7 @@ RootNode:
     DetailTable: PAddressLayoutCode
     CacheableTable: AddressLayoutCodeList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    ModuleForSecurityDerminedByContext: true
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 600
@@ -12,8 +13,8 @@ RootNode:
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
-        actPromote: {Label=&Up, ActionClick=PromoteRecord, Image=MoveUpArrow.ico}
-        actDemote: {Label=Do&wn, ActionClick=DemoteRecord, Image=MoveDownArrow.ico}
+        actPromote: {ActionClick=PromoteRecord, Image=MoveDownArrow.ico}
+        actDemote: {ActionClick=DemoteRecord, Image=MoveUpArrow.ico}
     Controls:
         pnlContent:
             Controls: [pnlGrid, pnlDetails]
@@ -40,7 +41,7 @@ RootNode:
             SortOrder: DetailCode ASC
         pnlUpDown:
             Dock: Right
-            Controls: [btnUp, btnDown]
+            Controls: [btnDemote, btnPromote]
         pnlDetails:
             Dock: Bottom
             Controls:
@@ -52,5 +53,5 @@ RootNode:
         txtDetailComment: {Multiline=true, Height=100, Width=500, ScrollBars=Vertical, WordWrap=true, Stretch=horizontally}
         txtDetailDescription: {Width=350}
         chkDetailDeletable:
-        btnUp: {Action=actPromote, Width=80, Tooltip=Click to move the selected row higher in the list. This affects the list ordering in Layout Code Combo Boxes.}
-        btnDown: {Action=actDemote, Width=80, Tooltip=Click to move the selected row lower in the list. This affects the list ordering in Layout Code Combo Boxes.}
+        btnDemote: {NoLabel=true, Width=15, Action=actDemote, Tooltip=Click to move the selected row higher in the list. This affects the list ordering in Layout Code Combo Boxes.}
+        btnPromote: {NoLabel=true, Width=15, Action=actPromote, Tooltip=Click to move the selected row lower in the list. This affects the list ordering in Layout Code Combo Boxes.}

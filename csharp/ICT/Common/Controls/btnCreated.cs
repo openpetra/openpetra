@@ -391,7 +391,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
-        /// The <see cref="DataRow"/> with row number <paramref name="ARow "/> in the 
+        /// The <see cref="DataRow"/> with row number <paramref name="ARow "/> in the
         /// <see cref="DataTable"/> passed in with <paramref name="ATable"/> is used for this.
         /// </summary>
         /// <param name="ATable">A table to which this control refers.</param>
@@ -421,12 +421,12 @@ namespace Ict.Common.Controls
             DateModified = TSaveConvert.ObjectToDate(ARow[UNIT_DATE_MODIFIED_COL]);
 
             this.DateCreated = DateCreated;
-            CreatedBy = ARow[UNIT_CREATED_BY_COL].ToString() != String.Empty ? 
-                System.Convert.ToString(ARow[UNIT_CREATED_BY_COL]) : StrUnknown;
+            CreatedBy = ARow[UNIT_CREATED_BY_COL].ToString() != String.Empty ?
+                        System.Convert.ToString(ARow[UNIT_CREATED_BY_COL]) : StrUnknown;
 
             this.DateModified = DateModified;
             ModifiedBy = ARow[UNIT_MODIFIED_BY_COL].ToString() != String.Empty ?
-                System.Convert.ToString(ARow[UNIT_MODIFIED_BY_COL]) : StrUnknown;
+                         System.Convert.ToString(ARow[UNIT_MODIFIED_BY_COL]) : StrUnknown;
 
             this.tipFields.SetToolTip(this, this.FToolTipString);
         }
@@ -457,7 +457,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
-        /// The <see cref="DataRow"/> with row number <paramref name="ARow "/> in the 
+        /// The <see cref="DataRow"/> with row number <paramref name="ARow "/> in the
         /// <see cref="DataView"/> passed in with <paramref name="AView"/> is used for this.
         /// </summary>
         /// <param name="AView">A <see cref="DataView"/> to which this control refers.</param>
@@ -473,7 +473,7 @@ namespace Ict.Common.Controls
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
-        /// The <em>first</em> <see cref="DataRow"/> in the <see cref="DataView"/> passed in with 
+        /// The <em>first</em> <see cref="DataRow"/> in the <see cref="DataView"/> passed in with
         /// <paramref name="AView"/> is used for this.
         /// </summary>
         /// <param name="AView">A <see cref="DataView"/> to which this control referes.</param>
@@ -574,39 +574,39 @@ namespace Ict.Common.Controls
     {
         /// <summary>
         /// This Method manually adds a <see cref="TbtnCreated"/> for the modified/created information to a
-        /// Panel or GroupBox - inside a newly created Panel that gets Docked to the right of the Panel or GroupBox. 
+        /// Panel or GroupBox - inside a newly created Panel that gets Docked to the right of the Panel or GroupBox.
         /// (The WinForms Generator doesn't have a built-in support for the creation of those buttons yet [Bug #1782]).
         /// </summary>
-        /// <param name="ABtnCreated">Pass in a freshly created instance of a <see cref="TbtnCreated"/> Control - 
+        /// <param name="ABtnCreated">Pass in a freshly created instance of a <see cref="TbtnCreated"/> Control -
         /// no need to set any Properties on it, all necessary layout-related Properties will be set by this Method! If
         /// no instance gets passed in then it will get created by this Method automatically.</param>
-        /// <param name="AContainerControl">A Panel or a GroupBox Control that is to host a newly created Panel that 
-        /// will host the instance of the <see cref="TbtnCreated"/> Control that gets passed in with 
+        /// <param name="AContainerControl">A Panel or a GroupBox Control that is to host a newly created Panel that
+        /// will host the instance of the <see cref="TbtnCreated"/> Control that gets passed in with
         /// <paramref name="ABtnCreated"/>.</param>
-        /// <param name="ATabIndexOfNewContainingPanel">TabIndex of the newly created Panel that will host the instance 
-        /// of the <see cref="TbtnCreated"/> Control that gets passed in with 
-        /// <paramref name="ABtnCreated"/> (default=999, to ensure it comes after all other Controls found in the 
+        /// <param name="ATabIndexOfNewContainingPanel">TabIndex of the newly created Panel that will host the instance
+        /// of the <see cref="TbtnCreated"/> Control that gets passed in with
+        /// <paramref name="ABtnCreated"/> (default=999, to ensure it comes after all other Controls found in the
         /// <paramref name="AContainerControl"/>).</param>
-        /// <param name="AOuterContainerControl">Optional (outer) container control that contains 
+        /// <param name="AOuterContainerControl">Optional (outer) container control that contains
         /// <paramref name="AContainerControl"/> (default = null). If a Control gets passed in with this Argument then
         /// SuspendLayout() and ResumeLayout(true) will get called on it at the appropriate times in this Method. This
-        /// can be necessary to make other Controls that are Anchored left, top, and right in 
+        /// can be necessary to make other Controls that are Anchored left, top, and right in
         /// <paramref name="AContainerControl"/> expand and contract correctly!</param>
-        /// <param name="ABtnCreatedName">Name of the <see cref="TbtnCreated"/> Control that gets passed in with 
+        /// <param name="ABtnCreatedName">Name of the <see cref="TbtnCreated"/> Control that gets passed in with
         /// <paramref name="ABtnCreated"/> (default="btnCreatedModified").</param>
-        /// <param name="ACustomYLocation">By default the <see cref="TbtnCreated"/> Control that gets passed in with 
+        /// <param name="ACustomYLocation">By default the <see cref="TbtnCreated"/> Control that gets passed in with
         /// <paramref name="ABtnCreated"/> is positioned 5 pixels from the top of the newly created Panel that gets Docked
-        /// to the right of <paramref name="AContainerControl"/> (fits for a <paramref name="AContainerControl"/> that is 
+        /// to the right of <paramref name="AContainerControl"/> (fits for a <paramref name="AContainerControl"/> that is
         /// the usual 'pnlDetail' of a List/Detail Form/UserControl. Pass in a different value for positioning it differently
         /// (typically, the value passed should be 0 when <paramref name="AContainerControl"/> is a GroupBox and 7 when
-        /// <paramref name="AContainerControl"/> is a Fill-Docked-Panel that hosts a UserControl that forms the Details of 
+        /// <paramref name="AContainerControl"/> is a Fill-Docked-Panel that hosts a UserControl that forms the Details of
         /// a List/Detail Form/UserControl.</param>
-        /// <param name="AOptionalLayoutFixupCode">Optional custom 'layout fixup code' (default = null). If a Delegate gets 
+        /// <param name="AOptionalLayoutFixupCode">Optional custom 'layout fixup code' (default = null). If a Delegate gets
         /// passed in with this Argument then it will get called at the appropriate time in this Method. This
-        /// can be necessary to make other Controls that are Anchored left, top, and right in 
+        /// can be necessary to make other Controls that are Anchored left, top, and right in
         /// <paramref name="AContainerControl"/> expand and contract correctly!</param>
         public static void AddModifiedCreatedButtonToContainerControl(ref TbtnCreated ABtnCreated, Control AContainerControl,
-            int ATabIndexOfNewContainingPanel = 999, Control AOuterContainerControl = null, 
+            int ATabIndexOfNewContainingPanel = 999, Control AOuterContainerControl = null,
             string ABtnCreatedName = "btnCreatedModified",
             int ACustomYLocation = -1, Action AOptionalLayoutFixupCode = null)
         {
@@ -643,8 +643,8 @@ namespace Ict.Common.Controls
             // ABtnCreated
             //
             ABtnCreated.Anchor =
-                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | 
-                 System.Windows.Forms.AnchorStyles.Left));
+                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top |
+                     System.Windows.Forms.AnchorStyles.Left));
             ABtnCreated.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
             ABtnCreated.Left = 1;
 
@@ -656,13 +656,13 @@ namespace Ict.Common.Controls
             {
                 ABtnCreated.Top = ACustomYLocation;
             }
-            
+
             ABtnCreated.Size = new System.Drawing.Size(14, 16);
             ABtnCreated.TabIndex = 0;
             ABtnCreated.Name = ABtnCreatedName;
             ABtnCreated.CreatedBy = null;
-            ABtnCreated.DateCreated = new System.DateTime((System.Int64)0);
-            ABtnCreated.DateModified = new System.DateTime((System.Int64)0);
+            ABtnCreated.DateCreated = new System.DateTime((System.Int64) 0);
+            ABtnCreated.DateModified = new System.DateTime((System.Int64) 0);
             ABtnCreated.ModifiedBy = null;
 
 

@@ -31,6 +31,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public class TPeriodEndMonth : TPeriodEnd
     {
+        private string FSecurityContext = String.Empty;
+
         /// <summary>
         /// The constructor is the typical constructor which shall be supported by
         /// refering this object in UINavigation.yml and AParentFormHandle
@@ -38,8 +40,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// switch to the EndMonthMode
         /// </summary>
         /// <param name="AParentForm"></param>
-        public TPeriodEndMonth(Form AParentForm) : base(AParentForm, true)
+        /// <param name="ASecurityContext"></param>
+        public TPeriodEndMonth(Form AParentForm, string ASecurityContext = "") : base(AParentForm, true)
         {
+            FSecurityContext = ASecurityContext;
         }
     }
 
@@ -48,6 +52,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public class TPeriodEndYear : TPeriodEnd
     {
+        private string FSecurityContext = String.Empty;
+
         /// <summary>
         /// The constructor is the typical constructor which shall be supported by
         /// refering this object in UINavigation.yml and AParentFormHandle
@@ -55,8 +61,10 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// switch to the EndYearMode
         /// </summary>
         /// <param name="AParentForm"></param>
-        public TPeriodEndYear(Form AParentForm) : base(AParentForm, false)
+        /// <param name="ASecurityContext"></param>
+        public TPeriodEndYear(Form AParentForm, string ASecurityContext = "") : base(AParentForm, false)
         {
+            FSecurityContext = ASecurityContext;
         }
     }
 

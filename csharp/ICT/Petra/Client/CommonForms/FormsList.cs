@@ -598,12 +598,14 @@ namespace Ict.Petra.Client.CommonForms
         /// Instance of the Form.</remarks>
         /// <param name="AForm">Type of the Form to be opened.</param>
         /// <param name="AParentForm">Parent Form (can be null).</param>
+        /// <param name="AContext">Context in which the Form runs (default=""). Can get evaluated for
+        /// security purposes.</param>
         /// <returns>void</returns>
-        public static void OpenNewOrExistingForm(Type AForm, Form AParentForm)
+        public static void OpenNewOrExistingForm(Type AForm, Form AParentForm, string AContext = "")
         {
             bool FormWasAlreadyOpened;
 
-            OpenNewOrExistingForm(AForm, AParentForm, out FormWasAlreadyOpened, true);
+            OpenNewOrExistingForm(AForm, AParentForm, out FormWasAlreadyOpened, true, AContext);
         }
 
         /// <summary>
@@ -614,8 +616,11 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="AFormWasAlreadyOpened">False if a new Form was opened, true if a
         /// Singleton Instance of the Form was activated.</param>
         /// <param name="ARunShowMethod">Set to true to run the Forms' Show() Method. (Default=true).</param>
+        /// <param name="AContext">Context in which the Form runs (default=""). Can get evaluated for
+        /// security purposes.</param>
         /// <returns>An Instance of the Form (either newly created or just activated).</returns>
-        public static Form OpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod = true)
+        public static Form OpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod = true,
+            string AContext = "")
         {
             Form OpenScreen;
             Form NewScreen;
@@ -642,7 +647,7 @@ namespace Ict.Petra.Client.CommonForms
                 }
             }
 
-            NewScreen = (Form)Activator.CreateInstance(AForm, new object[] { AParentForm });
+            NewScreen = (Form)Activator.CreateInstance(AForm, new object[] { AParentForm, AContext });
 
             if (ARunShowMethod)
             {

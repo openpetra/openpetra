@@ -66,6 +66,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
+
+                if (FPetraUtilsObject.SecurityReadOnly)
+                {
+                    btnNewType.Enabled = false;
+                }
             }
         }
         private void NewRow(System.Object sender, EventArgs e)

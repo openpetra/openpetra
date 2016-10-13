@@ -6,6 +6,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.GLBatchTDS
     DetailTable: ARecurringJournal
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.Account.Validation, Ict.Petra.Shared.MFinance.GL.Data]
+    AutomaticApplySecurityExecution: false
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 800

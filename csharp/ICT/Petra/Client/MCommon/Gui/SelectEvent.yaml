@@ -2,6 +2,7 @@ RootNode:
     BaseYaml: ../../CommonForms/PetraForm.yaml
     FormTitle: Select Event
     Namespace: Ict.Petra.Client.MCommon.Gui
+    ModuleForSecurity: MConference
     FormType: browse
     Template: window
     WindowWidth: 700

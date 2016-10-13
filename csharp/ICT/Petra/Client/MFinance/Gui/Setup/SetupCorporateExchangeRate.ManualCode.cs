@@ -38,7 +38,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Validation;
-
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -108,6 +108,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainDS.ACorporateExchangeRate.Merge(TypedTable);
 
             FUseCurrencyFormatForDecimal = TUserDefaults.GetBooleanDefault(Ict.Common.StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                mniImport.Enabled = false;
+                tbbImport.Enabled = false;
+            }
         }
 
         private void RunOnceOnActivationManual()

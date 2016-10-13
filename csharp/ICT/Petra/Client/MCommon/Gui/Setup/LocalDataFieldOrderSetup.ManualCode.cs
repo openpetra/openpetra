@@ -34,6 +34,7 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.CommonForms;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -153,7 +154,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         void HandleSelectionChanged(object sender, SourceGrid.RangeRegionChangedEventArgs e)
         {
-            FIndexedGridRowsHelper.UpdateButtons(grdDetails.Selection.ActivePosition.Row);
+            FIndexedGridRowsHelper.UpdateButtons(grdDetails.Selection.ActivePosition.Row, FPetraUtilsObject.SecurityReadOnly);
         }
 
         private void DataFieldPromote(System.Object sender, System.EventArgs e)
@@ -191,5 +192,37 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private int FPrevRowChangedRow = -1;
         private bool FIgnoreFocusRowLeaving = false;
+
+        #region Security
+
+        private List <string>ApplySecurityManual()
+        {
+            List <string>ReturnValue = new List <string>();
+
+            switch (FPetraUtilsObject.SecurityScreenContext)
+            {
+                case "Bank":
+                case "Church":
+                case "Family":
+                case "Person":
+                case "Organisation":
+                case "Unit":
+                case "Venue":
+                    FPetraUtilsObject.SecurityScreenContext = "MPartner";
+
+                    break;
+
+                case "Personnel":
+                case "LongTermApp":
+                case "ShortTermApp":
+                    FPetraUtilsObject.SecurityScreenContext = "MPersonnel";
+
+                    break;
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
     }
 }

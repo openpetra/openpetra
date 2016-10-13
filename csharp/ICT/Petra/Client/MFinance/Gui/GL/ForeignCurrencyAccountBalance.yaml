@@ -6,6 +6,7 @@ RootNode:
     CacheableTable: AccountList
     CacheableTableSpecificFilter: Ledger
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
+    AutomaticApplySecurityExecution: false
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 790

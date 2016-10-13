@@ -5,6 +5,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.GL.Data.CorporateExchangeSetupTDS
     DetailTable: ACorporateExchangeRate
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation]
+    ModuleForSecurity: FIN-EX-RATE
     FormType: edit
     Template: windowEdit
     WindowWidth: 660

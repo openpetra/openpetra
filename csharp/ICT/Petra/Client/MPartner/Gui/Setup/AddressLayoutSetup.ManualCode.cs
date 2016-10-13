@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       alanp, christiank
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,8 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
+
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.App.Core;
@@ -31,6 +33,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -44,6 +47,23 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         // A table we can use in validation
         private PAddressBlockElementTable FAddressBlockElements;
+
+        // Needed for Module-based Read-only security checks only.
+        private string FContext;
+
+        /// <summary>Needed for Module-based Read-only security checks only.</summary>
+        public string Context
+        {
+            get
+            {
+                return FContext;
+            }
+
+            set
+            {
+                FContext = value;
+            }
+        }
 
         #region Initialisation
 
@@ -71,6 +91,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 Catalog.GetString("Click to enter the selected placeholder at the cursor position in the Address Layout"));
 
             FAddressBlockElements = (PAddressBlockElementTable)TDataCache.GetCacheableDataTableFromCache("AddressBlockElementList");
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnCopy.Enabled = false;
+                btnInsert.Enabled = false;
+                btnInsertLine.Enabled = false;
+            }
         }
 
         private void RunOnceOnActivationManual()
@@ -219,9 +246,13 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void ShowDetailsManual(PAddressBlockRow ARow)
         {
-            btnCopy.Enabled = (ARow != null);
-            btnInsert.Enabled = (cmbAddressBlockElement.Count > 0);
-            btnInsertLine.Enabled = btnInsert.Enabled;
+            if (!FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnCopy.Enabled = (ARow != null);
+
+                btnInsert.Enabled = (cmbAddressBlockElement.Count > 0);
+                btnInsertLine.Enabled = btnInsert.Enabled;
+            }
         }
 
         private void ValidateDataDetailsManual(PAddressBlockRow ARow)
@@ -230,6 +261,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             TSharedPartnerValidation_Partner.ValidateAddressBlockSetup(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict, FAddressBlockElements);
+        }
+
+        #endregion
+
+        #region Security
+
+        private List <string>ApplySecurityManual()
+        {
+            // Whatever the Context is: the Module to check security for is *always* MPartner!
+            FPetraUtilsObject.SecurityScreenContext = "MPartner";
+
+            return new List <string>();
+        }
+
+        private void AfterRunOnceOnActivationManual()
+        {
+            TSetupScreensSecurityHelper.ShowMsgUserWillNeedToHaveDifferentAdminModulePermissionForEditing(
+                this, FPetraUtilsObject.SecurityReadOnly, FContext, Catalog.GetString("Partner"), "PTNRADMIN",
+                "AdressLayoutSetup_R-O_");
         }
 
         #endregion

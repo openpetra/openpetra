@@ -88,6 +88,12 @@ namespace Ict.Tools.CodeGeneration
         public string FEventHandlersImplementation = "";
         /// <summary>store the code for the action handlers in this variable</summary>
         public string FActionHandlers = "";
+        /// <summary>the Module for security checks</summary>
+        public string FModuleForSecurity = "";
+        /// <summary>whether the Module for security checks is allowed to be determined at runtime by the Context of the Form</summary>
+        public bool FModuleForSecurityDerminedByContext = false;
+        /// <summary>whether a form should automatically execute FPetraUtilsObject.ApplySecurity</summary>
+        public bool FAutomaticApplySecurityExecution = true;
         /// <summary>store code in this variable for the report parameters</summary>
         public string FReportParametersImplementation = "";
         /// <summary>height of the generate window</summary>

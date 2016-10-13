@@ -226,8 +226,11 @@ namespace Ict.Common.Controls
         /// <param name="AForm">Type of the Form to be opened.</param>
         /// <param name="AParentForm"></param>
         /// <param name="ARunShowMethod">Set to true to run the Forms' Show() Method. (Default=false).</param>
+        /// <param name="AContext">Context in which the Form runs (default=""). Can get evaluated for
+        /// security purposes.</param>
         /// <returns>An Instance of the Form (either newly created or just activated).</returns>
-        public delegate Form TOpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod);
+        public delegate Form TOpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod,
+            string AContext = "");
 
         /// <summary>
         /// This property is used to provide a function which opens a new or existing Form.
@@ -470,6 +473,7 @@ namespace Ict.Common.Controls
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
             bool FormWasAlreadyOpened = false;
+            string Context = String.Empty;
 
             if (!FHasAccessPermission(node, FUserId, true))
             {
@@ -595,15 +599,27 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
+                // check for Context property
+                foreach (PropertyInfo prop in classType.GetProperties())
+                {
+                    if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
+                    {
+                        if (prop.Name == "Context")
+                        {
+                            Context = TYml2Xml.GetAttributeRecursive(node, prop.Name);
+                        }
+                    }
+                }
+
                 try
                 {
                     if (OpenNewOrExistingForm != null)
                     {
-                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false);
+                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false, Context);
                     }
                     else
                     {
-                        screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                        screen = Activator.CreateInstance(classType, new object[] { AParentWindow, Context });
                     }
                 }
                 catch (System.Reflection.TargetInvocationException E)

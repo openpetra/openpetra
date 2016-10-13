@@ -40,8 +40,11 @@ namespace Ict.Petra.Shared
         /// <summary>Registry Keys for Petra</summary>
         public const String PETRA_REGISTRY_POSITIONS_KEY = "Positions";
 
-        /// <summary>OpenPetra Modules Conference Module</summary>
+        /// <summary>OpenPetra Modules Conference Module User Level Access</summary>
         public const String PETRAMODULE_CONFERENCE = "CONFERENCE";
+
+        /// <summary>OpenPetra Modules Conference Module Administrative Access</summary>
+        public const String PETRAMODULE_CONFADMIN = "CONFADMIN";
 
         /// <summary>Financial Development User Level Access</summary>
         public const String PETRAMODULE_DEVUSER = "DEVUSER";
@@ -61,6 +64,9 @@ namespace Ict.Petra.Shared
         /// <summary>Finance  Advanced User</summary>
         public const String PETRAMODULE_FINANCE3 = "FINANCE-3";
 
+        /// <summary>Personnel Administrative Access</summary>
+        public const String PETRAMODULE_PERSADMIN = "PERSADMIN";
+
         /// <summary>Personnel Module</summary>
         public const String PETRAMODULE_PERSONNEL = "PERSONNEL";
 
@@ -72,6 +78,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Manager</summary>
         public const String PETRAMODULE_SYSADMIN = "SYSMAN";
+
+        /// <summary>Ledger Module access prefix</summary>
+        public const String LEDGER_MODULESTRING = "LEDGER";
 
         /// <summary>OpenPetra Groups Conference User</summary>
         public const String PETRAGROUP_CONFUSER = "CONF-USER";

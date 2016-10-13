@@ -36,6 +36,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -173,6 +174,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 // Tell the pages that the data is available.  They will set the initial values of the controls accordingly.
                 ucoGeneralLedgerSettings.InitializeScreenData(this, FLedgerNumber);
                 ucoAPLedgerSettings.InitializeScreenData(this, FLedgerNumber);
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
             get
             {

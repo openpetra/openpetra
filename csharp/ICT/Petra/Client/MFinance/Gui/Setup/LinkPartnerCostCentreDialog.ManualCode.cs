@@ -33,6 +33,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -111,6 +112,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             btnUnlink.Enabled = false;
 
             btnRemove.Enabled = false;
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnLink.Enabled = false;
+                btnUnlink.Enabled = false;
+                btnRemove.Enabled = false;
+            }
         }
 
         /// <summary>
@@ -254,7 +264,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             grdUnlinkedCCs.SelectRowInGrid(1, false);
             grdUnlinkedCCs.Focus();
 
-            btnRemove.Enabled = (grdUnlinkedCCs.Rows.Count > 1);
+            if (!FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnRemove.Enabled = (grdUnlinkedCCs.Rows.Count > 1);
+            }
 
             btnOK.Text = "Accept";
             FChangedState = true;
@@ -295,7 +308,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             ValidReportTo = (cmbReportsTo.Text != string.Empty);
 
-            btnLink.Enabled = ValidCostCentre && ValidReportTo;
+            if (!FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnLink.Enabled = ValidCostCentre && ValidReportTo;
+            }
         }
 
         private void grdLinkedCCs_Enter(object sender, EventArgs e)
@@ -307,7 +323,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             if (grdLinkedCCs.SelectedDataRows.Length > 0)
             {
-                btnUnlink.Enabled = true;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    btnUnlink.Enabled = true;
+                }
+
                 btnLink.Enabled = false;
                 btnRemove.Enabled = false;
 
@@ -341,7 +361,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 DataRow Row = ((DataRowView)grdUnlinkedCCs.SelectedDataRows[0]).Row;
                 txtPartner.Text = Convert.ToString(Row["PartnerKey"]);
 
-                btnRemove.Enabled = true;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    btnRemove.Enabled = true;
+                }
             }
             else
             {

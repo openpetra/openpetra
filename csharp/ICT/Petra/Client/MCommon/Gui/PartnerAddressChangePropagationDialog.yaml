@@ -5,6 +5,7 @@ RootNode:
     InterfaceName: IFrmPetraEdit
     Namespace: Ict.Petra.Client.MCommon.Gui
     UsingNamespaces: [Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data]
+    ModuleForSecurity: MPartner
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerAddressAggregateTDS
     #MasterTable: PPartnerLocation
     FormType: dialog

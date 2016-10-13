@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MConference;
 using Ict.Petra.Shared.MConference.Data;
 using Ict.Petra.Shared.MConference.Validation;
@@ -226,6 +227,8 @@ namespace Ict.Petra.Client.MConference.Gui.Setup
             MyDataView.Sort = "p_venue_name_c ASC";
             MyDataView.AllowNew = false;
             grdVenues.DataSource = new DevAge.ComponentModel.BoundDataView(MyDataView);
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
         }
 
         // disables or enables the checkbox when a different radio button is selected

@@ -33,6 +33,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -61,6 +62,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(FPetraUtilsObject_DataSavingStarted);
                 cmbDetailAnalTypeCode.SelectedValueChanged += new System.EventHandler(OnDetailAnalysisTypeCodeChange);
                 grdDetails.Selection.EnableMultiSelection = false;
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
         }
 

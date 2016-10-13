@@ -44,7 +44,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 using Ict.Petra.Shared.MFinance.Validation;
-
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -344,6 +344,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             UpdateRecordNumberDisplay();
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnNew.Enabled = false;
+                btnDelete.Enabled = false;
+                btnInvertExchangeRate.Enabled = false;
+                mniImport.Enabled = false;
+                tbbImport.Enabled = false;
+
+                if (this.blnIsInModalMode)
+                {
+                    txtDetailRateOfExchange.Enabled = false;
+                    txtDetailTimeEffectiveFrom.Enabled = false;
+                }
+            }
         }
 
         private void RunOnceOnActivationManual()
@@ -1190,6 +1207,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 FMainDS.ADailyExchangeRateUsage.DefaultView.RowFilter = String.Format("{0}=0",
                     ExchangeRateTDSADailyExchangeRateUsageTable.GetLedgerNumberDBName());
                 btnRateUsage.Enabled = false;
+                FSelectedRateUsageLedgerNumber = -1;    // so we will re-enable the View button next time there is a grid row
                 grdRateUsage.TabStop = false;
                 SetEnabledStates();
             }
@@ -1234,6 +1252,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 {
                     grdRateUsage.TabStop = false;
                     btnRateUsage.Enabled = false;
+                    FSelectedRateUsageLedgerNumber = -1;    // so we will re-enable the View button next time there is a grid row
                 }
 
                 chkHideOthers.Enabled = true;
@@ -1241,13 +1260,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 SetEnabledStates();
             }
 
-            btnClose.Enabled = (ARow != null) && (txtDetailRateOfExchange.NumberValueDecimal != 0.0m);
+            btnClose.Enabled = (ARow != null) && (txtDetailRateOfExchange.NumberValueDecimal != 0.0m) && !FPetraUtilsObject.SecurityReadOnly;
             UpdateExchangeRateLabels();
         }
 
         private void SetEnabledStates()
         {
-            btnClose.Enabled = pnlDetails.Enabled;
+            bool DeleteButtonCustomEnablingDisabling = true;
+
+            btnClose.Enabled = pnlDetails.Enabled && !FPetraUtilsObject.SecurityReadOnly;
 
             if (!pnlDetails.Enabled)
             {
@@ -1271,39 +1292,60 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             else
             {
                 // Currencies differ
-                txtDetailRateOfExchange.Enabled = FIsRateUnused;
-                txtDetailTimeEffectiveFrom.Enabled = FIsRateUnused && !txtDetailTimeEffectiveFrom.ReadOnly;
-                btnInvertExchangeRate.Enabled = FIsRateUnused;
-            }
-
-            // Delete button is enabled if all the highlighted rows have unused rates
-            DataRowView[] highlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
-            int rowCount = highlightedRows.GetLength(0);
-
-            if (rowCount == 1)
-            {
-                btnDelete.Enabled = FIsRateUnused;
-            }
-            else if (rowCount > 1)
-            {
-                bool isAllUnused = true;
-
-                foreach (DataRowView drv in highlightedRows)
+                if (!FPetraUtilsObject.SecurityReadOnly)
                 {
-                    ExchangeRateTDSADailyExchangeRateRow rowToDelete = (ExchangeRateTDSADailyExchangeRateRow)drv.Row;
+                    txtDetailRateOfExchange.Enabled = FIsRateUnused;
+                    txtDetailTimeEffectiveFrom.Enabled = FIsRateUnused && !txtDetailTimeEffectiveFrom.ReadOnly;
 
-                    if ((rowToDelete.JournalUsage > 0) || (rowToDelete.GiftBatchUsage > 0))
+                    btnInvertExchangeRate.Enabled = FIsRateUnused;
+                }
+                else
+                {
+                    if (!this.blnIsInModalMode)
                     {
-                        isAllUnused = false;
-                        break;
+                        txtDetailRateOfExchange.Enabled = FIsRateUnused;
+                        txtDetailTimeEffectiveFrom.Enabled = FIsRateUnused && !txtDetailTimeEffectiveFrom.ReadOnly;
                     }
                 }
-
-                btnDelete.Enabled = isAllUnused;
             }
-            else
+
+            if (blnIsInModalMode && FPetraUtilsObject.SecurityReadOnly)
             {
-                btnDelete.Enabled = false;
+                DeleteButtonCustomEnablingDisabling = false;
+            }
+
+            if (!FPetraUtilsObject.SecurityReadOnly
+                && DeleteButtonCustomEnablingDisabling)
+            {
+                // Delete button is enabled if all the highlighted rows have unused rates
+                DataRowView[] highlightedRows = grdDetails.SelectedDataRowsAsDataRowView;
+                int rowCount = highlightedRows.GetLength(0);
+
+                if (rowCount == 1)
+                {
+                    btnDelete.Enabled = FIsRateUnused;
+                }
+                else if (rowCount > 1)
+                {
+                    bool isAllUnused = true;
+
+                    foreach (DataRowView drv in highlightedRows)
+                    {
+                        ExchangeRateTDSADailyExchangeRateRow rowToDelete = (ExchangeRateTDSADailyExchangeRateRow)drv.Row;
+
+                        if ((rowToDelete.JournalUsage > 0) || (rowToDelete.GiftBatchUsage > 0))
+                        {
+                            isAllUnused = false;
+                            break;
+                        }
+                    }
+
+                    btnDelete.Enabled = isAllUnused;
+                }
+                else
+                {
+                    btnDelete.Enabled = false;
+                }
             }
         }
 
@@ -1312,7 +1354,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (txtDetailRateOfExchange.Text.Trim() != String.Empty)
             {
                 UpdateExchangeRateLabels();
-                btnClose.Enabled = (txtDetailRateOfExchange.NumberValueDecimal != 0.0m);
+                btnClose.Enabled = (txtDetailRateOfExchange.NumberValueDecimal != 0.0m) && !FPetraUtilsObject.SecurityReadOnly;
             }
             else
             {

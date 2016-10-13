@@ -85,6 +85,10 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>Module to open when the application starts</summary>
             public const String MODULE_TO_OPEN_AT_STARTUP = "STARTUP_MODULE";
 
+            /// <summary>Prefix for UserDefaults that are about suppressing a particular message that would otherwise
+            /// always be shown to a user.</summary>
+            public const string SUPPRESS_MESSAGE_PREFIX = "SuppressMessage_";
+
             #region TUserDefaults.TNamedDefaults
 
             /// <summary>

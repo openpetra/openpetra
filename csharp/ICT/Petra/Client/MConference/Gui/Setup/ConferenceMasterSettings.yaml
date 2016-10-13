@@ -5,6 +5,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MConference.Data.ConferenceSetupTDS
     MasterTable: PcConference
     UsingNamespaces: [Ict.Petra.Shared.MConference.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MConference.Validation]
+    ModuleForSecurity: MConference
     FormType: edit
     Template: windowEdit
     WindowWidth: 550

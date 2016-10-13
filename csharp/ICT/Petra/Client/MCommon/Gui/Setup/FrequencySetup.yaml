@@ -5,6 +5,7 @@ RootNode:
     DetailTable: AFrequency
     CacheableTable: FrequencyList
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
+    ModuleForSecurity: MPartner
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 660

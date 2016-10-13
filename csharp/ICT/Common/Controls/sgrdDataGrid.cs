@@ -2442,7 +2442,8 @@ namespace Ict.Common.Controls
             /// Updates the enabled/disabled state of Demote and Promote Buttons.
             /// </summary>
             /// <param name="ACurrentRow">Current Row number (Row numbers start at 1!).</param>
-            public void UpdateButtons(int ACurrentRow)
+            /// <param name="AReadOnlyMode">Pass true to prevent the Buttons from becoming enabled (default=false).</param>
+            public void UpdateButtons(int ACurrentRow, bool AReadOnlyMode = false)
             {
                 if (FDemoteAndPromoteButtonsDisabledDueToManualSort)
                 {
@@ -2451,10 +2452,18 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    // The grid rows start at 1 due to the one-row header
-                    FBtnDemote.Enabled = ACurrentRow > 1;
-                    FBtnPromote.Enabled = ((ACurrentRow < FGrid.Rows.Count - 1)
-                                           && (ACurrentRow != -1));
+                    if (!AReadOnlyMode)
+                    {
+                        // The grid rows start at 1 due to the one-row header
+                        FBtnDemote.Enabled = ACurrentRow > 1;
+                        FBtnPromote.Enabled = ((ACurrentRow < FGrid.Rows.Count - 1)
+                                               && (ACurrentRow != -1));
+                    }
+                    else
+                    {
+                        FBtnDemote.Enabled = false;
+                        FBtnPromote.Enabled = false;
+                    }
                 }
             }
 

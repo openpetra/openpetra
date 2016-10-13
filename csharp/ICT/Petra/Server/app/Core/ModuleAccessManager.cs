@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using GNU.Gettext;
@@ -42,8 +43,6 @@ namespace Ict.Petra.Server.App.Core.Security
     /// </summary>
     public class TModuleAccessManager
     {
-        private const string LEDGER_MODULESTRING = "LEDGER";
-
         /// <summary>
         /// load the modules available to the given user
         /// </summary>
@@ -106,110 +105,6 @@ namespace Ict.Petra.Server.App.Core.Security
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// recursively check the expression
-        /// </summary>
-        /// <param name="AModuleExpression">is in uppercase</param>
-        /// <returns>true if the user has access permissions</returns>
-        static public bool CheckUserModulePermissions(string AModuleExpression)
-        {
-            if (AModuleExpression.StartsWith("OR(") || AModuleExpression.StartsWith("AND("))
-            {
-                // find the closing bracket
-                int openingBracketPos = AModuleExpression.IndexOf('(');
-                int closingBracketPos = AModuleExpression.IndexOf(')');
-
-                if (closingBracketPos < 0)
-                {
-                    throw new ArgumentException("missing closing bracket");
-                }
-
-                string modulesList = AModuleExpression.Substring(openingBracketPos + 1, closingBracketPos - openingBracketPos - 1);
-                string[] modules = modulesList.Split(new char[] { ',' });
-                bool oneTrue = false;
-
-                foreach (string module in modules)
-                {
-                    if (!UserInfo.GUserInfo.IsInModule(module))
-                    {
-                        if (AModuleExpression.StartsWith("AND("))
-                        {
-                            throw new ESecurityModuleAccessDeniedException(String.Format(
-                                    Catalog.GetString("No access for user {0} to module {1}."),
-                                    UserInfo.GUserInfo.UserID, module),
-                                UserInfo.GUserInfo.UserID, module);
-                        }
-                    }
-                    else
-                    {
-                        oneTrue = true;
-                    }
-                }
-
-                if (AModuleExpression.StartsWith("OR(") && !oneTrue)
-                {
-                    throw new ESecurityModuleAccessDeniedException(String.Format(
-                            Catalog.GetString("No access for user {0} to either of the modules {1}."),
-                            UserInfo.GUserInfo.UserID, modulesList),
-                        UserInfo.GUserInfo.UserID, modulesList);
-                }
-
-                return true;
-            }
-            else
-            {
-                // just a single module name
-                string ModuleName = AModuleExpression;
-
-                // find the closing bracket if there is one
-                int closingBracketPos = AModuleExpression.IndexOf(')');
-
-                if (closingBracketPos > -1)
-                {
-                    ModuleName = AModuleExpression.Substring(0, closingBracketPos);
-                }
-
-                if (ModuleName.Contains(","))
-                {
-                    throw new ArgumentException("There is a Comma in the wrong place");
-                }
-
-                if (!UserInfo.GUserInfo.IsInModule(ModuleName))
-                {
-                    throw new ESecurityModuleAccessDeniedException(String.Format(
-                            Catalog.GetString("No access for user {0} to {1}."),
-                            UserInfo.GUserInfo.UserID, GetModuleOrLedger(ModuleName)),
-                        UserInfo.GUserInfo.UserID, ModuleName);
-                }
-
-                return true;
-            }
-        }
-
-        static private string GetModuleOrLedger(string AModuleName)
-        {
-            if (AModuleName.StartsWith(LEDGER_MODULESTRING))
-            {
-                // Get pure ledger number without the LEDGER_MODULESTRING prefix, e.g. '0043' instead of 'LEDGER0043'
-                string ALedgerNumberWithoutLeadingZeroes = AModuleName.Substring(LEDGER_MODULESTRING.Length);
-
-                // Determine ledger number without leading zeroes
-                for (int Counter = 0; Counter < ALedgerNumberWithoutLeadingZeroes.Length; Counter++)
-                {
-                    if (ALedgerNumberWithoutLeadingZeroes[Counter] != '0')
-                    {
-                        ALedgerNumberWithoutLeadingZeroes = ALedgerNumberWithoutLeadingZeroes.Substring(Counter);
-                    }
-                }
-
-                return Catalog.GetString("Ledger") + " " + ALedgerNumberWithoutLeadingZeroes;
-            }
-            else
-            {
-                return Catalog.GetString("Module") + " " + AModuleName;
-            }
         }
 
         /// throws an exception if the current user does not have enough permission to access the method;
@@ -286,11 +181,11 @@ namespace Ict.Petra.Server.App.Core.Security
 
                     try
                     {
-                        CheckUserModulePermissions(moduleExpression);
+                        TSecurityChecks.CheckUserModulePermissions(moduleExpression);
 
                         if (ALedgerNumber != -1)
                         {
-                            CheckUserModulePermissions(LEDGER_MODULESTRING + ALedgerNumber.ToString("0000"));
+                            TSecurityChecks.CheckUserModulePermissions(SharedConstants.LEDGER_MODULESTRING + ALedgerNumber.ToString("0000"));
                         }
                     }
                     catch (ESecurityModuleAccessDeniedException Exc)
