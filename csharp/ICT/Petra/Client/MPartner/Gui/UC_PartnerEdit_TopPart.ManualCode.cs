@@ -76,6 +76,9 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private bool FIgnorePartnerStatusChange = true;
 
+        /// <summary>See call to Method <see cref="TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl"/>.</summary>
+        private TbtnCreated btnCreatedModifiedOverall = new TbtnCreated();
+
         #endregion
 
         #region Events
@@ -137,8 +140,11 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             BuildValidationControlsDict();
 
-            // Ensure that the Worker Field Panel (and thus the Button on it) always comes last in the Tab Order
-            pnlWorkerField.TabIndex = 999;
+            // Ensure that the 'Gift Destination' Panel (and thus the Button on it) always comes last in the Tab Order
+            // (well, that is last before the 'Created/Modified' Button, which has got TabIndex 999).
+            pnlGiftDestination.TabIndex = 998;
+
+            txtGiftDestination.Top -= 2;
 
             #region Show fields according to Partner Class
 
@@ -148,7 +154,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 case TPartnerClass.PERSON:
                     pnlPerson.Visible = true;
-                    pnlWorkerField.Visible = true;
+                    pnlGiftDestination.Visible = true;
                     pnlPerson2ndLine.Visible = true;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
@@ -172,7 +178,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 case TPartnerClass.FAMILY:
                     pnlFamily.Visible = true;
-                    pnlWorkerField.Visible = true;
+                    pnlGiftDestination.Visible = true;
                     pnlFamily2ndLine.Visible = true;
 
                     // Set ToolTips in addition to StatusBar texts for fields to make it clearer what to fill in there...
@@ -262,7 +268,7 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             ShowData(FMainDS.PPartner[0]);
 
-// TODO            SetupBtnCreated();
+            SetupBtnCreated();
             SetupChkNoSolicitations();
             ApplySecurity();
         }
@@ -369,6 +375,142 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 ARow.NoSolicitations = chkPersonNoSolicitations.Checked;
                 ARow.AddresseeTypeCode = cmbPersonAddresseeTypeCode.GetSelectedString();
+            }
+        }
+
+        /// <summary>
+        /// Sets up the Button that holds the Created and Modified information.
+        /// Since there are always two Tables involved in the data that is displayed in
+        /// this UserControl, DateCreated and CreatedBy are taken from the table where
+        /// DateCreated is earlier, and DateModified and ModifiedBy are taken from the
+        /// table where DateModified is later.
+        /// </summary>
+        private void SetupBtnCreated()
+        {
+            DateTime DateCreatedPPartner = DateTime.Now;
+            DateTime DateModifiedPPartner = DateTime.Now;
+            DateTime DateCreatedPartnerClassDependent = DateTime.Now;
+            DateTime DateModifiedPartnerClassDependent = DateTime.Now;
+            String CreatedByPartnerClassDependent = "";
+            String ModifiedByPartnerClassDependent = "";
+
+            // Manually add button for the modified/created information that was present in Petra 2.x's Partner Edit's 
+            // 'Collapsible Part', but was missing from OpenPetra's 'Top Part' because the WinForms Generator doesn't have 
+            // a built-in support for the creation of those buttons yet (Bug #1782).
+            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModifiedOverall, grpCollapsible, 
+                ACustomYLocation: 0);
+            FPetraUtilsObject.SetStatusBarText(btnCreatedModifiedOverall, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);
+
+            #region Determine DateCreated, DateModified, CreatedBy and ModifiedBy according to PartnerClass
+
+            switch (SharedTypes.PartnerClassStringToEnum(FMainDS.PPartner[0].PartnerClass))
+            {
+                case TPartnerClass.PERSON:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PPerson.ColumnDateCreated, FMainDS.PPerson[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PPerson.ColumnDateModified, FMainDS.PPerson[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PPerson.ColumnCreatedBy, FMainDS.PPerson[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PPerson.ColumnModifiedBy, FMainDS.PPerson[0]);
+                    break;
+
+                case TPartnerClass.FAMILY:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PFamily.ColumnDateCreated, FMainDS.PFamily[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PFamily.ColumnDateModified, FMainDS.PFamily[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PFamily.ColumnCreatedBy, FMainDS.PFamily[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PFamily.ColumnModifiedBy, FMainDS.PFamily[0]);
+                    break;
+
+                case TPartnerClass.CHURCH:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PChurch.ColumnDateCreated, FMainDS.PChurch[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PChurch.ColumnDateModified, FMainDS.PChurch[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PChurch.ColumnCreatedBy, FMainDS.PChurch[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PChurch.ColumnModifiedBy, FMainDS.PChurch[0]);
+                    break;
+
+                case TPartnerClass.ORGANISATION:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.POrganisation.ColumnDateCreated,
+                    FMainDS.POrganisation[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.POrganisation.ColumnDateModified,
+                    FMainDS.POrganisation[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.POrganisation.ColumnCreatedBy,
+                    FMainDS.POrganisation[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.POrganisation.ColumnModifiedBy,
+                    FMainDS.POrganisation[0]);
+                    break;
+
+                case TPartnerClass.BANK:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PBank.ColumnDateCreated, FMainDS.PBank[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PBank.ColumnDateModified, FMainDS.PBank[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PBank.ColumnCreatedBy, FMainDS.PBank[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PBank.ColumnModifiedBy, FMainDS.PBank[0]);
+                    break;
+
+                case TPartnerClass.UNIT:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PUnit.ColumnDateCreated, FMainDS.PUnit[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PUnit.ColumnDateModified, FMainDS.PUnit[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PUnit.ColumnCreatedBy, FMainDS.PUnit[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PUnit.ColumnModifiedBy, FMainDS.PUnit[0]);
+                    break;
+
+                case TPartnerClass.VENUE:
+                    DateCreatedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PVenue.ColumnDateCreated, FMainDS.PVenue[0]);
+                    DateModifiedPartnerClassDependent = TSaveConvert.DateColumnToDate(FMainDS.PVenue.ColumnDateModified, FMainDS.PVenue[0]);
+                    CreatedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PVenue.ColumnCreatedBy, FMainDS.PVenue[0]);
+                    ModifiedByPartnerClassDependent = TSaveConvert.StringColumnToString(FMainDS.PVenue.ColumnModifiedBy, FMainDS.PVenue[0]);
+                    break;
+            }
+
+            #endregion
+
+            /*
+             * Decide on which DateCreated and CreatedBy to display:
+             * If PPartner DateCreated is earlier, take them from PPartner, otherwise from
+             * the Table according to PartnerClass.
+             */
+            DateCreatedPPartner = TSaveConvert.DateColumnToDate(FMainDS.PPartner.ColumnDateCreated, FMainDS.PPartner[0]);
+
+            if (DateCreatedPartnerClassDependent != DateTime.MinValue)
+            {
+                if ((DateCreatedPPartner < DateCreatedPartnerClassDependent) && (DateCreatedPPartner != DateTime.MinValue))
+                {
+                    btnCreatedModifiedOverall.DateCreated = DateCreatedPPartner;
+                    btnCreatedModifiedOverall.CreatedBy = TSaveConvert.StringColumnToString(FMainDS.PPartner.ColumnCreatedBy, FMainDS.PPartner[0]);
+                }
+                else
+                {
+                    btnCreatedModifiedOverall.DateCreated = DateCreatedPartnerClassDependent;
+                    btnCreatedModifiedOverall.CreatedBy = CreatedByPartnerClassDependent;
+                }
+            }
+            else
+            {
+                btnCreatedModifiedOverall.DateCreated = DateCreatedPPartner;
+                btnCreatedModifiedOverall.CreatedBy = TSaveConvert.StringColumnToString(FMainDS.PPartner.ColumnCreatedBy, FMainDS.PPartner[0]);
+            }
+
+            /*
+             * Decide on which DateModified and ModifiedBy to display:
+             * If PPartner DateModified is later, take them from PPartner, otherwise from
+             * the Table according to PartnerClass.
+             */
+            DateModifiedPPartner = TSaveConvert.DateColumnToDate(FMainDS.PPartner.ColumnDateModified, FMainDS.PPartner[0]);
+
+            if (DateModifiedPartnerClassDependent != DateTime.MinValue)
+            {
+                if ((DateModifiedPPartner > DateModifiedPartnerClassDependent) && (DateModifiedPPartner != DateTime.MinValue))
+                {
+                    btnCreatedModifiedOverall.DateModified = DateModifiedPPartner;
+                    btnCreatedModifiedOverall.ModifiedBy = TSaveConvert.StringColumnToString(FMainDS.PPartner.ColumnModifiedBy, FMainDS.PPartner[0]);
+                }
+                else
+                {
+                    btnCreatedModifiedOverall.DateModified = DateModifiedPartnerClassDependent;
+                    btnCreatedModifiedOverall.ModifiedBy = ModifiedByPartnerClassDependent;
+                }
+            }
+            else
+            {
+                btnCreatedModifiedOverall.DateModified = DateModifiedPPartner;
+                btnCreatedModifiedOverall.ModifiedBy = TSaveConvert.StringColumnToString(FMainDS.PPartner.ColumnModifiedBy, FMainDS.PPartner[0]);
             }
         }
 

@@ -41,6 +41,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -184,6 +185,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TDelegateForDeterminationOfBestAddressesCountryCode FDelegateForDeterminationOfBestAddressesCountryCode;
 
         TPartnerClass FPartnersPartnerClass;
+
+        /// <summary>See call to Method <see cref="TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl"/>.</summary>
+        private TbtnCreated btnCreatedModified = new TbtnCreated();
 
         /// <summary>
         /// Populated by Method <see cref="Calculations.DeterminePhoneAttributes"/>.
@@ -394,6 +398,20 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
                             PPartnerAttributeTable.GetIndexDBName() + " ASC";
+
+            // 'On-the-fly' layout changes to accommodate the Modified/Created Button
+            cmbContactType.Left -= 15;
+            lblContactType.Left -= 15;
+            chkSpecialised.Left -= 15;
+            lblSpecialised.Left -= 15;
+            txtComment.Left -= 15;
+            lblComment.Left -= 15;
+
+            // Manually add button for the modified/created information. 
+            // (The WinForms Generator doesn't have a built-in support for the creation of those buttons yet 
+            // [Bug #1782]).
+            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModified, pnlDetails);
+            FPetraUtilsObject.SetStatusBarText(btnCreatedModified, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);
 
             if (grdDetails.Rows.Count > 1)
             {
@@ -825,6 +843,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
+
+                btnCreatedModified.UpdateFields(ARow);
             }
 
             OnContactTypeChanged(null, null);

@@ -8,8 +8,8 @@ RootNode:
     MasterTable: PSubscription
     FormType: dialog
     Template: window
-    WindowWidth: 794
-    WindowHeight: 400
+    WindowWidth: 775
+    WindowHeight: 373
     
     Events:
         Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
