@@ -80,6 +80,8 @@ namespace Ict.Petra.Client.App.PetraClient
 #endif
 
         private bool FTaxDeductiblePercentageEnabled = false;
+        private bool FTaxGovIdEnabled = false;
+        private string FTaxGovIdLabel = string.Empty;
         private bool FDevelopersOnly = false;
 
         /// <summary>
@@ -140,6 +142,16 @@ namespace Ict.Petra.Client.App.PetraClient
             // this is needed for one screen which should only be displayed if this is a developers build of OpenPetra
             FDevelopersOnly =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DEVELOPERSONLY, false);
+
+            // This is needed for Austria at the moment
+            FTaxGovIdEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
+
+            if (FTaxGovIdEnabled)
+            {
+                FTaxGovIdLabel =
+                    TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_LABEL, string.Empty);
+            }
 
             InitialiseTopPanel();
 
@@ -788,7 +800,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 UpdateFinanceSubsystemLinkStatus();
             };
 
-            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission, FTaxDeductiblePercentageEnabled, FDevelopersOnly);
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission,
+                FTaxDeductiblePercentageEnabled, FTaxGovIdEnabled, FDevelopersOnly, FTaxGovIdLabel);
 
             while (DepartmentNode != null)
             {

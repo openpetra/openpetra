@@ -499,6 +499,36 @@ namespace Ict.Common.Testing
             testBackSlash = StringHelper.AddCSV(testBackSlash, testBackSlashElement, ";");
             Assert.AreEqual(testBackSlashElement, StringHelper.GetNextCSV(ref testBackSlash,
                     ";"), "double backslash should be the same after AddCSV and GetNextCSV");
+
+            // Auto detection of separator
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator("123;456"), "Auto-detect separator test 1-1");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator("123; 456"), "Auto-detect separator test 1-2");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator("\"abc\"; 456"), "Auto-detect separator test 1-3");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator("\"abc\" ; 456"), "Auto-detect separator test 1-4");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator("\"abc,def\" ; 456"), "Auto-detect separator test 1-5");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(" \"abc,def\"; 456"), "Auto-detect separator test 1-6");
+            Assert.AreEqual("\t", StringHelper.GetCSVSeparator(" \"abc,def\"\t 456"), "Auto-detect separator test 1-7");
+            Assert.AreEqual(",", StringHelper.GetCSVSeparator(" \"abc,def\", 456"), "Auto-detect separator test 1-8");
+            Assert.AreEqual(":", StringHelper.GetCSVSeparator(" \"abc,def\": 456"), "Auto-detect separator test 1-9");
+            Assert.AreEqual(" ", StringHelper.GetCSVSeparator(" \"abc,def\" \"xyz\""), "Auto-detect separator test 1-10");
+            Assert.AreEqual(null, StringHelper.GetCSVSeparator(" \"abc,def\""), "Auto-detect separator test 1-11");
+            Assert.AreEqual(null, StringHelper.GetCSVSeparator(" 123.456"), "Auto-detect separator test 1-12");
+            Assert.AreEqual("\t", StringHelper.GetCSVSeparator("\t\"abc,def\";"), "Auto-detect separator test 1-13");
+
+            string preamble = "# comment1,\n/* comment2;\n  /* comment3\t\n\n\n";
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(preamble + "123;456"), "Auto-detect separator test 2-1");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(preamble + "123; 456"), "Auto-detect separator test 2-2");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(preamble + "\"abc\"; 456"), "Auto-detect separator test 2-3");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(preamble + "\"abc\" ; 456"), "Auto-detect separator test 2-4");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(preamble + "\"abc,def\" ; 456"), "Auto-detect separator test 2-5");
+            Assert.AreEqual(";", StringHelper.GetCSVSeparator(preamble + " \"abc,def\"; 456"), "Auto-detect separator test 2-6");
+            Assert.AreEqual("\t", StringHelper.GetCSVSeparator(preamble + " \"abc,def\"\t 456"), "Auto-detect separator test 2-7");
+            Assert.AreEqual(",", StringHelper.GetCSVSeparator(preamble + " \"abc,def\", 456"), "Auto-detect separator test 2-8");
+            Assert.AreEqual(":", StringHelper.GetCSVSeparator(preamble + " \"abc,def\": 456"), "Auto-detect separator test 2-9");
+            Assert.AreEqual(" ", StringHelper.GetCSVSeparator(preamble + " \"abc,def\" \"xyz\""), "Auto-detect separator test 2-10");
+            Assert.AreEqual(null, StringHelper.GetCSVSeparator(preamble + " \"abc,def\""), "Auto-detect separator test 2-11");
+            Assert.AreEqual(null, StringHelper.GetCSVSeparator(preamble + " 123.456"), "Auto-detect separator test 2-12");
+            Assert.AreEqual("\t", StringHelper.GetCSVSeparator("preamble + \t\"abc,def\";"), "Auto-detect separator test 2-13");
         }
 
         /// test the StrArrayToString Method

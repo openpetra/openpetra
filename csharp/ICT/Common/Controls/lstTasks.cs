@@ -46,6 +46,8 @@ namespace Ict.Common.Controls
         private static int FInitiallySelectedLedger = -1;
         private static TOpenNewOrExistingForm FOpenNewOrExistingForm;
         private static bool FTaxDeductiblePercentageEnabled = false;
+        private static bool FTaxGovIdEnabled = false;
+        private static string FTaxGovIdLabel = string.Empty;
         private static bool FDevelopersOnly = false;
 
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
@@ -153,6 +155,20 @@ namespace Ict.Common.Controls
                                 SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
                                 SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
                                     "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
+
+                                // this item should only be displayed on systems with TaxGovId enabled as a system setting (e.g. Austria)
+                                if (TaskNode.Name == "ImportPartnerTaxGovIds")
+                                {
+                                    if (!FTaxGovIdEnabled)
+                                    {
+                                        continue;
+                                    }
+
+                                    // Set the description for the GovId using the system setting for the label
+                                    string placeholder = FTaxGovIdLabel.Length == 0 ? "tax" : FTaxGovIdLabel;
+                                    SingleTask.TaskDescription = SingleTask.TaskDescription.Replace("---", placeholder);
+                                }
+
                                 SingleTask.Name = TaskNode.Name;
                                 SingleTask.TaskGroup = TaskGroup;
                                 SingleTask.Tag = TaskNode;
@@ -428,15 +444,23 @@ namespace Ict.Common.Controls
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
         /// <param name="ATaxDeductiblePercentageEnabled"></param>
+        /// <param name="ATaxGovIdEnabled"></param>
+        /// <param name="ATaxGovIdLabel"></param>
         /// <param name="ADevelopersOnly"></param>
         public static void Init(string AUserId,
             TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission,
-            bool ATaxDeductiblePercentageEnabled = false, bool ADevelopersOnly = false)
+            bool ATaxDeductiblePercentageEnabled = false, bool ATaxGovIdEnabled = false, bool ADevelopersOnly = false, string ATaxGovIdLabel = "")
         {
             FUserId = AUserId;
             FHasAccessPermission = AHasAccessPermission;
             FTaxDeductiblePercentageEnabled = ATaxDeductiblePercentageEnabled;
+            FTaxGovIdEnabled = ATaxGovIdEnabled;
             FDevelopersOnly = ADevelopersOnly;
+
+            if (FTaxGovIdEnabled)
+            {
+                FTaxGovIdLabel = ATaxGovIdLabel;
+            }
         }
 
         /// <summary>

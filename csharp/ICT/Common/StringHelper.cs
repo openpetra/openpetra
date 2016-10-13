@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.IO;
 
 using System.Threading;
 using Ict.Common;
@@ -482,32 +483,82 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// get the separator from the first line of CSV Data.
-        /// first test for tab, then for semicolon. otherwise default to comma
+        /// Get the separator from the first *VALID* line of CSV Data.  Comments and blank lines are ignored.  Leading spaces are ignored.
+        /// The primary test is for tab, semicolon and comma.
+        /// If the first item is a floating point number with a comma for a decimal separator it will need to be in quotes!
+        /// All text within quotes is ignored.  The character after the matching quote is also a candidate for being the separator.
+        ///    This character is returned if the separator is NOT tab, semicolon or comma.
+        ///    Thus quoted data separated by a space is correctly determined.
         /// </summary>
-        /// <param name="ACSVData"></param>
-        /// <returns></returns>
+        /// <param name="ACSVData">Multi-line CSV data</param>
+        /// <returns>null if the separator cannot be determined.  Otherwise returns the separator.</returns>
         public static string GetCSVSeparator(string ACSVData)
         {
-            string InputSeparator = ",";
+            StringReader reader = new StringReader(ACSVData);
+            string line = reader.ReadLine();
+            char charAfterMatchingQuote = '\0';
 
-            string FirstLine = ACSVData;
-
-            if (ACSVData.IndexOf("\n") > 0)
+            while (line != null)
             {
-                FirstLine = ACSVData.Substring(0, ACSVData.IndexOf("\n"));
+                // Remove leading spaces
+                line = line.TrimStart(' ');
+
+                // Skip a line that is a comment
+                if ((line.Length == 0) || line.StartsWith("#") || line.StartsWith("/*"))
+                {
+                    line = reader.ReadLine();
+                    continue;
+                }
+
+                // This is a valid line
+                char[] lookfor = new char[] {
+                    '\t', ';', ','
+                };
+
+                // If the text is a quoted string, skip over it
+                if (line.StartsWith("\""))
+                {
+                    try
+                    {
+                        int pos = FindMatchingQuote(line, 0);   //returns the last character pos before the quote!!
+                        line = line.Substring(pos + 2);         // May be one character beyond EOL but c# allows this far without error
+
+                        if (line.Length > 0)
+                        {
+                            // remember the character after the matching quote in case it turns out to be the separator
+                            charAfterMatchingQuote = line[0];
+                        }
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        // ooops - no matching quote
+                        return null;
+                    }
+                }
+
+                // work down the characters of the line looking for one of our separator characters
+                for (int i = 0; i < line.Length; i++)
+                {
+                    for (int k = 0; k < lookfor.Length; k++)
+                    {
+                        if (line[i] == lookfor[k])
+                        {
+                            return Convert.ToString(lookfor[k]);
+                        }
+                    }
+                }
+
+                if (charAfterMatchingQuote != '\0')
+                {
+                    return Convert.ToString(charAfterMatchingQuote);
+                }
+
+                // Don't examine any more lines
+                break;
             }
 
-            if (FirstLine.Contains("\t"))
-            {
-                InputSeparator = "\t";
-            }
-            else if (FirstLine.Contains(";"))
-            {
-                InputSeparator = ";";
-            }
-
-            return InputSeparator;
+            // Found nothing.  Maybe there is only one column?
+            return null;
         }
 
         /// <summary>

@@ -91,6 +91,8 @@ OpenPetra:
                 PartnerImportExport: {Label=Import/Export, PermissionsRequired=PTNRUSER;PERSONNEL;FINANCE-1, DontShowNestedTasksAsLinks=true}  #Permissions are OR'ed
                     PartnerImport: {Label=Import}
                         ImportPartners: {Label=Import Partners, Description=Import Partners from a file, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerImport}  
+                        #The item below is only displayed when System Setting GovIdEnabled is TRUE.  In that case the --- is replaced by GovIdLabel value
+                        ImportPartnerTaxGovIds: {Label=Import Partner Tax Code, Description=Import Partner --- codes from a file, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmImportPartnerTaxCodesDialog}  
                     PartnerExport: {Label=Export}
                          ExportSinglePartnerToPetra: {Label=Export Single Partner to Petra, Description=Export a single Partner for import into a Petra system, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionClick=TPartnerMain.ExportSinglePartnerToPetra}
                          ExportSinglePartnerToOpenpetra: {Label=Export Single Partner to OpenPetra, Description=Export a single Partner for import into an OpenPetra system, PermissionsRequired=PTNRUSER, Namespace=Ict.Petra.Client.MPartner.Gui, ActionClick=TPartnerMain.ExportSinglePartnerToOpenPetra}
