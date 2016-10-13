@@ -394,11 +394,11 @@ namespace Ict.Petra.Client.MPartner.Gui
             String CreatedByPartnerClassDependent = "";
             String ModifiedByPartnerClassDependent = "";
 
-            // Manually add button for the modified/created information that was present in Petra 2.x's Partner Edit's 
-            // 'Collapsible Part', but was missing from OpenPetra's 'Top Part' because the WinForms Generator doesn't have 
+            // Manually add button for the modified/created information that was present in Petra 2.x's Partner Edit's
+            // 'Collapsible Part', but was missing from OpenPetra's 'Top Part' because the WinForms Generator doesn't have
             // a built-in support for the creation of those buttons yet (Bug #1782).
-            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModifiedOverall, grpCollapsible, 
-                ACustomYLocation: 0);
+            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModifiedOverall, grpCollapsible,
+ACustomYLocation: 0);
             FPetraUtilsObject.SetStatusBarText(btnCreatedModifiedOverall, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);
 
             #region Determine DateCreated, DateModified, CreatedBy and ModifiedBy according to PartnerClass

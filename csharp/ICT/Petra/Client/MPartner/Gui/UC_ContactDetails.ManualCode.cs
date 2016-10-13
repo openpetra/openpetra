@@ -407,8 +407,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             txtComment.Left -= 15;
             lblComment.Left -= 15;
 
-            // Manually add button for the modified/created information. 
-            // (The WinForms Generator doesn't have a built-in support for the creation of those buttons yet 
+            // Manually add button for the modified/created information.
+            // (The WinForms Generator doesn't have a built-in support for the creation of those buttons yet
             // [Bug #1782]).
             TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModified, pnlDetails);
             FPetraUtilsObject.SetStatusBarText(btnCreatedModified, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);

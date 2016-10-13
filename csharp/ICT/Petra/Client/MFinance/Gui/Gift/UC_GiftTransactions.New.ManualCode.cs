@@ -57,7 +57,30 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void NewGift(System.Object sender, EventArgs e)
         {
+            string Reference = string.Empty;
+
+            //Read currently selected gift's Reference
+            if (FPreviouslySelectedDetailRow != null)
+            {
+                AGiftRow giftRow = GetGiftRow(FPreviouslySelectedDetailRow.GiftTransactionNumber);
+
+                if (!giftRow.IsReferenceNull())
+                {
+                    if (giftRow.Reference == txtDetailReference.Text)
+                    {
+                        Reference = giftRow.Reference;
+                    }
+                    else
+                    {
+                        Reference = txtDetailReference.Text;
+                    }
+                }
+            }
+
             CreateANewGift(true);
+
+            //Copy to new record
+            txtDetailReference.Text = Reference;
         }
 
         private void NewGiftDetail(System.Object sender, EventArgs e)

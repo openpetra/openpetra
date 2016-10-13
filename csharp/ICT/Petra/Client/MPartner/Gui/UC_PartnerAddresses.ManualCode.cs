@@ -709,23 +709,31 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FMainDS.PLocation.Rows.Count == 0)
             {
-                // Manually adds buttons for the modified/created information that were present in Petra 2.x's Address Tab, 
-                // but were missing from OpenPetra's Address Tab (Bug #4378) because the WinForms Generator doesn't have 
+                // Manually adds buttons for the modified/created information that were present in Petra 2.x's Address Tab,
+                // but were missing from OpenPetra's Address Tab (Bug #4378) because the WinForms Generator doesn't have
                 // a built-in support for the creation of those buttons yet (Bug #1782).
 
                 // Add Modified/Created Button for PLocation
                 TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedLocation, grpAddress,
-                    AOuterContainerControl: pnlAddress, ABtnCreatedName: "btnCreatedLocation", ACustomYLocation: 0,
-                    AOptionalLayoutFixupCode: delegate
+AOuterContainerControl: pnlAddress, ABtnCreatedName : "btnCreatedLocation", ACustomYLocation : 0,
+                    AOptionalLayoutFixupCode : delegate
                     {
                         // 'On-the-fly' layout changes to accommodate the two Modified/Created Buttons!
                         cmbPPartnerLocationLocationType.ComboBoxWidth = 105;
                         cmbPPartnerLocationLocationType.Width = 105;
 
-                        grpAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-                        txtLocationLocality.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-                        txtLocationStreetName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
-                        txtLocationAddress3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+                        grpAddress.Anchor =
+                            ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+                                                                   System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+                        txtLocationLocality.Anchor =
+                            ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+                                                                   System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+                        txtLocationStreetName.Anchor =
+                            ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+                                                                   System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
+                        txtLocationAddress3.Anchor =
+                            ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top |
+                                                                   System.Windows.Forms.AnchorStyles.Left) | System.Windows.Forms.AnchorStyles.Right)));
 
                         grpPartnerAddress.Padding = new Padding(3, 3, 1, 3);
                         grpAddress.Padding = new Padding(3, 3, 1, 3);
@@ -734,8 +742,8 @@ namespace Ict.Petra.Client.MPartner.Gui
 
                 // Add Modified/Created Button for PPartnerLocation
                 TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedPartnerLocation, grpPartnerAddress,
-                    AOuterContainerControl: pnlPartnerAddress, ABtnCreatedName: "btnCreatedPartnerLocation", 
-                    ACustomYLocation: 0);
+AOuterContainerControl: pnlPartnerAddress, ABtnCreatedName : "btnCreatedPartnerLocation",
+                    ACustomYLocation : 0);
                 FPetraUtilsObject.SetStatusBarText(btnCreatedLocation, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);
             }
         }
@@ -1155,7 +1163,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                 // Update Created/Modified Buttons
                 DataView UpdateFieldsLocationDV = new DataView(FMainDS.PLocation,
                     PLocationTable.GetSiteKeyDBName() + " = " + FCurrentSiteKey.ToString() + " AND " +
-                    PLocationTable.GetLocationKeyDBName() + " = " + FCurrentLocationKey.ToString(), 
+                    PLocationTable.GetLocationKeyDBName() + " = " + FCurrentLocationKey.ToString(),
                     String.Empty, DataViewRowState.CurrentRows);
 
                 btnCreatedLocation.UpdateFields(UpdateFieldsLocationDV);
@@ -1173,9 +1181,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="e"></param>
         private void NewRecord(System.Object sender, EventArgs e)
         {
-            // Workaround for Data Validation which happens automatically inside the call to 
+            // Workaround for Data Validation which happens automatically inside the call to
             // 'CreateNewPPartnerLocation': If there is no ActiveControl (this is the case e.g.
-            // when the Partner Edit screen was just openend) we set one - otherwise the call to 
+            // when the Partner Edit screen was just openend) we set one - otherwise the call to
             // 'ValidateAllData' in that Method returns false, and we get no new record created!
             if (this.ActiveControl == null)
             {

@@ -180,10 +180,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Hook up DataSavingStarted Event to be able to run code before SaveChanges is doing anything
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(this.DataSavingStarted);
 
-            // Manually add button for the modified/created information that was present in Petra 2.x's Subscription Tab, 
-            // but were missing from OpenPetra's Subscription Tab (Bug #4378) because the WinForms Generator doesn't have 
+            // Manually add button for the modified/created information that was present in Petra 2.x's Subscription Tab,
+            // but were missing from OpenPetra's Subscription Tab (Bug #4378) because the WinForms Generator doesn't have
             // a built-in support for the creation of those buttons yet (Bug #1782).
-            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModified, pnlDetails, ACustomYLocation: 7);
+            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModified, pnlDetails, ACustomYLocation : 7);
             FPetraUtilsObject.SetStatusBarText(btnCreatedModified, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);
 
             if (grdDetails.Rows.Count > 1)
