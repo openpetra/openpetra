@@ -38,9 +38,9 @@ namespace Ict.Common.IO
     /// </summary>
     public partial class TDlgSelectCSVSeparator : Form
     {
-        /// <summary>american number format: decimal point, comma for thousands separator</summary>
+        /// <summary>American number format: decimal point, comma for thousands separator</summary>
         public static string NUMBERFORMAT_AMERICAN = "American";
-        /// <summary>european number format: decimal comma, point for thousands separator</summary>
+        /// <summary>European number format: decimal comma, point for thousands separator</summary>
         public static string NUMBERFORMAT_EUROPEAN = "European";
 
         /// <summary>The connected UserID</summary>
@@ -171,9 +171,8 @@ namespace Ict.Common.IO
             InitializeComponent();
             #region CATALOGI18N
 
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.rbtComma.Text = Catalog.GetString("Comma");
-            this.rbtTabulator.Text = Catalog.GetString("Tabulator");
+            this.rbtTabulator.Text = Catalog.GetString("Tab");
             this.rbtOther.Text = Catalog.GetString("Other Separator") + ":";
             this.rbtSemicolon.Text = Catalog.GetString("Semicolon");
             this.btnCancel.Text = Catalog.GetString("Cancel");
@@ -342,6 +341,11 @@ namespace Ict.Common.IO
                 FSeparator = txtOtherSeparator.Text;
             }
 
+            RefreshGrid();
+        }
+
+        private void RefreshGrid()
+        {
             if ((FSeparator.Length > 0) && (FCSVRows != null) && (FCSVRows.Count > 0))
             {
                 DataTable table = new DataTable();
@@ -408,6 +412,12 @@ namespace Ict.Common.IO
 
                 grdPreview.SuspendLayout();
                 grdPreview.DataSource = table;
+
+                foreach (DataGridViewColumn column in grdPreview.Columns)
+                {
+                    column.SortMode = DataGridViewColumnSortMode.NotSortable;
+                }
+
                 grdPreview.ResumeLayout();
             }
         }

@@ -36,6 +36,13 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 
+#region changelog
+
+/*
+ * Sort the grid: https://tracker.openpetra.org/view.php?id=5554 - Moray
+ */
+#endregion
+
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
     public partial class TFrmMotivationGroupSetup
@@ -56,7 +63,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 FMainDS.Merge(new GiftBatchTDS());
 
+                // This code overrides what is in MotivationGroupSetup-generated.cs so we need to re-implement the sort too - Bug #5554
                 DataView myDataView = FMainDS.AMotivationGroup.DefaultView;
+                myDataView.Sort = AMotivationGroupTable.GetMotivationGroupCodeDBName() + " ASC";
                 myDataView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdDetails.AutoSizeCells();

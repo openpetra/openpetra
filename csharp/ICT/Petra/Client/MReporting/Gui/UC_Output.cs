@@ -50,10 +50,9 @@ namespace Ict.Petra.Client.MReporting.Gui
             InitializeComponent();
             #region CATALOGI18N
 
-            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.grpCSVOutput.Text = Catalog.GetString("Export to CSV");
             this.Label2.Text = Catalog.GetString("Hint: If you don\'t want quotes around your values, please choose a delimiter that");
-            this.Label1.Text = Catalog.GetString("(e.g. , or ; or : or Space; or type TAB for tabulator)");
+            this.Label1.Text = Catalog.GetString("(e.g. , or ; or : or Space or Tab)");
             this.lblCSVSeparator.Text = Catalog.GetString("Delimiter") + ":";
             this.chbExportToCSVOnly.Text = Catalog.GetString("Only save as CSV, don\'t print Report");
             this.BtnCSVDestination.Text = Catalog.GetString("...");

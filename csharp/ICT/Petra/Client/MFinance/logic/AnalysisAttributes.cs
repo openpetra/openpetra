@@ -36,6 +36,13 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 
+#region changelog
+
+/*
+ * Recurring GL Batches only need to validate active Analysis Attribute values: https://tracker.openpetra.org/view.php?id=5370 - Moray
+ */
+#endregion
+
 namespace Ict.Petra.Client.MFinance.Logic
 {
     /// <summary>
@@ -1039,8 +1046,13 @@ namespace Ict.Petra.Client.MFinance.Logic
                 return true;
             }
 
-            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,
-                AAccountCode, false);
+            StringCollection RequiredAnalAttrCodes = TRemote.MFinance.Setup.WebConnectors.RequiredAnalysisAttributesForAccount(FLedgerNumber,   //Bug #5370
+                AAccountCode, true);
+
+            if (RequiredAnalAttrCodes.Count == 0)
+            {
+                return true;
+            }
 
             string AnalysisCodeFilterValues = TAnalysisAttributes.ConvertStringCollectionToCSV(RequiredAnalAttrCodes, "'");
 
@@ -1062,7 +1074,7 @@ namespace Ict.Petra.Client.MFinance.Logic
 
                 string analysisCode = rw.AnalysisTypeCode;
 
-                if (TRemote.MFinance.Setup.WebConnectors.AccountAnalysisAttributeRequiresValues(FLedgerNumber, analysisCode, false))
+                if (TRemote.MFinance.Setup.WebConnectors.AccountAnalysisAttributeRequiresValues(FLedgerNumber, analysisCode, true))     //Bug #5370
                 {
                     if (rw.IsAnalysisAttributeValueNull() || (rw.AnalysisAttributeValue == string.Empty))
                     {

@@ -743,7 +743,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         ParentRow["ActualYTD"] = 0;
                         ParentRow["Budget"] = 0;
                         ParentRow["BudgetYTD"] = 0;
-                        ParentRow["ActualLastYear"] = 0;
+                        ParentRow["LastYearActual"] = 0;
                     }
                     else
                     {

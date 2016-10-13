@@ -92,13 +92,13 @@ namespace Ict.Common.IO
             this.rbtTabulator.Size = new System.Drawing.Size(104, 24);
             this.rbtTabulator.TabIndex = 2;
             this.rbtTabulator.TabStop = true;
-            this.rbtTabulator.Text = "Tabulator";
+            this.rbtTabulator.Text = "Tab";
             this.rbtTabulator.UseVisualStyleBackColor = true;
             this.rbtTabulator.CheckedChanged += new System.EventHandler(this.RbtCheckedChanged);
             //
             // rbtOther
             //
-            this.rbtOther.Location = new System.Drawing.Point(11, 38);
+            this.rbtOther.Location = new System.Drawing.Point(338, 11);
             this.rbtOther.Name = "rbtOther";
             this.rbtOther.Size = new System.Drawing.Size(104, 24);
             this.rbtOther.TabIndex = 3;
@@ -120,7 +120,7 @@ namespace Ict.Common.IO
             //
             // txtOtherSeparator
             //
-            this.txtOtherSeparator.Location = new System.Drawing.Point(117, 41);
+            this.txtOtherSeparator.Location = new System.Drawing.Point(444, 14);
             this.txtOtherSeparator.Name = "txtOtherSeparator";
             this.txtOtherSeparator.Size = new System.Drawing.Size(48, 20);
             this.txtOtherSeparator.TabIndex = 4;
@@ -155,9 +155,9 @@ namespace Ict.Common.IO
                 ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) |
                                                        System.Windows.Forms.AnchorStyles.Left) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
-            this.grdPreview.Location = new System.Drawing.Point(0, 176);
+            this.grdPreview.Location = new System.Drawing.Point(0, 145);
             this.grdPreview.Name = "grdPreview";
-            this.grdPreview.Size = new System.Drawing.Size(782, 335);
+            this.grdPreview.Size = new System.Drawing.Size(782, 366);
             this.grdPreview.TabIndex = 1;
             this.grdPreview.TabStop = false;
             //
@@ -182,7 +182,7 @@ namespace Ict.Common.IO
             this.pnlTop.Controls.Add(this.rbtComma);
             this.pnlTop.Location = new System.Drawing.Point(0, 0);
             this.pnlTop.Name = "pnlTop";
-            this.pnlTop.Size = new System.Drawing.Size(782, 170);
+            this.pnlTop.Size = new System.Drawing.Size(782, 139);
             this.pnlTop.TabIndex = 0;
             this.pnlTop.TabStop = true;
             //
@@ -195,7 +195,7 @@ namespace Ict.Common.IO
                     "dd/MM/yyyy",
                     "yyyy-MM-dd"
                 });
-            this.cmbDateFormat.Location = new System.Drawing.Point(118, 77);
+            this.cmbDateFormat.Location = new System.Drawing.Point(118, 46);
             this.cmbDateFormat.Name = "cmbDateFormat";
             this.cmbDateFormat.Size = new System.Drawing.Size(159, 21);
             this.cmbDateFormat.TabIndex = 6;
@@ -208,7 +208,7 @@ namespace Ict.Common.IO
                     "Decimal Point (12.34)",
                     "Decimal Comma (12,34)"
                 });
-            this.cmbNumberFormat.Location = new System.Drawing.Point(118, 108);
+            this.cmbNumberFormat.Location = new System.Drawing.Point(118, 77);
             this.cmbNumberFormat.Name = "cmbNumberFormat";
             this.cmbNumberFormat.Size = new System.Drawing.Size(160, 21);
             this.cmbNumberFormat.TabIndex = 8;
@@ -217,14 +217,14 @@ namespace Ict.Common.IO
             //
             this.cmbTextEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbTextEncoding.FormattingEnabled = true;
-            this.cmbTextEncoding.Location = new System.Drawing.Point(118, 139);
+            this.cmbTextEncoding.Location = new System.Drawing.Point(118, 108);
             this.cmbTextEncoding.Name = "cmbTextEncoding";
             this.cmbTextEncoding.Size = new System.Drawing.Size(175, 21);
             this.cmbTextEncoding.TabIndex = 10;
             //
             // lblNumberFormat
             //
-            this.lblNumberFormat.Location = new System.Drawing.Point(12, 108);
+            this.lblNumberFormat.Location = new System.Drawing.Point(12, 77);
             this.lblNumberFormat.Name = "lblNumberFormat";
             this.lblNumberFormat.Size = new System.Drawing.Size(100, 23);
             this.lblNumberFormat.TabIndex = 7;
@@ -232,7 +232,7 @@ namespace Ict.Common.IO
             //
             // lblDateFormat
             //
-            this.lblDateFormat.Location = new System.Drawing.Point(12, 77);
+            this.lblDateFormat.Location = new System.Drawing.Point(12, 46);
             this.lblDateFormat.Name = "lblDateFormat";
             this.lblDateFormat.Size = new System.Drawing.Size(100, 23);
             this.lblDateFormat.TabIndex = 5;
@@ -240,7 +240,7 @@ namespace Ict.Common.IO
             //
             // lblTextEncoding
             //
-            this.lblTextEncoding.Location = new System.Drawing.Point(12, 139);
+            this.lblTextEncoding.Location = new System.Drawing.Point(12, 108);
             this.lblTextEncoding.Name = "lblTextEncoding";
             this.lblTextEncoding.Size = new System.Drawing.Size(100, 23);
             this.lblTextEncoding.TabIndex = 9;
@@ -251,7 +251,7 @@ namespace Ict.Common.IO
             this.lblTextEncodingHint.Anchor =
                 ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) |
                                                       System.Windows.Forms.AnchorStyles.Right)));
-            this.lblTextEncodingHint.Location = new System.Drawing.Point(300, 139);
+            this.lblTextEncodingHint.Location = new System.Drawing.Point(300, 108);
             this.lblTextEncodingHint.Name = "lblTextEncodingHint";
             this.lblTextEncodingHint.Size = new System.Drawing.Size(470, 31);
             this.lblTextEncodingHint.TabIndex = 11;

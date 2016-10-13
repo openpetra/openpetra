@@ -49,6 +49,13 @@ using Ict.Petra.Shared.MFinance.Validation;
 
 using SourceGrid;
 
+#region changelog
+
+/*
+ * Fix unhandled exception when posting/testing batch containing analysis attributes: https://tracker.openpetra.org/view.php?id=5562 - Moray
+ */
+#endregion
+
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TUC_GLTransactions : IBoundImageEvaluator
@@ -2670,6 +2677,19 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 int numInactiveAccountTypes = 0;
                 int numInactiveAccountValues = 0;
 
+                // AllowInactiveFieldValues can be called without LoadTransactions() being called in this class (e.g. select a Batch and Test or Post it
+                // without visiting the Transactions tab. In that case, FLedgerNumber and FCacheDS have not been initialized. We need them later for
+                // AnalysisCodeIsActive(), but we don't want to leave our copies lying around, because LoadTransactions() may not replace them if necessary.
+                // Bug #5562
+                bool InvalidateAnalysisCacheAfterUse = false;
+
+                if (FCacheDS == null)
+                {
+                    InvalidateAnalysisCacheAfterUse = true;
+                    FLedgerNumber = ALedgerNumber;
+                    FCacheDS = TRemote.MFinance.GL.WebConnectors.LoadAAnalysisAttributes(ALedgerNumber, true);
+                }
+
                 foreach (ABatchRow gBR in BatchesToCheck)
                 {
                     currentBatchListNo = gBR.BatchNumber;
@@ -2857,6 +2877,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             }
                         }
                     }
+                }
+
+                if (InvalidateAnalysisCacheAfterUse)
+                {
+                    FLedgerNumber = -1;
+                    FCacheDS = null;
                 }
 
                 numInactiveFieldsPresent = (numInactiveAccounts + numInactiveCostCentres + numInactiveAccountTypes + numInactiveAccountValues);

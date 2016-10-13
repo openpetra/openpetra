@@ -186,7 +186,7 @@ msgid "Comma"
 msgstr "Coma"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:128 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "Tabulator"
+msgid "Tab"
 msgstr "Tabulador"
 
 #: csharp\ICT\Common\IO\SelectCSVSeparator.cs:129 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
@@ -17145,7 +17145,7 @@ msgid ""
 msgstr "Si no desea valores entre comillas, por favor escoger un delimitador"
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\UC_Output.cs:56 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
-msgid "(e.g. , or ; or : or Space; or type TAB for tabulator)"
+msgid "(e.g. , or ; or : or Space or Tab)"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\UC_Output.cs:58 (first of several occurrences - the whole list can be found in i8n/template.pot.withallsources)
