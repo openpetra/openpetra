@@ -91,6 +91,11 @@ namespace Ict.Petra.Client.App.Gui
             recordList.Field3Title = numColumns > 2 ? AGrid.Columns[AGridColumnOrder[2]].HeaderCell.ToString() : string.Empty;
             recordList.Field4Title = numColumns > 3 ? AGrid.Columns[AGridColumnOrder[3]].HeaderCell.ToString() : string.Empty;
             recordList.Field5Title = numColumns > 4 ? AGrid.Columns[AGridColumnOrder[4]].HeaderCell.ToString() : string.Empty;
+            recordList.Field6Title = numColumns > 5 ? AGrid.Columns[AGridColumnOrder[5]].HeaderCell.ToString() : string.Empty;
+            recordList.Field7Title = numColumns > 6 ? AGrid.Columns[AGridColumnOrder[6]].HeaderCell.ToString() : string.Empty;
+            recordList.Field8Title = numColumns > 7 ? AGrid.Columns[AGridColumnOrder[7]].HeaderCell.ToString() : string.Empty;
+            recordList.Field9Title = numColumns > 8 ? AGrid.Columns[AGridColumnOrder[8]].HeaderCell.ToString() : string.Empty;
+            recordList.Field10Title = numColumns > 9 ? AGrid.Columns[AGridColumnOrder[9]].HeaderCell.ToString() : string.Empty;
 
             // Look at each data row and set values for key, description and other columns and add to the Form Data list
             DataView dv = ((DevAge.ComponentModel.BoundDataView)AGrid.DataSource).DataView;
@@ -105,14 +110,21 @@ namespace Ict.Petra.Client.App.Gui
                 record.Field3 = numColumns > 2 ? GetPrintableText(AGrid, AGridColumnOrder[2], drv.Row[ATableColumnOrder[2]]) : string.Empty;
                 record.Field4 = numColumns > 3 ? GetPrintableText(AGrid, AGridColumnOrder[3], drv.Row[ATableColumnOrder[3]]) : string.Empty;
                 record.Field5 = numColumns > 4 ? GetPrintableText(AGrid, AGridColumnOrder[4], drv.Row[ATableColumnOrder[4]]) : string.Empty;
+                record.Field6 = numColumns > 5 ? GetPrintableText(AGrid, AGridColumnOrder[5], drv.Row[ATableColumnOrder[5]]) : string.Empty;
+                record.Field7 = numColumns > 6 ? GetPrintableText(AGrid, AGridColumnOrder[6], drv.Row[ATableColumnOrder[6]]) : string.Empty;
+                record.Field8 = numColumns > 7 ? GetPrintableText(AGrid, AGridColumnOrder[7], drv.Row[ATableColumnOrder[7]]) : string.Empty;
+                record.Field9 = numColumns > 8 ? GetPrintableText(AGrid, AGridColumnOrder[8], drv.Row[ATableColumnOrder[8]]) : string.Empty;
+                record.Field10 = numColumns > 9 ? GetPrintableText(AGrid, AGridColumnOrder[9], drv.Row[ATableColumnOrder[9]]) : string.Empty;
                 recordList.Add(record);
             }
 
             formDataList.Add(recordList);
 
-            // Work out the template file name to use.  This is based on the number of columns and any special preferences passed in.
-            // For the present time the options are limited!
-            string formName = "OM Print Grid ";
+            // Work out the template file name to use.
+            string formName;
+            //Chooses the template depending on the number of columns
+            formName = "OM Print Grid " + numColumns + " ";
+
             formName += (APrintApplication == TPrintUsing.Excel ? "X" : "W");
 
             if (numColumns <= 4)

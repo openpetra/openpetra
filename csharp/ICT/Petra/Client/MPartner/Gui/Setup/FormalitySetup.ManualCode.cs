@@ -29,6 +29,8 @@ using System.Xml;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
@@ -96,5 +98,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         #endregion
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4, 5 },
+                new int[]
+                {
+                    PFormalityTable.ColumnLanguageCodeId,
+                    PFormalityTable.ColumnCountryCodeId,
+                    PFormalityTable.ColumnAddresseeTypeCodeId,
+                    PFormalityTable.ColumnFormalityLevelId,
+                    PFormalityTable.ColumnSalutationTextId,
+                    PFormalityTable.ColumnComplimentaryClosingTextId
+                });
+        }
     }
 }

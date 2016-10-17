@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -62,6 +64,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPPartnerStatus();
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2 },
+                new int[]
+                {
+                    PPartnerStatusTable.ColumnPartnerStatusDescriptionId,
+                    PPartnerStatusTable.ColumnPartnerStatusDescriptionId,
+                    PPartnerStatusTable.ColumnDeletableId
+                });
         }
     }
 }

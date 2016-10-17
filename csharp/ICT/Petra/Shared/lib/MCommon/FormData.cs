@@ -2285,6 +2285,36 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Title for Field6 column
+        public String Field6Title
+        {
+            get; set;
+        }
+
+        /// Title for Field7 column
+        public String Field7Title
+        {
+            get; set;
+        }
+
+        /// Title for Field8 column
+        public String Field8Title
+        {
+            get; set;
+        }
+
+        /// Title for Field9 column
+        public String Field9Title
+        {
+            get; set;
+        }
+
+        /// Title for Field10 column
+        public String Field10Title
+        {
+            get; set;
+        }
+
         /// list of key/description pairs
         public List <TFormDataKeyDescription>list;
 
@@ -2335,6 +2365,36 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Extra Field 5
         public String Field5 {
+            get; set;
+        }
+
+        /// Extra Field 6
+        public String Field6
+        {
+            get; set;
+        }
+
+        /// Extra Field 7
+        public String Field7
+        {
+            get; set;
+        }
+
+        /// Extra Field 8
+        public String Field8
+        {
+            get; set;
+        }
+
+        /// Extra Field 9
+        public String Field9
+        {
+            get; set;
+        }
+
+        /// Extra Field 10
+        public String Field10
+        {
             get; set;
         }
     }

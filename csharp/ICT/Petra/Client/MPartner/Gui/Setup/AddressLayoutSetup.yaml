@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Address Layouts
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PAddressBlock

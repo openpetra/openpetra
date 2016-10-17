@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Country/Event Preference Levels
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtOutreachPreferenceLevel

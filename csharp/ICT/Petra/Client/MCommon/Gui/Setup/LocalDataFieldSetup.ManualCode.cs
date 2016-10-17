@@ -1113,5 +1113,19 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 AFilterString += String.Format("NOT ({0} LIKE '%{1}%')", DBUsedBy, ACheckBox.Text);
             }
         }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4 },
+                new int[]
+                {
+                    PDataLabelTable.ColumnGroupId,
+                    PDataLabelTable.ColumnTextId,
+                    PDataLabelTable.ColumnDataTypeId,
+                    PDataLabelTable.ColumnDisplayedId,
+                    PDataLabelTable.ColumnLookupCategoryCodeId
+                });
+        }
     }
 }

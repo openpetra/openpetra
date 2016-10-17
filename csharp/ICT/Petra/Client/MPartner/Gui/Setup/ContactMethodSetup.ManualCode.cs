@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -59,6 +61,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPMethodOfContact();
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4 },
+                new int[]
+                {
+                    PMethodOfContactTable.ColumnMethodOfContactCodeId,
+                    PMethodOfContactTable.ColumnDescriptionId,
+                    PMethodOfContactTable.ColumnContactTypeId,
+                    PMethodOfContactTable.ColumnValidMethodId,
+                    PMethodOfContactTable.ColumnDeletableId
+                });
         }
     }
 }

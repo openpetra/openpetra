@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -67,6 +69,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             {
                 txtDetailPublicationLabelCode.Text = txtDetailPublicationCode.Text.Substring(0, 2);
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4 },
+                new int[]
+                {
+                    PPublicationTable.ColumnPublicationCodeId,
+                    PPublicationTable.ColumnPublicationDescriptionId,
+                    PPublicationTable.ColumnFrequencyCodeId,
+                    PPublicationTable.ColumnValidPublicationId,
+                    PPublicationTable.ColumnPublicationLabelCodeId
+                });
         }
     }
 }

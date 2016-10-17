@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Local Data Option List Names
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PDataLabelLookupCategory

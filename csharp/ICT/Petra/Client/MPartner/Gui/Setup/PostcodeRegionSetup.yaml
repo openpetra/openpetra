@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Postcode Regions
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PostcodeRegionsTDS

@@ -8,6 +8,7 @@ RootNode:
     ModuleForSecurity: MPartner
     FormType: edit
     Template: windowMaintainCacheableTable
+    PrintGridOption: true
     WindowWidth: 660
     WindowHeight: 700
     Actions:

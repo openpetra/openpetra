@@ -84,6 +84,7 @@ RootNode:
             Width: 80
         lblNonCurrentAvailable:
             Text: Non-current contact details available. Use the Filter to show them.
+            Visible: false
         pnlPromoteDemote:
             Dock: Right
             Controls: [btnDemote, btnPromote]

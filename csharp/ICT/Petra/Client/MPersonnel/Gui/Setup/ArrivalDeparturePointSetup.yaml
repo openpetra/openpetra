@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Arrival and Departure Points
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtArrivalPoint

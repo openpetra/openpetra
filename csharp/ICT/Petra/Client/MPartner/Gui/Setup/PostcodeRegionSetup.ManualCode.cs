@@ -650,5 +650,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             return ReturnValue;
         }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1 },
+                new int[]
+                {
+                    PPostcodeRegionTable.ColumnRegionId,
+                    PPostcodeRegionTable.ColumnDescriptionId
+                });
+        }
     }
 }

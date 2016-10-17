@@ -33,6 +33,7 @@ using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
@@ -196,6 +197,20 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         private void grdDetails_DoubleClick(object sender, EventArgs e)
         {
             btnAccept_Click(null, null);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4 },
+                new int[]
+                {
+                    PMailingTable.ColumnMailingCodeId,
+                    PMailingTable.ColumnMailingDescriptionId,
+                    PMailingTable.ColumnMailingDateId,
+                    PMailingTable.ColumnMailingCostId,
+                    PMailingTable.ColumnViewableId
+                });
         }
     }
 }

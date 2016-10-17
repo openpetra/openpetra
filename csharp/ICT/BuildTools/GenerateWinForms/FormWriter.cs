@@ -1367,6 +1367,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
             }
 
+            //Add print option only for certain BaseYaml file
+            if (FCodeStorage.GetAttribute("BaseYaml").EndsWith("PetraEditPrintForm.yaml"))
+            {
+                FTemplate.AddToCodelet("PRINTGRIDOPTION", "true");
+            }
+
             if (FCodeStorage.HasAttribute("DatasetType"))
             {
                 FTemplate.SetCodelet("DATASETTYPE", FCodeStorage.GetAttribute("DatasetType"));

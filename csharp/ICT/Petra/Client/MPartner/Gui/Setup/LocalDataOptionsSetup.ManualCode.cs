@@ -35,6 +35,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -127,5 +129,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         #endregion
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2 },
+                new int[]
+                {
+                    PDataLabelLookupTable.ColumnCategoryCodeId,
+                    PDataLabelLookupTable.ColumnValueCodeId,
+                    PDataLabelLookupTable.ColumnValueDescId,
+                    PDataLabelLookupTable.ColumnActiveId
+                });
+        }
     }
 }

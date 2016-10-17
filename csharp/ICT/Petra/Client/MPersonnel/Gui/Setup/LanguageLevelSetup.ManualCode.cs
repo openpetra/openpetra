@@ -33,6 +33,8 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
@@ -85,6 +87,21 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateLanguageLevel(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4, 5 },
+                new int[]
+                {
+                    PtLanguageLevelTable.ColumnLanguageLevelId,
+                    PtLanguageLevelTable.ColumnLanguageLevelDescrId,
+                    PtLanguageLevelTable.ColumnLanguageCommentId,
+                    PtLanguageLevelTable.ColumnUnassignableFlagId,
+                    PtLanguageLevelTable.ColumnUnassignableDateId,
+                    PtLanguageLevelTable.ColumnDeletableFlagId
+                });
         }
     }
 }

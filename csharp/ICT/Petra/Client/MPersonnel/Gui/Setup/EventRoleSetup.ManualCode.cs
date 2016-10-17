@@ -34,6 +34,8 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -92,6 +94,25 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateEventRole(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 },
+                new int[]
+                {
+                    PtCongressCodeTable.ColumnCodeId,
+                    PtCongressCodeTable.ColumnDescriptionId,
+                    PtCongressCodeTable.ColumnPreCongressId,
+                    PtCongressCodeTable.ColumnConferenceId,
+                    PtCongressCodeTable.ColumnOutreachId,
+                    PtCongressCodeTable.ColumnDiscountedId,
+                    PtCongressCodeTable.ColumnParticipantId,
+                    PtCongressCodeTable.ColumnUnassignableFlagId,
+                    PtCongressCodeTable.ColumnUnassignableDateId,
+                    PtCongressCodeTable.ColumnDeletableFlagId
+                });
         }
     }
 }

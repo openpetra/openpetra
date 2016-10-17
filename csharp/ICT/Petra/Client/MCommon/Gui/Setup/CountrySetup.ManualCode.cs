@@ -31,6 +31,7 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
@@ -100,6 +101,21 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 TDataCache.TMCommon.RefreshCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4, 5 },
+                new int[]
+                {
+                    PCountryTable.ColumnCountryCodeId,
+                    PCountryTable.ColumnCountryNameId,
+                    PCountryTable.ColumnTimeZoneMinimumId,
+                    PCountryTable.ColumnTimeZoneMaximumId,
+                    PCountryTable.ColumnUndercoverId,
+                    PCountryTable.ColumnDeletableId
+                });
         }
     }
 }

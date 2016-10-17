@@ -300,6 +300,30 @@ namespace {#NAMESPACE}
 
 #endregion
 
+{#IFDEF PRINTGRIDOPTION}
+#region Printing Methods
+        private void PrintUsingWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, false);
+        }
+
+        private void PrintUsingExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, false);
+        }
+
+        private void PrintPreviewInWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, true);
+        }
+
+        private void PrintPreviewInExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, true);
+        }
+#endregion
+{#ENDIF PRINTGRIDOPTION}
+
 #region Row Selection and Discovery
 
     /// <summary>
@@ -507,7 +531,15 @@ namespace {#NAMESPACE}
             {
                 pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
                 {#SHOWDETAILS}
-            }
+            }      
+{#IFDEF PRINTGRIDOPTION}
+
+            bool gotRows = grdDetails.Rows.Count > 1;
+
+            ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingWord", gotRows));
+            ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingExcel", gotRows));
+            
+{#ENDIF PRINTGRIDOPTION}
         }
         finally
         {

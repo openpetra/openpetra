@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Local Data Fields
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PDataLabel
