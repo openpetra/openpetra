@@ -5,10 +5,10 @@
     FormType: dialog
     Template: window
     WindowWidth: 250
-    WindowHeight:250
+    WindowHeight:280
     Controls:
         pnlDialogContent:
-            Controls: [lblIntro, chkGlReports, chkIeStatement, chkBalanceSheet, chkAccountDetail, chkAfo, chkExec]
+            Controls: [lblIntro, chkGlReports, chkIeStatement, chkBalanceSheet, chkAccountDetail, chkAfo, chkSurplusDeficit, chkExec]
         lblIntro:
             Label: Select reports to print
         chkGlReports:
@@ -21,5 +21,7 @@
             Label: Account Detail
         chkAfo:
             Label: AFO Report
+        chkSurplusDeficit:
+            Label: Surplus Deficit Report
         chkExec:
             Label: Executive Summary

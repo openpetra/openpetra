@@ -195,17 +195,6 @@ namespace Ict.Petra.Shared.MPartner
         {
             TLocationPK ReturnValue;
 
-            DataRow[] OrderedRows;
-            System.Int32 CurrentRow;
-            System.Int32 BestRow;
-            System.Int16 FirstRowAddrOrder;
-            bool FirstRowMailingAddress;
-            System.DateTime BestRowDate;
-            System.DateTime TempDate;
-            CurrentRow = 0;
-            BestRow = 0;
-            bool Unchanged = false;
-
             TLogging.LogAtLevel(8, "Calculations.DetermineBestAddress: processing " + APartnerLocationsDT.Rows.Count.ToString() + " rows...");
 
             if (APartnerLocationsDT == null)
@@ -213,137 +202,121 @@ namespace Ict.Petra.Shared.MPartner
                 throw new ArgumentException("Argument APartnerLocationsDT must not be null");
             }
 
-            if (!APartnerLocationsDT.Columns.Contains(PARTNERLOCATION_BESTADDR_COLUMN))
-            {
-                DeterminePartnerLocationsDateStatus(APartnerLocationsDT, DateTime.Today);
-            }
-
             /*
              *  Add custom DataColumn if its not part of the DataTable yet
              */
             if (!APartnerLocationsDT.Columns.Contains(PARTNERLOCATION_BESTADDR_COLUMN))
             {
+                DeterminePartnerLocationsDateStatus(APartnerLocationsDT, DateTime.Today);
                 APartnerLocationsDT.Columns.Add(new System.Data.DataColumn(PARTNERLOCATION_BESTADDR_COLUMN, typeof(Boolean)));
             }
 
             /*
-             * Order tables' rows: first all records with p_send_mail_l = true, these are ordered
-             * ascending by Icon, then all records with p_send_mail_l = false, these are ordered
+             * Order table rows: first all records with p_send_mail_l = true, these are ordered
+             * ascending by Icon, then all records with p_send_mail_l = false, also ordered
              * ascending by Icon.
              */
-            OrderedRows = APartnerLocationsDT.Select(APartnerLocationsDT.DefaultView.RowFilter,
+            DataRow[] OrderedRows = APartnerLocationsDT.Select(APartnerLocationsDT.DefaultView.RowFilter,
                 PPartnerLocationTable.GetSendMailDBName() + " DESC, " + PartnerEditTDSPPartnerLocationTable.GetIconDBName() + " ASC",
                 DataViewRowState.CurrentRows);
 
-            if (OrderedRows.Length > 1)
+            if (OrderedRows.Length == 0)
             {
-                FirstRowAddrOrder = Convert.ToInt16(OrderedRows[0][PartnerEditTDSPPartnerLocationTable.GetIconDBName()]);
-                FirstRowMailingAddress = Convert.ToBoolean(OrderedRows[0][PPartnerLocationTable.GetSendMailDBName()]);
+                ReturnValue = new TLocationPK();
+            }
+            else
+            {
+                DataRow BestRow = OrderedRows[0];
 
-                // determine pBestRowDate
-                if (FirstRowAddrOrder != 3)
+                if (OrderedRows.Length > 1)
                 {
-                    BestRowDate = TSaveConvert.ObjectToDate(OrderedRows[CurrentRow][PPartnerLocationTable.GetDateEffectiveDBName()]);
-                }
-                else
-                {
-                    BestRowDate = TSaveConvert.ObjectToDate(OrderedRows[CurrentRow][PPartnerLocationTable.GetDateGoodUntilDBName()]);
-                }
+                    DateTime BestRowDate;
+                    DateTime TempDate;
+                    Int16 FirstRowAddrOrder = Convert.ToInt16(OrderedRows[0][PartnerEditTDSPPartnerLocationTable.GetIconDBName()]);
+                    bool FirstRowMailingAddress = Convert.ToBoolean(OrderedRows[0][PPartnerLocationTable.GetSendMailDBName()]);
 
-                // iterate through the sorted rows
-                for (CurrentRow = 0; CurrentRow <= OrderedRows.Length - 1; CurrentRow += 1)
-                {
-                    Unchanged = OrderedRows[CurrentRow].RowState == DataRowState.Unchanged;
-
-                    // reset any row that might have been marked as 'best' before
-                    OrderedRows[CurrentRow][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)0);
-
-                    // We do not want changing the BestAddress column to enable save. So revert row status to original.
-                    if (Unchanged)
-                    {
-                        OrderedRows[CurrentRow].AcceptChanges();
-                    }
-
-                    // determine pTempDate
+                    // determine BestRowDate
                     if (FirstRowAddrOrder != 3)
                     {
-                        TempDate = TSaveConvert.ObjectToDate(OrderedRows[CurrentRow][PPartnerLocationTable.GetDateEffectiveDBName()]);
+                        BestRowDate = TSaveConvert.ObjectToDate(OrderedRows[0][PPartnerLocationTable.GetDateEffectiveDBName()]);
                     }
                     else
                     {
-                        TempDate = TSaveConvert.ObjectToDate(OrderedRows[CurrentRow][PPartnerLocationTable.GetDateGoodUntilDBName()]);
+                        BestRowDate = TSaveConvert.ObjectToDate(OrderedRows[0][PPartnerLocationTable.GetDateGoodUntilDBName()]);
                     }
 
-                    // still the same ADDR_ORDER than the ADDR_ORDER of the first row and
-                    // still the same Mailing Address than the Mailing Address flag of the first row > proceed
-                    if ((Convert.ToInt16(OrderedRows[CurrentRow][PartnerEditTDSPPartnerLocationTable.GetIconDBName()]) == FirstRowAddrOrder)
-                        && (Convert.ToBoolean(OrderedRows[CurrentRow][PPartnerLocationTable.GetSendMailDBName()]) == FirstRowMailingAddress))
+                    // iterate through the sorted rows
+                    foreach (DataRow CurrentRow in OrderedRows)
                     {
-                        switch (FirstRowAddrOrder)
+                        bool Unchanged = CurrentRow.RowState == DataRowState.Unchanged;
+
+                        // reset any row that might have been marked as 'best' before
+                        CurrentRow[PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = 0;
+
+                        // We do not want changing the BestAddress column to enable save. So revert row status to Unchanged.
+                        if (Unchanged)
                         {
-                            case 1:
-                            case 3:
+                            CurrentRow.AcceptChanges();
+                        }
 
-                                // find the Row with the highest p_date_effective_d (or p_date_good_until_d) date
-                                if (TempDate > BestRowDate)
-                                {
-                                    BestRowDate = TempDate;
-                                    BestRow = CurrentRow;
-                                }
+                        // determine pTempDate
+                        if (FirstRowAddrOrder != 3)
+                        {
+                            TempDate = TSaveConvert.ObjectToDate(CurrentRow[PPartnerLocationTable.GetDateEffectiveDBName()]);
+                        }
+                        else
+                        {
+                            TempDate = TSaveConvert.ObjectToDate(CurrentRow[PPartnerLocationTable.GetDateGoodUntilDBName()]);
+                        }
 
-                                break;
+                        // still the same ADDR_ORDER than the ADDR_ORDER of the first row and
+                        // still the same Mailing Address than the Mailing Address flag of the first row > proceed
+                        if ((Convert.ToInt16(CurrentRow[PartnerEditTDSPPartnerLocationTable.GetIconDBName()]) == FirstRowAddrOrder)
+                            && (Convert.ToBoolean(CurrentRow[PPartnerLocationTable.GetSendMailDBName()]) == FirstRowMailingAddress))
+                        {
+                            switch (FirstRowAddrOrder)
+                            {
+                                case 1:
+                                case 3:
 
-                            case 2:
+                                    // find the Row with the highest p_date_effective_d (or p_date_good_until_d) date
+                                    if (TempDate > BestRowDate)
+                                    {
+                                        BestRowDate = TempDate;
+                                        BestRow = CurrentRow;
+                                    }
 
-                                // find the Row with the lowest p_date_effective_d date
-                                if (TempDate < BestRowDate)
-                                {
-                                    BestRowDate = TempDate;
-                                    BestRow = CurrentRow;
-                                }
+                                    break;
 
-                                break;
+                                case 2:
+
+                                    // find the Row with the lowest p_date_effective_d date
+                                    if (TempDate < BestRowDate)
+                                    {
+                                        BestRowDate = TempDate;
+                                        BestRow = CurrentRow;
+                                    }
+
+                                    break;
+                            }
                         }
                     }
                 }
 
-                Unchanged = OrderedRows[0].RowState == DataRowState.Unchanged;
+                bool previouslyUnchanged = BestRow.RowState == DataRowState.Unchanged;
 
                 // mark the location that was determined to be the 'best'
-                OrderedRows[BestRow][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)1);
+                BestRow[PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = 1;
 
-                // We do not want changing the BestAddress column to enable save. So revert row status to original.
-                if (Unchanged)
+                // We do not want changing the BestAddress column to enable save. So revert row status to Unchanged.
+                if (previouslyUnchanged)
                 {
-                    OrderedRows[0].AcceptChanges();
+                    BestRow.AcceptChanges();
                 }
 
                 ReturnValue =
-                    new TLocationPK(Convert.ToInt64(OrderedRows[BestRow][PLocationTable.GetSiteKeyDBName()]),
-                        Convert.ToInt32(OrderedRows[BestRow][PLocationTable.GetLocationKeyDBName()]));
-            }
-            else
-            {
-                if (OrderedRows.Length == 1)
-                {
-                    Unchanged = OrderedRows[0].RowState == DataRowState.Unchanged;
-
-                    // mark the only location to be the 'best'
-                    OrderedRows[0][PartnerEditTDSPPartnerLocationTable.GetBestAddressDBName()] = ((object)1);
-
-                    // We do not want changing the BestAddress column to enable save. So revert row status to original.
-                    if (Unchanged)
-                    {
-                        OrderedRows[0].AcceptChanges();
-                    }
-
-                    ReturnValue = new TLocationPK(Convert.ToInt64(OrderedRows[0][PLocationTable.GetSiteKeyDBName()]),
-                        Convert.ToInt32(OrderedRows[0][PLocationTable.GetLocationKeyDBName()]));
-                }
-                else
-                {
-                    ReturnValue = new TLocationPK();
-                }
+                    new TLocationPK(Convert.ToInt64(BestRow[PLocationTable.GetSiteKeyDBName()]),
+                        Convert.ToInt32(BestRow[PLocationTable.GetLocationKeyDBName()]));
             }
 
             return ReturnValue;

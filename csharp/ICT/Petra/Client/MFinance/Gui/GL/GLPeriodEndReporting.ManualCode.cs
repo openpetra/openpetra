@@ -68,6 +68,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             chkBalanceSheet.Checked = true;
             chkAccountDetail.Checked = true;
             chkAfo.Checked = true;
+            chkSurplusDeficit.Checked = true;
             chkExec.Checked = true;
         }
 
@@ -108,6 +109,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 TFrmAFO AfoGui = new TFrmAFO(null);
                 AfoGui.PrintPeriodEndReport(FLedgerNumber, FMonthMode);
+            }
+
+            if (chkSurplusDeficit.Checked)
+            {
+                TFrmSurplusDeficit SDGui = new TFrmSurplusDeficit(null);
+                SDGui.PrintPeriodEndReport(FLedgerNumber, FMonthMode);
             }
 
             if (chkExec.Checked)
