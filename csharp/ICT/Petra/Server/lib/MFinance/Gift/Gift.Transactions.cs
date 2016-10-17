@@ -3645,7 +3645,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftAmount"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static decimal CalculateAdminFee(GiftBatchTDS AMainDS,
             Int32 ALedgerNumber,
             string AFeeCode,
@@ -4632,7 +4632,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Return the ESR defaults table (creating if necessary) for use in importing, or for client side editing.
         /// </summary>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-2")]
+        [RequireModulePermission("FINANCE-1")]
         public static DataTable GetEsrDefaults()
         {
             return TGiftImporting.GetEsrDefaults();
@@ -4643,7 +4643,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="AEsrDefaults"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-2")]
+        [RequireModulePermission("FINANCE-3")]
         public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
         {
             return TGiftImporting.CommitEsrDefaults(AEsrDefaults);

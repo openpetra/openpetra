@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ATransactionsChanged">Number of transaction that were updated with the new exchange rate</param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FIN-EX-RATE")]
         public static TSubmitChangesResult SaveCorporateExchangeSetupTDS(ref CorporateExchangeSetupTDS AInspectDS,
             out int ATransactionsChanged, out TVerificationResultCollection AVerificationResult)
         {

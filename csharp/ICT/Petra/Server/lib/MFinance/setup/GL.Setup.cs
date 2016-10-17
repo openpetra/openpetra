@@ -517,7 +517,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AStartingReceiptNumber"></param>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static void ActivateGiftProcessingSubsystem(Int32 ALedgerNumber,
             Int32 AStartingReceiptNumber)
         {
@@ -650,7 +650,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// activate subsystem for accounts payable for given ledger
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static void ActivateAccountsPayableSubsystem(Int32 ALedgerNumber)
         {
             #region Validate Arguments
@@ -879,7 +879,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ASubsystemCode"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         private static bool DeactivateSubsystem(Int32 ALedgerNumber, String ASubsystemCode)
         {
             #region Validate Arguments
@@ -928,7 +928,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool DeactivateGiftProcessingSubsystem(Int32 ALedgerNumber)
         {
             return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.GR.ToString());
@@ -939,7 +939,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool DeactivateAccountsPayableSubsystem(Int32 ALedgerNumber)
         {
             return DeactivateSubsystem(ALedgerNumber, CommonAccountingSubSystemsEnum.AP.ToString());
@@ -1625,7 +1625,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="APartnerCostCentreTbl"></param>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static void SaveCostCentrePartnerLinks(
             Int32 ALedgerNumber, DataTable APartnerCostCentreTbl)
         {
@@ -3321,7 +3321,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <summary>
         /// import basic data for new ledger
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool ImportNewLedger(Int32 ALedgerNumber,
             string AXmlLedgerDetails,
             string AXmlAccountHierarchy,
@@ -4840,7 +4840,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AVerificationResults"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool RenameAccountCode(String AOldCode,
             String ANewCode,
             Int32 ALedgerNumber,
@@ -5241,7 +5241,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AVerificationResults"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool RenameCostCentreCode(String AOldCode,
             String ANewCode,
             Int32 ALedgerNumber,

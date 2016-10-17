@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       matthiash, peters
+//       matthiash, peters, christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -95,6 +96,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void InitializeManualCode()
         {
+            var SecurityPermissionRequired = new List <string>();
+
+            SecurityPermissionRequired.Add(TSecurityChecks.SECURITYPERMISSION_FINANCEREPORTING);
+            FPetraUtilsObject.ApplySecurity(SecurityPermissionRequired);
+
             // remove from the combobox all ledger numbers which the user does not have permission to access
             DataView cmbLedgerDataView = (DataView)cmbLedger.cmbCombobox.DataSource;
 
@@ -708,7 +714,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             // if the user does not have permission to access any Ledgers
             if (((DataView)frmDRH.cmbLedger.cmbCombobox.DataSource).Count == 0)
             {
-                MessageBox.Show(Catalog.GetString("Cannot view History as you do not have access rights to any Ledgers."));
+                TLstFolderNavigation.ShowMessageNoAccessToFinanceModuleDueToNoLedgerEnabled(Catalog.GetString("Finance"));
+
                 return;
             }
 
@@ -802,6 +809,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             long APartnerKey,
             Form AParentForm)
         {
+            TSecurityChecks.CheckUserModulePermissions(SharedConstants.PETRAMODULE_FINANCE1, AParentForm.Text);
+
             TFrmDonorRecipientHistory.OpenWindowDonorRecipientHistory(ADonor, APartnerKey, AParentForm);
         }
     }

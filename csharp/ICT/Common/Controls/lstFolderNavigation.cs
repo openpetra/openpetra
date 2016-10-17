@@ -467,6 +467,21 @@ namespace Ict.Common.Controls
             }
         }
 
+        /// <summary>
+        /// Shows a message to the user that (s)he can't access (anything) in the Finance Module because the user
+        /// lacks permission to any Ledger.
+        /// </summary>
+        /// <param name="AModuleName">Name of the Module, should be 'Finance' (localised string).</param>
+        public static void ShowMessageNoAccessToFinanceModuleDueToNoLedgerEnabled(string AModuleName)
+        {
+            MessageBox.Show(String.Format("Access to OpenPetra Module '{0}' is denied as you don't have access rights to any Ledger!" +
+                    "\r\n\r\n" +
+                    "Someone with OpenPetra System Administrator rights needs to grant you access rights to at least one Ledger " +
+                    "for you to be able to work with this Module.", AModuleName),
+                "Access to OpenPetra Module Denied",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
         #endregion
 
         #region Private Methods
@@ -538,12 +553,7 @@ namespace Ict.Common.Controls
             {
                 if (FCurrentLedger == LEDGERNUMBER_NO_ACCESS_TO_ANY_LEDGER)
                 {
-                    MessageBox.Show(String.Format("Access to OpenPetra Module '{0}' is denied as you don't have access rights to any Ledger!" +
-                            "\r\n\r\n" +
-                            "Someone with OpenPetra System Administrator rights needs to grant you access rights to at least one Ledger " +
-                            "for you to be able to work with this Module.", TXMLParser.GetAttribute(ModuleXmlNode, "Label")),
-                        "Access to OpenPetra Module Denied",
-                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    ShowMessageNoAccessToFinanceModuleDueToNoLedgerEnabled(TXMLParser.GetAttribute(ModuleXmlNode, "Label"));
 
                     ReturnValue = false;
                 }

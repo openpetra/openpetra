@@ -27,6 +27,7 @@ using System.Data;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner;
@@ -515,6 +516,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         private void RunOnceOnActivationManual()
         {
             ucoExtractMasterList.RunOnceOnParentActivation();
+
+            bool bGotFinance = UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1);
+            mniCreateDonorByAmountExtract.Enabled = bGotFinance;
+            mniCreateDonorByFieldExtract.Enabled = bGotFinance;
+            mniCreateDonorByMiscellaneousExtract.Enabled = bGotFinance;
+            mniCreateDonorByMotivationExtract.Enabled = bGotFinance;
+            mniCreateRecipientByFieldExtract.Enabled = bGotFinance;
+
+            bool bGotPersonnel = UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_PERSONNEL);
+            mniCreatePartnerByCommitmentExtract.Enabled = bGotPersonnel;
+            mniCreatePartnerByFieldExtract.Enabled = bGotPersonnel;
+            mniCreatePartnerByEventExtract.Enabled = bGotPersonnel;
+            mniCreatePartnerByEventRoleExtract.Enabled = bGotPersonnel;
         }
 
         private static string BuildVerifyInfoMessage(List <string>ARemoveNonExistentPartnerKeyList,

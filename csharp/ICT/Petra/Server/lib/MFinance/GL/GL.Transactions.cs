@@ -4111,7 +4111,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AReversalBatchNumber"></param>
         /// <param name="AVerifications"></param>
         /// <param name="AAutoPostReverseBatch"></param>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool ReverseBatch(Int32 ALedgerNumber, Int32 ABatchNumberToReverse,
             DateTime ADateForReversal,
             out Int32 AReversalBatchNumber,
@@ -4129,7 +4129,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
         /// Returns true if it seems to be OK.
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool PostGLBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
         {
             return TGLPosting.PostGLBatch(ALedgerNumber, ABatchNumber, out AVerifications);
@@ -5051,7 +5051,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AVerifications"></param>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool GLBatchCanBeCancelled(out GLBatchTDS AMainDS,
             Int32 ALedgerNumber,
             Int32 ABatchNumber,

@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="AgeneratedBatches">The Client should print these batches.</param>
         /// <param name="AVerificationResult"></param>
         /// <returns>True if calculation succeeded, otherwise false.</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool PerformStewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
             out List <Int32>AgeneratedBatches,
@@ -572,7 +572,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="AVerificationResults"></param>
         /// <param name="ANoRecordsToProcess"></param>
         /// <returns>True if successful</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         private static bool GenerateICHStewardshipBatch(int ALedgerNumber,
             int APeriodNumber,
             TDBTransaction ADBTransaction,

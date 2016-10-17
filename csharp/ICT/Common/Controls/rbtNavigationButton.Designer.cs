@@ -69,7 +69,7 @@ namespace Ict.Common.Controls
             this.lblCaption.Location = new System.Drawing.Point(31, 7);
             this.lblCaption.Name = "lblCaption";
             this.lblCaption.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, 0);
-            this.lblCaption.Size = new System.Drawing.Size(168, 22);
+            this.lblCaption.Size = new System.Drawing.Size(190, 22);
 
             //
             // TRbtNavigationButton

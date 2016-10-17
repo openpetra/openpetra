@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Xml;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
@@ -107,8 +108,16 @@ namespace Ict.Common.Controls
 
                 if (FChecked != value)
                 {
-                    if (FCheckChangingDelegate != null)
+                    // This call returns false if the user does not have access to the module being selected.
+                    // This is not determined by the Xml attribute but by a code look up using the Xml element name.
+                    // This gets round the problem that it is possible for a client user to edit their copy of UINavigation and appear to give themselves
+                    // permission for a module.  But note that it is still a client-side code solution and not a server-side one.
+                    CheckChangeOK = TCommonControlsSecurity.CheckUserAccessToModuleUsingModuleElementName(((XmlNode)Tag).Name);
+
+                    if ((FCheckChangingDelegate != null) && (CheckChangeOK))
                     {
+                        // This call returns false if the selected module will be Finance and the user has no access to any ledger
+                        // In that case the call shows a full message box explaining the situation - see lstFolderNavigation FolderCheckChanging
                         CheckChangeOK = FCheckChangingDelegate(this);
                     }
 

@@ -633,6 +633,7 @@ namespace Ict.Petra.Client.App.PetraClient
             // Set up Delegates for forwarding of calls for security-related Exceptions
             ExceptionHandling.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
             TUnhandledThreadExceptionHandler.ProcessSecurityAccessDeniedException = TMessages.MsgSecurityException;
+            Ict.Common.Controls.TCommonControlsSecurity.SecurityAccessDeniedMessage = TMessages.MsgSecurityException;
 
             // Delegate for an extended message box
             TClientTaskInstance.ShowExtendedMessageBox = @TFrmExtendedMessageBoxManager.Create;
@@ -659,6 +660,10 @@ namespace Ict.Petra.Client.App.PetraClient
 
             // Set up Delegate for the retrieval of the list of Currencies from the Cache
             Ict.Common.Controls.TTxtCurrencyTextBox.RetrieveCurrencyList = @Ict.Petra.Client.CommonControls.TControlExtensions.RetrieveCurrencyList;
+
+            // Set up Delegate for checking the real module access permissions (rather than the ones in the XML)
+            Ict.Common.Controls.TCommonControlsSecurity.CheckUserModulePermissions =
+                @Ict.Petra.Shared.Security.TSecurityChecks.CheckUserModulePermissions;
 
             // Set up Delegate for the retrieval of the user defaults
             Ict.Common.Controls.TTxtNumericTextBox.RetrieveUserDefaultBoolean =

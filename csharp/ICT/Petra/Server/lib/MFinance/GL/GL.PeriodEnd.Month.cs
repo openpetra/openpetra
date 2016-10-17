@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AStewardshipBatch">True if Stewardship Batch was generated</param>
         /// <param name="AVerificationResults"></param>
         /// <returns>false if there's no problem</returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool PeriodMonthEnd(
             Int32 ALedgerNumber,
             bool AInfoMode,

@@ -475,16 +475,16 @@ namespace Ict.Common.Controls
             bool FormWasAlreadyOpened = false;
             string Context = String.Empty;
 
-            if (!FHasAccessPermission(node, FUserId, true))
-            {
-                return Catalog.GetString("Sorry, you don't have enough permissions to do this");
-            }
-
             string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
 
             if (strNamespace.Length == 0)
             {
                 return "There is no namespace for " + node.Name;
+            }
+
+            if (TCommonControlsSecurity.CheckUserAccessToModuleUsingModuleNamespaceName(node) == false)
+            {
+                return Catalog.GetString("Access denied");
             }
 
             if (!FGUIAssemblies.Keys.Contains(strNamespace))

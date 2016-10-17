@@ -42,9 +42,20 @@ namespace Ict.Petra.Shared.Security
         public const string SECURITYPERMISSION_EDITING_AND_SAVING_OF_SETUP_DATA = "EditingAndSavingOfSetupData";
 
         /// <summary>
+        /// Security Permission Check: 'Finance Reporting'
+        /// </summary>
+        public const string SECURITYPERMISSION_FINANCEREPORTING = "FinanceReporting";
+
+        /// <summary>
         /// Security Restriction: Editing and Saving of data disabled.
         /// </summary>
         public const string SECURITYRESTRICTION_READONLY = "READ-ONLY";
+
+        /// <summary>
+        /// Security Restriction: Execution (generating) of a 'Finance Report' (or something opening something like it, e.g.
+        /// Donor/Recipient History) denied.
+        /// </summary>
+        public const string SECURITYRESTRICTION_FINANCEREPORTINGDENIED = "FINANCE_REPORTING_DENIED";
 
         /// <summary>
         /// Standard security permissions: Editing and saving of data in 'Setup' screens.

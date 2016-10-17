@@ -848,7 +848,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="AccountCodesCostCentres">list {Account"|"Cost Centre}</param>
         /// <returns>Empty string if there's no problems</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static String CheckAccountsAndCostCentres(Int32 ALedgerNumber, List <String>AccountCodesCostCentres)
         {
             String ReportMsg = "";
@@ -948,7 +948,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADeleteTheseDocs"></param>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-1")]
         public static void DeleteAPDocuments(Int32 ALedgerNumber, List <Int32>ADeleteTheseDocs)
         {
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
@@ -997,7 +997,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AglBatchNumber">If a GL batch was posted, this is the Batch Number.</param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool PostAPDocuments(Int32 ALedgerNumber,
             List <Int32>AAPDocumentIds,
             DateTime APostingDate,
@@ -1469,7 +1469,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ADocumentsToPay"></param>
         /// <returns>There's really nothing to return, but generateGlue doesn't cope properly with <void> methods...</void></returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-1")]
         public static bool CreatePaymentTableEntries(ref AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
         {
             ADataset.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
@@ -1594,7 +1594,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// Store payments in the database, and post the payment to GL
         /// </summary>
         /// <returns>true if it seemed to work OK</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool PostAPPayments(
             ref AccountsPayableTDS AMainDS,
             DateTime APostingDate,
@@ -1750,7 +1750,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APaymentNumber"></param>
         /// <returns>Fully loaded TDS</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-1")]
         public static AccountsPayableTDS LoadAPPayment(Int32 ALedgerNumber, Int32 APaymentNumber)
         {
             AccountsPayableTDS MainDs = new AccountsPayableTDS();
@@ -1821,7 +1821,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="APaymentNumber"></param>
         /// <returns>true if a matching payment reversal can be found</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool WasThisPaymentReversed(Int32 ALedgerNumber, Int32 APaymentNumber)
         {
             // TODO: Look for a matching reverse payment
@@ -1838,7 +1838,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// <param name="AglBatchNumbers">If GL Batches were generated, these are the Batch Numbers.</param>
         /// <param name="AVerifications"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool ReversePayment(Int32 ALedgerNumber,
             Int32 APaymentNumber,
             DateTime APostingDate,

@@ -361,6 +361,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 if (PermissionsRequired.IndexOf('+') > 0)
                 {
                     // There are multiple permissions which must be AND'ed
+                    gotPermission = true;
+
                     while (PermissionsRequired.Length > 0)
                     {
                         string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired, "+");

@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// Cancels, and prevents database commit, of a currently running PeriodEnd operation.
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("OR(FINANCE-2,FINANCE-2)")]
         public static void CancelPeriodOperation()
         {
             TLogging.Log("PeriodEnd operation was cancelled.");
@@ -73,7 +73,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVerificationResult"></param>
         /// <returns>false if there's no problem</returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool PeriodYearEnd(
             int ALedgerNum,
             bool AIsInInfoMode,

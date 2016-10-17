@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -41,6 +41,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.Security;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -148,6 +149,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>See comment on Property <see cref="SecurityReadOnly"/>!</summary>
         protected bool FSecurityReadOnly = false;
 
+        /// <summary>See comment on Property <see cref="SecurityReportingAllowed"/>!</summary>
+        protected bool FSecurityReportExecutionAllowed = true;
+
         /// <summary>See comment on Property <see cref="SecurityEditingAndSavingPermissionRequired"/>!</summary>
         protected string FSecurityEditingAndSavingPermissionRequired;
 
@@ -243,6 +247,29 @@ namespace Ict.Petra.Client.CommonForms
             set
             {
                 FSecurityReadOnly = value;
+            }
+        }
+
+        /// <summary>
+        /// The Method <see cref="ApplySecurity"/> sets this Property and denies the opening of a screen straightaway
+        /// if the <see cref="SecurityScreenContext"/> doesn't match what the 'SecurityPermissions' passed into it
+        /// dictates.
+        /// </summary>
+        /// <remarks>
+        /// <para><em>IMPORTANT:</em>The provisions here only serve for *client-side convenience* and *don't prevent*
+        /// reporting of data for real, i.e. on the server side!!!</para>
+        /// <para>'Reporting' in this context is seen as a loose concept, i.e. not seen as restricted to Reports!</para>
+        /// </remarks>
+        public virtual bool SecurityReportingAllowed
+        {
+            get
+            {
+                return FSecurityReportExecutionAllowed;
+            }
+
+            set
+            {
+                FSecurityReportExecutionAllowed = value;
             }
         }
 
@@ -1106,6 +1133,7 @@ namespace Ict.Petra.Client.CommonForms
             bool AEnableDisabledButtons = true)
         {
             List <string>SecurityPermissions;
+            string PermissionRequiredToOvercomeAccessDenied = String.Empty;
 
             if ((ASecurityPermissions == null)
                 && (FFormsSecurityPermissions == null))
@@ -1134,7 +1162,8 @@ namespace Ict.Petra.Client.CommonForms
                         break;
                 }
 
-                SecurityPermissions = SecurityEvaluateStandardPermissions(ASecurityPermissions);
+                SecurityPermissions = SecurityEvaluateStandardPermissions(ASecurityPermissions,
+                    out PermissionRequiredToOvercomeAccessDenied);
             }
             else
             {
@@ -1142,7 +1171,8 @@ namespace Ict.Petra.Client.CommonForms
 
                 if (SecurityPermissions.Count == 0)
                 {
-                    SecurityPermissions = SecurityEvaluateStandardPermissions(ASecurityPermissions);
+                    SecurityPermissions = SecurityEvaluateStandardPermissions(ASecurityPermissions,
+                        out PermissionRequiredToOvercomeAccessDenied);
                 }
             }
 
@@ -1184,6 +1214,15 @@ namespace Ict.Petra.Client.CommonForms
                         CallEnableDisableReadOnlyModeButtons(true);
                     }
                 }
+            }
+
+            SecurityReportingAllowed = !SecurityPermissions.Contains(TSecurityChecks.SECURITYRESTRICTION_FINANCEREPORTINGDENIED);
+
+            if (!SecurityReportingAllowed)
+            {
+                throw new ESecurityAccessDeniedException(
+                    String.Format("You are not allowed to use this function because you don't have the necessary permission! " +
+                        "({0} permission would be required.)", PermissionRequiredToOvercomeAccessDenied), FCallerForm.GetType().Name);
             }
         }
 
@@ -1262,7 +1301,8 @@ namespace Ict.Petra.Client.CommonForms
             FStatusBar.BackColor = FStatusBarBackColorBeforeReadonlyMode.Value;
         }
 
-        private List <string>SecurityEvaluateStandardPermissions(List <string>ASecurityPermissions)
+        private List <string>SecurityEvaluateStandardPermissions(List <string>ASecurityPermissions,
+            out string APermissionRequiredToOvercomeAccessDenied)
         {
             List <string>ReturnValue = new List <string>();
 
@@ -1270,6 +1310,8 @@ namespace Ict.Petra.Client.CommonForms
             {
                 throw new ArgumentNullException("ASecurityPermissions", "ASecurityPermissions must not be null");
             }
+
+            APermissionRequiredToOvercomeAccessDenied = String.Empty;
 
             if (ASecurityPermissions.Contains(TSecurityChecks.SECURITYPERMISSION_EDITING_AND_SAVING_OF_SETUP_DATA))
             {
@@ -1283,7 +1325,24 @@ namespace Ict.Petra.Client.CommonForms
 
                 if (!UserInfo.GUserInfo.IsInModule(SecurityEditingAndSavingPermissionRequired))
                 {
+                    APermissionRequiredToOvercomeAccessDenied = SecurityEditingAndSavingPermissionRequired;
+
                     ReturnValue.Add(TSecurityChecks.SECURITYRESTRICTION_READONLY);
+                }
+            }
+
+            if ((SecurityScreenContext == "MFinanceReporting")
+                && (ASecurityPermissions.Contains(TSecurityChecks.SECURITYPERMISSION_FINANCEREPORTING)))
+            {
+                APermissionRequiredToOvercomeAccessDenied = SharedConstants.PETRAMODULE_FINANCERPT;
+
+                if (!UserInfo.GUserInfo.IsInModule(APermissionRequiredToOvercomeAccessDenied))
+                {
+                    ReturnValue.Add(TSecurityChecks.SECURITYRESTRICTION_FINANCEREPORTINGDENIED);
+                }
+                else
+                {
+                    APermissionRequiredToOvercomeAccessDenied = String.Empty;
                 }
             }
 
