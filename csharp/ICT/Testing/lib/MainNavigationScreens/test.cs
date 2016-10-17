@@ -167,7 +167,7 @@ namespace Tests.MainNavigationScreens
                 bool gotServerException;
                 string errorResult = ExecuteAction(ActionNode, out gotServerException);
 
-                Assert.AreEqual(Catalog.GetString("Sorry, you don't have enough permissions to do this"), errorResult);
+                Assert.AreEqual(Catalog.GetString("No access for user DEMO to Module SYSMAN."), errorResult);
             }
         }
 
@@ -281,13 +281,13 @@ namespace Tests.MainNavigationScreens
                     string Module = TYml2Xml.GetAttributeRecursive(ActionNode, "PermissionsRequired");
 
                     TLstTasks.CurrentLedger = TFrmMainWindowNew.CurrentLedger;
-                    bool gotServerException;
+                    bool gotServerAccessDeniedException = false;
                     string executeResult = string.Empty;
 
                     // Try to open each screen and log the screens that cannot open
                     try
                     {
-                        executeResult = ExecuteAction(ActionNode, out gotServerException);
+                        executeResult = ExecuteAction(ActionNode, out gotServerAccessDeniedException);
                         Assert.AreEqual(String.Empty, executeResult);
 
                         if (TLstTasks.LastOpenedScreen != null)
@@ -313,7 +313,7 @@ namespace Tests.MainNavigationScreens
                             Environment.NewLine + e.ToString());
 
                         // if the failure is a permission failure, just log it but don't fail the test
-                        if (Catalog.GetString("Sorry, you don't have enough permissions to do this") == executeResult)
+                        if (gotServerAccessDeniedException)
                         {
                             // make sure user didn't have the necessary permissions to open that window
                             // true means user should have been able to open without error
@@ -418,7 +418,7 @@ namespace Tests.MainNavigationScreens
 
             //Now the loop is finished so fail if there were exceptions
             Assert.GreaterOrEqual(TotalWindowsOpened, 197, "Expected to open at least 197 windows");
-            Assert.GreaterOrEqual(sysManPermissions.Count, 5, "Expected to fail to open at least 5 windows requiring SYSMAN permissions");
+            Assert.GreaterOrEqual(sysManPermissions.Count, 3, "Expected to fail to open at least 3 windows requiring SYSMAN permissions");
 //            Assert.GreaterOrEqual(ptnrAdminPermissions.Count, 1, "Expected to fail to open at least 1 window requiring PTNRADMIN permissions");
             Assert.AreEqual(notOpened.Count, 0, "Failed to open at least one window for unexplained reasons");
             Assert.AreEqual(otherPermissions.Count,
@@ -491,12 +491,12 @@ namespace Tests.MainNavigationScreens
             }
         }
 
-        private string ExecuteAction(XmlNode ActionNode, out bool GotServerException)
+        private string ExecuteAction(XmlNode ActionNode, out bool GotServerAccessDeniedException)
         {
             string ReturnValue = string.Empty;
             Exception TheException = null;
 
-            GotServerException = false;
+            GotServerAccessDeniedException = false;
 
             try
             {
@@ -505,7 +505,7 @@ namespace Tests.MainNavigationScreens
                 // It really ought to be one of our Ict.Common.Exceptions.EAccessDeniedExceptions
                 //  but Remoting turns that into a TargetInvocationException (sadly).  Microsoft may change this in the future.
                 ReturnValue = TLstTasks.ExecuteAction(ActionNode, null);
-                GotServerException = false;
+                GotServerAccessDeniedException = false;
             }
             catch (System.Reflection.TargetInvocationException ex)
             {
@@ -522,7 +522,7 @@ namespace Tests.MainNavigationScreens
             {
                 if (TheException is ESecurityAccessDeniedException)
                 {
-                    GotServerException = true;
+                    GotServerAccessDeniedException = true;
                 }
 
                 ReturnValue = TheException.Message;

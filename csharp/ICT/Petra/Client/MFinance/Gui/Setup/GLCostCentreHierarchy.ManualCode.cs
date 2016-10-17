@@ -1012,7 +1012,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private bool CheckCostCentreValueChanged()
         {
-            if ((FIAmUpdating > 0) || (strOldDetailCostCentreCode == null))
+            if ((FIAmUpdating > 0) || (strOldDetailCostCentreCode == null) || (FPetraUtilsObject.GetCallerForm() == null))
             {
                 return false;
             }

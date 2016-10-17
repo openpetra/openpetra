@@ -333,6 +333,13 @@ namespace Ict.Petra.Client.App.Core
                         ProcessSecurityAccessDeniedException.ToString());
                 }
             }
+            else if ((TheException is InvalidOperationException)
+                     && (Application.OpenForms.Count == 0)
+                     && (TheException.Message == "DragDrop registration did not succeed."))
+            {
+                // This happens during testing because the apartment model is MTA
+                // Do nothing because we do not want to show a dialog
+            }
             else
             {
                 //                MessageBox.Show(

@@ -1136,6 +1136,7 @@ namespace Ict.Common.Controls
                 {
                     // ex.Message is: DragDrop registration did not succeed.
                     // Inner exception is: Current thread must be set to single thread apartment (STA) mode before OLE calls can be made.
+                    // Note: Maybe we do not need this now because there is protection in ExceptionHandling.cs
                 }
             }
         }
