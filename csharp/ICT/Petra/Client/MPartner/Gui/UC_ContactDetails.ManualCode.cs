@@ -436,6 +436,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FFilterInitialised = true;
                 }
             }
+
+            CheckForNonCurrent();
         }
 
         /// <summary>
@@ -1392,6 +1394,48 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TSharedPartnerValidation_Partner.ValidateContactDetailsManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, FValueKind);
+        }
+
+        /// <summary>
+        /// Checks and shows the "Non-current contact details available" message. It is shown when the filter panel is closed,
+        /// there are non-current available and the current filter is not ticked.
+        /// </summary>
+        private void CheckForNonCurrent()
+        {
+            if (!(pnlFilterAndFind.Width == 0))
+            {
+                lblNonCurrentAvailable.Visible = false;
+            }
+            else
+            {
+                CheckBox tempCheckBox = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkCurrent");
+
+                switch (tempCheckBox.CheckState)
+                {
+                    case CheckState.Checked:
+
+                        foreach (DataRow Row in FMainDS.PPartnerAttribute.Rows)
+                        {
+                            PPartnerAttributeRow attributeRow = (PPartnerAttributeRow)Row;
+
+                            if (!attributeRow.Current)
+                            {
+                                lblNonCurrentAvailable.Visible = true;
+                                break;
+                            }
+                        }
+
+                        break;
+
+                    case CheckState.Unchecked:
+                        lblNonCurrentAvailable.Visible = false;
+                        break;
+
+                    case CheckState.Indeterminate:
+                        lblNonCurrentAvailable.Visible = false;
+                        break;
+                }
+            }
         }
 
         #endregion

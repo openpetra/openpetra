@@ -74,7 +74,7 @@ RootNode:
             ShowKeepFilterTurnedOnButton: FilterContext.StandardFilterOnly
         pnlButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDelete]
+            Controls: [btnNew, btnDelete, lblNonCurrentAvailable]
             ControlsOrientation: horizontal
         btnNew:
             Action: actNew
@@ -82,6 +82,8 @@ RootNode:
         btnDelete:
             Action: actDelete
             Width: 80
+        lblNonCurrentAvailable:
+            Text: Non-current contact details available. Use the Filter to show them.
         pnlPromoteDemote:
             Dock: Right
             Controls: [btnDemote, btnPromote]

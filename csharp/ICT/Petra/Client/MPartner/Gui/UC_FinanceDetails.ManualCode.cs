@@ -169,7 +169,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                //Remove RecipientGiftReceipting
                 grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
+                grpRecipientGiftReceipting.Visible = false;
+                pnlRightMiscSettings.Controls.Remove(grpRecipientGiftReceipting);
+
+                //Reset and rescale the Finance Comment
+                grpOther.Top = grpRecipientGiftReceipting.Top;
+                txtFinanceComment.Height += grpLeftMiscSettings.Height - grpOther.Height;
+                grpOther.Height = grpLeftMiscSettings.Height;
 
                 // make sure we have enough space
                 if (FGovIdEnabled)
@@ -473,7 +481,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartner[0].ReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
                 FMainDS.PPartner[0].ReceiptEachGift = chkReceiptEachGift.Checked;
                 FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
-                FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
+                //Email gift statement removed from UI as probably not needed anylonger
+                //FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
                 FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
 
                 if (FTaxDeductiblePercentageEnabled)
