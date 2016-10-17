@@ -492,7 +492,8 @@ namespace Ict.Petra.Server.MPartner.Processing
             }
 
             // Send Email (this picks up the SmtpHost AppSetting from the Server Config File)
-            return Sender.SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body);
+            return Sender.SendEmail(TAppSettingsManager.GetValue("NoReplyEmailAddress", "noreply@solidcharity.com"),
+                                    "OpenPetra Server", Destination, Subject, Body);
         }
 
         /// <summary>
