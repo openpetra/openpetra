@@ -169,6 +169,7 @@ namespace Ict.Petra.Client.CommonDialogs
             this.chkRememberUserName.TabIndex = 6;
             this.chkRememberUserName.Text = "&Remember the User ID";
             this.chkRememberUserName.UseVisualStyleBackColor = true;
+            this.chkRememberUserName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ChkRememberUserNameKeyPress);
             //
             // label1
             //

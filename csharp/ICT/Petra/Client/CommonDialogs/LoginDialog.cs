@@ -249,6 +249,21 @@ namespace Ict.Petra.Client.CommonDialogs
             }
         }
 
+        void ChkRememberUserNameKeyPress(object sender, KeyPressEventArgs e)
+        {
+            // If the ENTER key is pressed, the Handled property is set to true,
+            // to indicate the event is handled and the 'Login' Button gets pressed.
+
+            if (e.KeyChar == (char)Keys.Return)
+            {
+                e.Handled = true;
+                btnLogin.Focus();
+                Application.DoEvents();
+
+                btnLogin.PerformClick();
+            }
+        }
+
         #endregion
 
         private void BtnCancelClick(System.Object sender, System.EventArgs e)
