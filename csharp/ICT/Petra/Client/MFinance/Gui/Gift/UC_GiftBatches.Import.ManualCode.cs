@@ -42,6 +42,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Client.MFinance.Gui.Gift
 {
@@ -113,7 +114,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             {
                 FMyForm.FCurrentGiftBatchAction = Logic.TExtraGiftBatchChecks.GiftBatchAction.IMPORTING;
 
+                bool datesMayBeIntegers = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.DateMayBeInteger = datesMayBeIntegers;
 
                 if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
                 {
@@ -182,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("DatesMayBeIntegers", datesMayBeIntegers);
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
@@ -361,6 +365,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             FdlgSeparator = new TDlgSelectCSVSeparator(false);
+            FdlgSeparator.DateMayBeInteger = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
 
             if (AImportSource == TGiftImportDataSourceEnum.FromClipboard)
             {

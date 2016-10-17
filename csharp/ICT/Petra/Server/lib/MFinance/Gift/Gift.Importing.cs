@@ -193,6 +193,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
+            bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
@@ -337,7 +338,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                                     // Parse the complete line and validate it
                                     ParseBatchLine(ref giftBatch, ref Transaction, ref LedgerTable, ref ImportMessage, RowNumber, LedgerBaseCurrency,
-                                        LedgerIntlCurrency, Messages,
+                                        LedgerIntlCurrency, datesMayBeIntegers, Messages,
                                         EmptyControlsDict, AccountTable, AccountPropertyTable, AccountingPeriodTable, CostCentreTable,
                                         CorporateExchangeRateTable, CurrencyTable);
 
@@ -1303,6 +1304,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             int ARowNumber,
             string ALedgerBaseCurrency,
             string ALedgerIntlCurrency,
+            bool ADateMayBeAnInteger,
             TVerificationResultCollection AMessages,
             TValidationControlsDict AValidationControlsDictBatch,
             AAccountTable AValidationAccountTable,
@@ -1322,8 +1324,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 FMainDS.AGiftBatch.ColumnBankAccountCode, ARowNumber, AMessages, AValidationControlsDictBatch).ToUpper();
             decimal HashTotal = TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Hash total"),
                 FMainDS.AGiftBatch.ColumnHashTotal, ARowNumber, AMessages, AValidationControlsDictBatch);
-            DateTime GlEffectiveDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, Catalog.GetString("Effective Date"),
-                FMainDS.AGiftBatch.ColumnGlEffectiveDate, ARowNumber, AMessages, AValidationControlsDictBatch);
+            DateTime GlEffectiveDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, ADateMayBeAnInteger,
+                Catalog.GetString("Effective Date"), FMainDS.AGiftBatch.ColumnGlEffectiveDate, ARowNumber, AMessages, AValidationControlsDictBatch);
 
             AImportMessage = "Creating new batch";
 

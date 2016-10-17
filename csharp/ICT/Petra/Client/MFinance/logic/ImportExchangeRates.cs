@@ -40,6 +40,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.Data;
@@ -76,7 +77,9 @@ namespace Ict.Petra.Client.MFinance.Logic
                 String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
                 String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
+                bool dateMayBeAnInteger = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
                 TDlgSelectCSVSeparator DlgSeparator = new TDlgSelectCSVSeparator(false);
+                DlgSeparator.DateMayBeInteger = dateMayBeAnInteger;
                 Boolean fileCanOpen = DlgSeparator.OpenCsvFile(DialogBox.FileName);
 
                 if (!fileCanOpen)
@@ -104,6 +107,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                         DlgSeparator.SelectedSeparator,
                         DlgSeparator.NumberFormat,
                         DlgSeparator.DateFormat,
+                        dateMayBeAnInteger,
                         AImportMode,
                         AResultCollection,
                         Path.GetFileNameWithoutExtension(DialogBox.FileName));
@@ -145,6 +149,7 @@ namespace Ict.Petra.Client.MFinance.Logic
                 ACSVSeparator,
                 TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN,
                 "MM/dd/yyyy",
+                false,
                 AImportMode,
                 AResultCollection,
                 Path.GetFileNameWithoutExtension(AImportFileName));
@@ -169,6 +174,7 @@ namespace Ict.Petra.Client.MFinance.Logic
         /// <param name="ACSVSeparator"></param>
         /// <param name="ANumberFormat"></param>
         /// <param name="ADateFormat"></param>
+        /// <param name="ADateMayBeAnInteger"></param>
         /// <param name="AImportMode">Daily or Corporate</param>
         /// <param name="AResultCollection">A validation collection to which errors will be added</param>
         /// <param name="ACurrencyPair">The encoding of the file</param>
@@ -179,6 +185,7 @@ namespace Ict.Petra.Client.MFinance.Logic
             string ACSVSeparator,
             string ANumberFormat,
             string ADateFormat,
+            bool ADateMayBeAnInteger,
             string AImportMode,
             TVerificationResultCollection AResultCollection,
             string ACurrencyPair = ""
@@ -408,6 +415,22 @@ namespace Ict.Petra.Client.MFinance.Logic
                     // Date parsing as in Petra 2.x instead of using XML date format!!!
                     string DateEffectiveStr = StringHelper.GetNextCSV(ref Line, ACSVSeparator, false, true).Replace("\"", String.Empty);
                     DateTime DateEffective;
+                    int dateAsInt;
+                    int dateLength = DateEffectiveStr.Length;
+
+                    // Allow for 6- or 8-digit dates if the User Setting has been set
+                    if (ADateMayBeAnInteger
+                        && ((dateLength == 6) || (dateLength == 8)) && !DateEffectiveStr.Contains(".") && !DateEffectiveStr.Contains(","))
+                    {
+                        if (int.TryParse(DateEffectiveStr, out dateAsInt) && (dateAsInt > 10100) && (dateAsInt < 311300))
+                        {
+                            DateEffectiveStr = DateEffectiveStr.Insert(dateLength - 2, "-").Insert(dateLength - 4, "-");
+                        }
+                        else if (int.TryParse(DateEffectiveStr, out dateAsInt) && (dateAsInt > 1011900) && (dateAsInt < 31133000))
+                        {
+                            DateEffectiveStr = DateEffectiveStr.Insert(dateLength - 4, "-").Insert(dateLength - 6, "-");
+                        }
+                    }
 
                     if (!DateTime.TryParse(DateEffectiveStr, MyCultureInfoDate, DateTimeStyles.None, out DateEffective))
                     {

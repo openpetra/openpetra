@@ -146,6 +146,7 @@ namespace Ict.Petra.Server.MFinance.GL
             String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
+            bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
@@ -299,7 +300,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                             Catalog.GetString("Batch hash value"),
                                             MainDS.ABatch.ColumnBatchControlTotal, RowNumber, Messages, ValidationControlsDictBatch);
                                     NewBatch.DateEffective =
-                                        TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate,
+                                        TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, datesMayBeIntegers,
                                             Catalog.GetString("Batch effective date"),
                                             MainDS.ABatch.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictBatch);
 
@@ -426,7 +427,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                             Catalog.GetString("Journal exchange rate"),
                                             MainDS.AJournal.ColumnExchangeRateToBase, RowNumber, Messages, ValidationControlsDictJournal);
                                     NewJournal.DateEffective =
-                                        TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate,
+                                        TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, datesMayBeIntegers,
                                             Catalog.GetString("Journal effective date"),
                                             MainDS.AJournal.ColumnDateEffective, RowNumber, Messages, ValidationControlsDictJournal);
 
@@ -588,7 +589,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                     }
 
                                     ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatch, ref NewJournal,
-                                        intlRateFromBase, ref transaction, ref ImportMessage, ref Messages,
+                                        intlRateFromBase, datesMayBeIntegers, ref transaction, ref ImportMessage, ref Messages,
                                         ref ValidationControlsDictTransaction);
                                 }
                                 else
@@ -844,6 +845,7 @@ namespace Ict.Petra.Server.MFinance.GL
             String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
+            bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
 
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
@@ -959,7 +961,7 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
 
                                 ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
-                                    intlRateFromBase, ref Transaction, ref ImportMessage, ref Messages,
+                                    intlRateFromBase, datesMayBeIntegers, ref Transaction, ref ImportMessage, ref Messages,
                                     ref ValidationControlsDictTransaction);
                             }  // if the CSV line qualifies
 
@@ -1134,6 +1136,7 @@ namespace Ict.Petra.Server.MFinance.GL
             ref ABatchRow ANewBatchRow,
             ref AJournalRow ANewJournalRow,
             decimal AIntlRateFromBase,
+            bool ADatesMayBeIntegers,
             ref TDBTransaction ATransaction,
             ref string AImportMessage,
             ref TVerificationResultCollection AMessages,
@@ -1175,8 +1178,9 @@ namespace Ict.Petra.Server.MFinance.GL
             NewTransaction.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
                 AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
-            DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, Catalog.GetString("Transaction date"),
-                AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages, AValidationControlsDictTransaction);
+            DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, ADatesMayBeIntegers,
+                Catalog.GetString(
+                    "Transaction date"), AMainDS.ATransaction.ColumnTransactionDate, ARowNumber, AMessages, AValidationControlsDictTransaction);
 
             decimal DebitAmount = TCommonImport.ImportDecimal(ref FImportLine, FDelimiter, FCultureInfoNumberFormat, Catalog.GetString("Debit amount"),
                 AMainDS.ATransaction.ColumnTransactionAmount, ARowNumber, AMessages, AValidationControlsDictTransaction, "0");

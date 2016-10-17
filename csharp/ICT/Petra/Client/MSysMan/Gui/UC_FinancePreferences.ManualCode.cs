@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Client.MSysMan.Gui
 {
@@ -39,6 +40,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         private bool FShowMoneyAsCurrency = true;
         private bool FShowDecimalsAsCurrency = true;
         private bool FShowThousands = true;
+        private bool FDatesMayLookLikeIntegers = false;
 
         private void InitializeManualCode()
         {
@@ -69,6 +71,9 @@ namespace Ict.Petra.Client.MSysMan.Gui
             txtExchangeRateExample.Context = ".MFinance";
             txtExchangeRateExample.ControlMode = TTxtNumericTextBox.TNumericTextBoxMode.Decimal;
             txtExchangeRateExample.NumberValueDecimal = 6.789m;
+
+            FDatesMayLookLikeIntegers = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
+            chkDatesMayBeIntegers.Checked = FDatesMayLookLikeIntegers;
         }
 
         /// <summary>
@@ -121,6 +126,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
             {
                 FShowThousands = chkShowThousands.Checked;
                 TUserDefaults.SetDefault(StringHelper.FINANCE_CURRENCY_SHOW_THOUSANDS, FShowThousands);
+            }
+
+            if (FDatesMayLookLikeIntegers != chkDatesMayBeIntegers.Checked)
+            {
+                FDatesMayLookLikeIntegers = chkDatesMayBeIntegers.Checked;
+                TUserDefaults.SetDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, FDatesMayLookLikeIntegers);
             }
 
             return false;

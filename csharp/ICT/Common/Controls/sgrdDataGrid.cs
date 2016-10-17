@@ -2219,11 +2219,11 @@ namespace Ict.Common.Controls
                 }
             }
             // Keys that can trigger AutoFind
-            else if (((AKeyEventArgs.KeyCode >= Keys.A)
-                      && (AKeyEventArgs.KeyCode <= Keys.Z)) || (AKeyEventArgs.KeyCode == Keys.Add) || (AKeyEventArgs.KeyCode == Keys.Subtract)
+            else if (((AKeyEventArgs.KeyCode >= Keys.A) && (AKeyEventArgs.KeyCode <= Keys.Z) && (Control.ModifierKeys == Keys.None))
+                     || (AKeyEventArgs.KeyCode == Keys.Add) || (AKeyEventArgs.KeyCode == Keys.Subtract)
                      || (AKeyEventArgs.KeyCode == Keys.Oemplus) || (AKeyEventArgs.KeyCode == Keys.OemMinus) || (AKeyEventArgs.KeyCode == Keys.Space)
-                     || ((AKeyEventArgs.KeyCode >= Keys.D0)
-                         && (AKeyEventArgs.KeyCode <= Keys.D9)) || ((AKeyEventArgs.KeyCode >= Keys.NumPad0) && (AKeyEventArgs.KeyCode <= Keys.NumPad9)))
+                     || ((AKeyEventArgs.KeyCode >= Keys.D0) && (AKeyEventArgs.KeyCode <= Keys.D9))
+                     || ((AKeyEventArgs.KeyCode >= Keys.NumPad0) && (AKeyEventArgs.KeyCode <= Keys.NumPad9)))
             {
                 // Note: Space only gets through to there when SpaceKeyPressed is not assigned!
                 if (AutoFindMode == TAutoFindModeEnum.FirstCharacter)

@@ -2662,11 +2662,15 @@ namespace Ict.Common
         /// Note that .NET parses many date strings unambiguously even though the basic date format is quite simple.
         /// For the date formats that OpenPetra works with we really only need to distinguish between month-first short dates and day-first short dates.
         /// </summary>
-        /// <param name="AString"></param>
-        /// <param name="AMonthFirstDate"></param>
-        /// <param name="ADayFirstDate"></param>
+        /// <param name="AString">The string to evaluate</param>
+        /// <param name="ADateMayBeInteger">Set to true if the option to include numeric dates such as 311216 should be included</param>
+        /// <param name="AMonthFirstDate">If successful this will be the date if the month is first, otherwise DateTime.MinValue</param>
+        /// <param name="ADayFirstDate">If successful this will be the date if the day is first, otherwise DateTime.MinValue</param>
         /// <returns></returns>
-        public static bool LooksLikeAmbiguousShortDate(string AString, out DateTime AMonthFirstDate, out DateTime ADayFirstDate)
+        public static bool LooksLikeAmbiguousShortDate(string AString,
+            bool ADateMayBeInteger,
+            out DateTime AMonthFirstDate,
+            out DateTime ADayFirstDate)
         {
             AMonthFirstDate = DateTime.MinValue;
             ADayFirstDate = DateTime.MinValue;
@@ -2690,7 +2694,31 @@ namespace Ict.Common
 
                         if (items.Length != 3)
                         {
-                            return false;
+                            // finally we will try seeing if it is like 310116
+                            int dateAsInt;
+                            int dateLength = AString.Length;
+
+                            if (ADateMayBeInteger && ((dateLength == 6) || (dateLength == 8)) && !AString.Contains(".") && !AString.Contains(","))
+                            {
+                                if (int.TryParse(AString, out dateAsInt) && (dateAsInt > 10100) && (dateAsInt < 311300))
+                                {
+                                    AString = AString.Insert(dateLength - 2, "-").Insert(dateLength - 4, "-");
+                                    items = AString.Split('-');
+                                }
+                                else if (int.TryParse(AString, out dateAsInt) && (dateAsInt > 1011900) && (dateAsInt < 31133000))
+                                {
+                                    AString = AString.Insert(dateLength - 4, "-").Insert(dateLength - 6, "-");
+                                    items = AString.Split('-');
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                     }
                 }

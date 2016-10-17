@@ -24,7 +24,6 @@
 using System;
 using System.Data;
 using System.Globalization;
-using System.Windows.Forms;
 
 using Ict.Common;
 using Ict.Common.Verification;
@@ -295,6 +294,7 @@ namespace Ict.Petra.Server.MFinance.Common
         /// will have been removed from the start ready for the next call to an Import method.</param>
         /// <param name="ADelimiter">The delimiter</param>
         /// <param name="ACultureInfoDateFormat"></param>
+        /// <param name="ADateMayBeAnInteger"></param>
         /// <param name="AColumnTitle"></param>
         /// <param name="ADataColumn"></param>
         /// <param name="ARowNumber"></param>
@@ -305,6 +305,7 @@ namespace Ict.Petra.Server.MFinance.Common
         public static DateTime ImportDate(ref String AImportLine,
             String ADelimiter,
             CultureInfo ACultureInfoDateFormat,
+            bool ADateMayBeAnInteger,
             String AColumnTitle,
             DataColumn ADataColumn,
             int ARowNumber,
@@ -319,9 +320,23 @@ namespace Ict.Petra.Server.MFinance.Common
 
             String sDate = StringHelper.GetNextCSV(ref AImportLine, ADelimiter);
 
+            int dateAsInt;
+            int dateLength = sDate.Length;
+
             if (sDate == String.Empty)
             {
                 sDate = ADefaultString;
+            }
+            else if (ADateMayBeAnInteger && ((dateLength == 6) || (dateLength == 8)) && !sDate.Contains(".") && !sDate.Contains(","))
+            {
+                if (int.TryParse(sDate, out dateAsInt) && (dateAsInt > 10100) && (dateAsInt < 311300))
+                {
+                    sDate = sDate.Insert(dateLength - 2, "-").Insert(dateLength - 4, "-");
+                }
+                else if (int.TryParse(sDate, out dateAsInt) && (dateAsInt > 1011900) && (dateAsInt < 31133000))
+                {
+                    sDate = sDate.Insert(dateLength - 4, "-").Insert(dateLength - 6, "-");
+                }
             }
 
             DateTime dtReturn;

@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -112,7 +113,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.IMPORTING;
 
+                bool datesMayBeIntegers = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.DateMayBeInteger = datesMayBeIntegers;
 
                 if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
                 {
@@ -181,6 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("DatesMayBeIntegers", datesMayBeIntegers);
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
@@ -263,7 +267,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            bool datesMayBeIntegers = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
             FdlgSeparator = new TDlgSelectCSVSeparator(false);
+            FdlgSeparator.DateMayBeInteger = datesMayBeIntegers;
 
             if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
             {
@@ -332,6 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
                 requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                 requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                requestParams.Add("DatesMayBeIntegers", datesMayBeIntegers);
                 requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                 requestParams.Add("NewLine", Environment.NewLine);
 

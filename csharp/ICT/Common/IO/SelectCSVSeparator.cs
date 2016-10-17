@@ -61,6 +61,7 @@ namespace Ict.Common.IO
         private int MAXBYTESPARSE = 4000;
         private string FSeparator;
         private bool FFileHasCaption;
+        private bool FDateMayBeInteger = false;
         private List <String>FCSVRows = null;
 
         // Encoding
@@ -147,6 +148,17 @@ namespace Ict.Common.IO
             get
             {
                 return FCurrentEncoding;
+            }
+        }
+
+        /// <summary>
+        /// Set to true if dates may llok like 6 digit integers.  Default is false.
+        /// </summary>
+        public bool DateMayBeInteger
+        {
+            set
+            {
+                FDateMayBeInteger = value;
             }
         }
 
@@ -374,7 +386,7 @@ namespace Ict.Common.IO
 
                 foreach (string column in columns)
                 {
-                    if (StringHelper.LooksLikeAmbiguousShortDate(column, out monthFirstDate, out dayFirstDate))
+                    if (StringHelper.LooksLikeAmbiguousShortDate(column, FDateMayBeInteger, out monthFirstDate, out dayFirstDate))
                     {
                         // We have a date column...
                         numDatesFound++;
