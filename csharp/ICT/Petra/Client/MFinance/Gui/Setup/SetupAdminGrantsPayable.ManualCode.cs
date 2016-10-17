@@ -38,6 +38,7 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Client.App.Gui;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -209,6 +210,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             TSetupAdminGrants.ChargeOptionComboChanged((TCmbAutoComplete)sender, lblDetailChargeAmount,
                 txtDetailChargeAmount, txtDetailChargePercentage);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4, 5, 6, 7 },
+                new int[]
+                {
+                    AFeesPayableTable.ColumnFeeCodeId,
+                    AFeesPayableTable.ColumnFeeDescriptionId,
+                    AFeesPayableTable.ColumnChargeOptionId,
+                    AFeesPayableTable.ColumnChargePercentageId,
+                    AFeesPayableTable.ColumnChargeAmountId,
+                    AFeesPayableTable.ColumnDrAccountCodeId,
+                    AFeesPayableTable.ColumnCostCentreCodeId,
+                    AFeesPayableTable.ColumnAccountCodeId
+                });
         }
     }
 }

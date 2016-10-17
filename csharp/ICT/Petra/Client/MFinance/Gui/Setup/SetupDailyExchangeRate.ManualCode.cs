@@ -46,6 +46,8 @@ using Ict.Petra.Shared.MFinance.CrossLedger.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared.Security;
 
+using Ict.Petra.Client.App.Gui;
+
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
     public partial class TFrmSetupDailyExchangeRate
@@ -1904,6 +1906,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return -1;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1, 2, 3, 4 },
+                new int[]
+                {
+                    ADailyExchangeRateTable.ColumnFromCurrencyCodeId,
+                    ADailyExchangeRateTable.ColumnToCurrencyCodeId,
+                    ADailyExchangeRateTable.ColumnDateEffectiveFromId,
+                    ADailyExchangeRateTable.ColumnTimeEffectiveFromId,
+                    ADailyExchangeRateTable.ColumnRateOfExchangeId
+                });
         }
     }
 }

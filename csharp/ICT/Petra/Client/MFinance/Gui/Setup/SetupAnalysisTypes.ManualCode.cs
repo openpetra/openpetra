@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using GNU.Gettext;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -234,6 +235,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             txtDetailAnalysisTypeCode.Enabled = false;
             return txtDetailAnalysisTypeCode.Text;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[] { 0, 1 },
+                new int[]
+                {
+                    AAnalysisTypeTable.ColumnAnalysisTypeCodeId,
+                    AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId
+                });
         }
     }
 }
