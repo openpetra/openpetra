@@ -375,7 +375,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable GiftStatementDonorTable(Dictionary <String, TVariant>AParameters,
             TReportingDbAdapter DbAdapter,
-            Int64 ADonorKey = -1,
+            String ADonorKeyList,
             Int64 ARecipientKey = -1,
             String ACommentFor = "RECIPIENT"
             )
@@ -413,10 +413,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         :
                         " AND detail.p_recipient_key_n = " + ARecipientKey;
                     String donorKeyFilter =
-                        (ADonorKey == -1) ?
+                        (ADonorKeyList == "") ?
                         ""
                         :
-                        " AND gift.p_donor_key_n = " + ADonorKey;
+                        " AND gift.p_donor_key_n IN (" + ADonorKeyList + ") ";
 
                     String amountFilter = "";
 
@@ -546,13 +546,36 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
                                    pTaxFieldFilterAsRequired;
 
+                    String requestedSort = "";
+
+                    if (AParameters.ContainsKey("param_order_by_name"))
+                    {
+                        requestedSort = AParameters["param_order_by_name"].ToString();
+                    }
+
                     if ((ReportType == "Complete") || (ReportType == "Gifts Only"))
                     {
                         Query += " ORDER BY gift.a_date_entered_d";
+
+                        if (requestedSort == "PartnerKey")
+                        {
+                            Query += ", DonorPartner.p_partner_key_n";
+                        }
+                        else
+                        {
+                            Query += ", DonorPartner.p_partner_short_name_c";
+                        }
                     }
                     else if (ReportType == "Donors Only")
                     {
-                        Query += " ORDER BY DonorPartner.p_partner_short_name_c";
+                        if (requestedSort == "PartnerKey")
+                        {
+                            Query += " ORDER BY DonorPartner.p_partner_key_n";
+                        }
+                        else
+                        {
+                            Query += " ORDER BY DonorPartner.p_partner_short_name_c";
+                        }
                     }
 
                     Results = DbAdapter.RunQuery(Query, "Donors", Transaction);

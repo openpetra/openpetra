@@ -52,7 +52,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FLedgerNumber = value;
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
 
-                this.tabReportSettings.Controls.Remove(tpgReportSorting);      // Sorting options not supported in this version.
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Column Settings is not supported in the FastReports based solution.
                 this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // We're also not doing this!
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();

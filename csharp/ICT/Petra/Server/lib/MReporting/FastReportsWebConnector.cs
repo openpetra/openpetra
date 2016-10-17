@@ -435,6 +435,49 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }); // Get NewOrExisting AutoRead Transaction
         }
 
+        [NoRemoting]
+        private static String GetDonorListFromExtract(Dictionary <String, TVariant>AParameters, TReportingDbAdapter ADbAdapter)
+        {
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            String paramFromDate = "'" + AParameters["param_from_date"].ToDate().ToString("yyyy-MM-dd") + "'";
+            String paramToDate = "'" + AParameters["param_to_date"].ToDate().ToString("yyyy-MM-dd") + "'";
+            TDBTransaction Transaction = null;
+            DataTable tbl = null;
+
+            ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+                ref Transaction,
+                delegate
+                {
+                    String Query =
+                        " (SELECT DISTINCT gift.p_donor_key_n FROM a_gift AS gift" +
+                        " LEFT JOIN m_extract AS extract ON gift.p_donor_key_n = extract.p_partner_key_n" +
+                        " LEFT JOIN m_extract_master AS master ON extract.m_extract_id_i = master.m_extract_id_i" +
+                        " LEFT JOIN a_gift_batch batch ON batch.a_batch_number_i = gift.a_batch_number_i" +
+                        " AND batch.a_ledger_number_i = gift.a_ledger_number_i" +
+                        " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                        " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
+                        " AND batch.a_batch_status_c = 'Posted'" +
+                        " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
+                    tbl = ADbAdapter.RunQuery(Query, "Recipients", Transaction);
+                });
+            String Results = "";
+
+            if (tbl != null)
+            {
+                foreach (DataRow Row in tbl.Rows)
+                {
+                    if (Results != "")
+                    {
+                        Results += ",";
+                    }
+
+                    Results += Row["p_donor_key_n"].ToString();
+                }
+            }
+
+            return Results;
+        }
+
         /// <summary>
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
@@ -443,15 +486,23 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
         {
             String reportType = AParameters["param_report_type"].ToString();
             String donorSelect = AParameters["param_donor"].ToString();
-            Int64 donorKey = (donorSelect == "All Donors") ?
-                             -1
-                             :
-                             AParameters["param_donorkey"].ToInt64();
+            String donorKeyList = "";
+
+            if (donorSelect == "One Donor")
+            {
+                donorKeyList = AParameters["param_donorkey"].ToString();
+            }
+
+            if (donorSelect == "Extract")
+            {
+                // I need to get an SQL list of Partner keys from the extract:
+                donorKeyList = GetDonorListFromExtract(AParameters, ADbAdapter);
+            }
 
             TLogging.SetStatusBarProcedure(WriteToStatusBar);
 
             // get donors
-            DataTable Donors = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, donorKey, -1, "DONOR");
+            DataTable Donors = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, donorKeyList, -1, "DONOR");
 
             if (ADbAdapter.IsCancelled || (Donors == null))
             {
@@ -515,11 +566,8 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
             } // foreach
 
-            if (reportType == "Totals")
+            if (Recipients.Columns.Count == 0)
             {
-                Totals.DefaultView.Sort = "DonorKey, Month";
-                Totals = Totals.DefaultView.ToTable();
-
                 Recipients.Columns.Add("RecipientKey", typeof(Int32));
                 Recipients.Columns.Add("RecipientName", typeof(Int32));
                 Recipients.Columns.Add("RecipientClass", typeof(Int32));
@@ -528,7 +576,8 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 Recipients.Columns.Add("thisYearTotal", typeof(Int32));
                 Recipients.Columns.Add("previousYearTotal", typeof(Int32));
             }
-            else
+
+            if (Totals.Columns.Count == 0)
             {
                 Totals.Columns.Add("DonorKey", typeof(Int64));
                 Totals.Columns.Add("Month", typeof(Int32));
@@ -540,6 +589,12 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 Totals.Columns.Add("Year2Count", typeof(Int32));
                 Totals.Columns.Add("Year3Total", typeof(Decimal));
                 Totals.Columns.Add("Year3Count", typeof(Int32));
+            }
+
+            if (Totals.Rows.Count > 0)
+            {
+                Totals.DefaultView.Sort = "DonorKey, Month";
+                Totals = Totals.DefaultView.ToTable();
             }
 
             DataTable DonorAddresses = new DataTable("DonorAddresses");
@@ -622,7 +677,7 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
 
                 // get donor information for each recipient
-                DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, -1, recipientKey);
+                DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, "", recipientKey);
 
                 if (DonorTemp != null)
                 {
