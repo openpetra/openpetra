@@ -49,11 +49,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         private const string PARTNER_IMPORT_TAX_CODE_INFILE = "PartnerImportTaxCode_Infile";
 
         private string FTaxGovIdLabel = string.Empty;
+        private string FTaxGovIdKeyName = string.Empty;
 
         private void InitializeManualCode()
         {
             FTaxGovIdLabel =
                 TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_LABEL, string.Empty);
+
+            FTaxGovIdKeyName =
+                TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, string.Empty);
 
             if (FTaxGovIdLabel != string.Empty)
             {
@@ -316,7 +320,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             requestParams.Add("ExtractDescription", txtExtractDescription.Text);
             requestParams.Add("CreateOutFile", chkCreateOutFile.Checked);
             requestParams.Add("EmptyTaxCode", emptyCodeAction);
-            requestParams.Add("TaxCodeType", FTaxGovIdLabel);
+            requestParams.Add("TaxCodeType", FTaxGovIdKeyName);
             // we include partner details if the user does not want a output file because we will write a sneaky one in the logs folder
             requestParams.Add("IncludePartnerDetails",
                 (chkCreateOutFile.Checked && chkIncludePartnerDetails.Checked) || (chkCreateOutFile.Checked == false));

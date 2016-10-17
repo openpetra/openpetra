@@ -287,6 +287,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
                 FGovIdLabel = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                     SharedConstants.SYSDEFAULT_GOVID_LABEL, "");
+                String GovIdKeyName = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -296,7 +298,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     PPartnerTaxDeductiblePctAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 }
 
-                if (FGovIdEnabled)
+                if (IsGovIdEnabled())
                 {
                     // set the GovId on the server so the client does not need to deal with it
                     // The client can retrieve this later by calling "GetGovId()"
@@ -304,9 +306,9 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                     DataView TaxView = new DataView(localDS.PTax);
 
-                    TaxView.RowFilter = String.Format("{0}={1}",
+                    TaxView.RowFilter = String.Format("{0}='{1}'",
                         PTaxTable.GetTaxTypeDBName(),
-                        "'GovId'");
+                        GovIdKeyName);
 
                     FGovId = "";
 
@@ -359,7 +361,8 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         /// <returns></returns>
         public bool IsGovIdEnabled()
         {
-            return FGovIdEnabled;
+            // at the moment we only allow this to be entered for Person records
+            return FGovIdEnabled && (FPartnerClass == TPartnerClass.PERSON);
         }
 
         /// <summary>
