@@ -86,6 +86,7 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("Delimiter", ",");
             parameters.Add("ALedgerNumber", ALedgerNumber);
             parameters.Add("DateFormatString", "yyyy-MM-dd");
+            parameters.Add("DatesMayBeIntegers", false);
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
