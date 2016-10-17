@@ -175,9 +175,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             chkExcludeInactiveCostCentres.Checked = AParameters.Get("ExcludeInactiveCostCentres").ToBool();
 
             /* Level of Detail */
-            rbtDetail.Checked = AParameters.Get("param_depth").ToString() == "detail";
-            rbtStandard.Checked = AParameters.Get("param_depth").ToString() == "standard";
-            rbtSummary.Checked = AParameters.Get("param_depth").ToString() == "summary";
+            rbtDetail.Checked = AParameters.Get("param_depth").ToString() == "Detail";
+            rbtStandard.Checked = AParameters.Get("param_depth").ToString() == "Standard";
+            rbtSummary.Checked = AParameters.Get("param_depth").ToString() == "Summary";
             chkPaginate.Checked = AParameters.Get("param_paginate").ToBool();
             chkAutoEmail.Checked = AParameters.Get("param_auto_email").ToBool();
         }

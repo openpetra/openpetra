@@ -20,7 +20,7 @@ RootNode:
                 Row3: [chkPDF]
                 
         txtEmail:
-            Label: Send to these Emails Addresses
+            Label: Send to these Email Addresses
             Stretch: horizontally
 
         chkExcelFile:

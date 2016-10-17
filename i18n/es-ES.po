@@ -17029,7 +17029,7 @@ msgid "Settings cannot be saved"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SendEmailOptionsDialog-generated.cs:71
-msgid "Send to these Emails Addresses"
+msgid "Send to these Email Addresses"
 msgstr ""
 
 #: csharp\ICT\Petra\Client\MReporting\Gui\SendEmailOptionsDialog-generated.cs:72

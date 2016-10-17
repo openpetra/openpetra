@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,9 +26,11 @@ using System.Data;
 
 using Ict.Common;
 using Ict.Common.Data;
+using Ict.Common.IO;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.ImportExport.WebConnectors;
+using Ict.Petra.Server.MSysMan.Application.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared.MPartner;
@@ -128,6 +130,8 @@ namespace Ict.Petra.Server.App.Delegates
             TSharedDataCache.TMConference.GetCacheableConferenceTableDelegate = @CachePopulatorConference.GetCacheableTable;
 
             TSharedDataCache.TMSysMan.GetCacheableSysManTableDelegate = @CachePopulatorSysMan.GetCacheableTable;
+
+            TSmtpSender.GetSmtpSettings = @TSysManServerLookups.GetServerSmtpSettings;
         }
     }
 }

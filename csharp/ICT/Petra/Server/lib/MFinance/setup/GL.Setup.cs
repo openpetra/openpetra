@@ -1592,7 +1592,6 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                                 ACostCentreFilter,
                                 AValidLedgerNumberTable.GetPartnerKeyDBName());
 
-
                             partnerCostCentreTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "PartnerCostCentre", Transaction);
 
                             foreach (DataRow Row in partnerCostCentreTbl.Rows)

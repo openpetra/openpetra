@@ -228,7 +228,7 @@ namespace Ict.Common.Remoting.Shared
         /// <summary>
         /// the host name of the smtp server
         /// </summary>
-        string SMTPServer
+        string SmtpHost
         {
             get;
         }

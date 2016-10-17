@@ -30,9 +30,155 @@ using System.Text;
 using System.Threading;
 using System.Net.Security;
 using Ict.Common;
+using System.Security;
+using Ict.Common.Exceptions;
+using System.Runtime.Serialization;
+
+#region changelog
+
+/* Unifying and standardising system settings, especially for SMTP and email - Moray
+ *
+ *   Enable the parameterless constructor to be called from both client and server. The callers shouldn't need to know how to get
+ *   SMTP configurations from the server; that's our responsibility. Remove redundant parameterised constructor.
+ *
+ *   Remove OutputEMLToDirectory after discussion with Timo (http://irclogs.openpetra.org/logfile_2016-09-02.html)
+ */
+#endregion
 
 namespace Ict.Common.IO
 {
+    /// <summary>
+    /// Delegate to fetch the SMTP server configuration.
+    /// </summary>
+    /// <remarks>Ultimately these settings come from Server.config. But as <see cref="TSmtpSender"/> can be
+    /// instantiated from either Client or Server, we need different routes to get to them.</remarks>
+    /// <returns><see cref="TSmtpServerSettings"/> struct containing the settings</returns>
+    public delegate TSmtpServerSettings TGetSmtpSettings();
+
+    /// <summary>
+    /// Returns the settings to initialize SmtpSender, either to Client or Server
+    /// </summary>
+    [Serializable()]
+    public struct TSmtpServerSettings
+    {
+        /// <summary>
+        /// Constructor method.
+        /// </summary>
+        /// <param name="ASmtpHost"></param>
+        /// <param name="ASmtpPort"></param>
+        /// <param name="ASmtpEnableSsl"></param>
+        /// <param name="ASmtpUsername"></param>
+        /// <param name="ASmtpPassword"></param>
+        /// <param name="ASmtpIgnoreServerCertificateValidation"></param>
+#if USE_SECURESTRING
+        public TSmtpServerSettings(string ASmtpHost,
+            int ASmtpPort,
+            bool ASmtpEnableSsl,
+            string ASmtpUsername,
+            System.Security.SecureString ASmtpPassword,
+            bool ASmtpIgnoreServerCertificateValidation)
+#else
+        public TSmtpServerSettings(string ASmtpHost,
+            int ASmtpPort,
+            bool ASmtpEnableSsl,
+            string ASmtpUsername,
+            string ASmtpPassword,
+            bool ASmtpIgnoreServerCertificateValidation)
+#endif
+        {
+            FSmtpHost = ASmtpHost;
+            FSmtpPort = ASmtpPort;
+            FSmtpEnableSsl = ASmtpEnableSsl;
+            FSmtpUsername = ASmtpUsername;
+            FSmtpPassword = ASmtpPassword;
+            FSmtpIgnoreServerCertificateValidation = ASmtpIgnoreServerCertificateValidation;
+        }
+
+        /// <summary/>
+        public string SmtpHost {
+            get
+            {
+                return FSmtpHost;
+            } private set
+            {
+                FSmtpHost = value;
+            }
+        }
+        /// <summary/>
+        public int SmtpPort {
+            get
+            {
+                return FSmtpPort;
+            } private set
+            {
+                FSmtpPort = value;
+            }
+        }
+        /// <summary/>
+        public bool SmtpEnableSsl {
+            get
+            {
+                return FSmtpEnableSsl;
+            } private set
+            {
+                FSmtpEnableSsl = value;
+            }
+        }
+        /// <summary/>
+        public string SmtpUsername {
+            get
+            {
+                return FSmtpUsername;
+            } private set
+            {
+                FSmtpUsername = value;
+            }
+        }
+        /// <summary/>
+#if USE_SECURESTRING
+        public System.Security.SecureString SmtpPassword {
+            get
+            {
+                return FSmtpPassword;
+            } private set
+            {
+                FSmtpPassword = value;
+            }
+        }
+#else
+        public string SmtpPassword {
+            get
+            {
+                return FSmtpPassword;
+            } private set
+            {
+                FSmtpPassword = value;
+            }
+        }
+#endif
+        /// <summary/>
+        public bool SmtpIgnoreServerCertificateValidation {
+            get
+            {
+                return FSmtpIgnoreServerCertificateValidation;
+            } private set
+            {
+                FSmtpIgnoreServerCertificateValidation = value;
+            }
+        }
+
+        private string FSmtpHost;
+        private int FSmtpPort;
+        private bool FSmtpEnableSsl;
+        private string FSmtpUsername;
+#if USE_SECURESTRING
+        private System.Security.SecureString FSmtpPassword;
+#else
+        private string FSmtpPassword;
+#endif
+        private bool FSmtpIgnoreServerCertificateValidation;
+    }
+
     /// <summary>
     /// If TSmtpSender.SendMessage can detect that an email didn't reach its recipient
     /// (which is not always possible)
@@ -47,175 +193,213 @@ namespace Ict.Common.IO
     }
 
     /// <summary>
-    /// this is a small wrapper around the .net SMTP Email services
+    /// This is a small wrapper around the .net SMTP Email services
     /// </summary>
-    public class TSmtpSender
+    public class TSmtpSender : IDisposable
     {
         /// <summary>todoComment</summary>
         public static readonly String EMAIL_USER_LOGIN_NAME = "IUSROPEMAIL";
+        /// <summary>The domain of the default dummy SmtpHost written to our Server.config. Used here to check whether SMTP has been configured.</summary>
+        public static readonly String SMTP_HOST_DEFAULT = ".example.org";
+
+        static TGetSmtpSettings FGetSmtpSettings;
 
         private SmtpClient FSmtpClient;
+        private MailAddress FSender;
+        private MailAddress FReplyTo;
+        private MailAddress FCcEverythingTo;
 
         /// <summary>
-        /// After SendMessage, this array should be empty.
+        /// After SendMessage, this list should be empty.
         /// If it is not empty, the contents must be shown to the user.
         /// </summary>
-        public List <TsmtpFailedRecipient>FailedRecipients;
+        private List <TsmtpFailedRecipient>FFailedRecipients;
 
-        /// <summary>Caller should check this after initialisation</summary>
-        public Boolean FInitOk;
-
-        /// <summary>If the Sender doesn't initialise, or mail doesn't send, this status string may give a clue why?</summary>
-        public String FErrorStatus;
-
+        /// <summary>If the mail doesn't send, this status string may give a clue why?</summary>
+        private String FErrorStatus;
 
         /// <summary>
-        /// Initialise method
+        /// Client or Server Delegate used to get the SMTP server settings.
         /// </summary>
-        /// <param name="ASMTPHost">The address of the mail server</param>
-        /// <param name="ASMTPPort">The port for the connection</param>
-        /// <param name="AEnableSsl">True to use SSL</param>
-        /// <param name="AUsername">A username on the server.  Can be null or empty string in which case default credentials are used.</param>
-        /// <param name="APassword">Password for the username specified.</param>
-        /// <param name="AOutputEMLToDirectory">Path to pickup folder</param>
-        /// <returns></returns>
-        private Boolean Initialise(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
+        public static TGetSmtpSettings GetSmtpSettings
         {
+            get
+            {
+                return FGetSmtpSettings;
+            }
+            set
+            {
+                FGetSmtpSettings = value;
+            }
+        }
+
+        /// <summary>
+        /// Static method that can be called from anywhere to validate an email address.
+        /// </summary>
+        /// <param name="field"></param>
+        /// <returns>True if the string forms a valid email address; false otherwise.</returns>
+        public static bool ValidateEmailAddress(string field)
+        {
+            // In .NET 4.5: return new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(field.Text);
             try
             {
-                FSmtpClient = new SmtpClient();
-
-                if (AOutputEMLToDirectory.Length > 0)
-                {
-                    FSmtpClient.PickupDirectoryLocation = AOutputEMLToDirectory;
-                    FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.SpecifiedPickupDirectory;
-                }
-                else
-                {
-                    FSmtpClient.Host = ASMTPHost;
-                    FSmtpClient.Port = ASMTPPort;
-                    FSmtpClient.EnableSsl = AEnableSsl;
-                    FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-
-                    if (AUsername == null)
-                    {
-                        AUsername = string.Empty;
-                    }
-
-                    if (APassword == null)
-                    {
-                        APassword = string.Empty;
-                    }
-
-                    FSmtpClient.UseDefaultCredentials = (AUsername.Length == 0);
-
-                    if (FSmtpClient.UseDefaultCredentials == false)
-                    {
-                        FSmtpClient.Credentials = new NetworkCredential(AUsername, APassword);
-                    }
-
-                    if (TAppSettingsManager.GetValue("IgnoreServerCertificateValidation", "false", false) == "true")
-                    {
-                        // when checking the validity of a SSL certificate, always pass
-                        // this is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate
-                        ServicePointManager.ServerCertificateValidationCallback =
-                            new RemoteCertificateValidationCallback(
-                                delegate
-                                { return true; }
-                                );
-                    }
-                }
-
-                FailedRecipients = new List <TsmtpFailedRecipient>();
-                FInitOk = true;
-            } // try
-            catch (Exception e)
-            {
-                FErrorStatus = e.Message;
-                FInitOk = false;
+                var TestAddress = new System.Net.Mail.MailAddress(field);
+                return true;
             }
-            return FInitOk;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
-        /// setup the smtp client
+        /// After SendMessage, this contains a list of any recipients we failed to send to.
         /// </summary>
-        /// <param name="ASMTPHost">The address of the mail server</param>
-        /// <param name="ASMTPPort">The port for the connection</param>
-        /// <param name="AEnableSsl">True to use SSL</param>
-        /// <param name="AUsername">A username on the server.  Can be null or empty string in which case default credentials are used.</param>
-        /// <param name="APassword">Password for the username specified.</param>
-        /// <param name="AOutputEMLToDirectory">Path to pickup folder</param>
-        public TSmtpSender(string ASMTPHost, int ASMTPPort, bool AEnableSsl, string AUsername, string APassword, string AOutputEMLToDirectory)
+        public List <TsmtpFailedRecipient>FailedRecipients
         {
-            FErrorStatus = "";
-            //Set up SMTP client
-            Initialise(ASMTPHost, ASMTPPort, AEnableSsl, AUsername, APassword, AOutputEMLToDirectory);
+            get
+            {
+                return FFailedRecipients;
+            }
         }
 
         /// <summary>
-        /// setup the smtp client from the config file or command line parameters
+        /// An indication of any errors that occurred during SendMessage.
+        /// </summary>
+        public string ErrorStatus
+        {
+            get
+            {
+                return FErrorStatus;
+            }
+        }
+
+        /// <summary>
+        /// Set up the SMTP client
         /// </summary>
         public TSmtpSender()
         {
-            //Set up SMTP client
-            String EmailDirectory = "";
-            String LoginUsername = null;
-            String LoginPassword = null;
-
             FErrorStatus = "";
 
-            if (TAppSettingsManager.HasValue("OutputEMLToDirectory"))
+            if (GetSmtpSettings == null)
             {
-                EmailDirectory = TAppSettingsManager.GetValue("OutputEMLToDirectory");
+                throw new ESmtpSenderInitializeException("Delegate GetSmtpSettings not assigned.");
             }
 
-            if (TAppSettingsManager.GetBoolean("SmtpRequireCredentials", false) == true)
+            try
             {
-                // We give the client the details of the fixed OP Email user.
-                // This is NOT retrieved from the config file but is stored in code.
-                // The password is converted from a byte array (rather than being compiled into this DLL as plain Unicode text).
-                // The username and password are stored in different DLL's. (Not brilliant security but a start.)
-                LoginUsername = EMAIL_USER_LOGIN_NAME;
-                LoginPassword = Encoding.ASCII.GetString(TPasswordHelper.EmailUserPassword);
-            }
+                /* SmtpClient can throw:
+                 *   ArgumentNullException          - if Host is set to null
+                 *   ArgumentException              - if Host is set to an empty string
+                 *   ArgumentOutOfRangeException    - if Port is out of range
+                 */
+                var SmtpSettings = GetSmtpSettings();
 
-            Initialise(
-                TAppSettingsManager.GetValue("SmtpHost"),
-                TAppSettingsManager.GetInt16("SmtpPort", 25),
-                TAppSettingsManager.GetBoolean("SmtpEnableSsl", false),
-                LoginUsername,
-                LoginPassword,
-                EmailDirectory);
+                FSmtpClient = new SmtpClient();
+
+                FSmtpClient.Host = SmtpSettings.SmtpHost;
+                FSmtpClient.Port = SmtpSettings.SmtpPort;
+                FSmtpClient.EnableSsl = SmtpSettings.SmtpEnableSsl;
+                FSmtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+                FSmtpClient.Credentials = new NetworkCredential(SmtpSettings.SmtpUsername, SmtpSettings.SmtpPassword);
+
+                if (SmtpSettings.SmtpIgnoreServerCertificateValidation)
+                {
+                    // When checking the validity of a SSL certificate, always pass.
+                    // This is needed for smtp.outlook365.com, since I cannot find a place to get the public key for the ssl certificate.
+                    ServicePointManager.ServerCertificateValidationCallback =
+                        new RemoteCertificateValidationCallback(
+                            delegate
+                            { return true; }
+                            );
+                }
+
+                FFailedRecipients = new List <TsmtpFailedRecipient>();
+            } // try
+            catch (Exception e)
+            {
+                if (FSmtpClient != null)
+                {
+                    FSmtpClient.Dispose();
+                }
+
+                throw new ESmtpSenderInitializeException(Catalog.GetString(
+                        "SMTP Sender failed to initialize. Ask your System Administrator to check the settings in the OpenPetra Server.config file."),
+                    e,
+                    TSmtpErrorClassEnum.secServer);
+            }
         }
 
         /// <summary>
-        /// check if smtp host has been configured
+        /// Sets the sender address for the email - or set of emails.
         /// </summary>
-        /// <returns></returns>
-        public bool ValidateEmailConfiguration()
+        /// <param name="AAddress"></param>
+        /// <param name="ADisplayName"></param>
+        public void SetSender(string AAddress, string ADisplayName)
         {
-            if (FSmtpClient.DeliveryMethod == SmtpDeliveryMethod.Network)
+            try
             {
-                return FSmtpClient.Host.Length > 0 && !FSmtpClient.Host.Contains("example.org");
+                FSender = new MailAddress(AAddress, ADisplayName);
             }
-            else if (FSmtpClient.DeliveryMethod == SmtpDeliveryMethod.SpecifiedPickupDirectory)
+            catch (Exception e)
             {
-                return Directory.Exists(FSmtpClient.PickupDirectoryLocation);
+                throw new ESmtpSenderInitializeException(String.Format("Invalid sender address '{0} <{1}>'.",
+                        ADisplayName,
+                        AAddress), e, TSmtpErrorClassEnum.secClient);
             }
-
-            return false;
         }
 
         /// <summary>
         /// Use this to get all the emails copied to an address
         /// </summary>
-        public String CcEverythingTo = "";
+        public String CcEverythingTo
+        {
+            set
+            {
+                if (value == "")
+                {
+                    FCcEverythingTo = null;
+                }
+                else
+                {
+                    try
+                    {
+                        FCcEverythingTo = new MailAddress(value);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ESmtpSenderInitializeException(String.Format("Invalid CC address '{0}'.", value), e, TSmtpErrorClassEnum.secClient);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// If the ReplyTo address should be different, use this.
         /// </summary>
-        public String ReplyTo = "";
+        public String ReplyTo
+        {
+            set
+            {
+                if (value == "")
+                {
+                    FReplyTo = null;
+                }
+                else
+                {
+                    try
+                    {
+                        FReplyTo = new MailAddress(value);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ESmtpSenderInitializeException(String.Format("Invalid Reply-To address '{0}'.",
+                                value), e, TSmtpErrorClassEnum.secClient);
+                    }
+                }
+            }
+        }
+
 
         private Attachment FAttachedObject = null;
 
@@ -230,29 +414,48 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
-        /// Create a mail message and send it
+        /// Create a mail message and send it as from the specified sender address.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Flag indicating whether email was sent.</returns>
+        /// <exception cref="ESmtpSenderInitializeException">Thrown when the sender address is invalid. An inner exception may contain more detail.</exception>
         public bool SendEmail(string fromemail, string fromDisplayName, string recipients, string subject, string body,
             string[] attachfiles = null)
         {
+            SetSender(fromemail, fromDisplayName);
+            return SendEmail(recipients, subject, body, attachfiles);
+        }
+
+        /// <summary>
+        /// Create a mail message and send it as from the address that has already been set.
+        /// </summary>
+        /// <remarks>The sender address must be set using <see cref="SetSender(string, string)"/></remarks>
+        /// <returns>Flag indicating whether email was sent. Check the <see cref="ErrorStatus"/> property for further details.</returns>
+        /// <exception cref="ESmtpSenderInitializeException">Thrown when the sender address is invalid. An inner exception may contain detail.</exception>
+        public bool SendEmail(string recipients, string subject, string body,
+            string[] attachfiles = null)
+        {
+            if (FSender == null)
+            {
+                throw new ESmtpSenderInitializeException("Sender address has not been set.", TSmtpErrorClassEnum.secClient);
+            }
+
             try
             {
                 using (MailMessage email = new MailMessage())
                 {
                     //From and To
-                    email.Sender = new MailAddress(fromemail, fromDisplayName);
-                    email.From = new MailAddress(fromemail, fromDisplayName);
+                    email.Sender = FSender;
+                    email.From = FSender;
                     email.To.Add(recipients);
 
-                    if (CcEverythingTo != "")
+                    if (FCcEverythingTo != null)
                     {
-                        email.CC.Add(new MailAddress(CcEverythingTo));
+                        email.CC.Add(FCcEverythingTo);
                     }
 
-                    if (ReplyTo != "")
+                    if (FReplyTo != null)
                     {
-                        email.ReplyToList.Add(new MailAddress(ReplyTo));
+                        email.ReplyToList.Add(FReplyTo);
                     }
 
                     //Subject and Body
@@ -260,13 +463,10 @@ namespace Ict.Common.IO
                     email.Body = body;
                     email.IsBodyHtml = false;
 
-                    List <Attachment>attachments = new List <Attachment>();
-
                     // A single attachment may have been specified using the AttachFromStream method, above.
                     if (FAttachedObject != null)
                     {
                         email.Attachments.Add(FAttachedObject);
-                        attachments.Add(FAttachedObject);
                     }
 
                     //Attachment files if any:
@@ -278,7 +478,6 @@ namespace Ict.Common.IO
                             {
                                 Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
                                 email.Attachments.Add(data);
-                                attachments.Add(data);
                             }
                             else
                             {
@@ -292,15 +491,9 @@ namespace Ict.Common.IO
 
                     bool Result = SendMessage(email);
 
-                    foreach (Attachment data in attachments)
-                    {
-                        // make sure that the file is not locked any longer
-                        data.Dispose();
-                    }
-
                     FAttachedObject = null;
                     return Result;
-                }
+                } // End of using block. This will Dispose email and clean up any attachments.
             }
             catch (Exception ex)
             {
@@ -314,8 +507,8 @@ namespace Ict.Common.IO
         /// <summary>
         /// Send an email message
         /// </summary>
-        /// <param name="AEmail">on successful sending, the header is modified with the sent date</param>
-        /// <returns>true if email was sent successfully</returns>
+        /// <param name="AEmail">On successful sending, the header is modified with the sent date.</param>
+        /// <returns>True if email was sent successfully.</returns>
         public bool SendMessage(MailMessage AEmail)
         {
             if (AEmail.Headers.Get("Date-Sent") != null)
@@ -324,24 +517,53 @@ namespace Ict.Common.IO
                 return false;
             }
 
-            FailedRecipients.Clear();
-
-            if (FSmtpClient.Host == TAppSettingsManager.UNDEFINEDVALUE)
-            {
-                TLogging.Log("Not sending the email, since the SMTP server wasn't configured.");
-                TLogging.Log("You can configure the mail settings in the config file (SmtpHost, etc.).");
-
-                return false;
-            }
-            else if (FSmtpClient.Host.EndsWith("example.org", StringComparison.InvariantCulture))
-            {
-                TLogging.Log("Not sending the email, since the configuration is just with an example server: " + FSmtpClient.Host);
-                TLogging.Log("You can configure the mail settings in the config file (SmtpHost, etc.).");
-
-                return false;
-            }
+            FFailedRecipients.Clear();
 
             //Attempt to send the email
+            // FIXME!! Some SMTP servers have a message rate limit, so if a message is rejected because we have exceeded the maximum number
+            // of messages per minute, we need to wait and retry (https://tracker.openpetra.org/view.php?id=3179). Unfortunately the solution
+            // here doesn't check what _kind_ of error occurred. So for a permanent error like incorrect credentials... for 100 HOSAs... it
+            // will happily retry one after another for 5 hours before telling the user they all failed.
+            //
+            // You can catch the SmtpClient exceptions and check the StatusCode enum to get a better idea of the problem. The numeric values of
+            // the enum match SMTP error codes as shown below. Codes in the 400 range are generally 'temporary' failures while codes in the 500
+            // range are usually'permanent'. It's more complicated than it should be because:
+            //    i) If a MailMessage has one To: address, failure is returned in a SmtpFailedRecipientException.
+            //       If a MailMessage has one To: address and one CC: address, failure is returned in a SmtpFailedRecipientsException (note the plural).
+            //       This contains an InnerExceptions property containing the individual SmtpFailedRecipientExceptions which Microsoft say is "not
+            //       intended to be used directly from your code".
+            //   ii) There are different kinds of "permanent" errors and SMTP servers aren't consistent about how they report things. For example,
+            //       for an authentication error, mail.smtp2go.com returns "Mailbox Unavailable. The server response was: Relay denied for unauthenticated sender".
+            //       You need to check the exception Message text to see whether the error is to do with the recipient mailbox (so mail to a
+            //       different recipient may work) or the sender account (so nothing will work and you may as well abort the whole process now).
+            //
+            // SmtpStatusCode Enumeration with numeric values:
+            //    -1      GeneralFailure
+            //   211     SystemStatus
+            //   214     HelpMessage
+            //   220     ServiceReady
+            //   221     ServiceClosingTransmissionChannel
+            //   250     Ok
+            //   251     UserNotLocalWillForward
+            //   252     CannotVerifyUserWillAttemptDelivery
+            //   354     StartMailInput
+            //   421     ServiceNotAvailable
+            //   450     MailboxBusy
+            //   451     LocalErrorInProcessing
+            //   452     InsufficientStorage
+            //   454     ClientNotPermitted
+            //   500     CommandUnrecognized
+            //   501     SyntaxError
+            //   502     CommandNotImplemented
+            //   503     BadCommandSequence
+            //   504     CommandParameterNotImplemented
+            //   530     MustIssueStartTlsFirst
+            //   550     MailboxUnavailable
+            //   551     UserNotLocalTryAlternatePath
+            //   552     ExceededStorageAllocation
+            //   553     MailboxNameNotAllowed
+            //   554     TransactionFailed
+
             try
             {
                 AEmail.IsBodyHtml = AEmail.Body.ToLower().Contains("<html>");
@@ -385,7 +607,7 @@ namespace Ict.Common.IO
                     TsmtpFailedRecipient FailureDetails = new TsmtpFailedRecipient();
                     FailureDetails.FailedAddress = problem.FailedRecipient;
                     FailureDetails.FailedMessage = problem.Message;
-                    FailedRecipients.Add(FailureDetails);
+                    FFailedRecipients.Add(FailureDetails);
                     TLogging.Log(problem.FailedRecipient + " : " + problem.Message);
                 }
 
@@ -411,5 +633,259 @@ namespace Ict.Common.IO
 
             return false;
         }
+
+        /// <summary>
+        /// Dispose of the IDisposable objects used by this object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (FSmtpClient != null)
+            {
+                FSmtpClient.Dispose();
+            }
+
+            if (FAttachedObject != null)
+            {
+                FAttachedObject.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// Used to distinguish server-config exceptions from client-specified exceptions.
+    /// </summary>
+    public enum TSmtpErrorClassEnum
+    {
+        /// <summary>
+        /// Default value
+        /// </summary>
+        secUnspecified,
+
+        /// <summary>
+        /// Error came from server configuration. Exception message should already include "Ask your System Administrator to check the settings in the OpenPetra Server.config file."
+        /// </summary>
+        secServer,
+
+        /// <summary>
+        /// Error cause by client-provided data. Use this value to add a helpful hint to the message appropriate to the client settings. Something like "See the Email tab in User Settings >> Preferences."
+        /// </summary>
+        secClient
+    }
+
+    /// <summary>
+    /// Generic emailer exception
+    /// </summary>
+    [Serializable()]
+    public class ESmtpSenderException : EOPAppException
+    {
+        // Copy serialization constructors from C:\OpenPetra\dev_20160805\csharp\ICT\Common\Exceptions.Remoted.cs ?
+
+        /// <summary>
+        /// Creates a new instance of this exception.
+        /// </summary>
+        public ESmtpSenderException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of this exception with the specified message.
+        /// </summary>
+        /// <param name="AMessage">The message that describes the error.</param>
+        public ESmtpSenderException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of this exception with the specified message and reference to the inner exception.
+        /// </summary>
+        /// <param name="AMessage">The message that describes the error.</param>
+        /// <param name="AInnerException">The exception that caused this exception.</param>
+        public ESmtpSenderException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESmtpSenderException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Exception for errors that occur during initialization
+    /// </summary>
+    [Serializable()]
+    public class ESmtpSenderInitializeException : ESmtpSenderException
+    {
+        /// <summary>
+        /// Indicates whether the exception was caused by server configuration data, or client-supplied data.
+        /// </summary>
+        public TSmtpErrorClassEnum ErrorClass;
+
+        /// <summary>
+        /// Creates a new instance of this exception.
+        /// </summary>
+        public ESmtpSenderInitializeException() : base()
+        {
+            this.ErrorClass = TSmtpErrorClassEnum.secUnspecified;
+        }
+
+        /// <summary>
+        /// Creates a new instance of this exception with the specified message.
+        /// </summary>
+        /// <param name="AMessage">The message that describes the error.</param>
+        /// <param name="ErrorClass">Field specifying whether the exception was caused by server configuration data, or client-supplied data. Default TSmtpErrorClassEnum.secUnspecified</param>
+        public ESmtpSenderInitializeException(String AMessage, TSmtpErrorClassEnum ErrorClass = TSmtpErrorClassEnum.secUnspecified) : base(AMessage)
+        {
+            this.ErrorClass = ErrorClass;
+        }
+
+        /// <summary>
+        /// Creates a new instance of this exception with the specified message and reference to the inner exception.
+        /// </summary>
+        /// <param name="AMessage">The message that describes the error.</param>
+        /// <param name="AInnerException">The exception that caused this exception.</param>
+        /// <param name="ErrorClass">Field specifying whether the exception was caused by server configuration data, or client-supplied data. Default TSmtpErrorClassEnum.secUnspecified</param>
+        public ESmtpSenderInitializeException(string AMessage,
+            Exception AInnerException,
+            TSmtpErrorClassEnum ErrorClass = TSmtpErrorClassEnum.secUnspecified) : base(AMessage, AInnerException)
+        {
+            this.ErrorClass = ErrorClass;
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESmtpSenderInitializeException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+            //FErrorClass = (TSmtpErrorClassEnum)AInfo.GetValue("ErrorClass", typeof(TSmtpErrorClassEnum));
+            ErrorClass = (TSmtpErrorClassEnum)AInfo.GetSByte("ErrorClass");
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            //AInfo.AddValue("ErrorClass", ErrorClass, typeof(TSmtpErrorClassEnum));
+            AInfo.AddValue("ErrorClass", (sbyte)ErrorClass);
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Exception for errors that occur during sending
+    /// </summary>
+    [Serializable()]
+    public class ESmtpSenderSendException : ESmtpSenderException
+    {
+        /// <summary>
+        /// Creates a new instance of this exception.
+        /// </summary>
+        public ESmtpSenderSendException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of this exception with the specified message.
+        /// </summary>
+        /// <param name="AMessage">The message that describes the error.</param>
+        public ESmtpSenderSendException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of this exception with the specified message and reference to the inner exception.
+        /// </summary>
+        /// <param name="AMessage">The message that describes the error.</param>
+        /// <param name="AInnerException">The exception that caused this exception.</param>
+        public ESmtpSenderSendException(string AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public ESmtpSenderSendException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
     }
 }

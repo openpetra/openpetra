@@ -34,7 +34,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
-
+using Ict.Common.IO;
 
 namespace Ict.Petra.Client.App.Core
 {
@@ -372,6 +372,8 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public class TMFinance
         {
+            #region TServerLookup.TMFinance
+
             /// <summary>
             /// Get the current posting date range for the specified ledger
             /// </summary>
@@ -412,6 +414,8 @@ namespace Ict.Petra.Client.App.Core
                     out AStartDatePeriod,
                     out AEndDatePeriod);
             }
+
+            #endregion
         }
 
         /// <summary>
@@ -419,6 +423,8 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public class TMSysMan
         {
+            #region TServerLookup.TMSysMan
+
             /// <summary>
             /// Get all the installed Patches
             /// </summary>
@@ -438,6 +444,17 @@ namespace Ict.Petra.Client.App.Core
             {
                 return TRemote.MSysMan.Application.WebConnectors.GetDBVersion(out APetraDBVersion);
             }
+
+            /// <summary>
+            /// Get the SMTP settings from the server
+            /// </summary>
+            /// <returns><see cref="TSmtpServerSettings"/> object.</returns>
+            public static TSmtpServerSettings GetServerSmtpSettings()
+            {
+                return TRemote.MSysMan.Application.WebConnectors.GetServerSmtpSettings();
+            }
+
+            #endregion
         }
     }
 }

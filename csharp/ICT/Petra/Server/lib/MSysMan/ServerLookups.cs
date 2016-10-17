@@ -32,6 +32,7 @@ using Ict.Common.Exceptions;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.App.Core.Security;
+using System.Security;
 
 namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
 {
@@ -133,14 +134,15 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
         }
 
         /// <summary>
-        /// Method to obtain the Smtp Configuration settings from the OP server that has been set up to act as an Email server
+        /// Method to obtain the SMTP email server configuration settings from the OP server, called to initialize FastReport Preview email settings.
         /// </summary>
-        /// <param name="ASMTPHost">The host address.  Default is empty string (not set).
-        /// If the name contains 'example.org' the parameter also returns an empty string</param>
-        /// <param name="ASMTPPort">Default return value is 25.</param>
-        /// <param name="AEnableSsl">Default return value id 'false'.</param>
-        /// <param name="ALoginUsername">Returns a user name to use for credentials for the server, or null if no credentials are required</param>
-        /// <param name="ALoginPassword">Returns a matching password for credentials on the server, or null if no credentials are required</param>
+        /// <param name="ASMTPHost">Returns the name or address for the SMTP server.</param>
+        /// <param name="ASMTPPort">Returns the TCP port to use. Default = 25.</param>
+        /// <param name="AEnableSsl">Flags whether to use SSL. Default = true.</param>
+        /// <param name="ALoginUsername">Returns a user name to use for credentials for the server.</param>
+        /// <param name="ALoginPassword">Returns a matching password for credentials on the server.</param>
+        /// <exception cref="ESmtpSenderInitializeException">Thrown when SmtpHost is blank or the default <see cref="TSmtpSender.SMTP_HOST_DEFAULT"/>;
+        /// when SmtpPort is invalid; or when SmtpAuthenticationType is unrecognised.</exception>
         [RequireModulePermission("NONE")]
         public static void GetServerSmtpSettings(out string ASMTPHost,
             out int ASMTPPort,
@@ -148,27 +150,86 @@ namespace Ict.Petra.Server.MSysMan.Application.WebConnectors
             out string ALoginUsername,
             out string ALoginPassword)
         {
-            ASMTPHost = TAppSettingsManager.GetValue("SmtpHost", "");
-            ASMTPPort = TAppSettingsManager.GetInt32("SmtpPort", 25);
-            AEnableSsl = TAppSettingsManager.GetBoolean("SmtpEnableSsl", false);
+            ASMTPHost = TSrvSetting.SmtpHost;
+            ASMTPPort = TSrvSetting.SmtpPort;
+            AEnableSsl = TSrvSetting.SmtpEnableSsl;
             ALoginUsername = null;
             ALoginPassword = null;
 
             // Validate the host name.  It should not be the content of an unmodified config file.
-            if (ASMTPHost.Contains("example.org"))
+            if ((ASMTPHost == "") || ASMTPHost.EndsWith(TSmtpSender.SMTP_HOST_DEFAULT))
             {
-                ASMTPHost = string.Empty;
-                return;
+                throw new ESmtpSenderInitializeException(String.Format(
+                        "SmtpHost '{0}' not valid in Server.config file. Contact your System Administrator.", ASMTPHost));
             }
 
-            if (TAppSettingsManager.GetBoolean("SmtpRequireCredentials", false) == true)
+            if ((ASMTPPort < System.Net.IPEndPoint.MinPort) || (ASMTPPort > System.Net.IPEndPoint.MaxPort))
             {
-                // We give the client the details of the OP Email user.
-                // The password is converted from a byte array (rather than being compiled into this DLL as plain text).
-                // The username and password are stored in different server DLL's.
-                ALoginUsername = TSmtpSender.EMAIL_USER_LOGIN_NAME;
-                ALoginPassword = Encoding.ASCII.GetString(TPasswordHelper.EmailUserPassword);
+                throw new ESmtpSenderInitializeException(String.Format(
+                        "SmtpPort '{0}' not valid in Server.config file. Contact your System Administrator.", ASMTPPort));
             }
+
+            // Could use a TSmtpAuthTypeEnum - but naming conventions would dictate the config file settings would be ugly: satBuiltin, satConfig etc.
+            string SmtpAuth = TSrvSetting.SmtpAuthenticationType;
+
+            switch (SmtpAuth)
+            {
+                case "builtin":
+                    // We give the client the details of the OP Email user.
+                    // The password is converted from a byte array (rather than being compiled into this DLL as plain text).
+                    // The username and password are stored in different server DLL's.
+                    ALoginUsername = TSmtpSender.EMAIL_USER_LOGIN_NAME;
+                    ALoginPassword = Encoding.ASCII.GetString(TPasswordHelper.EmailUserPassword);
+                    break;
+
+                case "config":
+                    ALoginUsername = TSrvSetting.SmtpUser;
+                    ALoginPassword = TSrvSetting.SmtpPassword;
+                    break;
+
+                default:
+                    throw new ESmtpSenderInitializeException(String.Format(
+                        "SmtpAuthenticationType '{0}' not valid in Server.config file. Contact your System Administrator.", SmtpAuth));
+            }
+        }
+
+        /// <summary>
+        /// Method to obtain the SMTP email server configuration settings from the OP server, called to initialize TSmtpSender by autoemailed reports.
+        /// </summary>
+        /// <returns><see cref="TSmtpServerSettings"/> struct.</returns>
+        /// <exception cref="ESmtpSenderInitializeException">Thrown when SmtpHost is blank or the default <see cref="TSmtpSender.SMTP_HOST_DEFAULT"/>;
+        /// when SmtpPort is invalid; or when SmtpAuthenticationType is unrecognised.</exception>
+        [RequireModulePermission("NONE")]
+        public static Ict.Common.IO.TSmtpServerSettings GetServerSmtpSettings()
+        {
+            string SmtpHost;
+            int SmtpPort;
+            bool EnableSsl;
+            string LoginUsername;
+            string s;
+            bool IgnoreServerCertificateValidation;
+
+            GetServerSmtpSettings(out SmtpHost,
+                out SmtpPort,
+                out EnableSsl,
+                out LoginUsername,
+                out s);
+
+#if USE_SECURESTRING
+            var LoginPassword = new SecureString();
+
+            foreach (char c in s)
+            {
+                LoginPassword.AppendChar(c);
+            }
+
+            s = null;
+            IgnoreServerCertificateValidation = TSrvSetting.SmtpIgnoreServerCertificateValidation;
+            return new TSmtpServerSettings(SmtpHost, SmtpPort, EnableSsl, LoginUsername, LoginPassword, IgnoreServerCertificateValidation);
+#else
+            IgnoreServerCertificateValidation = TSrvSetting.SmtpIgnoreServerCertificateValidation;
+            return new TSmtpServerSettings(SmtpHost, SmtpPort, EnableSsl, LoginUsername, s, IgnoreServerCertificateValidation);
+#endif
         }
     }
 }

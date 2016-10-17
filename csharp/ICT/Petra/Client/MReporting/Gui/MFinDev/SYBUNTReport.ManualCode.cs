@@ -65,10 +65,11 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void RunOnceOnActivationManual()
         {
-            // if fast reports, then ignore columns tab
+            // if FastReport, then ignore columns tab
             if ((FPetraUtilsObject.GetCallerForm() != null) && FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {
                 tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgAdditionalSettings);
             }
         }
 

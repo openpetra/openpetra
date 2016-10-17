@@ -26,6 +26,35 @@ using System.IO;
 
 using Ict.Common;
 
+#region changelog
+
+/* Unifying and standardising system settings, especially for SMTP and email - Moray
+ *
+ *   Removed the following unused properties:
+ *     IntranetDataDestinationEmail     - now set from system default INTRANETSERVERADDRESS.
+ *     IntranetDataSenderEmail          - now set from user defaults.
+ *     AutomaticIntranetExportEnabled   - not required here?
+ *   The old AutomaticIntranetExportEnabled has now become Server.Processing.AutomatedIntranetExport.Enabled. This and similar enablers for
+ *   PartnerReminders and DataChecks are only referred to from ServerManager.cs, which references TAppSettingsManager and not TSrvSetting.
+ *   If we added AutomatedIntranetExport here, we'd have to add the others too, and there seems little point without modifying ServerManager too.
+ *
+ *   Updated the SMTPServer property - it's now SmtpHost - and add the missing SMTP configuration:
+ *     SmtpPort
+ *     SmtpUser
+ *     SmtpPassword
+ *     SmtpEnableSsl
+ *     SmtpAuthenticationType
+ *
+ *   Generally default values provided by this class should be the same as those set by our own "nant initConfigFiles".
+ *   Most of these defaults can be found in inc\nant\OpenPetra.common.xml.
+ *
+ *   This class provides many different kinds of data to a variety of consumers. To add validation here, we'd have to add it to all properties,
+ *   and probably start having to add decision logic too. We'd have to know what all the data was used for, and all the right exceptions to
+ *   raise. Better to leave this to just hand the plain config file data to the consumers who are better positioned to know, for example, whether
+ *   or not a default value is valid to use.
+ */
+#endregion
+
 namespace Ict.Common
 {
     /// <summary>
@@ -58,10 +87,13 @@ namespace Ict.Common
         private System.Int32 FClientConnectionTimeoutAfterXSeconds;
         private bool FClientAppDomainShutdownAfterKeepAliveTimeout;
         private TExecutingOSEnum FExecutingOS;
-        private string FSMTPServer;
-        private bool FAutomaticIntranetExportEnabled;
-        private string FIntranetDataDestinationEmail;
-        private string FIntranetDataSenderEmail;
+        private string FSmtpHost;
+        private int FSmtpPort;
+        private string FSmtpUser;
+        private string FSmtpPassword;
+        private bool FSmtpEnableSsl;
+        private string FSmtpAuthenticationType;
+        private bool FSmtpIgnoreServerCertificateValidation;
         private bool FRunAsStandalone;
         private String FApplicationBinFolder;
         private int FDBConnectionCheckInterval;
@@ -69,7 +101,7 @@ namespace Ict.Common
         #region Properties
         private static TSrvSetting USingletonSrvSetting = null;
 
-        /// get a copy of the current values
+        /// Get a copy of the current values.
         public static TSrvSetting ServerSettings
         {
             get
@@ -240,7 +272,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// the hostname or IP address of the server that is running PostgreSQL for us
+        /// The hostname or IP address of the server that is running PostgreSQL for us.
         /// </summary>
         public static string PostgreSQLServer
         {
@@ -251,7 +283,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// the port of the PostgreSQL server
+        /// The port of the PostgreSQL server.
         /// </summary>
         public static string PostgreSQLServerPort
         {
@@ -262,7 +294,7 @@ namespace Ict.Common
         }
 
         /// <summary>
-        /// the name of the PostgreSQL database
+        /// The name of the PostgreSQL database.
         /// </summary>
         public static string PostgreSQLDatabaseName
         {
@@ -274,24 +306,82 @@ namespace Ict.Common
 
 
         /// <summary>
-        /// Which server to use for sending email.
+        /// Which server to use for sending email. Default = "".
         /// </summary>
-        public static string SMTPServer
+        public static string SmtpHost
         {
             get
             {
-                return USingletonSrvSetting.FSMTPServer;
+                return USingletonSrvSetting.FSmtpHost;
             }
         }
 
         /// <summary>
-        /// A way of turning off Automatic Intranet Export.
+        /// The SMTP port to use. Default = 25.
         /// </summary>
-        public static bool AutomaticIntranetExportEnabled
+        public static int SmtpPort
         {
             get
             {
-                return USingletonSrvSetting.FAutomaticIntranetExportEnabled;
+                return USingletonSrvSetting.FSmtpPort;
+            }
+        }
+
+        /// <summary>
+        /// The username to log into the SMTP server if <see cref="SmtpAuthenticationType" /> = "config".
+        /// Default = "YourSmtpUser"
+        /// </summary>
+        public static string SmtpUser
+        {
+            get
+            {
+                return USingletonSrvSetting.FSmtpUser;
+            }
+        }
+
+        /// <summary>
+        /// The password to log into the SMTP server if <see cref="SmtpAuthenticationType" /> = "config".
+        /// Default = "YourSmtpPassword".
+        /// </summary>
+        public static string SmtpPassword
+        {
+            get
+            {
+                return USingletonSrvSetting.FSmtpPassword;
+            }
+        }
+
+        /// <summary>
+        /// Whether to use SSL to connect to the SMTP server. Default = true.
+        /// </summary>
+        public static bool SmtpEnableSsl
+        {
+            get
+            {
+                return USingletonSrvSetting.FSmtpEnableSsl;
+            }
+        }
+
+        /// <summary>
+        /// What type of SMTP authentication to use. Default = "config" to use the config file settings.
+        /// </summary>
+        public static string SmtpAuthenticationType
+        {
+            get
+            {
+                return USingletonSrvSetting.FSmtpAuthenticationType;
+            }
+        }
+
+        /// <summary>
+        /// Whether to pass SSL validity checks. Not recommended, but sometimes needed if you cannot find a place to get the public key for the ssl certificate,
+        /// e.g. smtp.outlook365.com.
+        /// </summary>
+        public static bool SmtpIgnoreServerCertificateValidation
+        {
+            get
+            {
+                return USingletonSrvSetting.FSmtpIgnoreServerCertificateValidation;
             }
         }
 
@@ -303,28 +393,6 @@ namespace Ict.Common
             get
             {
                 return USingletonSrvSetting.FRunAsStandalone;
-            }
-        }
-
-        /// <summary>
-        /// Email address that the Intranet Fpload Data should get sent to.
-        /// </summary>
-        public static string IntranetDataDestinationEmail
-        {
-            get
-            {
-                return USingletonSrvSetting.FIntranetDataDestinationEmail;
-            }
-        }
-
-        /// <summary>
-        /// Email address of the user that creates the Intranet Fpload Data.
-        /// </summary>
-        public static string IntranetDataSenderEmail
-        {
-            get
-            {
-                return USingletonSrvSetting.FIntranetDataSenderEmail;
             }
         }
 
@@ -372,11 +440,14 @@ namespace Ict.Common
             FClientConnectionTimeoutAfterXSeconds = ACopyFrom.FClientConnectionTimeoutAfterXSeconds;
             FClientAppDomainShutdownAfterKeepAliveTimeout = ACopyFrom.FClientAppDomainShutdownAfterKeepAliveTimeout;
             FApplicationVersion = ACopyFrom.FApplicationVersion;
-            FSMTPServer = ACopyFrom.FSMTPServer;
-            FAutomaticIntranetExportEnabled = ACopyFrom.FAutomaticIntranetExportEnabled;
+            FSmtpHost = ACopyFrom.FSmtpHost;
+            FSmtpPort = ACopyFrom.FSmtpPort;
+            FSmtpUser = ACopyFrom.FSmtpUser;
+            FSmtpPassword = ACopyFrom.FSmtpPassword;
+            FSmtpEnableSsl = ACopyFrom.FSmtpEnableSsl;
+            FSmtpAuthenticationType = ACopyFrom.FSmtpAuthenticationType;
+            FSmtpIgnoreServerCertificateValidation = ACopyFrom.FSmtpIgnoreServerCertificateValidation;
             FRunAsStandalone = ACopyFrom.FRunAsStandalone;
-            FIntranetDataDestinationEmail = ACopyFrom.FIntranetDataDestinationEmail;
-            FIntranetDataSenderEmail = ACopyFrom.FIntranetDataSenderEmail;
             FApplicationBinFolder = ACopyFrom.FApplicationBinFolder;
         }
 
@@ -468,17 +539,13 @@ namespace Ict.Common
             FClientAppDomainShutdownAfterKeepAliveTimeout = TAppSettingsManager.GetBoolean("Server.ClientAppDomainShutdownAfterKeepAliveTimeout",
                 true);
 
-            FSMTPServer = TAppSettingsManager.GetValue("Server.SMTPServer", "localhost");
-
-            // This is disabled in processing at the moment, so we reflect that here. When it works change to true
-            FAutomaticIntranetExportEnabled = TAppSettingsManager.GetBoolean("Server.AutomaticIntranetExportEnabled", false);
-
-            // The following setting specifies the email address where the Intranet Data emails are sent to when "Server.AutomaticIntranetExportEnabled" is true.
-            FIntranetDataDestinationEmail = TAppSettingsManager.GetValue("Server.IntranetDataDestinationEmail", "???@???.org");
-
-            // The following setting is temporary - until we have created a GUI where users can specify the email address for the
-            // responsible Personnel and Finance persons themselves. Those will be stored in SystemDefaults then.
-            FIntranetDataSenderEmail = TAppSettingsManager.GetValue("Server.IntranetDataSenderEmail", "???@???.org");
+            FSmtpHost = TAppSettingsManager.GetValue("SmtpHost", "");
+            FSmtpPort = TAppSettingsManager.GetInt32("SmtpPort", 25);
+            FSmtpUser = TAppSettingsManager.GetValue("SmtpUser", "YourSmtpUser");
+            FSmtpPassword = TAppSettingsManager.GetValue("SmtpPassword", "YourSmtpPassword");
+            FSmtpEnableSsl = TAppSettingsManager.GetBoolean("SmtpEnableSsl", true);
+            FSmtpAuthenticationType = TAppSettingsManager.GetValue("SmtpAuthenticationType", "config").ToLower();
+            FSmtpIgnoreServerCertificateValidation = TAppSettingsManager.GetBoolean("IgnoreServerCertificateValidation", false);
 
             // Determine network configuration of the Server
             Networking.DetermineNetworkConfig(out FHostName, out FHostIPAddresses);

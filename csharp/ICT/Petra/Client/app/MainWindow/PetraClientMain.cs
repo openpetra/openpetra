@@ -390,7 +390,7 @@ namespace Ict.Petra.Client.App.PetraClient
             {
                 FSplashScreen.Close();
                 TLogging.Log(e.ToString());
-                MessageBox.Show(e.Message);
+                MessageBox.Show(e.Message, "Error Initializing OpenPetra", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Shutdown.StopPetraClient(false);
             }
 
@@ -718,6 +718,8 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonControlsHelper.SetInactiveIdentifier += delegate {
                 return SharedConstants.INACTIVE_VALUE_WITH_QUALIFIERS;
             };
+
+            TSmtpSender.GetSmtpSettings = @TServerLookup.TMSysMan.GetServerSmtpSettings;
         }
 
         /// <summary>

@@ -37,6 +37,7 @@ using Ict.Petra.Shared;
 using System.Data;
 using Ict.Petra.Client.App.Core;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -396,12 +397,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 && !parameters.Get("param_design_template").ToBool()
                 )
             {
-                String Status = FastReportsWrapper.AutoEmailReports(FPetraUtilsObject,
+                List <String>Status = FastReportsWrapper.AutoEmailReports(FPetraUtilsObject,
                     FPetraUtilsObject.FFastReportsPlugin,
                     ACalc,
                     FLedgerNumber,
                     CostCentreFilter);
-                MessageBox.Show(Status, Catalog.GetString("Account Detail Report"));
+                MessageBox.Show(String.Join("\n", Status), Catalog.GetString("Auto Email") + " " + Catalog.GetString(
+                        "Account Detail Report"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
 
