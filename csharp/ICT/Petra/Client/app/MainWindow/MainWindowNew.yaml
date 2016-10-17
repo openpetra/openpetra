@@ -68,14 +68,14 @@ RootNode:
         mniHelp: 
             Label: &Help
             Order: AlwaysLast
-            mniHelpPetraHelp: {Label=&OpenPetra Help, ActionId=eHelp, Image: Help2.ico}
+            mniHelpPetraHelp: {Label=&OpenPetra Help, ActionId=eHelp, Image: Help2.ico, Enabled=false}
             mniHelpKeyboardShortcuts: {Label=&Keyboard Shortcuts, Action=actKeyboardShortcuts}
             mniSeparator: {Label=-}
-            mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport}
+            mniHelpBugReport: {Label=Bug &Report, ActionId=eBugReport, Enabled=false}
             mniSeparator: {Label=-}
             mniHelpImproveTranslation: {Label=&Help Improve Translations, Action=actHelpImproveTranslations}    
             mniSeparator: {Label=-}            
             mniAbout:
-            mniDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam}    
+            mniDevelopmentTeam: {Label=&The Development Team..., ActionId=eHelpDevelopmentTeam, Enabled=false}
     Toolbar:
     

@@ -710,29 +710,21 @@ namespace Ict.Petra.Client.CommonForms
                     FWinForm.Close();
                     break;
 
-                case eActionId.eHelpDevelopmentTeam:
-#if TODO
-                    using (DevelopmentTeamDialog teamDialog = new DevelopmentTeamDialog())
-                    {
-                        teamDialog.ShowDialog();
-                    }
-#endif
-                    break;
-
                 case eActionId.eHelpAbout:
                     System.Type aboutDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
 
-                    using (Form aboutDialog = (Form)Activator.CreateInstance(aboutDialogType, new object[] { this.FWinForm }))
+                    using (Form aboutDialog = (Form)Activator.CreateInstance(aboutDialogType, new object[] { this.FWinForm, String.Empty }))
                     {
                         aboutDialog.ShowDialog();
                     }
+
                     break;
 
                 case eActionId.eKeyboardShortcuts:
                     System.Type shortcutsDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmKeyboardShortcutsDialog");
                     Type ActiveFormType = Form.ActiveForm.GetType();
 
-                    using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm }))
+                    using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm, String.Empty }))
                     {
                         //
                         // For some Forms (and Tabs on these Forms) we show a specific Shortcut Tab
@@ -776,9 +768,28 @@ namespace Ict.Petra.Client.CommonForms
 
                 case eActionId.eHelp:
                 {
-                    // TODO help action
+                    throw new NotImplementedException();
+
+                    // TODO Launch OpenPetra Help once it becomes available
                 }
-                break;
+
+                case eActionId.eBugReport:
+                {
+                    throw new NotImplementedException();
+
+                    // TODO Launch Bug Report Form (feature Bug #4956) once it becomes available
+                }
+
+                case eActionId.eHelpDevelopmentTeam:
+                    throw new NotImplementedException();
+#if TODO
+                    using (DevelopmentTeamDialog teamDialog = new DevelopmentTeamDialog())
+                    {
+                        teamDialog.ShowDialog();
+                    }
+
+                    break;
+#endif
             }
         }
 
@@ -1287,9 +1298,6 @@ namespace Ict.Petra.Client.CommonForms
     {
         /// <summary>todoComment</summary>
         eHelp,
-
-        /// <summary>todoComment</summary>
-        eAbout,
 
         /// <summary>todoComment</summary>
         eClose,
