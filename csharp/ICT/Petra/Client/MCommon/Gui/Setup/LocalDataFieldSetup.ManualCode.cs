@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 // The TFrmLocalDataFieldSetup class acts as a base class for three derived classes.
 // This is because this screen (and the database table behind it) is used by three different parts
@@ -1116,15 +1117,13 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2, 3, 4 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     PDataLabelTable.ColumnGroupId,
                     PDataLabelTable.ColumnTextId,
                     PDataLabelTable.ColumnDataTypeId,
                     PDataLabelTable.ColumnDisplayedId,
-                    PDataLabelTable.ColumnLookupCategoryCodeId
                 });
         }
     }

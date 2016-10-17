@@ -37,6 +37,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 #region changelog
 
@@ -140,8 +141,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2, 3 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     AMotivationGroupTable.ColumnMotivationGroupCodeId,

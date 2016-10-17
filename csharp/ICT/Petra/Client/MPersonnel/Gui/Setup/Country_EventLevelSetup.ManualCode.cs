@@ -36,6 +36,7 @@ using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -91,8 +92,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2, 3, 4 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     PtOutreachPreferenceLevelTable.ColumnCodeId,

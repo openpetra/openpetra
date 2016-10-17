@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -105,8 +106,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2, 3, 4, 5 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     PCountryTable.ColumnCountryCodeId,

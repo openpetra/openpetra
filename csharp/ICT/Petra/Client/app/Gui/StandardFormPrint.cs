@@ -73,6 +73,7 @@ namespace Ict.Petra.Client.App.Gui
         public static void PrintGrid(TPrintUsing APrintApplication, bool APreviewOnly, TModule AModule, string ATitleText, TSgrdDataGrid AGrid,
             int[] AGridColumnOrder, int[] ATableColumnOrder, string ABaseFilter = "")
         {
+            //TFrmSelectPrintFields TFrmSelectPFields = new TFrmSelectPrintFields();
             TFormDataKeyDescriptionList recordList = new TFormDataKeyDescriptionList();
 
             List <TFormData>formDataList = new List <TFormData>();
@@ -83,9 +84,11 @@ namespace Ict.Petra.Client.App.Gui
             // Title of the document
             recordList.Title = ATitleText;
 
-            // First two columns: key and description
+            // First column: key by default (or diffrent when sort order was changed by user)
             recordList.KeyTitle = AGrid.Columns[AGridColumnOrder[0]].HeaderCell.ToString();
-            recordList.DescriptionTitle = AGrid.Columns[AGridColumnOrder[1]].HeaderCell.ToString();
+
+            // Second column: description by default (or diffrent when sort order was changed by user)
+            recordList.DescriptionTitle = numColumns > 1 ? AGrid.Columns[AGridColumnOrder[1]].HeaderCell.ToString() : string.Empty;
 
             // Other columns
             recordList.Field3Title = numColumns > 2 ? AGrid.Columns[AGridColumnOrder[2]].HeaderCell.ToString() : string.Empty;
@@ -106,7 +109,7 @@ namespace Ict.Petra.Client.App.Gui
                 DataRowView drv = dv[i];
 
                 record.Key = GetPrintableText(AGrid, AGridColumnOrder[0], drv.Row[ATableColumnOrder[0]]);
-                record.Description = GetPrintableText(AGrid, AGridColumnOrder[1], drv.Row[ATableColumnOrder[1]]);
+                record.Description = numColumns > 1 ? GetPrintableText(AGrid, AGridColumnOrder[1], drv.Row[ATableColumnOrder[1]]) : string.Empty;
                 record.Field3 = numColumns > 2 ? GetPrintableText(AGrid, AGridColumnOrder[2], drv.Row[ATableColumnOrder[2]]) : string.Empty;
                 record.Field4 = numColumns > 3 ? GetPrintableText(AGrid, AGridColumnOrder[3], drv.Row[ATableColumnOrder[3]]) : string.Empty;
                 record.Field5 = numColumns > 4 ? GetPrintableText(AGrid, AGridColumnOrder[4], drv.Row[ATableColumnOrder[4]]) : string.Empty;

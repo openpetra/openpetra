@@ -26,6 +26,7 @@ using Ict.Common;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -57,8 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     AMethodOfPaymentTable.ColumnMethodOfPaymentCodeId,

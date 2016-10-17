@@ -39,6 +39,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -214,8 +215,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2, 3, 4, 5, 6, 7 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     AFeesPayableTable.ColumnFeeCodeId,

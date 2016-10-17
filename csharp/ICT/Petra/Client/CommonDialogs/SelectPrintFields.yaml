@@ -1,0 +1,34 @@
+RootNode:
+    BaseYaml: ../CommonForms/PetraFormDialog.yaml
+    Namespace: Ict.Petra.Client.CommonDialogs
+    FormType: dialog
+    Template: window
+    FormTitle: Select Print Fields
+    WindowWidth: 329
+    WindowHeight: 350
+    Events: 
+        Shown: {class=System.EventHandler, method=Form_Shown} 
+    Actions:
+        actMoveUp: {ActionClick=DataFieldMoveUp, Image: MoveUpArrow.ico}
+        actMoveDown: {ActionClick=DataFieldMoveDown, Image: MoveDownArrow.ico}
+    Controls:
+        pnlDialogContent:
+            Controls: [pnlLeft, pnlButtons]
+            Dock: Fill
+        pnlLeft:
+            Controls: [lblTop, clbFields]
+            Dock: Fill
+        clbFields:  
+            Stretch: fully
+            NoLabel: true          
+        lblTop:
+            Label: Please select the fields
+        pnlButtons:
+            Dock: Right
+            Controls: [btnMoveUp, btnMoveDown]
+        btnMoveUp: {NoLabel=true, Width=15}
+            Tooltip: Move the selected Data Field down in the list.
+            Padding: 0,50,0,0
+        btnMoveDown: {NoLabel=true, Width=15}
+            Tooltip: Move the selected Data Field up in the list.
+            Padding: 0,50,0,0

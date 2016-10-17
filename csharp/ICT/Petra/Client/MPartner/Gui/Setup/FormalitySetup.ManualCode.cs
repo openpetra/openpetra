@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -101,8 +102,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TStandardFormPrint.PrintGrid(APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[] { 0, 1, 2, 3, 4, 5 },
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
                 new int[]
                 {
                     PFormalityTable.ColumnLanguageCodeId,
