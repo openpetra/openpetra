@@ -555,16 +555,18 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     if ((ReportType == "Complete") || (ReportType == "Gifts Only"))
                     {
-                        Query += " ORDER BY gift.a_date_entered_d";
+                        Query += " ORDER BY ";
 
                         if (requestedSort == "PartnerKey")
                         {
-                            Query += ", DonorPartner.p_partner_key_n";
+                            Query += "DonorPartner.p_partner_key_n";
                         }
                         else
                         {
-                            Query += ", DonorPartner.p_partner_short_name_c";
+                            Query += "DonorPartner.p_partner_short_name_c";
                         }
+
+                        Query += ", gift.a_date_entered_d";
                     }
                     else if (ReportType == "Donors Only")
                     {
