@@ -42,11 +42,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmTransportTypeSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtTravelTypeRow ARow)
         {
             string baseCode = Catalog.GetString("NEWCODE");

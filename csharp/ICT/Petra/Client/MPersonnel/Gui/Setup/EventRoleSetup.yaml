@@ -63,7 +63,7 @@ RootNode:
         txtDetailDescription: {Label=Description, Width=340}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}
         pnlCanBeAssignedAs: {ColSpan=2}
             Label: Can be assigned as
             Margin: 0

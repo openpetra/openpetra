@@ -42,11 +42,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmOrganisationContactSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtContactRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");

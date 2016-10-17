@@ -39,8 +39,7 @@ RootNode:
             Dock: Fill
             Columns: []
             AutoFindColumn: 2
-            ActionFocusRow: FocusedRowChanged
-            
+            ActionFocusRow: FocusedRowChanged       
         pnlDetails:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control

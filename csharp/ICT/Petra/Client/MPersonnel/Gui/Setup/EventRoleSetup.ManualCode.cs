@@ -42,11 +42,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmEventRoleSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtCongressCodeRow ARow)
         {
             // Deal with primary key.  Code is unique.

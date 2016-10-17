@@ -42,11 +42,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmApplicantStatusSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtApplicantStatusRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");

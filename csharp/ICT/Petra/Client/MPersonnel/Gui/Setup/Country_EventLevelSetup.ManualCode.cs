@@ -42,11 +42,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmCountry_EventLevelSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtOutreachPreferenceLevelRow ARow)
         {
             int newLevel = 1;

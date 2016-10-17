@@ -25,15 +25,15 @@ RootNode:
                 Row0:[btnSelectAttributes, grdSelectedAttributes]
             Dock: Fill
         txtContactor:
-            Label: Contactor
+            Label: User ID
             Type: Contactor
         cmbContactCode:{Label=Contact Code,List=ContactCode}
-        cmbMailingCode:{Label=Mailing List, List=MailingList}
+        cmbMailingCode:{Label=Mailing Code, List=MailingList}
         dtpContactDate:
             Label: Contact Date
             Type: ContactDate
         txtContactComment:
-            Label: Notes
+            Label: Description
             Type: ContactComment
             Multiline: true
             ScrollBars: Vertical

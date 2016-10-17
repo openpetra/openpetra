@@ -55,4 +55,4 @@ RootNode:
         cmbDetailDocCategory: {Label=Document Category, List=DocumentTypeCategoryList, ColSpan=2, ComboBoxWidth=130}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

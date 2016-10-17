@@ -190,11 +190,11 @@ namespace Ict.Petra.Client.MPartner
 
         /// <summary>todoComment</summary>
         public static readonly string StrResultGridHelpText1 = Catalog.GetString(
-            "These are the results of your search. Highlight (or right-click) a line to work with the ");
+            "These are the results of your search. Double-click a line (or press Enter) to work with the ");
 
         /// <summary>todoComment</summary>
         public static readonly string StrResultGridHelpText2 = Catalog.GetString(
-            "These are the results of your search. Highlight a line to work with the ");
+            "These are the results of your search. Double-click a line (or press Enter) to work with the ");
 
         /// <summary>todoComment</summary>
         public static readonly string StrDetailedResultsHelpText =
