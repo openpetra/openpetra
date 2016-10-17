@@ -125,7 +125,7 @@ RootNode:
         chkAnonymousDonor:
         txtGovId:
             Label: bPK
-            Enabled: false
+            #Enabled: false
             Width: 250
         chkLimitTaxDeductibility:
            Visible: false

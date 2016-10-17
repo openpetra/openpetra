@@ -99,7 +99,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private bool FTaxDeductiblePercentageEnabled = false;
         private bool FGovIdEnabled = false;
         private String FGovIdLabel = "";
-        private String FGovId = "";
 
         #region TPartnerEditUIConnector
 
@@ -287,8 +286,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
                 FGovIdLabel = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
                     SharedConstants.SYSDEFAULT_GOVID_LABEL, "");
-                String GovIdKeyName = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                    SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -300,23 +297,7 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (IsGovIdEnabled())
                 {
-                    // set the GovId on the server so the client does not need to deal with it
-                    // The client can retrieve this later by calling "GetGovId()"
                     PTaxAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
-
-                    DataView TaxView = new DataView(localDS.PTax);
-
-                    TaxView.RowFilter = String.Format("{0}='{1}'",
-                        PTaxTable.GetTaxTypeDBName(),
-                        GovIdKeyName);
-
-                    FGovId = "";
-
-                    foreach (DataRowView tV in TaxView)
-                    {
-                        PTaxRow taxRowCurrent = (PTaxRow)tV.Row;
-                        FGovId = taxRowCurrent.TaxRef;
-                    }
                 }
             }
             catch (Exception)
@@ -372,16 +353,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         public String GetGovIdLabel()
         {
             return FGovIdLabel;
-        }
-
-        /// <summary>
-        /// gets the partners GovId (default "")
-        /// It is important that "GetBankingDetails" has been called before this call
-        /// </summary>
-        /// <returns></returns>
-        public String GetGovId()
-        {
-            return FGovId;
         }
 
         #endregion
