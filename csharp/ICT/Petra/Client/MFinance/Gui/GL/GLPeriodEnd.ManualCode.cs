@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,18 +31,21 @@ using System.Threading;
 using System.Runtime.Remoting.Messaging;
 using System.Collections.Generic;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Client.MFinance.Gui.ICH;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TPeriodEnd
     {
-        TVerificationResultCollection FverificationResult;
+        TVerificationResultCollection FverificationResult = new TVerificationResultCollection();
         private Int32 FLedgerNumber;
 
         /// <summary>
         /// Made public because I want to access this from a callback
         /// </summary>
-        public Boolean FOperationResult;
+        public Boolean FOperationResult = false;
+        private List <Int32>FglBatchNumbers;
+        private Boolean FMonthEndStewardship = false;
 
         /// <summary>
         /// Sets the ledger number and initializes the gui ...
@@ -130,36 +133,44 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             btnPeriodEnd.Visible = false;
+
+            if (!FOperationResult)
+            {
+                TFrmGLPeriodEndReporting PrintDlg = new TFrmGLPeriodEndReporting(this);
+                PrintDlg.glBatchNumbers = FglBatchNumbers;
+                PrintDlg.FLedgerNumber = FLedgerNumber;
+                PrintDlg.FMonthMode = blnIsInMonthMode;
+                PrintDlg.ShowDialog();
+
+                if (FMonthEndStewardship)
+                {
+                    //
+                    // Show Stewardship Reports screen
+                    TFrmStewardshipReports stewardshipForm = new TFrmStewardshipReports(null);
+                    stewardshipForm.LedgerNumber = FLedgerNumber;
+                    stewardshipForm.Show();
+                }
+            }
+
             btnCancel.Text = Catalog.GetString("Done");
         }
 
         private bool RunPeriodEnd(bool AInInfoMode)
         {
-            List <Int32>glBatchNumbers;
-
             if (blnIsInMonthMode)
             {
                 FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodMonthEnd(
                     FLedgerNumber, AInInfoMode,
-                    out glBatchNumbers,
+                    out FglBatchNumbers,
+                    out FMonthEndStewardship,
                     out FverificationResult);
             }
             else
             {
                 FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodYearEnd(
                     FLedgerNumber, AInInfoMode,
-                    out glBatchNumbers,
+                    out FglBatchNumbers,
                     out FverificationResult);
-            }
-
-            TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
-
-            foreach (Int32 glBatchNumber in glBatchNumbers)
-            {
-                if (glBatchNumber > 0)
-                {
-                    ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
-                }
             }
 
             TLogging.Log("RunPeriodEnd: " + FOperationResult);

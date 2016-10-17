@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Client.MCommon;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -126,7 +127,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         ///
         /// </summary>
-        /// <returns></returns>
+        /// <returns>true</returns>
         public bool SaveChanges()
         {
             if (FChangedState)
@@ -379,9 +380,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="e"></param>
         public void BtnOK_Click(object sender, EventArgs e)
         {
-            if (SaveChanges())
+            SaveChanges();
+            Close();
+        }
+
+        private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (FChangedState)
             {
-                Close();
+                if (MessageBox.Show(MCommonResourcestrings.StrFormHasUnsavedChangesQuestion,
+                        "Link Cost Centres to Partners",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button1) == DialogResult.Yes)
+                {
+                    SaveChanges();
+                }
             }
         }
     }

@@ -47,6 +47,8 @@ using Ict.Common.Printing;
 using Ict.Common.Verification;
 using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
+using Ict.Common.Exceptions;
+using Npgsql;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
 {
@@ -203,10 +205,33 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 TLogging.Log(Exc.StackTrace, TLoggingType.ToLogfile);
 
                 FSuccess = false;
-                SubmissionOK = false;
-
                 FErrorMessage = Exc.Message;
                 FException = Exc;
+            }
+
+            if (FException is Exception && FException.InnerException is EOPDBException)
+            {
+                EOPDBException DbExc = (EOPDBException)FException.InnerException;
+
+                if (DbExc.InnerException is Exception)
+                {
+                    if (DbExc.InnerException is NpgsqlException)
+                    {
+                        NpgsqlException PgExc = (NpgsqlException)DbExc.InnerException;
+
+                        if (PgExc.Code == "57014") // SQL statement timeout problem
+                        {
+                            FErrorMessage = Catalog.GetString(
+                                "Error - Database took too long to respond. Try different parameters to return fewer results.");
+                        }
+                    }
+                    else
+                    {
+                        FErrorMessage = DbExc.InnerException.Message;
+                    }
+
+                    FException = null;
+                }
             }
 
             TProgressTracker.FinishJob(FProgressID);

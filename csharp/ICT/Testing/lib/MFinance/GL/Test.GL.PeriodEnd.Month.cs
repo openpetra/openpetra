@@ -84,9 +84,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult;
             List <Int32>glBatchNumbers;
+            Boolean stewardshipBatch;
+
             bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true,
                 out glBatchNumbers,
+                out stewardshipBatch,
                 out verificationResult);
             bool blnStatusArrived = false;
 
@@ -129,10 +132,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             TVerificationResultCollection verificationResult;
             List <Int32>glBatchNumbers;
+            Boolean stewardshipBatch;
 
             bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(    // Changed to InfoMode because
                 FLedgerNumber, true,                                        // the suspense accounts warning is now shown only in InfoMode.
                 out glBatchNumbers,
+                out stewardshipBatch,
                 out verificationResult);
             bool blnStatusArrived = false;
 
@@ -158,6 +163,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false,
                     out glBatchNumbers,
+                    out stewardshipBatch,
                     out verificationResult);
 
                 Assert.IsFalse(blnHasErrors, "there was an error closing period " + periodCounter.ToString());
@@ -168,6 +174,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, false,
                 out glBatchNumbers,
+                out stewardshipBatch,
                 out verificationResult);
 
             blnStatusArrived = false;
@@ -228,11 +235,14 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
 
             ImportGiftBatch(getAccountingPeriodInfo.PeriodStartDate);
 
-            TVerificationResultCollection verificationResult;
             List <Int32>glBatchNumbers;
+            Boolean stewardshipBatch;
+            TVerificationResultCollection verificationResult;
+
             bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true,
                 out glBatchNumbers,
+                out stewardshipBatch,
                 out verificationResult);
             bool blnStatusArrived = false;
 
@@ -304,6 +314,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             // run revaluation
             Int32 forexBatchNumber;
             List <Int32>glBatchNumbers;
+            Boolean stewardshipBatch;
 
             Boolean revalueOk = TRevaluationWebConnector.Revaluate(FLedgerNumber, new string[] { "GBP" }, new decimal[] { 1.2m },
                 TLedgerInfo.GetStandardCostCentre(FLedgerNumber),
@@ -321,6 +332,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             Boolean Err = TPeriodIntervalConnector.PeriodMonthEnd(
                 FLedgerNumber, true,
                 out glBatchNumbers,
+                out stewardshipBatch,
                 out verificationResult);
 
             if (Err)
@@ -355,10 +367,12 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 // Run MonthEnd ...
                 TVerificationResultCollection verificationResult;
                 List <Int32>glBatchNumbers;
+                Boolean stewardshipBatch;
 
                 bool blnHasErrors = TPeriodIntervalConnector.PeriodMonthEnd(
                     FLedgerNumber, false,
                     out glBatchNumbers,
+                    out stewardshipBatch,
                     out verificationResult);
 
                 if (!LedgerInfo.ProvisionalYearEndFlag)

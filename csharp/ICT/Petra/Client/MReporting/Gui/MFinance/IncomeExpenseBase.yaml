@@ -23,28 +23,3 @@
         uco_CostCentreSettings:
             Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_CostCentreSettings
             Dock: Fill
-
-        tpgColumnSettings:
-            Label: Column Settings
-            Controls: [uco_FinanceColumns]
-        uco_FinanceColumns:
-            Type: Ict.Petra.Client.MReporting.Gui.MFinance.TFrmUC_FinanceColumns
-            Dock: Fill
-        
-        tpgAdditionalSettings:
-            Label: Additional Settings
-            Controls: [rgrFormatCurrency]
-        rgrFormatCurrency:
-            ParameterName: param_currency_format
-            Label: Format currency numbers:
-            Controls: [rbtCurrencyComplete, rbtCurrencyWithoutDecimals, rbtCurrencyThousands]
-        rbtCurrencyComplete:
-            Label: Complete
-            ParameterValue: CurrencyComplete
-        rbtCurrencyWithoutDecimals:
-            Label: Without decimals
-            ParameterValue: CurrencyWithoutDecimals
-        rbtCurrencyThousands:
-            Label: Only Thousands
-            ParameterValue: CurrencyThousands
-        

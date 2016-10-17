@@ -51,8 +51,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             {
                 FLedgerNumber = value;
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+
+                this.tabReportSettings.Controls.Remove(tpgReportSorting);      // Sorting options not supported in this version.
                 this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // Column Settings is not supported in the FastReports based solution.
+                this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // We're also not doing this!
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
+            }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            Boolean useGovId = TSystemDefaults.GetBooleanDefault("GovIdEnabled", false);
+
+            if (useGovId)
+            {
+                pnlRequireBpkCode.Visible = true;
+                chkRequireBpkCode.CheckedChanged += ChkRequireBpkCode_CheckedChanged;
+                chkRequireNoBpkCode.CheckedChanged += ChkRequireNoBpkCode_CheckedChanged;
+            }
+        }
+
+        private void ChkRequireNoBpkCode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkRequireNoBpkCode.Checked)
+            {
+                chkRequireBpkCode.Checked = false;
+            }
+        }
+
+        private void ChkRequireBpkCode_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkRequireBpkCode.Checked)
+            {
+                chkRequireNoBpkCode.Checked = false;
             }
         }
 
@@ -253,10 +284,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return false;
             }
 
-            // if no recipients
-            if ((ReportDataSet.Tables["Recipients"] == null) || (ReportDataSet.Tables["Recipients"].Rows.Count == 0))
+            // if no Donors
+            if ((ReportDataSet.Tables["Donors"] == null) || (ReportDataSet.Tables["Donors"].Rows.Count == 0))
             {
-                MessageBox.Show(Catalog.GetString("No Recipients found."), "Recipient Gift Statement");
+                MessageBox.Show(Catalog.GetString("No Donors found."), "Donor Gift Statement");
                 return false;
             }
 

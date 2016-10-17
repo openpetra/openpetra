@@ -33,6 +33,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -86,6 +87,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         //
         // New methods using the Fast-reports DLL:
 
+        /// <summary>
+        /// Called after MonthEnd. No GUI will be displayed.
+        /// </summary>
+        public void PrintPeriodEndReport(Int32 ALedgerNumber, Boolean AMonthMode)
+        {
+            LedgerNumber = ALedgerNumber;
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            int currentPeriod = Ledger.CurrentPeriod;
+            TRptCalculator Calc = new TRptCalculator();
+            Calc.AddParameter("param_account_hierarchy_c", "STANDARD");
+            Calc.AddParameter("param_ledger_number_i", new TVariant(ALedgerNumber));
+            Calc.AddParameter("param_year_i", Ledger.CurrentFinancialYear);
+            Calc.AddParameter("param_current_financial_year", true);
+            Calc.AddParameter("param_end_period_i", new TVariant(currentPeriod - 1));
+            Calc.AddParameter("param_current_period", new TVariant(currentPeriod));
+            DateTime startDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_start_date", new TVariant(startDate));
+            DateTime endDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_end_date", new TVariant(endDate));
+
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
+        }
+
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();
@@ -112,27 +140,28 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return false;
             }
 
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Accounts");
-            //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
-
-            if (LedgerView.Count > 0)
-            {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
-            }
-
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
-            ACalc.AddStringParameter("param_base_currency", uco_GeneralSettings.GetBaseCurrency());
-            ACalc.AddStringParameter("param_intl_currency", uco_GeneralSettings.GetInternationalCurrency());
-
             Boolean HasData = ReportTable.Rows.Count > 0;
 
-            if (!HasData)
+            if (HasData)
+            {
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Accounts");
+                //
+                // My report doesn't need a ledger row - only the name of the ledger.
+                DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+                DataView LedgerView = new DataView(LedgerNameTable);
+                LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+                String LedgerName = "";
+
+                if (LedgerView.Count > 0)
+                {
+                    LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+                }
+
+                ACalc.AddStringParameter("param_ledger_name", LedgerName);
+                ACalc.AddStringParameter("param_base_currency", uco_GeneralSettings.GetBaseCurrency());
+                ACalc.AddStringParameter("param_intl_currency", uco_GeneralSettings.GetInternationalCurrency());
+            }
+            else
             {
                 MessageBox.Show(Catalog.GetString("No Summary Accounts found for current Ledger."), "AFO");
             }

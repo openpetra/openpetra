@@ -34,6 +34,7 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using System.Windows.Forms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -57,6 +58,45 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
+        }
+
+        /// <summary>
+        /// Called after MonthEnd. No GUI will be displayed.
+        /// </summary>
+        public void PrintPeriodEndReport(Int32 ALedgerNumber, Boolean AMonthMode)
+        {
+            LedgerNumber = ALedgerNumber;
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            int currentPeriod = Ledger.CurrentPeriod;
+            TRptCalculator Calc = new TRptCalculator();
+
+            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            Calc.AddParameter("param_year_i", Ledger.CurrentFinancialYear);
+            Calc.AddParameter("param_current_financial_year", true);
+            Calc.AddParameter("param_period", true);
+            Calc.AddParameter("param_start_period_i", currentPeriod - 1);
+            Calc.AddParameter("param_end_period_i", currentPeriod - 1);
+            Calc.AddParameter("param_current_period", currentPeriod);
+            DateTime startDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_start_date", startDate);
+            DateTime endDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_end_date", endDate);
+
+            Calc.AddStringParameter("param_depth", "Standard");
+
+            Calc.AddParameter("param_auto_email", false);
+            Calc.AddParameter("param_paginate", false);
+            Calc.AddParameter("param_cost_centre_breakdown", false);
+            Calc.AddParameter("param_period_breakdown", false);
+            Calc.AddStringParameter("param_costcentreoptions", "All");
+            Calc.AddStringParameter("param_cost_centre_list_title", "All Cost Centres");
+            Calc.AddStringParameter("param_account_hierarchy_c", "STANDARD");
+            Calc.AddStringParameter("param_currency", "Base");
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
         }
 
         //
@@ -169,19 +209,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-        }
-
-        private void RunOnceOnActivationManual()
-        {
-            if (FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
-            {
-                this.tabReportSettings.Controls.Remove(tpgAdditionalSettings); // These tabs represent settings that are not supported
-                this.tabReportSettings.Controls.Remove(tpgColumnSettings);     // in the FastReports based solution.
-            }
-        }
-
-        private void SetControlsManual(TParameterList AParameters)
-        {
         }
     }
 }

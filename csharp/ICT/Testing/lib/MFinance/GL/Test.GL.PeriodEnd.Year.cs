@@ -134,8 +134,13 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 {
                     TVerificationResultCollection VerificationResult;
                     List <Int32>glBatchNumbers;
+                    Boolean stewardshipBatch;
 
-                    TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out glBatchNumbers, out VerificationResult);
+                    TPeriodIntervalConnector.PeriodMonthEnd(
+                        intLedgerNumber, false,
+                        out glBatchNumbers,
+                        out stewardshipBatch,
+                        out VerificationResult);
                     CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                         "Running MonthEnd gave critical error");
                 }
@@ -263,9 +268,16 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     }
                     else
                     {
-                        TVerificationResultCollection VerificationResult;
                         List <Int32>glBatchNumbers;
-                        TPeriodIntervalConnector.PeriodMonthEnd(intLedgerNumber, false, out glBatchNumbers, out VerificationResult);
+                        Boolean stewardshipBatch;
+                        TVerificationResultCollection VerificationResult;
+
+                        TPeriodIntervalConnector.PeriodMonthEnd(
+                            intLedgerNumber,
+                            false,
+                            out glBatchNumbers,
+                            out stewardshipBatch,
+                            out VerificationResult);
                         CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                             "MonthEnd gave critical error at Period" + LedgerInfo.CurrentPeriod + ":\r\n");
                     }

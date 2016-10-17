@@ -164,11 +164,21 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             rbtEmailHosa.Enabled =
                 rbtReprintHosa.Enabled = chkHOSA.Enabled && chkHOSA.Checked;
 
+            if (rbtEmailHosa.Enabled && !rbtEmailHosa.Checked && !rbtReprintHosa.Checked)
+            {
+                rbtEmailHosa.Checked = true;
+            }
+
             chkRecipient.Enabled =
                 rbtReprintHosa.Enabled & rbtReprintHosa.Checked;
 
             rbtEmailStewardship.Enabled =
                 rbtReprintStewardship.Enabled = chkStewardship.Enabled && chkStewardship.Checked;
+
+            if (rbtEmailStewardship.Enabled && !rbtEmailStewardship.Checked && !rbtReprintStewardship.Checked)
+            {
+                rbtEmailStewardship.Checked = true;
+            }
 
             rbtFull.Enabled =
                 rbtSummary.Enabled = chkFees.Enabled && chkFees.Checked;

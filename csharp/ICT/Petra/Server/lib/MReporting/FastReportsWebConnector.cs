@@ -461,20 +461,6 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
             DataTable Recipients = new DataTable("Recipients");
             DataTable Totals = new DataTable("Totals");
 
-            if (reportType != "Totals")
-            {
-                Totals.Columns.Add("DonorKey", typeof(Int64));
-                Totals.Columns.Add("Month", typeof(Int32));
-                Totals.Columns.Add("Year0Total", typeof(Decimal));
-                Totals.Columns.Add("Year0Count", typeof(Int32));
-                Totals.Columns.Add("Year1Total", typeof(Decimal));
-                Totals.Columns.Add("Year1Count", typeof(Int32));
-                Totals.Columns.Add("Year2Total", typeof(Decimal));
-                Totals.Columns.Add("Year2Count", typeof(Int32));
-                Totals.Columns.Add("Year3Total", typeof(Decimal));
-                Totals.Columns.Add("Year3Count", typeof(Int32));
-            }
-
             DataView View = new DataView(Donors);
             View.Sort = "DonorKey";
 
@@ -494,8 +480,6 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 if (reportType == "Totals")
                 {
                     GetDonorHistoricTotals(AParameters, ADbAdapter, DonorKey, Totals);
-                    Totals.DefaultView.Sort = "DonorKey, Month";
-                    Totals = Totals.DefaultView.ToTable();
                 }
                 else
                 {
@@ -515,14 +499,14 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                         DonorsRow["thisYearTotal"] = thisYearTotal;
                         DonorsRow["previousYearTotal"] = previousYearTotal;
                     }
-                }
 
-                // Get recipient information for each donor
-                tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
+                    // Get recipient information for each donor
+                    tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
 
-                if (tempTable != null)
-                {
-                    Recipients.Merge(tempTable);
+                    if (tempTable != null)
+                    {
+                        Recipients.Merge(tempTable);
+                    }
                 }
 
                 if (ADbAdapter.IsCancelled)
@@ -531,13 +515,38 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
             } // foreach
 
-            DataTable DonorAddresses = new DataTable("DonorAddresses");
+            if (reportType == "Totals")
+            {
+                Totals.DefaultView.Sort = "DonorKey, Month";
+                Totals = Totals.DefaultView.ToTable();
 
-            String donorsWhereClause = "";
+                Recipients.Columns.Add("RecipientKey", typeof(Int32));
+                Recipients.Columns.Add("RecipientName", typeof(Int32));
+                Recipients.Columns.Add("RecipientClass", typeof(Int32));
+                Recipients.Columns.Add("FieldName", typeof(Int32));
+                Recipients.Columns.Add("FieldKey", typeof(Int32));
+                Recipients.Columns.Add("thisYearTotal", typeof(Int32));
+                Recipients.Columns.Add("previousYearTotal", typeof(Int32));
+            }
+            else
+            {
+                Totals.Columns.Add("DonorKey", typeof(Int64));
+                Totals.Columns.Add("Month", typeof(Int32));
+                Totals.Columns.Add("Year0Total", typeof(Decimal));
+                Totals.Columns.Add("Year0Count", typeof(Int32));
+                Totals.Columns.Add("Year1Total", typeof(Decimal));
+                Totals.Columns.Add("Year1Count", typeof(Int32));
+                Totals.Columns.Add("Year2Total", typeof(Decimal));
+                Totals.Columns.Add("Year2Count", typeof(Int32));
+                Totals.Columns.Add("Year3Total", typeof(Decimal));
+                Totals.Columns.Add("Year3Count", typeof(Int32));
+            }
+
+            DataTable DonorAddresses = new DataTable("DonorAddresses");
 
             foreach (DataRow Row in DistinctDonors.Rows)
             {
-                // get best address for each donor
+                // get best address for donor
                 Int64 DonorKey = (Int64)Row["DonorKey"];
                 tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, DonorKey);
 
@@ -550,13 +559,6 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 {
                     return null;
                 }
-
-                if (donorsWhereClause != "")
-                {
-                    donorsWhereClause += ",";
-                }
-
-                donorsWhereClause += DonorKey.ToString();
             }
 
             if (ADbAdapter.IsCancelled)
@@ -564,32 +566,11 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 return null;
             }
 
-            DataTable taxRef = null;
-
-            if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
-            {
-                TDBTransaction Transaction = null;
-                ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
-                    ref Transaction,
-                    delegate
-                    {
-                        String query = "SELECT p_partner_key_n, p_tax_ref_c FROM p_tax" +
-                                       " WHERE p_tax_type_c='GovId' AND p_partner_key_n IN (" +
-                                       donorsWhereClause + ")";
-                        taxRef = ADbAdapter.RunQuery(query, "TaxRef", Transaction);
-                    });
-            }
-            else
-            {
-                taxRef = new DataTable("TaxRef");
-            }
-
             DataSet ReturnDataSet = new DataSet();
             ReturnDataSet.Tables.Add(Recipients);
             ReturnDataSet.Tables.Add(Donors);
             ReturnDataSet.Tables.Add(DonorAddresses);
             ReturnDataSet.Tables.Add(Totals);
-            ReturnDataSet.Tables.Add(taxRef);
             return ReturnDataSet;
         } // Get DonorGiftStatement DataSet
 
@@ -683,7 +664,6 @@ ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
                 }
             }
 
-            // We only want distinct donors for this report (i.e. no more than one per recipient)
             if (ReportType == "Donors Only")
             {
                 if (View.Count > 0)

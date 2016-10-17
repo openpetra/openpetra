@@ -443,6 +443,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         public enum ReportExportType
         {
             /// <summary>
+            /// </summary>
+            Pdf,
+            /// <summary>
             /// Allows text formatting but not external assets
             /// </summary>
             Html,
@@ -459,16 +462,27 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="Format"></param>
         public MemoryStream ExportToStream(TRptCalculator ACalc, ReportExportType Format)
         {
-            object HtmlExport = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
-            Type ExporterType = HtmlExport.GetType();
             MemoryStream HtmlStream = new MemoryStream();
+            object exporter;
+
+            if (Format == ReportExportType.Pdf)
+            {
+                exporter = FastReportsDll.CreateInstance("FastReport.Export.Pdf.PDFExport");
+                exporter.EmbeddingFonts = false;
+            }
+            else // otherwise do HTML - text is not yet supported.
+            {
+                exporter = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
+            }
+
+            Type ExporterType = HtmlExport.GetType();
 
             FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                 new object[] { FSelectedTemplate.XmlText });
             LoadReportParams(ACalc);
             FFastReportType.GetMethod("Prepare", new Type[0]).Invoke(FfastReportInstance, null);
             FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType() }).Invoke(FfastReportInstance,
-                new Object[] { HtmlExport, HtmlStream });
+                new Object[] { exporter, HtmlStream });
             return HtmlStream;
         }
 
@@ -695,12 +709,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             foreach (DataRowView rv in LinkedPartners.DefaultView)
             {
                 DataRow LinkedPartner = rv.Row;
+                Boolean reportAsAttachment = TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment", true);
 
                 if (LinkedPartner["EmailAddress"].ToString() != "")
                 {
                     ACalc.AddStringParameter("param_linked_partner_cc", LinkedPartner["CostCentreCode"].ToString());
                     FormUtils.WriteToStatusBar("Generate " + ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
-                    MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+                    MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc,
+                        reportAsAttachment ? FastReportsWrapper.ReportExportType.Pdf : FastReportsWrapper.ReportExportType.Html);
 
                     // in OpenSource OpenPetra, we do not have and use the FastReport dlls
                     // if (ReportEngine.FfastReportInstance.ReportInfo.Description == "Empty")
@@ -712,10 +728,10 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                     String EmailBody = "";
 
-                    if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
+                    if (reportAsAttachment)
                     {
                         EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
-                        EmailSender.AttachFromStream(ReportStream, ReportEngine.FReportName + ".html");
+                        EmailSender.AttachFromStream(ReportStream, ReportEngine.FReportName + ".pdf");
                     }
                     else
                     {
