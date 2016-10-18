@@ -464,18 +464,19 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             MemoryStream HtmlStream = new MemoryStream();
             object exporter;
+            Type ExporterType;
 
             if (Format == ReportExportType.Pdf)
             {
                 exporter = FastReportsDll.CreateInstance("FastReport.Export.Pdf.PDFExport");
-                exporter.EmbeddingFonts = false;
+                ExporterType = exporter.GetType();
+                ExporterType.GetProperty("EmbeddingFonts").SetValue(exporter, false, null);
             }
             else // otherwise do HTML - text is not yet supported.
             {
                 exporter = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
+                ExporterType = exporter.GetType();
             }
-
-            Type ExporterType = HtmlExport.GetType();
 
             FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                 new object[] { FSelectedTemplate.XmlText });
