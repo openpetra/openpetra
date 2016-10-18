@@ -156,7 +156,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
+            ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
+                FLedgerNumber);
             ALedgerRow Row = LedgerDetailsTable[0];
             Int32 LedgerYear = Row.CurrentFinancialYear;
             Int32 NumPeriods = Row.NumberOfAccountingPeriods;

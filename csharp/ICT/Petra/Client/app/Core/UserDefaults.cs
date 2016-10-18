@@ -85,6 +85,10 @@ namespace Ict.Petra.Client.App.Core
             /// <summary>Module to open when the application starts</summary>
             public const String MODULE_TO_OPEN_AT_STARTUP = "STARTUP_MODULE";
 
+            /// <summary>Prefix for UserDefaults that are about suppressing a particular message that would otherwise
+            /// always be shown to a user.</summary>
+            public const string SUPPRESS_MESSAGE_PREFIX = "SuppressMessage_";
+
             #region TUserDefaults.TNamedDefaults
 
             /// <summary>
@@ -475,7 +479,9 @@ namespace Ict.Petra.Client.App.Core
                 TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                     ref UserDefaultsDataTableChanges);
 
-                // TODO 1 oChristianK cUserDefaults / ModificationID : Copy the ModificationID into the Client's DataTable so that the PetraClient's ModificationID's of UserDefaults are the same than the ones of the PetraServer.
+                // We need to take over the changed modification ID's, otherwise this method will only succeed with ONE change and then fail
+                // See Mantis item #5574
+                UUserDefaultsDataTable.Merge(UserDefaultsDataTableChanges);
                 UUserDefaultsDataTable.AcceptChanges();
             }
         }

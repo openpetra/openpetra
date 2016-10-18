@@ -1,10 +1,11 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Daily Exchange Rates
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DatasetType: Ict.Petra.Shared.MFinance.CrossLedger.Data.ExchangeRateTDS
     DetailTable: ADailyExchangeRate
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Account.Data,Ict.Petra.Shared.MFinance.Account.Validation,Ict.Petra.Shared.MFinance.CrossLedger.Data]
+    ModuleForSecurity: FIN-EX-RATE
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 780

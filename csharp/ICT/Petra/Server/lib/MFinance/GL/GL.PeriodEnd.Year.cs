@@ -58,7 +58,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <summary>
         /// Cancels, and prevents database commit, of a currently running PeriodEnd operation.
         /// </summary>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("OR(FINANCE-2,FINANCE-2)")]
         public static void CancelPeriodOperation()
         {
             TLogging.Log("PeriodEnd operation was cancelled.");
@@ -69,20 +69,23 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// Routine to run the year end calculations ...
         /// </summary>
         /// <param name="ALedgerNum"></param>
-        /// <param name="AIsInInfoMode">True means: no calculation is done,
-        /// only verification result messages are collected</param>
+        /// <param name="AIsInInfoMode">True means: no calculation is done, only verification result messages are collected</param>
+        /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVerificationResult"></param>
         /// <returns>false if there's no problem</returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-3")]
         public static bool PeriodYearEnd(
             int ALedgerNum,
             bool AIsInInfoMode,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerificationResult)
         {
             try
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNum);
-                bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode, out AVerificationResult);
+                bool res = new TYearEnd(ledgerInfo).RunYearEnd(AIsInInfoMode,
+                    out AglBatchNumbers,
+                    out AVerificationResult);
 
                 if (!res)
                 {
@@ -96,6 +99,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             {
                 TLogging.Log("TPeriodIntervalConnector.TPeriodYearEnd() throws exception " + e.ToString());
                 AVerificationResult = new TVerificationResultCollection();
+                AglBatchNumbers = new List <int>();
                 AVerificationResult.Add(
                     new TVerificationResult(
                         Catalog.GetString("Year End"),
@@ -207,14 +211,17 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Master routine ...
         /// </summary>
         /// <param name="AInfoMode"></param>
+        /// <param name="AglBatchNumbers">The Client should print this list of Batches</param>
         /// <param name="AVRCollection"></param>
         /// <returns>True if an error occurred</returns>
         public bool RunYearEnd(
             bool AInfoMode,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
             AVRCollection = new TVerificationResultCollection();
+            AglBatchNumbers = new List <int>();
             FverificationResults = AVRCollection;
 
             if (!FledgerInfo.ProvisionalYearEndFlag)
@@ -235,7 +242,7 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TArchive(FledgerInfo),
                 Catalog.GetString("Archive old financial information"));
 
-            RunPeriodEndSequence(new TReallocation(FledgerInfo),
+            RunPeriodEndSequence(new TReallocation(FledgerInfo, AglBatchNumbers),
                 Catalog.GetString("Reallocate all income and expense accounts"));
 
             RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
@@ -325,13 +332,15 @@ namespace Ict.Petra.Server.MFinance.GL
     {
         TLedgerInfo FledgerInfo;
         TAccountInfo FaccountInfo;
+        List <Int32>FglBatchNumbers;
 
         /// <summary>
         ///
         /// </summary>
-        public TReallocation(TLedgerInfo ALedgerInfo)
+        public TReallocation(TLedgerInfo ALedgerInfo, List <Int32>AglBatchNumbers)
         {
             FledgerInfo = ALedgerInfo;
+            FglBatchNumbers = AglBatchNumbers;
         }
 
         private List <String>LoadAccountList()
@@ -441,7 +450,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public override AbstractPeriodEndOperation GetActualizedClone()
         {
-            return new TReallocation(FledgerInfo);
+            return new TReallocation(FledgerInfo, FglBatchNumbers);
         }
 
         /// <summary>
@@ -602,23 +611,16 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (DoExecuteableCode)
             {
-                /* Boolean PostedOk = */
-                yearEndBatch.CloseSaveAndPost(FverificationResults);
+                Boolean PostedOk = yearEndBatch.CloseSaveAndPost(FverificationResults);
 
-/*
- *              if (PostedOk)
- *              {
- *                  TLogging.Log("YearEnd batch posted OK.");
- *              }
- *              else
- *              {
- *                  TLogging.Log("YearEnd batch had a problem on posting.");
- *              }
- */
+                if (PostedOk)
+                {
+                    FglBatchNumbers.Add(yearEndBatch.BatchNumber);
+                }
             }
 
             return CountJobs;
-        }
+        } // Run Operation
     } // TReallocation
 
     /// <summary>

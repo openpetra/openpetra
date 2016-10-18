@@ -43,6 +43,9 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -183,6 +186,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return true;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    AEmailDestinationTable.ColumnFileCodeId,
+                    AEmailDestinationTable.ColumnConditionalValueId,
+                    AEmailDestinationTable.ColumnPartnerKeyId,
+                    AEmailDestinationTable.ColumnEmailAddressId
+                });
         }
     }
 }

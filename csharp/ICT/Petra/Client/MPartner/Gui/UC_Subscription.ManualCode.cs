@@ -189,6 +189,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             {
                 btnEditIssues.Visible = false;
             }
+
+            // Manual layout tweaking - the automatic layout wastes valuable space!
+            pnlDetailsLeft.Location = new System.Drawing.Point(0, 0);
+            pnlDetailsRight.Top = 0;
+
+            grpSubscription.Top -= 5;
+            grpMisc.Top -= 6;
+            grpDates.Top -= 5;
+            grpIssues.Top -= 6;
         }
 
         /// <summary>

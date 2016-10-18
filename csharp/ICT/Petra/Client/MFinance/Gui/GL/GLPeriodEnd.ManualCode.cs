@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,18 +29,23 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using System.Threading;
 using System.Runtime.Remoting.Messaging;
+using System.Collections.Generic;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
+using Ict.Petra.Client.MFinance.Gui.ICH;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
     public partial class TPeriodEnd
     {
-        TVerificationResultCollection FverificationResult;
+        TVerificationResultCollection FverificationResult = new TVerificationResultCollection();
         private Int32 FLedgerNumber;
 
         /// <summary>
         /// Made public because I want to access this from a callback
         /// </summary>
-        public Boolean FOperationResult;
+        public Boolean FOperationResult = false;
+        private List <Int32>FglBatchNumbers;
+        private Boolean FMonthEndStewardship = false;
 
         /// <summary>
         /// Sets the ledger number and initializes the gui ...
@@ -84,38 +89,31 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             this.Close();
         }
 
-        private delegate bool AsyncOpCaller(bool AInInfoMode);
-
         private void PeriodEndButtonClick(object btn, EventArgs e)
         {
             tbxMessage.Text = "Running Period End operation - please wait.";
-            AsyncOpCaller AsyncOp = new AsyncOpCaller(RunPeriodEnd);
-            this.UseWaitCursor = true;
-            AsyncOp.BeginInvoke(false, AsyncOpEnd, this);
+            UseWaitCursor = true;
+            Thread periodEndThread = new Thread(() => periodEndThreadOp());
+            periodEndThread.SetApartmentState(ApartmentState.STA);
+            periodEndThread.Start();
+        }
+
+        private void periodEndThreadOp()
+        {
+            RunPeriodEnd(false);
+            PeriodEndTidyup();
         }
 
         delegate void CrossThreadUpdate ();
 
-        private static void AsyncOpEnd(IAsyncResult ar)
-        {
-            AsyncResult result = (AsyncResult)ar;
-            TPeriodEnd TheForm = (TPeriodEnd)result.AsyncState;
-            AsyncOpCaller caller = (AsyncOpCaller)result.AsyncDelegate;
-
-            TheForm.FOperationResult = caller.EndInvoke(ar);
-            TLogging.Log("AsyncOpEnd: " + TheForm.FOperationResult);
-
-            TheForm.TidyUpAfterAsyncOperation();
-        }
-
         /// <summary>Called after the operation</summary>
         /// <remarks>Uses an "invoke" to update screen controls.</remarks>
         ///
-        public void TidyUpAfterAsyncOperation()
+        public void PeriodEndTidyup()
         {
             if (InvokeRequired)
             {
-                Invoke(new CrossThreadUpdate(TidyUpAfterAsyncOperation));
+                Invoke(new CrossThreadUpdate(PeriodEndTidyup));
                 return;
             }
 
@@ -135,6 +133,25 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
 
             btnPeriodEnd.Visible = false;
+
+            if (!FOperationResult)
+            {
+                TFrmGLPeriodEndReporting PrintDlg = new TFrmGLPeriodEndReporting(this);
+                PrintDlg.glBatchNumbers = FglBatchNumbers;
+                PrintDlg.FLedgerNumber = FLedgerNumber;
+                PrintDlg.FMonthMode = blnIsInMonthMode;
+                PrintDlg.ShowDialog();
+
+                if (FMonthEndStewardship)
+                {
+                    //
+                    // Show Stewardship Reports screen
+                    TFrmStewardshipReports stewardshipForm = new TFrmStewardshipReports(null);
+                    stewardshipForm.LedgerNumber = FLedgerNumber;
+                    stewardshipForm.Show();
+                }
+            }
+
             btnCancel.Text = Catalog.GetString("Done");
         }
 
@@ -143,12 +160,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             if (blnIsInMonthMode)
             {
                 FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodMonthEnd(
-                    FLedgerNumber, AInInfoMode, out FverificationResult);
+                    FLedgerNumber, AInInfoMode,
+                    out FglBatchNumbers,
+                    out FMonthEndStewardship,
+                    out FverificationResult);
             }
             else
             {
                 FOperationResult = TRemote.MFinance.GL.WebConnectors.PeriodYearEnd(
-                    FLedgerNumber, AInInfoMode, out FverificationResult);
+                    FLedgerNumber, AInInfoMode,
+                    out FglBatchNumbers,
+                    out FverificationResult);
             }
 
             TLogging.Log("RunPeriodEnd: " + FOperationResult);

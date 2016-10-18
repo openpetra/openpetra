@@ -47,6 +47,9 @@ using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using System.Text;
+using System.Security;
+using System.Net.Mail;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -440,6 +443,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         public enum ReportExportType
         {
             /// <summary>
+            /// </summary>
+            Pdf,
+            /// <summary>
             /// Allows text formatting but not external assets
             /// </summary>
             Html,
@@ -456,16 +462,28 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="Format"></param>
         public MemoryStream ExportToStream(TRptCalculator ACalc, ReportExportType Format)
         {
-            object HtmlExport = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
-            Type ExporterType = HtmlExport.GetType();
             MemoryStream HtmlStream = new MemoryStream();
+            object exporter;
+            Type ExporterType;
+
+            if (Format == ReportExportType.Pdf)
+            {
+                exporter = FastReportsDll.CreateInstance("FastReport.Export.Pdf.PDFExport");
+                ExporterType = exporter.GetType();
+                ExporterType.GetProperty("EmbeddingFonts").SetValue(exporter, false, null);
+            }
+            else // otherwise do HTML - text is not yet supported.
+            {
+                exporter = FastReportsDll.CreateInstance("FastReport.Export.Html.HTMLExport");
+                ExporterType = exporter.GetType();
+            }
 
             FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                 new object[] { FSelectedTemplate.XmlText });
             LoadReportParams(ACalc);
             FFastReportType.GetMethod("Prepare", new Type[0]).Invoke(FfastReportInstance, null);
             FFastReportType.GetMethod("Export", new Type[] { ExporterType, HtmlStream.GetType() }).Invoke(FfastReportInstance,
-                new Object[] { HtmlExport, HtmlStream });
+                new Object[] { exporter, HtmlStream });
             return HtmlStream;
         }
 
@@ -603,18 +621,27 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// The report will be sent to a list of email addresses derived from the Cost Centres in the supplied CostCentreFilter.
+        /// Takes a report and a list of cost centres; it runs the report for each of the cost centres and emails the results to the address(es)
+        /// associated with that cost centre. Used by Account Detail, Income Expense reports and HOSAs.
         /// </summary>
-        /// <returns>Status string that should be shown to the user</returns>
-        public static String AutoEmailReports(TFrmPetraReportingUtils FormUtils, FastReportsWrapper ReportEngine,
+        /// <remarks>If ACostCentreFilter is an SQL clause selecting cost centres, the associated email address is the Primary E-Mail Address of
+        /// every Partner linked to the cost centre. If ACostCentreFilter is "Foreign", the list is every cost centre in the a_email_destination
+        /// table with a File Code of "HOSA".</remarks>
+        /// <param name="FormUtils">The report selection form, to write to the status bar.</param>
+        /// <param name="ReportEngine">FastReport wrapper object.</param>
+        /// <param name="ACalc">The report parameters.</param>
+        /// <param name="ALedgerNumber">The ledger number.</param>
+        /// <param name="ACostCentreFilter">SQL clause to select the list of cost centres to run the report for, or "Foreign" </param>
+        /// <returns>List of status strings that should be shown to the user.</returns>
+        public static List <String>AutoEmailReports(TFrmPetraReportingUtils FormUtils, FastReportsWrapper ReportEngine,
             TRptCalculator ACalc, Int32 ALedgerNumber, String ACostCentreFilter)
         {
+            TSmtpSender EmailSender;
             Int32 SuccessfulCount = 0;
-            String NoEmailAddr = "";
-            String FailedAddresses = "";
-            String SendReport = "Auto Email\r\n";
+            var NoEmailAddr = new List <String>();
+            var FailedAddresses = new List <String>();
+            var SendReport = new List <String>();
 
-            //
             // FastReport will use a temporary folder to store HTML files.
             // I need to ensure that the CurrectDirectory is somewhere writable:
             String prevCurrentDir = Directory.GetCurrentDirectory();
@@ -633,10 +660,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
                 catch (Exception ex)
                 {
-                    //could not create the path so return useful debugging information:
-                    SendReport += Catalog.GetString("\r\nError - could not create directory: " + newDir);
-                    SendReport += Catalog.GetString("\r\n" + newDir);
-                    SendReport += ex.Message;
+                    //Could not create the path so return useful debugging information:
+                    SendReport.Add(Catalog.GetString("Error - could not create directory: "));
+                    SendReport.Add(newDir);
+                    SendReport.Add(ex.Message);
 
                     return SendReport;
                 }
@@ -644,7 +671,36 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             Directory.SetCurrentDirectory(newDir);
 
-            //
+            // This gets email defaults from the user settings table
+            //TUC_EmailPreferences.LoadEmailDefaults();
+
+            try
+            {
+                EmailSender = new TSmtpSender();
+
+                EmailSender.SetSender(TUserDefaults.GetStringDefault("SmtpFromAccount"), TUserDefaults.GetStringDefault("SmtpDisplayName"));
+                EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+            }
+            catch (ESmtpSenderInitializeException e)
+            {
+                if (e.InnerException != null)
+                {
+                    // I'd write the full exception to the log file, but it still gets transferred to the client window status bar and is _really_ ugly.
+                    //TLogging.Log("AutoEmailReports: " + e.InnerException.ToString());
+                    TLogging.Log("AutoEmailReports: " + e.InnerException.Message);
+                }
+
+                SendReport.Add(e.Message);
+
+                if (e.ErrorClass == TSmtpErrorClassEnum.secClient)
+                {
+                    SendReport.Add(Catalog.GetString("Check the Email tab in User Settings >> Preferences."));
+                }
+
+                return SendReport;
+            }
+
             // I need to find the email addresses for the linked partners I'm sending to.
             DataTable LinkedPartners = null;
 
@@ -654,12 +710,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             foreach (DataRowView rv in LinkedPartners.DefaultView)
             {
                 DataRow LinkedPartner = rv.Row;
+                Boolean reportAsAttachment = TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment", true);
 
                 if (LinkedPartner["EmailAddress"].ToString() != "")
                 {
                     ACalc.AddStringParameter("param_linked_partner_cc", LinkedPartner["CostCentreCode"].ToString());
                     FormUtils.WriteToStatusBar("Generate " + ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"]);
-                    MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc, FastReportsWrapper.ReportExportType.Html);
+                    MemoryStream ReportStream = ReportEngine.ExportToStream(ACalc,
+                        reportAsAttachment ? FastReportsWrapper.ReportExportType.Pdf : FastReportsWrapper.ReportExportType.Html);
 
                     // in OpenSource OpenPetra, we do not have and use the FastReport dlls
                     // if (ReportEngine.FfastReportInstance.ReportInfo.Description == "Empty")
@@ -669,45 +727,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                     ReportStream.Position = 0;
 
-                    // This gets email defaults from the user settings table
-                    TUC_EmailPreferences.LoadEmailDefaults();
-
-                    // This gets some of the settings from the server configuration.  We no longer get these items from local PC.
-                    // SmtpUsername and SmtpPassword will usually be null
-                    string smtpHost, smtpUsername, smtpPassword;
-                    int smtpPort;
-                    bool smtpUseSSL;
-                    TRemote.MSysMan.Application.WebConnectors.GetServerSmtpSettings(out smtpHost,
-                        out smtpPort,
-                        out smtpUseSSL,
-                        out smtpUsername,
-                        out smtpPassword);
-
-                    if ((smtpHost == string.Empty) || (smtpPort < 0))
-                    {
-                        return Catalog.GetString(
-                            "Cannot send email because 'smtpHost' and/or 'smtpPort' are not configured in the OP server configuration file.");
-                    }
-
-                    TSmtpSender EmailSender = new TSmtpSender(smtpHost, smtpPort, smtpUseSSL, smtpUsername, smtpPassword, "");
-
-                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
-                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
-
-                    if (!EmailSender.FInitOk)
-                    {
-                        return String.Format(
-                            Catalog.GetString(
-                                "Failed to set up the email server.\n    Please check the settings in Preferences / Email.\n    Message returned : \"{0}\""),
-                            EmailSender.FErrorStatus);
-                    }
-
                     String EmailBody = "";
 
-                    if (TUserDefaults.GetBooleanDefault("SmtpSendAsAttachment"))
+                    if (reportAsAttachment)
                     {
                         EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
-                        EmailSender.AttachFromStream(ReportStream, ReportEngine.FReportName + ".html");
+                        EmailSender.AttachFromStream(ReportStream, ReportEngine.FReportName + ".pdf");
                     }
                     else
                     {
@@ -716,8 +741,6 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
 
                     Boolean SentOk = EmailSender.SendEmail(
-                        TUserDefaults.GetStringDefault("SmtpFromAccount"),
-                        TUserDefaults.GetStringDefault("SmtpDisplayName"),
                         LinkedPartner["EmailAddress"].ToString(),
                         ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
                         EmailBody);
@@ -728,114 +751,54 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                     else // Email didn't send for some reason
                     {
-                        SendReport += String.Format(
-                            Catalog.GetString("\r\nFailed to send to {0}. Message returned: \"{1}\"."),
-                            LinkedPartner["EmailAddress"],
-                            EmailSender.FErrorStatus
-                            );
+                        SendReport.Add(String.Format(
+                                Catalog.GetString("Failed to send to {0}. Message returned: \"{1}\"."),
+                                LinkedPartner["EmailAddress"],
+                                EmailSender.ErrorStatus
+                                ));
 
-                        FailedAddresses += ("\r\n    " + LinkedPartner["EmailAddress"]);
+                        FailedAddresses.Add("    " + LinkedPartner["EmailAddress"]);
                     }
                 }
                 else // No Email Address for this Partner
                 {
-                    NoEmailAddr += ("\r\n    " + LinkedPartner["PartnerKey"] + " " + LinkedPartner["PartnerShortName"]);
+                    NoEmailAddr.Add("    " + String.Format("{0:D10}", LinkedPartner["PartnerKey"]) + " " + LinkedPartner["PartnerShortName"]);
                 }
             }
 
-            if (SuccessfulCount > 0)
+            if (SuccessfulCount == 1)
             {
-                SendReport +=
-                    String.Format(Catalog.GetString("\r\n{0} emailed to {1} addresses."), ReportEngine.FReportName, SuccessfulCount) + "\r\n\r\n";
+                SendReport.Add(
+                    String.Format(Catalog.GetString("{0} emailed to {1} address."), ReportEngine.FReportName, SuccessfulCount));
+            }
+            else if (SuccessfulCount > 1)
+            {
+                SendReport.Add(
+                    String.Format(Catalog.GetString("{0} emailed to {1} addresses."), ReportEngine.FReportName, SuccessfulCount));
             }
             else
             {
-                SendReport += Catalog.GetString("\r\nError - no page had a linked email address.");
+                SendReport.Add(Catalog.GetString(
+                        "Error – no cost centre in the report was linked to a Partner with a valid Primary E-mail Address."));
             }
 
-            if (NoEmailAddr != "")
+            if (NoEmailAddr.Count > 0)
             {
-                SendReport += (Catalog.GetString("\r\nThese Partners have no email addresses:") + NoEmailAddr + "\r\n");
+                SendReport.Add(Catalog.GetString("These Partners have no Primary E-mail Address:"));
+                SendReport.AddRange(NoEmailAddr);
             }
 
-            if (FailedAddresses != "")
+            if (FailedAddresses.Count > 0)
             {
-                SendReport += (Catalog.GetString("Failed to send email to these addresses:") + FailedAddresses + "\r\n\r\n");
+                SendReport.Add(Catalog.GetString("Failed to send email to these addresses:"));
+                SendReport.AddRange(FailedAddresses);
             }
 
             FormUtils.WriteToStatusBar("");
             Directory.SetCurrentDirectory(prevCurrentDir);
+            EmailSender.Dispose();
             return SendReport;
         } // AutoEmailReports
-
-        private void ShowBadBatchNumMessageInUiThread(Int32 ABatchNumber)
-        {
-            if (FPetraUtilsObject == null)
-            {
-                return;
-            }
-
-            Form ParentForm = FPetraUtilsObject.GetCallerForm();
-
-            if (ParentForm.InvokeRequired)
-            {
-                ParentForm.Invoke((MethodInvoker) delegate
-                    {
-                        ShowBadBatchNumMessageInUiThread(ABatchNumber);
-                        return;
-                    });;
-            }
-            else
-            {
-                MessageBox.Show(String.Format(Catalog.GetString("Batch {0} not found"), ABatchNumber),
-                    Catalog.GetString("Batch Posting Register"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-            }
-        }
-
-        /// <summary>Get all the data for the report</summary>
-        /// <remarks>Called from the server during batch posting, and also from File/Print gui</remarks>
-        /// <param name="ACalc"></param>
-        /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
-        /// <returns></returns>
-        public Boolean RegisterBatchPostingData(TRptCalculator ACalc, Int32 ALedgerNumber, Int32 ABatchNumber)
-        {
-            GLBatchTDS BatchTDS = null;
-
-            try
-            {
-                BatchTDS = TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTablesUsingPrivateDb(ALedgerNumber, ABatchNumber);
-            }
-            catch
-            {
-            }         // Ignore this error and instead detect the empty batch, below:
-
-            if ((BatchTDS == null) || (BatchTDS.ABatch == null) || (BatchTDS.ABatch.Rows.Count < 1))
-            {
-                ShowBadBatchNumMessageInUiThread(ABatchNumber);
-                return false;
-            }
-
-            //Call RegisterData to give the data to the template
-            RegisterData(BatchTDS.ABatch, "ABatch");
-            RegisterData(BatchTDS.AJournal, "AJournal");
-            RegisterData(BatchTDS.ATransaction, "ATransaction");
-            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.AccountList,
-                    ALedgerNumber), "AAccount");
-            RegisterData(TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
-                    ALedgerNumber), "ACostCentre");
-
-            ACalc.AddParameter("param_batch_number_i", ABatchNumber);
-            ACalc.AddParameter("param_ledger_number_i", ALedgerNumber);
-            String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ALedgerTable LedgerTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails);
-
-            ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
-            ACalc.AddParameter("param_currency_name", LedgerTable[0].BaseCurrency);
-            return true;
-        }
 
         /// <summary>Helper for the report printing ClientTask</summary>
         /// <param name="ReportName"></param>
@@ -843,17 +806,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         public static void PrintReportNoUi(String ReportName, String paramStr)
         {
             String[] Params = paramStr.Split(',');
-            Int32 LedgerNumber = -1;
-            Int32 BatchNumber = -1;
+            Int32 ledgerNumber = -1;
+            Int32 batchNumber = -1;
 
-/*
- *          String Msg = ReportName + "\n";
- *          foreach (String param in Params)
- *          {
- *              Msg += (param + "\n");
- *          }
- *          MessageBox.Show(Msg, "FastReportWrapper.PrintReportNoUi");
- */
             FastReportsWrapper ReportingEngine = new FastReportsWrapper(ReportName);
 
             if (!ReportingEngine.LoadedOK)
@@ -894,13 +849,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                             {
                                 case "param_ledger_number_i":
                                 {
-                                    LedgerNumber = IntTerm;
+                                    ledgerNumber = IntTerm;
                                     break;
                                 }
 
                                 case "param_batch_number_i":
                                 {
-                                    BatchNumber = IntTerm;
+                                    batchNumber = IntTerm;
                                     break;
                                 }
                             }
@@ -921,20 +876,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             // Get Data for report:
             switch (ReportName)
             {
-                case "Batch Posting Register":
-                {
-                    if ((LedgerNumber != -1) && (BatchNumber != -1))
-                    {
-                        ReportingEngine.RegisterBatchPostingData(Calc, LedgerNumber, BatchNumber);
-                    }
-                    else
-                    {
-                        MessageBox.Show("Error: Can't get data for Batch Posting Register", "FastReportWrapper.PrintReportNoUi");
-                    }
-
-                    break;
-                }
-
                 case "Gift Batch Detail":
                 {
                     DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("GiftBatchDetail", paramsDictionary);

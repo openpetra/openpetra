@@ -1,0 +1,64 @@
+  RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    FormTitle: Import Partner Tax Codes
+    Namespace: Ict.Petra.Client.MPartner.Gui
+    FormType: dialog
+    Template: window
+    WindowWidth: 700
+    WindowHeight:640
+    Controls:
+        pnlDialogContent:
+            Padding: 4,0,0,0        
+            Controls: [rgrSource, rgrData, grpOutput]
+        rgrSource:
+            Controls: [rbtFromClipboard, rbtFromFile, pnlFileName, pnlSourceOptions]
+            Stretch: horizontally
+        rgrData:
+            Controls: [rbtFailEmptyTaxCode, rbtSkipEmptyTaxCode, rbtDeleteEmptyTaxCode, chkFailIfNotPerson, chkFailInvalidPartner, chkOverwriteExistingTaxCode]
+            Stretch: horizontally
+        grpOutput:
+            Controls: [chkCreateExtract, txtExtractName, txtExtractDescription, chkCreateOutFile, pnlOutFile, chkIncludePartnerDetails]
+            Stretch: horizontally
+
+        rbtFromClipboard: {Tooltip=Import Partner tax codes from a spreadsheet using the clipboard, OnChange=OnDataSourceChange}
+        rbtFromFile: {Tooltip=Import Partner tax codes from a file}
+        pnlFileName:
+            ControlsOrientation: horizontal
+            Controls:  [txtFileName, btnBrowse]
+            Stretch: horizontally
+        pnlSourceOptions:
+            ControlsOrientation: horizontal
+            Controls: [nudPartnerKeyColumn, nudTaxCodeColumn, chkFirstRowIsHeader]
+            Stretch: horizontally
+        txtFileName: {Width=440, Stretch=horizontally, Tooltip=The file to be imported}
+        btnBrowse: {Label=..., Align=right, ActionClick=btnBrowse_Clicked, Tooltip=Click to select a file name from an Open File dialog}
+        nudPartnerKeyColumn: {Width=50, Tooltip=Enter the column number containing the Partner Key (the first column is 1)}
+        nudTaxCodeColumn: {Width=50, Tooltip=Enter the column number containing the TaxCode (the first column is 1)}
+        chkFirstRowIsHeader: {CheckBoxAttachedLabel=right, Tooltip=Tick this box if the first row in the file is a header row containing column names}
+            Padding: 50,0,0,0
+
+        chkFailIfNotPerson: {CheckBoxAttachedLabel=right, Label=Fail the import if the Partner is not a PERSON, Tooltip=Fail the import when checked. Skip the row when un-checked}
+        chkFailInvalidPartner: {CheckBoxAttachedLabel=right, Label=Fail the import if the Partner does not exist, Tooltip=Fail the import if the Partner Key does not match an existing Partner when checked. Skip the row when un-checked}
+        chkOverwriteExistingTaxCode: {CheckBoxAttachedLabel=right, Label=Overwrite an existing tax code if it is different from the value in the file, Tooltip=Overwrite an existing code when checked.  Skip the row when un-checked}
+        rbtFailEmptyTaxCode: {Label=Fail the import if a row has an empty tax code, Tooltip=Fail the whole import if a row has an empty code}
+            Padding: 5,5,0,0
+        rbtSkipEmptyTaxCode: {Label=Skip a row that has an empty tax code, Tooltip=Skip a row that has an empty code}
+            Padding: 5,0,0,0
+        rbtDeleteEmptyTaxCode: {Label=Delete an existing entry where the new tax code for a Partner is empty, Tooltip=Delete an existing entry where the new Tax Code for a Partner is empty}
+            Padding: 5,-3,0,0
+
+        chkCreateExtract: {CheckBoxAttachedLabel=right, Label=Create an Extract containing the successfully imported Partners, Tooltip=Create an Extract containing the successfully imported Partners, OnChange=chkCreateExtract_CheckedChanged}
+        txtExtractName: {Tooltip=Enter a name for the Extract, Width=180}
+        txtExtractDescription: {Tooltip=Enter a description for the Extract, Multiline=true, Height=60, Width=250, Stretch=horizontally}
+        chkCreateOutFile: {CheckBoxAttachedLabel=right, Label=Create an output log file, Tooltip=Create an output log file containing the results of the import, OnChange=chkCreateOutFile_CheckedChanged}
+        pnlOutFile:
+            ControlsOrientation: horizontal
+            Controls:  [txtOutputFileName, btnOutputBrowse]
+            Stretch: horizontally
+        txtOutputFileName: {Width=400, Stretch=horizontally, Tooltip=Enter the location of the output file}
+        btnOutputBrowse: {Label=..., Align=right, ActionClick=btnOutputBrowse_Clicked, Tooltip=Click to select a file name from an Open File dialog}
+        chkIncludePartnerDetails: {CheckBoxAttachedLabel=right, Tooltip=Include Partner details such as name and address in the output log file}
+            Padding: 20,0,0,0
+
+        btnOK: {Label=Import, Tooltip=Start the Import of the tax codes}
+        btnCancel: {Label=Close, Tooltip=Close the dialog}

@@ -35,6 +35,16 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
+
+#region changelog
+
+/*
+ * Sort the grid: https://tracker.openpetra.org/view.php?id=5554 - Moray
+ */
+#endregion
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
@@ -56,7 +66,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 FMainDS.Merge(new GiftBatchTDS());
 
+                // This code overrides what is in MotivationGroupSetup-generated.cs so we need to re-implement the sort too - Bug #5554
                 DataView myDataView = FMainDS.AMotivationGroup.DefaultView;
+                myDataView.Sort = AMotivationGroupTable.GetMotivationGroupCodeDBName() + " ASC";
                 myDataView.AllowNew = false;
                 grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
                 grdDetails.AutoSizeCells();
@@ -65,6 +77,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
         }
 
@@ -123,6 +137,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
 
             FDescription = txtDetailMotivationGroupDescription.Text;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    AMotivationGroupTable.ColumnMotivationGroupCodeId,
+                    AMotivationGroupTable.ColumnMotivationGroupDescriptionId,
+                    AMotivationGroupTable.ColumnMotivationGroupDescLocalId,
+                    AMotivationGroupTable.ColumnGroupStatusId
+                });
         }
     }
 }

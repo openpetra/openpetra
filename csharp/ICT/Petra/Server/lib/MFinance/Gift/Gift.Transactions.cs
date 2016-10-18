@@ -747,6 +747,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             MainDS.AGiftBatch.TableName, Transaction);
                     });
 
+
                 MainDS.AcceptChanges();
             }
             catch (Exception ex)
@@ -2833,6 +2834,17 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ATransaction.DataBaseObj.Select(AGiftDS, getRecipientUnitSQL, AGiftDS.RecipientUnit.TableName,
                     ATransaction,
                     parameters.ToArray(), 0, 0);
+
+                // In Austria, the donors may have Govt. Tax Ids:
+                if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
+                {
+                    String query = "SELECT * FROM p_tax WHERE p_tax_type_c='GovId' AND p_partner_key_n IN" +
+                                   " (SELECT DISTINCT p_donor_key_n FROM a_gift WHERE" +
+                                   " a_gift.a_ledger_number_i = " + ALedgerNumber +
+                                   " AND a_gift.a_batch_number_i = " + ABatchNumber + ")";
+                    ATransaction.DataBaseObj.Select(AGiftDS, query,
+                        AGiftDS.PTax.TableName, ATransaction);
+                }
             }
             catch (Exception ex)
             {
@@ -3633,7 +3645,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftAmount"></param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static decimal CalculateAdminFee(GiftBatchTDS AMainDS,
             Int32 ALedgerNumber,
             string AFeeCode,
@@ -4283,10 +4295,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// post a Gift Batch
         /// </summary>
         /// <param name="ALedgerNumber"></param>
-        /// <param name="ABatchNumber"></param>
+        /// <param name="AGiftBatchNumber"></param>
+        /// <param name="AGeneratedGlBatchNumber">If posting succeeds, this is the GL Batch</param>
         /// <param name="AVerifications"></param>
+        /// <returns>True if the batch posting went ahead</returns>
         [RequireModulePermission("FINANCE-2")]
-        public static bool PostGiftBatch(Int32 ALedgerNumber, Int32 ABatchNumber, out TVerificationResultCollection AVerifications)
+        public static bool PostGiftBatch(Int32 ALedgerNumber,
+            Int32 AGiftBatchNumber,
+            out Int32 AGeneratedGlBatchNumber,
+            out TVerificationResultCollection AVerifications)
         {
             #region Validate Arguments
 
@@ -4296,28 +4313,40 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
-            else if (ABatchNumber <= 0)
+            else if (AGiftBatchNumber <= 0)
             {
                 throw new EFinanceSystemInvalidBatchNumberException(String.Format(Catalog.GetString(
                             "Function:{0} - The Batch number must be greater than 0!"),
-                        Utilities.GetMethodSignature()), ALedgerNumber, ABatchNumber);
+                        Utilities.GetMethodSignature()), ALedgerNumber, AGiftBatchNumber);
             }
 
             #endregion Validate Arguments
 
             List <Int32>GiftBatches = new List <int>();
-            GiftBatches.Add(ABatchNumber);
+            GiftBatches.Add(AGiftBatchNumber);
+            AGeneratedGlBatchNumber = -1;
 
-            return PostGiftBatches(ALedgerNumber, GiftBatches, out AVerifications);
+            List <Int32>GeneratedGLBatchNumbers = new List <int>();
+
+            bool postWasOk = PostGiftBatches(ALedgerNumber, GiftBatches, GeneratedGLBatchNumbers, out AVerifications);
+
+            if (postWasOk)
+            {
+                AGeneratedGlBatchNumber = GeneratedGLBatchNumbers[0];
+            }
+
+            return postWasOk;
         }
 
         /// <summary>
         /// post several gift batches at once
         /// </summary>
+        /// <returns>True if the batch posting went ahead</returns>
         //[RequireModulePermission("FINANCE-2")]
         [NoRemoting]
         public static bool PostGiftBatches(Int32 ALedgerNumber,
-            List <Int32>ABatchNumbers,
+            List <Int32>AGiftBatchNumbers,
+            List <Int32>AGeneratedGLBatchNumbers,
             out TVerificationResultCollection AVerifications,
             TDataBase ADataBase = null)
         {
@@ -4332,14 +4361,14 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             "Function:{0} - The Ledger number must be greater than 0!"),
                         Utilities.GetMethodName(true)), ALedgerNumber);
             }
-            else if (ABatchNumbers.Count == 0)
+            else if (AGiftBatchNumbers.Count == 0)
             {
                 throw new ArgumentException(String.Format(Catalog.GetString(
                             "Function:{0} - No batches present to post!"),
                         Utilities.GetMethodName(true)));
             }
 
-            foreach (Int32 batchNumber in ABatchNumbers)
+            foreach (Int32 batchNumber in AGiftBatchNumbers)
             {
                 if (batchNumber <= 0)
                 {
@@ -4351,7 +4380,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             #endregion Validate Arguments
 
-            List <Int32>GLBatchNumbers = new List <int>();
             Dictionary <Int32, String>BatchCurrencyCode = new Dictionary <Int32, String>();
 
             //For use in transaction delegate
@@ -4370,7 +4398,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(),
                 Catalog.GetString("Posting gift batches"),
-                ABatchNumbers.Count * 3 + 1);
+                AGiftBatchNumbers.Count * 3 + 1);
 
             try
             {
@@ -4382,11 +4410,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         bool GLBatchIsRequired = false;
 
                         // first prepare all the gift batches, mark them as posted, and create the GL batches
-                        foreach (Int32 BatchNumber in ABatchNumbers)
+                        foreach (Int32 BatchNumber in AGiftBatchNumbers)
                         {
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting gift batches"),
-                                ABatchNumbers.IndexOf(BatchNumber) * 3);
+                                AGiftBatchNumbers.IndexOf(BatchNumber) * 3);
 
                             GiftBatchTDS MainDS = PrepareGiftBatchForPosting(ALedgerNumber,
                                 BatchNumber,
@@ -4403,7 +4431,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             BatchCurrencyCode[BatchNumber] = MainDS.AGiftBatch[0].CurrencyCode;
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Posting gift batches"),
-                                ABatchNumbers.IndexOf(BatchNumber) * 3 + 1);
+                                AGiftBatchNumbers.IndexOf(BatchNumber) * 3 + 1);
 
                             // create GL batch
                             GLBatchTDS GLDataset = CreateGLBatchAndTransactionsForPostingGifts(ALedgerNumber, ref MainDS);
@@ -4432,7 +4460,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                 if (!GLBatchNotRequired)  // i.e. GL batch is required and saved OK
                                 {
                                     VerificationResult.AddCollection(SingleVerificationResultCollection);
-                                    GLBatchNumbers.Add(batch.BatchNumber);
+                                    AGeneratedGLBatchNumbers.Add(batch.BatchNumber);
                                 }
 
                                 //
@@ -4477,10 +4505,10 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                             Catalog.GetString("Posting gift batches"),
-                            ABatchNumbers.Count * 3 - 1);
+                            AGiftBatchNumbers.Count * 3 - 1);
 
                         // now post the GL batches
-                        if (!TGLPosting.PostGLBatches(ALedgerNumber, GLBatchNumbers,
+                        if (!TGLPosting.PostGLBatches(ALedgerNumber, AGeneratedGLBatchNumbers,
                                 out SingleVerificationResultCollection) && GLBatchIsRequired)
                         {
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
@@ -4492,21 +4520,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             VerificationResult.AddCollection(SingleVerificationResultCollection);
                             SubmissionOK = true;
 
-                            string ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
-
-                            // Print Gift Batch Detail report (on the client!)
-                            foreach (Int32 BatchNumber in ABatchNumbers)
-                            {
-                                String[] Params =
-                                {
-                                    "param_ledger_number_i=" + ALedgerNumber,
-                                    "param_batch_number_i=" + BatchNumber,
-                                    "param_ledger_name=\"" + ledgerName + "\"",
-                                    "param_currency_name=\"" + BatchCurrencyCode[BatchNumber] + "\""
-                                };
-                                String ParamStr = String.Join(",", Params);
-                                TGLPosting.PrintReportOnClientDelegate("Gift Batch Detail", ParamStr);
-                            }
+                            //
+                            // I previously used "Client Tasks" to print the Batch Detail report on the client,
+                            // but this functionality has now moved to the client PostGiftBatch method.
                         }
                     }); // Begin AutoTransaction
             }
@@ -4616,7 +4632,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// Return the ESR defaults table (creating if necessary) for use in importing, or for client side editing.
         /// </summary>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-2")]
+        [RequireModulePermission("FINANCE-1")]
         public static DataTable GetEsrDefaults()
         {
             return TGiftImporting.GetEsrDefaults();
@@ -4627,7 +4643,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// </summary>
         /// <param name="AEsrDefaults"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-2")]
+        [RequireModulePermission("FINANCE-3")]
         public static Boolean CommitEsrDefaults(DataTable AEsrDefaults)
         {
             return TGiftImporting.CommitEsrDefaults(AEsrDefaults);

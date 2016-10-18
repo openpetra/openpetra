@@ -37,6 +37,7 @@ using Ict.Petra.Shared.MCommon.Validation;
 using System.Collections;
 using System.Drawing;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -314,7 +315,15 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             catch (Exception)
             {
             }
-            btnMove.Enabled = ICanReassign;
+
+            if (!FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnMove.Enabled = ICanReassign;
+            }
+            else
+            {
+                btnMove.Enabled = false;
+            }
         }
 
         private void treeView_MouseWheel(object sender, MouseEventArgs e)
@@ -408,6 +417,8 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             AddChildren(RootNode, UnitNodes);
             Int64 MySiteKey = TSystemDefaults.GetSiteKeyDefault();
             ShowThisUnit(MySiteKey);
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
         }
 
         private void GetAllChildren(TreeNode Parent, ref ArrayList UnitNodes)

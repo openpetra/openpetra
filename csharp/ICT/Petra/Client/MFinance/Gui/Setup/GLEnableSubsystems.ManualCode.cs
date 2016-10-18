@@ -32,6 +32,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -77,6 +78,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
 
                 UpdateControls();
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+                if (FPetraUtilsObject.SecurityReadOnly)
+                {
+                    btnActivateAccountsPayable.Enabled = false;
+                    btnActivateGiftProcessing.Enabled = false;
+                }
             }
         }
 

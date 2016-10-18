@@ -103,7 +103,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.Label1.Name = "Label1";
             this.Label1.Size = new System.Drawing.Size(231, 23);
             this.Label1.TabIndex = 6;
-            this.Label1.Text = "(e.g. , or ; or : or Space; or type TAB for tabulator)";
+            this.Label1.Text = "(e.g. , or ; or : or Space or Tab)";
 
             //
             // txtCSVSeparator

@@ -24,6 +24,9 @@
 using System;
 using Ict.Common;
 using Ict.Petra.Shared.MFinance.Gift.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -51,6 +54,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             ARow.MethodOfPaymentCode = newName;
             ARow.MethodOfPaymentDesc = Catalog.GetString("PLEASE ENTER DESCRIPTION");
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    AMethodOfPaymentTable.ColumnMethodOfPaymentCodeId,
+                    AMethodOfPaymentTable.ColumnMethodOfPaymentDescId,
+                    AMethodOfPaymentTable.ColumnActiveId
+                });
         }
     }
 }

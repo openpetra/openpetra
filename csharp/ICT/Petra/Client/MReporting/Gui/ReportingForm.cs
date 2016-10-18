@@ -156,10 +156,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="AParentForm">the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
+        /// <param name="ASecurityScreenIsForModule"></param>
         public TFrmPetraReportingUtils(Form AParentForm, IFrmPetra ATheForm,
-            TExtStatusBarHelp AStatusBar) : base(AParentForm,
-                                                (IFrmPetra)ATheForm,
-                                                AStatusBar)
+            TExtStatusBarHelp AStatusBar, string ASecurityScreenIsForModule = "") : base(AParentForm,
+                                                                                        (IFrmPetra)ATheForm,
+                                                                                        AStatusBar, ASecurityScreenIsForModule)
         {
             FCurrentSettingsName = "";
             FSelectedColumn = -1;
@@ -729,6 +730,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                         ((IFrmReporting)FTheForm).EnableBusy(true);
                         FGenerateReportThread = new Thread(GenerateReport);
                         FGenerateReportThread.IsBackground = true;
+                        FGenerateReportThread.SetApartmentState(ApartmentState.STA);
                         FGenerateReportThread.Start();
                     }
                 }

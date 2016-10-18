@@ -40,7 +40,7 @@ using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
-
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.AP
 {
@@ -975,14 +975,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 DateTime PostingDate = dateEffectiveDialog.SelectedDate;
 
                 this.Cursor = Cursors.WaitCursor;
+                Int32 glBatchNumber;
 
                 if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                         FMainForm.LedgerNumber,
                         ReverseTheseDocs,
                         PostingDate,
                         true,
+                        out glBatchNumber,
                         out Verifications))
                 {
+                    if (glBatchNumber >= 0)
+                    {
+                        TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+                        ReportGui.PrintReportNoUi(FMainForm.LedgerNumber, glBatchNumber);
+                    }
+
                     this.Cursor = Cursors.Default;
                     MessageBox.Show(Catalog.GetString("The tagged invoices have been reversed to 'Approved' status."), MsgTitle);
                     FMainForm.IsInvoiceDataChanged = true;

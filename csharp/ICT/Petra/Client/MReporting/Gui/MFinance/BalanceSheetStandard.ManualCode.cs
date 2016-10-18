@@ -33,6 +33,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using System.Windows.Forms;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -66,6 +67,39 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             uco_GeneralSettings.ShowOnlyEndPeriod();
             uco_GeneralSettings.CurrencyOptions(new object[] { "Base", "International" });
+        }
+
+        /// <summary>
+        /// Called after MonthEnd. No GUI will be displayed.
+        /// </summary>
+        public void PrintPeriodEndReport(Int32 ALedgerNumber, Boolean AMonthMode)
+        {
+            LedgerNumber = ALedgerNumber;
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            int currentPeriod = Ledger.CurrentPeriod;
+            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            Calc.AddParameter("param_year_i", Ledger.CurrentFinancialYear);
+            Calc.AddParameter("param_end_period_i", currentPeriod - 1);
+            DateTime endDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_end_date", new TVariant(endDate));
+
+            Calc.AddStringParameter("param_account_hierarchy_c", "STANDARD");
+            Calc.AddStringParameter("param_currency", "Base");
+            Calc.AddStringParameter("param_currency_name", Ledger.BaseCurrency);
+            Calc.AddParameter("param_cost_centre_breakdown", false);
+            Calc.AddParameter("param_cost_centre_summary", false);
+            Calc.AddParameter("param_cost_centre_codes", "");
+            Calc.AddParameter("param_costcentreoptions", "AccountLevel");
+            Calc.AddParameter("param_current_period", currentPeriod);
+            Calc.AddParameter("param_period", true);
+            Calc.AddParameter("param_current_financial_year", true);
+            Calc.AddStringParameter("param_depth", "standard");
+
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
         }
 
         //

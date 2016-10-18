@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       markusm, berndr
+//       markusm, berndr, christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,50 +36,14 @@ using System.Globalization;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// The Class provides the image for the TbtnCreated class.
-    /// </summary>
-    public class TButtonImage
-    {
-        /// <summary>Field containing the image</summary>
-        public static System.Drawing.Image FPersonImage;
-
-        #region TButtonImage routines
-
-        /// <summary>
-        /// The constructor of this class
-        ///
-        /// </summary>
-        /// <returns>void</returns>
-        public TButtonImage()
-        {
-            try
-            {
-                System.Reflection.Assembly mReflectionAssembly = System.Reflection.Assembly.GetExecutingAssembly();
-
-                Stream rs = mReflectionAssembly.GetManifestResourceStream("Icons.DateUserChanged.ico");
-
-                if (rs != null)
-                {
-                    FPersonImage = Image.FromStream(rs);
-                    rs.Close();
-                }
-            }
-            catch (Exception exp)
-            {
-                MessageBox.Show("Unhandled Exception occured in TbtnCreated.TButtonImage: " + exp.ToString());
-            }
-        }
-
-        #endregion
-    }
-
-    /// <summary>
     /// The btnCreated Button is a small button which provides information on who and
     /// when something was changed on the hosting form. It is not databound to the
     /// host, so the developer needs to provide the necessary information himself.
     /// </summary>
-    public class TbtnCreated : System.Windows.Forms.Button
+    public class TbtnCreated : Button
     {
+        private readonly string StrUnknown = Catalog.GetString("[Unknown]");
+
         private const Int32 UNIT_DEFAULT_WIDTH = 14;
         private const Int32 UNIT_DEFAULT_HEIGHT = 16;
         private const String UNIT_DATE_CREATED_COL = "s_date_created_d";
@@ -240,6 +204,8 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public TbtnCreated() : base()
         {
+            new TButtonImage();
+
             //
             // Required for Windows Form Designer support
             //
@@ -355,7 +321,8 @@ namespace Ict.Common.Controls
 
             if (m_String != "")
             {
-                MessageBox.Show(this.BuildMessage(), "Created / Modified");
+                MessageBox.Show(this.BuildMessage(), Catalog.GetString("Record Created / Modified Information"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -424,41 +391,56 @@ namespace Ict.Common.Controls
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
+        /// The <see cref="DataRow"/> with row number <paramref name="ARow "/> in the
+        /// <see cref="DataTable"/> passed in with <paramref name="ATable"/> is used for this.
         /// </summary>
-        /// <param name="ATable">A table to which this control referes.</param>
-        /// <param name="ARow">A row in the table which holds the data
-        /// </param>
-        /// <returns>void</returns>
-        public void UpdateFields(System.Data.DataTable ATable, System.Int32 ARow)
+        /// <param name="ATable">A table to which this control refers.</param>
+        /// <param name="ARow">A row in the table which holds the data.</param>
+        public void UpdateFields(DataTable ATable, int ARow)
         {
-            System.Data.DataRow mDataRow;
-            System.DateTime mDateCreated;
-            System.DateTime mDateModified;
-
             if (ATable.Rows.Count > 0)
             {
-                // Get a DataRow
-                mDataRow = ATable.Rows[ARow];
-
-                // A null date is transformed to the 1st January 0001
-                mDateCreated = TSaveConvert.ObjectToDate(mDataRow[UNIT_DATE_CREATED_COL]);
-                mDateModified = TSaveConvert.ObjectToDate(mDataRow[UNIT_DATE_MODIFIED_COL]);
-                DateCreated = mDateCreated;
-                CreatedBy = System.Convert.ToString(mDataRow[UNIT_CREATED_BY_COL]);
-                DateModified = mDateModified;
-                ModifiedBy = System.Convert.ToString(mDataRow[UNIT_MODIFIED_BY_COL]);
-                this.tipFields.SetToolTip(this, this.FToolTipString);
+                // Update the Fields according to data found in the DataRow.
+                UpdateFields(ATable.Rows[ARow]);
             }
         }
 
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
+        /// The <see cref="DataRow"/> passed in with <paramref name="ARow"/> is used for this.
         /// </summary>
-        /// <param name="ATable">A table to which this control referes.
-        /// </param>
-        /// <returns>void</returns>
-        public void UpdateFields(System.Data.DataTable ATable)
+        /// <param name="ARow">A <see cref="DataRow"/> which holds the data.</param>
+        public void UpdateFields(DataRow ARow)
+        {
+            DateTime DateCreated;
+            DateTime DateModified;
+
+            // A null date is transformed to the 1st January 0001
+            DateCreated = TSaveConvert.ObjectToDate(ARow[UNIT_DATE_CREATED_COL]);
+            DateModified = TSaveConvert.ObjectToDate(ARow[UNIT_DATE_MODIFIED_COL]);
+
+            this.DateCreated = DateCreated;
+            CreatedBy = ARow[UNIT_CREATED_BY_COL].ToString() != String.Empty ?
+                        System.Convert.ToString(ARow[UNIT_CREATED_BY_COL]) : StrUnknown;
+
+            this.DateModified = DateModified;
+            ModifiedBy = ARow[UNIT_MODIFIED_BY_COL].ToString() != String.Empty ?
+                         System.Convert.ToString(ARow[UNIT_MODIFIED_BY_COL]) : StrUnknown;
+
+            this.tipFields.SetToolTip(this, this.FToolTipString);
+        }
+
+        /// <summary>
+        /// This procedure updates the following fields in the TbtnButton class:
+        /// CreatedBy, DateCreated, DateModified, ModifiedBy.
+        /// If the <see cref="DataTable"/> passed in with <paramref name="ATable"/>
+        /// holds only one <see cref="DataRow"/> then this is used for this,
+        /// otherwise a search is done for the smallest "created" field
+        /// and the biggest "modified" field.
+        /// </summary>
+        /// <param name="ATable">A table to which this control refers.</param>
+        public void UpdateFields(DataTable ATable)
         {
             if (ATable.Rows.Count == 1)
             {
@@ -475,41 +457,27 @@ namespace Ict.Common.Controls
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
+        /// The <see cref="DataRow"/> with row number <paramref name="ARow "/> in the
+        /// <see cref="DataView"/> passed in with <paramref name="AView"/> is used for this.
         /// </summary>
-        /// <param name="AView">A table view to which this control referes.</param>
-        /// <param name="ARow">A row in the table which holds the data
-        /// </param>
-        /// <returns>void</returns>
-        public void UpdateFields(System.Data.DataView AView, System.Int32 ARow)
+        /// <param name="AView">A <see cref="DataView"/> to which this control refers.</param>
+        /// <param name="ARow">A row in the table which holds the data.</param>
+        public void UpdateFields(DataView AView, int ARow)
         {
-            System.Data.DataRowView mDataRowView;
-            System.Data.DataRow mDataRow;
-            System.DateTime mDateCreated;
-            System.DateTime mDateModified;
-
             if (AView.Count > 0)
             {
-                mDataRowView = AView[ARow];
-                mDataRow = mDataRowView.Row;
-
-                // A null date is transformed to the 1st January 0001
-                mDateCreated = TSaveConvert.ObjectToDate(mDataRow[UNIT_DATE_CREATED_COL]);
-                mDateModified = TSaveConvert.ObjectToDate(mDataRow[UNIT_DATE_MODIFIED_COL]);
-                DateCreated = mDateCreated;
-                CreatedBy = System.Convert.ToString(mDataRow[UNIT_CREATED_BY_COL]);
-                DateModified = mDateModified;
-                ModifiedBy = System.Convert.ToString(mDataRow[UNIT_MODIFIED_BY_COL]);
-                this.tipFields.SetToolTip(this, this.FToolTipString);
+                UpdateFields(AView[ARow].Row);
             }
         }
 
         /// <summary>
         /// This procedure updates the following fields in the TbtnButton class:
         /// CreatedBy, DateCreated, DateModified, ModifiedBy.
+        /// The <em>first</em> <see cref="DataRow"/> in the <see cref="DataView"/> passed in with
+        /// <paramref name="AView"/> is used for this.
         /// </summary>
-        /// <param name="AView">A table view to which this control referes.</param>
-        /// <returns>void</returns>
-        public void UpdateFields(System.Data.DataView AView)
+        /// <param name="AView">A <see cref="DataView"/> to which this control referes.</param>
+        public void UpdateFields(DataView AView)
         {
             this.UpdateFields(AView, 0);
         }
@@ -520,13 +488,13 @@ namespace Ict.Common.Controls
         /// Update these values: CreatedBy, DateCreated, DateModified, ModifiedBy.
         /// </summary>
         /// <param name="ADataTable">The data table to retrieve the modified and created values.</param>
-        private void UpdateFields_SearchDate(System.Data.DataTable ADataTable)
+        private void UpdateFields_SearchDate(DataTable ADataTable)
         {
             System.DateTime TempCreatedDate = new System.DateTime(System.DateTime.MinValue.Ticks);
             System.DateTime TempModifiedDate = new System.DateTime(System.DateTime.MaxValue.Ticks);
             System.DateTime TempDate = new System.DateTime(2000, 1, 1);
-            String TempCreatedBy = "";
-            String TempModifiedBy = "";
+            String TempCreatedBy = StrUnknown;
+            String TempModifiedBy = StrUnknown;
 
             // search for the smallest / biggest field
             for (int Counter = 0; Counter < ADataTable.Rows.Count; ++Counter)
@@ -570,5 +538,150 @@ namespace Ict.Common.Controls
         }
 
         #endregion
+
+        /// <summary>
+        /// Provides the image for the TbtnCreated class.
+        /// </summary>
+        private class TButtonImage
+        {
+            /// <summary>Field containing the image</summary>
+            public static Image FPersonImage;
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            public TButtonImage()
+            {
+                try
+                {
+                    ResourceManager resman =
+                        new ResourceManager("Ict.Common.Controls.Icons", Assembly.GetExecutingAssembly());
+
+                    FPersonImage = ((Icon)resman.GetObject("DateUserChanged")).ToBitmap();
+                }
+                catch (Exception exp)
+                {
+                    MessageBox.Show("Unhandled Exception occured in TbtnCreated.TButtonImage Constructor: " + exp.ToString());
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Helper Class for the <see cref="TbtnCreated"/> Class.
+    /// </summary>
+    public static class TbtnCreatedHelper
+    {
+        /// <summary>
+        /// This Method manually adds a <see cref="TbtnCreated"/> for the modified/created information to a
+        /// Panel or GroupBox - inside a newly created Panel that gets Docked to the right of the Panel or GroupBox.
+        /// (The WinForms Generator doesn't have a built-in support for the creation of those buttons yet [Bug #1782]).
+        /// </summary>
+        /// <param name="ABtnCreated">Pass in a freshly created instance of a <see cref="TbtnCreated"/> Control -
+        /// no need to set any Properties on it, all necessary layout-related Properties will be set by this Method! If
+        /// no instance gets passed in then it will get created by this Method automatically.</param>
+        /// <param name="AContainerControl">A Panel or a GroupBox Control that is to host a newly created Panel that
+        /// will host the instance of the <see cref="TbtnCreated"/> Control that gets passed in with
+        /// <paramref name="ABtnCreated"/>.</param>
+        /// <param name="ATabIndexOfNewContainingPanel">TabIndex of the newly created Panel that will host the instance
+        /// of the <see cref="TbtnCreated"/> Control that gets passed in with
+        /// <paramref name="ABtnCreated"/> (default=999, to ensure it comes after all other Controls found in the
+        /// <paramref name="AContainerControl"/>).</param>
+        /// <param name="AOuterContainerControl">Optional (outer) container control that contains
+        /// <paramref name="AContainerControl"/> (default = null). If a Control gets passed in with this Argument then
+        /// SuspendLayout() and ResumeLayout(true) will get called on it at the appropriate times in this Method. This
+        /// can be necessary to make other Controls that are Anchored left, top, and right in
+        /// <paramref name="AContainerControl"/> expand and contract correctly!</param>
+        /// <param name="ABtnCreatedName">Name of the <see cref="TbtnCreated"/> Control that gets passed in with
+        /// <paramref name="ABtnCreated"/> (default="btnCreatedModified").</param>
+        /// <param name="ACustomYLocation">By default the <see cref="TbtnCreated"/> Control that gets passed in with
+        /// <paramref name="ABtnCreated"/> is positioned 5 pixels from the top of the newly created Panel that gets Docked
+        /// to the right of <paramref name="AContainerControl"/> (fits for a <paramref name="AContainerControl"/> that is
+        /// the usual 'pnlDetail' of a List/Detail Form/UserControl. Pass in a different value for positioning it differently
+        /// (typically, the value passed should be 0 when <paramref name="AContainerControl"/> is a GroupBox and 7 when
+        /// <paramref name="AContainerControl"/> is a Fill-Docked-Panel that hosts a UserControl that forms the Details of
+        /// a List/Detail Form/UserControl.</param>
+        /// <param name="AOptionalLayoutFixupCode">Optional custom 'layout fixup code' (default = null). If a Delegate gets
+        /// passed in with this Argument then it will get called at the appropriate time in this Method. This
+        /// can be necessary to make other Controls that are Anchored left, top, and right in
+        /// <paramref name="AContainerControl"/> expand and contract correctly!</param>
+        public static void AddModifiedCreatedButtonToContainerControl(ref TbtnCreated ABtnCreated, Control AContainerControl,
+            int ATabIndexOfNewContainingPanel = 999, Control AOuterContainerControl = null,
+            string ABtnCreatedName = "btnCreatedModified",
+            int ACustomYLocation = -1, Action AOptionalLayoutFixupCode = null)
+        {
+            if (!((AContainerControl is Panel) || (AContainerControl is GroupBox)))
+            {
+                throw new ArgumentException("AContainerControl must be a Panel Control or a GroupBox Control",
+                    "AContainerControl");
+            }
+
+            if (ABtnCreated == null)
+            {
+                ABtnCreated = new TbtnCreated();
+            }
+
+            if (AOuterContainerControl != null)
+            {
+                AOuterContainerControl.SuspendLayout();
+            }
+
+            AContainerControl.SuspendLayout();
+
+            //
+            // pnlModifiedCreatedButtons
+            //
+            Panel pnlModifiedCreatedButtons = new Panel();
+            pnlModifiedCreatedButtons.SuspendLayout();
+
+            pnlModifiedCreatedButtons.Dock = DockStyle.Right;
+            pnlModifiedCreatedButtons.Width = 20;
+            pnlModifiedCreatedButtons.TabIndex = ATabIndexOfNewContainingPanel;
+            //pnlModifiedCreatedButtons.BackColor = System.Drawing.Color.Green;     // enable this line if you have trouble positioning the Panel...
+
+            //
+            // ABtnCreated
+            //
+            ABtnCreated.Anchor =
+                ((System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top |
+                     System.Windows.Forms.AnchorStyles.Left));
+            ABtnCreated.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            ABtnCreated.Left = 1;
+
+            if (ACustomYLocation == -1)
+            {
+                ABtnCreated.Top = 5;
+            }
+            else
+            {
+                ABtnCreated.Top = ACustomYLocation;
+            }
+
+            ABtnCreated.Size = new System.Drawing.Size(14, 16);
+            ABtnCreated.TabIndex = 0;
+            ABtnCreated.Name = ABtnCreatedName;
+            ABtnCreated.CreatedBy = null;
+            ABtnCreated.DateCreated = new System.DateTime((System.Int64) 0);
+            ABtnCreated.DateModified = new System.DateTime((System.Int64) 0);
+            ABtnCreated.ModifiedBy = null;
+
+
+            pnlModifiedCreatedButtons.Controls.Add(ABtnCreated);
+            AContainerControl.Controls.Add(pnlModifiedCreatedButtons);
+            pnlModifiedCreatedButtons.SendToBack();
+            pnlModifiedCreatedButtons.ResumeLayout(false);
+
+            if (AOptionalLayoutFixupCode != null)
+            {
+                AOptionalLayoutFixupCode();
+            }
+
+            AContainerControl.ResumeLayout(true);
+
+            if (AOuterContainerControl != null)
+            {
+                AOuterContainerControl.ResumeLayout(true);
+            }
+        }
     }
 }

@@ -207,6 +207,37 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
+        /// Adds a <see cref="ToolStripStatusLabel"/> to the right hand side of the usual Status Label, or to the right of
+        /// any already added extra <see cref="ToolStripStatusLabel"/> instances.
+        /// A text that should get displayed in that new Label can get passed in with the <paramref name="ALabelText"/>
+        /// Argument.
+        /// </summary>
+        /// <remarks>If this Method gets called repeatedly then extra Labels will get added to the right!</remarks>
+        /// <param name="ALabelText">Text that should be displayed in the Label.</param>
+        /// <returns>Reference to the added extra <see cref="ToolStripStatusLabel"/>.</returns>
+        public ToolStripStatusLabel AddExtraLabelOnTheRight(string ALabelText)
+        {
+            var ExtraLabelOnTheRight = new System.Windows.Forms.ToolStripStatusLabel();
+
+            this.SuspendLayout();
+
+            this.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+                    ExtraLabelOnTheRight
+                });
+
+            ExtraLabelOnTheRight.Name = "ExtraLabelOnTheRight";
+            ExtraLabelOnTheRight.AutoSize = true;
+            ExtraLabelOnTheRight.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+
+            ExtraLabelOnTheRight.Text = ALabelText;
+
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
+            return ExtraLabelOnTheRight;
+        }
+
+        /// <summary>
         /// OpenPetra-styled ToolStripRenderer (paints a vertical gradient instead of a horizontal one)
         /// </summary>
         private class TOpenPetraToolStripRenderer : System.Windows.Forms.ToolStripProfessionalRenderer

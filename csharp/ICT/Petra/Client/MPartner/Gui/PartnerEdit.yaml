@@ -135,8 +135,8 @@ RootNode:
             mniSeparator:
             mniMaintainPersonnelData:
             mniSeparator:
-            mniMaintainDonorHistory:
             mniMaintainFinanceDetails:
+            mniMaintainDonorHistory:
             mniMaintainRecipientHistory:
             mniMaintainFinanceReports:
             mniMaintainBankAccounts:

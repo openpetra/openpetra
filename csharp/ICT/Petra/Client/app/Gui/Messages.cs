@@ -491,6 +491,25 @@ namespace Ict.Petra.Client.App.Gui
         }
 
         /// <summary>
+        /// Displays a warning message in a MessageBox. This Method gets called when a user has edited data in a screen that
+        /// the user has only got read-only permissions for and the user closes the screen (data will not be saved in those
+        /// circumstances).
+        /// </summary>
+        /// <param name="ATypeWhichRaisesError">Instance of the Form that is to be closed.</param>
+        /// <param name="APermissionThatWouldBeRequired">The name of the permission that would be required to avoid getting
+        /// this warning message displayed.</param>
+        public static void MsgFormSavingModifiedDataNotPermittedError(System.Type ATypeWhichRaisesError, string APermissionThatWouldBeRequired)
+        {
+            const string ErrCodeConstant = CommonErrorCodes.ERR_SAVING_OF_MODIFIED_DATA_IN_SCREEN_NOT_ALLOWED;
+            var ErrCode = ErrorCodes.GetErrorInfo(ErrCodeConstant);
+
+            MessageBox.Show(String.Format(ErrCode.ErrorMessageText,
+                    APermissionThatWouldBeRequired) + BuildMessageFooter(ErrCodeConstant, ATypeWhichRaisesError.Name),
+                ErrCode.ErrorMessageTitle,
+                MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AException"></param>

@@ -96,6 +96,15 @@ namespace Ict.Petra.Server.MFinance.Common
             blnInitBatchDate = true;
         }
 
+        /// <summary></summary>
+        public Int32 BatchNumber
+        {
+            get
+            {
+                return FBatchNumber;
+            }
+        }
+
         /// <summary>
         /// The default parameter for the date is the "effective date" of the accounting interval and the
         /// value is set in the constructor. Here you can change the value, if you need an other day ...
@@ -408,22 +417,8 @@ namespace Ict.Petra.Server.MFinance.Common
         /// <param name="AVerifications">A TVerificationResultCollection can defined to
         /// accept the error messages and warnings - if necessary.</param>
         /// <returns>True if it seemed to work</returns>
-        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications)
-        {
-            return CloseSaveAndPost_(AVerifications);
-        }
 
-        /// <summary>
-        /// The net-syntax checker reqires a clause "using Ict.Common.Verification;" in the routine which
-        /// calls CloseSaveAndPost(null). The only way to avoid this is the use of CloseSaveAndPost().
-        /// </summary>
-        /// <returns>true if posting seemed to go OK</returns>
-        public Boolean CloseSaveAndPost()
-        {
-            return CloseSaveAndPost_(null);
-        }
-
-        private Boolean CloseSaveAndPost_(TVerificationResultCollection AVerifications)
+        public Boolean CloseSaveAndPost(TVerificationResultCollection AVerifications = null)
         {
             if (FJournalCount != 0)
             {

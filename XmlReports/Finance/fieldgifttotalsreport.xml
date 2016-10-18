@@ -80,34 +80,24 @@
 			
 			<calculation id="SelectMonthWorker" returns="MonthWorker, CountWorker" returnsFormat="row">
 				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS MonthWorker,
-							COUNT (detail.a_gift_amount_n) AS CountWorker
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthWorker,
-							COUNT (detail.a_gift_amount_n) AS CountWorker
-						 </value>
-					</queryDetail>
 					<queryDetail>
 						<value>
-						FROM
-							PUB_a_gift as gift, 
-							PUB_a_gift_detail as detail,
-							PUB_a_gift_batch,
+                            SELECT SUM (detail.a_gift_amount_n) * {{param_exchange_rate}} AS MonthWorker,
+                            COUNT (detail.a_gift_amount_n) AS CountWorker
+                            FROM
+                            PUB_a_gift as gift,
+                            PUB_a_gift_detail as detail,
+                            PUB_a_gift_batch,
                             PUB_a_motivation_detail as motivation
-						WHERE
-							detail.a_ledger_number_i = {param_ledger_number_i}
-							AND motivation.a_ledger_number_i = {param_ledger_number_i}
-							AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
-							AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
-							AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
-							AND detail.a_motivation_group_code_c = 'GIFT'
-							AND detail.a_motivation_detail_code_c = motivation.a_motivation_detail_code_c
-							AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
+                            WHERE
+                            detail.a_ledger_number_i = {param_ledger_number_i}
+                            AND motivation.a_ledger_number_i = {param_ledger_number_i}
+                            AND PUB_a_gift_batch.a_ledger_number_i = {param_ledger_number_i}
+                            AND PUB_a_gift_batch.a_batch_status_c = 'Posted'
+                            AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+                            AND detail.a_motivation_group_code_c = 'GIFT'
+                            AND detail.a_motivation_detail_code_c = motivation.a_motivation_detail_code_c
+                            AND a_gift_batch.a_gl_effective_date_d &gt;= #{{Year3}}-01-01#
 							AND motivation.a_motivation_group_code_c = 'GIFT'
                             AND motivation.a_report_column_c = 'Worker'
 							AND detail.a_recipient_ledger_number_n = {{FieldKey}}
@@ -149,20 +139,10 @@
 
 			<calculation id="SelectMonthField" returns="MonthField, CountField" returnsFormat="row">
 				<query>
-					<queryDetail condition="eq({param_currency}, Base)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_n) AS MonthField,
-							COUNT (detail.a_gift_amount_n) AS CountField
-						 </value>
-					</queryDetail>
-					<queryDetail condition="eq({param_currency}, International)">
-						<value>
-							SELECT SUM (detail.a_gift_amount_intl_n) AS MonthField,
-							COUNT (detail.a_gift_amount_n) AS CountField
-						</value>
-					</queryDetail>
 					<queryDetail>
 						<value>
+						SELECT SUM (detail.a_gift_amount_n) * {{param_exchange_rate}} AS MonthField,
+						COUNT (detail.a_gift_amount_n) AS CountField
 						FROM
 							PUB_a_gift as gift, 
 							PUB_a_gift_detail as detail,

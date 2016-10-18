@@ -641,21 +641,16 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// </summary>
         /// <param name="ALedgerNumber">THe ICH Ledger number</param>
         /// <param name="AICHFolder">The ICH folder</param>
-        public void ImportAllAvailableStewardshipReports(int ALedgerNumber, string AICHFolder)
+        /// <param name="AglBatchNumber">If a GL Batch was generated, this is its number</param>
+        public void ImportAllAvailableStewardshipReports(int ALedgerNumber, string AICHFolder, out Int32 AglBatchNumber)
         {
-            string PendingDir;
             string NewDir = AICHFolder + @"\" + DateTime.Today.Year.ToString() + DateTime.Today.Month.ToString("00") + DateTime.Today.Day.ToString(
                 "00");
-            string CurrentFile;
-            string InputLine;
             string UnsuccessfulFileList = string.Empty;
-            DateTime Time;
-            int Hours;
-            int Count;
-            int Mins;
             bool FormatOK = true;
-            DateTime PeriodDate;
             bool DateLineValid;
+
+            AglBatchNumber = -1;
 
             /* temp table to store basic details about each stewardship file */
             DataTable FileListTable = new DataTable();
@@ -668,7 +663,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             FileListTable.Columns.Add("Year", typeof(int));
             FileListTable.Columns.Add("RunNumber", typeof(int));
 
-            PendingDir = AICHFolder + @"\pending";
+            String PendingDir = AICHFolder + @"\pending";
             string LogFile = Path.GetDirectoryName(TSrvSetting.ServerLogFile) + @"\Stewardship Import.log";
             TextWriter LogWrite = new StreamWriter(LogFile);
 
@@ -711,9 +706,8 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                     foreach (string FileName in FileEntries)
                     {
-                        CurrentFile = FileName;
                         FormatOK = true;
-                        Count = 1;
+                        Int32 Count = 1;
 
                         DatRow = (DataRow)FileListTable.NewRow();
 
@@ -727,7 +721,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                         {
                             while (Count < 7 && FormatOK)
                             {
-                                InputLine = FileReader.ReadLine().Trim();
+                                String InputLine = FileReader.ReadLine().Trim();
 
                                 if (FileReader.Peek() >= 0)
                                 {
@@ -741,13 +735,12 @@ namespace Ict.Petra.Server.MFinance.ICH
                                                 break;
 
                                             case 2:
-                                                Time = Convert.ToDateTime(InputLine.Substring(69).Trim());
-                                                Hours = Time.Hour;
-                                                Mins = Time.Minute;
-                                                DatRow["ReportTimeInMins"] = (Hours * 60) + Mins;
+                                                DateTime Time = Convert.ToDateTime(InputLine.Substring(69).Trim());
+                                                DatRow["ReportTimeInMins"] = (Time.Hour * 60) + Time.Minute;
                                                 break;
 
                                             case 5:
+                                                DateTime PeriodDate;
 
                                                 if (InputLine.Length == 0)
                                                 {
@@ -832,7 +825,7 @@ namespace Ict.Petra.Server.MFinance.ICH
 
                         if (FormatOK)
                         {
-                            DatRow["FileName"] = CurrentFile;
+                            DatRow["FileName"] = FileName;
                             //Add the new row
                             FileListTable.Rows.Add(DatRow);
                         }
@@ -840,21 +833,21 @@ namespace Ict.Petra.Server.MFinance.ICH
                         {
                             LogWrite.WriteLine(String.Format(Catalog.GetString(
                                         "File: {0} is not in the correct format and will therefore be skipped."),
-                                    CurrentFile));
-                            UnsuccessfulFileList += CurrentFile + ",";
+                                    FileName));
+                            UnsuccessfulFileList += FileName + ",";
                             DatRow.Delete();
                         }
                     } // foreach filename
 
                 }); // Begin AutoRead Transaction
 
-            GenerateStewardshipBatchFromFileList(ALedgerNumber, ref FileListTable, ref LogWrite, ref UnsuccessfulFileList, NewDir);
+            GenerateStewardshipBatchFromFileList(ALedgerNumber, ref FileListTable, ref LogWrite, ref UnsuccessfulFileList, NewDir, out AglBatchNumber);
 
             // close the stream
             LogWrite.Close();
 
             ListUnprocessedFiles(UnsuccessfulFileList);
-        }
+        } // Import All Available Stewardship Reports
 
         /// <summary>
         ///
@@ -864,17 +857,20 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="ALogWriter">TextWriter for the log file</param>
         /// <param name="AUnsuccessfulFileList">List of files that failed</param>
         /// <param name="ANewDir"></param>
+        /// <param name="AglBatchNumber">If a GL Batch were generated, this is its number</param>
         private void GenerateStewardshipBatchFromFileList(int ALedgerNumber,
             ref DataTable AFileList,
             ref TextWriter ALogWriter,
             ref string AUnsuccessfulFileList,
-            string ANewDir)
+            string ANewDir,
+            out Int32 AglBatchNumber)
         {
             int PreviousLedger = 0;
             int PreviousRunNumber = 0;
             int PreviousPeriod = 0;
             string PreviousFileName = string.Empty;
 
+            AglBatchNumber = -1;
             string NewFileName = string.Empty;
 
             string FileName;
@@ -904,7 +900,7 @@ namespace Ict.Petra.Server.MFinance.ICH
                 if ((LedgerNo != PreviousLedger) || (PeriodNo != PreviousPeriod) || (RunNo != PreviousRunNumber))
                 {
                     Successful = GenerateStewardshipBatchFromReportFile(ALedgerNumber, YearNo, PeriodNo, RunNo, LedgerNo.ToString(
-                            "00") + "00", FileName, ALogWriter);
+                            "00") + "00", out AglBatchNumber, FileName, ALogWriter);
                 }
                 else
                 {
@@ -950,6 +946,7 @@ namespace Ict.Petra.Server.MFinance.ICH
         /// <param name="APeriod">Period to which stewardship applies</param>
         /// <param name="ARunNumber">Run number of stewardship</param>
         /// <param name="AFromCostCentre">Fund to which stewardship relates</param>
+        /// <param name="AglBatchNumber">If a GL Batch was generated, this is the batch number</param>
         /// <param name="AFileName">Filename of stewardship report to process</param>
         /// <param name="ALogWriter">TextWriter for log file</param>
         private bool GenerateStewardshipBatchFromReportFile(int ALedgerNumber,
@@ -957,6 +954,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             int APeriod,
             int ARunNumber,
             string AFromCostCentre,
+            out Int32 AglBatchNumber,
             string AFileName,
             TextWriter ALogWriter)
         {
@@ -970,7 +968,7 @@ namespace Ict.Petra.Server.MFinance.ICH
             string ToCostCentre = string.Empty;
             string Narrative;
             int Count;
-            int BatchNumber = 0;
+            Int32 BatchNumber = -1;
             int JournalNumber = 0;
             int MatchingBatchNumber;
             decimal ExchangeRate;
@@ -988,6 +986,8 @@ namespace Ict.Petra.Server.MFinance.ICH
             bool EmptyStewardship = false;
             DateTime CurrentPeriodDate;
             DateTime ExchangeRateDate;
+
+            AglBatchNumber = -1;
 
             //DEFINE BUFFER a_current_period_b FOR a_accounting_period.
 
@@ -1422,6 +1422,11 @@ namespace Ict.Petra.Server.MFinance.ICH
                 TVerificationResultCollection VerificationResultCollection;
 
                 bool PostingSuccessful = TGLPosting.PostGLBatch(ALedgerNumber, BatchNumber, out VerificationResultCollection);
+
+                if (PostingSuccessful)
+                {
+                    AglBatchNumber = BatchNumber;
+                }
 
                 return PostingSuccessful;
             }

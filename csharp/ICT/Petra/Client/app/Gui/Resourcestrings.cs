@@ -37,6 +37,10 @@ namespace Ict.Petra.Client.App.Gui
         /// <summary>todoComment</summary>
         public static readonly string StrUndefined = Catalog.GetString("Undefined");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrBtnCreatedUpdatedStatusBarText =
+            Catalog.GetString("Click this button to show information about who created / modified this record.");
+
         #endregion
 
         #region Partner

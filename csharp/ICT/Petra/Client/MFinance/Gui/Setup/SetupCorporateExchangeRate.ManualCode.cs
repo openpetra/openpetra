@@ -38,6 +38,9 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.Security;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
@@ -108,6 +111,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             FMainDS.ACorporateExchangeRate.Merge(TypedTable);
 
             FUseCurrencyFormatForDecimal = TUserDefaults.GetBooleanDefault(Ict.Common.StringHelper.FINANCE_DECIMAL_FORMAT_AS_CURRENCY, true);
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                mniImport.Enabled = false;
+                tbbImport.Enabled = false;
+            }
         }
 
         private void RunOnceOnActivationManual()
@@ -740,6 +751,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             }
 
             return Result;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    ACorporateExchangeRateTable.ColumnFromCurrencyCodeId,
+                    ACorporateExchangeRateTable.ColumnToCurrencyCodeId,
+                    ACorporateExchangeRateTable.ColumnDateEffectiveFromId,
+                    ACorporateExchangeRateTable.ColumnRateOfExchangeId
+                });
         }
     }
 }

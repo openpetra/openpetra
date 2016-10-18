@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,6 +40,8 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Shared.Security;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -51,6 +53,23 @@ namespace Ict.Petra.Client.CommonForms
     /// </summary>
     public class TFrmPetraUtils
     {
+        #region Resourcestrings
+
+        /// <summary>This Resourcestring needs to be public becaused it is used elsewhere as well.</summary>
+        public static readonly string StrFormCaptionPrefixNew = Catalog.GetString("NEW: ");
+
+        /// <summary>This Resourcestring needs to be public becaused it is used elsewhere as well.</summary>
+        public static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
+
+        #endregion
+
+        /// <summary>
+        /// Returns a list of screen security restrictions. (Available restrictions are defined by Constants found in Class
+        /// <see cref="TSecurityChecks"/>.)
+        /// </summary>
+        /// <returns>List of screen security restrictions.</returns>
+        public delegate List <string>TScreenSecurity();
+
         /// <summary>
         /// This sets a limit on the cascading reference count when checking for GUI deletion of a row.
         /// </summary>
@@ -66,6 +85,14 @@ namespace Ict.Petra.Client.CommonForms
         /// this object implements the IFrmPetra interface
         /// </summary>
         protected IFrmPetra FTheForm;
+
+        /// <summary>What context (e.g. OpenPetra Module) the screen is for (for security purposes).</summary>
+        protected String FSecurityScreenContext;
+
+        /// <summary>
+        /// The Form's recently set Security Permissions.
+        /// </summary>
+        protected List <string>FFormsSecurityPermissions = null;
 
         /// <summary>
         /// ToolTip instance for the Form.
@@ -113,6 +140,20 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>Whether the Form's Shown Event already occured. ATTENTION: See comment on
         /// <see cref="FormHasBeenShown" /> Property for important implementation details!</summary>
         protected Boolean FFormHasBeenShown = false;
+
+        /// <summary>Name of Button Controls that will get disabled when the screen is in read-only mode.</summary>
+        private List <string>FReadOnlyModeButtons = new List <string>();
+
+        private Color? FStatusBarBackColorBeforeReadonlyMode = null;
+
+        /// <summary>See comment on Property <see cref="SecurityReadOnly"/>!</summary>
+        protected bool FSecurityReadOnly = false;
+
+        /// <summary>See comment on Property <see cref="SecurityReportingAllowed"/>!</summary>
+        protected bool FSecurityReportExecutionAllowed = true;
+
+        /// <summary>See comment on Property <see cref="SecurityEditingAndSavingPermissionRequired"/>!</summary>
+        protected string FSecurityEditingAndSavingPermissionRequired;
 
         /// Used for keeping track of data verification errors
         public TVerificationResultCollection VerificationResultCollection
@@ -169,19 +210,102 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        /// <summary>What context (e.g. OpenPetra Module) the screen is for (for security purposes).</summary>
+        public string SecurityScreenContext
+        {
+            get
+            {
+                return FSecurityScreenContext;
+            }
+
+            set
+            {
+                FSecurityScreenContext = value;
+            }
+        }
+
+        /// <summary>
+        /// Set to false to disallow editing (and saving where applicable) of data. The Methods <see cref="SetScreenCaption"/> and
+        /// <see cref="ApplySecurity"/> read this Property and prefix the Form's Title with
+        /// 'READ-ONLY: ' and disable the 'OK' or 'Apply' button if these are present on the Form in case this
+        /// Property returns 'false.
+        /// </summary>
+        /// <remarks>
+        /// 1) TFrmPetraEditUtils overrides this Property (with 'override') and adds to the functionality of the Setter!
+        /// 2) Screens can inquire this Property at certain Events/stages to implement custom logic, i.e. to
+        /// disable other buttons.
+        /// <para>
+        /// <em>IMPORTANT:</em>The provisions here only serve for *client-side convenience* and *don't prevent*
+        /// saving of data for real, i.e. on the server side!!!</para></remarks>
+        public virtual bool SecurityReadOnly
+        {
+            get
+            {
+                return FSecurityReadOnly;
+            }
+
+            set
+            {
+                FSecurityReadOnly = value;
+            }
+        }
+
+        /// <summary>
+        /// The Method <see cref="ApplySecurity"/> sets this Property and denies the opening of a screen straightaway
+        /// if the <see cref="SecurityScreenContext"/> doesn't match what the 'SecurityPermissions' passed into it
+        /// dictates.
+        /// </summary>
+        /// <remarks>
+        /// <para><em>IMPORTANT:</em>The provisions here only serve for *client-side convenience* and *don't prevent*
+        /// reporting of data for real, i.e. on the server side!!!</para>
+        /// <para>'Reporting' in this context is seen as a loose concept, i.e. not seen as restricted to Reports!</para>
+        /// </remarks>
+        public virtual bool SecurityReportingAllowed
+        {
+            get
+            {
+                return FSecurityReportExecutionAllowed;
+            }
+
+            set
+            {
+                FSecurityReportExecutionAllowed = value;
+            }
+        }
+
+        /// <summary>
+        /// The name of the permission that gives a user the right to edit (and save where applicable) data in this Form.
+        /// </summary>
+        public string SecurityEditingAndSavingPermissionRequired
+        {
+            get
+            {
+                return FSecurityEditingAndSavingPermissionRequired;
+            }
+
+            set
+            {
+                FSecurityEditingAndSavingPermissionRequired = value;
+            }
+        }
+
+
         /// <summary>
         /// constructor
         /// </summary>
         /// <param name="ACallerForm">the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>
-        public TFrmPetraUtils(Form ACallerForm, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar)
+        /// <param name="ASecurityScreenContext"></param>
+        public TFrmPetraUtils(Form ACallerForm, IFrmPetra ATheForm, TExtStatusBarHelp AStatusBar,
+            string ASecurityScreenContext = "")
         {
             FFormActivatedForFirstTime = true;
             FVerificationResultCollection = new TVerificationResultCollection();
 
             FTheForm = ATheForm;
             FWinForm = (Form)ATheForm;
+            FSecurityScreenContext = ASecurityScreenContext;
             FStatusBar = AStatusBar;
             FCallerForm = ACallerForm;
 
@@ -431,7 +555,10 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             //trigger event
-            ActionEnablingEvent(this, new ActionEventArgs(AActionName, enable));
+            if (ActionEnablingEvent != null)
+            {
+                ActionEnablingEvent(this, new ActionEventArgs(AActionName, enable));
+            }
         }
 
         /// <summary>
@@ -610,29 +737,21 @@ namespace Ict.Petra.Client.CommonForms
                     FWinForm.Close();
                     break;
 
-                case eActionId.eHelpDevelopmentTeam:
-#if TODO
-                    using (DevelopmentTeamDialog teamDialog = new DevelopmentTeamDialog())
-                    {
-                        teamDialog.ShowDialog();
-                    }
-#endif
-                    break;
-
                 case eActionId.eHelpAbout:
                     System.Type aboutDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmAboutDialog");
 
-                    using (Form aboutDialog = (Form)Activator.CreateInstance(aboutDialogType, new object[] { this.FWinForm }))
+                    using (Form aboutDialog = (Form)Activator.CreateInstance(aboutDialogType, new object[] { this.FWinForm, String.Empty }))
                     {
                         aboutDialog.ShowDialog();
                     }
+
                     break;
 
                 case eActionId.eKeyboardShortcuts:
                     System.Type shortcutsDialogType = CommonDialogsAssembly.GetType("Ict.Petra.Client.CommonDialogs.TFrmKeyboardShortcutsDialog");
                     Type ActiveFormType = Form.ActiveForm.GetType();
 
-                    using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm }))
+                    using (Form shortcutsDialog = (Form)Activator.CreateInstance(shortcutsDialogType, new object[] { this.FWinForm, String.Empty }))
                     {
                         //
                         // For some Forms (and Tabs on these Forms) we show a specific Shortcut Tab
@@ -676,9 +795,28 @@ namespace Ict.Petra.Client.CommonForms
 
                 case eActionId.eHelp:
                 {
-                    // TODO help action
+                    throw new NotImplementedException();
+
+                    // TODO Launch OpenPetra Help once it becomes available
                 }
-                break;
+
+                case eActionId.eBugReport:
+                {
+                    throw new NotImplementedException();
+
+                    // TODO Launch Bug Report Form (feature Bug #4956) once it becomes available
+                }
+
+                case eActionId.eHelpDevelopmentTeam:
+                    throw new NotImplementedException();
+#if TODO
+                    using (DevelopmentTeamDialog teamDialog = new DevelopmentTeamDialog())
+                    {
+                        teamDialog.ShowDialog();
+                    }
+
+                    break;
+#endif
             }
         }
 
@@ -939,6 +1077,279 @@ namespace Ict.Petra.Client.CommonForms
 
             FFormWindowState = curWindowState;
         }
+
+        /// <summary>
+        /// Sets a Form's Title.
+        /// </summary>
+        /// <param name="ACaptionPostFix">Any string specified here gets added to the Form's Title (default = "").</param>
+        /// <remarks>TFrmPetraEditUtils re-implements this Method (with 'new') and adds to the functionality here
+        /// but calls this Method with base, too!
+        /// </remarks>
+        public void SetScreenCaption(string ACaptionPostFix = "")
+        {
+            String CaptionPrefix = "";
+
+            if (SecurityReadOnly)
+            {
+                if (!FWinForm.Text.StartsWith(StrFormCaptionPrefixReadonly))
+                {
+                    CaptionPrefix = StrFormCaptionPrefixReadonly;
+                }
+            }
+
+            FWinForm.Text = CaptionPrefix + (FormTitle != String.Empty ? FormTitle : FWinForm.Text) + ACaptionPostFix;
+        }
+
+        /// <summary>
+        /// Strips off a 'NEW: ' or 'READ-ONLY: ' prefix from the screen caption
+        /// </summary>
+        public void RemoveStdPrefixesFromScreenCaption(bool AReadOnlyPrefix = false)
+        {
+            if (!AReadOnlyPrefix)
+            {
+                if (FWinForm.Text.StartsWith(StrFormCaptionPrefixNew))
+                {
+                    FWinForm.Text = FWinForm.Text.Substring(TFrmPetraEditUtils.StrFormCaptionPrefixNew.Length);
+                }
+            }
+
+            if (FWinForm.Text.StartsWith(StrFormCaptionPrefixReadonly))
+            {
+                FWinForm.Text = FWinForm.Text.Substring(TFrmPetraEditUtils.StrFormCaptionPrefixReadonly.Length);
+            }
+        }
+
+        #region Security
+
+        /// <summary>
+        /// Sets up OpenPetra Security to restrict functionality as requested.
+        /// </summary>
+        /// <remarks>
+        /// 1) TFrmPetraEditUtils re-implements this Method (with 'new') and adds to the functionality here
+        /// but calls this Method with base, too!
+        /// 2) When this Method gets called from a UserControl it affects not only the UserControl but the
+        /// Form as a whole!!!</remarks>
+        public void ApplySecurity(List <string>ASecurityPermissions = null, TScreenSecurity AGetScreenSecurity = null,
+            bool AEnableDisabledButtons = true)
+        {
+            List <string>SecurityPermissions;
+            string PermissionRequiredToOvercomeAccessDenied = String.Empty;
+
+            if ((ASecurityPermissions == null)
+                && (FFormsSecurityPermissions == null))
+            {
+                throw new ArgumentNullException("ASecurityPermissions",
+                    "ASecurityPermissions must not be null if they haven't been set up once by the Form");
+            }
+            else if (ASecurityPermissions == null)
+            {
+                ASecurityPermissions = FFormsSecurityPermissions;
+            }
+
+            FFormsSecurityPermissions = ASecurityPermissions;
+
+            if (AGetScreenSecurity == null)
+            {
+                switch (SecurityScreenContext)
+                {
+                    case "Partner":
+                    case "Personnel":
+                    case "Finance":
+                    case "Conference":
+                    case "FinDev":
+                    case "SysMan":
+                        SecurityScreenContext = "M" + SecurityScreenContext;
+                        break;
+                }
+
+                SecurityPermissions = SecurityEvaluateStandardPermissions(ASecurityPermissions,
+                    out PermissionRequiredToOvercomeAccessDenied);
+            }
+            else
+            {
+                SecurityPermissions = AGetScreenSecurity();
+
+                if (SecurityPermissions.Count == 0)
+                {
+                    SecurityPermissions = SecurityEvaluateStandardPermissions(ASecurityPermissions,
+                        out PermissionRequiredToOvercomeAccessDenied);
+                }
+            }
+
+            // Note: The SecurityReadOnly Property is virtual and the inheriting TFrmPetraEditUtils Class
+            // extends what the setter of that Property does!
+            SecurityReadOnly = SecurityPermissions.Contains(TSecurityChecks.SECURITYRESTRICTION_READONLY);
+
+            if (SecurityReadOnly)
+            {
+                // Prefix screen's Title with 'READ-ONLY: '
+                SetScreenCaption();
+
+                // Alter the colour of the Status Bar, too, to make it more obvious that the screen is in read-only mode
+                // ... but first store the current BackColor so it can optionally be restored at a later point in time
+                // (see 'else branch' below).
+                if (!FStatusBarBackColorBeforeReadonlyMode.HasValue)
+                {
+                    FStatusBarBackColorBeforeReadonlyMode = FStatusBar.BackColor;
+                }
+
+                FStatusBar.BackColor = System.Drawing.Color.LightGray;
+
+                //
+                // Find 'OK' and 'Apply' Button Controls and disable them if they exist in the Form
+                // to prevent the user from first trying to use those buttons only to find out that the changes that (s)he
+                // made can't be saved later.
+                //
+                CallEnableDisableReadOnlyModeButtons(false);
+            }
+            else
+            {
+                if (FStatusBarBackColorBeforeReadonlyMode.HasValue)
+                {
+                    RemoveStdPrefixesFromScreenCaption(true);
+                    FStatusBar.BackColor = FStatusBarBackColorBeforeReadonlyMode.Value;
+
+                    if (AEnableDisabledButtons)
+                    {
+                        CallEnableDisableReadOnlyModeButtons(true);
+                    }
+                }
+            }
+
+            SecurityReportingAllowed = !SecurityPermissions.Contains(TSecurityChecks.SECURITYRESTRICTION_FINANCEREPORTINGDENIED);
+
+            if (!SecurityReportingAllowed)
+            {
+                throw new ESecurityAccessDeniedException(
+                    String.Format("You are not allowed to use this function because you don't have the necessary permission! " +
+                        "({0} permission would be required.)", PermissionRequiredToOvercomeAccessDenied), FCallerForm.GetType().Name);
+            }
+        }
+
+        /// <summary>
+        /// Finds the 'OK' and 'Apply' Button Controls and disables/enables them if they exist in the Form.
+        /// Disabling is done to prevent the user from first trying to use those buttons only to find out that the changes that (s)he
+        /// made can't be saved later (these Buttons must be named according to the default button naming scheme for this to work!).
+        /// </summary>
+        /// <param name="AEnable">Set to false to disable these Buttons, set to true to enable them
+        /// (default = false).</param>
+        public void CallEnableDisableReadOnlyModeButtons(bool AEnable = false)
+        {
+            EnableDisableReadOnlyModeButtons(AEnable, ref FReadOnlyModeButtons, delegate
+                {
+                    FReadOnlyModeButtons.Add("btnOK");
+                    FReadOnlyModeButtons.Add("btnApply");
+                });
+        }
+
+        /// <summary>
+        /// Finds the passed Button Controls and enables/disables them if they exist in the Form.
+        /// The disabling is to prevent the user from first trying to use those buttons only to find out
+        /// that the changes that (s)he made can't be saved later.
+        /// </summary>
+        /// <param name="AEnable">Set to false to disable these Buttons, set to true to enable them
+        /// (default = false).</param>
+        /// <param name="AReadOnlyModeButtons">List of names of Buttons that should be enabled/disabled in the Form.</param>
+        /// <param name="AButtonsAddingCodeWhenDisabling">Program code that will get run once to add the appropriate
+        /// Buttons to the AReadOnlyModeButtons List.</param>
+        protected void EnableDisableReadOnlyModeButtons(bool AEnable, ref List <string>AReadOnlyModeButtons,
+            Action AButtonsAddingCodeWhenDisabling)
+        {
+            Control[] BtnCtrls;
+
+            if (!AEnable)
+            {
+                if (AButtonsAddingCodeWhenDisabling == null)
+                {
+                    throw new ArgumentNullException("AButtonsAddingCodeWhenDisabling",
+                        "AButtonsAddingCodeWhenDisabling must not be null if AEnable is false");
+                }
+
+                if (AReadOnlyModeButtons.Count == 0)
+                {
+                    // Execute code that should be run once to add the appropriate Buttons to the AReadOnlyModeButtons List.
+                    AButtonsAddingCodeWhenDisabling();
+                }
+            }
+
+            foreach (var EnableDisableControl in AReadOnlyModeButtons)
+            {
+                BtnCtrls = FWinForm.Controls.Find(EnableDisableControl, true);
+
+                if ((BtnCtrls != null)
+                    && (BtnCtrls.Length > 0))
+                {
+                    BtnCtrls[0].Enabled = AEnable;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Call this Method if the screen has been shown in 'read-only Mode' but the *appearance changes*
+        /// that go with that should be revoked.
+        /// <para>It enables any Buttons that were disabled because of this Mode, removes the
+        /// 'READ-ONLY' prefix from the screen's Title Bar and sets the BackColor of the StatusBar
+        /// to what it normally is.</para>
+        /// </summary>
+        /// <remarks>Calling this Method will <em>not set</em> the Form's 'SecurityReadOnly' Property to false!</remarks>
+        protected void SecurityUndoReadOnlyModeAppearanceChanges()
+        {
+            CallEnableDisableReadOnlyModeButtons(true);
+
+            RemoveStdPrefixesFromScreenCaption(true);
+
+            FStatusBar.BackColor = FStatusBarBackColorBeforeReadonlyMode.Value;
+        }
+
+        private List <string>SecurityEvaluateStandardPermissions(List <string>ASecurityPermissions,
+            out string APermissionRequiredToOvercomeAccessDenied)
+        {
+            List <string>ReturnValue = new List <string>();
+
+            if (ASecurityPermissions == null)
+            {
+                throw new ArgumentNullException("ASecurityPermissions", "ASecurityPermissions must not be null");
+            }
+
+            APermissionRequiredToOvercomeAccessDenied = String.Empty;
+
+            if (ASecurityPermissions.Contains(TSecurityChecks.SECURITYPERMISSION_EDITING_AND_SAVING_OF_SETUP_DATA))
+            {
+                SecurityEditingAndSavingPermissionRequired =
+                    TSecurityChecks.GetModulePermissionForSavingOfSetupScreenData(SecurityScreenContext);
+
+                if (SecurityEditingAndSavingPermissionRequired.StartsWith("### ERROR ###"))
+                {
+                    MessageBox.Show("Developer forgot to specify Module in the YAML file with 'ModuleForSecurity' Element!");
+                }
+
+                if (!UserInfo.GUserInfo.IsInModule(SecurityEditingAndSavingPermissionRequired))
+                {
+                    APermissionRequiredToOvercomeAccessDenied = SecurityEditingAndSavingPermissionRequired;
+
+                    ReturnValue.Add(TSecurityChecks.SECURITYRESTRICTION_READONLY);
+                }
+            }
+
+            if ((SecurityScreenContext == "MFinanceReporting")
+                && (ASecurityPermissions.Contains(TSecurityChecks.SECURITYPERMISSION_FINANCEREPORTING)))
+            {
+                APermissionRequiredToOvercomeAccessDenied = SharedConstants.PETRAMODULE_FINANCERPT;
+
+                if (!UserInfo.GUserInfo.IsInModule(APermissionRequiredToOvercomeAccessDenied))
+                {
+                    ReturnValue.Add(TSecurityChecks.SECURITYRESTRICTION_FINANCEREPORTINGDENIED);
+                }
+                else
+                {
+                    APermissionRequiredToOvercomeAccessDenied = String.Empty;
+                }
+            }
+
+            return ReturnValue;
+        }
+
+        #endregion
     }
 
     /// <summary>todoComment</summary>
@@ -946,9 +1357,6 @@ namespace Ict.Petra.Client.CommonForms
     {
         /// <summary>todoComment</summary>
         eHelp,
-
-        /// <summary>todoComment</summary>
-        eAbout,
 
         /// <summary>todoComment</summary>
         eClose,

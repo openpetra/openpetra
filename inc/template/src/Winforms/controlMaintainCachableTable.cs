@@ -160,9 +160,13 @@ namespace {#NAMESPACE}
     /// <returns>void</returns>    /// needs to be called after FMainDS and FPetraUtilsObject have been set
     public void InitUserControl()
     {
-      {#INITUSERCONTROLS}
       Type DataTableType;
-      
+      {#INITUSERCONTROLS}
+
+{#IFDEF AUTOAPPLYSECURITY}
+      FPetraUtilsObject.ApplySecurity();
+
+{#ENDIF AUTOAPPLYSECURITY}
       // Load Data     
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
@@ -227,16 +231,16 @@ namespace {#NAMESPACE}
 
             if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors)
             {
-			    // Some non-critical warnings exist
+                // Some non-critical warnings exist
                 if (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
                     MCommonResourcestrings.StrCreateNewRowAnywayQuestion, this.GetType()) == false)
                 {
-				    // Client cancelled
+                    // Client cancelled
                     return false;
                 }
 
                 // Client wants to continue
-				// We can ignore FocusRowLeaving because we have just displayed the message as a Yes/No dialog
+                // We can ignore FocusRowLeaving because we have just displayed the message as a Yes/No dialog
                 FIgnoreFocusRowLeaving = true;
             }
             
@@ -689,7 +693,11 @@ namespace {#NAMESPACE}
             {#SHOWDETAILS}
         }
 
-        {#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
+        {#ENABLEDELETEBUTTON}
+
+        {#EXTRADISABLEBUTTONHANDLING}
+
+        FPetraUtilsObject.EnableDataChangedEvent();
     }
 {#CANDELETESELECTION}
 #endregion
@@ -797,8 +805,8 @@ namespace {#NAMESPACE}
 {#ENDIF BUTTONPANEL}
     }
 
-	#region IDeleteGridRows implementation
-	
+    #region IDeleteGridRows implementation
+
     /// <summary>
     /// Perform the reference count
     /// </summary>
@@ -834,7 +842,7 @@ namespace {#NAMESPACE}
     public void HandlePreDelete(DataRow ARowToDelete, ref bool AAllowDeletion, ref string ADeletionQuestion)
     {
 {#IFDEF HASPREDELETEMANUAL}
-		AAllowDeletion = PreDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, ref ADeletionQuestion);
+        AAllowDeletion = PreDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, ref ADeletionQuestion);
 {#ENDIF HASPREDELETEMANUAL}
     }
 
@@ -845,10 +853,10 @@ namespace {#NAMESPACE}
     {
 {#IFDEF HASDELETEROWMANUAL}
         ADeletionPerformed = DeleteRowManual(({#DETAILTABLETYPE}Row)ARowToDelete, ref ACompletionMessage);
-		return true;
+        return true;
 {#ENDIF HASDELETEROWMANUAL}
 {#IFNDEF HASDELETEROWMANUAL}
-		return false;
+        return false;
 {#ENDIFN HASDELETEROWMANUAL}
     }
 
@@ -858,11 +866,11 @@ namespace {#NAMESPACE}
     public bool HandlePostDelete(DataRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
     {
 {#IFDEF HASPOSTDELETEMANUAL}
-		PostDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
-		return true;
+        PostDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
+        return true;
 {#ENDIF HASPOSTDELETEMANUAL}
 {#IFNDEF HASPOSTDELETEMANUAL}
-		return false;
+        return false;
 {#ENDIFN HASPOSTDELETEMANUAL}
     }
 
@@ -873,8 +881,8 @@ namespace {#NAMESPACE}
     {
         {#CANDELETEROW}
     }
-	#endregion
-	
+    #endregion
+
 #endregion
 {#ENDIF SHOWDETAILS}
 
@@ -989,7 +997,7 @@ namespace {#NAMESPACE}
     ///<summary>
     /// Update the text in the button panel indicating details of the record count
     /// </summary>
-	public void UpdateRecordNumberDisplay()
+    public void UpdateRecordNumberDisplay()
     {
         if (grdDetails.DataSource != null) 
         {
@@ -1014,6 +1022,7 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// auto generated
@@ -1067,11 +1076,11 @@ namespace {#NAMESPACE}
     }
 
     /// auto generated
-	public int GetChangedRecordCount(out string AMessage)
-	{
-	    // Optionally return GetChangedRecordCountManual(out string AMessage)
-	    {#GETCHANGEDRECORDCOUNT}
-	}
+    public int GetChangedRecordCount(out string AMessage)
+    {
+        // Optionally return GetChangedRecordCountManual(out string AMessage)
+        {#GETCHANGEDRECORDCOUNT}
+    }
 
     /// <summary>
     /// save the changes in the usercontrol
@@ -1395,3 +1404,4 @@ return (({#DETAILTABLE}Row)ARowToDelete).{#DELETEABLEFLAG};
         return false;
     }
 
+{#INCLUDE security.cs}

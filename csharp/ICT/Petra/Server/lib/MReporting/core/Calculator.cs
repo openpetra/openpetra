@@ -396,10 +396,8 @@ namespace Ict.Petra.Server.MReporting.Calculator
         protected void InitParameterLedgers()
         {
             System.Int32 column;
-            System.Int32 ledgerNumber;
-            System.Int32 otherLedgerNumber;
-            ledgerNumber = -1;
-            otherLedgerNumber = -1;
+            System.Int32 ledgerNumber = -1;
+            System.Int32 otherLedgerNumber = -1;
 
             if (Parameters.Exists("param_ledger_number_i", -1, -1, eParameterFit.eExact))
             {
@@ -420,7 +418,10 @@ namespace Ict.Petra.Server.MReporting.Calculator
                         ledgerNumber = otherLedgerNumber;
                     }
 
-                    InitParameterLedger(otherLedgerNumber, column);
+                    if (otherLedgerNumber != -1)
+                    {
+                        InitParameterLedger(otherLedgerNumber, column);
+                    }
                 }
 
                 column = column + 1;
@@ -429,6 +430,10 @@ namespace Ict.Petra.Server.MReporting.Calculator
             if ((ledgerNumber != otherLedgerNumber) && (otherLedgerNumber != -1))
             {
                 Parameters.Add("use_several_ledgers", new TVariant(true), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+            }
+            else
+            {
+                Parameters.Add("use_several_ledgers", new TVariant(false), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             }
         }
 

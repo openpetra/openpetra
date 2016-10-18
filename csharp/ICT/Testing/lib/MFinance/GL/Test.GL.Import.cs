@@ -69,6 +69,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("Delimiter", ";");
             requestParams.Add("DateFormatString", "dd/MM/yyyy");
+            requestParams.Add("DatesMayBeIntegers", false);
             requestParams.Add("NumberFormat", "European");
             requestParams.Add("NewLine", Environment.NewLine);
 

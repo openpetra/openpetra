@@ -33,6 +33,8 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Validation;
 using GNU.Gettext;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -66,6 +68,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 SelectRowInGrid(1);
                 UpdateRecordNumberDisplay();
+
+                if (FPetraUtilsObject.SecurityReadOnly)
+                {
+                    btnNewType.Enabled = false;
+                }
             }
         }
         private void NewRow(System.Object sender, EventArgs e)
@@ -229,6 +236,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         {
             txtDetailAnalysisTypeCode.Enabled = false;
             return txtDetailAnalysisTypeCode.Text;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    AAnalysisTypeTable.ColumnAnalysisTypeCodeId,
+                    AAnalysisTypeTable.ColumnAnalysisTypeDescriptionId
+                });
         }
     }
 }

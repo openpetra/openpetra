@@ -35,6 +35,9 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -253,6 +256,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtDetailDecimalLabelPlural.Text = String.Empty;
                 txtDetailDecimalLabelSingular.Text = String.Empty;
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    ACurrencyLanguageTable.ColumnCurrencyCodeId,
+                    ACurrencyLanguageTable.ColumnLanguageCodeId,
+                    ACurrencyLanguageTable.ColumnUnitLabelSingularId,
+                    ACurrencyLanguageTable.ColumnUnitLabelPluralId,
+                    ACurrencyLanguageTable.ColumnDecimalLabelSingularId,
+                    ACurrencyLanguageTable.ColumnDecimalLabelPluralId,
+                    ACurrencyLanguageTable.ColumnDecimalOptionsId,
+                    ACurrencyLanguageTable.ColumnSpecialCodeId
+                });
         }
     }
 }

@@ -163,7 +163,7 @@ namespace Ict.Common
              FullDescription = "The user tried to delete a record that is referenced from another DB Table.")]
         public const String ERR_RECORD_DELETION_NOT_POSSIBLE_REFERENCED = "GENC.00018V";
 
-        /// <summary>Missing configuration for sending Emails</summary>
+        /// <summary>Missing configuration for sending Emails.</summary>
         [ErrCodeAttribute("Missing configuration for sending Emails",
              FullDescription = "No email can be sent because the configuration is missing on the server side.")]
         public const String ERR_MISSINGEMAILCONFIGURATION = "GENC.00020V";
@@ -173,6 +173,13 @@ namespace Ict.Common
              ErrorMessageText = "The record cannot be deleted because it is marked as non-deletable.",
              FullDescription = "The record cannot be deleted because it is marked as a non-deletable 'system' row in the design of the database.")]
         public const String ERR_RECORD_DELETION_NOT_POSSIBLE_BY_DESIGN = "GENC.00021V";
+
+        /// <summary>User tried to save data but the user doesn't have the necessary permission to do this.</summary>
+        [ErrCodeAttribute("Cannot save data because user doesn't have the necessary permission to do so",
+             ErrorMessageTitle = "Changed Data Will be Discarded!",
+             ErrorMessageText = "None of the changes to data in this screen can be saved because you don't have the necessary " +
+                                "permissions ({0} permission would be required)!")]
+        public const String ERR_SAVING_OF_MODIFIED_DATA_IN_SCREEN_NOT_ALLOWED = "GENC.00022E";
 
 //        [ErrCodeAttribute("Test duplicate.")]
 //        public const String ERR_NOFUTUREDATE2 = "GENC.00002V";

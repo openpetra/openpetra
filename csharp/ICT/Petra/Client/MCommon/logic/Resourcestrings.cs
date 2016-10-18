@@ -90,6 +90,25 @@ namespace Ict.Petra.Client.MCommon
         /// <summary>todoComment</summary>
         public static readonly string StrValueUnassignable = Catalog.GetString("Unassignable Value");
 
+        /// <summary>todoComment</summary>
+        public static readonly string StrReadOnlyInformationTitle = Catalog.GetString("Read-only Information");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDontShowThisMessageAgain = Catalog.GetString("Don't show me this message again");
+
+        #endregion
+
+        #region Strings associated with security
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDiffentPermissionRequiredForEditingData = Catalog.GetString("Note: To be able to edit " +
+            "data in this screen you will need the {0} Module permission.");
+
+        /// <summary>todoComment</summary>
+        public static readonly string StrDiffentPermissionRequiredForEditingDataMenuHint = Catalog.GetString(
+            "(This menu item is shown on the {0} Module Menu for your convenience, although the data that this Form maintains " +
+            "is associated with the {1} Module.)");
+
         #endregion
 
         #region Strings associated with saving data
@@ -187,6 +206,7 @@ namespace Ict.Petra.Client.MCommon
 
 
         #endregion
+
         #region Exchange rate Import strings
 
         /// <summary>todoComment</summary>

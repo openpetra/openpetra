@@ -164,7 +164,6 @@ RootNode:
             mniMaintainFamilyMembers:
             mniMaintainRelationships:
             mniMaintainReminders:
-            mniMaintainFinanceDetails:
             mniMaintainLocalPartnerData:            
             mniMaintainInterests:            
             mniMaintainNotes:
@@ -172,6 +171,7 @@ RootNode:
             mniSeparator:
             mniMaintainPersonnelData: {Label=&Personnel/Individual Data...}
             mniSeparator:
+            mniMaintainFinanceDetails:
             mniMaintainDonorHistory:
             mniMaintainRecipientHistory:
             mniMaintainFinanceReports:

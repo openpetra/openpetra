@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Passport Types
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtPassportType
@@ -52,4 +52,4 @@ RootNode:
         txtDetailDescription: {Label=Description, Width=338}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

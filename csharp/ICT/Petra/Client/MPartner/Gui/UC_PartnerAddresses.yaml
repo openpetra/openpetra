@@ -56,7 +56,6 @@ RootNode:
             Padding: [0,5,5,5]
 
         grpAddress: {Label=Address}
-            Stretch: horizontally
             Controls:
                 Row0: [txtLocationLocality]
                 Row1: [txtLocationStreetName]
@@ -72,15 +71,15 @@ RootNode:
                 Row2: [dtpPPartnerLocationDateEffective]
                 Row3: [dtpPPartnerLocationDateGoodUntil]
 
-        txtLocationLocality: {Label=Addr&1, ColSpan=2, Stretch=horizontally}
-        txtLocationStreetName: {Label=Street-&2, ColSpan=2, Stretch=horizontally}
-        txtLocationAddress3: {Label=Addr&3, ColSpan=2, Stretch=horizontally}
+        txtLocationLocality: {Label=Addr&1, ColSpan=2, Width=340}
+        txtLocationStreetName: {Label=Street-&2, ColSpan=2, Width=340}
+        txtLocationAddress3: {Label=Addr&3, ColSpan=2, Width=340}
         txtLocationCity: {Label=Cit&y/Town, Width=180}
-        txtLocationCounty: {Label=County/State, Stretch=horizontally}
+        txtLocationCounty: {Label=County/State, Width=80}
         txtLocationPostalCode: {Label=Po&st Code, Width=100}
         cmbLocationCountryCode: {Label=Coun&try, List=CountryList, OnChange=CountryCodeChanged, AllowDbNull=true, Width=300, ColSpan=2}
 
-        cmbPPartnerLocationLocationType: {Label=&Location Type, List=LocationTypeList,Width=150}
+        cmbPPartnerLocationLocationType: {Label=&Location Type, List=LocationTypeList,Width=130}
         chkPPartnerLocationSendMail: {Label=Mailin&g Address, Validation=true}
         dtpPPartnerLocationDateEffective: {Label=&Valid From}
         dtpPPartnerLocationDateGoodUntil: {Label=Valid To}

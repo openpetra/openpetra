@@ -51,12 +51,15 @@ RootNode:
             
         chkAccomodation:
             OnChange: ShowHideAccomodationData
+            Label: Accommodation
             
         txtAccomodationSize:
             Width: 45
+            Label: Accommodation Size
 
         cmbAccomodationType: {DataField=AccomodationType, List=AccommodationCodeList, AllowDbNull=true}
             Width: 100
+            Label: Accommodation Type
         
         pnlAccomodationDetails:
             Controls: [txtAccomodationSize, cmbAccomodationType]

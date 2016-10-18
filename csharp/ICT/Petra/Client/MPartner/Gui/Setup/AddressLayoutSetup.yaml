@@ -1,10 +1,11 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Address Layouts
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PAddressBlock
     CacheableTable: AddressBlockList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    ModuleForSecurityDerminedByContext: true
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 800

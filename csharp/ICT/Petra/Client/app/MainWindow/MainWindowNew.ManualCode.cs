@@ -80,6 +80,8 @@ namespace Ict.Petra.Client.App.PetraClient
 #endif
 
         private bool FTaxDeductiblePercentageEnabled = false;
+        private bool FTaxGovIdEnabled = false;
+        private string FTaxGovIdLabel = string.Empty;
         private bool FDevelopersOnly = false;
 
         /// <summary>
@@ -133,13 +135,26 @@ namespace Ict.Petra.Client.App.PetraClient
             // in colour and that doesn't look that good with an 'OpenPetra styled' StatusBar at the bottom).
             stbMain.UseOpenPetraToolStripRenderer = true;
 
-            // this is needed for one screen which should only be displayed if tax deductibility is enabled
+            // Show the logged-in user on the right hand side of the Status Bar
+            stbMain.AddExtraLabelOnTheRight(Catalog.GetString("User: ") + Ict.Petra.Shared.UserInfo.GUserInfo.UserID);
+
+            // This is needed for one screen which should only be displayed if tax deductibility is enabled
             FTaxDeductiblePercentageEnabled =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
 
-            // this is needed for one screen which should only be displayed if this is a developers build of OpenPetra
+            // This is needed for one screen which should only be displayed if this is a developers build of OpenPetra
             FDevelopersOnly =
                 TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_DEVELOPERSONLY, false);
+
+            // This is needed for Austria at the moment
+            FTaxGovIdEnabled =
+                TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
+
+            if (FTaxGovIdEnabled)
+            {
+                FTaxGovIdLabel =
+                    TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_LABEL, string.Empty);
+            }
 
             InitialiseTopPanel();
 
@@ -346,6 +361,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 if (PermissionsRequired.IndexOf('+') > 0)
                 {
                     // There are multiple permissions which must be AND'ed
+                    gotPermission = true;
+
                     while (PermissionsRequired.Length > 0)
                     {
                         string PermissionRequired = StringHelper.GetNextCSV(ref PermissionsRequired, "+");
@@ -788,7 +805,8 @@ namespace Ict.Petra.Client.App.PetraClient
                 UpdateFinanceSubsystemLinkStatus();
             };
 
-            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission, FTaxDeductiblePercentageEnabled, FDevelopersOnly);
+            TLstTasks.Init(UserInfo.GUserInfo.UserID, HasAccessPermission,
+                FTaxDeductiblePercentageEnabled, FTaxGovIdEnabled, FDevelopersOnly, FTaxGovIdLabel);
 
             while (DepartmentNode != null)
             {

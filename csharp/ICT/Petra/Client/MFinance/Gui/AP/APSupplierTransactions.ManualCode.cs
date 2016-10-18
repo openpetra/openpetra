@@ -918,14 +918,22 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         }
 
                         DateTime PostingDate = dateEffectiveDialog.SelectedDate;
+                        Int32 glBatchNumber;
 
                         if (TRemote.MFinance.AP.WebConnectors.PostAPDocuments(
                                 FLedgerNumber,
                                 ApDocumentIds,
                                 PostingDate,
                                 true,
+                                out glBatchNumber,
                                 out Verifications))
                         {
+                            if (glBatchNumber >= 0)
+                            {
+                                TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+                                ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
+                            }
+
                             System.Windows.Forms.MessageBox.Show("Invoice reversed to Approved status.", Catalog.GetString("Reversal"));
                             Reload();
                             return;

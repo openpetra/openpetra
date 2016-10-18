@@ -38,7 +38,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
     public partial class TFrmGiftBatchDetail
     {
         private Int32 FLedgerNumber;
-        private Int32 FBatchNumber;
+        private Int32 FBatchNumber = -1;
 
         /// <summary>
         /// the report should be run for this ledger
@@ -95,7 +95,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 LedgerName = LedgerView[0].Row["LedgerName"].ToString();
             }
 
-            if (!Int32.TryParse(txtBatchNumber.Text, out FBatchNumber))
+            if (FBatchNumber <= 0)
             {
                 MessageBox.Show(
                     Catalog.GetString("Fault: No valid Batch number"),
@@ -150,6 +150,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
+            Int32.TryParse(txtBatchNumber.Text, out FBatchNumber);
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_batch_number_i", FBatchNumber);
         }
@@ -166,6 +167,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void SetControlsManual(TParameterList AParameters)
         {
+        }
+
+        /// <summary>Automatically print this Batch Detail Report with displaying the UI</summary>
+        /// <param name="AledgerNumber"></param>
+        /// <param name="AgiftBatchNumber"></param>
+        public void PrintReportNoUi(Int32 AledgerNumber, Int32 AgiftBatchNumber)
+        {
+            FLedgerNumber = AledgerNumber;
+            FBatchNumber = AgiftBatchNumber;
+            FPetraUtilsObject.LoadDefaultSettings();
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+            TRptCalculator Calc = new TRptCalculator();
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
         }
     }
 }

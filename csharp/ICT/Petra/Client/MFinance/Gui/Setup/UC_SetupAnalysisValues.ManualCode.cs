@@ -31,6 +31,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using GNU.Gettext;
 using Ict.Petra.Client.MFinance.Logic;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -50,6 +51,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 /* fix tab order */
                 pnlButtons.TabIndex = grdDetails.TabIndex + 1;
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
         }
 

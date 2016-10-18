@@ -37,7 +37,7 @@ using Ict.Common;
 using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared;
-
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -79,6 +79,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ReadOnly = !TRemote.MFinance.Setup.WebConnectors.IsCalendarChangeAllowed(FLedgerNumber);
 
                 SelectRowInGrid(1);
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
             }
         }
 

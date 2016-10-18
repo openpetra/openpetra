@@ -225,7 +225,7 @@ msgstr "Komma"
 #: csharp/ICT/Common/IO/SelectCSVSeparator.cs:128 (first of several
 #: occurrences - the whole list can be found in
 #: i8n/template.pot.withallsources)
-msgid "Tabulator"
+msgid "Tab"
 msgstr "Tabulator"
 
 #: csharp/ICT/Common/IO/SelectCSVSeparator.cs:129 (first of several
@@ -22979,7 +22979,7 @@ msgid "Select Extract Column"
 msgstr "Mit extra Spalten"
 
 #: csharp/ICT/Petra/Client/MReporting/Gui/SendEmailOptionsDialog-generated.cs:71
-msgid "Send to these Emails Addresses"
+msgid "Send to these Email Addresses"
 msgstr ""
 
 #: csharp/ICT/Petra/Client/MReporting/Gui/SendEmailOptionsDialog-generated.cs:72

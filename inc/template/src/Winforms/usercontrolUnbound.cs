@@ -177,6 +177,7 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// auto generated
@@ -332,6 +333,7 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE findandfilter.cs}
+{#INCLUDE security.cs}
 
 {#INCLUDE dynamictabpage_basics.cs}
 {#INCLUDE dynamictabpage_usercontrol_selectionchanged.cs}

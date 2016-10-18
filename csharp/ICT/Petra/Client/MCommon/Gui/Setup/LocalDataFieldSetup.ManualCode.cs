@@ -42,6 +42,7 @@ using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 // The TFrmLocalDataFieldSetup class acts as a base class for three derived classes.
 // This is because this screen (and the database table behind it) is used by three different parts
@@ -70,7 +71,8 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// Constructor for the Partner module-related screen
         /// </summary>
         /// <param name="AParentForm">The screen form object</param>
-        public TFrmLocalPartnerDataFieldSetup(Form AParentForm) : base(AParentForm)
+        /// <param name="ASecurityContext">Security Context.</param>
+        public TFrmLocalPartnerDataFieldSetup(Form AParentForm, string ASecurityContext = "") : base(AParentForm, "MPartner")
         {
         }
     }
@@ -83,8 +85,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <summary>
         /// Constructor for the Personnel module-related screen
         /// </summary>
-        /// <param name="AParentForm">The screen form object</param>
-        public TFrmLocalPersonnelDataFieldSetup(Form AParentForm) : base(AParentForm)
+        /// <param name="AParentForm">The screen form object.</param>
+        /// <param name="ASecurityContext">Security Context.</param>
+        public TFrmLocalPersonnelDataFieldSetup(Form AParentForm, string ASecurityContext = "") : base(AParentForm, "MPersonnel")
         {
         }
     }
@@ -97,8 +100,9 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         /// <summary>
         /// Constructor for the Application module-related screen
         /// </summary>
-        /// <param name="AParentForm">The screen form object</param>
-        public TFrmLocalApplicationDataFieldSetup(Form AParentForm) : base(AParentForm)
+        /// <param name="AParentForm">The screen form object.</param>
+        /// <param name="ASecurityContext">Security Context.</param>
+        public TFrmLocalApplicationDataFieldSetup(Form AParentForm, string ASecurityContext = "") : base(AParentForm, "MPersonnel")
         {
         }
     }
@@ -281,6 +285,10 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 AddRowToUsedByList("Personnel", Catalog.GetString("Personnel"));
                 clbUsedBy.Visible = false;
             }
+
+            // Need to run this to ensure that the Form's Title gets prefixed with 'Read-Only: ' as the Form's title
+            // was overwritten just above
+            FPetraUtilsObject.SetScreenCaption();
 
             //Set up our checked list box columns and bind to our DTUsedBy table
             clbUsedBy.AddCheckBoxColumn(GUIUsedBy, DTUsedBy.Columns[0], 17, false);
@@ -1105,6 +1113,18 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 AFilterString += String.Format("NOT ({0} LIKE '%{1}%')", DBUsedBy, ACheckBox.Text);
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PDataLabelTable.ColumnGroupId,
+                    PDataLabelTable.ColumnTextId,
+                    PDataLabelTable.ColumnDataTypeId,
+                    PDataLabelTable.ColumnDisplayedId,
+                });
         }
     }
 }

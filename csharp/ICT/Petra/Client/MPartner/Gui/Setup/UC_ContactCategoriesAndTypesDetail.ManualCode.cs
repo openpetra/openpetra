@@ -111,6 +111,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             /* fix tab order */
             pnlButtons.TabIndex = grdDetails.TabIndex + 1;
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnNew.Enabled = false;
+            }
         }
 
         private void NewRecord(Object sender, EventArgs e)
@@ -188,7 +193,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 }
             }
 
-            FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex());
+            FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex(), FPetraUtilsObject.SecurityReadOnly);
         }
 
         /// <summary>

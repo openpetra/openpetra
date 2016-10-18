@@ -619,6 +619,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                                     }
                                 }
                             }
+
+                            AUserDefaultsDataTable.AcceptChanges();
                         }
                         catch (Exception Exp)
                         {

@@ -235,7 +235,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             // gets created since we have our own Delete handling ('DeleteRecord' Method in ManualCode file)
             btnDelete.Enabled = pnlDetails.Enabled && chkDetailDeletable.Checked;
 
-            FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex());
+            FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex(), FPetraUtilsObject.SecurityReadOnly);
         }
 
         private void GetDetailDataFromControlsManual(PPartnerAttributeCategoryRow ARow)

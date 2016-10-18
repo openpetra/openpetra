@@ -1,9 +1,10 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Letter Formalities
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PFormality
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation]
+    ModuleForSecurityDerminedByContext: true
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 780

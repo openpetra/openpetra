@@ -14,43 +14,7 @@
         READCONTROLSLOCALVARS: BLANK
         SETCONTROLSLOCALVARS: BLANK
         #~ show the YTD Checkbox (true) and hide the Ledger selection grid (false)
-        INITUSERCONTROLS: uco_FinanceColumns.SetVisibility(true, false); uco_GeneralSettings.EnableBreakdownByPeriod(true);
+        INITUSERCONTROLS: uco_GeneralSettings.EnableBreakdownByPeriod(true);
     Security:
         ModulePermissionRequired: [FINANCE-1]
     Controls:
-
-    ReportParameters:{ColumnFunction=TFinanceColumnFunction}
-        Para0:
-            Name: Actual Selected Year
-            Parameter: 0
-        Para1:
-            Name: Actual Previous Year
-            Parameter: 0
-        Para2:
-            Name: Actual End of Previous Year
-            Parameter: false, true
-        Para3:
-            Name: Variance
-            Parameter: 2
-        Para4:
-            Name: Variance %
-            Parameter: 2
-        Para5:
-            Name: Account %
-            Parameter: 1
-        Para6:
-            Name: Account % INC/EXP
-            Parameter: 1
-        Para7:
-            Name: Budget Previous Year
-            Parameter: 0
-        Para8:
-            Name: Budget Selected Year
-            Parameter: 0
-        Para9:
-            Name: Budget Whole Selected Year
-            Parameter: false, true
-        Para10:
-            Name: Budget Next Year
-            Parameter: 0
-            

@@ -1523,7 +1523,7 @@ namespace Ict.Petra.Client.CommonControls
                     break;
 
                 case TListTableEnum.LocationTypeList:
-                    this.ColumnWidthCol1 = 110;
+                    this.ColumnWidthCol1 = 90;
                     break;
 
                 case TListTableEnum.MailingList:

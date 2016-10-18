@@ -48,9 +48,9 @@ RootNode:
 
         btnCopy: {NoLabel=true, Width=12, Height=24, ImageAlign=System.Drawing.ContentAlignment.MiddleCenter, TabIndex=998, Tooltip=Copy the message content to clipboard}
 
-        btnYes: {Label=&Yes, Height=24, TabIndex=10, ActionClick=BtnYes_Click, Tooltip=Close the dialog using the 'Yes' option}
-        btnYesToAll: {Label=Yes to &all, Height=24, TabIndex=20, ActionClick=BtnYesToAll_Click, Tooltip=Close the dialog using the 'Yes to All' option}
-        btnNo: {Label=&No, Height=24, TabIndex=30, ActionClick=BtnNo_Click, Tooltip=Close the dialog using the 'No' option}
-        btnNoToAll: {Label=N&o to all, Height=24, TabIndex=40, ActionClick=BtnNoToAll_Click, Tooltip=Close the dialog using the 'No to All' option}
-        btnOK: {Tooltip=Close the dialog using the 'OK' option}
-        btnCancel: {Tooltip=Cancel the dialog}
+        btnYes: {Label=&Yes, Height=24, TabIndex=10, ActionClick=BtnYes_Click}
+        btnYesToAll: {Label=Yes to &all, Height=24, TabIndex=20, ActionClick=BtnYesToAll_Click}
+        btnNo: {Label=&No, Height=24, TabIndex=30, ActionClick=BtnNo_Click}
+        btnNoToAll: {Label=N&o to all, Height=24, TabIndex=40, ActionClick=BtnNoToAll_Click}
+        btnOK: 
+        btnCancel: 

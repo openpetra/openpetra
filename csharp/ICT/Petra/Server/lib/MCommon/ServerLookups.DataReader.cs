@@ -30,6 +30,7 @@ using Ict.Common.Data;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -99,6 +100,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             TDBTransaction AReadTransaction)
         {
             AResultTable = null;
+            string context = string.Format("GetData {0}", SharedConstants.MODULE_ACCESS_MANAGER);
 
             // TODO: check access permissions for the current user
 
@@ -236,22 +238,12 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             }
             else if (ATablename == SGroupTable.GetTableDBName())
             {
-                if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_SYSADMIN) == false)
-                {
-                    throw new ESecurityAccessDeniedException(string.Format("No access for user {0} to Module {1}.",
-                            UserInfo.GUserInfo.UserID, SharedConstants.PETRAMODULE_SYSADMIN));
-                }
-
+                TSecurityChecks.CheckUserModulePermissions(SharedConstants.PETRAMODULE_SYSADMIN, context);
                 AResultTable = SGroupAccess.LoadAll(AReadTransaction);
             }
             else if (ATablename == SSystemDefaultsTable.GetTableDBName())
             {
-                if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_SYSADMIN) == false)
-                {
-                    throw new ESecurityAccessDeniedException(string.Format("No access for user {0} to Module {1}.",
-                            UserInfo.GUserInfo.UserID, SharedConstants.PETRAMODULE_SYSADMIN));
-                }
-
+                TSecurityChecks.CheckUserModulePermissions(SharedConstants.PETRAMODULE_SYSADMIN, context);
                 AResultTable = SSystemDefaultsAccess.LoadAll(AReadTransaction);
             }
             else if (ATablename == SSystemDefaultsGuiTable.GetTableDBName())
@@ -322,6 +314,7 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
             AVerificationResult = null;
 
             // TODO: check write permissions
+            string context = string.Format("SaveData {0}", SharedConstants.MODULE_ACCESS_MANAGER);
 
             if (ASubmitTable != null)
             {
@@ -342,10 +335,14 @@ namespace Ict.Petra.Server.MCommon.DataReader.WebConnectors
                     }
                     else if (ATablename == ADailyExchangeRateTable.GetTableDBName())
                     {
+                        TSecurityChecks.CheckUserModulePermissions(
+                            string.Format("AND({0},{1})", SharedConstants.PETRAGROUP_FINANCE1, SharedConstants.PETRAMODULE_FINEXRATE),
+                            context);
                         ADailyExchangeRateAccess.SubmitChanges((ADailyExchangeRateTable)ASubmitTable, AWriteTransaction);
                     }
                     else if (ATablename == ACorporateExchangeRateTable.GetTableDBName())
                     {
+                        // AlanP:  I don't think this is used any more.  There is a TDS Save method instead
                         ACorporateExchangeRateAccess.SubmitChanges((ACorporateExchangeRateTable)ASubmitTable, AWriteTransaction);
                     }
                     else if (ATablename == ACurrencyLanguageTable.GetTableDBName())

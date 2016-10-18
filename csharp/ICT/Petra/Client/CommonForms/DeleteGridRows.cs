@@ -275,6 +275,12 @@ namespace Ict.Petra.Client.CommonForms
                     foreach (DataRowView drv in HighlightedRows)
                     {
                         DataRow rowToDelete = drv.Row;
+
+                        if (rowToDelete.RowState == DataRowState.Detached)
+                        {
+                            continue;
+                        }
+
                         string rowDetails = MakePKValuesString(rowToDelete);
 
                         if (!ACallerFormOrControl.IsRowDeletable(rowToDelete))

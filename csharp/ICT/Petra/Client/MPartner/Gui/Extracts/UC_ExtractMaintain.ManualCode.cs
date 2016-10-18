@@ -467,10 +467,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             btnDeleteRow.Enabled = pnlDetails.Enabled && !FFrozen;
-
-            bool gotRows = grdDetails.Rows.Count > 1;
-            ((TFrmExtractMaintain)FPetraUtilsObject.GetForm()).ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingWord", gotRows));
-            ((TFrmExtractMaintain)FPetraUtilsObject.GetForm()).ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingExcel", gotRows));
         }
 
         private void EditPartner(System.Object sender, EventArgs e)

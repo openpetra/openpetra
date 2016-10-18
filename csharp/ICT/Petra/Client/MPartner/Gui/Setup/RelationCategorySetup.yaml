@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Relationship Categories
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PRelationCategory
@@ -53,4 +53,4 @@ RootNode:
         txtDetailDescription: {Width=257}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

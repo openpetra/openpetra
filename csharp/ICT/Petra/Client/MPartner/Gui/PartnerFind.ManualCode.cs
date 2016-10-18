@@ -614,6 +614,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                     mniMaintainLocalPartnerData.Enabled = false;
                 }
             }
+
+            // If the user doesn't have Finance Module permission then disable the following MenuItems which would
+            // require the user to have that permission!
+            if (!UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+            {
+                mniMaintainDonorHistory.Enabled = false;
+                mniMaintainRecipientHistory.Enabled = false;
+            }
         }
 
         #region Menu/ToolBar command handling

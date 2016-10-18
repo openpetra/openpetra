@@ -1,9 +1,10 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain International Postal Type Codes
     Namespace: Ict.Petra.Client.MCommon.Gui.Setup
     DetailTable: PInternationalPostalType
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.Interfaces.MCommon,Ict.Petra.Shared.MCommon.Validation]
+    ModuleForSecurity: MPartner
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 660

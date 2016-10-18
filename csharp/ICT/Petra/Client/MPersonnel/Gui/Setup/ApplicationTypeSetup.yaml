@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Application Types
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtApplicationType
@@ -61,4 +61,4 @@ RootNode:
         txtDetailAppTypeDescr: {Label=Description, Width=300}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

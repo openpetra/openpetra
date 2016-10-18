@@ -178,12 +178,17 @@ namespace Ict.Petra.Tools.SampleDataConstructor
             }
 
             TVerificationResultCollection VerificationResult;
+            Int32 glBatchNumber;
 
-            if ((DocumentIdsToPost.Count > 0)
-                && !TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false, out VerificationResult))
+            if (DocumentIdsToPost.Count > 0)
             {
-                TLogging.Log(VerificationResult.BuildVerificationResultString());
-                return false;
+                if (!TAPTransactionWebConnector.PostAPDocuments(FLedgerNumber, DocumentIdsToPost, PeriodEndDate, false,
+                        out glBatchNumber,
+                        out VerificationResult))
+                {
+                    TLogging.Log(VerificationResult.BuildVerificationResultString());
+                    return false;
+                }
             }
 
             // TODO pay the invoices as well

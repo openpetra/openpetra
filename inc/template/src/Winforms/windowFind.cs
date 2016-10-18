@@ -29,6 +29,7 @@ using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#IFDEF FILTERANDFIND}
 using Ict.Petra.Client.MCommon;
 {#ENDIF FILTERANDFIND}
+using Ict.Petra.Shared.Security;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -42,6 +43,7 @@ namespace {#NAMESPACE}
                                      , IButtonPanel
 {#ENDIF FILTERANDFIND}
   {
+    private string FSecurityContext = String.Empty;
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
@@ -59,8 +61,10 @@ namespace {#NAMESPACE}
 {#ENDIF UICONNECTORTYPE}
 
     /// constructor
-    public {#CLASSNAME}(Form AParentForm) : base()
+    public {#CLASSNAME}(Form AParentForm, string ASecurityContext = "") : base()
     {
+      {#SETSECURITYCONTEXT}                   // this ^ gets dynamically set by the Winforms Generator!
+
       //
       // Required for Windows Form Designer support
       //
@@ -73,7 +77,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain, FSecurityContext);
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
@@ -457,9 +461,12 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#BEFORERUNONCEONACTIVATIONMANUAL}
         {#RUNONCEONACTIVATIONMANUAL}
+        {#AFTERRUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
         {#USERCONTROLSRUNONCEONACTIVATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// <summary>
@@ -669,3 +676,4 @@ namespace {#NAMESPACE}
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
 {#INCLUDE findandfilter.cs}
+{#INCLUDE security.cs}

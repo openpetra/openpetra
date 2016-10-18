@@ -500,7 +500,7 @@ namespace PetraServerAdminConsole
                             (TRemote.TimedProcessingJobEnabled("TProcessAutomatedIntranetExport") ? "On" : "Off"));
                             Console.WriteLine("    Data Checks: " + (TRemote.TimedProcessingJobEnabled("TProcessDataChecks") ? "On" : "Off"));
 
-                            Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SMTPServer);
+                            Console.WriteLine("  SMTP Server used for sending e-mails: " + TRemote.SmtpHost);
 
                             if (TRemote.TimedProcessingJobEnabled("TProcessPartnerReminders"))
                             {

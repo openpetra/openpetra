@@ -6,6 +6,7 @@ RootNode:
     GenerateGetSelectedDetailRow: true   # generates the Method 'GetSelectedDetailRow' despite no data fields are used in the Detail section of the Form (would otherwise not get generated!)
     CacheableTable: DataLabelUseList
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Partner.Validation]
+    ModuleForSecurityDerminedByContext: true
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 650

@@ -38,6 +38,9 @@ namespace Ict.Petra.Shared.MCommon
 
         #region Importing
 
+        /// <summary>todoComment</summary>
+        public const String USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS = "ImportedDatesMayBeIntegers";
+
         /// <summary>'Import Information'</summary>
         public static readonly string StrImportInformation = Catalog.GetString("Import Information");
 

@@ -375,7 +375,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable GiftStatementDonorTable(Dictionary <String, TVariant>AParameters,
             TReportingDbAdapter DbAdapter,
-            Int64 ADonorKey = -1,
+            String ADonorKeyList,
             Int64 ARecipientKey = -1,
             String ACommentFor = "RECIPIENT"
             )
@@ -413,10 +413,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         :
                         " AND detail.p_recipient_key_n = " + ARecipientKey;
                     String donorKeyFilter =
-                        (ADonorKey == -1) ?
+                        (ADonorKeyList == "") ?
                         ""
                         :
-                        " AND gift.p_donor_key_n = " + ADonorKey;
+                        " AND gift.p_donor_key_n IN (" + ADonorKeyList + ") ";
 
                     String amountFilter = "";
 
@@ -424,7 +424,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     {
                         Decimal minAmount = AParameters["param_min_amount"].ToDecimal();
                         Decimal maxAmount = AParameters["param_max_amount"].ToDecimal();
-                        amountFilter = " AND detail.a_gift_amount_n >= " + minAmount + " AND detail.a_gift_amount_n <= " + maxAmount;
+
+                        if (minAmount > 0)
+                        {
+                            amountFilter += " AND detail.a_gift_amount_n >= " + minAmount;
+                        }
+
+                        if (maxAmount < 999999999)
+                        {
+                            amountFilter += " AND detail.a_gift_amount_n <= " + maxAmount;
+                        }
                     }
 
                     String motivationFilter = "";
@@ -447,6 +456,39 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         }
                     }
 
+                    String pTaxJoinAsRequired = ", ";
+                    String pTaxFieldAsRequired = ", NULL AS TaxRef, NULL AS DOB, NULL AS Email";
+                    String pTaxFieldFilterAsRequired = "";
+
+                    if (TSystemDefaults.GetBooleanDefault("GovIdEnabled",
+                            false))                                               // This gets the Austrian bPK field...
+                    {
+                        pTaxFieldAsRequired =
+                            ", PUB_p_tax.p_tax_ref_c AS TaxRef, PUB_p_person.p_date_of_birth_d AS DOB, PUB_p_partner_attribute.p_value_c AS Email";
+                        Boolean requireBpk = AParameters["param_chkRequireBpkCode"].ToBool();
+                        pTaxJoinAsRequired = (requireBpk) ?
+                                             " INNER JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = 'GovId') "
+                                             :
+                                             " LEFT JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = 'GovId') ";
+                        //
+                        // If the donor is a person, I can also get their DOB here.
+                        pTaxJoinAsRequired += "LEFT JOIN PUB_p_person ON (p_donor_key_n = PUB_p_person.p_partner_key_n) ";
+                        //
+                        // I would also like their email address...
+                        pTaxJoinAsRequired += "LEFT JOIN (p_partner_attribute INNER JOIN p_partner_attribute_type" +
+                                              " ON (p_partner_attribute_type.p_category_code_c = 'E-Mail'" +
+                                              " AND p_partner_attribute.p_attribute_type_c = p_partner_attribute_type.p_attribute_type_c))" +
+                                              " ON (p_donor_key_n = p_partner_attribute.p_partner_key_n" +
+                                              " AND p_partner_attribute.p_primary_l = TRUE), ";
+
+                        Boolean requireNoBpk = AParameters["param_chkRequireNoBpkCode"].ToBool();
+
+                        if (requireNoBpk)
+                        {
+                            pTaxFieldFilterAsRequired = " AND PUB_p_tax.p_tax_ref_c IS NULL";
+                        }
+                    }
+
                     string Query = "SELECT" +
                                    " gift.a_date_entered_d AS GiftDate," +
                                    " gift.p_donor_key_n AS DonorKey," +
@@ -466,26 +508,22 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " CASE WHEN" +
                                    " (UPPER(detail.a_comment_one_type_c) = '" + ACommentFor + "' OR UPPER(detail.a_comment_one_type_c) = 'BOTH')" +
                                    " AND '" + ReportType + "' = 'Complete'" +
-                                   " THEN detail.a_gift_comment_one_c" +
-                                   " ELSE ''" +
-                                   " END AS CommentOne," +
+                                   " THEN detail.a_gift_comment_one_c ELSE '' END AS CommentOne," +
                                    " CASE WHEN" +
                                    " UPPER(detail.a_comment_two_type_c) = '" + ACommentFor + "' OR UPPER(detail.a_comment_two_type_c) = 'BOTH'" +
                                    " AND '" + ReportType + "' = 'Complete'" +
-                                   " THEN detail.a_gift_comment_two_c" +
-                                   " ELSE ''" +
-                                   " END AS CommentTwo," +
+                                   " THEN detail.a_gift_comment_two_c ELSE '' END AS CommentTwo," +
                                    " CASE WHEN" +
                                    " UPPER(detail.a_comment_three_type_c) = '" + ACommentFor + "' OR UPPER(detail.a_comment_three_type_c) = 'BOTH'" +
                                    " AND '" + ReportType + "' = 'Complete'" +
-                                   " THEN detail.a_gift_comment_three_c" +
-                                   " ELSE ''" +
-                                   " END AS CommentThree," +
+                                   " THEN detail.a_gift_comment_three_c ELSE '' END AS CommentThree," +
                                    " 0 AS thisYearTotal, " +
                                    " 0 AS previousYearTotal " +
+                                   pTaxFieldAsRequired +
 
                                    " FROM" +
-                                   " PUB_a_gift as gift," +
+                                   " PUB_a_gift as gift " +
+                                   pTaxJoinAsRequired +
                                    " PUB_a_gift_detail as detail," +
                                    " PUB_a_gift_batch," +
                                    " PUB_p_partner AS DonorPartner," +
@@ -505,15 +543,41 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " AND RecipientLedgerPartner.p_partner_key_n = detail.a_recipient_ledger_number_n" +
                                    " AND gift.a_ledger_number_i = " + LedgerNumber +
                                    " AND detail.a_batch_number_i = gift.a_batch_number_i" +
-                                   " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i";
+                                   " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                                   pTaxFieldFilterAsRequired;
+
+                    String requestedSort = "";
+
+                    if (AParameters.ContainsKey("param_order_by_name"))
+                    {
+                        requestedSort = AParameters["param_order_by_name"].ToString();
+                    }
 
                     if ((ReportType == "Complete") || (ReportType == "Gifts Only"))
                     {
-                        Query += " ORDER BY gift.a_date_entered_d";
+                        Query += " ORDER BY ";
+
+                        if (requestedSort == "PartnerKey")
+                        {
+                            Query += "DonorPartner.p_partner_key_n";
+                        }
+                        else
+                        {
+                            Query += "DonorPartner.p_partner_short_name_c";
+                        }
+
+                        Query += ", gift.a_date_entered_d";
                     }
                     else if (ReportType == "Donors Only")
                     {
-                        Query += " ORDER BY DonorPartner.p_partner_short_name_c";
+                        if (requestedSort == "PartnerKey")
+                        {
+                            Query += " ORDER BY DonorPartner.p_partner_key_n";
+                        }
+                        else
+                        {
+                            Query += " ORDER BY DonorPartner.p_partner_short_name_c";
+                        }
                     }
 
                     Results = DbAdapter.RunQuery(Query, "Donors", Transaction);
@@ -528,13 +592,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         [NoRemoting]
         public static DataTable GiftStatementDonorAddressesTable(TReportingDbAdapter DbAdapter, Int64 ADonorKey)
         {
-            TDBTransaction Transaction = null;
-
             // create new datatable
             DataTable Results = new DataTable();
 
             Results.Columns.Add("DonorKey", typeof(Int64));
 
+            TDBTransaction Transaction = null;
             DbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate

@@ -5,8 +5,10 @@ RootNode:
     DetailTable: PLanguage
     CacheableTable: LanguageCodeList
     UsingNamespaces: [Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MCommon.Validation]
+    ModuleForSecurity: MPartner
     FormType: edit
     Template: windowMaintainCacheableTable
+    PrintGridOption: true
     WindowWidth: 660
     WindowHeight: 700
     Actions:

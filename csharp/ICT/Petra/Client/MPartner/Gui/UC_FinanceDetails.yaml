@@ -52,7 +52,7 @@ RootNode:
             Padding: -7,0,0,0
         grpRecipientGiftReceipting:
             Controls:
-                Row0: [chkEmailGiftStatement, chkLimitTaxDeductibility]
+                Row0: [chkLimitTaxDeductibility]
                 Row1: [pnlTaxDeductible]
             Padding: 0,-7,0,0
             Width: 460
@@ -62,7 +62,7 @@ RootNode:
             ControlsOrientation: horizontal
             Padding: -4,-7,0,0
             Visible: false
-            ColSpan: 2
+            #ColSpan: 2
         grpOther:
             Controls: [txtFinanceComment]
             Width: 460
@@ -125,10 +125,8 @@ RootNode:
         chkAnonymousDonor:
         txtGovId:
             Label: bPK
-            Enabled: false
+            #Enabled: false
             Width: 250
-        chkEmailGiftStatement:
-            Label: Email Recipient Gift Statement
         chkLimitTaxDeductibility:
            Visible: false
            OnChange: ChkLimitTaxDeductibility_Change

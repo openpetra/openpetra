@@ -8,6 +8,9 @@ RootNode:
     WindowWidth: 500
     WindowHeight: 600
 
+    Events:
+        Closing: {class=System.ComponentModel.CancelEventHandler,method=CustomClosingHandler}
+
     Controls:
         pnlDialogContent:
             Controls: 

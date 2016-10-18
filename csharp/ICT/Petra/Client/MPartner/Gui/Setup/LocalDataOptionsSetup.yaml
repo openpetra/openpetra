@@ -1,10 +1,11 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Local Data Options
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PDataLabelLookup
     CacheableTable: DataLabelLookupList
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    ModuleForSecurityDerminedByContext: true
     FormType: edit
     Template: windowMaintainCacheableTable
     WindowWidth: 800

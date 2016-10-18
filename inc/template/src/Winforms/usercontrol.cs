@@ -441,6 +441,7 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// <summary>
@@ -622,3 +623,4 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
+{#INCLUDE security.cs}

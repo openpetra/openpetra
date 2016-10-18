@@ -1,6 +1,6 @@
 # 
-# for each module, add the names of the interfaces that are not calculated automatically, ie. all namespaces defined in dlls that are needed, but would be missing.
-# those using clauses used to be in ManualCode sections in the interface files
+# For each interface, list the project namespaces that are not calculated automatically, which need to be added as using statements, and their projects added as References.
+# Those using clauses used to be in ManualCode sections in the interface files.
 #
 InterfacesUsingNamespaces:
     Common: [Ict.Petra.Shared.MCommon,Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data]
@@ -8,6 +8,6 @@ InterfacesUsingNamespaces:
     Finance: [Ict.Petra.Shared.MFinance, Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.AP.Data, Ict.Petra.Shared.MFinance.CrossLedger.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Gift.Data, Ict.Petra.Shared.MPartner.Partner.Data]
     Partner: [Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MCommon, Ict.Petra.Shared.MCommon.Data]
     Personnel: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person]
-    SysMan: [Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.Security]
+    SysMan: [Ict.Common.IO, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.Security]
     Reporting: [Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MFinance.GL.Data]
     

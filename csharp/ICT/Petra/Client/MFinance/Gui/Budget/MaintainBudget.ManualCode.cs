@@ -380,9 +380,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
                         if (ARow.Table.Columns.Contains(CurrentCustomPeriodColumn))
                         {
-                            if ((decimal)ARow[CurrentCustomPeriodColumn] != budgetPeriodRow.BudgetBase)
+                            if (ARow[CurrentCustomPeriodColumn].ToString() != string.Empty)
                             {
-                                ARow[CurrentCustomPeriodColumn] = budgetPeriodRow.BudgetBase;
+                                if ((decimal)ARow[CurrentCustomPeriodColumn] != budgetPeriodRow.BudgetBase)
+                                {
+                                    ARow[CurrentCustomPeriodColumn] = budgetPeriodRow.BudgetBase;
+                                }
+                            }
+                            else
+                            {
+                                SetCurrentPeriodToZero(i, ARow, CurrentCustomPeriodColumn);
+                                return;
                             }
                         }
                         else
@@ -398,6 +406,72 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
                     "Error in MaintainBudget.UpdatePeriodAmountsFromControls(). CurrentCustomPeriodColumn is value: " + CurrentCustomPeriodColumn);
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
+            }
+        }
+
+        private void SetCurrentPeriodToZero(int index, BudgetTDSABudgetRow ARow, string CurrentCustomPeriodColumn)
+        {
+            switch (index)
+            {
+                case 1:
+                    txtPeriod01Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 2:
+                    txtPeriod02Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 3:
+                    txtPeriod03Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 4:
+                    txtPeriod04Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 5:
+                    txtPeriod05Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 6:
+                    txtPeriod06Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 7:
+                    txtPeriod07Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 8:
+                    txtPeriod08Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 9:
+                    txtPeriod09Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 10:
+                    txtPeriod10Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 11:
+                    txtPeriod11Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
+
+                case 12:
+                    txtPeriod12Amount.NumberValueDecimal = 0;
+                    ARow[CurrentCustomPeriodColumn] = 0;
+                    break;
             }
         }
 

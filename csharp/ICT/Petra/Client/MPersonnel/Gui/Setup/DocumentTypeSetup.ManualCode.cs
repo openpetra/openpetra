@@ -35,6 +35,9 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
@@ -105,6 +108,20 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateDocumentType(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PmDocumentTypeTable.ColumnDocCodeId,
+                    PmDocumentTypeTable.ColumnDocCategoryId,
+                    PmDocumentTypeTable.ColumnDescriptionId,
+                    PmDocumentTypeTable.ColumnUnassignableFlagId,
+                    PmDocumentTypeTable.ColumnUnassignableDateId,
+                    PmDocumentTypeTable.ColumnDeletableFlagId
+                });
         }
     }
 }

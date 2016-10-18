@@ -185,7 +185,7 @@ namespace {#NAMESPACE}
 {#IFDEF FILTERANDFIND}
         FFilterAndFindObject = new TFilterAndFindPanel(this, FPetraUtilsObject, grdDetails, this, pnlFilterAndFind, chkToggleFilter, lblRecordCounter);
         FFilterAndFindObject.SetupFilterAndFindControls();
-		{#FILTERBUTTON}
+        {#FILTERBUTTON}
 {#ENDIF FILTERANDFIND}
         SelectRowInGrid(1);
     }
@@ -211,16 +211,16 @@ namespace {#NAMESPACE}
 
             if (FPetraUtilsObject.VerificationResultCollection.HasOnlyNonCriticalErrors)
             {
-			    // Some non-critical warnings exist
+                // Some non-critical warnings exist
                 if (TDataValidation.ProcessAnyDataValidationWarnings(FPetraUtilsObject.VerificationResultCollection,
                     MCommonResourcestrings.StrCreateNewRowAnywayQuestion, this.GetType()) == false)
                 {
-				    // Client cancelled
+                    // Client cancelled
                     return false;
                 }
 
                 // Client wants to continue
-				// We can ignore FocusRowLeaving because we have just displayed the message as a Yes/No dialog
+                // We can ignore FocusRowLeaving because we have just displayed the message as a Yes/No dialog
                 FIgnoreFocusRowLeaving = true;
             }
             
@@ -299,6 +299,30 @@ namespace {#NAMESPACE}
     }
 
 #endregion
+
+{#IFDEF PRINTGRIDOPTION}
+#region Printing Methods
+        private void PrintUsingWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, false);
+        }
+
+        private void PrintUsingExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, false);
+        }
+
+        private void PrintPreviewInWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, true);
+        }
+
+        private void PrintPreviewInExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, true);
+        }
+#endregion
+{#ENDIF PRINTGRIDOPTION}
 
 #region Row Selection and Discovery
 
@@ -500,22 +524,34 @@ namespace {#NAMESPACE}
 
             if (ARow == null)
             {
-				pnlDetails.Enabled = false;
-				{#CLEARDETAILS}
-			}
-			else
-			{
-				pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
-				{#SHOWDETAILS}
-			}
-		}
-		finally
-		{
-			{#ENABLEDELETEBUTTON}FPetraUtilsObject.EnableDataChangedEvent();
-			FShowDetailsInProcess = false;
-		}
+                pnlDetails.Enabled = false;
+                {#CLEARDETAILS}
+            }
+            else
+            {
+                pnlDetails.Enabled = !FPetraUtilsObject.DetailProtectedMode && !pnlDetailsProtected;
+                {#SHOWDETAILS}
+            }      
+{#IFDEF PRINTGRIDOPTION}
+
+            bool gotRows = grdDetails.Rows.Count > 1;
+
+            ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingWord", gotRows));
+            ActionEnabledEvent(null, new ActionEventArgs("actPrintUsingExcel", gotRows));
+            
+{#ENDIF PRINTGRIDOPTION}
+        }
+        finally
+        {
+            {#ENABLEDELETEBUTTON}
+
+            {#EXTRADISABLEBUTTONHANDLING}
+
+            FPetraUtilsObject.EnableDataChangedEvent();
+            FShowDetailsInProcess = false;
+        }
     }
-	
+
     private bool ShowDetailsInProcess()
     {
         return FShowDetailsInProcess;
@@ -624,8 +660,8 @@ namespace {#NAMESPACE}
 {#ENDIF BUTTONPANEL}
     }
 
-	#region IDeleteGridRows implementation
-	
+    #region IDeleteGridRows implementation
+
     /// <summary>
     /// Perform the reference count
     /// </summary>
@@ -661,7 +697,7 @@ namespace {#NAMESPACE}
     public void HandlePreDelete(DataRow ARowToDelete, ref bool AAllowDeletion, ref string ADeletionQuestion)
     {
 {#IFDEF HASPREDELETEMANUAL}
-		AAllowDeletion = PreDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, ref ADeletionQuestion);
+        AAllowDeletion = PreDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, ref ADeletionQuestion);
 {#ENDIF HASPREDELETEMANUAL}
     }
 
@@ -672,10 +708,10 @@ namespace {#NAMESPACE}
     {
 {#IFDEF HASDELETEROWMANUAL}
         ADeletionPerformed = DeleteRowManual(({#DETAILTABLETYPE}Row)ARowToDelete, ref ACompletionMessage);
-		return true;
+        return true;
 {#ENDIF HASDELETEROWMANUAL}
 {#IFNDEF HASDELETEROWMANUAL}
-		return false;
+        return false;
 {#ENDIFN HASDELETEROWMANUAL}
     }
 
@@ -685,11 +721,11 @@ namespace {#NAMESPACE}
     public bool HandlePostDelete(DataRow ARowToDelete, bool AAllowDeletion, bool ADeletionPerformed, string ACompletionMessage)
     {
 {#IFDEF HASPOSTDELETEMANUAL}
-		PostDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
-		return true;
+        PostDeleteManual(({#DETAILTABLETYPE}Row)ARowToDelete, AAllowDeletion, ADeletionPerformed, ACompletionMessage);
+        return true;
 {#ENDIF HASPOSTDELETEMANUAL}
 {#IFNDEF HASPOSTDELETEMANUAL}
-		return false;
+        return false;
 {#ENDIFN HASPOSTDELETEMANUAL}
     }
 
@@ -700,8 +736,8 @@ namespace {#NAMESPACE}
     {
         {#CANDELETEROW}
     }
-	#endregion
-	
+    #endregion
+
 #endregion
 #endregion
 {#ENDIF SHOWDETAILS}
@@ -1021,8 +1057,8 @@ namespace {#NAMESPACE}
                 {
                     if(ControlToValidate.FindUserControlOrForm(true) == this)
                     {
-						bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
-							!FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
+                        bool ignoreWarnings = (ADataValidationProcessingMode == TErrorProcessingMode.Epm_IgnoreNonCritical) &&
+                            !FPetraUtilsObject.VerificationResultCollection.HasCriticalErrors;
 {#IFDEF SHOWDETAILS}
                         ReturnValue = TDataValidation.ProcessAnyDataValidationErrors(ARecordChangeVerification, FPetraUtilsObject.VerificationResultCollection,
                             this.GetType(), ARecordChangeVerification ? ControlToValidate.FindUserControlOrForm(true).GetType() : null, ignoreWarnings);
@@ -1061,6 +1097,7 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// auto generated
@@ -1130,7 +1167,7 @@ namespace {#NAMESPACE}
     /// Our main keyboard handler
     public bool ProcessParentCmdKey(ref Message msg, Keys keyData)
     {
-		{#PREPROCESSCMDKEY}
+        {#PREPROCESSCMDKEY}
 {#IFDEF FILTERANDFIND}
         {#PROCESSCMDKEYCTRLF}
         {#PROCESSCMDKEYCTRLR}
@@ -1317,3 +1354,4 @@ return (({#DETAILTABLE}Row)ARowToDelete).{#DELETEABLEFLAG};
         return false;
     }
 
+{#INCLUDE security.cs}

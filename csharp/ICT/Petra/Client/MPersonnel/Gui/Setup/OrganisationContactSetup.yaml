@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Organisation Contacts
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PtContact
@@ -52,4 +52,4 @@ RootNode:
         txtDetailContactDescr: {Label=Description, Width=345}
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

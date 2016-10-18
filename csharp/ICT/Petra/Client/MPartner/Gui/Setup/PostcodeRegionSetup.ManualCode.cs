@@ -45,6 +45,8 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared.Security;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -172,6 +174,8 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             FMainDS.AcceptChanges();
+
+            FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
         }
 
         private void ShowDetailsManual(PPostcodeRegionRow ARow)
@@ -191,7 +195,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 MyDataView.RowFilter = PPostcodeRegionRangeTable.GetRegionDBName() + " = " + "'" + ARow.Region + "'";
                 MyDataView.Sort = "p_range_c ASC";
 
-                btnAdd.Enabled = true;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    btnAdd.Enabled = true;
+                }
             }
             else
             {
@@ -245,7 +252,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             FPrevRangeRowChangedRow = e.Row;
 
-            btnRemove.Enabled = true;
+            if (!FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnRemove.Enabled = true;
+            }
         }
 
         private bool DeleteRowManual(PPostcodeRegionRow ARowToDelete, ref String ACompletionMessage)
@@ -640,6 +650,15 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
             }
 
             return ReturnValue;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PPostcodeRegionTable.ColumnRegionId
+                });
         }
     }
 }

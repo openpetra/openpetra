@@ -33,17 +33,15 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 {
     public partial class TFrmLanguageLevelSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtLanguageLevelRow ARow)
         {
             int newLevel = 1;
@@ -85,6 +83,20 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateLanguageLevel(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PtLanguageLevelTable.ColumnLanguageLevelId,
+                    PtLanguageLevelTable.ColumnLanguageLevelDescrId,
+                    PtLanguageLevelTable.ColumnLanguageCommentId,
+                    PtLanguageLevelTable.ColumnUnassignableFlagId,
+                    PtLanguageLevelTable.ColumnUnassignableDateId,
+                    PtLanguageLevelTable.ColumnDeletableFlagId
+                });
         }
     }
 }

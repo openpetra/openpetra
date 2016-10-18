@@ -94,6 +94,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             grdDetails.AddTextColumn(Catalog.GetString("Status"),
                 FMainDS.PmGeneralApplication.Columns[PmGeneralApplicationTable.GetGenApplicationStatusDBName()], 100);
 
+            //Sort by date entered
+            DataView myDataView = FMainDS.PmGeneralApplication.DefaultView;
+            myDataView.Sort = "s_date_created_d DESC";
+
             // initialize tab controls
             ucoApplicationEvent.InitialiseUserControl();
             ucoApplicationField.InitialiseUserControl();

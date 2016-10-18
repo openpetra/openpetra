@@ -1370,6 +1370,20 @@ namespace Ict.Common.Exceptions
             FUserName = AUserName;
         }
 
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message, context, OpenPetra Module and OpenPetra User.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AUserName">OpenPetra User.</param>
+        /// <param name="AModule">OpenPetra Module that cannot be accessed.</param>
+        /// <param name="AExceptionContext">The context for this exception</param>
+        public ESecurityModuleAccessDeniedException(String AMessage, String AUserName, String AModule, String AExceptionContext) : base(AMessage,
+                                                                                                                                       AExceptionContext)
+        {
+            FModule = AModule;
+            FUserName = AUserName;
+        }
+
         #region Remoting and serialization
 
         /// <summary>

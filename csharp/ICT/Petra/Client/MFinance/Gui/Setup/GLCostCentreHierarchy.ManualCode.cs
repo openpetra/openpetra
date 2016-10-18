@@ -43,6 +43,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -170,6 +171,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
                 ucoCostCentreList.RunOnceOnActivationManual(this);
                 ucoCostCentreList.PopulateListView(FMainDS, FLedgerNumber);
+
+                FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+                if (FPetraUtilsObject.SecurityReadOnly)
+                {
+                    tbbAddNewCostCentre.Enabled = false;
+                    tbbDeleteCostCentre.Enabled = false;
+                    tbbLinkPartner.Enabled = false;
+                }
             }
         }
 
@@ -1002,7 +1012,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// </summary>
         private bool CheckCostCentreValueChanged()
         {
-            if ((FIAmUpdating > 0) || (strOldDetailCostCentreCode == null))
+            if ((FIAmUpdating > 0) || (strOldDetailCostCentreCode == null) || (FPetraUtilsObject.GetCallerForm() == null))
             {
                 return false;
             }
@@ -1197,7 +1207,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanHaveChildren.HasValue))
             {
-                tbbAddNewCostCentre.Enabled = FCurrentCostCentre.CanHaveChildren.Value;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    tbbAddNewCostCentre.Enabled = FCurrentCostCentre.CanHaveChildren.Value;
+                }
+
                 tbbAddNewCostCentre.ToolTipText = (tbbAddNewCostCentre.Enabled) ? "New Cost Centre" : FCurrentCostCentre.Msg;
             }
             else
@@ -1208,7 +1222,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if ((FCurrentCostCentre != null) && (FCurrentCostCentre.CanDelete.HasValue))
             {
-                tbbDeleteCostCentre.Enabled = FCurrentCostCentre.CanDelete.Value;
+                if (!FPetraUtilsObject.SecurityReadOnly)
+                {
+                    tbbDeleteCostCentre.Enabled = FCurrentCostCentre.CanDelete.Value;
+                }
+
                 tbbDeleteCostCentre.ToolTipText = (tbbDeleteCostCentre.Enabled) ? "Delete Cost Centre" : FCurrentCostCentre.Msg;
             }
             else

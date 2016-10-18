@@ -89,6 +89,7 @@
             Label: All Donors
             ParameterValue: All Donors
             OnChange: DonorSelectionChanged
+            Controls:[pnlRequireBpkCode]
         rbtExtract:
             Label: From Extract
             ParameterValue: Extract
@@ -99,6 +100,17 @@
             ParameterValue: One Donor
             Controls: [txtDonor]
             OnChange: DonorSelectionChanged
+        pnlRequireBpkCode:
+            Height:20
+            Margin:0
+            Visible:false
+            ControlsOrientation: horizontal
+            Controls: [chkRequireBpkCode, chkRequireNoBpkCode]
+        chkRequireBpkCode:
+            Label: Only donors with pBK
+            Left:0
+        chkRequireNoBpkCode:
+            Label: Only donors without pBK
         txtExtract:
             NoLabel: true
             Type: Extract

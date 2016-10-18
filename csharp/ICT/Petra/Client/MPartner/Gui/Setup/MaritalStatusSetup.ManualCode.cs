@@ -34,16 +34,14 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
     public partial class TFrmMaritalStatusSetup
     {
-        private void RunOnceOnActivationManual()
-        {
-            chkDetailDeletableFlag.Enabled = false;
-        }
-
         private void NewRowManual(ref PtMaritalStatusRow ARow)
         {
             string newName = Catalog.GetString("NEWCODE");
@@ -91,6 +89,19 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             TSharedValidation_CacheableDataTables.ValidateMaritalStatus(this, ARow, ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PtMaritalStatusTable.ColumnCodeId,
+                    PtMaritalStatusTable.ColumnDescriptionId,
+                    PtMaritalStatusTable.ColumnAssignableFlagId,
+                    PtMaritalStatusTable.ColumnAssignableDateId,
+                    PtMaritalStatusTable.ColumnDeletableFlagId
+                });
         }
     }
 }

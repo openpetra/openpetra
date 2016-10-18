@@ -1249,14 +1249,21 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("DYNAMICTABPAGEUSERCONTROLSETUPMETHODS", "");
             FTemplate.AddToCodelet("ELSESTATEMENT", "");
 //          FTemplate.AddToCodelet("VALIDATEDETAILS", "");
-
+            FTemplate.AddToCodelet("BEFORERUNONCEONACTIVATIONMANUAL", "");
+            FTemplate.AddToCodelet("AFTERRUNONCEONACTIVATIONMANUAL", "");
+            FTemplate.AddToCodelet("FINALRUNONCEONACTIVATIONACTIONMANUAL", "");
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
             CallHandlerIfProvided("void BeforeShowDetailsManual", "SHOWDETAILS", "BeforeShowDetailsManual(ARow);");
             CallHandlerIfProvided("InitializeManualCode", "INITMANUALCODE", "InitializeManualCode();");
-            CallHandlerIfProvided("RunOnceOnActivationManual", "RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();");
+            CallHandlerIfProvided("BeforeRunOnceOnActivationManual", "BEFORERUNONCEONACTIVATIONMANUAL", "BeforeRunOnceOnActivationManual();");
+            CallHandlerIfProvided("void RunOnceOnActivationManual", "RUNONCEONACTIVATIONMANUAL", "RunOnceOnActivationManual();");
+            CallHandlerIfProvided("AfterRunOnceOnActivationManual", "AFTERRUNONCEONACTIVATIONMANUAL", "AfterRunOnceOnActivationManual();");
             CallHandlerIfProvided("RunOnceOnParentActivationManual", "RUNONCEONPARENTACTIVATIONMANUAL", "RunOnceOnParentActivationManual();");
+            CallHandlerIfProvided("FinalRunOnceOnActivationActionManual",
+                "FINALRUNONCEONACTIVATIONACTIONMANUAL",
+                "FinalRunOnceOnActivationActionManual();");
             CallHandlerIfProvided("ExitManualCode", "EXITMANUALCODE", "ExitManualCode();");
             CallHandlerIfProvided("CanCloseManual", "CANCLOSEMANUAL", " && CanCloseManual()");
             CallHandlerIfProvided("NewRowManual", "INITNEWROWMANUAL", "NewRowManual(ref NewRow);");
@@ -1358,6 +1365,12 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 }
 
                 FTemplate.InsertSnippet("PROCESSCMDKEY", snipCtrlR);
+            }
+
+            //Add print option only for certain BaseYaml file
+            if (FCodeStorage.GetAttribute("BaseYaml").EndsWith("PetraEditPrintForm.yaml"))
+            {
+                FTemplate.AddToCodelet("PRINTGRIDOPTION", "true");
             }
 
             if (FCodeStorage.HasAttribute("DatasetType"))
@@ -1604,6 +1617,8 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         snippetCanDeleteRow.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
                         FTemplate.InsertSnippet("CANDELETEROW", snippetCanDeleteRow);
                     }
+
+                    FTemplate.AddToCodelet("EXTRADISABLEBUTTONHANDLING", String.Empty);
                 }
                 else
                 {
@@ -1658,6 +1673,9 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     FTemplate.AddToCodelet("ENABLEDELETEBUTTON", enableDelete);
 
+                    ProcessTemplate snipFocusFirstControl = FTemplate.GetSnippet("DISABLEBUTTONHANDLINGFORREADONLYSCREENS");
+                    FTemplate.InsertSnippet("EXTRADISABLEBUTTONHANDLING", snipFocusFirstControl);
+
                     if (bRequiresCanDeleteSelection)
                     {
                         snippetCanDelete.SetCodelet("DETAILTABLE", FCodeStorage.GetAttribute("DetailTable"));
@@ -1666,6 +1684,10 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         FTemplate.InsertSnippet("CANDELETEROW", snippetCanDeleteRow);
                     }
                 }
+            }
+            else
+            {
+                FTemplate.AddToCodelet("EXTRADISABLEBUTTONHANDLING", String.Empty);
             }
 
             if (FTemplate.FCodelets["CANDELETEROW"].ToString() == String.Empty)
@@ -1939,12 +1961,15 @@ namespace Ict.Tools.CodeGeneration.Winforms
         /// <param name="AXAMLFilename"></param>
         public virtual void InsertCodeIntoTemplate(string AXAMLFilename)
         {
+            ProcessTemplate ApplySecuritySnippet;
+
             FTemplate.ReplacePlaceHolder("BASECLASSNAME", FCodeStorage.FBaseClass, "System.Windows.Forms.Form");
             FTemplate.ReplacePlaceHolder("INTERFACENAME", FCodeStorage.FInterfaceName, "Ict.Petra.Client.CommonForms.IFrmPetra");
             FTemplate.ReplacePlaceHolder("UTILOBJECTCLASS", FCodeStorage.FUtilObjectClass, "Ict.Petra.Client.CommonForms.TFrmPetraUtils");
             FTemplate.ReplacePlaceHolder("FORMTITLE", FCodeStorage.FFormTitle);
             FTemplate.ReplacePlaceHolder("NAMESPACE", FCodeStorage.FNamespace);
             FTemplate.ReplacePlaceHolder("CLASSNAME", FCodeStorage.FClassName);
+            FTemplate.ReplacePlaceHolder("MODULEFORSECURITY", FCodeStorage.FModuleForSecurity);
             FTemplate.ReplacePlaceHolder("SUSPENDLAYOUT", FSuspendLayout);
             FTemplate.ReplacePlaceHolder("FORMSIZE", FCodeStorage.FWidth.ToString() + ", " + FCodeStorage.FHeight.ToString());
             FTemplate.ReplacePlaceHolder("CLASSEVENTHANDLER", FCodeStorage.FEventHandler);
@@ -1967,6 +1992,41 @@ namespace Ict.Tools.CodeGeneration.Winforms
             if (FCodeStorage.FTemplateParameters != null)
             {
                 FTemplate.processTemplateParameters(FCodeStorage.FTemplateParameters);
+            }
+
+            // Set Security Context
+            ProcessTemplate SetSecuritySnippet = FTemplate.GetSnippet("SETSECURITYCONTEXT");
+
+            if (!FCodeStorage.FModuleForSecurityDerminedByContext)
+            {
+                SetSecuritySnippet.SetCodelet("SECURITYCONTEXT", "\"" + FCodeStorage.FModuleForSecurity + "\"");
+            }
+            else
+            {
+                SetSecuritySnippet.SetCodelet("SECURITYCONTEXT", "ASecurityContext");
+            }
+
+            FTemplate.InsertSnippet("SETSECURITYCONTEXT", SetSecuritySnippet);
+
+            if (FCodeStorage.FAutomaticApplySecurityExecution)
+            {
+                ApplySecuritySnippet = FTemplate.GetSnippet("APPLYSECURITY");
+
+                if (FCodeStorage.ManualFileExistsAndContains("ApplySecurityManual("))
+                {
+                    ApplySecuritySnippet.SetCodelet("APPLYSECURITYMANUAL", "true");
+                }
+                else
+                {
+                    ApplySecuritySnippet.SetCodelet("APPLYSECURITYMANUAL", "");
+                }
+
+                FTemplate.InsertSnippet("APPLYSECURITY", ApplySecuritySnippet);
+            }
+            else
+            {
+                ApplySecuritySnippet = FTemplate.GetSnippet("APPLYNOSECURITY");
+                FTemplate.InsertSnippet("APPLYSECURITY", ApplySecuritySnippet);
             }
 
             // todo: other parts that are not in the designer section,

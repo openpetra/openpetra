@@ -3218,31 +3218,10 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             string impOptions = TUserDefaults.GetStringDefault("Imp Options", defaultImpOptions);
 
-            if (impOptions.Length > 0)
-            {
-                ADialog.SelectedSeparator = impOptions.Substring(0, 1);
-            }
-
-            if (impOptions.Length > 1)
-            {
-                ADialog.NumberFormat = impOptions.Substring(1);
-            }
-
-            // Now do date format
-            string dateFormat = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-
-            // mdy and dmy have been the old default settings in Petra 2.x
-            if (dateFormat.ToLower() == "mdy")
-            {
-                dateFormat = "MM/dd/yyyy";
-            }
-
-            if (dateFormat.ToLower() == "dmy")
-            {
-                dateFormat = "dd/MM/yyyy";
-            }
-
-            ADialog.DateFormat = dateFormat;
+            ADialog.SelectedSeparator = StringHelper.GetCSVSeparator(ADialog.FileContent) ??
+                                        ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : myCulture.TextInfo.ListSeparator);
+            ADialog.NumberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+            ADialog.DateFormat = TUserDefaults.GetStringDefault("Imp Date", "MDY");
         }
 
         private void SaveUserDefaults(TDlgSelectCSVSeparator ADialog)

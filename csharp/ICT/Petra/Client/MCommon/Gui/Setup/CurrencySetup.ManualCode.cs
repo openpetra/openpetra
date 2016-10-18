@@ -26,6 +26,9 @@ using System;
 using Ict.Common;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -84,5 +87,18 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         }
 
         #endregion
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    ACurrencyTable.ColumnCurrencyCodeId,
+                    ACurrencyTable.ColumnCurrencyNameId,
+                    ACurrencyTable.ColumnCurrencySymbolId,
+                    ACurrencyTable.ColumnCountryCodeId,
+                    ACurrencyTable.ColumnDisplayFormatId
+                });
+        }
     }
 }

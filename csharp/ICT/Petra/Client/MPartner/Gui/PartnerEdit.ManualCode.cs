@@ -1941,6 +1941,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         void TFrmPartnerEdit_Shown(object sender, EventArgs e)
         {
             ucoLowerPart.SelectTabPage(FInitiallySelectedTabPage);
+
+            // We want the Cursor to be on the 'Title' TextBox in the top part of the Form so the user can
+            // start editing the Partner's name information right away...
+            ucoUpperPart.Focus();
         }
 
         private void UcoUpperPart_PartnerClassMainDataChanged(System.Object Sender, TPartnerClassMainDataChangedEventArgs e)

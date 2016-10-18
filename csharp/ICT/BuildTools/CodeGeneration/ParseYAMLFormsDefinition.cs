@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       timop
+//       timop, christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -62,12 +62,65 @@ namespace Ict.Tools.CodeGeneration
         /// parse basic things: BaseClass, FormTitle, Namespace
         public void LoadFormProperties(XmlNode formNode)
         {
+            string ModuleForSecurity;
+
             FCodeStorage.FBaseClass = TYml2Xml.GetAttribute(formNode, "BaseClass");
             FCodeStorage.FInterfaceName = TYml2Xml.GetAttribute(formNode, "InterfaceName");
             FCodeStorage.FUtilObjectClass = TYml2Xml.GetAttribute(formNode, "UtilObjectClass");
             FCodeStorage.FFormTitle = TYml2Xml.GetAttribute(formNode, "FormTitle");
             FCodeStorage.FNamespace = TYml2Xml.GetAttribute(formNode, "Namespace");
             FCodeStorage.FTemplate = TYml2Xml.GetAttribute(formNode, "Template");
+
+            if (TYml2Xml.HasAttribute(formNode, "ModuleForSecurity"))
+            {
+                FCodeStorage.FModuleForSecurity = TYml2Xml.GetAttribute(formNode, "ModuleForSecurity");
+            }
+            else
+            {
+                if (FCodeStorage.FNamespace != String.Empty)
+                {
+                    // Attempt to find out the Module ('MPartner', 'MPersonnel', etc.) between 'Ict.Petra.Client.' and '.xxx'
+                    ModuleForSecurity = FCodeStorage.FNamespace.Substring("Ict.Petra.Client.".Length);
+
+                    if (!ModuleForSecurity.StartsWith("MReporting"))
+                    {
+                        if (ModuleForSecurity.IndexOf('.') != -1)
+                        {
+                            ModuleForSecurity = ModuleForSecurity.Substring(0, ModuleForSecurity.IndexOf('.'));
+
+                            if (ModuleForSecurity != String.Empty)
+                            {
+                                FCodeStorage.FModuleForSecurity = ModuleForSecurity;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (FCodeStorage.FNamespace.Length > "Ict.Petra.Client.MReporting.Gui.".Length)
+                        {
+                            // Attempt to find out the Module ('MPartner', 'MPersonnel', etc.) after 'Ict.Petra.Client.MReporting.Gui.'
+                            ModuleForSecurity = FCodeStorage.FNamespace.Substring("Ict.Petra.Client.MReporting.Gui.".Length);
+
+                            if (ModuleForSecurity != String.Empty)
+                            {
+                                FCodeStorage.FModuleForSecurity = ModuleForSecurity;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (TYml2Xml.HasAttribute(formNode, "ModuleForSecurityDerminedByContext"))
+            {
+                FCodeStorage.FModuleForSecurityDerminedByContext = true;
+            }
+
+            // Check whether a form should automatically execute FPetraUtilsObject.ApplySecurity or not
+            if (TYml2Xml.HasAttribute(formNode, "AutomaticApplySecurityExecution")
+                && (TYml2Xml.GetAttribute(formNode, "AutomaticApplySecurityExecution").ToLower() == "false"))
+            {
+                FCodeStorage.FAutomaticApplySecurityExecution = false;
+            }
 
             if ((FCodeStorage.FBaseClass == "System.Windows.Forms.UserControl")
                 || (FCodeStorage.FBaseClass == "TGrpCollapsible"))

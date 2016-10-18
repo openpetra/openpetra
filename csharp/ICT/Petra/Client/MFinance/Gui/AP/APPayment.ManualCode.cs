@@ -516,10 +516,12 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TVerificationResultCollection Verifications;
 
             this.Cursor = Cursors.WaitCursor;
+            Int32 glBatchNumber;
 
             if (!TRemote.MFinance.AP.WebConnectors.PostAPPayments(
                     ref FMainDS,
                     PaymentDate,
+                    out glBatchNumber,
                     out Verifications))
             {
                 this.Cursor = Cursors.Default;
@@ -537,6 +539,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 this.Cursor = Cursors.Default;
+                //
+                // The GL Posting Register must be printed.
+                TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+                ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
+
                 PrintPaymentReport(sender, e);
                 PrintRemittanceAdvice();
 
@@ -677,11 +684,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TVerificationResultCollection Verifications;
 
             this.Cursor = Cursors.WaitCursor;
+            List <Int32>glBatchNumbers;
 
-            if (TRemote.MFinance.AP.WebConnectors.ReversePayment(ALedgerNumber, APaymentNumber, PostingDate, out Verifications))
+            if (TRemote.MFinance.AP.WebConnectors.ReversePayment(ALedgerNumber, APaymentNumber, PostingDate,
+                    out glBatchNumbers,
+                    out Verifications))
             {
                 this.Cursor = Cursors.Default;
-                // TODO: print reports on successfully posted batch
+                // The GL Posting Register must be printed.
+                TFrmBatchPostingRegister ReportGui = new TFrmBatchPostingRegister(null);
+
+                foreach (Int32 glBatchNumber in glBatchNumbers)
+                {
+                    ReportGui.PrintReportNoUi(ALedgerNumber, glBatchNumber);
+                }
+
                 MessageBox.Show(Catalog.GetString("The AP payment has been reversed."), Catalog.GetString("Reverse Payment"));
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
                 broadcastMessage.SetMessageDataAPTransaction(String.Empty);

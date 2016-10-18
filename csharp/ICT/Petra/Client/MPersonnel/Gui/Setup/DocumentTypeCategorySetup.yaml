@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Document Type Categories
     Namespace: Ict.Petra.Client.MPersonnel.Gui.Setup
     DetailTable: PmDocumentCategory
@@ -54,4 +54,4 @@ RootNode:
         chkDetailUnassignableFlag: {Label=Unassignable, OnChange=EnableDisableUnassignableDate}
         txtDetailDescription: {Width=300}
         dtpDetailUnassignableDate: {Label=Unassignable Date, Enabled=false, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

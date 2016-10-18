@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,6 +43,8 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.CommonForms
 {
@@ -52,11 +54,6 @@ namespace Ict.Petra.Client.CommonForms
     public partial class TFrmPetraEditUtils : TFrmPetraUtils
     {
         #region Resourcestrings
-
-        /// <summary>This Resourcestring needs to be public becaused it is used elsewhere as well.</summary>
-        public static readonly string StrFormCaptionPrefixNew = Catalog.GetString("NEW: ");
-
-// TODO        private static readonly string StrFormCaptionPrefixReadonly = Catalog.GetString("READ-ONLY: ");
 
         ///
         public static readonly string StrSingleRecordToSave = Catalog.GetString("There is 1 record that needs to be saved.");
@@ -106,7 +103,7 @@ namespace Ict.Petra.Client.CommonForms
         /// Tells whether a Detail of a list of Items is in protected mode (readonly)
         protected Boolean FDetailProtectedMode;
 
-        /// Set this to true to prevent the Save button and MenuItem beeing autoenabled when data changes in the form
+        /// Set this to true to prevent the Save button and MenuItem beeing auto-enabled when data changes in the Form.
         protected Boolean FNoAutoEnableOfSaving;
 
         /// Nasty hack to detect whether a form has "just loaded"
@@ -114,6 +111,9 @@ namespace Ict.Petra.Client.CommonForms
 
         /// <summary>todoComment</summary>
         protected Boolean FSuppressChangeDetection;
+
+        /// <summary>Name of Button Controls that will get disabled when the Edit screen is in read-only mode.</summary>
+        private List <string>FReadOnlyModeButtonsForEditScreens = new List <string>();
 
         /// <summary>Called immediately after the Save action has been started</summary>
         public event TDataSavingStartHandler DataSavingStarted;
@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
-        /// <summary>todoComment</summary>
+        /// <summary>Set this to true to prevent the Save button and MenuItem being auto-enabled when data changes in the Form.</summary>
         public bool NoAutoEnableOfSaving
         {
             get
@@ -172,6 +172,40 @@ namespace Ict.Petra.Client.CommonForms
             set
             {
                 FNoAutoEnableOfSaving = value;
+            }
+        }
+
+        /// <summary>
+        /// Set to false to disallow the editing and saving of data; this works by disabling the 'Save' button and MenuItem
+        /// when the screen is opened and by preventing the 'Save' button and MenuItem being auto-enabled when
+        /// the user edits data.
+        /// </summary>
+        /// <remarks>More advanced screens might well need further logic to prevent the 'Save' button and MenuItem
+        /// being auto-enabled; such screens might need to inquire this Property at certain Events/stages to prevent
+        /// the 'Save' button and MenuItem being auto-enabled when this Property returns false. (Note: If those screens
+        /// would solely call the Method <see cref="SetChangedFlag"/> to custom-enable the 'Save' button and MenuItem
+        /// then this woudld be fine because that Method simply won't perform those actions if
+        /// <see cref="SecurityReadOnly"/> was set to false.)
+        /// <para>
+        /// <em>IMPORTANT:</em>The provisions here only serve for *client-side convenience* and *don't prevent*
+        /// saving of data for real, i.e. on the server side!!!</para></remarks>
+        public override bool SecurityReadOnly
+        {
+            get
+            {
+                return FSecurityReadOnly;
+            }
+
+            set
+            {
+                FSecurityReadOnly = value;
+
+                if (FSecurityReadOnly)
+                {
+                    DisableSaveButton();
+                }
+
+                NoAutoEnableOfSaving = value;
             }
         }
 
@@ -249,9 +283,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <param name="ACallerForm">the int handle of the form that has opened this window; needed for focusing when this window is closed later</param>
         /// <param name="ATheForm"></param>
         /// <param name="AStatusBar"></param>"
-        public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar) : base(ACallerForm,
-                                                                                                                (IFrmPetra)ATheForm,
-                                                                                                                AStatusBar)
+        /// <param name="ASecurityScreenIsForModule"></param>
+        public TFrmPetraEditUtils(Form ACallerForm, IFrmPetraEdit ATheForm, TExtStatusBarHelp AStatusBar,
+            string ASecurityScreenIsForModule = "") : base(ACallerForm, (IFrmPetra)ATheForm, AStatusBar, ASecurityScreenIsForModule)
         {
             FCloseFormCheckRun = false;
             FFormLoadedTime = DateTime.Now;
@@ -942,8 +976,12 @@ namespace Ict.Petra.Client.CommonForms
         /// <remarks>Useful when manual code needs to do these actions (that are normally automatically handled in a Form).</remarks>
         public void SetChangedFlag()
         {
-            EnableAction("actSave", true);
-            EnableAction("actSaveClose", true);
+            if (!FNoAutoEnableOfSaving)
+            {
+                EnableAction("actSave", true);
+                EnableAction("actSaveClose", true);
+            }
+
             FHasChanges = true;
         }
 
@@ -965,6 +1003,7 @@ namespace Ict.Petra.Client.CommonForms
         {
             EnableAction("actSave", false);
             EnableAction("actSaveClose", false);
+
             FHasChanges = false;
         }
 
@@ -1038,7 +1077,7 @@ namespace Ict.Petra.Client.CommonForms
         }
 
         /// <summary>
-        /// don't close window when the details are being edited;
+        /// Don't close window when the details are being edited;
         /// if there are changes, ask the user what to do:
         /// save and close, discard and close, or cancel closing
         /// </summary>
@@ -1054,6 +1093,16 @@ namespace Ict.Petra.Client.CommonForms
                 {
                     CloseFormCheckRun = false;
                     return false;
+                }
+
+                if (FSecurityReadOnly)
+                {
+                    TMessages.MsgFormSavingModifiedDataNotPermittedError(FTheForm.GetType(), SecurityEditingAndSavingPermissionRequired);
+
+                    ChangesWereAbandonded = true;
+                    HasChanges = false;
+
+                    return true;
                 }
 
                 // still unsaved data in the DataSet
@@ -1255,21 +1304,94 @@ namespace Ict.Petra.Client.CommonForms
             }
         }
 
+        #endregion
 
-        /// <summary>todoComment</summary>
-        public void SetScreenCaption(string ACaptionPostFix = "")
+        /// <summary>
+        /// Sets a Form's Title.
+        /// </summary>
+        /// <param name="ACaptionPostFix">Any string specified here gets added to the Form's Title (default = "").</param>
+        public new void SetScreenCaption(string ACaptionPostFix = "")
         {
             String CaptionPrefix = "";
 
-            if (FHasNewData)
+            base.SetScreenCaption();
+
+            if (FHasNewData
+                && (!CaptionPrefix.StartsWith(StrFormCaptionPrefixNew)))
             {
                 CaptionPrefix = StrFormCaptionPrefixNew;
             }
 
-            FWinForm.Text = CaptionPrefix + FormTitle + ACaptionPostFix;
+            FWinForm.Text = CaptionPrefix + (FormTitle != String.Empty ? FormTitle : FWinForm.Text) + ACaptionPostFix;
         }
 
-        #endregion
+        /// <summary>
+        /// Sets up OpenPetra Security to restrict functionality as requested.
+        /// </summary>
+        /// <remarks>When this Method gets called from a UserControl it affects not only the
+        /// UserControl but the Form as a whole!!!</remarks>
+        public new void ApplySecurity(List <string>ASecurityPermissions = null, TScreenSecurity AGetScreenSecurity = null,
+            bool AEnableDisabledButtons = true)
+        {
+            base.ApplySecurity(ASecurityPermissions, AGetScreenSecurity, AEnableDisabledButtons);
+
+            if (SecurityReadOnly)
+            {
+                CallEnableDisableReadOnlyModeButtons(false);
+
+                // We could opt to disable all Controls in a Detail panel in read-only mode but so far we didn't think this is
+                // user-friendly - if users want that then we can enable the line below and that should do it!
+                //DetailProtectedMode = true;
+            }
+            else
+            {
+                if (AEnableDisabledButtons)
+                {
+                    CallEnableDisableReadOnlyModeButtons(true);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Finds the 'New', 'Delete', 'Add', 'Remove' and 'OK' Button Controls and disables/enables them if they exist in the Form.
+        /// Disabling is done to prevent the user from first trying to use those buttons only to find out that the changes that (s)he
+        /// made can't be saved later (these Buttons must be named according to the default button naming scheme for this to work!).
+        /// </summary>
+        /// <param name="AEnable">Set to false to disable these Buttons, set to true to enable them
+        /// (default = false).</param>
+        /// <param name="AAlsoEnableDisableButtonsOfBase">Set to true to also get the base Class, <see cref="TFrmPetraUtils"/>, to
+        /// enable/disable its Read-only Mode Buttons (default=false).</param>
+        public void CallEnableDisableReadOnlyModeButtons(bool AEnable = false,
+            bool AAlsoEnableDisableButtonsOfBase = false)
+        {
+            if (AAlsoEnableDisableButtonsOfBase)
+            {
+                base.CallEnableDisableReadOnlyModeButtons(AEnable);
+            }
+
+            base.EnableDisableReadOnlyModeButtons(AEnable, ref FReadOnlyModeButtonsForEditScreens, delegate
+                {
+                    FReadOnlyModeButtonsForEditScreens.Add("btnNew");
+                    FReadOnlyModeButtonsForEditScreens.Add("btnDelete");
+                    FReadOnlyModeButtonsForEditScreens.Add("btnAdd");
+                    FReadOnlyModeButtonsForEditScreens.Add("btnRemove");
+                });
+        }
+
+        /// <summary>
+        /// Call this Method if the screen has been shown in 'read-only Mode' but the *appearance changes*
+        /// that go with that should be revoked.
+        /// <para>It enables any Buttons that were disabled because of this Mode, removes the
+        /// 'READ-ONLY' prefix from the screen's Title Bar and sets the BackColor of the StatusBar
+        /// to what it normally is.</para>
+        /// </summary>
+        /// <remarks>Calling this Method will <em>not set</em> the Form's 'SecurityReadOnly' Property to false!</remarks>
+        public new void SecurityUndoReadOnlyModeAppearanceChanges()
+        {
+            base.SecurityUndoReadOnlyModeAppearanceChanges();
+
+            CallEnableDisableReadOnlyModeButtons(true);
+        }
     }
 
     /// <summary>todoComment</summary>

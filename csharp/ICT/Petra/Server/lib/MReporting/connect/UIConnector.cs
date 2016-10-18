@@ -38,6 +38,7 @@ using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.Calculator;
 using Ict.Petra.Server.MReporting.MFinance;
+using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;
@@ -46,6 +47,8 @@ using Ict.Common.Printing;
 using Ict.Common.Verification;
 using Ict.Common.Session;
 using Ict.Petra.Shared.MCommon;
+using Ict.Common.Exceptions;
+using Npgsql;
 
 namespace Ict.Petra.Server.MReporting.UIConnectors
 {
@@ -202,10 +205,33 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 TLogging.Log(Exc.StackTrace, TLoggingType.ToLogfile);
 
                 FSuccess = false;
-                SubmissionOK = false;
-
                 FErrorMessage = Exc.Message;
                 FException = Exc;
+            }
+
+            if (FException is Exception && FException.InnerException is EOPDBException)
+            {
+                EOPDBException DbExc = (EOPDBException)FException.InnerException;
+
+                if (DbExc.InnerException is Exception)
+                {
+                    if (DbExc.InnerException is NpgsqlException)
+                    {
+                        NpgsqlException PgExc = (NpgsqlException)DbExc.InnerException;
+
+                        if (PgExc.Code == "57014") // SQL statement timeout problem
+                        {
+                            FErrorMessage = Catalog.GetString(
+                                "Error - Database took too long to respond. Try different parameters to return fewer results.");
+                        }
+                    }
+                    else
+                    {
+                        FErrorMessage = DbExc.InnerException.Message;
+                    }
+
+                    FException = null;
+                }
             }
 
             TProgressTracker.FinishJob(FProgressID);
@@ -323,94 +349,140 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             bool AWrapColumn,
             out TVerificationResultCollection AVerification)
         {
-            TSmtpSender EmailSender = new TSmtpSender();
+            TSmtpSender EmailSender = null;
+            string EmailBody = "";
 
             AVerification = new TVerificationResultCollection();
 
-            if (!EmailSender.ValidateEmailConfiguration())
+            try
+            {
+                EmailSender = new TSmtpSender();
+
+                List <string>FilesToAttach = new List <string>();
+
+                if (AAttachExcelFile)
+                {
+                    string ExcelFile = TFileHelper.GetTempFileName(
+                        FParameterList.Get("currentReport").ToString(),
+                        ".xlsx");
+
+                    if (ExportToExcelFile(ExcelFile))
+                    {
+                        FilesToAttach.Add(ExcelFile);
+                    }
+                }
+
+                if (AAttachCSVFile)
+                {
+                    string CSVFile = TFileHelper.GetTempFileName(
+                        FParameterList.Get("currentReport").ToString(),
+                        ".csv");
+
+                    if (ExportToCSVFile(CSVFile))
+                    {
+                        FilesToAttach.Add(CSVFile);
+                    }
+                }
+
+                if (AAttachPDF)
+                {
+                    string PDFFile = TFileHelper.GetTempFileName(
+                        FParameterList.Get("currentReport").ToString(),
+                        ".pdf");
+
+                    if (PrintToPDF(PDFFile, AWrapColumn))
+                    {
+                        FilesToAttach.Add(PDFFile);
+                    }
+                }
+
+                if (FilesToAttach.Count == 0)
+                {
+                    AVerification.Add(new TVerificationResult(
+                            Catalog.GetString("Sending Email"),
+                            Catalog.GetString("Missing any attachments, not sending the email"),
+                            "Missing Attachments",
+                            TResultSeverity.Resv_Critical,
+                            new System.Guid()));
+                    return false;
+                }
+
+                try
+                {
+                    EmailSender.SetSender(TUserDefaults.GetStringDefault("SmtpFromAccount"),
+                        TUserDefaults.GetStringDefault("SmtpDisplayName"));
+                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
+                    EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
+                }
+                catch (ESmtpSenderInitializeException e)
+                {
+                    AVerification.Add(new TVerificationResult(
+                            Catalog.GetString("Sending Email"),
+                            String.Format("{0}\n{1}", e.Message, Catalog.GetString("Check the Email tab in User Settings >> Preferences.")),
+                            CommonErrorCodes.ERR_MISSINGEMAILCONFIGURATION,
+                            TResultSeverity.Resv_Critical,
+                            new System.Guid()));
+
+                    if (e.InnerException != null)
+                    {
+                        TLogging.Log("Email XML Report: " + e.InnerException);
+                    }
+
+                    return false;
+                }
+
+                if (EmailBody == "")
+                {
+                    EmailBody = Catalog.GetString("OpenPetra report attached.");
+                }
+
+                if (EmailSender.SendEmail(
+                        AEmailAddresses,
+                        FParameterList.Get("currentReport").ToString(),
+                        EmailBody,
+                        FilesToAttach.ToArray()))
+                {
+                    foreach (string file in FilesToAttach)
+                    {
+                        File.Delete(file);
+                    }
+
+                    return true;
+                }
+
+                AVerification.Add(new TVerificationResult(
+                        Catalog.GetString("Sending Email"),
+                        Catalog.GetString("Problem sending email"),
+                        "Server problems",
+                        TResultSeverity.Resv_Critical,
+                        new System.Guid()));
+
+                return false;
+            } // try
+            catch (ESmtpSenderInitializeException e)
             {
                 AVerification.Add(new TVerificationResult(
                         Catalog.GetString("Sending Email"),
-                        Catalog.GetString("Missing configuration for sending emails. Please edit your server configuration file"),
+                        e.Message,
                         CommonErrorCodes.ERR_MISSINGEMAILCONFIGURATION,
                         TResultSeverity.Resv_Critical,
                         new System.Guid()));
+
+                if (e.InnerException != null)
+                {
+                    TLogging.Log("Email XML Report: " + e.InnerException);
+                }
+
                 return false;
             }
-
-            List <string>FilesToAttach = new List <string>();
-
-            if (AAttachExcelFile)
+            finally
             {
-                string ExcelFile = TFileHelper.GetTempFileName(
-                    FParameterList.Get("currentReport").ToString(),
-                    ".xlsx");
-
-                if (ExportToExcelFile(ExcelFile))
+                if (EmailSender != null)
                 {
-                    FilesToAttach.Add(ExcelFile);
+                    EmailSender.Dispose();
                 }
             }
-
-            if (AAttachCSVFile)
-            {
-                string CSVFile = TFileHelper.GetTempFileName(
-                    FParameterList.Get("currentReport").ToString(),
-                    ".csv");
-
-                if (ExportToCSVFile(CSVFile))
-                {
-                    FilesToAttach.Add(CSVFile);
-                }
-            }
-
-            if (AAttachPDF)
-            {
-                string PDFFile = TFileHelper.GetTempFileName(
-                    FParameterList.Get("currentReport").ToString(),
-                    ".pdf");
-
-                if (PrintToPDF(PDFFile, AWrapColumn))
-                {
-                    FilesToAttach.Add(PDFFile);
-                }
-            }
-
-            if (FilesToAttach.Count == 0)
-            {
-                AVerification.Add(new TVerificationResult(
-                        Catalog.GetString("Sending Email"),
-                        Catalog.GetString("Missing any attachments, not sending the email"),
-                        "Missing Attachments",
-                        TResultSeverity.Resv_Critical,
-                        new System.Guid()));
-                return false;
-            }
-
-            // TODO use the email address of the user, from s_user
-            if (EmailSender.SendEmail("<" + TAppSettingsManager.GetValue("Reports.Email.Sender") + ">",
-                    "OpenPetra Reports",
-                    AEmailAddresses,
-                    FParameterList.Get("currentReport").ToString(),
-                    Catalog.GetString("Please see attachment!"),
-                    FilesToAttach.ToArray()))
-            {
-                foreach (string file in FilesToAttach)
-                {
-                    File.Delete(file);
-                }
-
-                return true;
-            }
-
-            AVerification.Add(new TVerificationResult(
-                    Catalog.GetString("Sending Email"),
-                    Catalog.GetString("Problem sending email"),
-                    "server problems",
-                    TResultSeverity.Resv_Critical,
-                    new System.Guid()));
-
-            return false;
         }
     }
 }

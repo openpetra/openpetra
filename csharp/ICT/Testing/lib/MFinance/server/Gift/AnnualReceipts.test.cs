@@ -86,6 +86,7 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("Delimiter", ",");
             parameters.Add("ALedgerNumber", ALedgerNumber);
             parameters.Add("DateFormatString", "yyyy-MM-dd");
+            parameters.Add("DatesMayBeIntegers", false);
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
@@ -97,8 +98,9 @@ namespace Tests.MFinance.Server.Gift
             }
 
             int BatchNumber = importer.GetLastGiftBatchNumber();
+            Int32 generatedGlBatchNumber;
 
-            if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out VerificationResult))
+            if (!TGiftTransactionWebConnector.PostGiftBatch(ALedgerNumber, BatchNumber, out generatedGlBatchNumber, out VerificationResult))
             {
                 CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult);
 

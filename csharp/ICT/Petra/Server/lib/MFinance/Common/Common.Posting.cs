@@ -1408,6 +1408,11 @@ namespace Ict.Petra.Server.MFinance.Common
                     continue;
                 }
 
+                decimal debitTotal, creditTotal, debitTotalBase, creditTotalBase, debitTotalIntl, creditTotalIntl;
+                decimal newBaseAmount, newIntlAmount;
+                debitTotal = creditTotal = debitTotalBase = creditTotalBase = debitTotalIntl = creditTotalIntl = 0.0m;
+                newBaseAmount = newIntlAmount = 0.0m;
+
                 foreach (DataRowView transactionview in TransactionsDV.FindRows(journal.JournalNumber))
                 {
                     ATransactionRow transaction = (ATransactionRow)transactionview.Row;
@@ -1436,6 +1441,74 @@ namespace Ict.Petra.Server.MFinance.Common
 
                     #endregion Validate Data
 
+                    // We need to check for base/intl currency corrections (added 27-Sep-2016)
+                    #region Make balancing adjustments to Base and Intl currency amounts, if required
+
+                    // We keep a running total of transaction amounts in this journal
+                    if (transaction.DebitCreditIndicator == true)
+                    {
+                        debitTotal += transaction.TransactionAmount;
+                        debitTotalBase += transaction.AmountInBaseCurrency;
+                        debitTotalIntl += transaction.AmountInIntlCurrency;
+                    }
+                    else
+                    {
+                        creditTotal += transaction.TransactionAmount;
+                        creditTotalBase += transaction.AmountInBaseCurrency;
+                        creditTotalIntl += transaction.AmountInIntlCurrency;
+                    }
+
+                    if ((debitTotal == creditTotal) && (debitTotal > 0.0m)
+                        && ((debitTotalBase != creditTotalBase) || (debitTotalIntl != creditTotalIntl)))
+                    {
+                        // Our local currency debit/credit balances ok but there is a discrepancy in the base/intl total(s)
+                        // This is where we calculate the adjusted value (which should only be a cent or two!)
+                        if (transaction.DebitCreditIndicator == true)
+                        {
+                            newBaseAmount = Math.Abs((debitTotalBase - transaction.AmountInBaseCurrency) - creditTotalBase);
+                            newIntlAmount = Math.Abs((debitTotalIntl - transaction.AmountInIntlCurrency) - creditTotalIntl);
+                            debitTotalBase = debitTotalBase + newBaseAmount - transaction.AmountInBaseCurrency;
+                            debitTotalIntl = debitTotalIntl + newIntlAmount - transaction.AmountInIntlCurrency;
+                        }
+                        else
+                        {
+                            newBaseAmount = Math.Abs((creditTotalBase - transaction.AmountInBaseCurrency) - debitTotalBase);
+                            newIntlAmount = Math.Abs((creditTotalIntl - transaction.AmountInIntlCurrency) - debitTotalIntl);
+                            creditTotalBase = creditTotalBase + newBaseAmount - transaction.AmountInBaseCurrency;
+                            creditTotalIntl = creditTotalIntl + newIntlAmount - transaction.AmountInIntlCurrency;
+                        }
+
+                        if (newBaseAmount != transaction.AmountInBaseCurrency)
+                        {
+                            TLogging.Log(string.Format(
+                                    "Posting: Making transaction base currency adjustment: {0} - {1:N2} -> {2:N2} (Batch {3}/Journal {4}/Trans {5})",
+                                    transaction.DebitCreditIndicator ? "DR" : "CR",
+                                    transaction.AmountInBaseCurrency,
+                                    newBaseAmount,
+                                    journal.BatchNumber,
+                                    journal.JournalNumber,
+                                    transaction.TransactionNumber));
+                        }
+
+                        if (newIntlAmount != transaction.AmountInIntlCurrency)
+                        {
+                            TLogging.Log(string.Format(
+                                    "Posting: Making transaction intl currency adjustment: {0} - {1:N2} -> {2:N2} (Batch {3}/Journal {4}/Trans {5})",
+                                    transaction.DebitCreditIndicator ? "DR" : "CR",
+                                    transaction.AmountInIntlCurrency,
+                                    newIntlAmount,
+                                    journal.BatchNumber,
+                                    journal.JournalNumber,
+                                    transaction.TransactionNumber));
+                        }
+
+                        // Apply the adjusted value
+                        transaction.AmountInBaseCurrency = newBaseAmount;
+                        transaction.AmountInIntlCurrency = newIntlAmount;
+                    }
+
+                    #endregion
+
                     // Set the sign of the amounts according to the debit/credit indicator
                     decimal SignBaseAmount = transaction.AmountInBaseCurrency;
                     decimal SignIntlAmount = transaction.AmountInIntlCurrency;
@@ -1448,9 +1521,6 @@ namespace Ict.Petra.Server.MFinance.Common
                         SignTransAmount *= -1.0M;
                     }
 
-                    // TODO: do we need to check for base currency corrections?
-                    // or do we get rid of these problems by not having international currency?
-
                     string key = TAmount.MakeKey(transaction.AccountCode, transaction.CostCentreCode);
 
                     if (!APostingLevel.ContainsKey(key))
@@ -1458,12 +1528,13 @@ namespace Ict.Petra.Server.MFinance.Common
                         APostingLevel.Add(key, new TAmount());
                     }
 
+                    // Fill in the new total in these variables - they will be used later to update the YearToDate columns in the GLM tables
+                    // See SummarizeData() method in this class
                     APostingLevel[key].BaseAmount += SignBaseAmount;
                     APostingLevel[key].IntlAmount += SignIntlAmount;
 
                     // Only foreign currency accounts store a value in the transaction currency,
                     // if the transaction was actually in the foreign currency.
-
                     if (accountRow.ForeignCurrencyFlag && (journal.TransactionCurrency == accountRow.ForeignCurrencyCode))
                     {
                         APostingLevel[key].TransAmount += SignTransAmount;
@@ -2324,26 +2395,31 @@ namespace Ict.Petra.Server.MFinance.Common
 
             AVerifications = VerificationResult;
 
-            if (SubmissionOK == true)
-            {
-                String ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+            //
+            // I previously used "Client Tasks" to ask the client to print the GL Posting Register,
+            // but now I don't - the client needs to do that itself.
 
-                // Generate posting reports (on the client!)
-                foreach (Int32 batchNumber in ABatchNumbers)
-                {
-                    String[] Params =
-                    {
-                        "param_ledger_number_i=" + ALedgerNumber,
-                        "param_batch_number_i=" + batchNumber,
-                        "param_ledger_name=\"" + ledgerName + "\"",
-                        "param_sortby=\"Transaction\""
-                    };
-
-                    String paramStr = String.Join(",", Params);
-                    PrintReportOnClientDelegate("Batch Posting Register", paramStr);
-                }
-            }
-
+            /*
+             * if (SubmissionOK == true)
+             * {
+             *  String ledgerName = TLedgerInfo.GetLedgerName(ALedgerNumber);
+             *
+             *  // Generate posting reports (on the client!)
+             *  foreach (Int32 batchNumber in ABatchNumbers)
+             *  {
+             *      String[] Params =
+             *      {
+             *          "param_ledger_number_i=" + ALedgerNumber,
+             *          "param_batch_number_i=" + batchNumber,
+             *          "param_ledger_name=\"" + ledgerName + "\"",
+             *          "param_sortby=\"Transaction\""
+             *      };
+             *
+             *      String paramStr = String.Join(",", Params);
+             *      PrintReportOnClientDelegate("Batch Posting Register", paramStr);
+             *  }
+             * }
+             */
             return SubmissionOK;
         }
 

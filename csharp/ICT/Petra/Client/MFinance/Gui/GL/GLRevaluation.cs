@@ -33,12 +33,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
     /// </summary>
     public partial class TGLRevaluation : Form
     {
+        private string FSecurityContext = String.Empty;
+
         /// <summary>
         /// Runs the revalation ...
         /// </summary>
         /// <param name="AParentForm"></param>
-        public TGLRevaluation(Form AParentForm) : base()
+        /// <param name="ASecurityContext"></param>
+        public TGLRevaluation(Form AParentForm, string ASecurityContext = "") : base()
         {
+            FSecurityContext = ASecurityContext;
+
             //
             // The InitializeComponent() call is required for Windows Forms designer support.
             //

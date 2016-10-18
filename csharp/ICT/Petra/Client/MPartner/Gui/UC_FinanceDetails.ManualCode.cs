@@ -29,6 +29,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Verification;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.CommonControls;
@@ -169,7 +170,15 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                //Remove RecipientGiftReceipting
                 grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
+                grpRecipientGiftReceipting.Visible = false;
+                pnlRightMiscSettings.Controls.Remove(grpRecipientGiftReceipting);
+
+                //Reset and rescale the Finance Comment
+                grpOther.Top = grpRecipientGiftReceipting.Top;
+                txtFinanceComment.Height += grpLeftMiscSettings.Height - grpOther.Height;
+                grpOther.Height = grpLeftMiscSettings.Height;
 
                 // make sure we have enough space
                 if (FGovIdEnabled)
@@ -330,7 +339,25 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FGovIdEnabled)
             {
-                txtGovId.Text = FPartnerEditUIConnector.GetGovId();
+                String GovIdKeyName = TSystemDefaults.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
+
+                txtGovId.Text = "";
+
+                if (FMainDS.PTax != null)
+                {
+                    DataView TaxView = new DataView(FMainDS.PTax);
+
+                    TaxView.RowFilter = String.Format("{0}='{1}'",
+                        PTaxTable.GetTaxTypeDBName(),
+                        GovIdKeyName);
+
+                    if (TaxView.Count > 0)
+                    {
+                        // take first row with tax type filtered
+                        txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef;
+                    }
+                }
             }
 
             if (grdDetails.Rows.Count > 1)
@@ -473,7 +500,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 FMainDS.PPartner[0].ReceiptLetterFrequency = cmbReceiptLetterFrequency.GetSelectedString();
                 FMainDS.PPartner[0].ReceiptEachGift = chkReceiptEachGift.Checked;
                 FMainDS.PPartner[0].AnonymousDonor = chkAnonymousDonor.Checked;
-                FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
+                //Email gift statement removed from UI as probably not needed anylonger
+                //FMainDS.PPartner[0].EmailGiftStatement = chkEmailGiftStatement.Checked;
                 FMainDS.PPartner[0].FinanceComment = txtFinanceComment.Text;
 
                 if (FTaxDeductiblePercentageEnabled)
@@ -534,6 +562,40 @@ namespace Ict.Petra.Client.MPartner.Gui
                                 }
                             }
                         }
+                    }
+                }
+
+                if (FGovIdEnabled)
+                {
+                    String GovIdKeyName = TSystemDefaults.GetStringDefault(
+                        SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
+                    PTaxRow taxRow;
+
+                    if (FMainDS.PTax == null)
+                    {
+                        FMainDS.Tables.Add(new PTaxTable());
+                        FMainDS.InitVars();
+                    }
+
+                    DataView TaxView = new DataView(FMainDS.PTax);
+
+                    TaxView.RowFilter = String.Format("{0}='{1}'",
+                        PTaxTable.GetTaxTypeDBName(),
+                        GovIdKeyName);
+
+                    if (TaxView.Count == 0)
+                    {
+                        taxRow = FMainDS.PTax.NewRowTyped();
+                        taxRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
+                        taxRow.TaxType = GovIdKeyName;
+                        taxRow.TaxRef = txtGovId.Text;
+                        FMainDS.PTax.Rows.Add(taxRow);
+                    }
+                    else
+                    {
+                        // take first row with tax type filtered
+                        taxRow = (PTaxRow)FMainDS.PTax.Rows[0];
+                        taxRow.TaxRef = txtGovId.Text;
                     }
                 }
             }

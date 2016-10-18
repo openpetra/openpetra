@@ -103,11 +103,24 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             Boolean Result = false;
             int ExtractId = -1;
 
-            if (!WarnIfNotSingleSelection(Catalog.GetString("Export Partners in Extract"))
-                && (GetSelectedDetailRow() != null))
+            if (WarnIfNotSingleSelection(Catalog.GetString("Export Partners in Extract"))
+                || (GetSelectedDetailRow() == null))
+            {
+                return Result;
+            }
+
+            if (GetSelectedDetailRow().KeyCount > 0)
             {
                 ExtractId = GetSelectedDetailRow().ExtractId;
                 Result = TPartnerExportLogic.ExportPartnersInExtract(ExtractId, AOldPetraFormat);
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString(
+                        "The selected extract doesn't contain any partners! Aborting."),
+                    Catalog.GetString(
+                        "Export Partners"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Result = false;
             }
 
             return Result;

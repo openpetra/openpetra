@@ -46,6 +46,7 @@ using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Common.Data;
+using System.Collections.Generic;
 
 namespace Tests.MFinance.Server.ICH
 {
@@ -101,6 +102,7 @@ namespace Tests.MFinance.Server.ICH
             parameters.Add("Delimiter", ",");
             parameters.Add("ALedgerNumber", FLedgerNumber);
             parameters.Add("DateFormatString", "yyyy-MM-dd");
+            parameters.Add("DatesMayBeIntegers", false);
             parameters.Add("NumberFormat", "American");
             parameters.Add("NewLine", Environment.NewLine);
 
@@ -116,7 +118,9 @@ namespace Tests.MFinance.Server.ICH
 
             Assert.AreNotEqual(-1, BatchNumber, "Should have imported the gift batch and return a valid batch number");
 
-            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out VerificationResult))
+            Int32 generatedGlBatchNumber;
+
+            if (!TGiftTransactionWebConnector.PostGiftBatch(FLedgerNumber, BatchNumber, out generatedGlBatchNumber, out VerificationResult))
             {
                 string VerifResStr;
 
@@ -233,13 +237,17 @@ namespace Tests.MFinance.Server.ICH
         {
             TVerificationResultCollection VerificationResults = new TVerificationResultCollection();
 
+            List <Int32>glBatchNumbers;
+
             Int32 PeriodNumber = 5;
             const string CostCentreGIF = "9500";
             const string CostCentreReceivingField = "7300";
 
             // run possibly empty stewardship calculation, to process all gifts that do not belong to this test
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
-                PeriodNumber, out VerificationResults);
+                PeriodNumber,
+                out glBatchNumbers,
+                out VerificationResults);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing initial Stewardship Calculation Failed!");
@@ -266,7 +274,9 @@ namespace Tests.MFinance.Server.ICH
             ImportAndPostGiftBatch(PeriodStartDate);
 
             TStewardshipCalculationWebConnector.PerformStewardshipCalculation(FLedgerNumber,
-                PeriodNumber, out VerificationResults);
+                PeriodNumber,
+                out glBatchNumbers,
+                out VerificationResults);
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing Stewardship Calculation Failed!");
 

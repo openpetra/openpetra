@@ -21,6 +21,7 @@ RootNode:
             LabelWidth: 150
         txtDisplayName:
         txtReplyTo:
+            Label: Reply-To
 
         grpMessage:
             Controls: [txtCopyMessagesTo,chkReportsAsAttachment,txtEmailBody]

@@ -56,5 +56,6 @@
         <Table sqltable="p_unit" name="RecipientUnit"/>
         <Table sqltable="p_partner_type" name="LedgerPartnerTypes"/>
         <Table sqltable="p_partner_tax_deductible_pct"/>
+        <Table sqltable="p_tax"/>
     </DataSet>
 </PetraDataSets>

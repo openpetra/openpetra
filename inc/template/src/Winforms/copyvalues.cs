@@ -232,3 +232,10 @@ if (index < controlsSortedByTabOrder.Count)
 {
     controlsSortedByTabOrder.Values[index].Focus();
 }
+
+{##DISABLEBUTTONHANDLINGFORREADONLYSCREENS}
+// Override the btnDelete.Enabled flag that was just set above if the saving of data is disallowed
+if (FPetraUtilsObject.SecurityReadOnly)
+{
+    btnDelete.Enabled = false;
+}

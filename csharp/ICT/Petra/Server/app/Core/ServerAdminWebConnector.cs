@@ -334,9 +334,9 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
         /// the host name of the smtp server
         /// </summary>
         [RequireModulePermission("SYSMAN")]
-        public static string GetSMTPServer()
+        public static string GetSmtpHost()
         {
-            return TServerManagerBase.TheServerManager.SMTPServer;
+            return TServerManagerBase.TheServerManager.SmtpHost;
         }
     }
 }

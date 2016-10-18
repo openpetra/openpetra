@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -98,7 +99,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ImportBatches(TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
-            String impOptions;
             OpenFileDialog dialog = null;
 
             if (FPetraUtilsObject.HasChanges)
@@ -113,7 +113,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             {
                 FMyForm.FCurrentGLBatchAction = TGLBatchEnums.GLBatchAction.IMPORTING;
 
+                bool datesMayBeIntegers = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
                 FdlgSeparator = new TDlgSelectCSVSeparator(false);
+                FdlgSeparator.DateMayBeInteger = datesMayBeIntegers;
 
                 if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
                 {
@@ -126,16 +128,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         return;
                     }
 
-                    impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-                    String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                    FdlgSeparator.SelectedSeparator = "\t";
                     FdlgSeparator.CSVData = importString;
-                    FdlgSeparator.DateFormat = dateFormatString;
-
-                    if (impOptions.Length > 1)
-                    {
-                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                    }
                 }
                 else if (AImportDataSource == TImportDataSourceEnum.FromFile)
                 {
@@ -148,7 +141,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                     dialog.Title = Catalog.GetString("Import Batches from CSV File");
                     dialog.Filter = Catalog.GetString("GL Batch Files (*.csv)|*.csv|Text Files (*.txt)|*.txt");
-                    impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                     // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
                     TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
@@ -165,16 +157,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                                 MessageBoxIcon.Stop);
                             return;
                         }
-
-                        String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                        FdlgSeparator.DateFormat = dateFormatString;
-
-                        if (impOptions.Length > 1)
-                        {
-                            FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                        }
-
-                        FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
                     }
                     else
                     {
@@ -183,9 +165,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else
                 {
-                    // unknown source!!  The following need a value...
-                    impOptions = String.Empty;
+                    // unknown source!!
+                    return;
                 }
+
+                String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+
+                FdlgSeparator.DateFormat = dateFormatString;
+                FdlgSeparator.NumberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+                FdlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(FdlgSeparator.FileContent) ??
+                                                  ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : ";");
 
                 if (FdlgSeparator.ShowDialog() == DialogResult.OK)
                 {
@@ -194,6 +184,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     requestParams.Add("ALedgerNumber", FLedgerNumber);
                     requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                     requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                    requestParams.Add("DatesMayBeIntegers", datesMayBeIntegers);
                     requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                     requestParams.Add("NewLine", Environment.NewLine);
 
@@ -210,11 +201,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ImportDialog.ShowDialog();
                     }
 
-                    // We save the defaults even if ok is false - because the client will probably want to try and import
-                    //   the same file again after correcting any errors
-                    SaveUserDefaults(dialog, impOptions);
                     ShowMessages(AMessages);
                 }
+
+                // We save the defaults even if ok is false - because the client will probably want to try and import
+                //   the same file again after correcting any errors
+                SaveUserDefaults(dialog);
 
                 if (ok)
                 {
@@ -243,7 +235,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ImportTransactions(ABatchRow ACurrentBatchRow, AJournalRow ACurrentJournalRow, TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
-            String impOptions;
             OpenFileDialog dialog = null;
 
             if (FPetraUtilsObject.HasChanges && !FMyForm.SaveChanges())
@@ -276,7 +267,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
             }
 
+            bool datesMayBeIntegers = TUserDefaults.GetBooleanDefault(MCommonConstants.USERDEFAULT_IMPORTEDDATESMAYBEINTEGERS, false);
             FdlgSeparator = new TDlgSelectCSVSeparator(false);
+            FdlgSeparator.DateMayBeInteger = datesMayBeIntegers;
 
             if (AImportDataSource == TImportDataSourceEnum.FromClipboard)
             {
@@ -289,16 +282,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     return;
                 }
 
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";American");
-                String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                FdlgSeparator.SelectedSeparator = "\t";
                 FdlgSeparator.CSVData = importString;
-                FdlgSeparator.DateFormat = dateFormatString;
-
-                if (impOptions.Length > 1)
-                {
-                    FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                }
             }
             else if (AImportDataSource == TImportDataSourceEnum.FromFile)
             {
@@ -311,7 +295,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 dialog.Title = Catalog.GetString("Import Transactions from CSV File");
                 dialog.Filter = Catalog.GetString("GL Transactions files (*.csv)|*.csv|Text Files (*.txt)|*.txt");
-                impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
 
                 // This call fixes Windows7 Open File Dialogs.  It must be the line before ShowDialog()
                 TWin7FileOpenSaveDialog.PrepareDialog(Path.GetFileName(fullPath));
@@ -328,16 +311,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             MessageBoxIcon.Stop);
                         return;
                     }
-
-                    String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
-                    FdlgSeparator.DateFormat = dateFormatString;
-
-                    if (impOptions.Length > 1)
-                    {
-                        FdlgSeparator.NumberFormat = impOptions.Substring(1);
-                    }
-
-                    FdlgSeparator.SelectedSeparator = impOptions.Substring(0, 1);
                 }
                 else
                 {
@@ -346,9 +319,17 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
             else
             {
-                // unknown source!!  The following need a value...
-                impOptions = String.Empty;
+                // unknown source!!
+                return;
             }
+
+            String impOptions = TUserDefaults.GetStringDefault("Imp Options", ";" + TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN);
+            String dateFormatString = TUserDefaults.GetStringDefault("Imp Date", "MDY");
+
+            FdlgSeparator.DateFormat = dateFormatString;
+            FdlgSeparator.NumberFormat = (impOptions.Length > 1) ? impOptions.Substring(1) : TDlgSelectCSVSeparator.NUMBERFORMAT_AMERICAN;
+            FdlgSeparator.SelectedSeparator = StringHelper.GetCSVSeparator(FdlgSeparator.FileContent) ??
+                                              ((impOptions.Length > 0) ? impOptions.Substring(0, 1) : ";");
 
             if (FdlgSeparator.ShowDialog() == DialogResult.OK)
             {
@@ -357,6 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 requestParams.Add("ALedgerNumber", FLedgerNumber);
                 requestParams.Add("Delimiter", FdlgSeparator.SelectedSeparator);
                 requestParams.Add("DateFormatString", FdlgSeparator.DateFormat);
+                requestParams.Add("DatesMayBeIntegers", datesMayBeIntegers);
                 requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                 requestParams.Add("NewLine", Environment.NewLine);
 
@@ -374,11 +356,12 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     ImportDialog.ShowDialog();
                 }
 
-                // It is important to save user defaults here, even if there were errors
-                //   because in that case the user will want to import the same file again after fixing it.
-                SaveUserDefaults(dialog, impOptions);
                 ShowMessages(AMessages);
             }
+
+            // It is important to save user defaults here, even if there were errors
+            //   because in that case the user will want to import the same file again after fixing it.
+            SaveUserDefaults(dialog);
 
             if (ok)
             {
@@ -663,14 +646,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             // csv !
         }
 
-        private void SaveUserDefaults(OpenFileDialog dialog, String impOptions)
+        private void SaveUserDefaults(OpenFileDialog dialog)
         {
             if (dialog != null)
             {
                 TUserDefaults.SetDefault("Imp Filename", dialog.FileName);
             }
 
-            impOptions = FdlgSeparator.SelectedSeparator;
+            string impOptions = FdlgSeparator.SelectedSeparator;
             impOptions += FdlgSeparator.NumberFormat;
             TUserDefaults.SetDefault("Imp Options", impOptions);
             TUserDefaults.SetDefault("Imp Date", FdlgSeparator.DateFormat);

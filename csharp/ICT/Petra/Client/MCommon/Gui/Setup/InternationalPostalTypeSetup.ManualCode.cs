@@ -35,6 +35,9 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -61,6 +64,17 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         private void NewRecord(Object sender, EventArgs e)
         {
             CreateNewPInternationalPostalType();
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PInternationalPostalTypeTable.ColumnInternatPostalTypeCodeId,
+                    PInternationalPostalTypeTable.ColumnDescriptionId,
+                    PInternationalPostalTypeTable.ColumnDeletableId
+                });
         }
     }
 }

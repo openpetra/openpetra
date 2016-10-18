@@ -66,7 +66,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         Int32 FLedgerNumber = 0;
         ALedgerRow FLedgerRow = null;
         FastReportsWrapper MyFastReportsPlugin;
-        String FStatusMsg;
+        List <String>FStatusMsg = new List <String>();
 
         const string STEWARDSHIP_EMAIL_ADDRESS = "ICHEMAIL";
 
@@ -164,11 +164,21 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             rbtEmailHosa.Enabled =
                 rbtReprintHosa.Enabled = chkHOSA.Enabled && chkHOSA.Checked;
 
+            if (rbtEmailHosa.Enabled && !rbtEmailHosa.Checked && !rbtReprintHosa.Checked)
+            {
+                rbtEmailHosa.Checked = true;
+            }
+
             chkRecipient.Enabled =
                 rbtReprintHosa.Enabled & rbtReprintHosa.Checked;
 
             rbtEmailStewardship.Enabled =
                 rbtReprintStewardship.Enabled = chkStewardship.Enabled && chkStewardship.Checked;
+
+            if (rbtEmailStewardship.Enabled && !rbtEmailStewardship.Checked && !rbtReprintStewardship.Checked)
+            {
+                rbtEmailStewardship.Checked = true;
+            }
 
             rbtFull.Enabled =
                 rbtSummary.Enabled = chkFees.Enabled && chkFees.Checked;
@@ -226,11 +236,11 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void GenerateAllSelectedReports(TRptCalculator ACalc)
         {
-            FStatusMsg = "";
+            FStatusMsg.Clear();
 
             if (chkHOSA.Enabled && chkHOSA.Checked)
             {
-                FStatusMsg += Catalog.GetString("\r\nAll HOSAs:");
+                FStatusMsg.Add(Catalog.GetString("All HOSAs:"));
                 MyFastReportsPlugin = new FastReportsWrapper("HOSA");
                 MyFastReportsPlugin.SetDataGetter(LoadHosaReportData);
                 MyFastReportsPlugin.GenerateReport(ACalc);
@@ -238,7 +248,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             if (chkStewardship.Enabled && chkStewardship.Checked)
             {
-                FStatusMsg += Catalog.GetString("\r\nStewardship Report:");
+                FStatusMsg.Add(Catalog.GetString("Stewardship Report:"));
                 MyFastReportsPlugin = new FastReportsWrapper("Stewardship");
                 MyFastReportsPlugin.SetDataGetter(LoadStewardshipReportData);
                 MyFastReportsPlugin.GenerateReport(ACalc);
@@ -246,14 +256,14 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             if (chkFees.Enabled && chkFees.Checked)
             {
-                FStatusMsg += Catalog.GetString("\r\nFees Report:");
+                FStatusMsg.Add(Catalog.GetString("Fees Report:"));
                 MyFastReportsPlugin = new FastReportsWrapper("Fees");
                 MyFastReportsPlugin.SetDataGetter(LoadFeesReportData);
                 MyFastReportsPlugin.GenerateReport(ACalc);
             }
 
             // complex way of stepping around the Windows non-thread-safe controls problem!
-            FStatusMsg += Catalog.GetString("\r\n\r\nReport generation complete.");
+            FStatusMsg.Add("\n" + Catalog.GetString("Report generation complete."));
             this.Invoke(new CrossThreadUpdate(ShowReportStatus));
         }
 
@@ -261,7 +271,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
         private void ShowReportStatus()
         {
-            MessageBox.Show(FStatusMsg, Catalog.GetString("Stewardship Reports"));
+            MessageBox.Show(String.Join("\n", FStatusMsg), Catalog.GetString("Stewardship Reports"));
         }
 
         private Dictionary <String, TVariant>InitialiseDictionary(TRptCalculator ACalc)
@@ -328,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 && (rbtEmailHosa.Checked))
             {
                 ACalc.AddStringParameter("param_currency", "Base"); // Always email HOSAs in Base Currency
-                FStatusMsg += FastReportsWrapper.AutoEmailReports(FPetraUtilsObject, MyFastReportsPlugin, ACalc, FLedgerNumber, "Foreign");
+                FStatusMsg.AddRange(FastReportsWrapper.AutoEmailReports(FPetraUtilsObject, MyFastReportsPlugin, ACalc, FLedgerNumber, "Foreign"));
                 return false;
             }
 
@@ -339,6 +349,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
         {
             Dictionary <String, TVariant>paramsDictionary = InitialiseDictionary(ACalc);
             DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("Stewardship", paramsDictionary);
+            TSmtpSender EmailSender;
 
             if (this.IsDisposed)
             {
@@ -357,7 +368,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
             if (!HasData)
             {
-                FStatusMsg += Catalog.GetString("No Stewardship entries found for selected Run Number.");
+                FStatusMsg.Add(Catalog.GetString("No Stewardship entries found for selected Run Number."));
             }
 
             TParameterList Params = ACalc.GetParameters();
@@ -365,39 +376,29 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             if ((!Params.Get("param_design_template").ToBool())
                 && (rbtEmailStewardship.Checked))
             {
-                // This gets email defaults from the user settings table
-                TUC_EmailPreferences.LoadEmailDefaults();
-
-                // This gets some of the settings from the server configuration.  We no longer get these items from local PC.
-                // SmtpUsername and SmtpPassword will usually be null
-                string smtpHost, smtpUsername, smtpPassword;
-                int smtpPort;
-                bool smtpUseSSL;
-                TRemote.MSysMan.Application.WebConnectors.GetServerSmtpSettings(out smtpHost,
-                    out smtpPort,
-                    out smtpUseSSL,
-                    out smtpUsername,
-                    out smtpPassword);
-
-                if ((smtpHost == string.Empty) || (smtpPort < 0))
+                try
                 {
-                    FStatusMsg += Catalog.GetString(
-                        "\r\nCannot send email because 'smtpHost' and/or 'smtpPort' are not configured in the OP server configuration file.");
-                    return false;
+                    EmailSender = new TSmtpSender();
+                    EmailSender.SetSender(TUserDefaults.GetStringDefault("SmtpFromAccount"), TUserDefaults.GetStringDefault("SmtpDisplayName"));
+                    EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
+                    EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
                 }
-
-                TSmtpSender EmailSender = new TSmtpSender(smtpHost, smtpPort, smtpUseSSL, smtpUsername, smtpPassword, "");
-
-                EmailSender.CcEverythingTo = TUserDefaults.GetStringDefault("SmtpCcTo");
-                EmailSender.ReplyTo = TUserDefaults.GetStringDefault("SmtpReplyTo");
-
-                if (!EmailSender.FInitOk)
+                catch (ESmtpSenderInitializeException e)
                 {
-                    FStatusMsg += String.Format(
-                        Catalog.GetString(
-                            "\r\nFailed to set up the email server.\n    Please check the settings in Preferences / Email.\n    Message returned: \"{0}\""),
-                        EmailSender.FErrorStatus
-                        );
+                    if (e.InnerException != null)
+                    {
+                        // I'd write the full exception to the log file, but it still gets transferred to the client window status bar and is _really_ ugly.
+                        //TLogging.Log("Stewardship Email: " + e.InnerException.ToString());
+                        TLogging.Log("Stewardship Email: " + e.InnerException.Message);
+                    }
+
+                    FStatusMsg.Add(e.Message);
+
+                    if (e.ErrorClass == TSmtpErrorClassEnum.secClient)
+                    {
+                        FStatusMsg.Add("See the Email tab in User Settings >> Preferences.");
+                    }
+
                     return false;
                 }
 
@@ -431,7 +432,7 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
 
                 if (!TSystemDefaults.IsSystemDefaultDefined(STEWARDSHIP_EMAIL_ADDRESS))
                 {
-                    FStatusMsg += Catalog.GetString("\r\n Stewardship email address not configured in System Defaults.");
+                    FStatusMsg.Add(Catalog.GetString("Stewardship email address not configured in System Defaults."));
                     return false;
                 }
 
@@ -440,21 +441,21 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
                 String EmailBody = TUserDefaults.GetStringDefault("SmtpEmailBody");
                 EmailSender.AttachFromStream(new MemoryStream(Encoding.ASCII.GetBytes(CsvAttachment)), "Stewardship_" + MyCostCentreCode + ".csv");
                 Boolean SentOk = EmailSender.SendEmail(
-                    TUserDefaults.GetStringDefault("SmtpFromAccount"),
-                    TUserDefaults.GetStringDefault("SmtpDisplayName"),
-                    EmailRecipient, //ich@om.org
+                    EmailRecipient,
                     "Stewardship Report [" + MyCostCentreCode + "] Period end: " + PeriodEnd + " Run#: " + RunNumber,
                     EmailBody);
 
                 if (SentOk)
                 {
-                    FStatusMsg += Catalog.GetString("\r\nStewardship report emailed to ICH.");
+                    FStatusMsg.Add(Catalog.GetString("Stewardship report emailed to ICH."));
                 }
                 else
                 {
-                    FStatusMsg += Catalog.GetString("\r\nFailed to send Stewardship email to ICH.");
+                    FStatusMsg.Add(Catalog.GetString("Failed to send Stewardship email to ICH:"));
+                    FStatusMsg.Add(EmailSender.ErrorStatus);
                 }
 
+                EmailSender.Dispose();
                 return false;
             }
 

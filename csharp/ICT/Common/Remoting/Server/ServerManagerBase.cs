@@ -228,11 +228,11 @@ namespace Ict.Common.Remoting.Server
         }
 
         /// smtp server for sending email
-        public string SMTPServer
+        public string SmtpHost
         {
             get
             {
-                return TSrvSetting.SMTPServer;
+                return TSrvSetting.SmtpHost;
             }
         }
 

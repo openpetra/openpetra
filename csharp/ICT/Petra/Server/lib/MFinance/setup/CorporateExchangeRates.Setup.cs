@@ -48,7 +48,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         /// <param name="ATransactionsChanged">Number of transaction that were updated with the new exchange rate</param>
         /// <param name="AVerificationResult"></param>
         /// <returns></returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FIN-EX-RATE")]
         public static TSubmitChangesResult SaveCorporateExchangeSetupTDS(ref CorporateExchangeSetupTDS AInspectDS,
             out int ATransactionsChanged, out TVerificationResultCollection AVerificationResult)
         {
@@ -253,7 +253,8 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                                     tempTbl = DBAccess.GDBAccessObj.SelectDT(
                                         "SELECT a_debit_credit_indicator_l AS debit_indicator FROM " +
-                                        " a_account WHERE a_account_code_c = '" + accountCode + "'",
+                                        " a_account WHERE a_account_code_c = '" + accountCode + "'" +
+                                        " AND a_ledger_number_i = " + ledgerNumber,
                                         "temp", Transaction);
                                     seemsToWorkOk = (tempTbl.Rows.Count == 1);
 

@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       alanp
+//       alanp, christiank
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,15 +26,20 @@ using System.Data;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Xml;
+
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -43,10 +48,34 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
     /// </summary>
     public partial class TFrmAddressLayoutCodeSetup
     {
+        // Needed for Module-based Read-only security checks only.
+        private string FContext;
+
+        /// <summary>Needed for Module-based Read-only security checks only.</summary>
+        public string Context
+        {
+            get
+            {
+                return FContext;
+            }
+
+            set
+            {
+                FContext = value;
+            }
+        }
+
+        // Instance of a 'Helper Class' for handling the Indexes of the DataRows. (The Grid is sorted by the Index.)
+        TSgrdDataGrid.IndexedGridRowsHelper FIndexedGridRowsHelper;
+
         #region Initialisation
 
         private void RunOnceOnActivationManual()
         {
+            FIndexedGridRowsHelper = new TSgrdDataGrid.IndexedGridRowsHelper(
+                grdDetails, PAddressLayoutCodeTable.ColumnDisplayIndexId, btnDemote, btnPromote,
+                delegate { FPetraUtilsObject.SetChangedFlag(); });
+
             // Always disable the deletable flag
             chkDetailDeletable.Enabled = false;
 
@@ -56,6 +85,11 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // Select first row after altering the sort
             SelectRowInGrid(1);
+
+            if (FPetraUtilsObject.SecurityReadOnly)
+            {
+                btnDelete.Enabled = false;
+            }
         }
 
         #endregion
@@ -69,12 +103,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void PromoteRecord(Object sender, EventArgs e)
         {
-            PromoteOrDemoteRecord(true);
+            FIndexedGridRowsHelper.PromoteRow();
         }
 
         private void DemoteRecord(Object sender, EventArgs e)
         {
-            PromoteOrDemoteRecord(false);
+            FIndexedGridRowsHelper.DemoteRow();
         }
 
         private void PromoteOrDemoteRecord(Boolean APromote)
@@ -160,18 +194,10 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void ShowDetailsManual(PAddressLayoutCodeRow ARow)
         {
-            if (ARow == null)
+            if (FIndexedGridRowsHelper != null)
             {
-                btnUp.Enabled = false;
-                btnDown.Enabled = false;
+                FIndexedGridRowsHelper.UpdateButtons(GetSelectedRowIndex(), FPetraUtilsObject.SecurityReadOnly);
             }
-            else
-            {
-                btnUp.Enabled = (GetSelectedRowIndex() > 1);
-                btnDown.Enabled = (GetSelectedRowIndex() > 0) && (GetSelectedRowIndex() < grdDetails.Rows.Count - 1);
-            }
-
-            btnDelete.Enabled = (pnlDetails.Enabled && CanDeleteSelection());
         }
 
         #endregion
@@ -212,5 +238,35 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
         }
 
         #endregion
+
+        #region Security
+
+        private List <string>ApplySecurityManual()
+        {
+            // Whatever the Context is: the Module to check security for is *always* MPartner!
+            FPetraUtilsObject.SecurityScreenContext = "MPartner";
+
+            return new List <string>();
+        }
+
+        private void AfterRunOnceOnActivationManual()
+        {
+            TSetupScreensSecurityHelper.ShowMsgUserWillNeedToHaveDifferentAdminModulePermissionForEditing(
+                this, FPetraUtilsObject.SecurityReadOnly, FContext, Catalog.GetString("Partner"), "PTNRADMIN",
+                "AddressLayoutCodeSetup_R-O_");
+        }
+
+        #endregion
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PAddressLayoutCodeTable.ColumnCodeId,
+                    PAddressLayoutCodeTable.ColumnDeletableId,
+                    PAddressLayoutCodeTable.ColumnDescriptionId
+                });
+        }
     }
 }

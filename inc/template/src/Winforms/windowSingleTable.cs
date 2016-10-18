@@ -19,6 +19,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Shared.Security;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -27,6 +28,7 @@ namespace {#NAMESPACE}
   /// auto generated: {#FORMTITLE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
+    private string FSecurityContext = String.Empty;
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#IFDEF DATASETTYPE}
     private {#DATASETTYPE} FMainDS;
@@ -36,8 +38,10 @@ namespace {#NAMESPACE}
 {#ENDIFN DATASETTYPE}
 
     /// constructor
-    public {#CLASSNAME}(Form AParentForm) : base()
+    public {#CLASSNAME}(Form AParentForm, string ASecurityContext = "") : base()
     {
+      {#SETSECURITYCONTEXT}                   // this ^ gets dynamically set by the Winforms Generator!
+
       //
       // Required for Windows Form Designer support
       //
@@ -50,7 +54,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain, FSecurityContext);
 {#IFDEF DATASETTYPE}
       FMainDS = new {#DATASETTYPE}();
 {#ENDIF DATASETTYPE}
@@ -218,8 +222,11 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#BEFORERUNONCEONACTIVATIONMANUAL}
         {#RUNONCEONACTIVATIONMANUAL}
+        {#AFTERRUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// <summary>
@@ -275,3 +282,4 @@ namespace {#NAMESPACE}
 {#INCLUDE copyvalues.cs}
 {#INCLUDE inline_typed_dataset.cs}
 {#INCLUDE findandfilter.cs}
+{#INCLUDE security.cs}

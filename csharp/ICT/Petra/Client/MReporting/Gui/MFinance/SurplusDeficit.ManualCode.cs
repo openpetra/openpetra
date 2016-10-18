@@ -3,8 +3,9 @@
 //
 // @Authors:
 //       berndr
+//       Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +32,8 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MFinance.Account.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -57,6 +60,43 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.LoadDefaultSettings();
                 FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
+        }
+
+        /// <summary/>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="AMonthMode"></param>
+        public void PrintPeriodEndReport(Int32 ALedgerNumber, Boolean AMonthMode)
+        {
+            LedgerNumber = ALedgerNumber;
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            int currentPeriod = Ledger.CurrentPeriod;
+            TRptCalculator Calc = new TRptCalculator();
+            Calc.AddParameter("param_ledger_number_i", new TVariant(ALedgerNumber));
+            Calc.AddParameter("param_year_i", Ledger.CurrentFinancialYear);
+            Calc.AddParameter("param_current_financial_year", true);
+            Calc.AddParameter("param_end_period_i", new TVariant(currentPeriod - 1));
+            Calc.AddParameter("param_current_period", new TVariant(currentPeriod));
+            DateTime startDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_start_date", new TVariant(startDate));
+            DateTime endDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_end_date", new TVariant(endDate));
+
+            Calc.AddParameter("param_rgrCostCentres", "AllCostCentres");
+            Calc.AddParameter("param_cost_centre_list_title", "All");
+            Calc.AddParameter("param_rgrAccounts", "AllAccounts");
+            Calc.AddParameter("param_account_list_title", "All");
+
+            Calc.AddParameter("param_currency", "Base");
+            Calc.AddParameter("param_currency_name", Ledger.BaseCurrency);
+
+            Calc.AddParameter("param_period_checked", true);
+            Calc.AddParameter("param_quarter_checked", false);
+
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
         }
 
         //

@@ -33,6 +33,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance.Account.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -75,17 +76,35 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)
         {
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
-            ACalc.AddColumnLayout(0, 8, 0, 3);
-            ACalc.AddColumnLayout(1, 11, 0, 3);
-            ACalc.AddColumnLayout(2, 14, 0, 7);
-            ACalc.SetMaxDisplayColumns(3);
-            ACalc.AddColumnCalculation(0, "Debit");
-            ACalc.AddColumnCalculation(1, "Credit");
             ACalc.AddParameter("param_daterange", "false");
         }
 
-        //
-        // New methods using the Fast-reports DLL:
+        /// <summary>
+        /// Called after MonthEnd. No GUI is displayed - last month's Summary is shown.
+        /// </summary>
+        public void PrintPeriodEndReport(Int32 ALedgerNumber, Boolean AMonthMode)
+        {
+            LedgerNumber = ALedgerNumber;
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            int currentPeriod = Ledger.CurrentPeriod;
+            TRptCalculator Calc = new TRptCalculator();
+
+            Calc.AddParameter("param_ledger_number_i", new TVariant(ALedgerNumber));
+            Calc.AddParameter("param_year_i", Ledger.CurrentFinancialYear);
+            Calc.AddParameter("param_current_financial_year", true);
+            Calc.AddParameter("param_end_period_i", new TVariant(currentPeriod - 1));
+            Calc.AddParameter("param_current_period", new TVariant(currentPeriod));
+            DateTime startDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_start_date", new TVariant(startDate));
+            DateTime endDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_end_date", new TVariant(endDate));
+
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
+        }
 
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
@@ -114,7 +133,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "Accounts");
             //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
+            // My report doesn't need a ledger row - only the name of the ledger.
             DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
             DataView LedgerView = new DataView(LedgerNameTable);
             LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
@@ -126,7 +145,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FLedgerNumber))[0];
+            ACalc.AddStringParameter("param_currency_name", Ledger.BaseCurrency);
 
             Boolean HasData = ReportTable.Rows.Count > 0;
 

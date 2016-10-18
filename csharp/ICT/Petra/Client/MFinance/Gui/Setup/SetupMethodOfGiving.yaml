@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Methods of Giving
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup
     DetailTable: AMethodOfGiving

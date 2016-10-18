@@ -748,7 +748,7 @@ namespace Ict.Common.Printing
                     InitFontsAndPens();
                 }
 
-                PrintPage(null, FEv);
+                PrintPage(this, FEv);
             } while (HasMorePages());
 
             // should we catch an exception if document cannot be written?

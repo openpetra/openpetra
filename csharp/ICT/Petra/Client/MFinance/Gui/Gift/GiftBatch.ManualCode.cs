@@ -87,6 +87,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         private Boolean FViewMode = false;
         private GiftBatchTDS FViewModeTDS;
         private bool FWarnAboutMissingIntlExchangeRate = false;
+        private Boolean FenablePostingReport = true;
         private Boolean FLatestSaveIncludedForex = false;
 
         /// ViewMode is a special mode where the whole window with all tabs is in a readonly mode
@@ -202,6 +203,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             set
             {
                 FWarnAboutMissingIntlExchangeRate = value;
+            }
+        }
+
+        /// <summary>
+        /// If this is false, no report will be generated on Batch posting.
+        /// </summary>
+        public Boolean EnablePostingReport
+        {
+            get
+            {
+                TLogging.Log("GiftBatch.ManualCode: Posting Report Enabled: " + FenablePostingReport);
+                return FenablePostingReport;
+            }
+            set
+            {
+                FenablePostingReport = value;
             }
         }
 
@@ -385,6 +402,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             // Add a GotFocus event for the tabs so we can display a help message
             tabGiftBatch.GotFocus += new EventHandler(tabGiftBatch_GotFocus);
+            EnablePostingReport = true;
         }
 
         private void FPetraUtilsObject_DataSaved(object Sender, TDataSavedEventArgs e)

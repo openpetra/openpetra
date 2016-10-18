@@ -46,6 +46,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
+using Ict.Petra.Client.MReporting.Gui.MFinance;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -170,6 +171,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 Cursor.Current = Cursors.WaitCursor;
 
                 Thread postingThread = new Thread(() => PostGLBatch(CurrentBatchNumber, out Verifications));
+                postingThread.SetApartmentState(ApartmentState.STA);
 
                 using (TProgressDialog dialog = new TProgressDialog(postingThread))
                 {
@@ -201,10 +203,6 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 }
                 else
                 {
-                    //I don't need to call this directly, because the server calls it:
-                    //TFrmGLBatch.PrintPostingRegister(FLedgerNumber, CurrentBatchNumber);
-
-                    // TODO: print reports on successfully posted batch
                     MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"),
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
@@ -242,7 +240,14 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// </summary>
         private void PostGLBatch(int ABatchNumber, out TVerificationResultCollection AVerifications)
         {
-            TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, ABatchNumber, out AVerifications);
+            bool postedOk = TRemote.MFinance.GL.WebConnectors.PostGLBatch(FLedgerNumber, ABatchNumber, out AVerifications);
+
+            if (postedOk && FMyForm.EnablePostingReport)
+            {
+                TLogging.Log("PostGLBatch is generating the Batch Posting Report...");
+                TFrmBatchPostingRegister glReportGui = new TFrmBatchPostingRegister(null);
+                glReportGui.PrintReportNoUi(FLedgerNumber, ABatchNumber);
+            }
         }
 
         private void SetAccountCostCentreTableVariables()

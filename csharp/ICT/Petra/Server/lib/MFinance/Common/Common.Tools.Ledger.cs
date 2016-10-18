@@ -237,6 +237,20 @@ namespace Ict.Petra.Server.MFinance.Common
             return ReturnValue;
         }
 
+        /// <summary>Use a separate DB Connection to get the Ledger name</summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <returns></returns>
+        public static string GetLedgerNameUsingSeparateDb(Int32 ALedgerNumber)
+        {
+            TDataBase dataBase = DBAccess.SimpleEstablishDBConnection("GetLedgerName");
+
+            String ledgerName = GetLedgerName(ALedgerNumber, dataBase);
+
+            dataBase.CloseDBConnection();
+
+            return ledgerName;
+        }
+
         /// <summary>
         /// Get the name for this Ledger
         /// </summary>

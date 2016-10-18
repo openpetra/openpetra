@@ -24298,7 +24298,7 @@
             area=""/>
   <sequence name="seq_report_template"
             descr="Template Unique ID"
-            initial="1000"
+            initial="1100"
             increment="1"
             cycleonlimit="no"
             minval="0"

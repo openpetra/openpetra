@@ -18,7 +18,7 @@ RootNode:
 
         grpCollapsible:
             Controls:
-                Row0: [pnlPartnerInfo, pnlWorkerField]
+                Row0: [pnlPartnerInfo, pnlGiftDestination]
                 Row1: [pnlClassSpecificName, cmbPartnerStatus]
                 Row2: [pnlClassSpecificDetails, dtpStatusUpdated]
                 Row3: [pnlAdditionalInfo, dtpLastContact]
@@ -38,10 +38,11 @@ RootNode:
             Width: 540
             
 # Right-hand Panel (misc. information)            
-        pnlWorkerField: {Visible=false}
+        pnlGiftDestination: {Visible=false}
             Controls: 
                 Row0: [btnGiftDestination, txtGiftDestination] 
             Height: 30
+            Width: 210
             Padding: -20,0,0,0
         btnGiftDestination:
             Action: actMaintainGiftDestination
@@ -51,7 +52,7 @@ RootNode:
             ReadOnly: true
             NoLabel: true
             BorderStyle: None
-            Width: 125
+            Width: 98
             
         cmbPartnerStatus: 
             Label: Partner Stat&us

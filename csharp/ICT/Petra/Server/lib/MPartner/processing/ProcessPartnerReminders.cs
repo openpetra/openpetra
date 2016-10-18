@@ -42,6 +42,7 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
+using System.Collections.Specialized;
 
 namespace Ict.Petra.Server.MPartner.Processing
 {
@@ -69,6 +70,7 @@ namespace Ict.Petra.Server.MPartner.Processing
             SSystemDefaultsRow SystemDefaultsDR;
             PPartnerReminderTable PartnerReminderDT;
             int ReminderFreqency;
+            TSmtpSender Sender = null;
 
             if (TLogging.DebugLevel >= 6)
             {
@@ -107,15 +109,21 @@ namespace Ict.Petra.Server.MPartner.Processing
                     return;
                 }
 
-                TSmtpSender Sender = new TSmtpSender();
-
-                if (!Sender.FInitOk)
+                try
+                {
+                    Sender = new TSmtpSender();
+                }
+                catch (ESmtpSenderInitializeException e)
                 {
                     TLogging.Log(
                         TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
-                        ": Could not send Partner Reminders because SMTP server didn't initialise.");
+                        ": " + e.Message);
 
-                    ADataBaseObj.RollbackTransaction();
+                    if (e.InnerException != null)
+                    {
+                        TLogging.Log(e.InnerException.ToString(), TLoggingType.ToLogfile);
+                    }
+
                     return;
                 }
 
@@ -174,8 +182,33 @@ namespace Ict.Petra.Server.MPartner.Processing
                     {
                         emailSentOk = SendReminderEmail(PartnerReminderDR, ReadWriteTransaction, Sender);
                     }
-                    catch // if an exception was thrown, assume the email didn't go.
+                    catch (ESmtpSenderInitializeException e) // if an exception was thrown, assume the email didn't go.
                     {
+                        TLogging.Log(String.Format(TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
+                                ": Reminder ID {0} for Partner {1}: {2}", PartnerReminderDR.ReminderId,
+                                PartnerReminderDR.PartnerKey,
+                                e.Message));
+
+                        if (e.InnerException != null)
+                        {
+                            TLogging.Log(e.InnerException.Message);
+                        }
+                    }
+                    catch (ESmtpSenderSendException e)
+                    {
+                        TLogging.Log(String.Format(TTimedProcessing.StrAutomaticProcessing + StrRemindersProcessing +
+                                ": Reminder ID {0} for Partner {1}: {2}", PartnerReminderDR.ReminderId,
+                                PartnerReminderDR.PartnerKey,
+                                e.Message));
+
+                        if (e.InnerException != null)
+                        {
+                            TLogging.Log(e.InnerException.Message);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        TLogging.Log(e.Message);
                     }
 
                     if (emailSentOk)
@@ -242,6 +275,13 @@ namespace Ict.Petra.Server.MPartner.Processing
                 }
 
                 throw;
+            }
+            finally
+            {
+                if (Sender != null)
+                {
+                    Sender.Dispose();
+                }
             }
         }
 
@@ -420,19 +460,8 @@ namespace Ict.Petra.Server.MPartner.Processing
             char LF = Convert.ToChar(10);
 
 
-            // Retrieve ShortName of the Partner to which the Reminder Email should be sent
-            PartnerShortName = GetPartnerShortName(APartnerReminderDR.PartnerKey);
-
-            // Format Email Recipient Address as per email RFC's
-            if (!Destination.Trim().StartsWith("<"))
-            {
-                Destination = "<" + Destination;
-            }
-
-            if (!Destination.Trim().EndsWith(">"))
-            {
-                Destination = Destination + ">";
-            }
+            // Retrieve ShortName of the Partner about whom the Reminder Email should be sent
+            PartnerShortName = GetPartnerShortName(APartnerReminderDR.PartnerKey, AReadWriteTransaction);
 
             // Compose Email Subject
             Subject = String.Format("OpenPetra Reminder about {0}", PartnerShortName);
@@ -462,24 +491,31 @@ namespace Ict.Petra.Server.MPartner.Processing
                 Body += String.Format("This Reminder has now been disabled.{0}", LF);
             }
 
-            // Send Email (this picks up the SMTPServer AppSetting from the Server Config File)
-            return Sender.SendEmail(Destination, "OpenPetra Server", Destination, Subject, Body);
+            // Send Email (this picks up the SmtpHost AppSetting from the Server Config File)
+            return Sender.SendEmail(TAppSettingsManager.GetValue("NoReplyEmailAddress", "noreply@solidcharity.com"),
+                                    "OpenPetra Server", Destination, Subject, Body);
         }
 
         /// <summary>
         /// Retrieves the ShortName of a Partner.
         /// </summary>
         /// <param name="APartnerKey">PartnerKey of the Partner.</param>
+        /// <param name="ATransaction">Database transaction to use.</param>
         /// <returns>ShortName of the specified Partner.</returns>
-        private static string GetPartnerShortName(long APartnerKey)
+        private static string GetPartnerShortName(long APartnerKey, TDBTransaction ATransaction)
         {
-            string ShortName = "";
+            // Can't use TPartnerServerLookups from here:
+            // TPartnerServerLookups.GetPartnerShortName(APartnerKey, out ShortName, out PartnerClass);
 
-            Ict.Petra.Shared.TPartnerClass PartnerClass;
+            PPartnerTable PartnerTable;
+            var Columns = new StringCollection();
 
-            TPartnerServerLookups.GetPartnerShortName(APartnerKey, out ShortName, out PartnerClass);
+            Columns.Add(PPartnerTable.GetPartnerKeyDBName());
+            Columns.Add(PPartnerTable.GetPartnerShortNameDBName());
 
-            return ShortName;
+            PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, Columns, ATransaction);
+
+            return PartnerTable[0].PartnerShortName;
         }
 
         /// <summary>

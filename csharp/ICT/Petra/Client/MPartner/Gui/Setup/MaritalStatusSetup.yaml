@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Marital Statuses
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PtMaritalStatus
@@ -48,4 +48,4 @@ RootNode:
         txtDetailDescription: {Width=335}
         chkDetailAssignableFlag: {Label=Assignable, OnChange=EnableDisableUnassignableDate}
         dtpDetailAssignableDate: {Label=Unassignable Date, Validation=true}
-        chkDetailDeletableFlag: {Label=Deletable}
+        chkDetailDeletableFlag: {Label=Deletable, Enabled=false}

@@ -376,8 +376,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             string NumberFormat = AFdlgSeparator[2];
 
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
-            CultureInfo MyCultureInfoDate = new CultureInfo("en-GB");
-            MyCultureInfoDate.DateTimeFormat.ShortDatePattern = DateFormat;
+            CultureInfo MyCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
 
             // To store the From and To currencies
             // Use an array to store these to make for easy

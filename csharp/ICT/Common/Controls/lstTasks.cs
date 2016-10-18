@@ -46,6 +46,8 @@ namespace Ict.Common.Controls
         private static int FInitiallySelectedLedger = -1;
         private static TOpenNewOrExistingForm FOpenNewOrExistingForm;
         private static bool FTaxDeductiblePercentageEnabled = false;
+        private static bool FTaxGovIdEnabled = false;
+        private static string FTaxGovIdLabel = string.Empty;
         private static bool FDevelopersOnly = false;
 
         private Dictionary <string, TUcoTaskGroup>FGroups = new Dictionary <string, TUcoTaskGroup>();
@@ -153,6 +155,20 @@ namespace Ict.Common.Controls
                                 SingleTask.TaskTitle = TLstFolderNavigation.GetLabel(TaskNode);
                                 SingleTask.TaskDescription = TYml2Xml.HasAttribute(TaskNode,
                                     "Description") ? Catalog.GetString(TYml2Xml.GetAttribute(TaskNode, "Description")) : "";
+
+                                // this item should only be displayed on systems with TaxGovId enabled as a system setting (e.g. Austria)
+                                if (TaskNode.Name == "ImportPartnerTaxGovIds")
+                                {
+                                    if (!FTaxGovIdEnabled)
+                                    {
+                                        continue;
+                                    }
+
+                                    // Set the description for the GovId using the system setting for the label
+                                    string placeholder = FTaxGovIdLabel.Length == 0 ? "tax" : FTaxGovIdLabel;
+                                    SingleTask.TaskDescription = SingleTask.TaskDescription.Replace("---", placeholder);
+                                }
+
                                 SingleTask.Name = TaskNode.Name;
                                 SingleTask.TaskGroup = TaskGroup;
                                 SingleTask.Tag = TaskNode;
@@ -210,8 +226,11 @@ namespace Ict.Common.Controls
         /// <param name="AForm">Type of the Form to be opened.</param>
         /// <param name="AParentForm"></param>
         /// <param name="ARunShowMethod">Set to true to run the Forms' Show() Method. (Default=false).</param>
+        /// <param name="AContext">Context in which the Form runs (default=""). Can get evaluated for
+        /// security purposes.</param>
         /// <returns>An Instance of the Form (either newly created or just activated).</returns>
-        public delegate Form TOpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod);
+        public delegate Form TOpenNewOrExistingForm(Type AForm, Form AParentForm, out bool AFormWasAlreadyOpened, bool ARunShowMethod,
+            string AContext = "");
 
         /// <summary>
         /// This property is used to provide a function which opens a new or existing Form.
@@ -428,15 +447,23 @@ namespace Ict.Common.Controls
         /// <param name="AUserId"></param>
         /// <param name="AHasAccessPermission"></param>
         /// <param name="ATaxDeductiblePercentageEnabled"></param>
+        /// <param name="ATaxGovIdEnabled"></param>
+        /// <param name="ATaxGovIdLabel"></param>
         /// <param name="ADevelopersOnly"></param>
         public static void Init(string AUserId,
             TLstFolderNavigation.CheckAccessPermissionDelegate AHasAccessPermission,
-            bool ATaxDeductiblePercentageEnabled = false, bool ADevelopersOnly = false)
+            bool ATaxDeductiblePercentageEnabled = false, bool ATaxGovIdEnabled = false, bool ADevelopersOnly = false, string ATaxGovIdLabel = "")
         {
             FUserId = AUserId;
             FHasAccessPermission = AHasAccessPermission;
             FTaxDeductiblePercentageEnabled = ATaxDeductiblePercentageEnabled;
+            FTaxGovIdEnabled = ATaxGovIdEnabled;
             FDevelopersOnly = ADevelopersOnly;
+
+            if (FTaxGovIdEnabled)
+            {
+                FTaxGovIdLabel = ATaxGovIdLabel;
+            }
         }
 
         /// <summary>
@@ -446,17 +473,18 @@ namespace Ict.Common.Controls
         public static string ExecuteAction(XmlNode node, Form AParentWindow)
         {
             bool FormWasAlreadyOpened = false;
-
-            if (!FHasAccessPermission(node, FUserId, true))
-            {
-                return Catalog.GetString("Sorry, you don't have enough permissions to do this");
-            }
+            string Context = String.Empty;
 
             string strNamespace = TYml2Xml.GetAttributeRecursive(node, "Namespace");
 
             if (strNamespace.Length == 0)
             {
                 return "There is no namespace for " + node.Name;
+            }
+
+            if (TCommonControlsSecurity.CheckUserAccessToModuleUsingModuleNamespaceName(node) == false)
+            {
+                return Catalog.GetString("Access denied");
             }
 
             if (!FGUIAssemblies.Keys.Contains(strNamespace))
@@ -571,15 +599,27 @@ namespace Ict.Common.Controls
                 // also use something similar as in lstFolderNavigation: CheckAccessPermissionDelegate?
                 // delegate as a static function that is available from everywhere?
 
+                // check for Context property
+                foreach (PropertyInfo prop in classType.GetProperties())
+                {
+                    if (TYml2Xml.HasAttributeRecursive(node, prop.Name))
+                    {
+                        if (prop.Name == "Context")
+                        {
+                            Context = TYml2Xml.GetAttributeRecursive(node, prop.Name);
+                        }
+                    }
+                }
+
                 try
                 {
                     if (OpenNewOrExistingForm != null)
                     {
-                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false);
+                        screen = OpenNewOrExistingForm(classType, AParentWindow, out FormWasAlreadyOpened, false, Context);
                     }
                     else
                     {
-                        screen = Activator.CreateInstance(classType, new object[] { AParentWindow });
+                        screen = Activator.CreateInstance(classType, new object[] { AParentWindow, Context });
                     }
                 }
                 catch (System.Reflection.TargetInvocationException E)

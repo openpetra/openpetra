@@ -41,6 +41,7 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -184,6 +185,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         private TDelegateForDeterminationOfBestAddressesCountryCode FDelegateForDeterminationOfBestAddressesCountryCode;
 
         TPartnerClass FPartnersPartnerClass;
+
+        /// <summary>See call to Method <see cref="TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl"/>.</summary>
+        private TbtnCreated btnCreatedModified = new TbtnCreated();
 
         /// <summary>
         /// Populated by Method <see cref="Calculations.DeterminePhoneAttributes"/>.
@@ -395,6 +399,20 @@ namespace Ict.Petra.Client.MPartner.Gui
             gridView.Sort = "Parent_Parent_CategoryIndex ASC, Parent_AttributeIndex ASC, " +
                             PPartnerAttributeTable.GetIndexDBName() + " ASC";
 
+            // 'On-the-fly' layout changes to accommodate the Modified/Created Button
+            cmbContactType.Left -= 15;
+            lblContactType.Left -= 15;
+            chkSpecialised.Left -= 15;
+            lblSpecialised.Left -= 15;
+            txtComment.Left -= 15;
+            lblComment.Left -= 15;
+
+            // Manually add button for the modified/created information.
+            // (The WinForms Generator doesn't have a built-in support for the creation of those buttons yet
+            // [Bug #1782]).
+            TbtnCreatedHelper.AddModifiedCreatedButtonToContainerControl(ref btnCreatedModified, pnlDetails);
+            FPetraUtilsObject.SetStatusBarText(btnCreatedModified, ApplWideResourcestrings.StrBtnCreatedUpdatedStatusBarText);
+
             if (grdDetails.Rows.Count > 1)
             {
                 grdDetails.SelectRowInGrid(1);
@@ -418,6 +436,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FFilterInitialised = true;
                 }
             }
+
+            CheckForNonCurrent();
         }
 
         /// <summary>
@@ -825,6 +845,8 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (ARow != null)
             {
                 btnDelete.Enabled = true;
+
+                btnCreatedModified.UpdateFields(ARow);
             }
 
             OnContactTypeChanged(null, null);
@@ -1372,6 +1394,48 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             TSharedPartnerValidation_Partner.ValidateContactDetailsManual(this, ARow, ref VerificationResultCollection,
                 FValidationControlsDict, FValueKind);
+        }
+
+        /// <summary>
+        /// Checks and shows the "Non-current contact details available" message. It is shown when the filter panel is closed,
+        /// there are non-current available and the current filter is not ticked.
+        /// </summary>
+        private void CheckForNonCurrent()
+        {
+            if (!(pnlFilterAndFind.Width == 0))
+            {
+                lblNonCurrentAvailable.Visible = false;
+            }
+            else
+            {
+                CheckBox tempCheckBox = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkCurrent");
+
+                switch (tempCheckBox.CheckState)
+                {
+                    case CheckState.Checked:
+
+                        foreach (DataRow Row in FMainDS.PPartnerAttribute.Rows)
+                        {
+                            PPartnerAttributeRow attributeRow = (PPartnerAttributeRow)Row;
+
+                            if (!attributeRow.Current)
+                            {
+                                lblNonCurrentAvailable.Visible = true;
+                                break;
+                            }
+                        }
+
+                        break;
+
+                    case CheckState.Unchecked:
+                        lblNonCurrentAvailable.Visible = false;
+                        break;
+
+                    case CheckState.Indeterminate:
+                        lblNonCurrentAvailable.Visible = false;
+                        break;
+                }
+            }
         }
 
         #endregion

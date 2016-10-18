@@ -33,6 +33,9 @@ using Ict.Common.IO;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -109,6 +112,18 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             // only one record can be selected
             grdDetails.Selection.EnableMultiSelection = false;
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    POccupationTable.ColumnOccupationCodeId,
+                    POccupationTable.ColumnOccupationDescriptionId,
+                    POccupationTable.ColumnValidOccupationId,
+                    POccupationTable.ColumnDeletableId
+                });
         }
     }
 

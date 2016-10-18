@@ -2219,11 +2219,11 @@ namespace Ict.Common.Controls
                 }
             }
             // Keys that can trigger AutoFind
-            else if (((AKeyEventArgs.KeyCode >= Keys.A)
-                      && (AKeyEventArgs.KeyCode <= Keys.Z)) || (AKeyEventArgs.KeyCode == Keys.Add) || (AKeyEventArgs.KeyCode == Keys.Subtract)
+            else if (((AKeyEventArgs.KeyCode >= Keys.A) && (AKeyEventArgs.KeyCode <= Keys.Z) && (Control.ModifierKeys == Keys.None))
+                     || (AKeyEventArgs.KeyCode == Keys.Add) || (AKeyEventArgs.KeyCode == Keys.Subtract)
                      || (AKeyEventArgs.KeyCode == Keys.Oemplus) || (AKeyEventArgs.KeyCode == Keys.OemMinus) || (AKeyEventArgs.KeyCode == Keys.Space)
-                     || ((AKeyEventArgs.KeyCode >= Keys.D0)
-                         && (AKeyEventArgs.KeyCode <= Keys.D9)) || ((AKeyEventArgs.KeyCode >= Keys.NumPad0) && (AKeyEventArgs.KeyCode <= Keys.NumPad9)))
+                     || ((AKeyEventArgs.KeyCode >= Keys.D0) && (AKeyEventArgs.KeyCode <= Keys.D9))
+                     || ((AKeyEventArgs.KeyCode >= Keys.NumPad0) && (AKeyEventArgs.KeyCode <= Keys.NumPad9)))
             {
                 // Note: Space only gets through to there when SpaceKeyPressed is not assigned!
                 if (AutoFindMode == TAutoFindModeEnum.FirstCharacter)
@@ -2442,7 +2442,8 @@ namespace Ict.Common.Controls
             /// Updates the enabled/disabled state of Demote and Promote Buttons.
             /// </summary>
             /// <param name="ACurrentRow">Current Row number (Row numbers start at 1!).</param>
-            public void UpdateButtons(int ACurrentRow)
+            /// <param name="AReadOnlyMode">Pass true to prevent the Buttons from becoming enabled (default=false).</param>
+            public void UpdateButtons(int ACurrentRow, bool AReadOnlyMode = false)
             {
                 if (FDemoteAndPromoteButtonsDisabledDueToManualSort)
                 {
@@ -2451,10 +2452,18 @@ namespace Ict.Common.Controls
                 }
                 else
                 {
-                    // The grid rows start at 1 due to the one-row header
-                    FBtnDemote.Enabled = ACurrentRow > 1;
-                    FBtnPromote.Enabled = ((ACurrentRow < FGrid.Rows.Count - 1)
-                                           && (ACurrentRow != -1));
+                    if (!AReadOnlyMode)
+                    {
+                        // The grid rows start at 1 due to the one-row header
+                        FBtnDemote.Enabled = ACurrentRow > 1;
+                        FBtnPromote.Enabled = ((ACurrentRow < FGrid.Rows.Count - 1)
+                                               && (ACurrentRow != -1));
+                    }
+                    else
+                    {
+                        FBtnDemote.Enabled = false;
+                        FBtnPromote.Enabled = false;
+                    }
                 }
             }
 

@@ -242,6 +242,7 @@ namespace Tests.MFinance.GLBatches
                 tester.SendCommand(MessageBoxTester.Command.Yes);
             };
 
+            frmBatch.EnablePostingReport = false;
             ButtonTester btnPost = new ButtonTester("ucoBatches.btnPostBatch");
             btnPost.Click();
 

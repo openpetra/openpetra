@@ -1,5 +1,5 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: Maintain Contact Log Attributes and Details
     Namespace: Ict.Petra.Client.MPartner.Gui.Setup
     DetailTable: PContactAttribute

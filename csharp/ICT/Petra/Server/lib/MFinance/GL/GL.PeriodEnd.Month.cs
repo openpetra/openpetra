@@ -45,6 +45,7 @@ using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Server.MFinance.GL.WebConnectors
 {
@@ -58,19 +59,27 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNumber"></param>
         /// <param name="AInfoMode"></param>
+        /// <param name="AglBatchNumbers"></param>
+        /// <param name="AStewardshipBatch">True if Stewardship Batch was generated</param>
         /// <param name="AVerificationResults"></param>
         /// <returns>false if there's no problem</returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool PeriodMonthEnd(
             Int32 ALedgerNumber,
             bool AInfoMode,
+            out List <Int32>AglBatchNumbers,
+            out Boolean AStewardshipBatch,
             out TVerificationResultCollection AVerificationResults)
         {
+            AglBatchNumbers = new List <int>();
+            AStewardshipBatch = false;
             try
             {
                 TLedgerInfo ledgerInfo = new TLedgerInfo(ALedgerNumber);
                 Int32 PeriodClosing = ledgerInfo.CurrentPeriod;
                 bool res = new TMonthEnd(ledgerInfo).RunMonthEnd(AInfoMode,
+                    out AglBatchNumbers,
+                    out AStewardshipBatch,
                     out AVerificationResults);
 
                 if (!res && !AInfoMode)
@@ -131,6 +140,7 @@ namespace Ict.Petra.Server.MFinance.GL
         [NoRemoting]
         public delegate bool StewardshipCalculation(int ALedgerNumber,
             int APeriodNumber,
+            out List <Int32>AglBatchNumbers,
             out TVerificationResultCollection AVerificationResult);
         private static StewardshipCalculation FStewardshipCalculationDelegate;
 
@@ -235,16 +245,22 @@ namespace Ict.Petra.Server.MFinance.GL
         /// Ict.Petra.Server.MFinance.GL.WebConnectors.TPeriodMonthEnd
         /// </summary>
         /// <param name="AInfoMode"></param>
+        /// <param name="AglBatchNumbers">The Client should print the generated Batches</param>
+        /// <param name="AStewardshipBatch">True if Stewardship Batch was generated</param>
         /// <param name="AVRCollection"></param>
         /// <returns>false if it went OK</returns>
         public bool RunMonthEnd(
             bool AInfoMode,
+            out List <Int32>AglBatchNumbers,
+            out Boolean AStewardshipBatch,
             out TVerificationResultCollection AVRCollection)
         {
             FInfoMode = AInfoMode;
             FverificationResults = new TVerificationResultCollection();
             AVRCollection = FverificationResults;
+            AStewardshipBatch = false;
             TPeriodEndOperations.FwasCancelled = false;
+            AglBatchNumbers = new List <int>();
 
             if (FledgerInfo.ProvisionalYearEndFlag)
             {
@@ -286,16 +302,22 @@ namespace Ict.Petra.Server.MFinance.GL
 
             if (!AInfoMode)
             {
-                TVerificationResultCollection IchVerificationReults;
+                TVerificationResultCollection IchVerificationResults;
 
                 if (!StewardshipCalculationDelegate(FledgerInfo.LedgerNumber, FledgerInfo.CurrentPeriod,
-                        out IchVerificationReults))
+                        out AglBatchNumbers,
+                        out IchVerificationResults))
                 {
                     FHasCriticalErrors = true;
                 }
 
                 // Merge VerificationResults:
-                FverificationResults.AddCollection(IchVerificationReults);
+                FverificationResults.AddCollection(IchVerificationResults);
+
+                if (AglBatchNumbers.Count > 0)
+                {
+                    AStewardshipBatch = true;
+                }
             }
 
             // RunPeriodEndSequence(new RunMonthlyAdminFees(), "Example");
@@ -321,18 +343,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 }
             }
 
-            //
-            // The 4GL code throws out these reports:
-            //
-            //     Admin fee calculations report.
-            //     ICH stewardship report.
-            //     "Trial Balance" with account details.
-            //     HOSA for each foreign cost centre (ledger/fund).
-            //     Income Statement/Profit & Loss
-            //     Current Accounts Payable if interfaced.  M025
-            //     AFO report.
-            //     Executive Summary Report.
-            //
             return FHasCriticalErrors;
         }
     }

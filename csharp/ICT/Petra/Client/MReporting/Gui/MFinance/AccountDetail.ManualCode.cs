@@ -37,6 +37,7 @@ using Ict.Petra.Shared;
 using System.Data;
 using Ict.Petra.Client.App.Core;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -52,6 +53,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 uco_GeneralSettings.EnableDateSelection(true);
+                uco_GeneralSettings.EnforceLocalCurrencyWhenMultiplePeriodSelected = true;
 
                 FLedgerNumber = value;
 
@@ -88,8 +90,48 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        /// <summary>
+        /// Called after MonthEnd. No GUI will be displayed.
+        /// </summary>
+        public void PrintPeriodEndReport(Int32 ALedgerNumber, Boolean AMonthMode)
+        {
+            LedgerNumber = ALedgerNumber;
+            TRptCalculator Calc = new TRptCalculator();
+            ALedgerRow Ledger =
+                ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, ALedgerNumber))[0];
+
+            int currentPeriod = Ledger.CurrentPeriod;
+            Calc.AddParameter("param_ledger_number_i", ALedgerNumber);
+            Calc.AddParameter("param_current_period", currentPeriod);
+            Calc.AddParameter("param_period", true);
+            Calc.AddParameter("param_current_financial_year", true);
+            Calc.AddStringParameter("param_rgrAccounts", "All");
+            Calc.AddStringParameter("param_rgrCostCentres", "All");
+            Calc.AddStringParameter("param_account_list_title", "All Accounts");
+            Calc.AddStringParameter("param_cost_centre_list_title", "All Cost Centres");
+
+            Calc.AddParameter("param_year_i", Ledger.CurrentFinancialYear);
+            Calc.AddParameter("param_start_period_i", currentPeriod - 1);
+            Calc.AddParameter("param_end_period_i", currentPeriod - 1);
+            DateTime startDate = TRemote.MFinance.GL.WebConnectors.GetPeriodStartDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_start_date", new TVariant(startDate));
+            DateTime endDate = TRemote.MFinance.GL.WebConnectors.GetPeriodEndDate(
+                ALedgerNumber, Ledger.CurrentFinancialYear, -1, currentPeriod);
+            Calc.AddParameter("param_end_date", new TVariant(endDate));
+
+            Calc.AddStringParameter("param_sortby", "Account");
+            Calc.AddStringParameter("param_currency", "Base");
+            Calc.AddStringParameter("param_currency_name", Ledger.BaseCurrency);
+
+            Calc.AddParameter("param_paginate", false);
+            Calc.AddParameter("param_auto_email", false);
+            Calc.AddParameter("param_with_analysis_attributes", false);
+
+            FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
+        }
+
         //
-        // This will be called if the Fast Reports Wrapper loaded OK.
         // Returns True if the data apparently loaded OK and the report should be printed.
         // (Returns FALSE if the user has selected "auto-email" and this method drives the email sending process itself, leaving nothing for the default process to do.)
         private bool LoadReportData(TRptCalculator ACalc)
@@ -344,7 +386,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
             ACalc.AddStringParameter("param_base_currency_name", uco_GeneralSettings.GetBaseCurrency());
 
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled())
@@ -395,12 +436,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 && !parameters.Get("param_design_template").ToBool()
                 )
             {
-                String Status = FastReportsWrapper.AutoEmailReports(FPetraUtilsObject,
+                List <String>Status = FastReportsWrapper.AutoEmailReports(FPetraUtilsObject,
                     FPetraUtilsObject.FFastReportsPlugin,
                     ACalc,
                     FLedgerNumber,
                     CostCentreFilter);
-                MessageBox.Show(Status, Catalog.GetString("Account Detail Report"));
+                MessageBox.Show(String.Join("\n", Status), Catalog.GetString("Auto Email") + " " + Catalog.GetString(
+                        "Account Detail Report"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return false;
             }
 

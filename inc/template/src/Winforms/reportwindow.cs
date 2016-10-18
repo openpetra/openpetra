@@ -22,6 +22,7 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Shared.Security;
 
 namespace {#NAMESPACE}
 {
@@ -31,14 +32,17 @@ namespace {#NAMESPACE}
   /// </summary>
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
+    private string FSecurityContext = String.Empty;
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
     private Boolean FCalledFromExtracts = false;
     
     /// <summary>
     /// constructor
     /// </summary>
-    public {#CLASSNAME}(Form AParentForm) : base()
+    public {#CLASSNAME}(Form AParentForm, string ASecurityContext = "") : base()
     {
+      {#SETSECURITYCONTEXT}                   // this ^ gets dynamically set by the Winforms Generator!
+
       //
       // Required for Windows Form Designer support
       //
@@ -51,7 +55,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain, FSecurityContext);
 
 {#IFDEF CALCULATEFROMMETHOD}
       FPetraUtilsObject.FCalculateFromMethod = "{#CALCULATEFROMMETHOD}";
@@ -219,8 +223,11 @@ namespace {#NAMESPACE}
     public void RunOnceOnActivation()
     {
         ShowReportOrExtractOptions();
+        {#BEFORERUNONCEONACTIVATIONMANUAL}
         {#RUNONCEONACTIVATIONMANUAL}
+        {#AFTERRUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// <summary>
@@ -403,3 +410,5 @@ if (({#CONTROLNAME}Date <= DateTime.MinValue)
 }
 {#CONTROLNAME}.Date = {#CONTROLNAME}Date;
 {#ENDIFN CLEARIFSETTINGEMPTY}
+
+{#INCLUDE security.cs}

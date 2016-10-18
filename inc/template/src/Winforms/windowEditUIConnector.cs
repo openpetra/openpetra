@@ -29,6 +29,7 @@ using Ict.Petra.Client.CommonControls;
 {#IFDEF SHAREDVALIDATIONNAMESPACEMODULE}
 using {#SHAREDVALIDATIONNAMESPACEMODULE};
 {#ENDIF SHAREDVALIDATIONNAMESPACEMODULE}
+using Ict.Petra.Shared.Security;
 {#USINGNAMESPACES}
 
 namespace {#NAMESPACE}
@@ -37,6 +38,7 @@ namespace {#NAMESPACE}
   /// auto generated: {#FORMTITLE}
   public partial class {#CLASSNAME}: System.Windows.Forms.Form, {#INTERFACENAME}
   {
+    private string FSecurityContext = String.Empty;
     private {#UTILOBJECTCLASS} FPetraUtilsObject;
 {#IFDEF MASTERTABLE OR DETAILTABLE}
     private DataColumn FPrimaryKeyColumn = null;
@@ -52,8 +54,10 @@ namespace {#NAMESPACE}
 {#ENDIF SHOWDETAILS}
 
     /// constructor
-    public {#CLASSNAME}(Form AParentForm) : base()
+    public {#CLASSNAME}(Form AParentForm, string ASecurityContext = "") : base()
     {
+      {#SETSECURITYCONTEXT}                   // this ^ gets dynamically set by the Winforms Generator!
+
       //
       // Required for Windows Form Designer support
       //
@@ -66,7 +70,7 @@ namespace {#NAMESPACE}
 
       {#ASSIGNFONTATTRIBUTES}
       
-      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain);
+      FPetraUtilsObject = new {#UTILOBJECTCLASS}(AParentForm, this, stbMain, FSecurityContext);
       {#INITUSERCONTROLS}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
       {#INITMANUALCODE}
@@ -419,8 +423,11 @@ namespace {#NAMESPACE}
     /// auto generated
     public void RunOnceOnActivation()
     {
+        {#BEFORERUNONCEONACTIVATIONMANUAL}
         {#RUNONCEONACTIVATIONMANUAL}
+        {#AFTERRUNONCEONACTIVATIONMANUAL}
         {#RUNONCEINTERFACEIMPLEMENTATION}
+        {#FINALRUNONCEONACTIVATIONACTIONMANUAL}
     }
 
     /// <summary>
@@ -607,3 +614,4 @@ namespace {#NAMESPACE}
 
 {#INCLUDE copyvalues.cs}
 {#INCLUDE validationcontrolsdict.cs}
+{#INCLUDE security.cs}

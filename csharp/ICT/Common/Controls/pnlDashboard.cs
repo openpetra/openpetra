@@ -223,6 +223,11 @@ namespace Ict.Common.Controls
         /// </summary>
         private void SelectFirstTaskWithFocus(TLstTasks ATaskList)
         {
+            if (ATaskList == null)
+            {
+                return;
+            }
+
             for (int i = ATaskList.Controls.Count - 1; i >= 0; i--)
             {
                 TUcoTaskGroup group = (TUcoTaskGroup)ATaskList.Controls[i];

@@ -37,7 +37,7 @@ using Ict.Petra.Server.MSysMan.Data.Access;
 namespace Ict.Petra.Server.MCommon.Processing
 {
     /// <summary>
-    /// run some data checks against the database and tell the users how to fix consistency issues
+    /// Run some data checks against the database and tell the users how to fix consistency issues.
     /// </summary>
     public class TProcessDataChecks
     {

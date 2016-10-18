@@ -31,12 +31,14 @@ using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MCommon.Validation;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -100,6 +102,20 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
             {
                 TDataCache.TMCommon.RefreshCacheableCommonTable(TCacheableCommonTablesEnum.CountryList);
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PCountryTable.ColumnCountryCodeId,
+                    PCountryTable.ColumnCountryNameId,
+                    PCountryTable.ColumnTimeZoneMinimumId,
+                    PCountryTable.ColumnTimeZoneMaximumId,
+                    PCountryTable.ColumnUndercoverId,
+                    PCountryTable.ColumnDeletableId
+                });
         }
     }
 }

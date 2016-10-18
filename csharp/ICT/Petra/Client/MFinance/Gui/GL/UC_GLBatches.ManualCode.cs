@@ -42,6 +42,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Validation;
+using Ict.Petra.Shared.Security;
 
 namespace Ict.Petra.Client.MFinance.Gui.GL
 {
@@ -1155,6 +1156,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void PostBatch(System.Object sender, EventArgs e)
         {
+            // Although the screen can be used with FINANCE-1, Posting requires FINANCE-2
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PostBatch [raised by Client Proxy for ModuleAccessManager]");
+
             if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
             {
                 MessageBox.Show(Catalog.GetString("Please select a GL Batch before posting!"));

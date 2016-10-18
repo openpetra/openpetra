@@ -40,8 +40,17 @@ namespace Ict.Petra.Shared
         /// <summary>Registry Keys for Petra</summary>
         public const String PETRA_REGISTRY_POSITIONS_KEY = "Positions";
 
-        /// <summary>OpenPetra Modules Conference Module</summary>
+        /// <summary>Module Access Manager</summary>
+        public const String MODULE_ACCESS_MANAGER = "[raised by Module Access Manager]";
+
+        /// <summary>Module Access Manager</summary>
+        public const String MODULE_ACCESS_MANAGER_CLIENT_PROXY = "[raised by Client Proxy for Module Access Manager]";
+
+        /// <summary>OpenPetra Modules Conference Module User Level Access</summary>
         public const String PETRAMODULE_CONFERENCE = "CONFERENCE";
+
+        /// <summary>OpenPetra Modules Conference Module Administrative Access</summary>
+        public const String PETRAMODULE_CONFADMIN = "CONFADMIN";
 
         /// <summary>Financial Development User Level Access</summary>
         public const String PETRAMODULE_DEVUSER = "DEVUSER";
@@ -52,14 +61,20 @@ namespace Ict.Petra.Shared
         /// <summary>Finance Exchange Rates</summary>
         public const String PETRAMODULE_FINEXRATE = "FIN-EX-RATE";
 
-        /// <summary>Finance  Basic User</summary>
+        /// <summary>Finance Basic User</summary>
         public const String PETRAMODULE_FINANCE1 = "FINANCE-1";
 
-        /// <summary>Finance  Intermediate User</summary>
+        /// <summary>Finance Intermediate User</summary>
         public const String PETRAMODULE_FINANCE2 = "FINANCE-2";
 
-        /// <summary>Finance  Advanced User</summary>
+        /// <summary>Finance Advanced User</summary>
         public const String PETRAMODULE_FINANCE3 = "FINANCE-3";
+
+        /// <summary>Finance Reporting User</summary>
+        public const String PETRAMODULE_FINANCERPT = "FINANCE-RPT";
+
+        /// <summary>Personnel Administrative Access</summary>
+        public const String PETRAMODULE_PERSADMIN = "PERSADMIN";
 
         /// <summary>Personnel Module</summary>
         public const String PETRAMODULE_PERSONNEL = "PERSONNEL";
@@ -72,6 +87,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Manager</summary>
         public const String PETRAMODULE_SYSADMIN = "SYSMAN";
+
+        /// <summary>Ledger Module access prefix</summary>
+        public const String LEDGER_MODULESTRING = "LEDGER";
 
         /// <summary>OpenPetra Groups Conference User</summary>
         public const String PETRAGROUP_CONFUSER = "CONF-USER";
@@ -177,6 +195,9 @@ namespace Ict.Petra.Shared
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_GOVID_ENABLED = "GovIdEnabled";
+
+        /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GOVID_DB_KEY_NAME = "GovIdDbKeyName";
 
         /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_GOVID_LABEL = "GovIdLabel";

@@ -5,6 +5,7 @@ RootNode:
     DatasetType: Ict.Petra.Shared.MFinance.Gift.Data.GiftBatchTDS
     TempTableName: DonorRecipientHistoryTempTable
     UsingNamespaces: [Ict.Petra.Shared.MFinance.Gift.Data]
+    ModuleForSecurity: MFinanceReporting
     FormType: browse
     Template: windowSingleUntypedTempTable
     WindowWidth: 1000

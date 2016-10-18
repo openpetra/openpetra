@@ -4,6 +4,7 @@ RootNode:
     Namespace: Ict.Petra.Client.MPartner.Gui
     DetailTable: PPartnerGiftDestination
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Partner.Validation]
+    AutomaticApplySecurityExecution: false
     FormType: edit
     Template: windowMaintainTable
     WindowWidth: 550

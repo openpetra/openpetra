@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="AFileName">File name</param>
         /// <param name="AVerificationResult">Error messaging</param>
         /// <returns>True if successful</returns>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool GenerateHOSAFiles(int ALedgerNumber,
             int APeriodNumber,
             int AIchNumber,
@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="AFileName">File name (including path) to process</param>
         /// <param name="AHeaderText">Text to insert in first line</param>
         /// <param name="AVerificationResult">Error messaging</param>
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool ReplaceHeaderInFile(string AFileName, string AHeaderText, ref TVerificationResultCollection AVerificationResult)
         {
             bool retVal = true;
@@ -390,7 +390,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
         /// <param name="AExportDataTable"></param>
         /// <param name="AVerificationResult"></param>
         [NoRemoting]
-        [RequireModulePermission("FINANCE-3")]
+        [RequireModulePermission("FINANCE-2")]
         public static void ExportGifts(int ALedgerNumber,
             string ACostCentre,
             string AAcctCode,

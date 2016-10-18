@@ -34,6 +34,9 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Validation;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -68,6 +71,17 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
             TSharedPartnerValidation_Partner.ValidateInterestSetupManual(this, ARow,
                 ref VerificationResultCollection, FPetraUtilsObject.ValidationControlsDict);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    PInterestTable.ColumnInterestId,
+                    PInterestTable.ColumnCategoryId,
+                    PInterestTable.ColumnDescriptionId
+                });
         }
     }
 }
