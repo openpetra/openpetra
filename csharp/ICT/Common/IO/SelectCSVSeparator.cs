@@ -55,10 +55,6 @@ namespace Ict.Common.IO
         private static string FUserID = null;
 
         private bool FIsActivatedOnce = false;
-
-        private int MAXLINESPARSE = 50;
-        private int MAXLINESDISPLAY = 5;
-        private int MAXBYTESPARSE = 4000;
         private string FSeparator;
         private bool FFileHasCaption;
         private bool FDateMayBeInteger = false;
@@ -605,7 +601,7 @@ namespace Ict.Common.IO
 
                 string line = reader.ReadLine();
 
-                while (line != null && FCSVRows.Count < MAXLINESPARSE)
+                while (line != null)
                 {
                     FCSVRows.Add(line);
                     line = reader.ReadLine();
@@ -674,33 +670,20 @@ namespace Ict.Common.IO
                     DataRow row = table.NewRow();
                     int countColumns = 0;
 
-                    try
+                    while (line.Length > 0)
                     {
-                        while (line.Length > 0)
+                        if (countColumns + 1 > table.Columns.Count)
                         {
-                            if (countColumns + 1 > table.Columns.Count)
-                            {
-                                table.Columns.Add(columnCounter.ToString());
-                                columnCounter++;
-                            }
-
-                            // cope with cells containing new line (quoted)
-                            row[countColumns] = StringHelper.GetNextCSV(ref line, FCSVRows, ref counter, FSeparator);
-                            countColumns++;
+                            table.Columns.Add(columnCounter.ToString());
+                            columnCounter++;
                         }
 
-                        table.Rows.Add(row);
+                        // cope with cells containing new line (quoted)
+                        row[countColumns] = StringHelper.GetNextCSV(ref line, FCSVRows, ref counter, FSeparator);
+                        countColumns++;
+                    }
 
-                        if (table.Rows.Count == MAXLINESDISPLAY)
-                        {
-                            break;
-                        }
-                    }
-                    catch (System.IndexOutOfRangeException)
-                    {
-                        // ignore this exception, it can happen because we only parse the first lines, and a cell might spread across several lines
-                        break;
-                    }
+                    table.Rows.Add(row);
                 }
 
                 table.DefaultView.AllowNew = false;
