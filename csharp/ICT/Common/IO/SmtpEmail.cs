@@ -463,10 +463,15 @@ namespace Ict.Common.IO
                     email.Body = body;
                     email.IsBodyHtml = false;
 
+                    // at least for Mono, we need to keep the attachments separately in memory
+                    // to avoid Exception: Object reference not set to an instance of an object
+                    List <Attachment>attachments = new List <Attachment>();
+
                     // A single attachment may have been specified using the AttachFromStream method, above.
                     if (FAttachedObject != null)
                     {
                         email.Attachments.Add(FAttachedObject);
+                        attachments.Add(FAttachedObject);
                     }
 
                     //Attachment files if any:
@@ -478,6 +483,7 @@ namespace Ict.Common.IO
                             {
                                 Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
                                 email.Attachments.Add(data);
+                                attachments.Add(FAttachedObject);
                             }
                             else
                             {
@@ -491,6 +497,12 @@ namespace Ict.Common.IO
 
                     bool Result = SendMessage(email);
 
+                    foreach (Attachment data in attachments)
+                    {
+                        // make sure that the file is not locked any longer
+                        data.Dispose();
+                    }
+
                     FAttachedObject = null;
                     return Result;
                 } // End of using block. This will Dispose email and clean up any attachments.
@@ -499,7 +511,7 @@ namespace Ict.Common.IO
             {
                 FErrorStatus = ex.Message;
                 TLogging.Log("Could not send email");
-                TLogging.Log(ex.Message);
+                TLogging.Log(ex.ToString());
                 return false;
             }
         }
