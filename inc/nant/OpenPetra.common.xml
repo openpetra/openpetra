@@ -424,7 +424,11 @@
         <property name="search.NUnitConsole" value="/usr/lib/nunit/nunit-console.exe"/>
     </if>
     <if test="${not file::exists(search.NUnitConsole)}">
-        <!-- this is the location of NUnit with the Fedora/CentOS packages -->
+        <!-- this is the location of NUnit with the Epel7 and F26 packages -->
+        <property name="search.NUnitConsole" value="/usr/lib/mono/nunit2/nunit-console.exe"/>
+    </if>
+    <if test="${not file::exists(search.NUnitConsole)}">
+        <!-- this is the location of NUnit with the older Fedora/CentOS packages (before NUnit3) -->
         <property name="search.NUnitConsole" value="/usr/lib/mono/nunit/nunit-console.exe"/>
     </if>
     <property name="external.NUnitConsole" value="${search.NUnitConsole}" overwrite="false"/>
