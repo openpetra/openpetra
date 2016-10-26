@@ -21663,7 +21663,8 @@
                 descr="Who actually performed this action?"
                 format="X(10)"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
+                type="number"
+                length="10"
                 descr="Part of FK link to p_partner_reminder so can link this action to a reminder"
                 format="&gt;&gt;&gt;&gt;&gt;9"/>
     <tablefield name="p_reminder_id_i"
@@ -22256,7 +22257,8 @@
                 label="Partner Key"
                 notnull="yes"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
+                type="number"
+                length="10"
                 descr="ID of Contact to which reminder relates. Null means that reminder relates just to a Partner"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Contact ID"
