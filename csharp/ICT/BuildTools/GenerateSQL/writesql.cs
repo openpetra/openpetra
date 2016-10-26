@@ -358,6 +358,8 @@ namespace GenerateSQL
             {
                 // use InnoDB, otherwise there are no constraints
                 ASw.WriteLine(" ENGINE=InnoDB");
+                // make sure we are using the character set for UTF8
+                ASw.WriteLine(" CHARACTER SET UTF8");
             }
 
             ASw.WriteLine(";");
