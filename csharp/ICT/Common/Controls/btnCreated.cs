@@ -36,33 +36,6 @@ using System.Globalization;
 namespace Ict.Common.Controls
 {
     /// <summary>
-    /// Provides the image for the TbtnCreated class.
-    /// </summary>
-    public class TButtonImage
-    {
-        /// <summary>Field containing the image</summary>
-        public static Image FPersonImage;
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public TButtonImage()
-        {
-            try
-            {
-                ResourceManager resman =
-                    new ResourceManager("Ict.Common.Controls.Icons", Assembly.GetExecutingAssembly());
-
-                FPersonImage = ((Icon)resman.GetObject("DateUserChanged")).ToBitmap();
-            }
-            catch (Exception exp)
-            {
-                MessageBox.Show("Unhandled Exception occured in TbtnCreated.TButtonImage Constructor: " + exp.ToString());
-            }
-        }
-    }
-
-    /// <summary>
     /// The btnCreated Button is a small button which provides information on who and
     /// when something was changed on the hosting form. It is not databound to the
     /// host, so the developer needs to provide the necessary information himself.
@@ -565,6 +538,32 @@ namespace Ict.Common.Controls
         }
 
         #endregion
+
+        /// <summary>
+        /// Provides the image for the TbtnCreated class.
+        /// </summary>
+        private class TButtonImage
+        {
+            /// <summary>Field containing the image</summary>
+            public static Image FPersonImage;
+
+            /// <summary>
+            /// Constructor.
+            /// </summary>
+            public TButtonImage()
+            {
+                try
+                {
+                    String ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir", true);
+                    FPersonImage = TIconCache.IconCache.AddOrGetExistingIcon(
+                        ResourceDirectory + Path.DirectorySeparatorChar + "DateUserChanged.ico", TIconCache.TIconSize.is16by16);
+                }
+                catch (Exception exp)
+                {
+                    MessageBox.Show("Unhandled Exception occured in TbtnCreated.TButtonImage Constructor: " + exp.ToString());
+                }
+            }
+        }
     }
 
     /// <summary>
