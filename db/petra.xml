@@ -2751,7 +2751,7 @@
     <tablefield name="p_value_country_c"
                 type="varchar"
                 descr="The country of the value of the attribute (only relevant for Telephone and Fax Numbers)."
-                format="X(200)"
+                format="X(4)"
                 label="Partner Attribute Value Country" />
     <tablefield name="p_comment_c"
                 type="varchar"
