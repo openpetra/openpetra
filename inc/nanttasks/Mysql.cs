@@ -210,7 +210,18 @@ namespace Ict.Tools.NAntTasks
 
             if ((FSQLCommand.Length > 0) && (process.StandardInput != null))
             {
-                process.StandardInput.WriteLine(FSQLCommand);
+                // do not print the password
+                string SqlPrint = FSQLCommand;
+
+                int pos;
+
+                if ((pos = SqlPrint.IndexOf("IDENTIFIED BY '")) != -1)
+                {
+                    SqlPrint = SqlPrint.Substring(0, pos) + " IDENTIFIED BY 'xxx" +
+                        SqlPrint.Substring(SqlPrint.IndexOf("'", pos + "IDENTIFIED BY '".Length));
+                }
+
+                process.StandardInput.WriteLine(SqlPrint);
                 process.StandardInput.Close();
             }
             else if (FSQLFile.Length > 0)
