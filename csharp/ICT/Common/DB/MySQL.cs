@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -67,11 +67,6 @@ namespace Ict.Common.DB
                 if (AUsername == "")
                 {
                     throw new ArgumentException("AUsername", "AUsername must not be null or an empty string!");
-                }
-
-                if (APassword == "")
-                {
-                    throw new ArgumentException("APassword", "APassword must not be null or an empty string!");
                 }
 
                 AConnectionString = "SERVER=" + AServer + ";" + "DATABASE=" + ADatabaseName + ";" + "UID=" + AUsername + ";" + "PASSWORD=";
