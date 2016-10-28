@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,8 @@ namespace Ict.Tools.GenerateSQL
         {
             TCmdOpts cmdLine = new TCmdOpts();
             string operation, xmlfile, outputfile;
+
+            new TAppSettingsManager(false);
 
             try
             {

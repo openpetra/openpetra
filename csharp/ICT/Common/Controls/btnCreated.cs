@@ -554,10 +554,9 @@ namespace Ict.Common.Controls
             {
                 try
                 {
-                    ResourceManager resman =
-                        new ResourceManager("Ict.Common.Controls.Icons", Assembly.GetExecutingAssembly());
-
-                    FPersonImage = ((Icon)resman.GetObject("DateUserChanged")).ToBitmap();
+                    String ResourceDirectory = TAppSettingsManager.GetValue("Resource.Dir", true);
+                    FPersonImage = TIconCache.IconCache.AddOrGetExistingIcon(
+                        ResourceDirectory + Path.DirectorySeparatorChar + "DateUserChanged.ico", TIconCache.TIconSize.is16by16);
                 }
                 catch (Exception exp)
                 {

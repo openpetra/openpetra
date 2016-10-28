@@ -2751,7 +2751,7 @@
     <tablefield name="p_value_country_c"
                 type="varchar"
                 descr="The country of the value of the attribute (only relevant for Telephone and Fax Numbers)."
-                format="X(200)"
+                format="X(4)"
                 label="Partner Attribute Value Country" />
     <tablefield name="p_comment_c"
                 type="varchar"
@@ -21152,7 +21152,6 @@
                 length="10"
                 format="9999999999"
                 label="Contact ID"
-                initial="?"
                 notnull="yes"/>
     <tablefield name="p_reminder_id_i"
                 type="integer"
@@ -21664,7 +21663,8 @@
                 descr="Who actually performed this action?"
                 format="X(10)"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
+                type="number"
+                length="10"
                 descr="Part of FK link to p_partner_reminder so can link this action to a reminder"
                 format="&gt;&gt;&gt;&gt;&gt;9"/>
     <tablefield name="p_reminder_id_i"
@@ -22257,11 +22257,11 @@
                 label="Partner Key"
                 notnull="yes"/>
     <tablefield name="p_contact_id_i"
-                type="integer"
+                type="number"
+                length="10"
                 descr="ID of Contact to which reminder relates. Null means that reminder relates just to a Partner"
                 format="&gt;&gt;&gt;&gt;&gt;9"
                 label="Contact ID"
-                initial="?"
                 notnull="yes"/>
     <tablefield name="p_reminder_id_i"
                 type="integer"
