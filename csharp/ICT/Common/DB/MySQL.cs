@@ -137,6 +137,7 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace("PUB.", "");
             ReturnValue = ReturnValue.Replace("pub_", "");
             ReturnValue = ReturnValue.Replace("pub.", "");
+            ReturnValue = ReturnValue.Replace("public.", "");
 
             // replacing the quotes would give trouble with importing initial database, with LOAD FROM
             //ReturnValue = ReturnValue.Replace("\"", "'");

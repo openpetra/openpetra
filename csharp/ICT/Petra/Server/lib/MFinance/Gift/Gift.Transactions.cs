@@ -2810,7 +2810,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     parameters.ToArray(), 0, 0);
 
                 string getRecipientPersonSQL =
-                    "SELECT DISTINCT pf.* FROM PUB_p_Person pf, PUB_a_gift_detail gd " +
+                    "SELECT DISTINCT pf.* FROM PUB_p_person pf, PUB_a_gift_detail gd " +
                     "WHERE gd.a_ledger_number_i = ? AND gd.a_batch_number_i = ? AND gd.p_recipient_key_n = pf.p_partner_key_n";
 
                 if (ARecurring)
@@ -2823,7 +2823,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     parameters.ToArray(), 0, 0);
 
                 string getRecipientUnitSQL =
-                    "SELECT DISTINCT pf.* FROM PUB_p_Unit pf, PUB_a_gift_detail gd " +
+                    "SELECT DISTINCT pf.* FROM PUB_p_unit pf, PUB_a_gift_detail gd " +
                     "WHERE gd.a_ledger_number_i = ? AND gd.a_batch_number_i = ? AND gd.p_recipient_key_n = pf.p_partner_key_n";
 
                 if (ARecurring)
