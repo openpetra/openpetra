@@ -483,7 +483,7 @@ namespace Ict.Common.IO
                             {
                                 Attachment data = new Attachment(attachfile, System.Net.Mime.MediaTypeNames.Application.Octet);
                                 email.Attachments.Add(data);
-                                attachments.Add(FAttachedObject);
+                                attachments.Add(data);
                             }
                             else
                             {
