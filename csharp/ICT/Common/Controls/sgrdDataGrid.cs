@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -974,66 +974,20 @@ namespace Ict.Common.Controls
         #region Methods for adding typed columns
 
         /// <summary>
-        /// Easy method to add a new Text column.
-        ///
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound
-        /// </param>
-        /// <returns>void</returns>
-        public void AddTextColumn(String AColumnTitle, DataColumn ADataColumn)
-        {
-            AddTextColumn(AColumnTitle, ADataColumn, -1);
-        }
-
-        /// <summary>
-        /// Easy method to add a new Text column.
-        ///
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)
-        /// </param>
-        /// <returns>void</returns>
-        public void AddTextColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
-        {
-            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, null, null, null);
-        }
-
-        /// <summary>
-        /// Easy method to add a new Text column.
-        /// </summary>
-        /// <param name="AColumnTitle"></param>
-        /// <param name="ADataColumn"></param>
-        /// <param name="AColumnWidth"></param>
-        /// <param name="AEditor"></param>
-        public void AddTextColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor)
-        {
-            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, AEditor, null, null);
-        }
-
-        /// <summary>
-        /// Easy method to add a new Text column.
+        /// Overload for adding a text column with an editor
         ///
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
-        /// <param name="AController"></param>
         /// <param name="AEditor">An instance of an Editor (based on ICellVirtual.Editor)</param>
-        /// <param name="AModel"></param>
-        /// <param name="AView"></param>
         /// <returns>void</returns>
         public void AddTextColumn(String AColumnTitle,
             DataColumn ADataColumn,
             Int16 AColumnWidth,
-            ControllerBase AController,
-            EditorBase AEditor,
-            ModelContainer AModel,
-            IView AView)
+            EditorBase AEditor)
         {
-            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth,
-                AController, AEditor, AModel, AView, null);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, AEditor);
         }
 
         /// <summary>
@@ -1052,12 +1006,12 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddTextColumn(String AColumnTitle,
             DataColumn ADataColumn,
-            Int16 AColumnWidth,
-            ControllerBase AController,
-            EditorBase AEditor,
-            ModelContainer AModel,
-            IView AView,
-            SourceGrid.Conditions.ConditionView AConditionView)
+            Int16 AColumnWidth = -1,
+            ControllerBase AController = null,
+            EditorBase AEditor = null,
+            ModelContainer AModel = null,
+            IView AView = null,
+            SourceGrid.Conditions.ConditionView AConditionView = null)
         {
             SourceGrid.Cells.ICellVirtual ADataCell;
             SourceGrid.DataGridColumn AGridColumn;
@@ -1108,19 +1062,7 @@ namespace Ict.Common.Controls
         }
 
         /// <summary>
-        /// Easy method to add a new CheckBox column.
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound
-        /// </param>
-        /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn)
-        {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1);
-        }
-
-        /// <summary>
-        /// Easy method to add a new CheckBox column.
+        /// Overload for adding a CheckBox column
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
@@ -1128,20 +1070,7 @@ namespace Ict.Common.Controls
         /// <returns>void</returns>
         public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, bool AReadOnly)
         {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, -1, AReadOnly);
-        }
-
-        /// <summary>
-        /// Easy method to add a new CheckBox column.
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)
-        /// </param>
-        /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
-        {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, AColumnWidth, null, true);
+            AddCheckBoxColumn(AColumnTitle, ADataColumn, AReadOnly);
         }
 
         /// <summary>
@@ -1151,22 +1080,9 @@ namespace Ict.Common.Controls
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
         /// <param name="AReadOnly">Set to true if the column should be read-only</param>
-        /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, bool AReadOnly)
-        {
-            AddCheckBoxColumn(AColumnTitle, ADataColumn, AColumnWidth, null, AReadOnly);
-        }
-
-        /// <summary>
-        /// Easy method to add a new CheckBox column.
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
         /// <param name="AEditor"></param>
-        /// <param name="AReadOnly">Set to true if the column should be read-only</param>
         /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth, EditorBase AEditor, bool AReadOnly)
+        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth = -1, bool AReadOnly = true, EditorBase AEditor = null)
         {
             if (ADataColumn == null)
             {
@@ -1230,7 +1146,8 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        public void AddDateColumn(String AColumnTitle, DataColumn ADataColumn)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddDateColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBoxUITypeEditor DateEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
             Ict.Common.TypeConverter.TDateConverter DateTypeConverter = new Ict.Common.TypeConverter.TDateConverter();
@@ -1238,18 +1155,7 @@ namespace Ict.Common.Controls
             DateEditor.EditableMode = EditableMode.None;
             DateEditor.TypeConverter = DateTypeConverter;
 
-            AddTextColumn(AColumnTitle, ADataColumn, -1, null, DateEditor, null, null);
-        }
-
-        /// <summary>
-        /// add a column that shows a decimal value.
-        /// aligns the value to the right.
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        public void AddDecimalColumn(String AColumnTitle, DataColumn ADataColumn)
-        {
-            AddDecimalColumn(AColumnTitle, ADataColumn, 2);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, DateEditor, null, null);
         }
 
         /// <summary>
@@ -1259,7 +1165,8 @@ namespace Ict.Common.Controls
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="ADecimalDigits">Number of digits after the numeric decimal point</param>
-        public void AddDecimalColumn(String AColumnTitle, DataColumn ADataColumn, int ADecimalDigits)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddDecimalColumn(String AColumnTitle, DataColumn ADataColumn, int ADecimalDigits = 2, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBox DecimalEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
             DecimalEditor.TypeConverter = new Ict.Common.TypeConverter.TDecimalConverter(
@@ -1269,19 +1176,7 @@ namespace Ict.Common.Controls
             SourceGrid.Cells.Views.Cell view = new SourceGrid.Cells.Views.Cell();
             view.TextAlignment = DevAge.Drawing.ContentAlignment.MiddleRight;
 
-            AddTextColumn(AColumnTitle, ADataColumn, -1, null, DecimalEditor, null, view, null);
-        }
-
-        /// <summary>
-        /// add a column that shows a currency value.
-        /// aligns the value to the right.
-        /// prints number in red if it is negative
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn)
-        {
-            AddCurrencyColumn(AColumnTitle, ADataColumn, 2);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, DecimalEditor, null, view, null);
         }
 
         /// <summary>
@@ -1292,7 +1187,8 @@ namespace Ict.Common.Controls
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="ADecimalDigits">Number of digits after the currency decimal point</param>
-        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int ADecimalDigits)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddCurrencyColumn(String AColumnTitle, DataColumn ADataColumn, int ADecimalDigits = 2, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBox CurrencyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(decimal));
             CurrencyEditor.TypeConverter = new Ict.Common.TypeConverter.TCurrencyConverter(
@@ -1321,7 +1217,7 @@ namespace Ict.Common.Controls
                                                               && (decimal)row[ADataColumn.ColumnName] < 0;
                                                           });
 
-            AddTextColumn(AColumnTitle, ADataColumn, -1, null, CurrencyEditor, null, view, selectedConditionNegative);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, CurrencyEditor, null, view, selectedConditionNegative);
         }
 
         class BooleanConverter : System.ComponentModel.TypeConverter
@@ -1388,14 +1284,15 @@ namespace Ict.Common.Controls
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="ATextTrue">text to be displayed in the column if the value is true</param>
         /// <param name="ATextFalse">text to be displayed in the column if the value is false</param>
-        public void AddBooleanColumn(String AColumnTitle, DataColumn ADataColumn, string ATextTrue, string ATextFalse)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddBooleanColumn(String AColumnTitle, DataColumn ADataColumn, string ATextTrue, string ATextFalse, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBox BooleanEditor = new SourceGrid.Cells.Editors.TextBox(typeof(bool));
             BooleanEditor.TypeConverter = new BooleanConverter(ATextTrue, ATextFalse);
 
             BooleanEditor.EditableMode = EditableMode.None;
 
-            AddTextColumn(AColumnTitle, ADataColumn, -1, null, BooleanEditor, null, null, null);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, BooleanEditor, null, null, null);
         }
 
         /// <summary>
@@ -1452,18 +1349,8 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn)
-        {
-            AddPartnerKeyColumn(AColumnTitle, ADataColumn, -1);
-        }
-
-        /// <summary>
-        /// add a column that shows a PartnerKey value (include leading zeros to display a 10 digit number)
-        /// </summary>
-        /// <param name="AColumnTitle">Title of the HeaderColumn</param>
-        /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
         /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
-        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth)
+        public void AddPartnerKeyColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBox PartnerKeyEditor = new SourceGrid.Cells.Editors.TextBox(typeof(Int64));
             PartnerKeyEditor.TypeConverter = new PartnerKeyConverter();
@@ -1478,13 +1365,14 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        public void AddShortTimeColumn(String AColumnTitle, DataColumn ADataColumn)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddShortTimeColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBoxUITypeEditor TimeEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
             TimeEditor.EditableMode = EditableMode.None;
             TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TShortTimeConverter();
 
-            AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, TimeEditor);
         }
 
         /// <summary>
@@ -1492,13 +1380,14 @@ namespace Ict.Common.Controls
         /// </summary>
         /// <param name="AColumnTitle">Title of the HeaderColumn</param>
         /// <param name="ADataColumn">DataColumn to which this column should be DataBound</param>
-        public void AddLongTimeColumn(String AColumnTitle, DataColumn ADataColumn)
+        /// <param name="AColumnWidth">Column width in pixels (-1 for automatic width)</param>
+        public void AddLongTimeColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth = -1)
         {
             SourceGrid.Cells.Editors.TextBoxUITypeEditor TimeEditor = new SourceGrid.Cells.Editors.TextBoxUITypeEditor(typeof(DateTime));
             TimeEditor.EditableMode = EditableMode.None;
             TimeEditor.TypeConverter = new Ict.Common.TypeConverter.TLongTimeConverter();
 
-            AddTextColumn(AColumnTitle, ADataColumn, -1, TimeEditor);
+            AddTextColumn(AColumnTitle, ADataColumn, AColumnWidth, null, TimeEditor);
         }
 
         /// <summary>
