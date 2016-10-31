@@ -89,8 +89,13 @@ namespace Ict.Testing.NUnitTools
         /// </summary>
         public static string LoadCSVFileToString(string fileName)
         {
-            using (FileStream fs = new FileStream(rootPath + "/" +
-                       fileName.Replace('\\', Path.DirectorySeparatorChar),
+            if (!File.Exists(fileName))
+            {
+                fileName = rootPath + "/" +
+                       fileName.Replace('\\', Path.DirectorySeparatorChar);
+            }
+
+            using (FileStream fs = new FileStream(fileName,
                        FileMode.Open))
             {
                 using (StreamReader sr = new StreamReader(fs))
