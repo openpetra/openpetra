@@ -22,12 +22,10 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.IO;
-using System.Collections;
 using System.Data;
 using System.Windows.Forms;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Threading;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -92,7 +90,7 @@ namespace Ict.Testing.NUnitTools
             if (!File.Exists(fileName))
             {
                 fileName = rootPath + "/" +
-                       fileName.Replace('\\', Path.DirectorySeparatorChar);
+                           fileName.Replace('\\', Path.DirectorySeparatorChar);
             }
 
             using (FileStream fs = new FileStream(fileName,
@@ -114,14 +112,14 @@ namespace Ict.Testing.NUnitTools
             // with command: load data infile '/tmp/mysqltsv' into table tblname
             string sqlfileContent = LoadCSVFileToString(fileName);
 
-            string[] lines = sqlfileContent.Split(new char[] {'\n'});
+            string[] lines = sqlfileContent.Split(new char[] { '\n' });
             string currenttable = string.Empty;
             string tempfile = string.Empty;
             StreamWriter sw = null;
 
             foreach (string line in lines)
             {
-                if (line.StartsWith("--") || line.Trim() == String.Empty)
+                if (line.StartsWith("--") || (line.Trim() == String.Empty))
                 {
                     continue;
                 }
@@ -141,7 +139,8 @@ namespace Ict.Testing.NUnitTools
                         ref SubmissionResult,
                         delegate
                         {
-                            DBAccess.GDBAccessObj.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable, LoadTransaction);
+                            DBAccess.GDBAccessObj.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable,
+                                LoadTransaction);
                             SubmissionResult = TSubmitChangesResult.scrOK;
                         });
 
