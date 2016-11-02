@@ -1082,7 +1082,11 @@ namespace Ict.Common.Controls
         /// <param name="AReadOnly">Set to true if the column should be read-only</param>
         /// <param name="AEditor"></param>
         /// <returns>void</returns>
-        public void AddCheckBoxColumn(String AColumnTitle, DataColumn ADataColumn, Int16 AColumnWidth = -1, bool AReadOnly = true, EditorBase AEditor = null)
+        public void AddCheckBoxColumn(String AColumnTitle,
+            DataColumn ADataColumn,
+            Int16 AColumnWidth = -1,
+            bool AReadOnly = true,
+            EditorBase AEditor = null)
         {
             if (ADataColumn == null)
             {

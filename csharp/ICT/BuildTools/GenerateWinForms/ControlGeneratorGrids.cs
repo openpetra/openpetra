@@ -326,6 +326,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             int Period = ColumnFieldNameResolved.IndexOf(".");
                             string TableName = ColumnFieldNameResolved.Remove(Period);
                             string ColumnName = ColumnFieldNameResolved.Remove(0, TableName.Length + 1);
+
                             AddColumnToGrid(writer, ctrl.controlName, ColumnWidth,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
@@ -483,13 +484,13 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     ctrl.GetAttribute("ActionEnterKeyPressed"));
             }
 
-	    if (ctrl.HasAttribute("MaxAutoSizeRows"))
-	    {
-		Int16 maxAutoSizeRows = Convert.ToInt16(ctrl.GetAttribute("MaxAutoSizeRows"));
-		writer.Template.AddToCodelet("INITMANUALCODE",
-		    ctrl.controlName + ".MaxAutoSizeRows = " + maxAutoSizeRows.ToString() + ";" + Environment.NewLine);
-		TLogging.Log("Info: MaxAutoSizeRows was set to " + maxAutoSizeRows.ToString() + " for: " + ctrl.controlName);
-	    }
+            if (ctrl.HasAttribute("MaxAutoSizeRows"))
+            {
+                Int16 maxAutoSizeRows = Convert.ToInt16(ctrl.GetAttribute("MaxAutoSizeRows"));
+                writer.Template.AddToCodelet("INITMANUALCODE",
+                    ctrl.controlName + ".MaxAutoSizeRows = " + maxAutoSizeRows.ToString() + ";" + Environment.NewLine);
+                TLogging.Log("Info: MaxAutoSizeRows was set to " + maxAutoSizeRows.ToString() + " for: " + ctrl.controlName);
+            }
 
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
             {

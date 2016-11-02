@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -166,7 +166,7 @@ namespace Ict.Tools.NAntTasks
             if (FSQLCommand.Length > 0)
             {
                 process.StartInfo.RedirectStandardInput = true;
-                
+
                 // do not print the password
                 string SqlPrint = FSQLCommand;
 
@@ -175,7 +175,7 @@ namespace Ict.Tools.NAntTasks
                 if ((pos = SqlPrint.IndexOf("IDENTIFIED BY '")) != -1)
                 {
                     SqlPrint = SqlPrint.Substring(0, pos) + " IDENTIFIED BY 'xxx" +
-                        SqlPrint.Substring(SqlPrint.IndexOf("'", pos + "IDENTIFIED BY '".Length));
+                               SqlPrint.Substring(SqlPrint.IndexOf("'", pos + "IDENTIFIED BY '".Length));
                 }
 
                 Log(Level.Info, SqlPrint);
