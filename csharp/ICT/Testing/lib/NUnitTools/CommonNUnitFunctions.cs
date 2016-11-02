@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -85,17 +85,75 @@ namespace Ict.Testing.NUnitTools
         }
 
         /// <summary>
-        /// ...
+        /// load the csv file into a string
         /// </summary>
         public static string LoadCSVFileToString(string fileName)
         {
-            using (FileStream fs = new FileStream(rootPath + "/" +
-                       fileName.Replace('\\', Path.DirectorySeparatorChar),
+            if (!File.Exists(fileName))
+            {
+                fileName = rootPath + "/" +
+                       fileName.Replace('\\', Path.DirectorySeparatorChar);
+            }
+
+            using (FileStream fs = new FileStream(fileName,
                        FileMode.Open))
             {
                 using (StreamReader sr = new StreamReader(fs))
                 {
                     return sr.ReadToEnd();
+                }
+            }
+        }
+
+        /// <summary>
+        /// load test data written in PostgreSQL syntax into MySQL
+        /// </summary>
+        private static void LoadTestDataMySQL(string fileName)
+        {
+            // parse the sql file, and for each table (are there multiple???) load the data
+            // with command: load data infile '/tmp/mysqltsv' into table tblname
+            string sqlfileContent = LoadCSVFileToString(fileName);
+
+            string[] lines = sqlfileContent.Split(new char[] {'\n'});
+            string currenttable = string.Empty;
+            string tempfile = string.Empty;
+            StreamWriter sw = null;
+
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("--") || line.Trim() == String.Empty)
+                {
+                    continue;
+                }
+                else if (line.StartsWith("COPY "))
+                {
+                    currenttable = line.Substring("COPY ".Length, line.IndexOf("(") - "COPY ".Length - 1);
+                    tempfile = Path.GetTempFileName();
+                    sw = new StreamWriter(tempfile);
+                }
+                else if (line == "\\.")
+                {
+                    sw.Close();
+                    TDBTransaction LoadTransaction = null;
+                    TSubmitChangesResult SubmissionResult = TSubmitChangesResult.scrError;
+
+                    DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref LoadTransaction,
+                        ref SubmissionResult,
+                        delegate
+                        {
+                            DBAccess.GDBAccessObj.ExecuteNonQuery("LOAD DATA LOCAL INFILE '" + tempfile + "' INTO TABLE " + currenttable, LoadTransaction);
+                            SubmissionResult = TSubmitChangesResult.scrOK;
+                        });
+
+                    currenttable = String.Empty;
+                    File.Delete(tempfile);
+                }
+                else if (currenttable != String.Empty)
+                {
+                    string convertedLine = line;
+
+                    convertedLine = convertedLine.Replace("\tt\t", "\t1\t").Replace("\tf\t", "\t0\t");
+                    sw.WriteLine(convertedLine);
                 }
             }
         }
@@ -152,19 +210,24 @@ namespace Ict.Testing.NUnitTools
                 strSqlFilePathFromCSharpName = tempfile;
             }
 
-            if (TSrvSetting.RDMBSType == TDBType.SQLite)
+            if (TSrvSetting.RDMBSType == TDBType.PostgreSQL)
+            {
+                nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
+            }
+            else if (TSrvSetting.RDMBSType == TDBType.SQLite)
             {
                 DBAccess.GDBAccessObj.CloseDBConnection();
-            }
 
-            nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
+                nant("loadDatabaseIncrement -D:file=\"" + strSqlFilePathFromCSharpName + "\"", false);
 
-            if (TSrvSetting.RDMBSType == TDBType.SQLite)
-            {
                 DBAccess.GDBAccessObj.EstablishDBConnection(TSrvSetting.RDMBSType,
                     TSrvSetting.PostgreSQLServer, TSrvSetting.PostgreSQLServerPort,
                     TSrvSetting.PostgreSQLDatabaseName,
                     TSrvSetting.DBUsername, TSrvSetting.DBPassword, "", "CommonNUnitFunctions.LoadTestDataBase DB Connection");
+            }
+            else if (TSrvSetting.RDMBSType == TDBType.MySQL)
+            {
+                LoadTestDataMySQL(strSqlFilePathFromCSharpName);
             }
 
             if (tempfile.Length > 0)

@@ -159,6 +159,15 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace(" as ", " AS ");
             ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
             ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
+            ReturnValue = ReturnValue.Replace("SUM (", "SUM(");
+
+            if (ReturnValue.Contains(" AS usage"))
+            {
+                // it seems that usage is a keyword and cannot be used as an alias
+                // this is used in csharp/ICT/Petra/Server/lib/MFinance/Common/Common.CrossLedger.cs
+                ReturnValue = ReturnValue.Replace(" AS usage", " AS usage_");
+                ReturnValue = ReturnValue.Replace("usage.", "usage_.");
+            }
 
             // Get the correct function for DAYOFYEAR
             while (ReturnValue.Contains("DAYOFYEAR("))
