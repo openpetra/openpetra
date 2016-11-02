@@ -4,7 +4,7 @@
 // @Authors:
 //       wolfgangu, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -205,7 +205,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary>
-        /// Check an spefic error ...
+        /// Check an specific error ...
         /// </summary>
         [Test]
         public void Test_03_ForeignCurrencyAccountingWithWrongForeignValue()
@@ -236,7 +236,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             }
             catch (Exception exception)
             {
-                System.Diagnostics.Debug.WriteLine(exception.ToString());
+                TLogging.Log("Wrong exception: " + exception.ToString());
                 Assert.Fail("Wrong exception thrown");
             }
         }

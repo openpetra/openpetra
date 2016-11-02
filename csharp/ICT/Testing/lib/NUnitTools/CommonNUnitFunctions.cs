@@ -150,7 +150,10 @@ namespace Ict.Testing.NUnitTools
                 }
                 else if (currenttable != String.Empty)
                 {
-                    sw.WriteLine(line);
+                    string convertedLine = line;
+
+                    convertedLine = convertedLine.Replace("\tt\t", "\t1\t").Replace("\tf\t", "\t0\t");
+                    sw.WriteLine(convertedLine);
                 }
             }
         }

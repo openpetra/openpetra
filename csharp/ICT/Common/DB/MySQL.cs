@@ -159,6 +159,7 @@ namespace Ict.Common.DB
             ReturnValue = ReturnValue.Replace(" as ", " AS ");
             ReturnValue = ReturnValue.Replace("true AS ", "1 AS ");
             ReturnValue = ReturnValue.Replace("false AS ", "0 AS ");
+            ReturnValue = ReturnValue.Replace("SUM (", "SUM(");
 
             if (ReturnValue.Contains(" AS usage"))
             {
