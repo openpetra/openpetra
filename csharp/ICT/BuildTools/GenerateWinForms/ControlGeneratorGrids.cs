@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,7 +80,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
             return false;
         }
 
-        private void AddColumnToGrid(TFormWriter writer, string AGridControlName, string AColumnType, string ALabel,
+        private void AddColumnToGrid(TFormWriter writer, string AGridControlName, short AColumnWidth, string AColumnType, string ALabel,
             string AHeaderTooltip, string ATableName, string AColumnName)
         {
             string ColumnType = "Text";
@@ -185,16 +185,17 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
-                    AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"));" + Environment.NewLine);
+                    AColumnName + ", Catalog.GetString(\"" + TrueString + "\"), Catalog.GetString(\"" + FalseString + "\"), " +
+                    AColumnWidth.ToString() + ");" + Environment.NewLine);
             }
-            else if (((ColumnType == "Currency") || (ColumnType == "Decimal")) && (DecimalPrecision != 2))
+            else if ((ColumnType == "Currency") || (ColumnType == "Decimal"))
             {
-                // Currency or decimal with non-standard decimal digits
+                // Currency or decimal
                 writer.Template.AddToCodelet("INITMANUALCODE",
                     AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
-                    AColumnName + ", " + DecimalPrecision.ToString() + ");" + Environment.NewLine);
+                    AColumnName + ", " + DecimalPrecision.ToString() + ", " + AColumnWidth.ToString() + ");" + Environment.NewLine);
             }
             else
             {
@@ -203,7 +204,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                     AGridControlName + ".Add" + ColumnType + "Column(Catalog.GetString(\"" + ALabel + "\"), " +
                     "FMainDS." +
                     ATableName + ".Column" +
-                    AColumnName + ");" + Environment.NewLine);
+                    AColumnName + ", " + AColumnWidth.ToString() + ");" + Environment.NewLine);
             }
 
             // Are we still working with the same grid?  If not reset our tracking variables back to the first column
@@ -288,6 +289,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         CustomColumnNode = TYml2Xml.GetChild(CustomColumnsNode, ColumnFieldName);
                     }
 
+                    XmlNode ColumnWidthNode = TYml2Xml.GetChild(ctrl.xmlNode, "ColumnWidth");
+                    short ColumnWidth = -1;
+
+                    if ((ColumnWidthNode != null) && TYml2Xml.HasAttribute(ColumnWidthNode, ColumnFieldName))
+                    {
+                        ColumnWidth = Convert.ToInt16(TYml2Xml.GetAttribute(ColumnWidthNode, ColumnFieldName));
+                    }
+
                     if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
                     {
                         TableFieldTable = FCodeStorage.GetAttribute("DetailTable");
@@ -317,8 +326,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             int Period = ColumnFieldNameResolved.IndexOf(".");
                             string TableName = ColumnFieldNameResolved.Remove(Period);
                             string ColumnName = ColumnFieldNameResolved.Remove(0, TableName.Length + 1);
-
-                            AddColumnToGrid(writer, ctrl.controlName,
+                            AddColumnToGrid(writer, ctrl.controlName, ColumnWidth,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
@@ -328,7 +336,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
                         }
                         else
                         {
-                            AddColumnToGrid(writer, ctrl.controlName,
+                            AddColumnToGrid(writer, ctrl.controlName, ColumnWidth,
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Type"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Label"),
                                 TYml2Xml.GetAttribute(CustomColumnNode, "Tooltip"),
@@ -355,7 +363,7 @@ namespace Ict.Tools.CodeGeneration.Winforms
 
                     if (field != null)
                     {
-                        AddColumnToGrid(writer, ctrl.controlName,
+                        AddColumnToGrid(writer, ctrl.controlName, ColumnWidth,
                             field.iDecimals == 10 && field.iLength == 24 ? "Decimal" : field.GetDotNetType(),
                             field.strLabel.Length > 0 ? field.strLabel : field.strName,
                             String.Empty,
@@ -474,6 +482,14 @@ namespace Ict.Tools.CodeGeneration.Winforms
                 AssignEventHandlerToControl(writer, ctrl, "EnterKeyPressed", "TKeyPressedEventHandler",
                     ctrl.GetAttribute("ActionEnterKeyPressed"));
             }
+
+	    if (ctrl.HasAttribute("MaxAutoSizeRows"))
+	    {
+		Int16 maxAutoSizeRows = Convert.ToInt16(ctrl.GetAttribute("MaxAutoSizeRows"));
+		writer.Template.AddToCodelet("INITMANUALCODE",
+		    ctrl.controlName + ".MaxAutoSizeRows = " + maxAutoSizeRows.ToString() + ";" + Environment.NewLine);
+		TLogging.Log("Info: MaxAutoSizeRows was set to " + maxAutoSizeRows.ToString() + " for: " + ctrl.controlName);
+	    }
 
             if ((ctrl.controlName == "grdDetails") && FCodeStorage.HasAttribute("DetailTable"))
             {
