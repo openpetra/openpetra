@@ -99,6 +99,13 @@ namespace GenerateSQL
 
             FileStream outPutFileStream = new FileStream(AOutputFile, FileMode.Create, FileAccess.Write);
             StreamWriter sw = new StreamWriter(outPutFileStream);
+
+            if (ATargetDatabase == eDatabaseType.MySQL)
+            {
+                sw.WriteLine("SET AUTOCOMMIT=0;");
+                sw.WriteLine("SET FOREIGN_KEY_CHECKS=0;");
+            }
+
             List <TTable>Tables = AStore.GetTables();
 
             foreach (TTable Table in Tables)
@@ -144,6 +151,11 @@ namespace GenerateSQL
             if (ATargetDatabase == eDatabaseType.PostgreSQL)
             {
                 sw.WriteLine("SET client_min_messages TO WARNING;");
+            }
+            else if (ATargetDatabase == eDatabaseType.MySQL)
+            {
+                sw.WriteLine("SET AUTOCOMMIT=0;");
+                sw.WriteLine("SET FOREIGN_KEY_CHECKS=0;");
             }
 
             foreach (TTable Table in Tables)
@@ -229,6 +241,11 @@ namespace GenerateSQL
             if (ATargetDatabase == eDatabaseType.PostgreSQL)
             {
                 sw.WriteLine("SET client_min_messages TO WARNING;");
+            }
+            else if (ATargetDatabase == eDatabaseType.MySQL)
+            {
+                sw.WriteLine("SET AUTOCOMMIT=0;");
+                sw.WriteLine("SET FOREIGN_KEY_CHECKS=0;");
             }
 
             foreach (TTable Table in Tables)
