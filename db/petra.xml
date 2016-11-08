@@ -11116,9 +11116,9 @@
                 otherFields="a_ledger_number_i, a_account_code_c"/>
     <foreignkey name="a_recurring_trans_anal_attr_fk3"
                 descr=""
-                thisFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"
+                thisFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"
                 otherTable="a_analysis_attribute"
-                otherFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"/>
+                otherFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"/>
     <foreignkey name="a_recurring_trans_anal_attr_fk4"
                 descr=""
                 thisFields="a_ledger_number_i, a_analysis_type_code_c, a_analysis_attribute_value_c"
@@ -12970,9 +12970,9 @@
                 otherFields="a_ledger_number_i, a_account_code_c"/>
     <foreignkey name="a_trans_anal_attrib_fk3"
                 descr=""
-                thisFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"
+                thisFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"
                 otherTable="a_analysis_attribute"
-                otherFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"/>
+                otherFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_"/>
     <foreignkey name="a_trans_anal_attrib_fk4"
                 descr=""
                 thisFields="a_ledger_number_i, a_analysis_type_code_c, a_analysis_attribute_value_c"
@@ -13904,9 +13904,9 @@
                 otherFields="a_ap_document_id_i, a_detail_number_i"/>
     <foreignkey name="a_ap_anal_attrib_fk2"
                 descr=""
-                thisFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"
+                thisFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"
                 otherTable="a_analysis_attribute"
-                otherFields="a_ledger_number_i, a_account_code_c, a_analysis_type_code_c"/>
+                otherFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"/>
     <foreignkey name="a_ap_anal_attrib_fk3"
                 descr=""
                 thisFields="a_ledger_number_i, a_account_code_c"
