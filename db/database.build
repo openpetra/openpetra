@@ -187,8 +187,7 @@
              <echo message="this will now take a while..."/>
              <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists ${DBMS.DBName};" user="root" password="${DBMS.RootPassword}"/>
              <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists ${DBMS.DBName};" user="root" password="${DBMS.RootPassword}"/>
-             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createtables-MySQL.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
-             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/createconstraints-MySQL.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
              <mysql exe="${MySQL.exe}" sqlcommand="GRANT ALL ON ${DBMS.DBName}.* TO ${DBMS.UserName}@localhost IDENTIFIED BY '${DBMS.Password}';" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
         </if>
     </target>

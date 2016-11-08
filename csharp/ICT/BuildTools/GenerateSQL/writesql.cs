@@ -59,6 +59,8 @@ namespace GenerateSQL
             Sqlite
         };
 
+        private enum eInclude { eInCreateTable, eIncludeSeparate, eOnlyForeign, eOnlyLocal };
+
         /// <summary>
         /// parse the database type from a string
         /// </summary>
@@ -110,29 +112,10 @@ namespace GenerateSQL
 
             foreach (TTable Table in Tables)
             {
-                if (!WriteTable(ATargetDatabase, sw, Table))
+                if (!WriteTable(ATargetDatabase, sw, Table, true))
                 {
                     Environment.Exit(1);
                 }
-            }
-
-            foreach (TTable Table in Tables)
-            {
-                if (ATargetDatabase == eDatabaseType.Sqlite)
-                {
-                    // see http://www.sqlite.org/omitted.html:
-                    // sqlite does not support Alter table add constraint
-                }
-                else
-                {
-                    DumpConstraints(sw, Table, true, true);
-                }
-            }
-
-            foreach (TTable Table in Tables)
-            {
-                // Dump indexes
-                DumpIndexes(sw, Table, true);
             }
 
             WriteSequences(sw, ATargetDatabase, AStore, true);
@@ -278,14 +261,14 @@ namespace GenerateSQL
                 }
                 else
                 {
-                    DumpConstraints(sw, Table, true, true);
+                    DumpConstraints(sw, Table, eInclude.eOnlyForeign, true);
                 }
             }
 
             foreach (TTable Table in Tables)
             {
                 // Dump indexes
-                DumpIndexes(sw, Table, true);
+                DumpIndexes(sw, Table, eInclude.eIncludeSeparate, true);
             }
 
             sw.Close();
@@ -358,7 +341,7 @@ namespace GenerateSQL
             return true;
         }
 
-        private static Boolean WriteTable(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable)
+        private static Boolean WriteTable(eDatabaseType ATargetDatabase, StreamWriter ASw, TTable ATable, bool AWriteConstraintsAndIndexes = false)
         {
             // Show the table info
             ASw.WriteLine("-- {0}", ATable.strDescription.Replace("\r", " ").Replace("\n", " "));
@@ -367,7 +350,8 @@ namespace GenerateSQL
 
             // Dump fields
             DumpFields(ATargetDatabase, ASw, ATable);
-            DumpConstraints(ASw, ATable, false, true);
+            DumpConstraints(ASw, ATable, eInclude.eInCreateTable, true);
+            DumpIndexes(ASw, ATable, eInclude.eInCreateTable, true);
             ASw.WriteLine();
             ASw.Write(")");
 
@@ -535,7 +519,7 @@ namespace GenerateSQL
             return result;
         }
 
-        private static void DumpConstraints(StreamWriter ASw, TTable ATable, Boolean onlyForeign, Boolean AAdd)
+        private static void DumpConstraints(StreamWriter ASw, TTable ATable, eInclude onlyForeign, Boolean AAdd)
         {
             foreach (TConstraint constr in ATable.grpConstraint)
             {
@@ -543,23 +527,23 @@ namespace GenerateSQL
             }
         }
 
-        private static void WriteConstraint(StreamWriter ASw, TTable ATable, TConstraint constr, Boolean onlyForeign, Boolean AAdd)
+        private static void WriteConstraint(StreamWriter ASw, TTable ATable, TConstraint constr, eInclude onlyForeign, Boolean AAdd)
         {
-            if (!onlyForeign && (constr.strType == "primarykey"))
+            if (onlyForeign != eInclude.eOnlyForeign && (constr.strType == "primarykey"))
             {
                 ASw.WriteLine(",");
                 ASw.WriteLine("  CONSTRAINT {0}", constr.strName);
                 ASw.Write("    PRIMARY KEY ({0})", StringHelper.StrMerge(constr.strThisFields, ','));
             }
 
-            if (!onlyForeign && (constr.strType == "uniquekey"))
+            if (onlyForeign != eInclude.eOnlyForeign && (constr.strType == "uniquekey"))
             {
                 ASw.WriteLine(",");
                 ASw.WriteLine("  CONSTRAINT {0}", constr.strName);
                 ASw.Write("    UNIQUE ({0})", StringHelper.StrMerge(constr.strThisFields, ','));
             }
 
-            if (onlyForeign && (constr.strType == "foreignkey"))
+            if (onlyForeign == eInclude.eOnlyForeign && (constr.strType == "foreignkey"))
             {
                 ASw.WriteLine("ALTER TABLE {0}", ATable.strName);
 
@@ -574,10 +558,17 @@ namespace GenerateSQL
                     ASw.WriteLine("  DROP CONSTRAINT IF EXISTS {0};", constr.strName);
                 }
             }
+            else if (onlyForeign == eInclude.eInCreateTable && (constr.strType == "foreignkey"))
+            {
+                ASw.WriteLine(",");
+                ASw.WriteLine("  CONSTRAINT {0}", constr.strName);
+                ASw.WriteLine("    FOREIGN KEY ({0})", StringHelper.StrMerge(constr.strThisFields, ','));
+                ASw.Write("    REFERENCES {0}({1})", constr.strOtherTable, StringHelper.StrMerge(constr.strOtherFields, ','));
+            }
         }
 
         static Int32 countGeneratedIndex = 0;
-        private static void DumpIndexes(StreamWriter ASw, TTable ATable, Boolean AAdd)
+        private static void DumpIndexes(StreamWriter ASw, TTable ATable, eInclude includeIndexes, Boolean AAdd)
         {
             for (System.Int32 implicit_ = 0; implicit_ <= 1; implicit_ += 1)
             {
@@ -599,15 +590,30 @@ namespace GenerateSQL
 
                         if (AAdd)
                         {
-                            ASw.Write("CREATE ");
+                            if (includeIndexes == eInclude.eInCreateTable)
+                            {
+                                ASw.WriteLine(",");
+                            }
+                            else
+                            {
+                                ASw.Write("CREATE ");
+                            }
 
                             if (index.bUnique)
                             {
                                 ASw.Write("UNIQUE ");
                             }
 
-                            ASw.WriteLine("INDEX {0} ", indexName);
-                            ASw.WriteLine("   ON {0}", ATable.strName);
+                            if (includeIndexes == eInclude.eInCreateTable)
+                            {
+                                ASw.WriteLine("KEY {0} ", indexName);
+                            }
+                            else
+                            {
+                                ASw.WriteLine("INDEX {0} ", indexName);
+                                ASw.WriteLine("   ON {0}", ATable.strName);
+                            }
+
                             string fields = "";
 
                             foreach (TIndexField indfield in index.grpIndexField)
@@ -620,7 +626,14 @@ namespace GenerateSQL
                                 fields += indfield.strName;
                             }
 
-                            ASw.WriteLine("   ({0});", fields);
+                            if (includeIndexes == eInclude.eInCreateTable)
+                            {
+                                ASw.Write("   ({0})", fields);
+                            }
+                            else
+                            {
+                                ASw.WriteLine("   ({0});", fields);
+                            }
                         }
                         else
                         {
