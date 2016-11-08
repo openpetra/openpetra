@@ -606,8 +606,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
                 tofile="${dir.setup}/db30/createtables-MySQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
                 tofile="${dir.setup}/db30/createconstraints-MySQL.sql"/>
-      <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
+      <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-MySQL.sql')}">
+          <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
                 tofile="${dir.setup}/db30/demodata-MySQL.sql"/>
+      </if>
     </if>
     <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/INSTALL"
                 tofile="${dir.setup}/INSTALL"/>
