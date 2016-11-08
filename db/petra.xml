@@ -12972,7 +12972,7 @@
                 descr=""
                 thisFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"
                 otherTable="a_analysis_attribute"
-                otherFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_"/>
+                otherFields="a_ledger_number_i, a_analysis_type_code_c, a_account_code_c"/>
     <foreignkey name="a_trans_anal_attrib_fk4"
                 descr=""
                 thisFields="a_ledger_number_i, a_analysis_type_code_c, a_analysis_attribute_value_c"
