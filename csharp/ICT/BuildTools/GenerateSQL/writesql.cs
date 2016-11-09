@@ -118,6 +118,14 @@ namespace GenerateSQL
                 }
             }
 
+            if (ATargetDatabase == eDatabaseType.PostgreSQL)
+            {
+                foreach (TTable Table in Tables)
+                {
+                    DumpConstraints(sw, Table, eInclude.eOnlyForeign, true);
+                }
+            }
+
             WriteSequences(sw, ATargetDatabase, AStore, true);
 
             sw.Close();
@@ -350,8 +358,20 @@ namespace GenerateSQL
 
             // Dump fields
             DumpFields(ATargetDatabase, ASw, ATable);
-            DumpConstraints(ASw, ATable, eInclude.eInCreateTable, true);
-            DumpIndexes(ASw, ATable, eInclude.eInCreateTable, true);
+
+            if (AWriteConstraintsAndIndexes)
+            {
+                if (ATargetDatabase == eDatabaseType.PostgreSQL)
+                {
+                    DumpConstraints(ASw, ATable, eInclude.eOnlyLocal, true);
+                }
+                else
+                {
+                    DumpConstraints(ASw, ATable, eInclude.eInCreateTable, true);
+                    DumpIndexes(ASw, ATable, eInclude.eInCreateTable, true);
+                }
+            }
+
             ASw.WriteLine();
             ASw.Write(")");
 
@@ -364,6 +384,12 @@ namespace GenerateSQL
             }
 
             ASw.WriteLine(";");
+
+            if (AWriteConstraintsAndIndexes && (ATargetDatabase == eDatabaseType.PostgreSQL))
+            {
+                DumpIndexes(ASw, ATable, eInclude.eIncludeSeparate, true);
+            }
+
             ASw.WriteLine();
             return true;
         }
