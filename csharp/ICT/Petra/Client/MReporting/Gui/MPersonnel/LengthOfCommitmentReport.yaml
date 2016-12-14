@@ -60,8 +60,11 @@ RootNode:
         Para6:
             Name: Partner Surname
             Parameter: 2.0
-        Para8:
+        Para7:
             Name: Start Date of Commitment
+            Parameter: 2.0
+        Para8:
+            Name: Country of Service
             Parameter: 2.0
         Para9:
             Name: Primary E-Mail
