@@ -126,6 +126,8 @@
           <CustomField name="FirstName" type="string"/>
           <CustomField name="Surname" type="string"/>
           <CustomField name="Gender" type="string"/>
+          <CustomField name="FirstCommitmentDate" type="DateTime"/>
+          <CustomField name="ReceivingCountryCode" type="string"/>
         </Table>
     </DataSet>
 

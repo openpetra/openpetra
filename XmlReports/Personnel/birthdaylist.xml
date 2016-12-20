@@ -104,7 +104,7 @@
 			</calculation>
 
 			<calculation id="GetCommitmentPeriodAndEmail" returnsFormat="internal"
-					returns="CommitmentStart,CommitmentEnd,EmailAddress">
+					returns="CommitmentStart,CommitmentEnd,CountryOfService,EmailAddress">
 				<query>
 					<queryDetail>
 						<value function="GetCurrentCommitmentPeriod({{PartnerKey}},{#param_currentstaffdate#})"/>
@@ -210,7 +210,18 @@
 				</query>
 			</calculation>
 
-			<calculation id="Gender" returnsFormat="text" returns="text">
+      <calculation id="Country of Service" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Country of\nService"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="CountryOfService"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
+      <calculation id="Gender" returnsFormat="text" returns="text">
 				<caption><value text="Gender"/></caption>
 				<query>
 					<queryDetail>

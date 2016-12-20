@@ -73,6 +73,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
             Int32 daysServed,
             DateTime AReportStartDate,
             DateTime AReportEndDate,
+            DateTime AFirstStartDate,
             DateTime previousStartDate,
             DateTime? previousEndDate,
             LengthOfCommitmentReportTDSPmStaffDataTable Anniversaries,
@@ -131,6 +132,8 @@ namespace Ict.Petra.Server.MPersonnel.queries
                 newAnniversary.FirstName = PreviousRow.FirstName;
                 newAnniversary.Surname = PreviousRow.Surname;
                 newAnniversary.Gender = PreviousRow.Gender;
+                newAnniversary.FirstCommitmentDate = AFirstStartDate;
+                newAnniversary.ReceivingCountryCode = PreviousRow.ReceivingCountryCode;
                 Anniversaries.Rows.Add(newAnniversary);
             }
         }
@@ -153,6 +156,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
 
             // add up time, ignore overlaps
             DateTime previousStartDate = DateTime.MinValue;
+            DateTime firstStartDate = DateTime.MinValue; // first ever start of commitment
             DateTime? previousEndDate = new Nullable <DateTime>(); // null value: open ended commitment
 
             // we need the overall time that someone has worked with us
@@ -173,6 +177,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                             monthsServed,
                             AReportStartDate,
                             AReportEndDate,
+                            firstStartDate,
                             previousStartDate,
                             previousEndDate,
                             Anniversaries,
@@ -183,6 +188,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     PreviousPartnerKey = CurrentPartnerKey;
                     PreviousRow = row;
                     previousStartDate = row.StartOfCommitment;
+                    firstStartDate = row.StartOfCommitment;
                     previousEndDate = row.IsEndOfCommitmentNull() ? new Nullable <DateTime>() : row.EndOfCommitment;
                 }
                 else
@@ -230,6 +236,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
                     monthsServed,
                     AReportStartDate,
                     AReportEndDate,
+                    firstStartDate,
                     previousStartDate,
                     previousEndDate,
                     Anniversaries,
