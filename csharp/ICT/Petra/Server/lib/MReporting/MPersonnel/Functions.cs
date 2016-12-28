@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -250,15 +250,18 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             System.Object StartDate = DateTime.MinValue;
             System.Object EndDate = DateTime.MinValue;
             ReturnValue = false;
+            List<OdbcParameter> odbcparameters = new List<OdbcParameter>();
+            odbcparameters .Add(new OdbcParameter("partnerKey", OdbcType.BigInt) { Value = APartnerKey });
+            odbcparameters .Add(new OdbcParameter("startOfCommitment", OdbcType.DateTime) { Value = AGivenDate });
+            odbcparameters .Add(new OdbcParameter("endOfCommitment", OdbcType.DateTime) { Value = AGivenDate });
             strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d " + "FROM PUB_pm_staff_data " +
-                     "WHERE PUB_pm_staff_data.p_partner_key_n = " + APartnerKey.ToString() + ' ' + "AND pm_start_of_commitment_d <= {#" +
-                     StringHelper.DateToStr(AGivenDate, "dd/MM/yyyy") + "#} " + "AND (pm_end_of_commitment_d >= {#" + StringHelper.DateToStr(
-                AGivenDate,
-                "dd/MM/yyyy") + "#} " + "     OR pm_end_of_commitment_d IS NULL) " + "ORDER BY pm_start_of_commitment_d ASC";
-            formatQuery = new TRptFormatQuery(null, -1, -1);
-            strSql = formatQuery.ReplaceVariables(strSql).ToString();
+                     "WHERE PUB_pm_staff_data.p_partner_key_n = ? AND pm_start_of_commitment_d <= ? " +
+                     "AND (pm_end_of_commitment_d >= ? OR pm_end_of_commitment_d IS NULL) " +
+                     "ORDER BY pm_start_of_commitment_d ASC";
+            formatQuery = new TRptFormatQuery(strSql, odbcparameters, null, -1, -1);
+            formatQuery.ReplaceVariables();
+            tab = situation.GetDatabaseConnection().SelectDT(formatQuery.SQLStmt, "table", situation.GetDatabaseConnection().Transaction, formatQuery.OdbcParameters.ToArray());
             formatQuery = null;
-            tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
             if (tab.Rows.Count > 0)
             {

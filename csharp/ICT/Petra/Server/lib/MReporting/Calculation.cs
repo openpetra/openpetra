@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -470,7 +470,7 @@ namespace Ict.Petra.Server.MReporting
             if (rptLowerLevel.rptGrpParameter != null)
             {
                 rptDataCalcParameter = new TRptDataCalcParameter(this);
-                rptDataCalcParameter.Calculate("", rptLowerLevel.rptGrpParameter);
+                rptDataCalcParameter.Calculate(new TRptFormatQuery(string.Empty), rptLowerLevel.rptGrpParameter);
             }
 
             if (rptLowerLevel.strCalculation.Length == 0)
@@ -1068,10 +1068,8 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="query"></param>
         /// <param name="rptGrpParameter"></param>
         /// <returns></returns>
-        public String Calculate(String query, List <TRptParameter>rptGrpParameter)
+        public TRptFormatQuery Calculate(TRptFormatQuery query, List <TRptParameter>rptGrpParameter)
         {
-            String ReturnValue = query;
-
             foreach (TRptParameter rptParameter in rptGrpParameter)
             {
                 string name = rptParameter.strName;
@@ -1100,14 +1098,14 @@ namespace Ict.Petra.Server.MReporting
                 {
                     TLogging.Log(
                         "Variable " + name + " could not be found (column: " + column.ToString() + "; level: " + Depth.ToString() + ")." + ' ' +
-                        ReturnValue);
+                        query.SQLStmt);
                 }
 
-                ReturnValue = ReturnValue.Replace("{{" + name + "}}", value.ToString());
-                ReturnValue = ReturnValue.Replace("{" + name + "}", "'" + value.ToString() + "'");
+                query.AddOdbcParameters("{{", name, "}}", value);
+                query.AddOdbcParameters("{", name, "}", value);
             }
 
-            return ReturnValue;
+            return query;
         }
     }
 
@@ -1155,20 +1153,15 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpParameter"></param>
         /// <param name="query"></param>
         /// <returns></returns>
-        private string ApplyParametersToQuery(List <TRptParameter>rptGrpParameter, String query)
+        private TRptFormatQuery ApplyParametersToQuery(List <TRptParameter>rptGrpParameter, TRptFormatQuery query)
         {
-            string ReturnValue;
-            TRptDataCalcParameter rptDataCalcParameter;
-
-            ReturnValue = query;
-
             if (rptGrpParameter != null)
             {
-                rptDataCalcParameter = new TRptDataCalcParameter(this);
-                ReturnValue = rptDataCalcParameter.Calculate(ReturnValue, rptGrpParameter);
+                TRptDataCalcParameter rptDataCalcParameter = new TRptDataCalcParameter(this);
+                return rptDataCalcParameter.Calculate(query, rptGrpParameter);
             }
 
-            return ReturnValue;
+            return query;
         }
 
         private SortedList <string, Assembly>FReportAssemblies = new SortedList <string, Assembly>();
@@ -1262,7 +1255,17 @@ namespace Ict.Petra.Server.MReporting
             // depending on existing lower level, we want the parameters on that level, otherwise on the current level
             int StoreResultsAtDepth = (strLowerLevel.Length == 0) ? Depth : Depth + 1;
 
-            string strSql = this.Calculate(rptCalculation, rptGrpParameter).ToString();
+            TRptFormatQuery qry = this.Calculate(rptCalculation, rptGrpParameter);
+            string strSql = String.Empty;
+
+            if (qry.IsVariant)
+            {
+                strSql = qry.VariantValue.ToString();
+            }
+            else
+            {
+                strSql = qry.SQLStmt;
+            }
 
             if (strSql.Length == 0)
             {
@@ -1351,7 +1354,7 @@ namespace Ict.Petra.Server.MReporting
                 else if (strSql.Length > 0)
                 {
                     strSql = ReplaceQuotesForSql(strSql, rptCalculation.strId);
-                    DataTable tab = DatabaseConnection.SelectDT(strSql, "EvaluateCalculation_TempTable", DatabaseConnection.Transaction);
+                    DataTable tab = DatabaseConnection.SelectDT(strSql, "EvaluateCalculation_TempTable", DatabaseConnection.Transaction, qry.OdbcParameters.ToArray());
                     string strReturns = rptCalculation.strReturns;
 
                     if (strReturns.ToLower() == "automatic")
@@ -1408,7 +1411,7 @@ namespace Ict.Petra.Server.MReporting
                 return ReturnValue;
             }
 
-            ReturnValue = Calculate(rptCalculation, null);
+            ReturnValue = Calculate(rptCalculation, null).VariantValue;
 
             if (ReturnValue.IsZeroOrNull() || (ReturnValue.ToString().Trim().ToUpper().IndexOf("SELECT") != 0))
             {
@@ -1535,16 +1538,16 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpTemplate"></param>
         /// <param name="rptGrpQuery"></param>
         /// <returns></returns>
-        public TVariant EvaluateCalculationAll(TRptCalculation rptCalculation,
+        public TRptFormatQuery EvaluateCalculationAll(TRptCalculation rptCalculation,
             List <TRptParameter>rptGrpParameter,
             List <TRptQuery>rptGrpTemplate,
             List <TRptQuery>rptGrpQuery)
         {
-            TVariant ReturnValue;
+            TRptFormatQuery ReturnValue;
             TRptDataCalcValue rptDataCalcValue;
             TRptDataCalcSwitch rptDataCalcSwitch;
 
-            ReturnValue = new TVariant();
+            ReturnValue = new TRptFormatQuery(String.Empty, null, this.Parameters);
 
             if (rptGrpQuery == null)
             {
@@ -1561,16 +1564,16 @@ namespace Ict.Petra.Server.MReporting
 
                         if (!ReturnValue.IsZeroOrNull())
                         {
-                            ReturnValue.Add(new TVariant(" "));
+                            ReturnValue.Add(" ");
                         }
 
-                        ReturnValue.Add(rptDataCalcValue.Calculate(rptQuery.rptGrpValue, true));
+                        ReturnValue.Add(rptDataCalcValue.Calculate(rptQuery.rptGrpValue, true).ToString());
                     }
 
                     if (rptQuery.rptGrpParameter != null)
                     {
                         // insert template with parameters
-                        ReturnValue.Add(new TVariant(" "));
+                        ReturnValue.Add(" ");
                         ReturnValue.Add(EvaluateCalculationAll(rptCalculation, rptQuery.rptGrpParameter, null, rptGrpTemplate));
                     }
 
@@ -1578,19 +1581,19 @@ namespace Ict.Petra.Server.MReporting
                     {
                         if (!ReturnValue.IsZeroOrNull())
                         {
-                            ReturnValue.Add(new TVariant(" "));
+                            ReturnValue.Add(" ");
                         }
 
                         rptDataCalcSwitch = new TRptDataCalcSwitch(this);
-                        ReturnValue.Add(new TVariant(rptDataCalcSwitch.Calculate(rptQuery.rptGrpSwitch)));
+                        ReturnValue.Add(rptDataCalcSwitch.Calculate(rptQuery.rptGrpSwitch).ToString());
                     }
                 }
             }
 
-            if ((ReturnValue.TypeVariant == eVariantTypes.eString) || (ReturnValue.ToString().IndexOf("{") != -1))
+            if (ReturnValue.SQLStmt.IndexOf("{") != -1)
             {
-                ReturnValue = new TVariant(ApplyParametersToQuery(rptGrpParameter, ReturnValue.ToString()), true); // explicit string
-                ReturnValue = ReplaceVariables(ReturnValue.ToString(), true);
+                ReturnValue = ApplyParametersToQuery(rptGrpParameter, ReturnValue);
+                ReturnValue.ReplaceVariables();
             }
 
             // TLogging.log('Result of TRptDataCalcCalculation.evaluateCalculationAll: '+result.encodetostring());
@@ -1602,14 +1605,9 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptCalculation"></param>
         /// <param name="rptGrpParameter"></param>
         /// <returns></returns>
-        public TVariant Calculate(TRptCalculation rptCalculation, List <TRptParameter>rptGrpParameter)
+        public TRptFormatQuery Calculate(TRptCalculation rptCalculation, List <TRptParameter>rptGrpParameter)
         {
             return EvaluateCalculationAll(rptCalculation, rptGrpParameter, rptCalculation.rptGrpTemplate, rptCalculation.rptGrpQuery);
-
-            /*
-             * //This is for logging the SQL string before it gets sent to the database
-             * TLogging.Log(result.EncodeToString(), [tologfile]);
-             */
         }
 
         /// <summary>

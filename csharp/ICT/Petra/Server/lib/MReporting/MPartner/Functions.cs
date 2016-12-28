@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -245,7 +245,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             System.Int32 col;
             TRptCalculation mRptCalculation;
             TRptDataCalcCalculation mRptDataCalcCalculation;
-            TVariant mRptCalcResult;
+            TRptFormatQuery mRptCalcResult;
             mRptCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), "PartnerLabelValue");
             mRptDataCalcCalculation = new TRptDataCalcCalculation(situation);
             mRptCalcResult = mRptDataCalcCalculation.EvaluateCalculationAll(mRptCalculation,
@@ -259,7 +259,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return false;
             }
 
-            mTable = situation.GetDatabaseConnection().SelectDT(mRptCalcResult.ToString(), "table", situation.GetDatabaseConnection().Transaction);
+            mTable = situation.GetDatabaseConnection().SelectDT(mRptCalcResult.SQLStmt, "table", situation.GetDatabaseConnection().Transaction, mRptCalcResult.OdbcParameters.ToArray());
 
             foreach (DataRow mRow in mTable.Rows)
             {
@@ -1118,7 +1118,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
             ADataTable = null;
             TRptCalculation ReportCalculation;
             TRptDataCalcCalculation ReportDataCalcCalculation;
-            TVariant ReportCalcResult;
+            TRptFormatQuery ReportCalcResult;
 
             ReportCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), ASqlID);
 
@@ -1131,7 +1131,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 return false;
             }
 
-            String SqlStatement = ReportCalcResult.ToString();
+            String SqlStatement = ReportCalcResult.SQLStmt;
 
             if ((ReplaceString != null)
                 && (Replacement != null))
@@ -1139,7 +1139,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                 SqlStatement = SqlStatement.Replace(ReplaceString, Replacement);
             }
 
-            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "table", situation.GetDatabaseConnection().Transaction);
+            ADataTable = situation.GetDatabaseConnection().SelectDT(SqlStatement, "table", situation.GetDatabaseConnection().Transaction, ReportCalcResult.OdbcParameters.ToArray());
 
             return true;
         }
@@ -1278,8 +1278,25 @@ namespace Ict.Petra.Server.MReporting.MPartner
             PLocationTable LocationTable;
             PLocationRow LocationRow;
 
-            // codes should be surrounded by single quotes
-            APublicationCodes = APublicationCodes.Replace("\"", "'");
+            // split list of publication codes, and remove the quotes
+            // preparing for SQL Parameter
+            string[] PublicationCodes = APublicationCodes.Split(new char[] {','});
+            string PublicationCodesPlaceholders = string.Empty;
+            List<OdbcParameter> PublicationCodesParameters = new List<OdbcParameter>();
+
+            for (int pubIndex = 0; pubIndex < PublicationCodes.Length; pubIndex++)
+            {
+                PublicationCodesParameters.Add(new OdbcParameter("publicationcode" + pubIndex.ToString(), OdbcType.VarChar)
+                                   { Value = PublicationCodes[pubIndex].Trim(new char[] {'"', '\'', ' '}) });
+
+                if (pubIndex > 0)
+                {
+                    PublicationCodesPlaceholders += ",";
+                }
+
+                PublicationCodesPlaceholders += "?";
+            }
+            
 
             // load all active partners who have subscriptions for publications in the list,
             // are a donor, are a church, are an applicant or are an ex-worker
@@ -1309,7 +1326,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                            " AND (EXISTS (SELECT * FROM p_subscription" +
                            " WHERE p_subscription.p_partner_key_n = p_partner.p_partner_key_n" +
 
-                           " AND p_subscription.p_publication_code_c IN (" + APublicationCodes + "))" +
+                           " AND p_subscription.p_publication_code_c IN (" + PublicationCodesPlaceholders + "))" +
 
                            // if a donor
                            " OR EXISTS (SELECT * FROM PUB_a_gift" +
@@ -1324,7 +1341,7 @@ namespace Ict.Petra.Server.MReporting.MPartner
                            " AND (p_partner_type.p_type_code_c LIKE 'EX-WORKER%'" +
                            " OR p_partner_type.p_type_code_c LIKE 'APPLIED%')))";
 
-            PartnerTable = DBAccess.GDBAccessObj.SelectDT(PartnerTable, Query, situation.GetDatabaseConnection().Transaction);
+            PartnerTable = DBAccess.GDBAccessObj.SelectDT(PartnerTable, Query, situation.GetDatabaseConnection().Transaction, PublicationCodesParameters.ToArray());
 
             // get total number of active partners
             FNumberOfActivePartner = PPartnerAccess.CountViaPPartnerStatus("ACTIVE", situation.GetDatabaseConnection().Transaction);
@@ -1333,9 +1350,9 @@ namespace Ict.Petra.Server.MReporting.MPartner
 
             // load all subscriptions for publications in the list
             Query = "SELECT * FROM p_subscription" +
-                    " WHERE p_subscription.p_publication_code_c IN (" + APublicationCodes + ")";
+                    " WHERE p_subscription.p_publication_code_c IN (" + PublicationCodesPlaceholders + ")";
             SubscriptionTable = (PSubscriptionTable)DBAccess.GDBAccessObj.SelectDT(SubscriptionTable, Query,
-                situation.GetDatabaseConnection().Transaction);
+                situation.GetDatabaseConnection().Transaction, PublicationCodesParameters.ToArray());
 
             PPartnerLocationRow PartnerLocationRow;
 

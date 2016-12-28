@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -475,13 +475,11 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TVariant Precalculate(TVariant[] precalculatedColumns)
         {
-            TVariant ReturnValue;
             String strCalculation;
             TRptDataCalcCalculation rptDataCalcCalculation;
             TRptCalculation rptCalculation;
-            DataTable tab;
 
-            ReturnValue = new TVariant();
+            TVariant ReturnValue = new TVariant();
 
             // calculation is used for display in the GUI, formula is used for adding ledgers
             if ((!GetParameters().Exists("param_calculation", column, Depth)))
@@ -513,32 +511,12 @@ namespace Ict.Petra.Server.MReporting
                     ReturnValue = rptDataCalcCalculation.EvaluateCalculationAll(rptCalculation,
                         null,
                         rptCalculation.rptGrpTemplate,
-                        rptCalculation.rptGrpQuery);
+                        rptCalculation.rptGrpQuery).VariantValue;
 
                     if (ReturnValue.IsZeroOrNull())
                     {
                         ReturnValue.ApplyFormatString(rptCalculation.strReturnsFormat);
                         return ReturnValue;
-                    }
-
-                    int SelectPos = ReturnValue.ToString().ToUpper().IndexOf("SELECT");
-
-                    if ((SelectPos >= 0) && (SelectPos <= 3))
-                    {
-                        // this is an sql statement and not a function result
-                        tab = DatabaseConnection.SelectDT(ReturnValue.ToString(), "", DatabaseConnection.Transaction);
-
-                        if (tab.Rows.Count > 0)
-                        {
-                            if (tab.Rows[0][0].GetType() == typeof(String))
-                            {
-                                ReturnValue = new TVariant(Convert.ToString(tab.Rows[0][0]));
-                            }
-                            else
-                            {
-                                ReturnValue = new TVariant(tab.Rows[0][0]);
-                            }
-                        }
                     }
                 }
 
