@@ -242,6 +242,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
                 // Login via server admin console authenticated by file token
+                APassword = String.Empty;
             }
             //
             // (1) Check user-supplied password
@@ -374,7 +375,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             UserDR.FailedLogins = 0;  // this needs resetting!
 
             // Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
-            if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
+            if (APassword != String.Empty && UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
             {
                 TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword,
                     AClientComputerName, AClientIPAddress, ATransaction);
