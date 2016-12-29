@@ -252,7 +252,7 @@
 <target name="startClient" depends="initConfigFiles-client" description="start the OpenPetra Client">
   <if test="${platform::is-windows()}">
     <if test="${compileForStandalone == 'false'}">
-        <call target="startServer-internal" />
+        <call target="startServer-internal" unless="${target::has-executed('startServer-internal')}"/>
     </if>
     <if test="${compileForStandalone != 'false'}">
         <call target="copySQLFiles" />
