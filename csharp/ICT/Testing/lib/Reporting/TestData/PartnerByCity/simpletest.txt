@@ -1,0 +1,23 @@
+Page 1                                          Partner by City                                      %%%%%%%%%%%
+
+                                                city: Westhausen                                        %%%%%%%%
+
+Report requested by: DEMO                                                                   Version: %%%%%%%%%%%
+
+
+
+                                                                                               as at %%%%%%%%%%%
+
+
+
+
+
+
+
+Partner name           Partner Key    City                              Post Code          Partner Class
+
+----------------------------------------------------------------------------------------------------------------
+
+
+Thamm, Maria, Mrs.     0043013259     Westhausen                        99869              FAMILY
+
