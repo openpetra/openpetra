@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="xmlfiles" value="eString:Partner\\\\partnerbycity.xml" />
+  <Parameter id="IsolationLevel" value="eString:serializable" />
+  <Parameter id="currentReport" value="eString:Partner by City" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_today" value="eDateTime:&quot;2017-01-25T00:00:00&quot;" />
+  <Parameter id="param_city" value="eString:Westhausen" />
+  <Parameter id="orderby0" value="eString:City" />
+  <Parameter id="orderby1" value="eString:Partner Name" />
+  <Parameter id="orderby2" value="eString:Partner Key" />
+  <Parameter id="param_sortby_readable" value="eString:City, Partner Name, Partner Key" />
+  <Parameter id="param_calculation" column="5" value="eString:City" />
+  <Parameter id="param_calculation" column="6" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="7" value="eString:Partner Key" />
+  <Parameter id="param_sortby_columns" value="eString:5,6,7" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
+  <Parameter id="param_ytd" column="0" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_ytd" column="1" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="2" value="eString:City" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4616752568008179712" />
+  <Parameter id="param_ytd" column="2" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="3" value="eString:PostCode" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="3" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Partner Class" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_ytd" column="4" value="eBoolean:false" />
+  <Parameter id="ColumnFormat" column="0" value="eString:text" />
+  <Parameter id="ColumnFormat" column="1" value="eString:partnerkey" />
+  <Parameter id="ColumnFormat" column="2" value="eString:text" />
+  <Parameter id="ColumnFormat" column="3" value="eString:text" />
+  <Parameter id="ColumnFormat" column="4" value="eString:text" />
+  <Parameter id="ColumnFormat" column="5" value="eString:text" />
+  <Parameter id="ColumnFormat" column="6" value="eString:text" />
+  <Parameter id="ColumnFormat" column="7" value="eString:partnerkey" />
+  <Parameter id="ControlSource" column="100" value="eString:Partner by City" />
+  <Parameter id="ControlSource" column="101" value="eString:&quot;city: Westhausen&quot;" />
+  <Parameter id="ControlSource" column="103" value="eComposite::&quot;eString:as at |&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;2017-01-25T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;&quot;" />
+  <Parameter id="ColumnAlign" column="0" value="eString:left" />
+  <Parameter id="ColumnCaption" column="0" value="eString:text:Partner name" />
+  <Parameter id="ColumnAlign" column="1" value="eString:left" />
+  <Parameter id="ColumnCaption" column="1" value="eString:text:Partner Key" />
+  <Parameter id="ColumnAlign" column="2" value="eString:left" />
+  <Parameter id="ColumnCaption" column="2" value="eString:text:City" />
+  <Parameter id="ColumnAlign" column="3" value="eString:left" />
+  <Parameter id="ColumnCaption" column="3" value="eString:text:Post Code" />
+  <Parameter id="ColumnAlign" column="4" value="eString:left" />
+  <Parameter id="ColumnCaption" column="4" value="eString:text:Partner Class" />
+  <Parameter id="lowestLevel" level="-2" value="eInteger:1" />
+  <Parameter id="ColumnPosition" column="0" value="eDecimal:0" />
+  <Parameter id="ColumnPosition" column="1" value="eDecimal:4613937818241073152" />
+  <Parameter id="ColumnPosition" column="2" value="eDecimal:4617315517961601024" />
+  <Parameter id="ColumnPosition" column="3" value="eDecimal:4621537642612260864" />
+  <Parameter id="ColumnPosition" column="4" value="eDecimal:4622945017495814144" />
+  <Parameter id="ReportWidth" value="eDecimal:4624070917402656768" />
+  <Parameter id="param_detail_report_0" value="eString:&quot;&quot;&quot;Open &quot;&quot;&quot;&quot;Partner Key&quot;&quot;&quot;&quot; in Partner Edit Screen&quot;&quot;,PartnerEditScreen,1&quot;" />
+  <Parameter id="ControlSource" column="112" value="eString:Left1" />
+  <Parameter id="ControlSource" column="113" value="eString:Left2" />
+</Parameters>
