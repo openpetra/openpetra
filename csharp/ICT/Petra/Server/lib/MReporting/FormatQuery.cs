@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -276,11 +276,27 @@ namespace Ict.Petra.Server.MReporting
             int pos = 0;
             int parampos = 0;
             int parameterIndex = 0;
+
+            int wherePos = this.FSQLStmt.ToUpper().IndexOf(" WHERE ");
+            pos = this.FSQLStmt.IndexOf(APrefix + AName + APostfix, pos);
+
+            if (pos == -1)
+            {
+                return;
+            }
+
+            if (wherePos > pos)
+            {
+                TLogging.Log(this.FSQLStmt);
+                throw new Exception("AddOdbcParameters: do not replace table names with odbc parameters");
+            }
+
             while ((pos = this.FSQLStmt.IndexOf(APrefix + AName + APostfix, pos)) != -1)
             {
                 while ((parampos != -1) && (parampos <= pos))
                 {
-                    parampos = this.FSQLStmt.IndexOf("PARAMETER?", parampos);
+                    parampos = this.FSQLStmt.IndexOf("PARAMETER?", parampos + 1);
+
                     if ((parampos != -1) && (parampos <= pos))
                     {
                         parameterIndex++;

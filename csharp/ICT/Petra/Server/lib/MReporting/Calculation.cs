@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -850,7 +850,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpValue"></param>
         /// <param name="AWithSpaceBetweenValues"></param>
         /// <returns></returns>
-        public TVariant Calculate(List <TRptValue>rptGrpValue, Boolean AWithSpaceBetweenValues)
+        public TVariant Calculate(List <TRptValue>rptGrpValue, Boolean AWithSpaceBetweenValues = false)
         {
             TVariant ReturnValue;
             String listValue;
@@ -1012,16 +1012,6 @@ namespace Ict.Petra.Server.MReporting
             }
 
             return ReturnValue;
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="rptGrpValue"></param>
-        /// <returns></returns>
-        public TVariant Calculate(List <TRptValue>rptGrpValue)
-        {
-            return Calculate(rptGrpValue, false);
         }
     }
 
@@ -1747,7 +1737,7 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpSwitch"></param>
         /// <param name="strLine"></param>
         /// <param name="strSpace"></param>
-        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch, string strLine, string strSpace)
+        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch, string strLine = "", string strSpace = "")
         {
             TRptDataCalcSwitch calcSwitch;
             TRptDataCalcField calcField;
@@ -1784,27 +1774,6 @@ namespace Ict.Petra.Server.MReporting
                 calcField = new TRptDataCalcField(this);
                 calcField.Calculate(rptGrpField);
             }
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="rptGrpField"></param>
-        /// <param name="rptGrpSwitch"></param>
-        /// <param name="strLine"></param>
-        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch, string strLine)
-        {
-            Calculate(rptGrpField, rptGrpSwitch, strLine, "");
-        }
-
-        /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="rptGrpField"></param>
-        /// <param name="rptGrpSwitch"></param>
-        public void Calculate(List <TRptField>rptGrpField, List <TRptSwitch>rptGrpSwitch)
-        {
-            Calculate(rptGrpField, rptGrpSwitch, "", "");
         }
     }
 }
