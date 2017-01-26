@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -101,8 +101,8 @@ namespace Tests.MReporting.Tools
 
             TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
             TParameterList Parameters = new TParameterList();
-            string resultFile = AReportParameterXmlFile.Replace(".xml", ".Results.xml");
-            string parameterFile = AReportParameterXmlFile.Replace(".xml", ".Parameters.xml");
+            string resultFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.csv");
+            string parameterFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.xml");
             Parameters.Load(AReportParameterXmlFile);
 
             if (ALedgerNumber != -1)
@@ -125,18 +125,9 @@ namespace Tests.MReporting.Tools
             Results.LoadFromDataTable(ReportGenerator.GetResult());
             Parameters.LoadFromDataTable(ReportGenerator.GetParameter());
 
-            if (!Parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT1, -1, eParameterFit.eBestFit))
-            {
-                Parameters.Add("ControlSource", new TVariant("Left1"), ReportingConsts.HEADERPAGELEFT1);
-            }
-
-            if (!Parameters.Exists("ControlSource", ReportingConsts.HEADERPAGELEFT2, -1, eParameterFit.eBestFit))
-            {
-                Parameters.Add("ControlSource", new TVariant("Left2"), ReportingConsts.HEADERPAGELEFT2);
-            }
-
+            Parameters.Sort();
             Parameters.Save(parameterFile, false);
-            Results.WriteCSV(Parameters, resultFile, ",", false, false);
+            Results.WriteCSV(Parameters, resultFile, ",");
         }
 
         /// <summary>
@@ -144,10 +135,10 @@ namespace Tests.MReporting.Tools
         /// </summary>
         public static void TestResult(string AReportParameterXmlFile, int ALedgerNumber = -1)
         {
-            string resultFile = AReportParameterXmlFile.Replace(".xml", ".Results.xml");
-            string parameterFile = AReportParameterXmlFile.Replace(".xml", ".Parameters.xml");
-            string resultExpectedFile = AReportParameterXmlFile.Replace(".xml", ".Results.Expected.xml");
-            string parameterExpectedFile = AReportParameterXmlFile.Replace(".xml", ".Parameters.Expected.xml");
+            string resultFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.csv");
+            string parameterFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.xml");
+            string resultExpectedFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.Expected.csv");
+            string parameterExpectedFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.Expected.xml");
 
             SortedList <string, string>ToReplace = new SortedList <string, string>();
             ToReplace.Add("{ledgernumber}", ALedgerNumber.ToString());

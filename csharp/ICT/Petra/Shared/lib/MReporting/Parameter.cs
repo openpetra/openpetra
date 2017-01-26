@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -66,7 +66,7 @@ namespace Ict.Petra.Shared.MReporting
     /// This class is able to hold one value,
     /// and knows to which column and level this variable applies.
     /// </summary>
-    public class TParameter
+    public class TParameter: IComparable
     {
         /// <summary>
         /// name of the parameter
@@ -102,9 +102,9 @@ namespace Ict.Petra.Shared.MReporting
             int pcolumn,
             int plevel,
             int psubreport,
-            System.Object pRptElement,
-            System.Object pRptGroup,
-            int paramType)
+            System.Object pRptElement = null,
+            System.Object pRptGroup = null,
+            int paramType = -1)
         {
             name = pname;
             value = pvalue;
@@ -114,48 +114,6 @@ namespace Ict.Petra.Shared.MReporting
             this.pRptElement = pRptElement;
             this.pRptGroup = pRptGroup;
             this.paramType = paramType;
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="pname"></param>
-        /// <param name="pvalue"></param>
-        /// <param name="pcolumn"></param>
-        /// <param name="plevel"></param>
-        /// <param name="psubreport"></param>
-        /// <param name="pRptElement"></param>
-        /// <param name="pRptGroup"></param>
-        public TParameter(String pname, TVariant pvalue, int pcolumn, int plevel, int psubreport, System.Object pRptElement, System.Object pRptGroup)
-            : this(pname, pvalue, pcolumn, plevel, psubreport, pRptElement, pRptGroup, -1)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="pname"></param>
-        /// <param name="pvalue"></param>
-        /// <param name="pcolumn"></param>
-        /// <param name="plevel"></param>
-        /// <param name="psubreport"></param>
-        /// <param name="pRptElement"></param>
-        public TParameter(String pname, TVariant pvalue, int pcolumn, int plevel, int psubreport, System.Object pRptElement)
-            : this(pname, pvalue, pcolumn, plevel, psubreport, pRptElement, null, -1)
-        {
-        }
-
-        /// <summary>
-        /// constructor
-        /// </summary>
-        /// <param name="pname"></param>
-        /// <param name="pvalue"></param>
-        /// <param name="pcolumn"></param>
-        /// <param name="plevel"></param>
-        /// <param name="psubreport"></param>
-        public TParameter(String pname, TVariant pvalue, int pcolumn, int plevel, int psubreport)
-            : this(pname, pvalue, pcolumn, plevel, psubreport, null, null, -1)
-        {
         }
 
         /// <summary>
@@ -172,6 +130,32 @@ namespace Ict.Petra.Shared.MReporting
             this.pRptElement = copy.pRptElement;
             this.pRptGroup = copy.pRptGroup;
             this.paramType = copy.paramType;
+        }
+
+        /// <summary>
+        /// compare two objects for sorting
+        /// </summary>
+        int IComparable.CompareTo(Object B)
+        {
+            TParameter a = this;
+            TParameter b = (TParameter) B;
+
+            if (a.name == b.name)
+            {
+                if (a.level == b.level)
+                {
+                    if (a.column == b.column)
+                    {
+                        return 0;
+                    }
+
+                    return (a.column > b.column ? 1 : -1);
+                }
+
+                return (a.level > b.level ? 1 : -1);
+            }
+
+            return a.name.CompareTo(b.name);
         }
     }
 
@@ -1090,6 +1074,14 @@ namespace Ict.Petra.Shared.MReporting
             {
                 throw new Exception(E.Message);
             }
+        }
+
+        /// <summary>
+        /// useful for storing the parameter lists and comparing in unit tests
+        /// </summary>
+        public void Sort()
+        {
+            Fparameters.Sort();
         }
 
         /// <summary>

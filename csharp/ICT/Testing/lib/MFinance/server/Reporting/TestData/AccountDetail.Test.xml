@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="ColumnPosition" column="0" value="eInteger:0" />
+  <Parameter id="ColumnPosition" column="1" value="eInteger:1" />
+  <Parameter id="ColumnPosition" column="2" value="eInteger:6" />
+  <Parameter id="ColumnPosition" column="3" value="eInteger:8" />
+  <Parameter id="ColumnPosition" column="4" value="eInteger:10" />
+  <Parameter id="ColumnPosition" column="5" value="eInteger:15" />
+  <Parameter id="ColumnPosition" column="6" value="eInteger:17" />
+  <Parameter id="ColumnPositionIndented" column="0" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="1" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="2" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="3" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="4" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="5" value="eInteger:0" />
+  <Parameter id="ColumnPositionIndented" column="6" value="eInteger:0" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:1" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:1" />
+  <Parameter id="ColumnWidth" column="2" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="3" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:5" />
+  <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="currentReport" value="eString:Account Detail" />
+  <Parameter id="CurrentSubReport" value="eInteger:-1" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
+  <Parameter id="param_account_code_end" value="eString:text:&quot;0100&quot;" />
+  <Parameter id="param_account_code_start" value="eString:text:&quot;0100&quot;" />
+  <Parameter id="param_account_codes" value="eString:*NOTUSED*" />
+  <Parameter id="param_account_hierarchy_c" value="eString:STANDARD" />
+  <Parameter id="param_account_list_title" value="eString:0100 To 0100" />
+  <Parameter id="param_auto_email" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="0" value="eString:Transaction Cost Centre" />
+  <Parameter id="param_calculation" column="1" value="eString:Transaction Account Code" />
+  <Parameter id="param_calculation" column="2" value="eString:Debit" />
+  <Parameter id="param_calculation" column="3" value="eString:Credit" />
+  <Parameter id="param_calculation" column="4" value="eString:Transaction Narrative" />
+  <Parameter id="param_calculation" column="5" value="eString:Start Balance" />
+  <Parameter id="param_calculation" column="6" value="eString:End Balance" />
+  <Parameter id="param_cost_centre_code_end" value="eString:text:10500" />
+  <Parameter id="param_cost_centre_code_start" value="eString:text:10100" />
+  <Parameter id="param_cost_centre_codes" value="eString:*NOTUSED*" />
+  <Parameter id="param_cost_centre_list_title" value="eString:10100 To 10500" />
+  <Parameter id="param_currency" value="eString:Base" />
+  <Parameter id="param_currency_name" value="eString:EUR" />
+  <Parameter id="param_current_financial_year" value="eBoolean:true" />
+  <Parameter id="param_current_period" value="eInteger:6" />
+  <Parameter id="param_date_checked" value="eBoolean:false" />
+  <Parameter id="param_daterange" value="eString:false" />
+  <Parameter id="param_depth" value="eString:standard" />
+  <Parameter id="param_diff_period_i" value="eInteger:0" />
+  <Parameter id="param_end_date" value="eDateTime:&quot;2016-01-31T00:00:00&quot;" />
+  <Parameter id="param_end_period_i" value="eInteger:1" />
+  <Parameter id="param_ledger_number_i" value="eInteger:43" />
+  <Parameter id="param_paginate" value="eBoolean:false" />
+  <Parameter id="param_period" value="eBoolean:true" />
+  <Parameter id="param_period_breakdown" value="eBoolean:false" />
+  <Parameter id="param_period_checked" value="eBoolean:true" />
+  <Parameter id="param_quarter" value="eString:false" />
+  <Parameter id="param_quarter_checked" value="eBoolean:false" />
+  <Parameter id="param_real_year" value="eInteger:2016" />
+  <Parameter id="param_real_year_ending" value="eString:31-Dez-2016" />
+  <Parameter id="param_rgrAccounts" value="eString:AccountRange" />
+  <Parameter id="param_rgrCostCentres" value="eString:CostCentreRange" />
+  <Parameter id="param_sortby" value="eString:Account" />
+  <Parameter id="param_start_date" value="eDateTime:&quot;2016-01-01T00:00:00&quot;" />
+  <Parameter id="param_start_period_i" value="eInteger:1" />
+  <Parameter id="param_with_analysis_attributes" value="eBoolean:false" />
+  <Parameter id="param_year_i" value="eInteger:0" />
+  <Parameter id="xmlfiles" value="eString:Finance/accountdetail.xml,Finance/accountdetailcommon.xml,Finance/finance.xml,common.xml" />
+</Parameters>

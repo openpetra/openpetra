@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,22 +80,21 @@ namespace Tests.MFinance.Server.Reporting
         [Test]
         public void TestAccountDetail()
         {
-/*
- * Don't run this test - it's not valid in the FastReports world.
- *          // create a new ledger
- *          Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
- *
- *          string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.xml";
- *
- *          TParameterList SpecificParameters = new TParameterList();
- *          SpecificParameters.Add("param_start_period_i", 1);
- *          SpecificParameters.Add("param_end_period_i", 1);
- *          SpecificParameters.Add("param_start_date", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
- *          SpecificParameters.Add("param_end_date", new TVariant(new DateTime(DateTime.Today.Year, 1, 31)));
- *          TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
- *
- *          TReportTestingTools.TestResult(testFile, FLedgerNumber);
- */
+            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/AccountDetail.Test.xml";
+            int LedgerNumber = 43;
+            TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_start_period_i", 1);
+            SpecificParameters.Add("param_end_period_i", 1);
+
+            // make sure that the parameters are explicitly strings
+            SpecificParameters.Add("param_account_code_start", new TVariant("0100", true));
+            SpecificParameters.Add("param_account_code_end", new TVariant("0100", true));
+            SpecificParameters.Add("param_cost_centre_code_start", new TVariant("10100", true));
+            SpecificParameters.Add("param_cost_centre_code_end", new TVariant("10500", true));
+
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+
+            TReportTestingTools.TestResult(testFile, LedgerNumber);
         }
     }
 }
