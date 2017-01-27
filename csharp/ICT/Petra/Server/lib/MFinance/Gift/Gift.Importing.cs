@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, dougm, alanP
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -177,9 +177,6 @@ namespace Ict.Petra.Server.MFinance.Gift
                 0);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
-
-            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
-            AMessages = Messages;
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
             NeedRecipientLedgerNumber.DefaultView.Sort = "p_recipient_key_n";
@@ -907,9 +904,6 @@ namespace Ict.Petra.Server.MFinance.Gift
             ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
-            AMessages = Messages;
-
-            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
             AMessages = Messages;
 
             FMainDS = new GiftBatchTDS();
