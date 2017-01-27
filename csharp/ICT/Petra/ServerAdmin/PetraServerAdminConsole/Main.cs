@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -845,7 +845,27 @@ namespace PetraServerAdminConsole
                 THttpConnector.ServerAdminSecurityToken = NewSecurityToken();
                 THttpConnector.InitConnection(TAppSettingsManager.GetValue("OpenPetra.HTTPServer"));
                 TRemote = new TMServerAdminNamespace().WebConnectors;
-                TRemote.LoginServerAdmin();
+
+                try {
+                    TRemote.LoginServerAdmin();
+                }
+                catch (Exception)
+                {
+                    if (TAppSettingsManager.HasValue("Command") && (TAppSettingsManager.GetValue("Command") == "Stop"))
+                    {
+                        // don't exit with error code because the server is not running anyway
+                        if ((!SilentSysadm))
+                        {
+                            Console.WriteLine("The server is not running, so it cannot be stopped");
+                        }
+
+                        System.Environment.Exit(0);
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
 
                 if (TAppSettingsManager.HasValue("Command"))
                 {
