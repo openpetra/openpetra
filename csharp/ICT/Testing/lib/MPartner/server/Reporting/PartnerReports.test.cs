@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,7 +79,7 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerBySpecialTypes()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Test.xml";
 
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_address_date_valid_on", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
@@ -96,7 +96,7 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerByCity()
         {
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Test.xml";
 
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_today", new TVariant(DateTime.Today));

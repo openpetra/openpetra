@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="xmlfiles" value="eString:Partner\\\\partnerbyspecialtype.xml" />
+  <Parameter id="xmlfiles" value="eString:Partner/partnerbyspecialtype.xml" />
   <Parameter id="IsolationLevel" value="eString:serializable" />
   <Parameter id="currentReport" value="eString:Partner By Special Type" />
   <Parameter id="MaxDisplayColumns" value="eInteger:9" />

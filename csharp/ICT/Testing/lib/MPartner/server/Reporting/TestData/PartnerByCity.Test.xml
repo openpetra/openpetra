@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="xmlfiles" value="eString:Partner\\\\partnerbycity.xml" />
+  <Parameter id="xmlfiles" value="eString:Partner/partnerbycity.xml" />
   <Parameter id="IsolationLevel" value="eString:serializable" />
   <Parameter id="currentReport" value="eString:Partner by City" />
   <Parameter id="MaxDisplayColumns" value="eInteger:5" />

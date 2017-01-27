@@ -101,6 +101,12 @@ namespace Tests.MReporting.Tools
 
             TReportGeneratorUIConnector ReportGenerator = new TReportGeneratorUIConnector();
             TParameterList Parameters = new TParameterList();
+
+            if (AReportParameterXmlFile.IndexOf(".Test.xml") == -1)
+            {
+                throw new Exception("invalid report name, should end with .Test.xml");
+            }
+
             string resultFile = AReportParameterXmlFile.Replace(".Test.xml", ".Results.csv");
             string parameterFile = AReportParameterXmlFile.Replace(".Test.xml", ".Parameters.xml");
             Parameters.Load(AReportParameterXmlFile);
@@ -151,8 +157,11 @@ namespace Tests.MReporting.Tools
             ToReplace.Add("{ThisYear}", currentYear.ToString());
             ToReplace.Add("{PreviousYear}", (currentYear - 1).ToString());
 
-            TLedgerInfo ledger = new TLedgerInfo(ALedgerNumber);
-            ToReplace.Add("{CurrentPeriod}", ledger.CurrentPeriod.ToString());
+            if (ALedgerNumber != -1)
+            {
+                TLedgerInfo ledger = new TLedgerInfo(ALedgerNumber);
+                ToReplace.Add("{CurrentPeriod}", ledger.CurrentPeriod.ToString());
+            }
 
             Assert.True(TTextFile.SameContent(resultFile, resultExpectedFile, true, ToReplace, true),
                 "the file " + resultFile + " should have the same content as " + resultExpectedFile);
