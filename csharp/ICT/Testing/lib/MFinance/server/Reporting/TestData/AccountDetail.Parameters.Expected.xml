@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 <Parameters>
   <Parameter id="ColumnAlign" column="0" value="eString:left" />
   <Parameter id="ColumnAlign" column="1" value="eString:left" />
@@ -96,7 +96,7 @@
   <Parameter id="ControlSource" column="105" value="eString:&quot;Account: 0100 To 0100&quot;" />
   <Parameter id="ControlSource" column="106" value="eComposite::&quot;eString:Ledger |eInteger:43|eString:   Germany&quot;" />
   <Parameter id="ControlSource" column="107" value="eString:&quot;Currency: EUR Ordered by: Account&quot;" />
-  <Parameter id="ControlSource" column="108" value="eComposite::&quot;eString:Current Period is |eInteger:6&quot;" />
+  <Parameter id="ControlSource" column="108" value="eComposite::&quot;eString:Current Period is |eInteger:{CurrentPeriod}&quot;" />
   <Parameter id="ControlSource" column="112" value="eString:Details" />
   <Parameter id="currentReport" value="eString:Account Detail" />
   <Parameter id="FullLineAbove" level="2" subreport="0" value="eBoolean:true" />

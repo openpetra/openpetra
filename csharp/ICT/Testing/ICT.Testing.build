@@ -66,11 +66,16 @@
     
     <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
 
+    <!-- stop old server that might still be running from earlier (failed) builds -->
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}" failonerror="false"/>
+    <nant inheritall="false" target="startServerBackground" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
     <if test="${not file::exists(dir.root + '/demoWith1ledger.yml.gz')}">
         <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
     </if>
     <ExecDotNet program="${dir.bin}/PetraServerAdminConsole.exe"
         commandline="-C:${dir.root}/etc/ServerAdmin.config -Command:LoadYmlGz -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+    <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>
+
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
 
