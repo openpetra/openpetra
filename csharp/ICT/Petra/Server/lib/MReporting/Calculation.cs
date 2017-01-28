@@ -353,11 +353,9 @@ namespace Ict.Petra.Server.MReporting
         /// <summary>
         /// this function can be used in calculations and other places as well
         /// </summary>
-        public TVariant Calculate(List <TRptSwitch>rptGrpSwitch)
+        public TRptFormatQuery Calculate(List <TRptSwitch>rptGrpSwitch)
         {
-            TVariant ReturnValue;
-
-            ReturnValue = new TVariant();
+            TRptFormatQuery ReturnValue = new TRptFormatQuery();
 
             foreach (TRptSwitch rptSwitch in rptGrpSwitch)
             {
@@ -372,15 +370,15 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         /// <param name="rptSwitch"></param>
         /// <returns></returns>
-        public TVariant Calculate(TRptSwitch rptSwitch)
+        public TRptFormatQuery Calculate(TRptSwitch rptSwitch)
         {
-            TVariant ReturnValue;
+            TRptFormatQuery ReturnValue;
             TRptDataCalcField rptDataCalcField;
             TRptDataCalcValue rptDataCalcValue;
             TRptDataCalcSwitch rptDataCalcSwitch;
             TRptCase rptCase;
 
-            ReturnValue = new TVariant();
+            ReturnValue = new TRptFormatQuery(string.Empty, null, this.Parameters, this.column, this.Depth);
             rptCase = GetFittingCase(rptSwitch);
 
             if (rptCase == null)
@@ -740,7 +738,7 @@ namespace Ict.Petra.Server.MReporting
                     if (rptGrpValue != null)
                     {
                         rptDataCalcValue = new TRptDataCalcValue(this);
-                        value = rptDataCalcValue.Calculate(rptGrpValue);
+                        value = rptDataCalcValue.Calculate(rptGrpValue).ConvertToVariant();
                     }
                 }
 
@@ -779,12 +777,12 @@ namespace Ict.Petra.Server.MReporting
                     if (rptFieldDetail.rptGrpValue != null)
                     {
                         rptDataCalcValue = new TRptDataCalcValue(this);
-                        ReturnValue.Add(rptDataCalcValue.Calculate(rptFieldDetail.rptGrpValue));
+                        ReturnValue.Add(rptDataCalcValue.Calculate(rptFieldDetail.rptGrpValue).ConvertToVariant());
                     }
                     else
                     {
                         rptDataCalcSwitch = new TRptDataCalcSwitch(this);
-                        ReturnValue.Add(rptDataCalcSwitch.Calculate(rptFieldDetail.rptSwitch));
+                        ReturnValue.Add(rptDataCalcSwitch.Calculate(rptFieldDetail.rptSwitch).ConvertToVariant());
                     }
                 }
             }
@@ -866,23 +864,21 @@ namespace Ict.Petra.Server.MReporting
         /// <param name="rptGrpValue"></param>
         /// <param name="AWithSpaceBetweenValues"></param>
         /// <returns></returns>
-        public TVariant Calculate(List <TRptValue>rptGrpValue, Boolean AWithSpaceBetweenValues = false)
+        public TRptFormatQuery Calculate(List <TRptValue>rptGrpValue, Boolean AWithSpaceBetweenValues = false)
         {
-            TVariant ReturnValue;
+            TRptFormatQuery ReturnValue = new TRptFormatQuery(string.Empty, null, this.Parameters, this.column, this.Depth);
             String listValue;
             String listText;
             Boolean first;
             TRptDataCalcCalculation rptDataCalcCalculation;
 
-            ReturnValue = new TVariant();
-
             foreach (TRptValue rptValue in rptGrpValue)
             {
                 if (EvaluateCondition(rptValue.strCondition))
                 {
-                    if ((AWithSpaceBetweenValues == true) && (ReturnValue.TypeVariant != eVariantTypes.eEmpty))
+                    if ((AWithSpaceBetweenValues == true) && (ReturnValue.SQLStmt.Length > 0))
                     {
-                        ReturnValue.Add(new TVariant(' '));
+                        ReturnValue.Add(" ");
                     }
 
                     if (rptValue.strFunction == "csv")
@@ -896,12 +892,12 @@ namespace Ict.Petra.Server.MReporting
                         }
 
                         first = true;
-                        ReturnValue.Add(new TVariant(" ("));
+                        ReturnValue.Add(" (");
 
                         if (listValue.Length == 0)
                         {
                             // this would make the sql query invalid; so insert a false condition to at least make it run, and return no records
-                            ReturnValue.Add(new TVariant(" 1 = 0 "));
+                            ReturnValue.Add(" 1 = 0 ");
                         }
 
                         while (listValue.Length != 0)
@@ -915,7 +911,7 @@ namespace Ict.Petra.Server.MReporting
                             }
                             else
                             {
-                                ReturnValue.Add(new TVariant(" OR "));
+                                ReturnValue.Add(" OR ");
                             }
 
                             if (rptValue.strText.IndexOf(',') != -1)
@@ -931,7 +927,7 @@ namespace Ict.Petra.Server.MReporting
                                 bool ValueIsNumber = (rptValue.strFormat == "Number");
                                 bool ValueIsText = (rptValue.strFormat == "Text");
 
-                                ReturnValue.Add(new TVariant('('));
+                                ReturnValue.Add("(");
 
                                 while (listText.Length != 0)
                                 {
@@ -951,60 +947,33 @@ namespace Ict.Petra.Server.MReporting
                                         if (calculationText.Length > 0)
                                         {
                                             ValidateAgainstSQLInjection(calculationText);
-                                            ReturnValue.Add(new TVariant(" " + calculationText + " "));
+                                            ReturnValue.Add(" " + calculationText + " ");
                                         }
                                         else
                                         {
-                                            ReturnValue.Add(new TVariant(" AND "));
+                                            ReturnValue.Add(" AND ");
                                         }
                                     }
 
                                     //todo: allow integer as well; problem with motivation detail codes that are just numbers;
                                     //todo: specify type with text, variable names and type
                                     //if (new TVariant(value).TypeVariant == eVariantTypes.eString)
-                                    if (!ValueIsNumber || ValueIsText)
-                                    {
-                                        ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = '"));
-                                        ValidateAgainstSQLInjection(value);
-                                        ReturnValue.Add(new TVariant(value));
-                                        ReturnValue.Add(new TVariant("' "));
-                                    }
-                                    else
-                                    {
-                                        ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = "));
-                                        ValidateAgainstSQLInjection(value);
-                                        ReturnValue.Add(new TVariant(value));
-                                        ReturnValue.Add(new TVariant(' '));
-                                    }
+                                    ReturnValue.Add(StringHelper.GetNextCSV(ref listText).Trim() + " = {valueparameter} ");
+                                    ValidateAgainstSQLInjection(value.ToString());
+                                    ReturnValue.AddOdbcParameters("{", "valueparameter", "}", new TVariant(value));
                                 }
 
-                                ReturnValue.Add(new TVariant(')'));
+                                ReturnValue.Add(")");
                             }
                             else
                             {
-                                // if the format is defined in the xml file, it overwrites the value we get from (new TVariant(value).TypeVariant == eVariantTypes.xxx
-                                bool ValueIsNumber = (rptValue.strFormat == "Number");
-                                bool ValueIsText = (rptValue.strFormat == "Text");
-
-                                if ((ValueIsText || (new TVariant(value).TypeVariant == eVariantTypes.eString))
-                                    && !ValueIsNumber)
-                                {
-                                    ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = '"));
-                                    ValidateAgainstSQLInjection(value);
-                                    ReturnValue.Add(new TVariant(value));
-                                    ReturnValue.Add(new TVariant("' "));
-                                }
-                                else
-                                {
-                                    ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = "));
-                                    ValidateAgainstSQLInjection(value);
-                                    ReturnValue.Add(new TVariant(value));
-                                    ReturnValue.Add(new TVariant(' '));
-                                }
+                                ReturnValue.Add(' ' + rptValue.strText + " = {valueparameter} ");
+                                ValidateAgainstSQLInjection(value.ToString());
+                                ReturnValue.AddOdbcParameters("{", "valueparameter", "}", new TVariant(value));
                             }
                         }
 
-                        ReturnValue.Add(new TVariant(") "));
+                        ReturnValue.Add(") ");
                     }
                     else
                     {
@@ -1103,7 +1072,7 @@ namespace Ict.Petra.Server.MReporting
                     if (rptParameter.rptGrpValue != null)
                     {
                         TRptDataCalcValue rptDataCalcValue = new TRptDataCalcValue(this);
-                        value = rptDataCalcValue.Calculate(rptParameter.rptGrpValue);
+                        value = rptDataCalcValue.Calculate(rptParameter.rptGrpValue).ConvertToVariant();
                         Parameters.Add(name, value, -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                     }
                     else
@@ -1585,7 +1554,7 @@ namespace Ict.Petra.Server.MReporting
                             ReturnValue.Add(" ");
                         }
 
-                        ReturnValue.Add(rptDataCalcValue.Calculate(rptQuery.rptGrpValue, true).ToString());
+                        ReturnValue.Add(rptDataCalcValue.Calculate(rptQuery.rptGrpValue, true));
                     }
 
                     if (rptQuery.rptGrpParameter != null)
@@ -1603,7 +1572,7 @@ namespace Ict.Petra.Server.MReporting
                         }
 
                         rptDataCalcSwitch = new TRptDataCalcSwitch(this);
-                        ReturnValue.Add(rptDataCalcSwitch.Calculate(rptQuery.rptGrpSwitch).ToString());
+                        ReturnValue.Add(rptDataCalcSwitch.Calculate(rptQuery.rptGrpSwitch).ConvertToVariant());
                     }
                 }
             }

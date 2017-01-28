@@ -119,6 +119,37 @@ namespace Ict.Petra.Server.MReporting
             }
         }
 
+        /// <summary>
+        /// only a workaround for text on the report that is not used for sql queries
+        /// </summary>
+        /// <returns></returns>
+        public TVariant ConvertToVariant()
+        {
+            if (IsVariant)
+            {
+                return this.VariantValue;
+            }
+
+            if (this.FOdbcParameters.Count != 0 && this.FSQLStmt.StartsWith("SELECT "))
+            {
+                TLogging.Log("ConvertToString is only meant for text that is not an SQL query: " + this.FSQLStmt);
+                throw new Exception("expected a text string, not an SQL string");
+            }
+
+            string s = this.FSQLStmt;
+            int pos = -1;
+            int count = 0;
+
+            while((pos = s.IndexOf("PARAMETER?")) != -1)
+            {
+                throw new Exception("replaceing parameter?");
+                s = s.Substring(0, pos) + FOdbcParameters[count].Value.ToString() + s.Substring(pos + "PARAMETER?".Length);
+                count++;
+            }
+
+            return new TVariant(s);
+        }
+
         /// read the odbc parameters
         public List<OdbcParameter> OdbcParameters
         {
@@ -133,7 +164,31 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         public void Add(string sql)
         {
-            this.FSQLStmt += sql;
+            if (IsVariant)
+            {
+                this.FVariantValue.Add(new TVariant(sql, true));
+            }
+            else
+            {
+                this.FSQLStmt += sql;
+            }
+        }
+
+        /// <summary>
+        /// add more to the variant
+        /// </summary>
+        public void Add(TVariant v, string format = "")
+        {
+            if (FSQLStmt == string.Empty)
+            {
+                FSQLStmt = "TVariant";
+            }
+            else if (!IsVariant)
+            {
+                throw new Exception("there is already a string, we cannot add a TVariant value " + ".." + FSQLStmt +"...");
+            }
+
+            this.FVariantValue.Add(v, format);
         }
 
         /// <summary>
@@ -141,9 +196,31 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         public void Add(TRptFormatQuery AQueryToAdd)
         {
-            this.FSQLStmt += AQueryToAdd.SQLStmt;
+            if (AQueryToAdd.IsVariant)
+            {
+                if (this.IsVariant)
+                {
+                    this.Add(AQueryToAdd.VariantValue);
+                }
+                else
+                {
+                    this.Add(AQueryToAdd.VariantValue.ToString());
+                }
+            }
+            else
+            {
+                if (this.IsVariant)
+                {
+                    this.FSQLStmt = VariantValue.ToString();
+                }
 
-            this.parameters.Add(AQueryToAdd.parameters);
+                this.FSQLStmt += AQueryToAdd.SQLStmt;
+    
+                foreach (OdbcParameter p in AQueryToAdd.FOdbcParameters)
+                {
+                    this.FOdbcParameters.Add(p);
+                }
+            }
         }
 
         // do not print warning too many times for the same variable
@@ -158,6 +235,11 @@ namespace Ict.Petra.Server.MReporting
             String searchOpen,
             String searchClose)
         {
+            if (IsVariant)
+            {
+                this.FSQLStmt = this.VariantValue.ToString();
+            }
+
             int bracket = this.FSQLStmt.IndexOf(searchOpen);
 
             while (bracket != -1)
@@ -273,6 +355,11 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         public void AddOdbcParameters(string APrefix, string AName, string APostfix, TVariant AValue)
         {
+            if (IsVariant)
+            {
+                this.FSQLStmt = this.FVariantValue.ToString();
+            }
+
             int pos = 0;
             int parampos = 0;
             int parameterIndex = 0;

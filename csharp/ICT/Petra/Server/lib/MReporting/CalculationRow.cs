@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MReporting
                     ColumnFormat = GetParameters().Get("ColumnFormat", column, Depth).ToString();
                 }
 
-                value = rptDataCalcValue.Calculate(rptGrpValue);
+                value = rptDataCalcValue.Calculate(rptGrpValue).ConvertToVariant();
                 value.ApplyFormatString(ColumnFormat);
 
                 if (value.ToFormattedString().Length > 0)
@@ -331,7 +331,7 @@ namespace Ict.Petra.Server.MReporting
                     Parameters.Add("headerVISIBLE", new TVariant(true), -1, Depth);
                     column = ReportingConsts.HEADERCOLUMN + 1;
                     rptDataCalcValue = new TRptDataCalcValue(this);
-                    header[0] = rptDataCalcValue.Calculate(rptGrpValue);
+                    header[0] = rptDataCalcValue.Calculate(rptGrpValue).ConvertToVariant();
                 }
 
                 rptGrpValue = (List <TRptValue> )Parameters.GetGrpValue("ControlSource",
@@ -344,7 +344,7 @@ namespace Ict.Petra.Server.MReporting
                     Parameters.Add("headerVISIBLE", new TVariant(true), -1, Depth);
                     column = ReportingConsts.HEADERCOLUMN + 2;
                     rptDataCalcValue = new TRptDataCalcValue(this);
-                    header[1] = rptDataCalcValue.Calculate(rptGrpValue);
+                    header[1] = rptDataCalcValue.Calculate(rptGrpValue).ConvertToVariant();
                 }
 
                 for (counter = 0; counter <= 1; counter += 1)
@@ -355,7 +355,7 @@ namespace Ict.Petra.Server.MReporting
                     if (rptGrpValue != null)
                     {
                         rptDataCalcValue = new TRptDataCalcValue(this);
-                        precalculatedDescr[counter] = rptDataCalcValue.Calculate(rptGrpValue);
+                        precalculatedDescr[counter] = rptDataCalcValue.Calculate(rptGrpValue).ConvertToVariant();
                     }
                 }
 
