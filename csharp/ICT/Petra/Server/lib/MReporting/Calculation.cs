@@ -845,6 +845,22 @@ namespace Ict.Petra.Server.MReporting
         }
 
         /// <summary>
+        /// make sure there is no semicolon, no quote, no comment sign.
+        /// see also https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet#Defense_Option_4:_Escaping_All_User_Supplied_Input
+        /// throws an exception if suspicious characters are found
+        /// </summary>
+        /// <param name="s"></param>
+        private static void ValidateAgainstSQLInjection(string s)
+        {
+            if (s.IndexOfAny(new char[]{'\'', ';'}) != -1
+                || s.IndexOf("--") != -1
+                || s.IndexOf("/*") != -1)
+            {
+                throw new Exception("possible sql injection attack? " + s);
+            }
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="rptGrpValue"></param>
@@ -934,6 +950,7 @@ namespace Ict.Petra.Server.MReporting
                                     {
                                         if (calculationText.Length > 0)
                                         {
+                                            ValidateAgainstSQLInjection(calculationText);
                                             ReturnValue.Add(new TVariant(" " + calculationText + " "));
                                         }
                                         else
@@ -948,12 +965,14 @@ namespace Ict.Petra.Server.MReporting
                                     if (!ValueIsNumber || ValueIsText)
                                     {
                                         ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = '"));
+                                        ValidateAgainstSQLInjection(value);
                                         ReturnValue.Add(new TVariant(value));
                                         ReturnValue.Add(new TVariant("' "));
                                     }
                                     else
                                     {
                                         ReturnValue.Add(new TVariant(StringHelper.GetNextCSV(ref listText).Trim() + " = "));
+                                        ValidateAgainstSQLInjection(value);
                                         ReturnValue.Add(new TVariant(value));
                                         ReturnValue.Add(new TVariant(' '));
                                     }
@@ -971,12 +990,14 @@ namespace Ict.Petra.Server.MReporting
                                     && !ValueIsNumber)
                                 {
                                     ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = '"));
+                                    ValidateAgainstSQLInjection(value);
                                     ReturnValue.Add(new TVariant(value));
                                     ReturnValue.Add(new TVariant("' "));
                                 }
                                 else
                                 {
                                     ReturnValue.Add(new TVariant(' ' + rptValue.strText + " = "));
+                                    ValidateAgainstSQLInjection(value);
                                     ReturnValue.Add(new TVariant(value));
                                     ReturnValue.Add(new TVariant(' '));
                                 }
@@ -989,23 +1010,30 @@ namespace Ict.Petra.Server.MReporting
                     {
                         if (rptValue.strText.Length != 0)
                         {
+                            // this can be a full query: so no ValidateAgainstSQLInjection(rptValue.strText);
                             ReturnValue.Add(new TVariant(rptValue.strText), rptValue.strFormat);
                         }
 
                         if (rptValue.strVariable.Length != 0)
                         {
-                            ReturnValue.Add(Parameters.Get(rptValue.strVariable, column, Depth), rptValue.strFormat);
+                            TVariant pvalue = Parameters.Get(rptValue.strVariable, column, Depth);
+                            ValidateAgainstSQLInjection(pvalue.ToString());
+                            ReturnValue.Add(pvalue, rptValue.strFormat);
                         }
 
                         if (rptValue.strCalculation.Length != 0)
                         {
                             rptDataCalcCalculation = new TRptDataCalcCalculation(this);
-                            ReturnValue.Add(rptDataCalcCalculation.EvaluateHelperCalculation(rptValue.strCalculation), rptValue.strFormat);
+                            TVariant cvalue = rptDataCalcCalculation.EvaluateHelperCalculation(rptValue.strCalculation);
+                            ValidateAgainstSQLInjection(cvalue.ToString());
+                            ReturnValue.Add(cvalue, rptValue.strFormat);
                         }
 
                         if (rptValue.strFunction.Length != 0)
                         {
-                            ReturnValue.Add(EvaluateFunctionString(rptValue.strFunction), rptValue.strFormat);
+                            TVariant fvalue = EvaluateFunctionString(rptValue.strFunction);
+                            ValidateAgainstSQLInjection(fvalue.ToString());
+                            ReturnValue.Add(fvalue, rptValue.strFormat);
                         }
                     }
                 }
