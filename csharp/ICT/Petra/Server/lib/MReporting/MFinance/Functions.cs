@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1145,42 +1145,35 @@ namespace Ict.Petra.Server.MReporting.MFinance
             parameters.Add("param_parentaccountcode", pv_account_code_c);
             TRptCalculation rptCalculation = situation.GetReportStore().GetCalculation(situation.GetCurrentReport(), "Select AllAccountDescendants");
             TRptDataCalcCalculation rptDataCalcCalculation = new TRptDataCalcCalculation(situation);
-            TVariant calculationResult = rptDataCalcCalculation.EvaluateCalculationAll(rptCalculation,
+            TRptFormatQuery mRptCalcResult = rptDataCalcCalculation.EvaluateCalculationAll(rptCalculation,
                 null,
                 rptCalculation.rptGrpTemplate,
-                rptCalculation.rptGrpQuery).VariantValue;
+                rptCalculation.rptGrpQuery);
 
-            if (calculationResult.IsZeroOrNull())
+            // this is an sql statement and not a function result
+            DataTable tab = AccountDescendantsCache.GetDataTable(
+                mRptCalcResult.SQLStmt, mRptCalcResult.OdbcParameters.ToArray(), situation.GetDatabaseConnection());
+
+            foreach (DataRow row in tab.Rows)
             {
-                return ReturnValue;
-            }
-
-            if ((calculationResult.ToString().ToUpper().IndexOf("SELECT") >= 0) && (calculationResult.ToString().ToUpper().IndexOf("SELECT") <= 3))
-            {
-                // this is an sql statement and not a function result
-                DataTable tab = AccountDescendantsCache.GetDataTable(calculationResult.ToString(), situation.GetDatabaseConnection());
-
-                foreach (DataRow row in tab.Rows)
+                if (!Convert.ToBoolean(row["a_posting_status_l"]))
                 {
-                    if (!Convert.ToBoolean(row["a_posting_status_l"]))
-                    {
-                        ReturnValue =
-                            StringHelper.ConcatCSV(ReturnValue,
-                                GetAllAccountDescendants(pv_ledger_number_i, Convert.ToString(row["line_a_account_code_c"]), pv_account_hierarchy_c));
-                    }
-                    else
-                    {
-                        ReturnValue =
-                            StringHelper.AddCSV(ReturnValue,
-                                Convert.ToString(row["line_a_account_code_c"]));
-                        ReturnValue =
-                            StringHelper.AddCSV(ReturnValue,
-                                Convert.ToString(row["line_a_account_alias_c"]));
-                        ReturnValue =
-                            StringHelper.AddCSV(ReturnValue,
-                                Convert.ToString(row["account_code_short_desc"]));
-                        ReturnValue = StringHelper.AddCSV(ReturnValue, Convert.ToString(row["debit_credit_indicator"]));
-                    }
+                    ReturnValue =
+                        StringHelper.ConcatCSV(ReturnValue,
+                            GetAllAccountDescendants(pv_ledger_number_i, Convert.ToString(row["line_a_account_code_c"]), pv_account_hierarchy_c));
+                }
+                else
+                {
+                    ReturnValue =
+                        StringHelper.AddCSV(ReturnValue,
+                            Convert.ToString(row["line_a_account_code_c"]));
+                    ReturnValue =
+                        StringHelper.AddCSV(ReturnValue,
+                            Convert.ToString(row["line_a_account_alias_c"]));
+                    ReturnValue =
+                        StringHelper.AddCSV(ReturnValue,
+                            Convert.ToString(row["account_code_short_desc"]));
+                    ReturnValue = StringHelper.AddCSV(ReturnValue, Convert.ToString(row["debit_credit_indicator"]));
                 }
             }
 

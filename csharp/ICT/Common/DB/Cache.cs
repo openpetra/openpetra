@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -26,7 +26,6 @@ using System.Collections;
 using System.Data.Odbc;
 using System.Data;
 
-
 using Ict.Common;
 using Ict.Common.DB;
 
@@ -46,6 +45,7 @@ namespace Ict.Common.DB.DBCaching
     {
         private ArrayList storedDataSet;
         private ArrayList storedSQLQuery;
+        private ArrayList storedParameters;
 
         /// <summary>
         /// Provides a simple method for caching datasets for queries that are
@@ -56,6 +56,7 @@ namespace Ict.Common.DB.DBCaching
         {
             storedDataSet = new ArrayList();
             storedSQLQuery = new ArrayList();
+            storedParameters = new ArrayList();
         }
 
         /// <summary>
@@ -65,6 +66,7 @@ namespace Ict.Common.DB.DBCaching
         /// as a DataSet from the cache.
         /// </summary>
         /// <param name="sql"></param>
+        /// <param name="AParameters">odbc parameters</param>
         /// <param name="ATable">can already have some prepared columns; optional parameter, can be null
         /// </param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
@@ -72,7 +74,7 @@ namespace Ict.Common.DB.DBCaching
         /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
         /// Argument!</param>
         /// <returns>void</returns>
-        public DataSet GetDataSet(String sql, DataTable ATable, TDataBase ADataBase = null)
+        public DataSet GetDataSet(String sql, OdbcParameter[] AParameters, DataTable ATable, TDataBase ADataBase = null)
         {
             TDataBase DBAccessObj = DBAccess.GetDBAccessObj(ADataBase);
             TDBTransaction ReadTransaction;
@@ -85,9 +87,46 @@ namespace Ict.Common.DB.DBCaching
             {
                 if (sqlstr == sql)
                 {
-                    // create a clone of the result, so that the returned datasets
-                    // can be treated separately
-                    return ((DataSet)storedDataSet[counter]).Copy();
+                    bool SameParameters = false;
+
+                    if (AParameters == null && storedParameters[counter] == null)
+                    {
+                        SameParameters = true;
+                    }
+                    else if (AParameters == null || storedParameters[counter] == null)
+                    {
+                        SameParameters = false;
+                    }
+                    else if (AParameters.Length != ((OdbcParameter[])storedParameters[counter]).Length)
+                    {
+                        SameParameters = false;
+                    }
+                    else
+                    {
+                        int countParam = 0;
+
+                        SameParameters = true;
+
+                        foreach (OdbcParameter p in AParameters)
+                        {
+                            if (p.OdbcType != ((OdbcParameter[])storedParameters[counter])[countParam].OdbcType)
+                            {
+                                SameParameters = false;
+                            }
+                            else
+                            {
+                                SameParameters = (p.Value.ToString() == ((OdbcParameter[])storedParameters[counter])[countParam].ToString());
+                            }
+                            countParam ++;
+                        }
+                    }
+
+                    if (SameParameters)
+                    {
+                        // create a clone of the result, so that the returned datasets
+                        // can be treated separately
+                        return ((DataSet)storedDataSet[counter]).Copy();
+                    }
                 }
 
                 counter++;
@@ -101,14 +140,14 @@ namespace Ict.Common.DB.DBCaching
 
                 if (ATable == null)
                 {
-                    newDataSet = DBAccessObj.Select(sql, "Cache", ReadTransaction);
+                    newDataSet = DBAccessObj.Select(sql, "Cache", ReadTransaction, AParameters);
                 }
                 else
                 {
                     newDataSet = new DataSet();
                     newDataSet.Tables.Add(ATable);
                     ATable.TableName = "Cache";
-                    DBAccessObj.Select(newDataSet, sql, "Cache", ReadTransaction);
+                    DBAccessObj.Select(newDataSet, sql, "Cache", ReadTransaction, AParameters);
                 }
             }
             finally
@@ -120,6 +159,7 @@ namespace Ict.Common.DB.DBCaching
             }
             storedDataSet.Add(newDataSet);
             storedSQLQuery.Add(sql);
+            storedParameters.Add(AParameters);
 
             // return a copy, so that changes to the dataset don't affect the stored copy.
             return newDataSet.Copy();
@@ -132,14 +172,15 @@ namespace Ict.Common.DB.DBCaching
         /// as a DataSet from the cache.
         /// </summary>
         /// <param name="sql"></param>
+        /// <param name="AParameters">odbc parameters</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
         /// gets passed then the Method executes DB commands with the 'globally available'
         /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
         /// Argument!</param>
         /// <returns></returns>
-        public DataSet GetDataSet(String sql, TDataBase ADataBase = null)
+        public DataSet GetDataSet(String sql, OdbcParameter[] AParameters, TDataBase ADataBase = null)
         {
-            return GetDataSet(sql, null, ADataBase);
+            return GetDataSet(sql, AParameters, null, ADataBase);
         }
 
         /// <summary>
@@ -149,6 +190,7 @@ namespace Ict.Common.DB.DBCaching
         /// as a DataTable from the cache.
         /// </summary>
         /// <param name="sql"></param>
+        /// <param name="AParameters">odbc parameters</param>
         /// <param name="ATable">can already have some prepared columns; optional parameter, can be nil
         /// </param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
@@ -156,9 +198,9 @@ namespace Ict.Common.DB.DBCaching
         /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
         /// Argument!</param>
         /// <returns>void</returns>
-        public DataTable GetDataTable(string sql, DataTable ATable, TDataBase ADataBase = null)
+        public DataTable GetDataTable(string sql, OdbcParameter[] AParameters, DataTable ATable, TDataBase ADataBase = null)
         {
-            return GetDataSet(sql, ATable, ADataBase).Tables["Cache"];
+            return GetDataSet(sql, AParameters, ATable, ADataBase).Tables["Cache"];
         }
 
         /// <summary>
@@ -168,14 +210,23 @@ namespace Ict.Common.DB.DBCaching
         /// as a DataTable from the cache.
         /// </summary>
         /// <param name="sql"></param>
+        /// <param name="AParameters">odbc parameters</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
         /// gets passed then the Method executes DB commands with the 'globally available'
         /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
         /// Argument!</param>
         /// <returns></returns>
-        public DataTable GetDataTable(String sql, TDataBase ADataBase = null)
+        public DataTable GetDataTable(String sql, OdbcParameter[] AParameters = null, TDataBase ADataBase = null)
         {
-            return GetDataTable(sql, null, ADataBase);
+            return GetDataTable(sql, AParameters, null, ADataBase);
+        }
+
+        /// <summary>
+        /// overloaded method
+        /// </summary>
+        public DataTable GetDataTable(String sql, TDataBase ADataBase)
+        {
+            return GetDataTable(sql, null, null, ADataBase);
         }
 
         /// <summary>
@@ -187,15 +238,16 @@ namespace Ict.Common.DB.DBCaching
         /// of the first column of the first table in the dataset.
         /// </summary>
         /// <param name="sql"></param>
+        /// <param name="AParameters">odbc parameters</param>
         /// <param name="ADataBase">An instantiated <see cref="TDataBase" /> object, or null (default = null). If null
         /// gets passed then the Method executes DB commands with the 'globally available'
         /// <see cref="DBAccess.GDBAccessObj" /> instance, otherwise with the instance that gets passed in with this
         /// Argument!</param>
         /// <returns>void</returns>
-        public ArrayList GetStringList(String sql, TDataBase ADataBase = null)
+        public ArrayList GetStringList(String sql, OdbcParameter[] AParameters = null, TDataBase ADataBase = null)
         {
             ArrayList ReturnValue = new ArrayList();
-            DataSet ds = GetDataSet(sql, ADataBase);
+            DataSet ds = GetDataSet(sql, AParameters, ADataBase);
 
             foreach (DataRow row in ds.Tables[0].Rows)
             {
@@ -203,6 +255,14 @@ namespace Ict.Common.DB.DBCaching
             }
 
             return ReturnValue;
+        }
+
+        /// <summary>
+        /// overloaded method
+        /// </summary>
+        public ArrayList GetStringList(String sql, TDataBase ADataBase)
+        {
+            return GetStringList(sql, null, ADataBase);
         }
 
         /// <summary>
