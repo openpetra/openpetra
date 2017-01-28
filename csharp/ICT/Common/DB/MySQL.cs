@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -206,15 +206,10 @@ namespace Ict.Common.DB
 
                     if (ParamName == "")
                     {
-                        ParamName = "param" + Counter.ToString();
-#if DEBUGMODE_TODO
-                        if (FDebugLevel >= DBAccess.DB_DEBUGLEVEL_TRACE)
-                        {
-                            TLogging.Log("Assigned Parameter Name '" + ParamName + "' for Parameter with Value '" +
-                                AParameterArrayOdbc[Counter].Value.ToString() + "'.");
-                        }
-#endif
+                        ParamName = "param";
                     }
+
+                    ParamName += Counter.ToString();
 
                     switch (AParameterArrayOdbc[Counter].OdbcType)
                     {
