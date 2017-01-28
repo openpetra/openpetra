@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -78,25 +78,20 @@ namespace Tests.MFinance.Server.Reporting
         /// Test the standard Income and Expenses report
         /// </summary>
         [Test]
+        [Ignore("IncExc statement needs fixing to calculate the summaries in glm")]
         public void TestIncExpStatement()
         {
-/*
- * Don't run this test - it's not valid in the FastReports world.
- *          // create a new ledger
- *          Int32 FLedgerNumber = TReportTestingTools.SetupTestLedgerWithPostedBatches();
- *
- *          string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.xml";
- *
- *          TParameterList SpecificParameters = new TParameterList();
- *          SpecificParameters.Add("param_start_period_i", 1);
- *          SpecificParameters.Add("param_end_period_i", 1);
- *          SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
- *          string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(FLedgerNumber);
- *          SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
- *          TReportTestingTools.CalculateReport(testFile, SpecificParameters, FLedgerNumber);
- *
- *          TReportTestingTools.TestResult(testFile, FLedgerNumber);
- */
+            string testFile = "../../csharp/ICT/Testing/lib/MFinance/server/Reporting/TestData/IncExpStmt.Test.xml";
+            int LedgerNumber = 43;
+            TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_start_period_i", 1);
+            SpecificParameters.Add("param_end_period_i", 1);
+            SpecificParameters.Add("param_costcentreoptions", "SelectedCostCentres");
+            string StandardCostCentre = TGLTransactionWebConnector.GetStandardCostCentre(LedgerNumber);
+            SpecificParameters.Add("param_cost_centre_codes", StandardCostCentre);
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters, LedgerNumber);
+
+            TReportTestingTools.TestResult(testFile, LedgerNumber);
         }
     }
 }
