@@ -125,6 +125,8 @@ namespace Ict.Petra.Server.MReporting
         /// <returns></returns>
         public TVariant ConvertToVariant()
         {
+            return this.VariantValue;
+#if notneeded
             if (IsVariant)
             {
                 return this.VariantValue;
@@ -142,12 +144,12 @@ namespace Ict.Petra.Server.MReporting
 
             while((pos = s.IndexOf("PARAMETER?")) != -1)
             {
-                throw new Exception("replaceing parameter?");
                 s = s.Substring(0, pos) + FOdbcParameters[count].Value.ToString() + s.Substring(pos + "PARAMETER?".Length);
                 count++;
             }
 
             return new TVariant(s);
+#endif
         }
 
         /// read the odbc parameters
