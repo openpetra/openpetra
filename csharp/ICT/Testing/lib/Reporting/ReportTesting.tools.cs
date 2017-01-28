@@ -153,6 +153,8 @@ namespace Tests.MReporting.Tools
 
             SortedList <string, string>ToReplace = new SortedList <string, string>();
             ToReplace.Add("{ledgernumber}", ALedgerNumber.ToString());
+            ToReplace.Add("{Today}", DateTime.Today.ToString("yyyy-MM-dd"));
+
             int currentYear = DateTime.Today.Year;
             ToReplace.Add("{ThisYear}", currentYear.ToString());
             ToReplace.Add("{PreviousYear}", (currentYear - 1).ToString());

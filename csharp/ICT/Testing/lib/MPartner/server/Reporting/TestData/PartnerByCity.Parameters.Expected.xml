@@ -30,7 +30,7 @@
   <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
   <Parameter id="ControlSource" column="100" value="eString:Partner by City" />
   <Parameter id="ControlSource" column="101" value="eString:&quot;city: Westhausen&quot;" />
-  <Parameter id="ControlSource" column="103" value="eComposite::&quot;eString:as at |&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;2017-01-27T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;&quot;" />
+  <Parameter id="ControlSource" column="103" value="eComposite::&quot;eString:as at |&quot;&quot;eDateTime:&quot;&quot;&quot;&quot;{Today}T00:00:00&quot;&quot;&quot;&quot;&quot;&quot;&quot;" />
   <Parameter id="currentReport" value="eString:Partner by City" />
   <Parameter id="IsolationLevel" value="eString:serializable" />
   <Parameter id="lowestLevel" level="-2" value="eInteger:1" />
@@ -50,7 +50,7 @@
   <Parameter id="param_detail_report_0" value="eString:&quot;&quot;&quot;Open &quot;&quot;&quot;&quot;Partner Key&quot;&quot;&quot;&quot; in Partner Edit Screen&quot;&quot;,PartnerEditScreen,1&quot;" />
   <Parameter id="param_sortby_columns" value="eString:5,6,7" />
   <Parameter id="param_sortby_readable" value="eString:City, Partner Name, Partner Key" />
-  <Parameter id="param_today" value="eDateTime:&quot;2017-01-27T00:00:00&quot;" />
+  <Parameter id="param_today" value="eDateTime:&quot;{Today}T00:00:00&quot;" />
   <Parameter id="param_ytd" column="0" value="eBoolean:false" />
   <Parameter id="param_ytd" column="1" value="eBoolean:false" />
   <Parameter id="param_ytd" column="2" value="eBoolean:false" />
