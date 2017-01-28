@@ -172,6 +172,11 @@ namespace GenerateSQL
             Tables = TTableSort.TopologicalSort(AStore, Tables);
             Tables.Reverse();
 
+            if (ATargetDatabase == eDatabaseType.MySQL)
+            {
+                sw.WriteLine("SET foreign_key_checks = 0;");
+            }
+
             foreach (TTable Table in Tables)
             {
                 sw.WriteLine("DROP TABLE IF EXISTS " + Table.strName + " CASCADE;");
@@ -188,6 +193,12 @@ namespace GenerateSQL
                 // also no sequences in Mysql
                 // see http://dev.mysql.com/doc/refman/5.0/en/information-functions.html for a workaround
                 // look for CREATE TABLE sequence and LAST_INSERT_ID
+                List <TSequence>Sequences = AStore.GetSequences();
+
+                foreach (TSequence Sequence in Sequences)
+                {
+                    sw.WriteLine("DROP TABLE IF EXISTS " + Sequence.strName + ";");
+                }
             }
             else
             {

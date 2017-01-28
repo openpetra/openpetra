@@ -185,10 +185,16 @@
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <echo message="this will now take a while..."/>
-             <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists ${DBMS.DBName};" user="root" password="${DBMS.RootPassword}"/>
-             <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists ${DBMS.DBName};" user="root" password="${DBMS.RootPassword}"/>
-             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
-             <mysql exe="${MySQL.exe}" sqlcommand="GRANT ALL ON ${DBMS.DBName}.* TO ${DBMS.UserName}@localhost IDENTIFIED BY '${DBMS.Password}';" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
+             <if test="${property::exists('DBMS.RootPassword')}">
+               <mysql exe="${MySQL.exe}" sqlcommand="drop database if exists ${DBMS.DBName};" user="root" password="${DBMS.RootPassword}"/>
+               <mysql exe="${MySQL.exe}" sqlcommand="create database if not exists ${DBMS.DBName};" user="root" password="${DBMS.RootPassword}"/>
+               <mysql exe="${MySQL.exe}" sqlcommand="GRANT ALL ON ${DBMS.DBName}.* TO ${DBMS.UserName}@localhost IDENTIFIED BY '${DBMS.Password}';" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
+             </if>
+             <if test="${not property::exists('DBMS.RootPassword')}">
+               <mysql exe="${MySQL.exe}"  sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra_remove.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
+             </if>
+
+             <mysql exe="${MySQL.exe}" sqlfile="${OpenPetraRoot.dir}/setup/petra${PetraRelease}/petra.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
     </target>
 
@@ -292,9 +298,9 @@
              <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
         </if>
         <if test="${DBMS.Type=='mysql'}">
-             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" database="${DBMS.DBName}" user="root" password="${DBMS.RootPassword}"/>
-             <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -database:${DBMS.DBName} -username:root -password:${DBMS.RootPassword}" failonerror="true"/>
-             <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -database:${DBMS.DBName} -username:root -password:${DBMS.RootPassword}" failonerror="true"/>
+             <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
+             <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
         </if>
     </target>
 
