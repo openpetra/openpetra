@@ -32,7 +32,7 @@
         <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
     </if>
     <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
-        commandline="-Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config)} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
 
 <!-- TODO
@@ -70,7 +70,7 @@
         <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
     </if>
     <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
-        commandline="-Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config)} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />

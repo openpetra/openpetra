@@ -44,14 +44,14 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
         /// main method
         public static void Main(string[] args)
         {
-            TPetraServerConnector.Connect("../../etc/TestServer.config");
+            TPetraServerConnector.Connect();
 
             try
             {
-                if (!TAppSettingsManager.HasValue("YmlFile") || !TAppSettingsManager.HasValue("Action"))
+                if (!TAppSettingsManager.HasValue("YmlGzFile") || !TAppSettingsManager.HasValue("Action"))
                 {
-                    TLogging.Log("sample call: -Action:dump -YmlGzFile:test.yml.gz");
-                    TLogging.Log("sample call: -Action:load -YmlGzFile:test.yml.gz");
+                    TLogging.Log("sample call: -C:../../etc/TestServer.config -Action:dump -YmlGzFile:test.yml.gz");
+                    TLogging.Log("sample call: -C:../../etc/TestServer.config -Action:load -YmlGzFile:test.yml.gz");
                     Environment.Exit(-1);
                 }
 

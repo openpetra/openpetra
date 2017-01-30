@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,6 +80,11 @@ namespace Ict.Testing.NUnitPetraServer
             if (File.Exists(AConfigName))
             {
                 new TAppSettingsManager(AConfigName);
+            }
+            else if (AConfigName.Length > 0)
+            {
+                TLogging.Log("cannot find config file " + Path.GetFullPath(AConfigName));
+                Environment.Exit(-1);
             }
             else
             {
