@@ -46,6 +46,9 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
         {
             TPetraServerConnector.Connect();
 
+            // we need to see progress during the load, otherwise the build server thinks the job is hanging
+            TLogging.DebugLevel = 1;
+
             try
             {
                 if (!TAppSettingsManager.HasValue("YmlGzFile") || !TAppSettingsManager.HasValue("Action"))
