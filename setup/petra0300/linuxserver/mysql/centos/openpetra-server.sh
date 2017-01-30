@@ -7,7 +7,6 @@ export OpenPetraPath=/usr/local/openpetra
 export documentroot=/var/www/openpetra
 export OPENPETRA_DBPORT=5432
 export OPENPETRA_RDBMSType=mysql
-export OPENPETRA_DBHOST=localhost
 
 if [ -z "$NAME" ]
 then
@@ -17,6 +16,7 @@ then
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
   export OPENPETRA_PORT=@HostedPort@
+  export OPENPETRA_DBHOST=localhost
 fi
 
 if [ -z "$backupfile" ]
@@ -88,33 +88,37 @@ restore() {
     echo `date` "Start restoring from " $backupfile
     echo "creating database..."
 
-    echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    echo "use $OPENPETRA_DBNAME;" >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    cat $OpenPetraOrgPath/db30/createtables-MySQL.sql >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    echo "GRANT SELECT,UPDATE,DELETE,INSERT ON * TO $OPENPETRA_DBUSER IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    rm $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
+    echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "use $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    cat $OpenPetraPath/db30/createtables-MySQL.sql >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "GRANT SELECT,UPDATE,DELETE,INSERT ON * TO $OPENPETRA_DBUSER IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createtables-MySQL.sql
+    rm $OpenPetraPath/tmp30/createtables-MySQL.sql
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $OpenPetraOrgPath/log30/mysqlload.log
+        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $OpenPetraPath/log30/mysqlload.log
     else
-        mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $OpenPetraOrgPath/log30/mysqlload.log
+        mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $OpenPetraPath/log30/mysqlload.log
     fi
 
     echo "enabling indexes and constraints..."
-    mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraOrgPath/db30/createconstraints-MySQL.sql
+    mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createconstraints-MySQL.sql
 
     echo `date` "Finished!"
 }
 
 init() {
     echo "creating database..."
-    systemctl start mariadb
-    systemctl enable mariadb
+
+    if [ "$OPENPETRA_DBHOST" == "localhost" ]
+    then
+      systemctl start mariadb
+      systemctl enable mariadb
+    fi
 
     useradd --home /home/$userName $userName
     mkdir -p /home/$userName/log
@@ -139,25 +143,25 @@ init() {
     chown -R $userName:$userName /home/$userName
 
     echo "creating tables..."
-    echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    echo "use $OPENPETRA_DBNAME;" >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    cat $OpenPetraOrgPath/db30/createtables-MySQL.sql >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    echo "GRANT ALL ON $OPENPETRA_DBNAME TO $OPENPETRA_DBUSER IDENTIFIED BY 'OPENPETRA_DBPWD'" >> $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
-    rm $OpenPetraOrgPath/tmp30/createtables-MySQL.sql
+    echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "use $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    cat $OpenPetraPath/db30/createtables-MySQL.sql >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "GRANT ALL ON $OPENPETRA_DBNAME TO $OPENPETRA_DBUSER IDENTIFIED BY 'OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createtables-MySQL.sql
+    rm $OpenPetraPath/tmp30/createtables-MySQL.sql
 
     echo "loading data..."
     echo $backupfile|grep -qE '\.gz$'
     if [ $? -eq 0 ]
     then
-        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $OpenPetraOrgPath/log30/mysqlload.log
+        cat $backupfile | gunzip | mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME > $OpenPetraPath/log30/mysqlload.log
     else
-        mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $OpenPetraOrgPath/log30/mysqlload.log
+        mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $backupfile > $OpenPetraPath/log30/mysqlload.log
     fi
 
     echo "enabling indexes and constraints..."
-    mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraOrgPath/db30/createconstraints-MySQL.sql
+    mysql -u $OPENPETRA_DBUSER --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createconstraints-MySQL.sql
 
     # configure lighttpd
     cat > /etc/lighttpd/vhosts.d/openpetra$OPENPETRA_PORT.conf <<FINISH
