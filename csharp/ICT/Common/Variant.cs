@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -362,7 +362,7 @@ namespace Ict.Common
                     TypeVariant = eVariantTypes.eInteger;
                 }
             }
-            else if (this.ToDecimal().ToString() == StripDecimalAndZeros(StringValue))
+            else if (StripDecimalAndZeros(this.ToDecimal().ToString()) == StripDecimalAndZeros(StringValue))
             {
                 // has to work for 0.0 as well!
                 DecimalValue = this.ToDecimal();
@@ -1374,7 +1374,7 @@ namespace Ict.Common
             String columnformat;
             int Counter;
 
-            columnformat = AFormatString.ToLower();;
+            columnformat = AFormatString.ToLower();
 
             if (columnformat.IndexOf("csvlistslash") == 0)
             {

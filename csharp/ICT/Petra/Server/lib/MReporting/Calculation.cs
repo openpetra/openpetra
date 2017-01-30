@@ -355,7 +355,7 @@ namespace Ict.Petra.Server.MReporting
         /// </summary>
         public TRptFormatQuery Calculate(List <TRptSwitch>rptGrpSwitch)
         {
-            TRptFormatQuery ReturnValue = new TRptFormatQuery();
+            TRptFormatQuery ReturnValue = new TRptFormatQuery(string.Empty, null, this.Parameters, this.column, this.Depth);
 
             foreach (TRptSwitch rptSwitch in rptGrpSwitch)
             {
@@ -468,7 +468,7 @@ namespace Ict.Petra.Server.MReporting
             if (rptLowerLevel.rptGrpParameter != null)
             {
                 rptDataCalcParameter = new TRptDataCalcParameter(this);
-                rptDataCalcParameter.Calculate(new TRptFormatQuery(string.Empty), rptLowerLevel.rptGrpParameter);
+                rptDataCalcParameter.Calculate(new TRptFormatQuery(string.Empty, null, this.Parameters, this.column, this.Depth), rptLowerLevel.rptGrpParameter);
             }
 
             if (rptLowerLevel.strCalculation.Length == 0)
@@ -1541,7 +1541,7 @@ namespace Ict.Petra.Server.MReporting
             TRptDataCalcValue rptDataCalcValue;
             TRptDataCalcSwitch rptDataCalcSwitch;
 
-            ReturnValue = new TRptFormatQuery(String.Empty, null, this.Parameters);
+            ReturnValue = new TRptFormatQuery(string.Empty, null, this.Parameters, this.column, this.Depth);
 
             if (rptGrpQuery == null)
             {
