@@ -4,7 +4,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -257,54 +257,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             }
 
             return ResultSet;
-        }
-
-        /// <summary>
-        /// Returns a DataSet to the client for use in client-side reporting
-        /// The CSV can get several tables and add them to the Dataset.
-        /// Each CSV entry is divided using a slash / like this:
-        /// TableName/Query.
-        /// </summary>
-        [RequireModulePermission("none")]
-        public static GLReportingTDS GetReportingDataSet(String ADataSetFilterCsv)
-        {
-            TDBTransaction Transaction = null;
-            GLReportingTDS MainDs = new GLReportingTDS();
-
-            try
-            {
-                FDbAdapter = new TReportingDbAdapter(true);
-                Transaction = FDbAdapter.FPrivateDatabaseObj.BeginTransaction(
-ATransactionName: "FastReports Report GetReportingDataSet DB Transaction");
-
-                while (!FDbAdapter.IsCancelled && ADataSetFilterCsv != "")
-                {
-                    String Tbl = StringHelper.GetNextCSV(ref ADataSetFilterCsv, ",", "");
-                    String[] part = Tbl.Split('/');
-                    DataTable NewTbl = FDbAdapter.RunQuery(part[1], part[0], Transaction);
-                    MainDs.Merge(NewTbl);
-                }
-
-                if (FDbAdapter.IsCancelled)
-                {
-                    return null;
-                }
-            }
-            catch (Exception Exc)
-            {
-                MainDs = null;
-
-                TLogging.Log("TReportingWebConnector.GetReportingDataSet encountered an Exception: " + Exc.ToString());
-
-                throw;
-            }
-            finally
-            {
-                FDbAdapter.FPrivateDatabaseObj.RollbackTransaction();
-                FDbAdapter.CloseConnection();
-            }
-
-            return MainDs;
         }
 
         private static void GetDonorHistoricTotals(Dictionary <String, TVariant>AParameters,

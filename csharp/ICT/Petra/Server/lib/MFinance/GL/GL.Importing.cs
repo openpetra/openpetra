@@ -4,7 +4,7 @@
 // @Authors:
 //       matthiash, timop, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -131,9 +131,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
-
-            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
-            AMessages = Messages;
 
             GLBatchTDS MainDS = new GLBatchTDS();
             GLSetupTDS SetupDS = new GLSetupTDS();
@@ -832,9 +829,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 5);
 
             TVerificationResultCollection Messages = new TVerificationResultCollection();
-
-            // fix for Mono issue with out parameter: https://bugzilla.xamarin.com/show_bug.cgi?id=28196
-            AMessages = Messages;
 
             GLSetupTDS SetupDS = new GLSetupTDS();
             SetupDS.CaseSensitive = true;

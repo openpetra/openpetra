@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -129,6 +129,7 @@ namespace Ict.Common.IO
 
         /// <summary>
         /// check if the two text files have the same content
+        /// if AIgnoreNewLine is true: if there are multiple percentage characters in the first file, then ignore the text in that position
         /// </summary>
         public static bool SameContent(String filename1,
             String filename2,
@@ -193,6 +194,23 @@ namespace Ict.Common.IO
                 linecounter++;
                 line = ReplaceStrings(sr1.ReadLine(), AToReplace);
                 line2 = ReplaceStrings(sr2.ReadLine(), AToReplace);
+
+                if (line.Length >= line2.Length)
+                {
+                    int pos = 0;
+                    while ((pos = line.IndexOf("%%", pos)) >= 0)
+                    {
+                        int count = 2;
+
+                        while ((pos + count < line.Length) && (line[pos+count] == '%'))
+                        {
+                            count++;
+                        }
+
+                        line2 = line2.Substring(0, pos) + new string('%', count) + line.Substring(pos + count);
+                        pos+=count;
+                    }
+                }
 
                 if (line.CompareTo(line2) != 0)
                 {

@@ -376,7 +376,14 @@ namespace Ict.Petra.Server.App.WebService
         [WebMethod(EnableSession = true)]
         public bool Logout()
         {
-            TLogging.Log("Logout from session: ClientName=" + DomainManager.CurrentClient.ClientName, TLoggingType.ToLogfile | TLoggingType.ToConsole);
+            string clientName = "unknown";
+
+            if (DomainManager.CurrentClient != null)
+            {
+                clientName = DomainManager.CurrentClient.ClientName;
+            }
+
+            TLogging.Log("Logout from session: ClientName=" + clientName, TLoggingType.ToLogfile | TLoggingType.ToConsole);
 
             if (DomainManager.CurrentClient == null)
             {

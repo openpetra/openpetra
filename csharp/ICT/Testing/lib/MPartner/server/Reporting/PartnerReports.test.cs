@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -53,7 +53,7 @@ namespace Tests.MPartner.Server.Reporting
 {
     /// This will test the business logic directly on the server
     [TestFixture]
-    public class TPartnerSpecialTypesTest
+    public class TPartnerReportsTest
     {
         /// <summary>
         /// open database connection or prepare other things for this test
@@ -79,13 +79,28 @@ namespace Tests.MPartner.Server.Reporting
         [Test]
         public void TestPartnerBySpecialTypes()
         {
-            CommonNUnitFunctions.ResetDatabase();
-
-            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.xml";
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerBySpecialTypes.Test.xml";
 
             TParameterList SpecificParameters = new TParameterList();
             SpecificParameters.Add("param_address_date_valid_on", new TVariant(new DateTime(DateTime.Today.Year, 1, 1)));
             SpecificParameters.Add("param_explicit_specialtypes", new TVariant("LEDGER"));
+
+            TReportTestingTools.CalculateReport(testFile, SpecificParameters);
+
+            TReportTestingTools.TestResult(testFile);
+        }
+
+        /// <summary>
+        /// Test the partner by city report
+        /// </summary>
+        [Test]
+        public void TestPartnerByCity()
+        {
+            string testFile = "../../csharp/ICT/Testing/lib/MPartner/server/Reporting/TestData/PartnerByCity.Test.xml";
+
+            TParameterList SpecificParameters = new TParameterList();
+            SpecificParameters.Add("param_today", new TVariant(DateTime.Today));
+            SpecificParameters.Add("param_city", new TVariant("Westhausen"));
 
             TReportTestingTools.CalculateReport(testFile, SpecificParameters);
 

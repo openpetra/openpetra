@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -746,13 +746,13 @@ namespace Ict.Petra.Server.MReporting.Calculator
                     if (rptCalculation.rptGrpCaption != null)
                     {
                         rptDataCalcValue = new TRptDataCalcValue(this, -1, column, -1, 0);
-                        FormatCaption("ColumnCaption", rptDataCalcValue.Calculate(rptCalculation.rptGrpCaption), column);
+                        FormatCaption("ColumnCaption", rptDataCalcValue.Calculate(rptCalculation.rptGrpCaption).ConvertToVariant(), column);
                     }
 
                     if (rptCalculation.rptGrpShortCaption != null)
                     {
                         rptDataCalcValue = new TRptDataCalcValue(this, -1, column, -1, 0);
-                        FormatCaption("ColumnShortCaption", rptDataCalcValue.Calculate(rptCalculation.rptGrpShortCaption), column);
+                        FormatCaption("ColumnShortCaption", rptDataCalcValue.Calculate(rptCalculation.rptGrpShortCaption).ConvertToVariant(), column);
                     }
                 }
             }

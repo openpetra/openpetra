@@ -255,11 +255,11 @@
       <calculation id="Select Reference Names"
           returns="line_reference_c"
           returnsFormat="row">
-        <template>
+        <query>
           <queryDetail>
             <value>
           SELECT DISTINCT  a_reference_c AS line_reference_c
-          FROM {{transaction}} AS trans
+          FROM PUB_a_transaction AS trans
           WHERE trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
           </queryDetail>
@@ -295,11 +295,6 @@
             AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
-        </template>
-        <query>
-          <queryDetail>
-            <parameter name="transaction" value="PUB_a_transaction"/>
-          </queryDetail>
           <queryDetail>
             <value>
             ORDER BY 1
@@ -311,12 +306,12 @@
       <calculation id="Select Analysis Attribute Names"
           returns="line_analysis_attribute_value_c, a_analysis_type_code_c, a_analysis_type_description_c"
           returnsFormat="row">
-        <template>
+        <query>
           <queryDetail>
             <value>
           SELECT DISTINCT  a_analysis_attribute_value_c AS line_analysis_attribute_value_c,
             typ.a_analysis_type_code_c, a_analysis_type_description_c
-          FROM {{transaction}} AS trans, {{transanalattrib}} AS attr, PUB_a_analysis_type as typ 
+          FROM PUB_a_transaction AS trans, PUB_a_trans_anal_attrib AS attr, PUB_a_analysis_type as typ 
           WHERE trans.a_ledger_number_i = attr.a_ledger_number_i 
             AND trans.a_batch_number_i = attr.a_batch_number_i 
             AND trans.a_journal_number_i = attr.a_journal_number_i 
@@ -357,12 +352,6 @@
             AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
-        </template>
-        <query>
-          <queryDetail>
-            <parameter name="transaction" value="PUB_a_transaction"/>
-            <parameter name="transanalattrib" value="PUB_a_trans_anal_attrib"/>
-          </queryDetail>
           <queryDetail>
             <value>
             ORDER BY 1
@@ -373,7 +362,7 @@
       <calculation id="Select Transactions of AccountCostCentre"
           returns="a_transaction_date_d, a_amount_in_base_currency_n, a_amount_in_intl_currency_n, a_transaction_amount_n, a_debit_credit_indicator_l, a_transaction_currency_c, a_narrative_c, a_reference_c, batchNumber, journalNumber, transactionNumber"
           returnsFormat="row">
-        <template>
+        <query>
           <queryDetail>
             <value>
           SELECT 
@@ -388,7 +377,7 @@
             a_transaction_amount_n,
             a_narrative_c,
             a_reference_c
-          FROM {{transaction}} AS trans, {{journal}} AS j 
+          FROM PUB.a_transaction AS trans, PUB.a_journal AS j 
           WHERE trans.a_ledger_number_i = j.a_ledger_number_i 
             AND trans.a_journal_number_i = j.a_journal_number_i
             AND trans.a_batch_number_i = j.a_batch_number_i
@@ -399,12 +388,6 @@
             AND trans.a_transaction_status_l = 1
             AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
             </value>
-          </queryDetail>
-        </template>
-        <query>
-          <queryDetail>
-            <parameter name="transaction" value="PUB_a_transaction"/>
-            <parameter name="journal" value="PUB_a_journal"/>
           </queryDetail>
           <queryDetail>
             <value>
@@ -417,7 +400,7 @@
       <calculation id="Select Transactions by Reference"
           returns="a_transaction_date_d, a_amount_in_base_currency_n, a_amount_in_intl_currency_n, a_debit_credit_indicator_l, a_narrative_c, a_account_code_c, a_cost_centre_code_c"
           returnsFormat="row">
-        <template>
+        <query>
           <queryDetail>
             <value>
           SELECT 
@@ -430,7 +413,7 @@
             a_debit_credit_indicator_l,
             a_account_code_c, a_cost_centre_code_c,
             a_narrative_c
-          FROM {{transaction}} AS trans 
+          FROM PUB.a_transaction AS trans 
           WHERE trans.a_reference_c = {line_reference_c}
             AND trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
@@ -464,11 +447,6 @@
             AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
-        </template>
-        <query>
-          <queryDetail>
-            <parameter name="transaction" value="PUB_a_transaction"/>
-          </queryDetail>
           <queryDetail>
             <value>
             ORDER BY 1, 2, 3, 4
@@ -479,7 +457,7 @@
       <calculation id="Select Transactions by Analysis Attribute"
           returns="a_transaction_date_d, a_amount_in_base_currency_n, a_amount_in_intl_currency_n, a_transaction_amount_n, a_debit_credit_indicator_l, a_narrative_c, line_reference_c, a_account_code_c, a_cost_centre_code_c"
           returnsFormat="row">
-        <template>
+        <query>
           <queryDetail>
             <value>
           SELECT 
@@ -494,7 +472,7 @@
             a_narrative_c,
             a_reference_c AS line_reference_c,
             trans.a_account_code_c, trans.a_cost_centre_code_c
-          FROM {{transaction}} AS trans, {{transanalattrib}} AS attr 
+          FROM PUB_a_transaction AS trans, PUB_a_trans_anal_attrib AS attr 
           WHERE trans.a_ledger_number_i = attr.a_ledger_number_i
             AND trans.a_batch_number_i = attr.a_batch_number_i 
             AND trans.a_journal_number_i = attr.a_journal_number_i 
@@ -532,12 +510,6 @@
             AND NOT (trans.a_system_generated_l = 1 AND trans.a_narrative_c LIKE 'Year end re-allocation%')
           </value>
           </queryDetail>
-        </template>
-        <query>
-          <queryDetail>
-            <parameter name="transaction" value="PUB_a_transaction"/>
-            <parameter name="transanalattrib" value="PUB_a_trans_anal_attrib"/>
-          </queryDetail>
           <queryDetail>
             <value>
             ORDER BY 1, 2, 3, 4
@@ -550,13 +522,13 @@
       <calculation id="Select Analysis Attributes of Transaction"
           returns="a_analysis_type_code_c, a_analysis_attribute_value_c"
           returnsFormat="row">
-        <template>
+        <query>
           <queryDetail>
             <value>
           SELECT 
             attr.a_analysis_type_code_c,
             attr.a_analysis_attribute_value_c
-          FROM {{transaction}} AS trans, {{transanalattrib}} AS attr 
+          FROM PUB_a_transaction AS trans, PUB_a_trans_anal_attrib AS attr 
           WHERE trans.a_ledger_number_i = attr.a_ledger_number_i
             AND trans.a_batch_number_i = attr.a_batch_number_i 
             AND trans.a_journal_number_i = attr.a_journal_number_i 
@@ -566,12 +538,6 @@
             AND trans.a_transaction_number_i = {{transactionNumber}}
             AND trans.a_ledger_number_i = {{param_ledger_number_i}}
           </value>
-          </queryDetail>
-        </template>
-        <query>
-          <queryDetail>
-            <parameter name="transaction" value="PUB_a_transaction"/>
-            <parameter name="transanalattrib" value="PUB_a_trans_anal_attrib"/>
           </queryDetail>
           <queryDetail>
             <value>

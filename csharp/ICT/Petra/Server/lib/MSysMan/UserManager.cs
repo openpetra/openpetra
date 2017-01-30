@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -227,6 +227,10 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             catch (EUserNotExistantException)
             {
                 // Logging
+                // we need to create a dummy user because the generated code to store the failed login to the database requires UserInfo.GUserInfo.UserID
+                TPetraIdentity dummy = new TPetraIdentity("SYSADMIN", string.Empty, string.Empty, string.Empty, string.Empty, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, -1, -1, -1, true, true, false);
+                UserInfo.GUserInfo = new TPetraPrincipal(dummy, new SUserGroupTable());
+
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
                     String.Format(Catalog.GetString(
                             "User with User ID '{0}' attempted to log in, but there is no user account for this user! "),
@@ -242,6 +246,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
                 // Login via server admin console authenticated by file token
+                APassword = String.Empty;
             }
             //
             // (1) Check user-supplied password
@@ -328,7 +333,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             // (3) Check SystemLoginStatus (whether the general use of the OpenPetra application is enabled/disabled) in the
             // SystemStatus table (this table always holds only a single record)
             //
-            Boolean NewTransaction = false;
             SSystemStatusTable SystemStatusDT;
 
             SystemStatusDT = SSystemStatusAccess.LoadAll(ATransaction);
@@ -374,7 +378,7 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             UserDR.FailedLogins = 0;  // this needs resetting!
 
             // Upgrade the user's password hashing scheme if it is older than the current password hashing scheme
-            if (UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
+            if (APassword != String.Empty && UserDR.PwdSchemeVersion < TPasswordHelper.CurrentPasswordSchemeNumber)
             {
                 TMaintenanceWebConnector.SetNewPasswordHashAndSaltForUser(UserDR, APassword,
                     AClientComputerName, AClientIPAddress, ATransaction);

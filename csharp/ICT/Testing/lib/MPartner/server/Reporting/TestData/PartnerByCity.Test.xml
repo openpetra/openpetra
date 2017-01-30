@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<Parameters>
+  <Parameter id="xmlfiles" value="eString:Partner/partnerbycity.xml" />
+  <Parameter id="IsolationLevel" value="eString:serializable" />
+  <Parameter id="currentReport" value="eString:Partner by City" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:5" />
+  <Parameter id="param_today" value="eDateTime:&quot;2017-01-04T18:12:11&quot;" />
+  <Parameter id="param_city" value="eString:Westhausen" />
+  <Parameter id="orderby0" value="eString:City" />
+  <Parameter id="orderby1" value="eString:Partner Name" />
+  <Parameter id="orderby2" value="eString:Partner Key" />
+  <Parameter id="param_sortby_readable" value="eString:City, Partner Name, Partner Key" />
+  <Parameter id="param_calculation" column="5" value="eString:City" />
+  <Parameter id="param_calculation" column="6" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="7" value="eString:Partner Key" />
+  <Parameter id="param_sortby_columns" value="eString:5,6,7" />
+  <Parameter id="CurrentSubReport" value="eInteger:-1" />
+  <Parameter id="param_calculation" column="0" value="eString:Partner Name" />
+  <Parameter id="ColumnWidth" column="0" value="eInteger:3" />
+  <Parameter id="param_ytd" column="0" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="1" value="eString:Partner Key" />
+  <Parameter id="ColumnWidth" column="1" value="eInteger:2" />
+  <Parameter id="param_ytd" column="1" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="2" value="eString:City" />
+  <Parameter id="ColumnWidth" column="2" value="eDecimal:4616752568008179712" />
+  <Parameter id="param_ytd" column="2" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="3" value="eString:PostCode" />
+  <Parameter id="ColumnWidth" column="3" value="eDecimal:4612811918334230528" />
+  <Parameter id="param_ytd" column="3" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="4" value="eString:Partner Class" />
+  <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
+  <Parameter id="param_ytd" column="4" value="eBoolean:false" />
+</Parameters>

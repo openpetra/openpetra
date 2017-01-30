@@ -28,10 +28,15 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.ExchangeRates.dll" />
 
+    <if test="${not file::exists(dir.root + '/demoWith1ledger.yml.gz')}">
+        <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
+    </if>
+    <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
+
 <!-- TODO
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
         <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GiftForm.dll" />
-        <test assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.GLForm.dll" />
 -->
     <nant inheritall="false" target="stopServer" buildfile="${path::combine(dir.root, 'OpenPetra.build')}" verbose="${verbose}"/>    
     
@@ -56,13 +61,20 @@
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.ICH.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.AP.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.CrossLedger.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.PartnerExports.dll" />
-    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     
     <!-- <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Gift.dll" /> -->
-    
+
+    <if test="${not file::exists(dir.root + '/demoWith1ledger.yml.gz')}">
+        <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
+    </if>
+    <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
+    <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
+
     <echo message="Target test-server finished at: ${datetime::now()}" /> 
 </target>
 

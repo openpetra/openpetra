@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,17 +22,13 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data.Odbc;
 using System.Collections.Generic;
 using Ict.Petra.Shared.MReporting;
 using Ict.Common;
 
 namespace Ict.Petra.Server.MReporting
 {
-    /// <summary>
-    /// convert parameters for sql query
-    /// </summary>
-    public delegate TVariant TConvertProc(TVariant S);
-
     /// <summary>
     /// tools to format an SQL query so that it is useful for the SQL server
     /// </summary>
@@ -41,124 +37,232 @@ namespace Ict.Petra.Server.MReporting
         private TParameterList parameters;
         private int column;
         private int depth;
-
-        /// <summary>
-        /// create a copy
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TVariant Id(TVariant value)
-        {
-            return new TVariant(value);
-        }
-
-        /// <summary>
-        /// format a date in a form that will be adjusted
-        /// for each database in FormatQueryRDBMSSpecific;
-        /// (correct order of month/day etc)
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static TVariant FormatDate(TVariant value)
-        {
-            String list;
-            String day;
-            String month;
-            String year;
-            String resultString;
-
-            if (value.TypeVariant == eVariantTypes.eDateTime)
-            {
-                resultString = "#" + value.DateToString("yyyy/MM/dd") + "#";
-
-                // it seems, the separators (e.g. , /, .) are not considered
-                resultString = resultString.Replace(value.DateToString("yyyy/MM/dd")[4], '-');
-            }
-            else
-            {
-                list = value.ToString();
-
-                // try all available separators, defined in Ict.Common.StringHelper
-                day = StringHelper.GetNextCSV(ref list, ".", true);
-
-                if (list.Length == 0)
-                {
-                    throw new Exception("Ict.Petra.Server.MReporting.FormatQuery: Cannot decode date " + value.ToString());
-                }
-
-                month = StringHelper.GetNextCSV(ref list, ".", true);
-                year = StringHelper.GetNextCSV(ref list, ".", true);
-
-                resultString = String.Format("#{0:4}-{1:2}-{2:2}#",
-                    year, month, day);
-            }
-
-            return new TVariant(resultString, true); // explicit string
-        }
+        private List<OdbcParameter> FOdbcParameters;
+        private string FSQLStmt;
+        private TVariant FVariantValue = new TVariant();
 
         /// <summary>
         /// constructor
         /// </summary>
-        /// <param name="parameters"></param>
-        /// <param name="column"></param>
-        /// <param name="depth"></param>
-        public TRptFormatQuery(TParameterList parameters, int column, int depth)
+        public TRptFormatQuery(string ASQLStmt = "", List<OdbcParameter> AOdbcParameters = null, TParameterList parameters = null, int column = -1, int depth = -1)
         {
+            this.FSQLStmt = ASQLStmt;
+
+            if (AOdbcParameters == null)
+            {
+                this.FOdbcParameters = new List<OdbcParameter>();
+            }
+            else
+            {
+                this.FOdbcParameters = AOdbcParameters;
+            }
+
             this.parameters = parameters;
             this.column = column;
             this.depth = depth;
+        }
+
+        /// read the sql statement
+        public string SQLStmt
+        {
+            get
+            {
+                return this.FSQLStmt.Replace("PARAMETER?", "?");
+            }
+        }
+
+        /// <summary>
+        /// returns true if this is not an sql statement but a single value that can be accessed through the VariantValue property
+        /// </summary>
+        /// <returns></returns>
+        public bool IsVariant
+        {
+            get
+            {
+                return this.FSQLStmt == "TVariant";
+            }
+        }
+        
+        /// <summary>
+        /// returns true if the value is zero or null
+        /// </summary>
+        public bool IsZeroOrNull()
+        {
+            if (IsVariant)
+            {
+                return FVariantValue.IsZeroOrNull();
+            }
+            TVariant v = new TVariant(this.FSQLStmt);
+            return v.IsZeroOrNull();
+        }
+
+        /// <summary>
+        /// returns the value if it is not an SQL statement.
+        /// </summary>
+        public TVariant VariantValue
+        {
+            get
+            {
+                if (!IsVariant)
+                {
+                    if (this.FOdbcParameters.Count == 0)
+                    {
+                        // we assume this is a single value, not an SQL statement
+                        return new TVariant(this.FSQLStmt);
+                    }
+
+                    TLogging.Log("expected a single variant value: " + this.FSQLStmt);
+                    throw new Exception("expected a single variant value, not an SQL string");
+                }
+
+                return this.FVariantValue;
+            }
+        }
+
+        /// <summary>
+        /// only a workaround for text on the report that is not used for sql queries
+        /// </summary>
+        /// <returns></returns>
+        public TVariant ConvertToVariant()
+        {
+            return this.VariantValue;
+#if notneeded
+            if (IsVariant)
+            {
+                return this.VariantValue;
+            }
+
+            if (this.FOdbcParameters.Count != 0 && this.FSQLStmt.StartsWith("SELECT "))
+            {
+                TLogging.Log("ConvertToString is only meant for text that is not an SQL query: " + this.FSQLStmt);
+                throw new Exception("expected a text string, not an SQL string");
+            }
+
+            string s = this.FSQLStmt;
+            int pos = -1;
+            int count = 0;
+
+            while((pos = s.IndexOf("PARAMETER?")) != -1)
+            {
+                s = s.Substring(0, pos) + FOdbcParameters[count].Value.ToString() + s.Substring(pos + "PARAMETER?".Length);
+                count++;
+            }
+
+            return new TVariant(s);
+#endif
+        }
+
+        /// read the odbc parameters
+        public List<OdbcParameter> OdbcParameters
+        {
+            get
+            {
+                return this.FOdbcParameters;
+            }
+        }
+
+        /// <summary>
+        /// add more text to the sql statement
+        /// </summary>
+        public void Add(string sql)
+        {
+            if (IsVariant)
+            {
+                this.FVariantValue.Add(new TVariant(sql, true));
+            }
+            else
+            {
+                this.FSQLStmt += sql;
+            }
+        }
+
+        /// <summary>
+        /// add more to the variant
+        /// </summary>
+        public void Add(TVariant v, string format = "")
+        {
+            if (FSQLStmt == string.Empty)
+            {
+                FSQLStmt = "TVariant";
+            }
+            else if (!IsVariant)
+            {
+                throw new Exception("there is already a string, we cannot add a TVariant value " + ".." + FSQLStmt +"...");
+            }
+
+            this.FVariantValue.Add(v, format);
+        }
+
+        /// <summary>
+        /// combine two sql statements with parameters
+        /// </summary>
+        public void Add(TRptFormatQuery AQueryToAdd)
+        {
+            if (AQueryToAdd.IsVariant)
+            {
+                if (this.IsVariant)
+                {
+                    this.Add(AQueryToAdd.VariantValue);
+                }
+                else
+                {
+                    this.Add(AQueryToAdd.VariantValue.ToString());
+                }
+            }
+            else
+            {
+                if (this.IsVariant)
+                {
+                    this.FSQLStmt = VariantValue.ToString();
+                }
+
+                this.FSQLStmt += AQueryToAdd.SQLStmt;
+    
+                foreach (OdbcParameter p in AQueryToAdd.FOdbcParameters)
+                {
+                    this.FOdbcParameters.Add(p);
+                }
+            }
         }
 
         // do not print warning too many times for the same variable
         private static SortedList <string, Int32>VariablesNotFound = new SortedList <string, int>();
 
         /// <summary>
-        /// todoComment
+        /// Replace parameters with ODBC Parameters
         /// </summary>
-        /// <param name="orig"></param>
         /// <param name="searchOpen"></param>
         /// <param name="searchClose"></param>
-        /// <param name="newOpen"></param>
-        /// <param name="newClose"></param>
-        /// <param name="convert"></param>
-        /// <returns></returns>
-        protected TVariant ReplaceVariablesPattern(TVariant orig,
+        protected void ReplaceVariablesPattern(
             String searchOpen,
-            String searchClose,
-            String newOpen,
-            String newClose,
-            TConvertProc convert)
+            String searchClose)
         {
-            int position = 0;
-            String resultString = orig.ToString();
-            TVariant ReturnValue = null;
-            int bracket = resultString.IndexOf(searchOpen, position);
-
-            if (bracket == -1)
+            if (IsVariant)
             {
-                // no brackets, therefore use the original TVariant, so that the type information is not lost
-                ReturnValue = orig;
+                this.FSQLStmt = this.VariantValue.ToString();
             }
+
+            int bracket = this.FSQLStmt.IndexOf(searchOpen);
 
             while (bracket != -1)
             {
                 int firstRealChar = bracket + searchOpen.Length;
-                int paramEndIdx = resultString.IndexOf(searchClose, firstRealChar);
+                int paramEndIdx = this.FSQLStmt.IndexOf(searchClose, firstRealChar);
 
                 if (paramEndIdx <= 0)
                 {
                     // missing closing bracket; can happen with e.g. #testdate; should be #testdate#
-                    if (resultString.Length > bracket + 20)
+                    if (this.FSQLStmt.Length > bracket + 20)
                     {
-                        throw new Exception("Cannot find closing bracket " + searchClose + " for " + resultString.Substring(bracket, 20));
+                        throw new Exception("Cannot find closing bracket " + searchClose + " for " + this.FSQLStmt.Substring(bracket, 20));
                     }
                     else
                     {
-                        throw new Exception("Cannot find closing bracket " + searchClose + " for " + resultString.Substring(bracket));
+                        throw new Exception("Cannot find closing bracket " + searchClose + " for " + this.FSQLStmt.Substring(bracket));
                     }
                 }
 
-                String parameter = resultString.Substring(firstRealChar, paramEndIdx - firstRealChar);
+                String parameter = this.FSQLStmt.Substring(firstRealChar, paramEndIdx - firstRealChar);
                 bool ParameterExists = false;
                 TVariant newvalue;
 
@@ -211,7 +315,7 @@ namespace Ict.Petra.Server.MReporting
                             // this can be alright, for empty values; for example method of giving can be empty; for report GiftTransactions
                             TLogging.Log(
                                 "Variable " + parameter + " empty or not found (column: " + column.ToString() +
-                                "; level: " + depth.ToString() + "). " + resultString);
+                                "; level: " + depth.ToString() + "). " + this.FSQLStmt);
                         }
                         else if (CountWarning % 20 == 0)
                         {
@@ -222,73 +326,98 @@ namespace Ict.Petra.Server.MReporting
 
                 try
                 {
-                    if (resultString.Length == (searchOpen + parameter + searchClose).Length)
+                    if (this.FSQLStmt.Length == (searchOpen + parameter + searchClose).Length)
                     {
                         // replace the whole value, return as a TVariant
-                        ReturnValue = convert(newvalue);
+                        this.FVariantValue = newvalue;
+                        this.FSQLStmt = "TVariant";
+                        return;
                     }
 
-                    resultString = resultString.Replace(searchOpen + parameter + searchClose, newOpen + convert(newvalue).ToString() + newClose);
+                    if (newvalue.TypeVariant == eVariantTypes.eDateTime)
+                    {
+                        // remove the time from the timestamp, only use the date at 0:00
+                        DateTime date = newvalue.ToDate();
+                        newvalue = new TVariant(new DateTime(date.Year, date.Month, date.Day));
+                    }
+
+                    this.AddOdbcParameters(searchOpen, parameter, searchClose, newvalue);
                 }
                 catch (Exception e)
                 {
                     throw new Exception(
                         "While trying to format parameter " + parameter + ", there was a problem with formatting." + Environment.NewLine + e.Message);
                 }
-                bracket = resultString.IndexOf(searchOpen, position);
+                bracket = this.FSQLStmt.IndexOf(searchOpen);
             } // while
-
-            if (ReturnValue == null)
-            {
-                // there has not been just a single value
-                ReturnValue = new TVariant(resultString, true); // explicit string
-            }
-
-            return ReturnValue;
         }
 
         /// <summary>
-        /// todoComment
+        /// add an odbc parameter, and replace the placeholders
         /// </summary>
-        /// <param name="s"></param>
-        /// <param name="withQuotes"></param>
-        /// <returns></returns>
-        public TVariant ReplaceVariables(String s, Boolean withQuotes)
+        public void AddOdbcParameters(string APrefix, string AName, string APostfix, TVariant AValue)
         {
-            TVariant ReturnValue;
-
-            // find all variables given in
-            // name translates into "value"
-            // name is changed to value
-            // #name# is changed to "value" (date)
-            // if the variable should be retrieved with getParameter("variablename", 1,1,true) => use GLOBAL:variablename
-            // var
-            // todo: Integer;  need to make it work for postgresql as well
-            ReturnValue = new TVariant(s);
-            ReturnValue = ReplaceVariablesPattern(ReturnValue, "{{", "}}", "", "", new TConvertProc(Id));
-
-            ReturnValue = ReplaceVariablesPattern(ReturnValue, "{#", "#}", "", "", new TConvertProc(FormatDate));
-
-            if (withQuotes)
+            if (IsVariant)
             {
-                ReturnValue = ReplaceVariablesPattern(ReturnValue, "{", "}", "'", "'", new TConvertProc(Id));
-            }
-            else
-            {
-                ReturnValue = ReplaceVariablesPattern(ReturnValue, "{", "}", "", "", new TConvertProc(Id));
+                this.FSQLStmt = this.FVariantValue.ToString();
             }
 
-            return ReturnValue;
+            int pos = 0;
+            int parampos = 0;
+            int parameterIndex = 0;
+
+            int wherePos = this.FSQLStmt.ToUpper().IndexOf(" WHERE ");
+            pos = this.FSQLStmt.IndexOf(APrefix + AName + APostfix, pos);
+
+            if (pos == -1)
+            {
+                return;
+            }
+
+            if (wherePos > pos)
+            {
+                TLogging.Log(this.FSQLStmt);
+                throw new Exception("AddOdbcParameters: do not replace table names with odbc parameters");
+            }
+
+            while ((pos = this.FSQLStmt.IndexOf(APrefix + AName + APostfix, pos)) != -1)
+            {
+                while ((parampos != -1) && (parampos <= pos))
+                {
+                    parampos = this.FSQLStmt.IndexOf("PARAMETER?", parampos + 1);
+
+                    if ((parampos != -1) && (parampos <= pos))
+                    {
+                        parameterIndex++;
+                    }
+                }
+                pos++;
+                parampos = pos;
+
+                if (APrefix == "{")
+                {
+                    // force a string. needed for example for cost centre codes
+                    AValue = new TVariant(AValue.ToString(), true);
+                }
+
+                this.FOdbcParameters.Insert(parameterIndex, AValue.ToOdbcParameter(AName));
+
+                // we have added now a parameter, so this needs to be counted.
+                // this is important if there are multiple occurances for the same parameter
+                parameterIndex++;
+            }
+
+            this.FSQLStmt = this.FSQLStmt.Replace(APrefix + AName + APostfix, "PARAMETER?");
         }
 
         /// <summary>
-        /// overload
+        /// replace all place holders with values stored in the parameters list
         /// </summary>
-        /// <param name="s"></param>
-        /// <returns></returns>
-        public TVariant ReplaceVariables(String s)
+        public void ReplaceVariables()
         {
-            return ReplaceVariables(s, true);
+            ReplaceVariablesPattern("{{", "}}");
+            ReplaceVariablesPattern("{#", "#}");
+            ReplaceVariablesPattern("{", "}");
         }
     }
 }

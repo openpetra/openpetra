@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -203,7 +203,6 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
             string AClientComputerName, string AClientIPAddress,
             out TVerificationResultCollection AVerification)
         {
-            TDBTransaction Transaction;
             string UserAuthenticationMethod = TAppSettingsManager.GetValue("UserAuthenticationMethod", "OpenPetraDBSUser", false);
             TVerificationResult VerificationResult;
             TVerificationResultCollection VerificationResultColl = null;

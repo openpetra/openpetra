@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -336,34 +336,23 @@ namespace Ict.Petra.Server.MReporting
                     s = testS.ToString();
                 }
 
-                v = ReplaceVariables(s, false);
+                TRptFormatQuery query = new TRptFormatQuery(s, null, Parameters, column, Depth);
+                query.ReplaceVariables();
+
+                v = query.VariantValue;
             }
         }
 
         /// <summary>
-        /// todoComment
-        /// </summary>
-        /// <param name="s"></param>
-        /// <param name="withQuotes"></param>
-        /// <returns></returns>
-        protected TVariant ReplaceVariables(String s, Boolean withQuotes)
-        {
-            TVariant ReturnValue;
-            TRptFormatQuery formatQuery;
-
-            formatQuery = new TRptFormatQuery(Parameters, column, Depth);
-            ReturnValue = formatQuery.ReplaceVariables(s, withQuotes);
-            return ReturnValue;
-        }
-
-        /// <summary>
-        /// todoComment
+        /// Replace Variables
         /// </summary>
         /// <param name="s"></param>
         /// <returns></returns>
-        protected TVariant ReplaceVariables(String s)
+        protected TRptFormatQuery ReplaceVariables(String s)
         {
-            return ReplaceVariables(s, true);
+            TRptFormatQuery formatQuery = new TRptFormatQuery(s, null, Parameters, column, Depth);
+            formatQuery.ReplaceVariables();
+            return formatQuery;
         }
 
         private TVariant EvaluateFunction(String f, TVariant[] ops)
@@ -1105,7 +1094,7 @@ namespace Ict.Petra.Server.MReporting
             {
                 TRptCalculation rptTemplate = ReportStore.GetCalculation(CurrentReport, ops[1].ToString());
                 TRptDataCalcCalculation rptTempCalculation = new TRptDataCalcCalculation(this);
-                ReturnValue = rptTempCalculation.Calculate(rptTemplate, null);
+                ReturnValue = rptTempCalculation.Calculate(rptTemplate, null).VariantValue;
             }
             else if (f == "columnexist")
             {

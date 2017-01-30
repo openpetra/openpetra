@@ -41,7 +41,7 @@
                         AND pub_p_partner.p_status_code_c = 'ACTIVE'
                         AND (pub_p_partner.p_partner_class_c = 'FAMILY' OR pub_p_partner.p_partner_class_c = 'CHURCH')
                         AND pub_p_partner_location.p_send_mail_l = true
-                        AND {#param_today#} &gt;= pub_p_partner_location.p_date_effective_d 
+                        AND ({#param_today#} &gt;= pub_p_partner_location.p_date_effective_d OR pub_p_partner_location.p_date_effective_d IS NULL)
                         AND ({#param_today#} &lt;= pub_p_partner_location.p_date_good_until_d OR pub_p_partner_location.p_date_good_until_d IS NULL)
                     ORDER BY 3
                     </value></queryDetail>

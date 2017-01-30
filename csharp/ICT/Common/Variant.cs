@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Data.Odbc;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -361,7 +362,7 @@ namespace Ict.Common
                     TypeVariant = eVariantTypes.eInteger;
                 }
             }
-            else if (this.ToDecimal().ToString() == StripDecimalAndZeros(StringValue))
+            else if (StripDecimalAndZeros(this.ToDecimal().ToString()) == StripDecimalAndZeros(StringValue))
             {
                 // has to work for 0.0 as well!
                 DecimalValue = this.ToDecimal();
@@ -1071,6 +1072,60 @@ namespace Ict.Common
         }
 
         /// <summary>
+        /// convert the value to an ODBC parameter
+        /// </summary>
+        public OdbcParameter ToOdbcParameter(string AName)
+        {
+            switch (this.TypeVariant)
+            {
+                case eVariantTypes.eString:
+                    return new OdbcParameter(AName, OdbcType.VarChar) {
+                            Value = this.ToString()
+                        };
+                case eVariantTypes.eDateTime:
+                    return new OdbcParameter(AName, OdbcType.DateTime) {
+                            Value = this.ToDate()
+                        };
+                case eVariantTypes.eBoolean:
+                    return new OdbcParameter(AName, OdbcType.Bit) {
+                            Value = this.ToBool()
+                        };
+                case eVariantTypes.eInt64:
+                    return new OdbcParameter(AName, OdbcType.BigInt)
+                        {
+                            Value = this.ToInt64()
+                        };
+                case eVariantTypes.eInteger:
+                    return new OdbcParameter(AName, OdbcType.Int)
+                        {
+                            Value = this.ToInt32()
+                        };
+                case eVariantTypes.eDecimal:
+                    return new OdbcParameter(AName, OdbcType.Decimal)
+                        {
+                            Value = this.ToDecimal()
+                        };
+                case eVariantTypes.eCurrency:
+                    return new OdbcParameter(AName, OdbcType.Decimal)
+                        {
+                            Value = this.ToDecimal()
+                        };
+                case eVariantTypes.eComposite:
+                    return new OdbcParameter(AName, OdbcType.VarChar)
+                        {
+                            Value = this.ToString()
+                        };
+                case eVariantTypes.eEmpty:
+                    return new OdbcParameter(AName, OdbcType.VarChar)
+                        {
+                            Value = String.Empty
+                        };
+                default:
+                    throw new Exception("type " + this.TypeVariant.ToString() + " has not been implemented for ToOdbcParameter");
+            }
+        }
+
+        /// <summary>
         /// convert to Date
         /// </summary>
         /// <returns>a date representation</returns>
@@ -1319,7 +1374,7 @@ namespace Ict.Common
             String columnformat;
             int Counter;
 
-            columnformat = AFormatString.ToLower();;
+            columnformat = AFormatString.ToLower();
 
             if (columnformat.IndexOf("csvlistslash") == 0)
             {

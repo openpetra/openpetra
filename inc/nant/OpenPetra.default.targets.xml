@@ -252,7 +252,7 @@
 <target name="startClient" depends="initConfigFiles-client" description="start the OpenPetra Client">
   <if test="${platform::is-windows()}">
     <if test="${compileForStandalone == 'false'}">
-        <call target="startServer-internal" />
+        <call target="startServer-internal" unless="${target::has-executed('startServer-internal')}"/>
     </if>
     <if test="${compileForStandalone != 'false'}">
         <call target="copySQLFiles" />
@@ -291,7 +291,6 @@
 
 <target name="stopServer" depends="initConfigFiles-admin" description="stop the local OpenPetra Server">
   <if test="${platform::is-windows()}" >
-    <!-- This doesn't really do anything now with web services and web server-->
       <exec program="PetraServerAdminConsole.exe" 
             basedir="${dir.bin}" 
             workingdir="${dir.bin}"

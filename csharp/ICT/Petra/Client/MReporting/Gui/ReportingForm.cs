@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -700,7 +700,12 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
                 {
-                    FCalculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameter.xml", true);
+                    // write the report files that can be used for the Unit tests
+                    TParameterList p = FCalculator.GetParameters();
+                    string ReportName = p.Get("currentReport").ToString().Replace(" ", "");
+
+                    p.Sort();
+                    p.Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + ReportName + ".Test.xml", true);
                 }
 
                 GetForm().Cursor = Cursors.WaitCursor;
@@ -961,8 +966,19 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (TClientSettings.DebugLevel >= TClientSettings.DEBUGLEVEL_REPORTINGDATA)
             {
                 Calculator.GetParameters().Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugParameterReturn.xml", true);
-                Calculator.GetResults().WriteCSV(
-                    Calculator.GetParameters(), TClientSettings.PathLog + Path.DirectorySeparatorChar + "debugResultReturn.csv");
+
+                // convert to DataTable to get rid of debug values
+                TParameterList p = new TParameterList();
+                p.LoadFromDataTable(Calculator.GetParameters().ToDataTable());
+                TResultList r = new TResultList();
+                r.LoadFromDataTable(Calculator.GetResults().ToDataTable(p));
+
+                // write the report files that can be used for the Unit tests
+                string ReportName = p.Get("currentReport").ToString().Replace(" ", "");
+                p.Sort();
+                p.Save(TClientSettings.PathLog + Path.DirectorySeparatorChar + ReportName + ".Parameters.Expected.xml", false);
+                r.WriteCSV(
+                    p, TClientSettings.PathLog + Path.DirectorySeparatorChar + ReportName + ".Results.Expected.csv");
             }
 
             if (Calculator.GetParameters().Exists("SaveCSVFilename")
@@ -1454,7 +1470,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             if (AXMLFiles.Length > 0)
             {
-                ACalculator.AddParameter("xmlfiles", AXMLFiles);
+                ACalculator.AddParameter("xmlfiles", AXMLFiles.Replace("\\", "/").Replace("//", "/"));
             }
 
             if (AIsolationLevel.Length > 0)
