@@ -249,13 +249,16 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
 
             System.Object StartDate = DateTime.MinValue;
             System.Object EndDate = DateTime.MinValue;
+            System.Object CountryCode = String.Empty;
             ReturnValue = false;
             List<OdbcParameter> odbcparameters = new List<OdbcParameter>();
             odbcparameters .Add(new OdbcParameter("partnerKey", OdbcType.BigInt) { Value = APartnerKey });
             odbcparameters .Add(new OdbcParameter("startOfCommitment", OdbcType.DateTime) { Value = AGivenDate });
             odbcparameters .Add(new OdbcParameter("endOfCommitment", OdbcType.DateTime) { Value = AGivenDate });
-            strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d " + "FROM PUB_pm_staff_data " +
-                     "WHERE PUB_pm_staff_data.p_partner_key_n = ? AND pm_start_of_commitment_d <= ? " +
+            strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d, p_country_code_c " +
+                     "FROM PUB_pm_staff_data, PUB_p_unit " +
+                     "WHERE PUB_pm_staff_data.pm_receiving_field_n = PUB_p_unit.p_partner_key_n " +
+                     "AND PUB_pm_staff_data.p_partner_key_n = ? AND pm_start_of_commitment_d <= ? " +
                      "AND (pm_end_of_commitment_d >= ? OR pm_end_of_commitment_d IS NULL) " +
                      "ORDER BY pm_start_of_commitment_d ASC";
             formatQuery = new TRptFormatQuery(strSql, odbcparameters, null, -1, -1);
@@ -269,12 +272,16 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                 ReturnValue = true;
                 StartDate = tab.Rows[tab.Rows.Count - 1]["pm_start_of_commitment_d"];
                 EndDate = tab.Rows[tab.Rows.Count - 1]["pm_end_of_commitment_d"];
+                CountryCode = tab.Rows[tab.Rows.Count - 1]["p_country_code_c"];
             }
             else
             {
                 // no commitment period for the given date was found, so find the most recent commitment
-                strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d " + "FROM PUB_pm_staff_data " +
-                         "WHERE PUB_pm_staff_data.p_partner_key_n = " + APartnerKey.ToString() + ' ' + "ORDER BY pm_start_of_commitment_d ASC";
+                strSql = "SELECT pm_start_of_commitment_d, pm_end_of_commitment_d, p_country_code_c " +
+                         "FROM PUB_pm_staff_data " +
+                         "LEFT JOIN PUB_p_unit ON PUB_pm_staff_data.pm_receiving_field_n = PUB_p_unit.p_partner_key_n " +
+                         "WHERE PUB_pm_staff_data.p_partner_key_n = " + APartnerKey.ToString() + ' ' + 
+                         "ORDER BY pm_start_of_commitment_d ASC";
                 tab = situation.GetDatabaseConnection().SelectDT(strSql, "table", situation.GetDatabaseConnection().Transaction);
 
                 if (tab.Rows.Count > 0)
@@ -283,6 +290,7 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
                     ReturnValue = true;
                     StartDate = tab.Rows[tab.Rows.Count - 1]["pm_start_of_commitment_d"];
                     EndDate = tab.Rows[tab.Rows.Count - 1]["pm_end_of_commitment_d"];
+                    CountryCode = tab.Rows[tab.Rows.Count - 1]["p_country_code_c"];
                 }
             }
 
@@ -290,11 +298,13 @@ namespace Ict.Petra.Server.MReporting.MPersonnel
             {
                 situation.GetParameters().RemoveVariable("CommitmentStart", -1, -1, eParameterFit.eExact);
                 situation.GetParameters().RemoveVariable("CommitmentEnd", -1, -1, eParameterFit.eExact);
+                situation.GetParameters().RemoveVariable("CountryOfService", -1, -1, eParameterFit.eExact);
             }
             else
             {
                 situation.GetParameters().Add("CommitmentStart", new TVariant(StartDate), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
                 situation.GetParameters().Add("CommitmentEnd", new TVariant(EndDate), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
+                situation.GetParameters().Add("CountryOfService", new TVariant(CountryCode), -1, -1, null, null, ReportingConsts.CALCULATIONPARAMETERS);
             }
 
             return ReturnValue;

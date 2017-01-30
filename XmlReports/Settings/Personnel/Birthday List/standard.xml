@@ -3,13 +3,14 @@
   <Parameter id="systemsettings" value="eBoolean:true" />
   <Parameter id="xmlfiles" value="eString:Personnel\\birthdaylist.xml,Personnel\\personnel.xml" />
   <Parameter id="currentReport" value="eString:Birthday List" />
-  <Parameter id="MaxDisplayColumns" value="eInteger:6" />
+  <Parameter id="MaxDisplayColumns" value="eInteger:7" />
   <Parameter id="param_selection" value="eString:all current staff" />
   <Parameter id="param_extract" value="eString:" />
   <Parameter id="param_partnerkey" value="eInteger:0" />
-  <Parameter id="param_calculation" column="6" value="eString:Date Of Birth This Year" />
-  <Parameter id="param_calculation" column="7" value="eString:Partner Name" />
-  <Parameter id="param_calculation" column="8" value="eString:Partner Key" />
+  <Parameter id="param_calculation" column="7" value="eString:Date Of Birth This Year" />
+  <Parameter id="param_calculation" column="8" value="eString:Partner Name" />
+  <Parameter id="param_calculation" column="9" value="eString:Partner Key" />
+  <Parameter id="param_sortby_readable" value="eString:Date Of Birth This Year, Partner Name, Partner Key" />
   <Parameter id="param_chkUseDate" value="eBoolean:false" />
   <Parameter id="param_chkAnniversaries" value="eBoolean:false" />
   <Parameter id="param_txtAnniversaries" value="eString:" />
@@ -33,4 +34,7 @@
   <Parameter id="param_calculation" column="5" value="eString:End Date of Commitment" />
   <Parameter id="ColumnWidth" column="5" value="eInteger:2" />
   <Parameter id="param_ytd" column="5" value="eBoolean:false" />
+  <Parameter id="param_calculation" column="6" value="eString:Country of Service" />
+  <Parameter id="ColumnWidth" column="6" value="eInteger:2" />
+  <Parameter id="param_ytd" column="6" value="eBoolean:false" />  
 </Parameters>

@@ -113,13 +113,24 @@
           </query>
       </calculation>
 
+      <calculation id="Country of Service" returnsFormat="text" returns="text">
+        <caption>
+          <value text="Country of\nService"/>
+        </caption>
+        <query>
+          <queryDetail>
+            <value variable="ReceivingCountryCode"/>
+          </queryDetail>
+        </query>
+      </calculation>
+
       <calculation id="Start Date of Commitment" returnsFormat="date" returns="formatteddate">
         <caption>
           <value text="Start Date of\nCommitment"/>
         </caption>
         <query>
           <queryDetail>
-            <value variable="StartOfCommitment" format="formatteddate"/>
+            <value variable="FirstCommitmentDate"/>
           </queryDetail>
         </query>
       </calculation>
