@@ -393,7 +393,18 @@ namespace Ict.Petra.Server.MReporting
                 }
                 pos++;
                 parampos = pos;
+
+                if (APrefix == "{")
+                {
+                    // force a string. needed for example for cost centre codes
+                    AValue = new TVariant(AValue.ToString(), true);
+                }
+
                 this.FOdbcParameters.Insert(parameterIndex, AValue.ToOdbcParameter(AName));
+
+                // we have added now a parameter, so this needs to be counted.
+                // this is important if there are multiple occurances for the same parameter
+                parameterIndex++;
             }
 
             this.FSQLStmt = this.FSQLStmt.Replace(APrefix + AName + APostfix, "PARAMETER?");

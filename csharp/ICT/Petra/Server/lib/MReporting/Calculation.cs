@@ -957,10 +957,17 @@ namespace Ict.Petra.Server.MReporting
 
                                     //todo: allow integer as well; problem with motivation detail codes that are just numbers;
                                     //todo: specify type with text, variable names and type
-                                    //if (new TVariant(value).TypeVariant == eVariantTypes.eString)
-                                    ReturnValue.Add(StringHelper.GetNextCSV(ref listText).Trim() + " = {valueparameter} ");
                                     ValidateAgainstSQLInjection(value.ToString());
-                                    ReturnValue.AddOdbcParameters("{", "valueparameter", "}", new TVariant(value));
+                                    if (ValueIsNumber)
+                                    {
+                                        ReturnValue.Add(StringHelper.GetNextCSV(ref listText).Trim() + " = {{valueparameter}} ");
+                                        ReturnValue.AddOdbcParameters("{{", "valueparameter", "}}", new TVariant(value));
+                                    }
+                                    else
+                                    {
+                                        ReturnValue.Add(StringHelper.GetNextCSV(ref listText).Trim() + " = {valueparameter} ");
+                                        ReturnValue.AddOdbcParameters("{", "valueparameter", "}", new TVariant(value));
+                                    }
                                 }
 
                                 ReturnValue.Add(")");
