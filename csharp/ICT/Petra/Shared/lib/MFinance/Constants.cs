@@ -420,6 +420,14 @@ namespace Ict.Petra.Shared.MFinance
         public const string LEDGER_INIT_FLAG_CAL = "CAL";
         ///Ledger Init Flags
         public const string LEDGER_INIT_FLAG_REVAL = "REVAL";
+
+
+        ///Finance sub-module Contexts
+        public const string FINANCE_PRINT_CONTEXT_CHEQUE = "CHEQUE";
+        ///Finance sub-module Contexts
+        public const string FINANCE_PRINT_CONTEXT_RECEIPT = "RECEIPT";
+        ///Finance sub-module Contexts
+        public const string FINANCE_PRINT_CONTEXT_REMITTANCE = "REMITTANCE";
     }
 
     /// <summary>

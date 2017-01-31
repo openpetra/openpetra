@@ -35,6 +35,10 @@ using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Client.MCommon.Gui.Setup
 {
@@ -224,5 +228,40 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
         }
 
         #endregion
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFormDataKeyDescriptionList recordList = new TFormDataKeyDescriptionList();
+            DataView FieldOrderView = new DataView(FMainDS.PDataLabelUse);
+
+            FieldOrderView.RowFilter = String.Format("p_use_c = '{0}'", Context);
+            recordList.Title = "Local Data Field Order For " + Context;
+
+            String Key = Catalog.GetString("Name");
+            String Descr = Catalog.GetString("GroupHeading");
+            String Field3 = Catalog.GetString("Description");
+
+            recordList.KeyTitle = Key;
+            recordList.DescriptionTitle = Descr;
+            recordList.Field3Title = Field3;
+
+            foreach (DataRowView FieldOrderViewRow in FieldOrderView)
+            {
+                TFormDataKeyDescription record = new TFormDataKeyDescription();
+
+                record.Key = FieldOrderViewRow[Key].ToString();
+                record.Description = FieldOrderViewRow[Descr].ToString();
+                record.Field3 = FieldOrderViewRow[Field3].ToString();
+                recordList.Add(record);
+            }
+
+            TStandardFormPrint.PrintRecordList(recordList,
+                3,
+                APrintApplication,
+                FieldOrderView.Count,
+                FieldOrderView,
+                "",
+                APreviewMode);
+        }
     }
 }

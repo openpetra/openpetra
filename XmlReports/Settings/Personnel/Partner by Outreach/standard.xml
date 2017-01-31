@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Parameters>
   <Parameter id="systemsettings" value="eBoolean:true" />
-  <Parameter id="currentReport" value="eString:Partner by Outreach" />
+  <Parameter id="currentReport" value="eString:Partner by Event Role" />
   <Parameter id="param_events" value="eString:" />
   <Parameter id="param_status_cancelled" value="eBoolean:true" />
   <Parameter id="param_status_rejected" value="eBoolean:false" />

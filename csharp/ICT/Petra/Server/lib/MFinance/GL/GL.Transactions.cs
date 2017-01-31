@@ -4321,6 +4321,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
             Decimal AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
+            String AReference = (String)ARequestParams["AReference"];
 
             ALedgerRow LedgerRow = (ALedgerRow)AGLMainDS.ALedger[0];
             ARecurringBatchRow RBatchRow = (ARecurringBatchRow)AGLMainDS.ARecurringBatch[0];
@@ -4540,7 +4541,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                                 TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
                                                 TransactionRow.DetailNumber = recTransaction.DetailNumber;
                                                 TransactionRow.SubType = recTransaction.SubType;
-                                                TransactionRow.Reference = recTransaction.Reference;
+
+                                                if (AReference != "")
+                                                {
+                                                    TransactionRow.Reference = AReference;
+                                                }
+                                                else
+                                                {
+                                                    TransactionRow.Reference = recTransaction.Reference;
+                                                }
 
                                                 GLMainDS.ATransaction.Rows.Add(TransactionRow);
 
@@ -5082,18 +5091,20 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="requestParams">Hashtable containing the given params </param>
         /// <param name="importString">Big parts of the import file as a simple String</param>
+        /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
         public static bool ImportGLBatches(
             Hashtable requestParams,
             String importString,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLBatches(requestParams, importString, out AMessages);
+            return Importing.ImportGLBatches(requestParams, importString, out AClientRefreshRequired, out AMessages);
         }
 
         /// <summary>
@@ -5106,6 +5117,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
+        /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages"></param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -5115,12 +5127,19 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGLImporting Importing = new TGLImporting();
 
-            return Importing.ImportGLTransactions(ARequestParams, AImportString, ALedgerNumber, ABatchNumber, AJournalNumber, out AMessages);
+            return Importing.ImportGLTransactions(ARequestParams,
+                AImportString,
+                ALedgerNumber,
+                ABatchNumber,
+                AJournalNumber,
+                out AClientRefreshRequired,
+                out AMessages);
         }
 
         /// <summary>

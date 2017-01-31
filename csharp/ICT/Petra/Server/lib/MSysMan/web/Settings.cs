@@ -91,8 +91,7 @@ namespace Ict.Petra.Server.MSysMan.WebConnectors
                                          ", pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetUnitNameDBName() +
                                          " FROM " + PUnitTable.GetTableDBName() + ", " + PPartnerTable.GetTableDBName() +
                                          " WHERE ((" + PUnitTable.GetUnitTypeCodeDBName() + " = 'F')" +
-                                         "        OR(" + PUnitTable.GetUnitTypeCodeDBName() + " = 'A')" +
-                                         "        OR(" + PUnitTable.GetUnitTypeCodeDBName() + " = 'KEY-MIN'))" +
+                                         "        OR(" + PUnitTable.GetUnitTypeCodeDBName() + " = 'A'))" +
                                          " AND pub_" + PUnitTable.GetTableDBName() + "." + PUnitTable.GetPartnerKeyDBName() +
                                          " = pub_" + PPartnerTable.GetTableDBName() + "." + PPartnerTable.GetPartnerKeyDBName() +
                                          " AND " + PPartnerTable.GetStatusCodeDBName() + " = 'ACTIVE'";

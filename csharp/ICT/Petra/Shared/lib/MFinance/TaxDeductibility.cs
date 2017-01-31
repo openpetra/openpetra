@@ -50,6 +50,9 @@ namespace Ict.Petra.Shared.MFinance
                 AGiftDetail.TaxDeductiblePct = 0.0m;
             }
 
+            AGiftDetail.TaxDeductiblePct = Math.Max(AGiftDetail.TaxDeductiblePct, 0);
+            AGiftDetail.TaxDeductiblePct = Math.Min(AGiftDetail.TaxDeductiblePct, 100);
+
             /* Update transaction amounts */
             CalculateTaxDeductibilityAmounts(
                 out TaxDeductAmount, out NonDeductAmount, AGiftDetail.GiftTransactionAmount, AGiftDetail.TaxDeductiblePct);

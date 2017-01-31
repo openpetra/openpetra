@@ -31,6 +31,7 @@ using System.Text;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
@@ -129,6 +130,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 return;
             }
 
+            ACommentType = ACommentType.Trim();
+
             if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_DONOR, false) == 0)
             {
                 ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_DONOR;
@@ -159,12 +162,16 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="AImportString">Big parts of the export file as a simple String</param>
         /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
         /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AClientRefreshRequired">Will be set to true if the client should refresh its data after importing.
+        /// Normally this will be obvious (because the import was successful) but some handled Exceptions imply that the data has changed
+        /// behind the client's back!</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         public bool ImportGiftBatches(
             Hashtable ARequestParams,
             String AImportString,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
@@ -191,6 +198,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
             bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
+            bool clientRefreshRequired = false;
+            bool StartedSaving = false;
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
@@ -682,6 +691,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
 
                         // Everything is ok, so we can do our finish actions
+                        StartedSaving = true;
 
                         //Update batch total for the last batch entered.
                         if (giftBatch != null)
@@ -712,43 +722,56 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
                         FMainDS.ALedger.AcceptChanges();
 
+                        clientRefreshRequired = true;
+
                         // Commit the transaction (we know that we got a new one and can control it)
                         SubmissionOK = true;
                     }
                     catch (Exception ex)
                     {
-                        // Parse the exception text for possible references to database foreign keys
-                        // Make the message more friendly in that case
-                        string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
-
-                        if (RowNumber > 0)
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
                         {
-                            // At least we made a start
-                            string msg = ImportMessage;
-
-                            if (friendlyExceptionText.Length > 0)
-                            {
-                                msg += FNewLine + friendlyExceptionText;
-                            }
-
-                            if (ImportMessage.StartsWith(Catalog.GetString("Saving ")))
-                            {
-                                // Do not display any specific line number because these errors occur outside the parsing loop
-                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileSavingBatch,
-                                            giftBatch.BatchDescription),
-                                        msg, TResultSeverity.Resv_Critical));
-                            }
-                            else
-                            {
-                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                        msg, TResultSeverity.Resv_Critical));
-                            }
+                            // This also indicates that another user may have been importing at the same time
+                            Messages.Add(new TVerificationResult("ImportGiftBatches",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                            NeedRecipientLedgerNumber.Clear();
+                            clientRefreshRequired = true;
                         }
                         else
                         {
-                            // We got an exception before we even started parsing the rows (getting a transaction?)
-                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                    friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            // Parse the exception text for possible references to database foreign keys
+                            // Make the message more friendly in that case
+                            string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
+
+                            if (RowNumber > 0)
+                            {
+                                // At least we made a start
+                                string msg = ImportMessage;
+
+                                if (friendlyExceptionText.Length > 0)
+                                {
+                                    msg += " : " + friendlyExceptionText;
+                                }
+
+                                if (StartedSaving)
+                                {
+                                    // Do not display any specific line number because these errors occur outside the parsing loop
+                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileSavingBatch,
+                                                giftBatch.BatchDescription),
+                                            msg, TResultSeverity.Resv_Critical));
+                                }
+                                else
+                                {
+                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                            msg, TResultSeverity.Resv_Critical));
+                                }
+                            }
+                            else
+                            {
+                                // We got an exception before we even started parsing the rows (getting a transaction?)
+                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                        friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            }
                         }
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -785,6 +808,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             // Set our 'out' parameters
             AMessages = Messages;
             ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
+            AClientRefreshRequired = clientRefreshRequired;
 
             return SubmissionOK;
         }
@@ -882,6 +906,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         /// <param name="AImportString"></param>
         /// <param name="AGiftBatchNumber"></param>
         /// <param name="ANeedRecipientLedgerNumber"></param>
+        /// <param name="AClientRefreshRequired"></param>
         /// <param name="AMessages"></param>
         /// <returns></returns>
         public bool ImportGiftTransactions(
@@ -889,6 +914,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             String AImportString,
             Int32 AGiftBatchNumber,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
@@ -901,10 +927,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                 5);
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber = new GiftBatchTDSAGiftDetailTable();
-            ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
-
             TVerificationResultCollection Messages = new TVerificationResultCollection();
-            AMessages = Messages;
 
             FMainDS = new GiftBatchTDS();
             StringReader sr = new StringReader(AImportString);
@@ -915,6 +938,8 @@ namespace Ict.Petra.Server.MFinance.Gift
             String DateFormat = (String)ARequestParams["DateFormatString"];
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
+            bool clientRefreshRequired = false;
+            bool StartedSaving = false;
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
@@ -1191,6 +1216,7 @@ namespace Ict.Petra.Server.MFinance.Gift
                         }
 
                         // Everything is ok, so we can do our finish actions
+                        StartedSaving = true;
 
                         //Update batch total for the last batch entered.
                         if ((giftBatch != null) && !ImportingEsr)
@@ -1219,42 +1245,54 @@ namespace Ict.Petra.Server.MFinance.Gift
                         ALedgerAccess.SubmitChanges(LedgerTable, Transaction);
                         LedgerTable.AcceptChanges();
 
+                        clientRefreshRequired = true;
+
                         // Commit the transaction (we know that we got a new one and can control it)
                         SubmissionOK = true;
                     }
                     catch (Exception ex)
                     {
-                        // Parse the exception text for possible references to database foreign keys
-                        // Make the message more friendly in that case
-                        string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
-
-                        if (RowNumber > 0)
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
                         {
-                            // At least we made a start
-                            string msg = ImportMessage;
-
-                            if (friendlyExceptionText.Length > 0)
-                            {
-                                msg += FNewLine + friendlyExceptionText;
-                            }
-
-                            if (ImportMessage.StartsWith(Catalog.GetString("Saving ")))
-                            {
-                                // Do not display any specific line number because these errors occur outside the parsing loop
-                                Messages.Add(new TVerificationResult(MCommonConstants.StrExceptionWhileSavingTransactions,
-                                        msg, TResultSeverity.Resv_Critical));
-                            }
-                            else
-                            {
-                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                        msg, TResultSeverity.Resv_Critical));
-                            }
+                            Messages.Add(new TVerificationResult("ImportGiftTransactions",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                            NeedRecipientLedgerNumber.Clear();
+                            clientRefreshRequired = true;
                         }
                         else
                         {
-                            // We got an exception before we even started parsing the rows (getting a transaction?)
-                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                    friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            // Parse the exception text for possible references to database foreign keys
+                            // Make the message more friendly in that case
+                            string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
+
+                            if (RowNumber > 0)
+                            {
+                                // At least we made a start
+                                string msg = ImportMessage;
+
+                                if (friendlyExceptionText.Length > 0)
+                                {
+                                    msg += " : " + friendlyExceptionText;
+                                }
+
+                                if (StartedSaving)
+                                {
+                                    // Do not display any specific line number because these errors occur outside the parsing loop
+                                    Messages.Add(new TVerificationResult(MCommonConstants.StrExceptionWhileSavingTransactions,
+                                            msg, TResultSeverity.Resv_Critical));
+                                }
+                                else
+                                {
+                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                            msg, TResultSeverity.Resv_Critical));
+                                }
+                            }
+                            else
+                            {
+                                // We got an exception before we even started parsing the rows (getting a transaction?)
+                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                        friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            }
                         }
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -1287,6 +1325,10 @@ namespace Ict.Petra.Server.MFinance.Gift
                         TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     } // finally
                 }); // BeginAutoTransaction
+
+            AMessages = Messages;
+            ANeedRecipientLedgerNumber = NeedRecipientLedgerNumber;
+            AClientRefreshRequired = clientRefreshRequired;
 
             return SubmissionOK;
         }
@@ -1547,9 +1589,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.ConfidentialGiftFlag = TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Confidential gift"),
                 FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, ARowNumber, AMessages, null);
             AGiftDetails.MotivationGroupCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation group code"),
-                FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages, null).ToUpper();
+                FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages, null).ToUpper().Trim();
             AGiftDetails.MotivationDetailCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation detail"),
-                FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper();
+                FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper().Trim();
 
             //Always lookup the RecipientLedgerNumber
             AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(AGiftDetails.RecipientKey,
@@ -1626,7 +1668,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (AGiftDetails.MailingCode != null)
             {
-                AGiftDetails.MailingCode = AGiftDetails.MailingCode.ToUpper();
+                AGiftDetails.MailingCode = AGiftDetails.MailingCode.Trim().ToUpper();
             }
 
             // Find the default Tax deductabilty from the motivation detail. This ensures that the column can be missing.

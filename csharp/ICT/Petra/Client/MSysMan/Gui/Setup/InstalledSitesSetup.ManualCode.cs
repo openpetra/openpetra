@@ -122,7 +122,8 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             // save default site key
             if (cmbDefaultSite.SelectedValue != null)
             {
-                TSystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, cmbDefaultSite.SelectedValue.ToString());
+                TSystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY,
+                    String.Format("{0:0000000000}", Convert.ToInt64(cmbDefaultSite.SelectedValue)));
             }
 
             Result = TRemote.MSysMan.WebConnectors.SaveSiteKeys(AddedSiteKeyList, RemovedSiteKeyList);
@@ -180,7 +181,7 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
             cmbDefaultSite.DataSource = CmbDataTable.DefaultView;
 
-            UpdateDefaultCombobox();
+            UpdateDefaultCombobox(true);
 
             // reset after initialization
             FPetraUtilsObject.DisableSaveButton();
@@ -220,10 +221,10 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
         private void ClbSites_ValueChanged(System.Object sender, System.EventArgs e)
         {
-            UpdateDefaultCombobox();
+            UpdateDefaultCombobox(false);
         }
 
-        private void UpdateDefaultCombobox()
+        private void UpdateDefaultCombobox(Boolean ADuringScreenActivation)
         {
             // update default combobox
             String SelectedSites = clbSites.GetCheckedStringList();
@@ -231,9 +232,16 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             String SiteName;
 
             // remember original selection for default site
-            if (cmbDefaultSite.SelectedValue != null)
+            if (ADuringScreenActivation)
             {
-                SelectedDefaultSite = Convert.ToInt64(cmbDefaultSite.SelectedValue);
+                SelectedDefaultSite = Convert.ToInt64(TSystemDefaults.GetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY));
+            }
+            else
+            {
+                if (cmbDefaultSite.SelectedValue != null)
+                {
+                    SelectedDefaultSite = Convert.ToInt64(cmbDefaultSite.SelectedValue);
+                }
             }
 
             String[] SiteKeyArray = SelectedSites.Split(',');

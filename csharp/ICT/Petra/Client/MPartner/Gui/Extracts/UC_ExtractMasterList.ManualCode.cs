@@ -40,12 +40,13 @@ using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Logic;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
-    public partial class TUC_ExtractMasterList
+    public partial class TUC_ExtractMasterList : IBoundImageEvaluator
     {
         /// <summary>
         /// Delegate for call to parent window to trigger refreshing of extract list
@@ -1057,6 +1058,12 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             //FPetraUtilsObject.SetToolTip(btnRefreshGrid, Catalog.GetString("Refresh Extract List"));
         }
 
+        private void BeforeDataBindingManual()
+        {
+            // Add the ability to show an annotation in column 1 (for retired users)
+            grdDetails.AddAnnotationImage(this, 1, BoundGridImage.AnnotationContextEnum.RetiredUser, BoundGridImage.DisplayImageEnum.Inactive);
+        }
+
         private void RunOnceOnParentActivationManual()
         {
             TCmbAutoComplete cmbCreatedByUser = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByClonedFrom(cmbCreatedBy);
@@ -1093,7 +1100,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 // Make sure that Typed DataTables are already there at Client side
                 if (FMainDS.MExtractMaster == null)
                 {
-                    FMainDS.Tables.Add(new MExtractMasterTable());
+                    FMainDS.Tables.Add(new ExtractTDSMExtractMasterTable());
                     FMainDS.InitVars();
                 }
                 else
@@ -1192,6 +1199,56 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
         }
 
+        private bool FInitialActiveUserCheckSet = false;
+
+        private void FilterToggledManual(bool AFilterPanelIsCollapsed)
+        {
+            // The first time the panel is shown we want to set the 'Active Users' checkbox to ticked so all retired users get excluded
+            if ((FFilterAndFindObject.FilterFindPanel != null) && !FFilterAndFindObject.FilterFindPanel.IsCollapsed && !FInitialActiveUserCheckSet)
+            {
+                CheckBox chk = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
+                chk.CheckState = CheckState.Checked;
+                FInitialActiveUserCheckSet = true;
+            }
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            // Depending on the setting for the 'Active Users' check box we want to filter the CreatedBy and ModifiedBy user lists
+            CheckBox chk = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
+            TCmbAutoComplete cmbCreated = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbCreatedBy");
+            TCmbAutoComplete cmbModified = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbModifiedBy");
+
+            DataView dvCreated = (DataView)cmbCreated.DataSource;
+            DataView dvModified = (DataView)cmbModified.DataSource;
+            string currentRowFilter = dvCreated.RowFilter;
+
+            if (chk.CheckState == CheckState.Indeterminate)
+            {
+                string newRowFilter = string.Empty;
+
+                if ((currentRowFilter != newRowFilter) && cmbCreated.CanFocus)
+                {
+                    dvCreated.RowFilter = newRowFilter;
+                    cmbCreated.SetSelectedString("", -1);
+                    dvModified.RowFilter = newRowFilter;
+                    cmbModified.SetSelectedString("", -1);
+                }
+            }
+            else
+            {
+                string newRowFilter = string.Format("{0}={1}", SUserTable.GetRetiredDBName(), chk.CheckState == CheckState.Checked ? 0 : 1);
+
+                if ((currentRowFilter != newRowFilter) && cmbCreated.CanFocus)
+                {
+                    dvCreated.RowFilter = newRowFilter;
+                    cmbCreated.SetSelectedString("", -1);
+                    dvModified.RowFilter = newRowFilter;
+                    cmbModified.SetSelectedString("", -1);
+                }
+            }
+        }
+
         #endregion
 
         #region Forms Messaging Interface Implementation
@@ -1247,6 +1304,43 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
             }
 
             return MessageProcessed;
+        }
+
+        #endregion
+
+        #region Printing Methods
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="APrintApplication"></param>
+        /// <param name="APreviewMode"></param>
+        public void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(ParentForm, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    MExtractMasterTable.ColumnExtractNameId,
+                    MExtractMasterTable.ColumnCreatedById,
+                    MExtractMasterTable.ColumnKeyCountId,
+                    MExtractMasterTable.ColumnExtractDescId
+                });
+        }
+
+        #endregion
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
+        {
+            ExtractTDSMExtractMasterRow row = (ExtractTDSMExtractMasterRow)ADataRowView.Row;
+
+            return row.Retired;
         }
 
         #endregion

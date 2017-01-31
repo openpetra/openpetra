@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, PeterS
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -303,6 +303,10 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_alternate_telephone_c", typeof(string)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_email_address_c", typeof(string)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_url_c", typeof(string)));
+                ReturnValue.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(string)));
+                ReturnValue.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+                ReturnValue.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(string)));
+                ReturnValue.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
 
                 // Add special DataColumns that are needed for the 'Best Address' calculation
                 ReturnValue.Columns.Add(new System.Data.DataColumn(PARTNERLOCATION_ICON_COLUMN, typeof(Int32)));
@@ -486,6 +490,38 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             {
                 get; set;
             }
+
+            /// <summary>
+            /// CreatedByUser Column data.
+            /// </summary>
+            public String CreatedByUser
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// CreatedDate Column data.
+            /// </summary>
+            public DateTime ? DateCreated
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// ModifiedByUser Column data.
+            /// </summary>
+            public String ModifiedByUser
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// ModifiedDate Column data.
+            /// </summary>
+            public DateTime ? DateModified
+            {
+                get; set;
+            }
         }
 
         #endregion
@@ -514,10 +550,20 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             // p_partner_location records of each Partner that gets loaded.
 //            TLogging.Log(String.Format("We have entries for {0} Partners.", FPartnerClassInformation.Count));
 
+            if (FPartnerClassInformation.Keys.Count == 0)
+            {
+                throw new Exception("need to process p_partner first! rm fulldump/p_partner.sql.gz");
+            }
+
             // Process each Partner and its p_partner_location records
             foreach (Int64 PartnerKey in FPartnerClassInformation.Keys)
             {
                 FInsertionOrderPerPartner = -1;
+
+                if (FPartnerLocationRecords == null)
+                {
+                    throw new Exception("need to process p_partner_location first! rm fulldump/p_partner_location.sql.gz");
+                }
 
                 // Get that Partner's p_partner_location records from PPartnerLocationRecords
                 DataRow[] CurrentRows = FPartnerLocationRecords[Math.Abs(PartnerKey) % NumberOfTables].Select(
@@ -2077,6 +2123,19 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 SpecialisedFlag = true;
             }
 
+            DateTime ? dateCreated = null;
+            DateTime ? dateModified = null;
+
+            if (!APartnerLocationDR.IsNull("s_date_created_d"))
+            {
+                dateCreated = Convert.ToDateTime(APartnerLocationDR["s_date_created_d"]);
+            }
+
+            if (!APartnerLocationDR.IsNull("s_date_modified_d"))
+            {
+                dateModified = Convert.ToDateTime(APartnerLocationDR["s_date_modified_d"]);
+            }
+
             return new TPartnerContactDetails.PPartnerAttributeRecord() {
                        InsertionOrderPerPartner = FInsertionOrderPerPartner,
                        PartnerKey = APartnerKey,
@@ -2087,7 +2146,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                        Confidential = ((string)APartnerLocationDR["p_location_type_c"]).EndsWith(SECURITY_CAN_LOCATIONTYPE,
                            StringComparison.InvariantCulture),
                        NoLongerCurrentFrom = NoLongerCurrentFromDate,
-                       ValueCountry = null
+                       ValueCountry = null,
+                       CreatedByUser = APartnerLocationDR.IsNull("s_created_by_c") ? null : (string)APartnerLocationDR["s_created_by_c"],
+                       DateCreated = dateCreated,
+                       ModifiedByUser = APartnerLocationDR.IsNull("s_modified_by_c") ? null : (string)APartnerLocationDR["s_modified_by_c"],
+                       DateModified = dateModified
             };
         }
 

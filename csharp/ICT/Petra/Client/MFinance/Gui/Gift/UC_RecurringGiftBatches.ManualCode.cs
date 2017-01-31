@@ -1225,6 +1225,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            grdDetails.AutoResizeGrid();
+        }
+
         #region BoundImage interface implementation
 
         /// <summary>

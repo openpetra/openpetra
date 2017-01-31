@@ -30,6 +30,7 @@ using System.Text;
 using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
@@ -796,33 +797,45 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                     }
                     catch (Exception e)
                     {
-                        string msg =
-                            string.Format("An exception occurred during a merge of two partners ({0}->{1}): ", AFromPartnerKey, AToPartnerKey);
-                        msg += e.Message;
-                        verificationResults.Add(new TVerificationResult(ResultContext, msg, TResultSeverity.Resv_Critical));
-                        verificationResults.Add(new TVerificationResult(ResultContext,
-                                string.Format("Server date and time: {0}", DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss")),
-                                TResultSeverity.Resv_Critical));
-
-                        if (e.StackTrace != null)
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(e))
                         {
-                            msg += Environment.NewLine + "Stack trace:" + Environment.NewLine + e.StackTrace;
+                            verificationResults.Add(new TVerificationResult("MergeTwoPartners",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                            TLogging.Log("Exception was thrown that is presumed to be a transaction serialization exception.");
+                            TLogging.LogException(e);
                         }
-
-                        if (e.InnerException != null)
+                        else
                         {
-                            msg += Environment.NewLine + "Inner exception:" + Environment.NewLine + e.InnerException;
-                        }
+                            string msg =
+                                string.Format("An exception occurred during a merge of two partners ({0}->{1}): ", AFromPartnerKey, AToPartnerKey);
+                            msg += e.Message;
+                            verificationResults.Add(new TVerificationResult(ResultContext, msg, TResultSeverity.Resv_Critical));
+                            verificationResults.Add(new TVerificationResult(ResultContext,
+                                    string.Format("Server date and time: {0}", DateTime.Now.ToString("dddd, dd-MMM-yyyy, HH:mm:ss")),
+                                    TResultSeverity.Resv_Critical));
 
-                        TLogging.Log(msg);
-                        TLogging.Log("The following changes had already been made but were rolled back...");
-                        TLogging.Log(verificationResults.BuildVerificationResultString());
+                            if (e.StackTrace != null)
+                            {
+                                msg += Environment.NewLine + "Stack trace:" + Environment.NewLine + e.StackTrace;
+                            }
+
+                            if (e.InnerException != null)
+                            {
+                                msg += Environment.NewLine + "Inner exception:" + Environment.NewLine + e.InnerException;
+                            }
+
+                            TLogging.Log(msg);
+                            TLogging.Log("The following changes had already been made but were rolled back...");
+                            TLogging.Log(verificationResults.BuildVerificationResultString());
+                        }
+                    }
+                    finally
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                     }
 
                     //TODO MyWriter.Close();
                 });
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             ADifferentFamilies = DifferentFamilies;
             AVerificationResults = verificationResults;

@@ -1975,7 +1975,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             switch (FValueKind)
             {
                 case TPartnerAttributeTypeValueKind.CONTACTDETAIL_GENERAL:
-                    StatusBarText = Catalog.GetString("Enter whatever the Contact Type is about.");
+                    StatusBarText = Catalog.GetString("Enter the detail for this Contact Type.");
                     CurrentRowHasPhoneAttributeType = Calculations.RowHasPhoneAttributeType(FPhoneAttributesDV, SelectedDetailDR);
 
                     if (cmbContactCategory.Enabled)
@@ -1990,6 +1990,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                             if (!SelectedDetailDR.Primary)
                             {
                                 StatusBarText += StrFunctionKeysTipWithPrimary;
+                            }
+                            else
+                            {
+                                StatusBarText += StrFunctionKeysTip;
                             }
                         }
                     }

@@ -980,12 +980,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        private void AutoResizeGrid()
         {
             if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.AutoResizeGrid();
             }
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            AutoResizeGrid();
+        }
+
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            AutoResizeGrid();
         }
 
         private int GetDataTableRowIndexByPrimaryKeys(int ALedgerNumber, int ABatchNumber)
@@ -1301,6 +1311,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool Success = false;
             bool PostingAlreadyConfirmed = false;
+            bool RefreshGUIAfterPosting = false;
 
             if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
             {
@@ -1339,19 +1350,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 LoadDialogVisible = false;
 
                 Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow,
+                    out RefreshGUIAfterPosting,
                     FWarnOfInactiveValuesOnPosting,
                     FDonorZeroIsValid,
                     FRecipientZeroIsValid,
                     PostingAlreadyConfirmed);
 
-                if (Success)
+                if (Success || RefreshGUIAfterPosting)
                 {
-                    // Posting succeeded so now deal with gift receipting ...
-                    GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
-                        FSelectedBatchNumber,
-                        false);
+                    if (Success)
+                    {
+                        // Posting succeeded so now deal with gift receipting ...
+                        GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
+                            FSelectedBatchNumber,
+                            false);
 
-                    FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
+                        FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
+                    }
 
                     // Now we need to get the data back from the server to pick up all the changes
                     RefreshAllData();

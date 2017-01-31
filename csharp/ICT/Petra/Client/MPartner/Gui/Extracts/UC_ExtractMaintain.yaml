@@ -32,7 +32,7 @@ RootNode:
             Label: Edit Partner
             Action: actEdit
         btnAdd: {Width=100}
-            Label: Add Partner
+            Label: &Add Partner
             Action: actAdd
         btnDeleteRow: {Width=100}
             Label: Delete

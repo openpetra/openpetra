@@ -27,6 +27,10 @@ using Ict.Common;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
@@ -56,11 +60,69 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             chkRelationships.Checked = true;
             chkReminders.Checked = true;
             chkLocations.Checked = true;
+            chkContactDetails.Checked = true;
+            chkSpecialTypes.Checked = true;
 
             if (UserInfo.GUserInfo.IsInModule("FINANCE-1"))
             {
                 chkFinanceDetails.Checked = true;
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            DataSet ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet("PrintPartner", paramsDictionary);
+
+            if (this.IsDisposed)
+            {
+                return false;
+            }
+
+            if (ReportSet == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Partners"], "Partners");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassPerson"], "ClassPerson");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassFamily"], "ClassFamily");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassOrganisation"], "ClassOrganisation");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassBank"], "ClassBank");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassChurch"], "ClassChurch");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassUnit"], "ClassUnit");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassVenue"], "ClassVenue");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Subscriptions"], "Subscriptions");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Relationships"], "Relationships");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Locations"], "Locations");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ContactDetails"], "ContactDetails");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["FinanceDetails"], "FinanceDetails");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PartnerInterests"], "PartnerInterests");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PartnerContacts"], "PartnerContacts");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Reminders"], "Reminders");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["SpecialTypes"], "SpecialTypes");
+
+            return true;
         }
 
         private void DeselectAll(Object sender, EventArgs e)
@@ -73,6 +135,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             chkReminders.Checked = false;
             chkLocations.Checked = false;
             chkFinanceDetails.Checked = false;
+            chkContactDetails.Checked = false;
+            chkSpecialTypes.Checked = false;
         }
 
         /// <summary>

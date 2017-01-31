@@ -49,7 +49,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
 
         private void RunOnceOnActivationManual()
         {
-            chkDetailCongressLanguage.Enabled = false;
         }
 
         private void NewRowManual(ref PLanguageRow ARow)
@@ -82,7 +81,6 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 {
                     PLanguageTable.ColumnLanguageCodeId,
                     PLanguageTable.ColumnLanguageDescriptionId,
-                    PLanguageTable.ColumnCongressLanguageId,
                     PLanguageTable.ColumnDeletableId
                 });
         }

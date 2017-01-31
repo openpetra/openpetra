@@ -53,12 +53,19 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             if (!TRemote.MFinance.Setup.WebConnectors.DeleteLedger(ALedgerNumber, out VerificationResult))
             {
-                MessageBox.Show(
-                    string.Format(Catalog.GetString("Deletion of Ledger '{0}' failed"), ALedgerNameAndNumber) + "\r\n\r\n" +
-                    VerificationResult.BuildVerificationResultString(),
-                    Catalog.GetString("Deletion failed"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
+                if (TVerificationHelper.ResultsContainErrorCode(VerificationResult, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                {
+                    TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                }
+                else
+                {
+                    MessageBox.Show(
+                        string.Format(Catalog.GetString("Deletion of Ledger '{0}' failed"), ALedgerNameAndNumber) + "\r\n\r\n" +
+                        VerificationResult.BuildVerificationResultString(),
+                        Catalog.GetString("Deletion failed"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
+                }
             }
             else
             {

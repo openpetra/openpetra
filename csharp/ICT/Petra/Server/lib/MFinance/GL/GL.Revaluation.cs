@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="glBatchNumber">If a batch was generated, the caller should print it.</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
         /// <returns>true if a forex batch was posted.</returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool Revaluate(
             int ALedgerNum,
             string[] AForeignAccount,
@@ -374,6 +374,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TransactionRow.AmountInBaseCurrency = Aamount;
             TransactionRow.TransactionAmount = Aamount;
             TransactionRow.TransactionDate = F_batch.DateEffective;
+            TransactionRow.SystemGenerated = false;  // Setting true will prohibit reversal of this batch
 
             F_GLDataset.ATransaction.Rows.Add(TransactionRow);
         }

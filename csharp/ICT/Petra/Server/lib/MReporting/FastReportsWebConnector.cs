@@ -33,6 +33,9 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
+using Ict.Petra.Server.MPartner.Reporting.WebConnectors;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -228,6 +231,18 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* Partner Reports */
+
+                case "PrintPartner":
+                    ResultSet = TPartnerReportingWebConnector.PrintPartner(AParameters, FDbAdapter);
+                    break;
+
+                /* Personnel Reports */
+
+                case "EmergencyDataReport":
+                    ResultSet = TPersonnelReportingWebConnector.EmergencyDataReport(AParameters, FDbAdapter);
+                    break;
+
                 /* Finance */
                 case "RecipientGiftStatement":
                     ResultSet = GetRecipientGiftStatementDataSet(AParameters, FDbAdapter);
@@ -244,8 +259,26 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultSet = TFinanceReportingWebConnector.GiftsOverMinimum(AParameters, FDbAdapter);
                     break;
 
+                case "TopDonorReport":
+                    ResultSet = TFinanceReportingWebConnector.TopDonorReport(AParameters, FDbAdapter);
+                    break;
+
+                case "NewDonorReport":
+                    ResultSet = TFinanceReportingWebConnector.NewDonorReport(AParameters, FDbAdapter);
+                    break;
+
+                case "DonorReportShort":
+
+                    ResultSet = TFinanceReportingWebConnector.DonorReportShort(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDataSetThread unknown ReportType: " + AReportType);
+                    break;
+
+                case "DonorReportDetail":
+
+                    ResultSet = TFinanceReportingWebConnector.DonorReportDetail(AParameters, FDbAdapter);
                     break;
             }
 
@@ -549,24 +582,14 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 Totals = Totals.DefaultView.ToTable();
             }
 
-            DataTable DonorAddresses = new DataTable("DonorAddresses");
-
-            foreach (DataRow Row in DistinctDonors.Rows)
-            {
-                // get best address for donor
-                Int64 DonorKey = (Int64)Row["DonorKey"];
-                tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, DonorKey);
-
-                if (tempTable != null)
+            DataTable DonorAddresses = null;
+            TDBTransaction Transaction = null;
+            ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+                ref Transaction,
+                delegate
                 {
-                    DonorAddresses.Merge(tempTable);
-                }
-
-                if (ADbAdapter.IsCancelled)
-                {
-                    return null;
-                }
-            }
+                    DonorAddresses = TAddressTools.GetBestAddressForPartners(DistinctDonors, 0, Transaction);
+                });
 
             if (ADbAdapter.IsCancelled)
             {
@@ -606,7 +629,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 Int64 recipientKey = (Int64)Row["RecipientKey"];
 
-                if (ReportType == "Complete")
+                if ((ReportType == "Complete") || (ReportType == "Gifts Only"))
                 {
                     // get historical totals for recipient
                     Decimal thisYearTotal = 0;
@@ -652,23 +675,28 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             DataTable DonorAddresses = new DataTable("DonorAddresses");
 
-            if ((ReportType == "Complete") || (ReportType == "Donors Only"))
+            if ((ReportType == "Complete") || (ReportType == "Donors Only") || (ReportType == "Gifts Only"))
             {
-                foreach (DataRow Row in DistinctDonors.Rows)
-                {
-                    // get best address for each distinct donor
-                    DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
-
-                    if (DonorTemp != null)
+                TDBTransaction Transaction = null;
+                ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+                    ref Transaction,
+                    delegate
                     {
-                        DonorAddresses.Merge(DonorTemp);
-                    }
-
-                    if (ADbAdapter.IsCancelled)
-                    {
-                        return null;
-                    }
-                }
+                        DonorAddresses = TAddressTools.GetBestAddressForPartners(DistinctDonors, 0, Transaction);
+                    });
+            }
+            else
+            {
+                DonorAddresses.Columns.Add("DonorKey", typeof(Int64));
+                DonorAddresses.Columns.Add("DonorName", typeof(String));
+                DonorAddresses.Columns.Add("Locality", typeof(String));
+                DonorAddresses.Columns.Add("p_street_name_c", typeof(String));
+                DonorAddresses.Columns.Add("p_address_3_c", typeof(String));
+                DonorAddresses.Columns.Add("p_postal_code_c", typeof(String));
+                DonorAddresses.Columns.Add("p_city_c", typeof(String));
+                DonorAddresses.Columns.Add("p_county_c", typeof(String));
+                DonorAddresses.Columns.Add("p_country_code_c", typeof(String));
+                DonorAddresses.Columns.Add("p_address_order_i", typeof(String));
             }
 
             if (ReportType == "Donors Only")

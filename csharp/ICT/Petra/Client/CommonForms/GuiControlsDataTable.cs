@@ -442,7 +442,7 @@ namespace Ict.Petra.Client.CommonForms
             }
 
             // Remove the trailing comma we added
-            return ReturnValue.Trim(',');
+            return ReturnValue.Substring(0, ReturnValue.Length - 1);
         }
 
         /// <summary>

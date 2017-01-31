@@ -393,7 +393,12 @@ namespace Ict.Petra.Client.MPartner.Gui
             else
             {
                 // Import failed
-                if (errorMessages.HasCriticalErrors)
+                if (TVerificationHelper.ResultsContainErrorCode(errorMessages, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                {
+                    TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                    return;
+                }
+                else if (errorMessages.HasCriticalErrors)
                 {
                     // A failed import should contain some critical errors.
                     // Concatenate them and show them in an extended message box with scroll bar

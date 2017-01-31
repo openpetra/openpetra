@@ -8,42 +8,68 @@ RootNode:
     Template: usercontrol
     MasterTable: PmSpecialNeed
     Controls:
-        pnlContent: {ControlsOrientation=horizontal}
-            Controls: [pnlMedicalNeeds, pnlDietaryNeeds, pnlOtherNeeds]              
+        pnlContent:
+            Controls: [sptContent]
             Dock: Fill
        
-        pnlMedicalNeeds:
+        sptContent:
+            SplitterOrientation: vertical
+            SplitterDistance: 220
+            Height: 600
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlMedical
+            Panel2: pnlDietaryAndOther
+
+        pnlMedical:
             Controls: [lblMedicalNeeds, txtMedicalComment]
-                   
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+        pnlDietaryAndOther:
+            Controls: [sptDietaryAndOther]
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+
         lblMedicalNeeds:
         txtMedicalComment:
-            Width: 165
-            Height: 340
+            Stretch: fully
             Multiline: true
             ScrollBars: Vertical
             NoLabel: true
+
+        sptDietaryAndOther:
+            SplitterOrientation: vertical
+            SplitterDistance: 70
+            #Height: 350
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.ControlDark
+            Panel1: pnlDietary
+            Panel2: pnlOther
             
-        pnlDietaryNeeds:
+        pnlDietary:
             Controls: [lblDietaryNeeds, txtDietaryComment, chkVegetarianFlag]
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
+            
+        pnlOther:
+            Controls: [lblOtherNeeds, txtOtherSpecialNeed]            
+            Dock: Fill
+            BackColor: System.Drawing.SystemColors.Control
 
         lblDietaryNeeds:
         txtDietaryComment:
-            Width: 165
-            Height: 340
+            Stretch: fully
             Multiline: true
             ScrollBars: Vertical
             NoLabel: true
-            
         chkVegetarianFlag:
+            Align: Bottom
             Label: Vegetarian
-            
-        pnlOtherNeeds:
-            Controls: [lblOtherNeeds, txtOtherSpecialNeed]            
+            CheckBoxAttachedLabel: right
             
         lblOtherNeeds:
         txtOtherSpecialNeed:
-            Width: 165
-            Height: 340
+            Stretch: fully
             Multiline: true
             ScrollBars: Vertical
             NoLabel: true

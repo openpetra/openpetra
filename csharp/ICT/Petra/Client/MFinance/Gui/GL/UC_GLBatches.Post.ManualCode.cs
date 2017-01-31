@@ -161,7 +161,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                      Catalog.GetString("Question"),
                      MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button1) != System.Windows.Forms.DialogResult.Yes))
             {
-                return true;
+                return false;
             }
 
             TVerificationResultCollection Verifications = new TVerificationResultCollection();
@@ -178,7 +178,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     dialog.ShowDialog();
                 }
 
-                if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
+                if (TVerificationHelper.ResultsContainErrorCode(Verifications, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                {
+                    TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                }
+                else if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
 
@@ -207,20 +211,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         Catalog.GetString("Success"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
-
-                    // refresh the grid, to reflect that the batch has been posted
-                    FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, CurrentBatchNumber));
-
-                    // make sure that the current dataset is clean,
-                    // otherwise the next save would try to modify the posted batch, even though no values have been changed
-                    FMainDS.AcceptChanges();
-
-                    // Ensure these tabs will ask the server for updates
-                    FMyForm.GetTransactionsControl().ClearCurrentSelection();
-                    FMyForm.GetJournalsControl().ClearCurrentSelection();
-
-                    FMyUserControl.UpdateDisplay();
                 }
+
+                // refresh the grid, to reflect that the batch has been posted (or even maybe had been posted by another user)
+                FMainDS.Merge(TRemote.MFinance.GL.WebConnectors.LoadABatchAndRelatedTables(FLedgerNumber, CurrentBatchNumber));
+
+                // make sure that the current dataset is clean,
+                // otherwise the next save would try to modify the posted batch, even though no values have been changed
+                FMainDS.AcceptChanges();
+
+                // Ensure these tabs will ask the server for updates
+                FMyForm.GetTransactionsControl().ClearCurrentSelection();
+                FMyForm.GetJournalsControl().ClearCurrentSelection();
+
+                FMyUserControl.UpdateDisplay();
             }
             catch (Exception ex)
             {

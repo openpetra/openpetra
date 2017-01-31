@@ -202,12 +202,16 @@ namespace Ict.Common.IO
         /// <summary>The domain of the default dummy SmtpHost written to our Server.config. Used here to check whether SMTP has been configured.</summary>
         public static readonly String SMTP_HOST_DEFAULT = ".example.org";
 
+        /// <summary>User Default code for the list of most recently used email addresses.</summary>
+        public static readonly string RECENTADDRS = "EmailRecentAddresses";
+
+
         static TGetSmtpSettings FGetSmtpSettings;
 
         private SmtpClient FSmtpClient;
         private MailAddress FSender;
-        private MailAddress FReplyTo;
-        private MailAddress FCcEverythingTo;
+        private MailAddressCollection FReplyTo;
+        private MailAddressCollection FCcEverythingTo;
 
         /// <summary>
         /// After SendMessage, this list should be empty.
@@ -234,6 +238,17 @@ namespace Ict.Common.IO
         }
 
         /// <summary>
+        /// Returns the sender address for use if constructing a MailMessage outside this class.
+        /// </summary>
+        public MailAddress Sender
+        {
+            get
+            {
+                return FSender;
+            }
+        }
+
+        /// <summary>
         /// Static method that can be called from anywhere to validate an email address.
         /// </summary>
         /// <param name="field"></param>
@@ -250,6 +265,58 @@ namespace Ict.Common.IO
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Convert a semicolon-separated list of email addresses to a comma-separated list of email addresses.
+        /// </summary>
+        /// <remarks>
+        /// Where OpenPetra has multiple addresses stored in one database field, most are separated by semicolons because by
+        /// default Microsoft Outlook requiers semicolons to separate addresses (https://blogs.msdn.microsoft.com/oldnewthing/20150119-00/?p=44883).
+        /// But the Internet, including .NET's <see cref="MailMessage.To"/>.Add(string) method, requires commas (https://tools.ietf.org/html/rfc5322#section-3.4).
+        /// So when pulling "To" addresses from the database we must parse them for unquoted semicolons and convert them to commas.
+        /// </remarks>
+        /// <param name="AList"></param>
+        /// <returns></returns>
+        public static string ConvertAddressList(string AList)
+        {
+            var InQuote = false;
+            var chars = AList.ToCharArray();
+
+            for (int i = 0; i < chars.Length; i++)
+            {
+                var ch = chars[i];
+
+                switch (ch)
+                {
+                    case '\\':
+                        // The next character is escaped, so skip it.
+                        i++;
+                        break;
+
+                    case '"':
+                        // A quoted-string is delimited by DQUOTE, ASCII 34, only.
+                        InQuote = !InQuote;
+                        break;
+
+                    case ';':
+
+                        // An unquoted semicolon must be a mailbox-list separator; .NET does not support the
+                        // group syntax of https://tools.ietf.org/html/rfc5322#section-3.2.4 which is the
+                        // only valid use of an unquoted semicolon in an address specification.
+                        if (!InQuote)
+                        {
+                            chars[i] = ',';
+                        }
+
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+
+            return new string(chars);
         }
 
         /// <summary>
@@ -364,7 +431,8 @@ namespace Ict.Common.IO
                 {
                     try
                     {
-                        FCcEverythingTo = new MailAddress(value);
+                        FCcEverythingTo = new MailAddressCollection();
+                        FCcEverythingTo.Add(ConvertAddressList(value));
                     }
                     catch (Exception e)
                     {
@@ -389,7 +457,8 @@ namespace Ict.Common.IO
                 {
                     try
                     {
-                        FReplyTo = new MailAddress(value);
+                        FReplyTo = new MailAddressCollection();
+                        FReplyTo.Add(ConvertAddressList(value));
                     }
                     catch (Exception e)
                     {
@@ -400,6 +469,42 @@ namespace Ict.Common.IO
             }
         }
 
+        /// <summary>
+        /// Returns a new MailMessage with From, Reply-To and CC addresses set from the values in User Defaults.
+        /// </summary>
+        /// <returns>A MailMessage</returns>
+        /// <exception cref="ESmtpSenderInitializeException">Thrown if the sender address has not been set.</exception>
+        public MailMessage GetNewMailMessage()
+        {
+            if (FSender == null)
+            {
+                throw new ESmtpSenderInitializeException("Sender address has not been set.", TSmtpErrorClassEnum.secClient);
+            }
+
+            var NewMessage = new MailMessage();
+
+            //Settings from User Defaults: From, Copy and Reply
+            NewMessage.Sender = FSender;
+            NewMessage.From = FSender;
+
+            if (FCcEverythingTo != null)
+            {
+                foreach (var addr in FCcEverythingTo)
+                {
+                    NewMessage.CC.Add(addr);
+                }
+            }
+
+            if (FReplyTo != null)
+            {
+                foreach (var addr in FReplyTo)
+                {
+                    NewMessage.ReplyToList.Add(addr);
+                }
+            }
+
+            return NewMessage;
+        }
 
         private Attachment FAttachedObject = null;
 
@@ -434,29 +539,13 @@ namespace Ict.Common.IO
         public bool SendEmail(string recipients, string subject, string body,
             string[] attachfiles = null)
         {
-            if (FSender == null)
-            {
-                throw new ESmtpSenderInitializeException("Sender address has not been set.", TSmtpErrorClassEnum.secClient);
-            }
-
             try
             {
-                using (MailMessage email = new MailMessage())
+                // Initialize a new MailMessage with settings from User Defaults
+                using (MailMessage email = GetNewMailMessage())
                 {
-                    //From and To
-                    email.Sender = FSender;
-                    email.From = FSender;
-                    email.To.Add(recipients);
-
-                    if (FCcEverythingTo != null)
-                    {
-                        email.CC.Add(FCcEverythingTo);
-                    }
-
-                    if (FReplyTo != null)
-                    {
-                        email.ReplyToList.Add(FReplyTo);
-                    }
+                    //To
+                    email.To.Add(ConvertAddressList(recipients));
 
                     //Subject and Body
                     email.Subject = subject;
@@ -679,7 +768,7 @@ namespace Ict.Common.IO
         secServer,
 
         /// <summary>
-        /// Error cause by client-provided data. Use this value to add a helpful hint to the message appropriate to the client settings. Something like "See the Email tab in User Settings >> Preferences."
+        /// Error cause by client-provided data. Use this value to add a helpful hint to the message appropriate to the client settings. Something like "Check the Email tab in User Settings >> Preferences."
         /// </summary>
         secClient
     }

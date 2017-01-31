@@ -231,6 +231,32 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Cancels all Subscriptions for a Partner
+        /// </summary>
+        /// <param name="ValidTo"></param>
+        /// <returns></returns>
+        public bool PerformCancelAllSubscriptions(DateTime ValidTo)
+        {
+            if (!FTabSetup.ContainsKey(TDynamicLoadableUserControls.dlucSubscriptions))
+            {
+                // The follwing function calls internally 'DynamicLoadUserControl(TDynamicLoadableUserControls.dlucAddresses);'
+                SetupUserControlSubscriptions();
+            }
+
+            return FUcoSubscriptions.PerformCancelAllSubscriptions(ValidTo);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AValidTo"></param>
+        /// <returns></returns>
+        public void ExpireAllCurrentAddresses(DateTime AValidTo)
+        {
+            FUcoAddresses.ExpireAllCurrentAddresses(AValidTo);
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <returns></returns>

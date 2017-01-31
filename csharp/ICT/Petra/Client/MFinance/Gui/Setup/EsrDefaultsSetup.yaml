@@ -1,11 +1,11 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraEditForm.yaml
+    BaseYaml: ../../../CommonForms/PetraEditPrintForm.yaml
     FormTitle: ESR Defaults
     Namespace: Ict.Petra.Client.MFinance.Gui.Setup.Gift
     FormType: edit
     Template: window
-    WindowWidth: 500
-    WindowHeight: 350
+    WindowWidth: 520
+    WindowHeight: 380
     Actions:
         actNew: {Label=&New, ActionClick=NewRecord}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord}
@@ -16,7 +16,7 @@ RootNode:
         sptContent:
             SplitterOrientation: Horizontal
             SplitterDistance: 200
-            Height: 350
+            Height: 380
             Dock: Fill
             BackColor: System.Drawing.SystemColors.ControlDark
             Panel1: pnlDetailGrid
@@ -46,10 +46,12 @@ RootNode:
             Controls:
                 Row0: [txtPartnerKey]
                 Row1: [txtNewPartnerKey]
-                Row2: [cmbMotivGroup]
-                Row3: [cmbMotivDetail]
-        cmbMotivGroup: {Label=Motiv. Group, List=UserDefinedList}
-        cmbMotivDetail: {Label=Motiv. Detail, List=UserDefinedList}
+                Row2: [lblIgnoredForDonor]
+                Row3: [cmbMotivGroup]
+                Row4: [cmbMotivDetail]
 
         txtPartnerKey: {Label=ESR Key, Width=120}
         txtNewPartnerKey: {Label=Substitute Key, Type=PartnerKey, Validation=true, Width=300}
+        lblIgnoredForDonor: {Label="For Donor Keys, the fields below are ignored"}
+        cmbMotivGroup: {Label=Motiv. Group, List=UserDefinedList}
+        cmbMotivDetail: {Label=Motiv. Detail, List=UserDefinedList}

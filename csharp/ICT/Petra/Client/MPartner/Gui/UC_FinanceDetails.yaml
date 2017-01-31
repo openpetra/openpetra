@@ -17,17 +17,17 @@ RootNode:
     Controls:
         pnlContent:
             Controls: [pnlMiscSettings, grpBankAccounts]
-            Dock: Fill
-    
+            Dock: Fill 
         pnlMiscSettings:
             Dock: Top
-            Height: 114
+            Height: 120
             Controls:
                 Row0: [pnlLeftMiscSettings, pnlRightMiscSettings]
         pnlLeftMiscSettings:
             Controls:
                 Row0: [grpLeftMiscSettings]
                 Row1: [grpGovId]
+            Height: 110
             Width: 310
             Padding: -7,-7,0,-7
         grpLeftMiscSettings:
@@ -37,24 +37,24 @@ RootNode:
                 Row1: [chkReceiptEachGift]
                 Row2: [chkAnonymousDonor]
             Width: 305
-            Height: 90
         grpGovId:
             NoLabel: true
             Controls:
                 Row0: [txtGovId]
+                Row1: [chkNoUpload]
             Width: 305
-            Height: 40
         pnlRightMiscSettings:
             Controls:
                 Row0: [grpRecipientGiftReceipting]
                 Row1: [grpOther]
-            Width: 470
-            Padding: -7,0,0,0
+            Width: 410
+            Stretch: horizontally
+            Padding: -10,-3,-40,0
         grpRecipientGiftReceipting:
             Controls:
                 Row0: [chkLimitTaxDeductibility]
                 Row1: [pnlTaxDeductible]
-            Padding: 0,-7,0,0
+            Padding: 0,-18,0,0
             Width: 460
             Height: 41
         pnlTaxDeductible:
@@ -65,10 +65,8 @@ RootNode:
             #ColSpan: 2
         grpOther:
             Controls: [txtFinanceComment]
-            Width: 460
-            Padding: 0,-7,0,0
+            Padding: 0,-15,0,0
             Label: Finance Comment
-   
         grpBankAccounts:
             Controls: [pnlGrid, pnlDetails]
             Dock: Fill
@@ -127,6 +125,11 @@ RootNode:
             Label: bPK
             #Enabled: false
             Width: 250
+        chkNoUpload:
+            Label: No Upload
+            CheckBoxAttachedLabel: right
+            OnChange: ChkNoUpload_Change
+            Width: 250
         chkLimitTaxDeductibility:
            Visible: false
            OnChange: ChkLimitTaxDeductibility_Change
@@ -143,7 +146,7 @@ RootNode:
             Width: 445
             NoLabel: true
             ScrollBars: Vertical
- 
+            Stretch: fully
         grdDetails:
             Dock: Fill
             TableName: PBankingDetails

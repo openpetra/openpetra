@@ -1,8 +1,7 @@
 RootNode:
     BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Accounts Payable
+    FormTitle: Accounts Payable Suppliers and Invoices
     Namespace: Ict.Petra.Client.MFinance.Gui.AP
-    #UtilObjectClass: TFrmPetraEditUtils
     FormType: browse
     Template: windowFind
     WindowWidth: 900
@@ -10,85 +9,119 @@ RootNode:
     Events:
         Closed: {class=System.EventHandler, method=Form_Closed}
     Actions:
-        cndSelectedSupplier: {InitialValue=false}
         actEditFilter: {Label=Filte&r..., ActionClick=mniFilterFind_Click, Image=FilterActive.ico, Tooltip=Filter the displayed records by one or more criteria}
         actEditFind: {Label=&Find..., ActionClick=mniFilterFind_Click, Image=Find.ico, Tooltip=Find a record that matches one or more criteria}
         actDefaults: {ActionClick=mniDefaults_Click, Image=Options2.ico, Tooltip=View or modify the default settings for Accounts Payable}
-        actShowInvoice:
-            ActionClick: ShowInvoice
-        actNewSupplier:
+
+## Supplier Actions
+        actSupplierNewSupplier:
             Label: &New Supplier
-            ActionClick: NewSupplier
+            ActionClick: SupplierNewSupplier
             Tooltip: Create a new supplier
             Image: NewPartner.ico
             ShortCut: Ctrl+N
-        actEditSupplier:
+        actSupplierEditSupplier:
             Label: Edit S&upplier
-            ActionClick: EditDetails
+            ActionClick: SupplierEditDetails
             Tooltip: Change the details and settings of an existing supplier
             Image: Edit_Record.ico
             ShortCut: Ctrl+E
-            Enabled: cndSelectedSupplier
-        actSupplierTransactions:
+        actSupplierOpenTransactions:
             Label: &Open Transactions
             ActionClick: SupplierTransactions
-            Tooltip: Open the transactions of the supplier
+            #Tooltip: Open the transactions of the supplier
             ShortCut: Ctrl+O
-            Enabled: cndSelectedSupplier
-        actCreateInvoice:
-            Label: Create &Invoice
+        actSupplierNewInvoice:
+            Label: New &Invoice
             ShortCut: Ctrl+I
             Tooltip: Create a new invoice relating to the selected supplier
             Image: New_Record.ico
-            ActionClick: CreateInvoice
-            Enabled: cndSelectedSupplier
-        actCreateCreditNote:
-            Label: Create &Credit Note
+            ActionClick: SupplierCreateInvoice
+        actSupplierNewCreditNote:
+            Label: New &Credit Note
             ShortCut: Ctrl+R
             Tooltip: Create a new credit note relating to the selected supplier
             Image: New_Credit.ico
-            ActionClick: CreateCreditNote
-            Enabled: cndSelectedSupplier
-        #actFindInvoice:
-        #    Label: &Find Invoice...
-        #    ShortCut: Ctrl+F
-        actApproveTagged:
-            Label: &Approve Tagged
-            Enabled: cndCanApprove
-            ActionClick: ApproveAllTagged
-            Tooltip: Approve all the tagged invoices
-        actPostTagged:
-            Label: &Post Tagged
-            Enabled: cndCanPost
-            ActionClick: PostAllTagged
-            Tooltip: Post all the tagged invoices
-        actOpenSelected:
+            ActionClick: SupplierCreateCreditNote
+
+## Transaction History actions
+        actTransactionNewInvoice:
+            Label: New &Invoice
+            ShortCut: Ctrl+I
+            Tooltip: Create a new invoice relating to the selected supplier
+            Image: New_Record.ico
+            ActionClick: TransactionCreateInvoice
+        actTransactionNewCreditNote:
+            Label: New &Credit Note
+            ShortCut: Ctrl+R
+            Tooltip: Create a new credit note relating to the selected supplier
+            Image: New_Credit.ico
+            ActionClick: TransactionCreateCreditNote
+        actTransactionOpenSelected:
             Label: &Open Selected
-            Enabled: cndCanOpen
             Image: Edit_Record.ico
-            ActionClick: OpenSelectedInvoice
+            ActionClick: TransactionOpenSelectedInvoice
             Tooltip: View the details of the selected invoice or payment
-        actOpenTagged:
+        actTransactionOpenTagged:
             Label: Open Ta&gged
-            Enabled: cndCanOpen
-            ActionClick: OpenAllTagged
+            ActionClick: TransactionOpenAllTagged
             Tooltip: View the details of all the tagged invoices or payments
-        actPayTagged:
-            Label: Pa&y Tagged
-            Enabled: cndCanPay
-            ActionClick: PayAllTagged
-            Tooltip: Pay or part-pay all the tagged invoices
-        actReverseTagged:
-            Label: Re&verse Tagged
-            Enabled: cndCanReverse
-            ActionClick: ReverseAllTagged
-            Tooltip: Reverse the tagged invoices that have been posted
-        actDeleteTagged:
-            Label: De&lete Tagged
-            Enabled: cndCanDelete
+        actTransactionReverseSelected:
+            Label: Re&verse Selected
+            ActionClick: TransactionReverseSelected
+            Tooltip: Reverse the selected invoice that has been posted
+        actTransactionDeleteSelected:
+            Label: De&lete Selected
             Image: Delete_Record.ico
-            ActionClick: DeleteAllTagged
+            ActionClick: TransactionDeleteSelected
+            Tooltip: Delete the selected invoice that has been opened or approved
+        actTransactionApproveTagged:
+            Label: &Approve Tagged
+            ActionClick: TransactionRunTagAction
+            Tooltip: Approve all the tagged invoices
+        actTransactionPostTagged:
+            Label: &Post Tagged
+            ActionClick: TransactionRunTagAction
+            Tooltip: Post all the tagged invoices
+        actTransactionAddTaggedToPayment:
+            Label: Pa&y Tagged
+            ActionClick: TransactionRunTagAction
+            Tooltip: Pay all the tagged invoices
+
+        ## Invoice menu actions
+        actInvoiceOpenSelected:
+            Label: &Open Selected
+            Image: Edit_Record.ico
+            ActionClick: InvoiceOpenSelectedInvoice
+            Tooltip: View the details of the selected invoice or payment
+        actInvoiceOpenTagged:
+            Label: Open Ta&gged
+            ActionClick: InvoiceOpenAllTagged
+            Tooltip: View the details of all the tagged invoices or payments
+        actInvoiceReverseTagged:
+            Label: Re&verse Tagged
+            ActionClick: InvoiceReverseAllTagged
+            Tooltip: Reverse the tagged invoices that have been posted
+        actInvoiceDeleteTagged:
+            Label: De&lete Tagged
+            Image: Delete_Record.ico
+            ActionClick: InvoiceDeleteAllTagged
             Tooltip: Delete the tagged invoices that have been opened or approved
+        actInvoiceApproveTagged:
+            Label: &Approve Tagged
+            ActionClick: InvoiceRunTagAction
+            Tooltip: Approve all the tagged invoices
+        actInvoicePostTagged:
+            Label: &Post Tagged
+            ActionClick: InvoiceRunTagAction
+            Tooltip: Post all the tagged invoices
+        actInvoicePayTagged:
+            Label: Pa&y Tagged
+            #Enabled: cndCanDelete
+            ActionClick: InvoiceRunTagAction
+            Tooltip: Pay all the tagged invoices
+
+
         actEditFindNext:
             Label:Find Ne&xt
             ActionClick:MniFilterFind_Click
@@ -97,31 +130,26 @@ RootNode:
             Label:Find Pre&vious
             ActionClick:MniFilterFind_Click
             Tooltip: Find the previous record that matches the current 'Find' criteria
-        #actTagAllPostable:
-        #    ActionClick: TagAllPostable
-        #actTagAllPayable:
-        #    ActionClick: TagAllPayable
-        #actUntagAll:
-        #    ActionClick: UntagAll
-        actTabChange:
-            ActionClick: TabChange
 
     Controls:
         pnlContent:
-            Dock: Fill
-            #Controls: [pnlSearchButtons, tabSearchResult]
             Controls: [tabSearchResult]
-            
-        tabSearchResult:
-            Controls: [tpgSuppliers, tpgOutstandingInvoices]
             Dock: Fill
-            Action:actTabChange
+        tabSearchResult:
+            Controls: [tpgSuppliers, tpgSupplierTransactionHistory, tpgOutstandingInvoices]
+            Dock: Fill
+            #Action:actTabChange
         tpgSuppliers:
             Controls: [ucoSuppliers]
+        tpgSupplierTransactionHistory:
+            Controls: [ucoSupplierTransactionHistory]
         tpgOutstandingInvoices:
             Controls: [ucoOutstandingInvoices]
         ucoSuppliers:
             Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_Suppliers
+            Dock: Fill
+        ucoSupplierTransactionHistory:
+            Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_SupplierTransactions
             Dock: Fill
         ucoOutstandingInvoices:
             Type: Ict.Petra.Client.MFinance.Gui.AP.TUC_OutstandingInvoices
@@ -161,20 +189,35 @@ RootNode:
             mniEditFindPrevious:
         mniSupplier:
             Label:&Supplier
-            mniNewSupplier: {Action=actNewSupplier}
-            mniEditSupplier: {Action=actEditSupplier}
+            mniSupplierNewInvoice: {Action=actSupplierNewInvoice}
+            mniSupplierNewCreditNote: {Action=actSupplierNewCreditNote}
             mniSeparator: {Label=-}
-            mniTransactions: {Action=actSupplierTransactions}
-            mniCreateInvoice: {Action=actCreateInvoice}
-            mniCreateCreditNote: {Action=actCreateCreditNote}
+            mniSupplierOpenTransactions: {Action=actSupplierOpenTransactions}
+            mniSeparator: {Label=-}
+            mniSupplierNewSupplier: {Action=actSupplierNewSupplier}
+            mniSupplierEditSupplier: {Action=actSupplierEditSupplier}
+        mniTransaction:
+            Label:Tr&ansaction
+            mniTransactionNewInvoice: {Action=actTransactionNewInvoice}
+            mniTransactionNewCreditNote: {Action=actTransactionNewCreditNote}
+            mniSeparator: {Label=-}
+            mniTransactionOpenSelected: {Action=actTransactionOpenSelected}
+            mniTransactionOpenTagged: {Action=actTransactionOpenTagged}
+            mniTransactionApproveTagged: {Action=actTransactionApproveTagged}
+            mniSeparator: {Label=-}
+            mniTransactionDeleteSelected: {Action=actTransactionDeleteSelected}
+            mniTransactionPostTagged: {Action=actTransactionPostTagged}
+            mniSeparator: {Label=-}
+            mniTransactionReverseSelected: {Action=actTransactionReverseSelected}
+            mniTransactionAddTaggedToPayment: {Action=actTransactionAddTaggedToPayment}
         mniInvoice:
             Label:&Invoice
-            mniOpenSelected: {Action=actOpenSelected}
-            mniOpenTagged: {Action=actOpenTagged}
-            mniApproveTagged: {Action=actApproveTagged}
+            mniInvoiceOpenSelected: {Action=actInvoiceOpenSelected}
+            mniInvoiceOpenTagged: {Action=actInvoiceOpenTagged}
+            mniInvoiceApproveTagged: {Action=actInvoiceApproveTagged}
             mniSeparator: {Label=-}
-            mniDeleteTagged: {Action=actDeleteTagged}
-            mniPostTagged: {Action=actPostTagged}
+            mniInvoiceDeleteTagged: {Action=actInvoiceDeleteTagged}
+            mniInvoicePostTagged: {Action=actInvoicePostTagged}
             mniSeparator: {Label=-}
-            mniReverseTagged: {Action=actReverseTagged}
-            mniPayTagged: {Action=actPayTagged}
+            mniInvoiceReverseTagged: {Action=actInvoiceReverseTagged}
+            mniInvoicePayTagged: {Action=actInvoicePayTagged}

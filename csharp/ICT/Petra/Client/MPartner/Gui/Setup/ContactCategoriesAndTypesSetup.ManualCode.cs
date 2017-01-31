@@ -32,6 +32,9 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -423,6 +426,36 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                     Catalog.GetString("Saving of Data Required"),
                     MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            PPartnerAttributeTypeTable typeTable = (PPartnerAttributeTypeTable)TDataCache.TMPartner.
+                                                   GetCacheablePartnerTable(TCacheablePartnerTablesEnum.ContactTypeList);
+            DataView typeDataView = new DataView(typeTable);
+
+            typeDataView.Sort = PPartnerAttributeTypeTable.GetCategoryCodeDBName();
+
+            TFormDataKeyDescriptionList recordList = new TFormDataKeyDescriptionList();
+            recordList.Title = "Contact Categories and Types";
+            recordList.KeyTitle = Catalog.GetString("Contact Category");
+            recordList.DescriptionTitle = Catalog.GetString("Contact Type");
+            recordList.Field3Title = Catalog.GetString("Description");
+
+            PPartnerAttributeTypeRow typeRow;
+
+            foreach (DataRowView typeRowView in typeDataView)
+            {
+                TFormDataKeyDescription record = new TFormDataKeyDescription();
+
+                typeRow = (PPartnerAttributeTypeRow)typeRowView.Row;
+                record.Key = typeRow.CategoryCode;
+                record.Description = typeRow.AttributeType;
+                record.Field3 = typeRow.Description;
+                recordList.Add(record);
+            }
+
+            TStandardFormPrint.PrintRecordList(recordList, 3, APrintApplication, typeDataView.Count, typeDataView, "", APreviewMode);
         }
     }
 }

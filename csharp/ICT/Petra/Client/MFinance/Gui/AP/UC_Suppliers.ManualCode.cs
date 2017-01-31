@@ -110,8 +110,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             TFrmPetraUtils utils = FMainForm.GetPetraUtilsObject();
             utils.SetStatusBarText(grdSuppliers, Catalog.GetString("Double-click a supplier to see the transaction history"));
-            utils.SetStatusBarText(btnCreateCreditNote, Catalog.GetString("Click to create a credit note for the selected supplier"));
-            utils.SetStatusBarText(btnCreateInvoice, Catalog.GetString("Click to create an invoice for the selected supplier"));
+            utils.SetStatusBarText(btnNewCreditNote, Catalog.GetString("Click to create a credit note for the selected supplier"));
+            utils.SetStatusBarText(btnNewInvoice, Catalog.GetString("Click to create an invoice for the selected supplier"));
             utils.SetStatusBarText(btnEditDetails, Catalog.GetString("Click to edit the details for the selected supplier"));
             utils.SetStatusBarText(btnNewSupplier, Catalog.GetString("Click to create a new supplier"));
             //utils.SetStatusBarText(btnSupplierTransactions, Catalog.GetString("Click to view the transaction history for the selected supplier"));
@@ -315,7 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdSuppliers.SetHeaderTooltip(3, Catalog.GetString("Status"));
 
             UpdateRecordNumberDisplay();
-            FMainForm.ActionEnabledEvent(null, new ActionEventArgs("cndSelectedSupplier", grdSuppliers.TotalPages > 0));
+            FMainForm.SupplierCount = grdSuppliers.Rows.Count - 1;
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// get the partner key of the currently selected supplier in the grid
         /// </summary>
         /// <returns></returns>
-        private Int64 GetCurrentlySelectedSupplier()
+        public Int64 GetCurrentlySelectedSupplier()
         {
             DataRowView[] SelectedGridRow = grdSuppliers.SelectedDataRowsAsDataRowView;
             Int64 SupplierKey = -1;
@@ -436,17 +436,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <summary>
         /// open the transactions of the selected supplier
         /// </summary>
-        public void SupplierTransactions(object sender, EventArgs e)
+        private void SupplierTransactions(object sender, EventArgs e)
         {
-            Int64 SelectedSupplier = GetCurrentlySelectedSupplier();
-
-            if (SelectedSupplier != -1)
-            {
-                TFrmAPSupplierTransactions frm = new TFrmAPSupplierTransactions(FMainForm);
-
-                frm.LoadSupplier(FMainForm.LedgerNumber, SelectedSupplier);
-                frm.Show();
-            }
+            FMainForm.SelectTab(TFrmAPMain.APMainTabEnum.SupplierHistory);
         }
 
         /// <summary>
@@ -515,6 +507,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 this.Cursor = Cursors.Default;
 
                 frm.Show();
+
+                FMainForm.IsInvoiceDataChanged = true;
             }
         }
 
@@ -535,6 +529,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 this.Cursor = Cursors.Default;
 
                 frm.Show();
+
+                FMainForm.IsInvoiceDataChanged = true;
             }
         }
 
@@ -548,13 +544,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 ActionEnabledEvent(null, new ActionEventArgs("actEditDetails", gotRows));
                 ActionEnabledEvent(null, new ActionEventArgs("actSupplierTransactions", gotRows));
-                ActionEnabledEvent(null, new ActionEventArgs("actCreateInvoice", gotRows));
-                ActionEnabledEvent(null, new ActionEventArgs("actCreateCreditNote", gotRows));
+                ActionEnabledEvent(null, new ActionEventArgs("actNewInvoice", gotRows));
+                ActionEnabledEvent(null, new ActionEventArgs("actNewCreditNote", gotRows));
 
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actEditDetails", gotRows));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actSupplierTransactions", gotRows));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actCreateInvoice", gotRows));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actCreateCreditNote", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actSupplierEditSupplier", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actSupplierOpenTransactions", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actSupplierNewInvoice", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actSupplierNewCreditNote", gotRows));
 
                 if (gotRows)
                 {

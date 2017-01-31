@@ -37,7 +37,7 @@ RootNode:
             Type: PartnerKey
             PartnerClass: UNIT
         chkInclude:
-            Label: Include Conferences and Outreachs
+            Label: Include Conferences and Outreaches
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
        

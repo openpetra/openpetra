@@ -55,16 +55,27 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <returns>returns table filled with all extract headers</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static MExtractMasterTable GetAllExtractHeaders()
+        public static ExtractTDSMExtractMasterTable GetAllExtractHeaders()
         {
-            MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
+            ExtractTDSMExtractMasterTable ExtractMasterDT = new ExtractTDSMExtractMasterTable();
             TDBTransaction Transaction = null;
+            string SqlStmt;
 
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
                 ref Transaction,
                 delegate
                 {
-                    ExtractMasterDT = MExtractMasterAccess.LoadAll(Transaction);
+                    // Use a direct sql statement rather than db access classes to improve performance as otherwise
+                    // we would need an extra query for each row of an extract to retrieve partner name and class
+                    SqlStmt = "SELECT pub_" + MExtractMasterTable.GetTableDBName() + ".*" +
+                              ", pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetRetiredDBName() +
+                              ", NOT pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetRetiredDBName() + " AS Active" +
+                              " FROM pub_" + MExtractMasterTable.GetTableDBName() + ", pub_" + SUserTable.GetTableDBName() +
+                              " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                              " = pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetUserIdDBName() +
+                              " ORDER BY " + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName();
+
+                    DBAccess.GDBAccessObj.SelectDT(ExtractMasterDT, SqlStmt, Transaction, null, -1, -1);
                 });
 
             return ExtractMasterDT;
@@ -100,7 +111,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="ADateModifiedTo"></param>
         /// <returns>returns table filled with all extract headers</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static MExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, String AExtractDescFilter,
+        public static ExtractTDSMExtractMasterTable GetAllExtractHeaders(String AExtractNameFilter, String AExtractDescFilter,
             Boolean AAllUsers, String AUserCreated, String AUserModified, DateTime? ADateCreatedFrom,
             DateTime? ADateCreatedTo, DateTime? ADateModifiedFrom, DateTime ? ADateModifiedTo)
         {
@@ -116,7 +127,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return GetAllExtractHeaders();
             }
 
-            MExtractMasterTable ExtractMasterDT = new MExtractMasterTable();
+            ExtractTDSMExtractMasterTable ExtractMasterDT = new ExtractTDSMExtractMasterTable();
             string SqlStmt;
             List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
 
@@ -134,8 +145,13 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
             // Use a direct sql statement rather than db access classes to improve performance as otherwise
             // we would need an extra query for each row of an extract to retrieve partner name and class
-            SqlStmt = "SELECT * FROM " + MExtractMasterTable.GetTableDBName() +
-                      " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
+            SqlStmt = "SELECT pub_" + MExtractMasterTable.GetTableDBName() + ".*" +
+                      ", pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetRetiredDBName() +
+                      ", NOT pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetRetiredDBName() + " AS Active" +
+                      " FROM pub_" + MExtractMasterTable.GetTableDBName() + ", pub_" + SUserTable.GetTableDBName() +
+                      " WHERE pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetCreatedByDBName() +
+                      " = pub_" + SUserTable.GetTableDBName() + "." + SUserTable.GetUserIdDBName() +
+                      " AND pub_" + MExtractMasterTable.GetTableDBName() + "." + MExtractMasterTable.GetExtractNameDBName() +
                       " LIKE '" + AExtractNameFilter + "'";
 
             if (AExtractDescFilter.Length > 0)

@@ -110,6 +110,29 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         }
 
         /// <summary>
+        /// Uploads a conference form template to the specified data row.  The FormCode for this is always CONFERENCE
+        /// </summary>
+        /// <param name="AFormName">Form name</param>
+        /// <param name="ALanguageCode">language code</param>
+        /// <param name="ATemplateText">The template as a base64 string</param>
+        /// <param name="AUserID">User ID who is doing the upload</param>
+        /// <param name="AUploadDateTime">Local date and time from the user PC that is doing the upload</param>
+        /// <param name="ATemplateFileExtension">File extension of template file (eg docx)</param>
+        /// <returns>True if the table record was modified successfully</returns>
+        [RequireModulePermission("CONFERENCE")]
+        public static bool UploadConferenceFormTemplate(String AFormName, String ALanguageCode, String ATemplateText,
+            String AUserID, DateTime AUploadDateTime, String ATemplateFileExtension)
+        {
+            return UploadFormTemplate(MCommonConstants.FORM_CODE_CONFERENCE,
+                AFormName,
+                ALanguageCode,
+                ATemplateText,
+                AUserID,
+                AUploadDateTime,
+                ATemplateFileExtension);
+        }
+
+        /// <summary>
         /// Main private helper method that uploads a form template to the specified data row
         /// </summary>
         /// <param name="AFormCode">Form Code</param>
@@ -177,12 +200,34 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// <summary>
         /// Returns a single row PFormTable that contains the full template text as a base64 string.
         /// The parameters are two of the three elements of the table primary key.
+        /// Use for Partner form downloads
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PFormTable DownloadSystemFormTemplate(String AFormName, String ALanguageCode)
+        {
+            return DownloadFormTemplate(MCommonConstants.FORM_CODE_SYSTEM, AFormName, ALanguageCode);
+        }
+
+        /// <summary>
+        /// Returns a single row PFormTable that contains the full template text as a base64 string.
+        /// The parameters are two of the three elements of the table primary key.
         /// Use for Personnel form downloads
         /// </summary>
         [RequireModulePermission("PERSONNEL")]
         public static PFormTable DownloadPersonnelFormTemplate(String AFormName, String ALanguageCode)
         {
             return DownloadFormTemplate(MCommonConstants.FORM_CODE_PERSONNEL, AFormName, ALanguageCode);
+        }
+
+        /// <summary>
+        /// Returns a single row PFormTable that contains the full template text as a base64 string.
+        /// The parameters are two of the three elements of the table primary key.
+        /// Use for Personnel form downloads
+        /// </summary>
+        [RequireModulePermission("PERSONNEL")]
+        public static PFormTable DownloadConferenceFormTemplate(String AFormName, String ALanguageCode)
+        {
+            return DownloadFormTemplate(MCommonConstants.FORM_CODE_CONFERENCE, AFormName, ALanguageCode);
         }
 
         /// <summary>
@@ -231,6 +276,16 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         }
 
         /// <summary>
+        /// return a table with forms for the partner module
+        /// </summary>
+        /// <returns>Result Form Table</returns>
+        [RequireModulePermission("CONFERENCE")]
+        public static PFormTable GetConferenceForms()
+        {
+            return GetForms(MCommonConstants.FORM_CODE_CONFERENCE, String.Empty);
+        }
+
+        /// <summary>
         /// return a table with forms for the personnel module
         /// </summary>
         /// <returns>Result Form Table</returns>
@@ -256,7 +311,8 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
                 || (AFormCode == MCommonConstants.FORM_CODE_PERSONNEL)
                 || (AFormCode == MCommonConstants.FORM_CODE_CHEQUE)
                 || (AFormCode == MCommonConstants.FORM_CODE_RECEIPT)
-                || (AFormCode == MCommonConstants.FORM_CODE_REMITTANCE))
+                || (AFormCode == MCommonConstants.FORM_CODE_REMITTANCE)
+                || (AFormCode == MCommonConstants.FORM_CODE_CONFERENCE))
             {
                 TemplateRow.FormCode = AFormCode;
                 TemplateRow.TemplateAvailable = true;

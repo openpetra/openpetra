@@ -376,7 +376,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </returns>
         public virtual bool InitialiseData(String AReportParameter)
         {
-            bool ReturnValue = true;
+            if (FReportName == "")
+            {
+                return false; // Come back when you have more information!
+            }
 
             if (!HasSufficientPermissions())
             {
@@ -402,7 +405,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SetAvailableFunctions();
             }
 
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -1018,21 +1021,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// Allow to store and load settings
+        /// Hide/show menu items related to FastReports
         /// </summary>
         /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
-        public void EnableDisableSettings(bool AEnabled)
+        public void EnableDisableFastReports(bool AEnabled)
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
-//          ToolStrip tbrMain = (ToolStrip)FFormReportUi.Controls["tbrMain"];
-            ToolStripMenuItem nmuFile = (ToolStripMenuItem)mnuMain.Items[0];
+            ToolStripMenuItem mnuFile = (ToolStripMenuItem)mnuMain.Items[0];
 
-            nmuFile.DropDownItems["mniLoadSettings"].Visible = AEnabled;
-            nmuFile.DropDownItems["mniSaveSettings"].Visible = AEnabled;
-            nmuFile.DropDownItems["mniSaveSettingsAs"].Visible = AEnabled;
-            nmuFile.DropDownItems["mniMaintainSettings"].Visible = AEnabled;
+            if (mnuFile.DropDownItems["mniSeparator1"] != null)
+            {
+                mnuFile.DropDownItems["mniSeparator1"].Visible = AEnabled;
+            }
 
-            nmuFile.DropDownItems["mniMaintainTemplates"].Visible = !AEnabled;
+            mnuFile.DropDownItems["mniMaintainTemplates"].Visible = AEnabled;
         }
 
         /// <summary>
@@ -1045,7 +1047,15 @@ namespace Ict.Petra.Client.MReporting.Gui
         public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
-            ToolStripMenuItem mniLoadSettings = (ToolStripMenuItem)mnuMain.Items["mniLoadSettings"];
+            ToolStripMenuItem mnuFile = (ToolStripMenuItem)mnuMain.Items[0];
+
+            ToolStripItem[] arrayMniLoadSettings = mnuFile.DropDown.Items.Find("mniLoadSettings", false);
+            ToolStripMenuItem mniLoadSettings = null;
+
+            if (arrayMniLoadSettings != null)
+            {
+                mniLoadSettings = (ToolStripMenuItem)arrayMniLoadSettings[0];
+            }
 
             if ((mniLoadSettings == null) || (AIndex < 0) || (AIndex >= mniLoadSettings.DropDownItems.Count - 2))
             {
@@ -1172,6 +1182,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void LoadDefaultSettings()
         {
+            if (FStoredSettings == null)
+            {
+                return; // Call back here after FStoredSettings is initialised!
+            }
+
             StringCollection RecentlyUsedSettings;
 
             RecentlyUsedSettings = FStoredSettings.GetRecentlyUsedSettings();
@@ -1492,6 +1507,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             ((IFrmReporting)FTheForm).ReadControls(FCalculator, AReportAction);
 
             TParameterList CurrentParameters = FCalculator.GetParameters();
+            FFastReportsPlugin.SaveTemplateInParameters(CurrentParameters);
 
             // if the current parameters don't have any columns, but the backup list has, copy all columns
             if ((CurrentParameters.Get("MaxDisplayColumns").ToInt32() == 0) && (FParametersFromFile.Get("MaxDisplayColumns").ToInt32() > 0))
@@ -1516,6 +1532,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void SetControls(TParameterList AParameters)
         {
+            FFastReportsPlugin.SetTemplateFromParameters(AParameters);
             ((IFrmReporting)FTheForm).SetControls(AParameters);
         }
 

@@ -54,6 +54,18 @@ namespace Ict.Petra.Shared.MCommon
         public static readonly string StrExceptionWhileSavingBatch = Catalog.GetString(
             "An exception occurred while saving the batch with description: '{0}'");
 
+        /// <summary>'DuplicateKey exception while saving a batch' - part 1</summary>
+        public static readonly string StrDuplicateKeyExceptionWhileSavingBatch1 = Catalog.GetString(
+            "The data could not be saved because the Batch Number that was available at the start of the import had already been used.  ");
+
+        /// <summary>'DuplicateKey exception while saving a batch' - part 2</summary>
+        public static readonly string StrDuplicateKeyExceptionWhileSavingBatch2 = Catalog.GetString(
+            "This could be because another user was importing batches at the same time as you.  ");
+
+        /// <summary>'DuplicateKey exception while saving a batch' - part 3</summary>
+        public static readonly string StrDuplicateKeyExceptionWhileSavingBatch3 = Catalog.GetString(
+            "Please try to import the same file again, because another attempt may well be successful.");
+
         /// <summary>'Parsing error in Line {0}'</summary>
         public static readonly string StrParsingErrorInLine = Catalog.GetString("Parsing error in Line {0}");
 
@@ -71,6 +83,12 @@ namespace Ict.Petra.Shared.MCommon
 
         /// <summary>'Validation error in line {0}'</summary>
         public static readonly string StrValidationErrorInLine = Catalog.GetString("Validation error in line {0}");
+
+        /// <summary>'Error adding transactions'</summary>
+        public static readonly string StrErrorAddingTransactions = Catalog.GetString("Error adding transactions");
+
+        /// <summary>'Error adding transactions'</summary>
+        public static readonly string StrHintReviewJournalContent = Catalog.GetString("Please review the current content of this Journal");
 
         #endregion
 
@@ -107,11 +125,17 @@ namespace Ict.Petra.Shared.MCommon
 
         #region Common Form Design Codes
 
+        /// <summary>System</summary>
+        public const String FORM_CODE_SYSTEM = "SYSTEM";
+
         /// <summary>Partner</summary>
         public const String FORM_CODE_PARTNER = "PARTNER";
 
-        /// <summary>Partner</summary>
+        /// <summary>Personnel</summary>
         public const String FORM_CODE_PERSONNEL = "PERSONNEL";
+
+        /// <summary>Conference</summary>
+        public const String FORM_CODE_CONFERENCE = "CONFERENCE";
 
         /// <summary>Cheque</summary>
         public const String FORM_CODE_CHEQUE = "CHEQUE";
@@ -171,6 +195,9 @@ namespace Ict.Petra.Shared.MCommon
 
         /// <summary>Form Letter Contexts</summary>
         public const string FORM_LETTER_CONTEXT_PERSONNEL = "PERSONNEL";
+
+        /// <summary>Form Letter Contexts</summary>
+        public const string FORM_LETTER_CONTEXT_CONFERENCE = "CONFERENCE";
 
         #endregion
     }

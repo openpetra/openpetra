@@ -29,6 +29,7 @@ using System.IO;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
 
@@ -114,11 +115,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         /// <param name="ARequestParams">Hashtable containing the given params </param>
         /// <param name="AImportString">Big parts of the export file as a simple String</param>
+        /// <param name="AClientRefreshRequired">Will be set to true on exit if the client needs to refresh its data</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         public bool ImportGLBatches(
             Hashtable ARequestParams,
             String AImportString,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
@@ -144,6 +147,8 @@ namespace Ict.Petra.Server.MFinance.GL
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
             bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
+            bool clientRefreshRequired = false;
+            bool StartedSaving = false;
 
             // Set culture from parameters
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
@@ -698,6 +703,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
 
                         // Everything is ok, so we can do our finish actions
+                        StartedSaving = true;
 
                         // Save all pending changes (last xxx number is updated)
                         ImportMessage = Catalog.GetString("Saving daily exchange rate data");
@@ -726,43 +732,55 @@ namespace Ict.Petra.Server.MFinance.GL
                         ATransactionAccess.SubmitChanges(MainDS.ATransaction, transaction);
                         MainDS.ATransaction.AcceptChanges();
 
+                        clientRefreshRequired = true;
+
                         // Now we are done!!!
                         submissionOK = true;
                     } // try
                     catch (Exception ex)
                     {
-                        // Parse the exception text for possible references to database foreign keys
-                        // Make the message more friendly in that case
-                        string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
-
-                        if (RowNumber > 0)
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
                         {
-                            // At least we made a start
-                            string msg = ImportMessage;
-
-                            if (friendlyExceptionText.Length > 0)
-                            {
-                                msg += FNewLine + friendlyExceptionText;
-                            }
-
-                            if (ImportMessage.StartsWith(Catalog.GetString("Saving ")))
-                            {
-                                // Do not display any specific line number because these errors occur outside the parsing loop
-                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileSavingBatch,
-                                            NewBatch.BatchDescription),
-                                        msg, TResultSeverity.Resv_Critical));
-                            }
-                            else
-                            {
-                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                        msg, TResultSeverity.Resv_Critical));
-                            }
+                            // This also indicates that another user may have been importing at the same time
+                            Messages.Add(new TVerificationResult("ImportGLBatches",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                            clientRefreshRequired = true;
                         }
                         else
                         {
-                            // We got an exception before we even started parsing the rows (getting a transaction?)
-                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                    friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            // Parse the exception text for possible references to database foreign keys
+                            // Make the message more friendly in that case
+                            string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
+
+                            if (RowNumber > 0)
+                            {
+                                // At least we made a start
+                                string msg = ImportMessage;
+
+                                if (friendlyExceptionText.Length > 0)
+                                {
+                                    msg += " : " + friendlyExceptionText;
+                                }
+
+                                if (StartedSaving)
+                                {
+                                    // Do not display any specific line number because these errors occur outside the parsing loop
+                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileSavingBatch,
+                                                NewBatch.BatchDescription),
+                                            msg, TResultSeverity.Resv_Critical));
+                                }
+                                else
+                                {
+                                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                            msg, TResultSeverity.Resv_Critical));
+                                }
+                            }
+                            else
+                            {
+                                // We got an exception before we even started parsing the rows (getting a transaction?)
+                                Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                        friendlyExceptionText, TResultSeverity.Resv_Critical));
+                            }
                         }
 
                         TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -796,6 +814,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // Set our 'out' parameters
             AMessages = Messages;
+            AClientRefreshRequired = clientRefreshRequired;
 
             return submissionOK;
         } // Import GL Batches
@@ -808,6 +827,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <param name="ALedgerNumber"></param>
         /// <param name="ABatchNumber"></param>
         /// <param name="AJournalNumber"></param>
+        /// <param name="AClientRefreshRequired"></param>
         /// <param name="AMessages"></param>
         /// <returns></returns>
         public bool ImportGLTransactions(
@@ -816,6 +836,7 @@ namespace Ict.Petra.Server.MFinance.GL
             Int32 ALedgerNumber,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages)
         {
             string ImportMessage = Catalog.GetString("Initialising");
@@ -840,6 +861,9 @@ namespace Ict.Petra.Server.MFinance.GL
             String NumberFormat = (String)ARequestParams["NumberFormat"];
             FNewLine = (String)ARequestParams["NewLine"];
             bool datesMayBeIntegers = (bool)ARequestParams["DatesMayBeIntegers"];
+            int lastTransactionNumberOnClient = (int)ARequestParams["LastTransactionNumber"];
+            bool clientRefreshRequired = false;
+            bool StartedSaving = false;
 
             FCultureInfoNumberFormat = new CultureInfo(NumberFormat.Equals("American") ? "en-US" : "de-DE");
             FCultureInfoDate = StringHelper.GetCultureInfoForDateFormat(DateFormat);
@@ -852,6 +876,7 @@ namespace Ict.Petra.Server.MFinance.GL
             Int32 PreviousPercentDone = 0;
             bool submissionOK = false;
             Boolean CancelledByUser = false;
+            int transactionsAdded = 0;
 
             // Create some validation dictionaries
             TValidationControlsDict ValidationControlsDictTransaction = new TValidationControlsDict();
@@ -891,6 +916,19 @@ namespace Ict.Petra.Server.MFinance.GL
                         ACostCentreAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         AAccountAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
                         ALedgerInitFlagAccess.LoadViaALedger(SetupDS, LedgerNumber, Transaction);
+
+                        int startTransactionCount = ATransactionAccess.CountViaAJournal(ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+                        if (startTransactionCount != lastTransactionNumberOnClient)
+                        {
+                            // This indicates that another client has already started adding transactions to this journal on a parallel database transaction
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrErrorAddingTransactions,
+                                    Catalog.GetString("Another user has already started adding transactions to this journal") +
+                                    MCommonConstants.StrHintReviewJournalContent,
+                                    TResultSeverity.Resv_Critical));
+                            clientRefreshRequired = true;
+                            return;
+                        }
 
                         DateTime firstDayOfMonth;
                         decimal intlRateFromBase = -1.0m;
@@ -957,6 +995,8 @@ namespace Ict.Petra.Server.MFinance.GL
                                 ImportGLTransactionsInner(LedgerNumber, RowNumber, ref MainDS, ref SetupDS, ref NewBatchRow, ref NewJournalRow,
                                     intlRateFromBase, datesMayBeIntegers, ref Transaction, ref ImportMessage, ref Messages,
                                     ref ValidationControlsDictTransaction);
+
+                                transactionsAdded++;
                             }  // if the CSV line qualifies
 
                             if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob == true)
@@ -1027,7 +1067,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         }
 
                         // Everything is ok, so we can do our finish actions
-
+                        StartedSaving = true;
 
                         //Finally submit all our changes
                         ImportMessage = Catalog.GetString("Saving transactions");
@@ -1050,43 +1090,67 @@ namespace Ict.Petra.Server.MFinance.GL
                         ABatchAccess.SubmitChanges(MainDS.ABatch, Transaction);
                         MainDS.ABatch.AcceptChanges();
 
+                        clientRefreshRequired = true;
+
+                        // Now we do one final check for concurrent activity
+                        int endTransactionCount = ATransactionAccess.CountViaAJournal(ALedgerNumber, ABatchNumber, AJournalNumber, Transaction);
+
+                        if (endTransactionCount > (startTransactionCount + transactionsAdded))
+                        {
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrErrorAddingTransactions,
+                                    Catalog.GetString("Another user has added transactions to this journal at the same time as you.  ") +
+                                    MCommonConstants.StrHintReviewJournalContent,
+                                    TResultSeverity.Resv_Critical));
+                            return;
+                        }
+
                         // Now we are done!!!
                         submissionOK = true;
                     }); // Begin Auto Transaction
             } // try
             catch (Exception ex)
             {
-                // Parse the exception text for possible references to database foreign keys
-                // Make the message more friendly in that case
-                String friendlyExceptionText = MakeFriendlyFKExceptions(ex, "T");
-
-                if (RowNumber > 0)
+                if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
                 {
-                    // At least we made a start
-                    string msg = ImportMessage;
-
-                    if (friendlyExceptionText.Length > 0)
-                    {
-                        msg += FNewLine + friendlyExceptionText;
-                    }
-
-                    if (ImportMessage.StartsWith(Catalog.GetString("Saving ")))
-                    {
-                        // Do not display any specific line number because these errors occur outside the parsing loop
-                        Messages.Add(new TVerificationResult(MCommonConstants.StrExceptionWhileSavingTransactions,
-                                msg, TResultSeverity.Resv_Critical));
-                    }
-                    else
-                    {
-                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                                msg, TResultSeverity.Resv_Critical));
-                    }
+                    // This also indicates that another user may have been importing at the same time
+                    Messages.Add(new TVerificationResult("ImportGLTransactions",
+                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                    clientRefreshRequired = true;
                 }
                 else
                 {
-                    // We got an exception before we even started parsing the rows (getting a transaction?)
-                    Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
-                            friendlyExceptionText, TResultSeverity.Resv_Critical));
+                    // Parse the exception text for possible references to database foreign keys
+                    // Make the message more friendly in that case
+                    string friendlyExceptionText = MakeFriendlyFKExceptions(ex);
+
+                    if (RowNumber > 0)
+                    {
+                        // At least we made a start
+                        string msg = ImportMessage;
+
+                        if (friendlyExceptionText.Length > 0)
+                        {
+                            msg += " : " + friendlyExceptionText;
+                        }
+
+                        if (StartedSaving)
+                        {
+                            // Do not display any specific line number because these errors occur outside the parsing loop
+                            Messages.Add(new TVerificationResult(MCommonConstants.StrExceptionWhileSavingTransactions,
+                                    msg, TResultSeverity.Resv_Critical));
+                        }
+                        else
+                        {
+                            Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                    msg, TResultSeverity.Resv_Critical));
+                        }
+                    }
+                    else
+                    {
+                        // We got an exception before we even started parsing the rows (getting a transaction?)
+                        Messages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, RowNumber),
+                                friendlyExceptionText, TResultSeverity.Resv_Critical));
+                    }
                 }
 
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
@@ -1119,6 +1183,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
             // Set our 'out' parameters
             AMessages = Messages;
+            AClientRefreshRequired = clientRefreshRequired;
 
             return submissionOK;
         } // Import GL Transactions
@@ -1152,10 +1217,10 @@ namespace Ict.Petra.Server.MFinance.GL
             int nonCriticalErrorCount = 0;
 
             string costCentreCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre"),
-                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
+                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
 
             string accountCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Account code"),
-                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
+                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
 
             // This might add a non-critical error
             int msgCount = AMessages.Count;
@@ -1167,10 +1232,10 @@ namespace Ict.Petra.Server.MFinance.GL
             NewTransaction.AccountCode = accountCode;
 
             NewTransaction.Narrative = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Narrative"),
-                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
 
             NewTransaction.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
-                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
 
             DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, ADatesMayBeIntegers,
                 Catalog.GetString(
@@ -1188,9 +1253,9 @@ namespace Ict.Petra.Server.MFinance.GL
             for (int i = 0; i < 10; i++)
             {
                 String analysisType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Type") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
                 String analysisValue = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Value") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
 
                 bool gotType = (analysisType != null) && (analysisType.Length > 0);
                 bool gotValue = (analysisValue != null) && (analysisValue.Length > 0);

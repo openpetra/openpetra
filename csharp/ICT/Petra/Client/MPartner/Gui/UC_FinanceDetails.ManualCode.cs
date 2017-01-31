@@ -128,13 +128,41 @@ namespace Ict.Petra.Client.MPartner.Gui
             // set up access to Government Id (e.g. bPK) when needed
             FGovIdEnabled = FPartnerEditUIConnector.IsGovIdEnabled();
 
+            grpRecipientGiftReceipting.Anchor = (AnchorStyles.Left | AnchorStyles.Right);
+
+            grpOther.Anchor = (AnchorStyles.Left | AnchorStyles.Right);
+
             if (FGovIdEnabled)
             {
-                lblGovId.Text = FPartnerEditUIConnector.GetGovIdLabel() + ":";
+                lblGovId.Text = TSystemDefaults.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_LABEL, "") + ":";
+                chkNoUpload.Text = TSystemDefaults.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_NO_UPLOAD_LABEL, "");
+                chkNoUpload.Width = 200;
+
+                pnlMiscSettings.Height += 36;
+                pnlLeftMiscSettings.Height += 36;
+                pnlRightMiscSettings.Height += 26;
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    grpOther.Top -= 13;
+                    grpRecipientGiftReceipting.Top -= 13;
+                    grpOther.Height += 35;
+                    pnlRightMiscSettings.Height += 5;
+                    grpOther.Width += pnlRightMiscSettings.Width - grpOther.Width - 5;
+                    grpRecipientGiftReceipting.Width += pnlRightMiscSettings.Width - grpRecipientGiftReceipting.Width - 5;
+                }
             }
             else
             {
                 pnlLeftMiscSettings.Controls.Remove(this.grpGovId);
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    grpOther.Width += pnlRightMiscSettings.Width - grpOther.Width - 5;
+                    grpRecipientGiftReceipting.Width += pnlRightMiscSettings.Width - grpRecipientGiftReceipting.Width - 5;
+                }
             }
 
             if (FTaxDeductiblePercentageEnabled)
@@ -170,23 +198,40 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                grpOther.Dock = DockStyle.Fill;
+
                 //Remove RecipientGiftReceipting
                 grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
                 grpRecipientGiftReceipting.Visible = false;
                 pnlRightMiscSettings.Controls.Remove(grpRecipientGiftReceipting);
 
                 //Reset and rescale the Finance Comment
-                grpOther.Top = grpRecipientGiftReceipting.Top;
-                txtFinanceComment.Height += grpLeftMiscSettings.Height - grpOther.Height;
-                grpOther.Height = grpLeftMiscSettings.Height;
+                //grpOther.Top = grpRecipientGiftReceipting.Top + 10;
+                pnlRightMiscSettings.Height = pnlLeftMiscSettings.Height - 19;
+                pnlRightMiscSettings.Top += 3;
 
                 // make sure we have enough space
                 if (FGovIdEnabled)
                 {
                     pnlMiscSettings.Height += 27;
                     pnlLeftMiscSettings.Height += 27;
+                    pnlRightMiscSettings.Height += 32;
+                    grpOther.Height += 27;
                 }
             }
+
+            //
+            // Validation will not be called for the fields above the grid,
+            // unless there's a selected row in the grid.
+
+            txtTaxDeductiblePercentage.Leave += PerformLocalValidation;
+            chkLimitTaxDeductibility.Leave += PerformLocalValidation;
+            dtpTaxDeductibleValidFrom.Leave += PerformLocalValidation;
+        }
+
+        private void PerformLocalValidation(object sender, EventArgs e)
+        {
+            ValidateDataDetailsManual(null);
         }
 
         /// <summary>
@@ -342,6 +387,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 String GovIdKeyName = TSystemDefaults.GetStringDefault(
                     SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
 
+                chkNoUpload.Checked = false;
+                txtGovId.Enabled = true;
                 txtGovId.Text = "";
 
                 if (FMainDS.PTax != null)
@@ -355,7 +402,32 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (TaxView.Count > 0)
                     {
                         // take first row with tax type filtered
-                        txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef;
+
+                        if (((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef == "NoUpload")
+                        {
+                            chkNoUpload.Checked = true;
+                        }
+                        else
+                        {
+                            txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef;
+                        }
+
+                        if (TaxView.Count > 1)
+                        {
+                            if (((PTaxRow)FMainDS.PTax.Rows[1]).TaxRef == "NoUpload")
+                            {
+                                chkNoUpload.Checked = true;
+                            }
+                            else
+                            {
+                                txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[1]).TaxRef;
+                            }
+                        }
+
+                        if (chkNoUpload.Checked)
+                        {
+                            txtGovId.Enabled = false;
+                        }
                     }
                 }
             }
@@ -510,7 +582,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         if (!dtpTaxDeductibleValidFrom.ValidDate(false))
                         {
-                            ValidateValidFromDate();
+                            ValidateTaxDeductibleFromDate();
                             return false;
                         }
 
@@ -570,6 +642,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     String GovIdKeyName = TSystemDefaults.GetStringDefault(
                         SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
                     PTaxRow taxRow;
+                    Boolean RowFound = false;
 
                     if (FMainDS.PTax == null)
                     {
@@ -578,24 +651,46 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     DataView TaxView = new DataView(FMainDS.PTax);
+                    String TaxRef;
+
+                    if (chkNoUpload.Checked)
+                    {
+                        TaxRef = "NoUpload";
+                    }
+                    else
+                    {
+                        TaxRef = txtGovId.Text;
+                    }
 
                     TaxView.RowFilter = String.Format("{0}='{1}'",
                         PTaxTable.GetTaxTypeDBName(),
                         GovIdKeyName);
 
-                    if (TaxView.Count == 0)
+                    if (TaxView.Count > 0)
+                    {
+                        foreach (DataRowView rowView in TaxView)
+                        {
+                            taxRow = (PTaxRow)rowView.Row;
+
+                            if (taxRow.TaxRef == TaxRef)
+                            {
+                                RowFound = true;
+                            }
+                            else
+                            {
+                                // since TaxRef is part of primary key we cannot modify it but need to delete/create if needed
+                                taxRow.Delete();
+                            }
+                        }
+                    }
+
+                    if (!RowFound)
                     {
                         taxRow = FMainDS.PTax.NewRowTyped();
                         taxRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
                         taxRow.TaxType = GovIdKeyName;
-                        taxRow.TaxRef = txtGovId.Text;
+                        taxRow.TaxRef = TaxRef;
                         FMainDS.PTax.Rows.Add(taxRow);
-                    }
-                    else
-                    {
-                        // take first row with tax type filtered
-                        taxRow = (PTaxRow)FMainDS.PTax.Rows[0];
-                        taxRow.TaxRef = txtGovId.Text;
                     }
                 }
             }
@@ -1123,6 +1218,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
+        private void ChkNoUpload_Change(System.Object sender, System.EventArgs e)
+        {
+            if (FFirstTime)
+            {
+                // don't do this while screen is initialized with data
+                return;
+            }
+
+            if (chkNoUpload.Checked)
+            {
+                if (txtGovId.Text.Length > 0)
+                {
+                    if (MessageBox.Show(string.Format(Catalog.GetString(
+                                    "Selecting the '{0}' Box will clear the entry for '{1}'. Are you sure you want to continue?"), chkNoUpload.Text,
+                                lblGovId.Text),
+                            Catalog.GetString("Select No Upload"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information) == DialogResult.No)
+                    {
+                        chkNoUpload.Checked = false;
+                        return;
+                    }
+                }
+
+                txtGovId.Text = "";
+                txtGovId.Enabled = false;
+            }
+            else
+            {
+                txtGovId.Enabled = true;
+            }
+        }
+
         #endregion
 
         #region Deletion
@@ -1257,17 +1385,35 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ValidateDataDetailsManual(PBankingDetailsRow ARow)
         {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                if (chkLimitTaxDeductibility.Checked)
+                {
+                    // validate dtpTaxDeductibleValidFrom
+                    ValidateTaxDeductibleFromDate();
+                }
+
+                Decimal? enteredPercentage = txtTaxDeductiblePercentage.NumberValueDecimal;
+
+                if (enteredPercentage.HasValue)
+                {
+                    if (enteredPercentage.Value > 100)
+                    {
+                        txtTaxDeductiblePercentage.NumberValueDecimal = 100;
+                    }
+
+                    if (enteredPercentage.Value < 0)
+                    {
+                        txtTaxDeductiblePercentage.NumberValueDecimal = 0;
+                    }
+                }
+            }
+
             if (ARow == null)
             {
                 return;
-            }
-
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            if (FTaxDeductiblePercentageEnabled && chkLimitTaxDeductibility.Checked)
-            {
-                // validate dtpTaxDeductibleValidFrom
-                ValidateValidFromDate();
             }
 
             // obtain the bank's country code (if it exists)
@@ -1302,11 +1448,18 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Adds validation for dtpTaxDeductibleValidFrom
         /// </summary>
         /// <returns>Returns false if validation error</returns>
-        private bool ValidateValidFromDate()
+        private bool ValidateTaxDeductibleFromDate()
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TScreenVerificationResult VerificationResult = null;
+
+            if (FMainDS.PPartnerTaxDeductiblePct == null) // If I don't have this table yet - apparently I can just go ahead and create one...
+            {
+                FMainDS.Tables.Add(new PPartnerTaxDeductiblePctTable());
+                FMainDS.InitVars();
+            }
+
             DataColumn ValidationColumn = FMainDS.PPartnerTaxDeductiblePct.ColumnDateValidFrom;
             bool ReturnValue = true;
 

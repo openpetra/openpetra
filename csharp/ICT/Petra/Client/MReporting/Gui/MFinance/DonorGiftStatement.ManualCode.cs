@@ -295,7 +295,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             // Register datatables with the report
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["PartnersAddresses"], "DonorAddresses");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Totals"], "Totals");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["TaxRef"], "TaxRef");

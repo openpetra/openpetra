@@ -196,8 +196,40 @@ namespace Ict.Common.DB
                 m = Regex.Match(ReturnValue, "#([0-9][0-9][0-9][0-9])-([0-9][0-9])-([0-9][0-9])#");
             }
 
-            // PostgreSQL's 'LIKE' command is case-sensitive, but we prefer case insensitive search
-            ReturnValue = ReturnValue.Replace("LIKE", "ILIKE");
+            // PostgreSQL's 'LIKE' command is case-sensitive, but we prefer case insensitive search ie ILIKE
+            // We need to check whether LIKE is inside quoted text.
+            // This has caught us out when storing Base64 text converted from a binary string (Form Templates)
+            // Note: there is a test for this part of the method : see TestPostgreSQL_ILIKE
+            int posLike = -1;
+            int posStartQuote = -1;
+            bool inQuotes = false;
+            int pos = -1;
+
+            while (true)
+            {
+                posLike = ReturnValue.IndexOf("LIKE", ++pos);
+                posStartQuote = ReturnValue.IndexOf('\'', pos);
+
+                if (posLike == -1)
+                {
+                    break;
+                }
+                else if ((posLike >= 0) && ((posStartQuote > posLike) || (posStartQuote == -1)) && !inQuotes)
+                {
+                    // found a LIKE that needs changing
+                    ReturnValue = ReturnValue.Substring(0, posLike) + "I" + ReturnValue.Substring(posLike);
+                    pos = posLike + 4;
+                }
+                else if (posStartQuote >= 0)
+                {
+                    inQuotes = !inQuotes;
+                    pos = posStartQuote;
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             // to avoid Npgsql.NpgsqlException:
             // operator does not exist: boolean = integer

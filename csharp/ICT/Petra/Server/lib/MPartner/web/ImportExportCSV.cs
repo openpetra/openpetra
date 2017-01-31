@@ -300,7 +300,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             {
                 string[] giftReceiptingDefaults = TSystemDefaults.GetStringDefault("GiftReceiptingDefaults", ",no").Split(new char[] { ',' });
                 newPartner.ReceiptLetterFrequency = giftReceiptingDefaults[0];
-                newPartner.ReceiptEachGift = giftReceiptingDefaults[1] == "YES" || giftReceiptingDefaults[1] == "TRUE";
+                newPartner.ReceiptEachGift = giftReceiptingDefaults[1].ToUpper() == "YES" || giftReceiptingDefaults[1].ToUpper() == "TRUE";
             }
 
             PFamilyRow newFamily = AMainDS.PFamily.NewRowTyped();

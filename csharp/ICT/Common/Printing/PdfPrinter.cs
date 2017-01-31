@@ -688,6 +688,7 @@ namespace Ict.Common.Printing
             }
 
             FPdfDocument = new PdfDocument();
+            bool firstPage = true;
 
             do
             {
@@ -748,7 +749,15 @@ namespace Ict.Common.Printing
                     InitFontsAndPens();
                 }
 
-                PrintPage(this, FEv);
+                if (firstPage)
+                {
+                    PrintPage(this, FEv);
+                    firstPage = false;
+                }
+                else
+                {
+                    PrintPage(null, FEv);
+                }
             } while (HasMorePages());
 
             // should we catch an exception if document cannot be written?

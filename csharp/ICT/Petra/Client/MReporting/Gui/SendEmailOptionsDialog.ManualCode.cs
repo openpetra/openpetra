@@ -41,6 +41,9 @@ using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.CommonControls;
+using System.Collections.Specialized;
+using Ict.Common.IO;
+using System.Linq;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -49,6 +52,11 @@ namespace Ict.Petra.Client.MReporting.Gui
     {
         private void InitializeManualCode()
         {
+            var RecentAddrs = new StringCollection();
+
+            RecentAddrs.AddRange(TUserDefaults.GetStringDefault(TSmtpSender.RECENTADDRS).Split('|'));
+            cmbEmail.SetDataSourceStringList(RecentAddrs);
+            cmbEmail.AcceptNewValues = true;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)
@@ -107,13 +115,13 @@ namespace Ict.Petra.Client.MReporting.Gui
         {
             get
             {
-                return txtEmail.Text;
+                return cmbEmail.Text;
             }
         }
 
         private void BtnOK_Click(Object Sender, EventArgs e)
         {
-            if (txtEmail.Text.Trim().Length == 0)
+            if (cmbEmail.Text.Trim().Length == 0)
             {
                 MessageBox.Show(Catalog.GetString("Please enter an Email Address"),
                     Catalog.GetString("Invalid Data entered"),
@@ -122,7 +130,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 return;
             }
 
-            TVerificationResult verification = TStringChecks.ValidateEmail(txtEmail.Text, true);
+            TVerificationResult verification = TStringChecks.ValidateEmail(cmbEmail.Text, true);
 
             if ((verification != null) && (verification.ResultSeverity == TResultSeverity.Resv_Critical))
             {
@@ -141,6 +149,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                     MessageBoxIcon.Error);
                 return;
             }
+
+            if (!cmbEmail.Items.Contains(cmbEmail.Text))
+            {
+                cmbEmail.Items.Insert(0, cmbEmail.Text);
+            }
+
+            TUserDefaults.SetDefault(TSmtpSender.RECENTADDRS, String.Join("|", cmbEmail.Items.Cast <String>().Take(10).ToArray()));
 
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();

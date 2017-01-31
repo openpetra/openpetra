@@ -15,7 +15,7 @@
 
     <pageheader>
       <field whichfield="title1">
-          <value text ="Current Accounts Payable" />
+          <value text ="Payments Due On Report Date" />
       </field>
       <field whichfield="title2"><value function="getLedgerName({{param_ledger_number_i}})"/></field>
       <field whichfield="descr1"><value text="Ledger: "/><value variable="param_ledger_number_i"/>

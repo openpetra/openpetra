@@ -526,13 +526,16 @@
   </DataSet>
 
   <DataSet name="ExtractTDS">
-    <Table sqltable="m_extract_master"/>
+    <Table sqltable="m_extract_master">
+      <Field sqltable="s_user" sqlfield="s_retired_l"/>
+      <CustomField name="Active" type="bool"/>
+    </Table>
     <Table sqltable="m_extract">
       <Field sqltable="p_partner" sqlfield="p_partner_short_name_c"/>
       <Field sqltable="p_partner" sqlfield="p_partner_class_c"/>
     </Table>
     <Table sqltable="m_extract_type"/>	
-    <Table sqltable="m_extract_parameter"/>	
+    <Table sqltable="m_extract_parameter"/>
   </DataSet>   
 
   <DataSet name="ContactTDS">

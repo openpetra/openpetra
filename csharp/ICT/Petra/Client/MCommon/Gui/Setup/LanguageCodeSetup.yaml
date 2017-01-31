@@ -38,18 +38,16 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailLanguageCode, DetailLanguageDescription, DetailCongressLanguage, DetailDeletable]
+            Columns: [DetailLanguageCode, DetailLanguageDescription, DetailDeletable]
             SortOrder: DetailLanguageCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailLanguageCode, txtDetailLanguageDescription]
-                Row1: [chkDetailCongressLanguage]
-                Row2: [chkDetailDeletable]
+                Row1: [chkDetailDeletable]
         txtDetailLanguageCode: {Label=Language Code, Width=100}
         txtDetailLanguageDescription: {Width=245}
-        chkDetailCongressLanguage: 
         chkDetailDeletable:
 
 #    Menu:

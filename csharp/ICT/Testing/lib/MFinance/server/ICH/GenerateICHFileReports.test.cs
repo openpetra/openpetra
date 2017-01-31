@@ -118,6 +118,7 @@ namespace Tests.MFinance.Server.ICH
             }
         }
 
+#if disabled_because_none_of_this_tests_any_real_code
         /// <summary>
         /// this test loads the sample partners, imports a gift batch, and posts it, and then runs a stewardship calculation
         /// </summary>
@@ -209,5 +210,7 @@ namespace Tests.MFinance.Server.ICH
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResults,
                 "Performing ICH Email File Generation Failed!");
         }
+#endif
+
     }
 }

@@ -114,13 +114,19 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalculator.AddParameter("param_paginate", chkPaginate.Checked);
             ACalculator.AddParameter("param_auto_email", chkAutoEmail.Checked);
 
-            String CostCentreListTitle;
+            String CostCentreListTitle = "";
 
             if (rbtAllCostCentres.Checked || rbtAllActiveCostCentres.Checked)
             {
                 CostCentreListTitle = clbCostCentres.GetAllStringList(false);
             }
-            else
+
+            if (rbtAccountLevel.Checked)
+            {
+                CostCentreListTitle = "Account Level";
+            }
+
+            if (rbtSelectedCostCentres.Checked)
             {
                 CostCentreListTitle = clbCostCentres.GetCheckedStringList();
             }

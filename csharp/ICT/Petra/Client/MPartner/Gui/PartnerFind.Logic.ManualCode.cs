@@ -308,7 +308,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// todoComment
         /// </summary>
         /// <returns></returns>
-        public void SendEmailToPartner(TFrmPetraUtils APetraUtilsObject)
+        public void SendEmailToPartner(TFrmPetraUtils APetraUtilsObject, bool AEmailToClipboard)
         {
             if (FPartnerInfoCollPanel.UserControlInstance == null)
             {
@@ -319,14 +319,33 @@ namespace Ict.Petra.Client.MPartner.Gui
             PartnerInfoUC.PetraUtilsObject = APetraUtilsObject;
             PartnerInfoUC.InitUserControl();
 
-            PartnerInfoUC.DataLoaded += PartnerInfoUC_DataLoaded;
+            if (!AEmailToClipboard)
+            {
+                PartnerInfoUC.DataLoaded += PartnerInfoUC_DataLoaded;
+            }
 
             // Ask the UserControl to load the data for the Partner; once it is finished
             // the 'DataLoaded' Event will fire and the Email can get sent - if the Partner
             // has indeed got a 'Primary E-Mail Address'
             if (!UpdatePartnerInfoPanel(false, PartnerInfoUC))
             {
-                PartnerInfoUC_DataLoaded(PartnerInfoUC, null);
+                if (AEmailToClipboard)
+                {
+                    String PrimaryEmailAddress;
+
+                    if (Calculations.GetPrimaryEmailAddress((PartnerInfoUC).GetPartnerAttributeData(), out PrimaryEmailAddress))
+                    {
+                        Clipboard.SetDataObject(PrimaryEmailAddress);
+                    }
+                    else
+                    {
+                        Clipboard.SetDataObject(String.Empty);
+                    }
+                }
+                else
+                {
+                    PartnerInfoUC_DataLoaded(PartnerInfoUC, null);
+                }
             }
         }
 
@@ -631,7 +650,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         public void SendEmailToPartner(TFrmPetraUtils APetraUtilsObject)
         {
-            FLogic.SendEmailToPartner(APetraUtilsObject);
+            FLogic.SendEmailToPartner(APetraUtilsObject, false);
         }
     }
 

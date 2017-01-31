@@ -97,6 +97,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public void ImportBatches(TGiftImportDataSourceEnum AImportSource, GiftBatchTDS AMainDS)
         {
             bool ImportOK = false;
+            bool RefreshGUIAfterImport = false;
             OpenFileDialog OFileDialog = null;
 
             if (FPetraUtilsObject.HasChanges)
@@ -203,6 +204,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                                 FdlgSeparator.FileContent,
                                 out AMessages,
                                 out ImportOK,
+                                out RefreshGUIAfterImport,
                                 out NeedRecipientLedgerNumber));
 
                         using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
@@ -215,7 +217,14 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         // We do not want to show this as we will be displaying another more detailed message.
                         if (NeedRecipientLedgerNumber.Rows.Count == 0)
                         {
-                            ShowMessages(AMessages);
+                            if (TVerificationHelper.ResultsContainErrorCode(AMessages, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                            {
+                                TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                            }
+                            else
+                            {
+                                ShowMessages(AMessages);
+                            }
                         }
 
                         // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
@@ -298,7 +307,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         Catalog.GetString("Gift Import"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
+                }
 
+                if (ImportOK)
+                {
                     FMyUserControl.LoadBatchesForCurrentYear();
                     FMyForm.GetBatchControl().SelectRowInBatchGrid(1);
 
@@ -317,6 +329,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     //Force initial inactive values check
                     FMyForm.SaveChangesManual(FMyForm.FCurrentGiftBatchAction);
                 }
+                else if (RefreshGUIAfterImport)
+                {
+                    FMyUserControl.LoadBatchesForCurrentYear();
+                    FMyForm.GetBatchControl().SelectRowInBatchGrid(1);
+                }
             }
             finally
             {
@@ -333,6 +350,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         public bool ImportTransactions(AGiftBatchRow ACurrentBatchRow, TGiftImportDataSourceEnum AImportSource)
         {
             bool ok = false;
+            bool RefreshGUIAfterImport = false;
             OpenFileDialog dialog = null;
             Boolean IsPlainText = false;
 
@@ -454,6 +472,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                             ACurrentBatchRow.BatchNumber,
                             out AMessages,
                             out ok,
+                            out RefreshGUIAfterImport,
                             out NeedRecipientLedgerNumber));
 
                     using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
@@ -461,11 +480,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         ImportDialog.ShowDialog();
                     }
 
-                    ShowMessages(AMessages);
-
                     // if the import contains gifts with Motivation Group 'GIFT' and that have a Family recipient with no Gift Destination
                     // then the import will have failed and we need to alert the user
                     int numberOfMissingGiftDestinations = NeedRecipientLedgerNumber.Rows.Count;
+
+                    if (numberOfMissingGiftDestinations == 0)
+                    {
+                        if (TVerificationHelper.ResultsContainErrorCode(AMessages, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                        {
+                            TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                        }
+                        else
+                        {
+                            ShowMessages(AMessages);
+                        }
+                    }
 
                     if (numberOfMissingGiftDestinations > 0)
                     {
@@ -532,12 +561,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     Catalog.GetString("Gift Import"),
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information);
-
-                FMyUserControl.LoadBatchesForCurrentYear();
-                FPetraUtilsObject.DisableSaveButton();
             }
 
-            return ok;
+            if (ok || RefreshGUIAfterImport)
+            {
+                FMyUserControl.LoadBatchesForCurrentYear();
+                FPetraUtilsObject.DisableSaveButton();
+                return true;        // This completes the refresh
+            }
+
+            return false;
         }
 
         #endregion
@@ -551,9 +584,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="AImportString"></param>
         /// <param name="AMessages"></param>
         /// <param name="ok"></param>
+        /// <param name="AGUIRefreshRequired"></param>
         /// <param name="ANeedRecipientLedgerNumber"></param>
-        private void ImportGiftBatches(Hashtable ARequestParams, string AImportString,
-            out TVerificationResultCollection AMessages, out bool ok, out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber)
+        private void ImportGiftBatches(Hashtable ARequestParams, string AImportString, out TVerificationResultCollection AMessages,
+            out bool ok, out bool AGUIRefreshRequired, out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber)
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
@@ -562,6 +596,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 ARequestParams,
                 AImportString,
                 out ANeedRecipientLedgerNumber,
+                out AGUIRefreshRequired,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;
@@ -576,9 +611,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="ABatchNumber"></param>
         /// <param name="AMessages"></param>
         /// <param name="ok"></param>
+        /// <param name="AGUIRefreshRequired"></param>
         /// <param name="ANeedRecipientLedgerNumber"></param>
-        private void ImportGiftTransactions(Hashtable ARequestParams, string AImportString, Int32 ABatchNumber,
-            out TVerificationResultCollection AMessages, out bool ok, out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber)
+        private void ImportGiftTransactions(Hashtable ARequestParams,
+            string AImportString,
+            Int32 ABatchNumber,
+            out TVerificationResultCollection AMessages,
+            out bool ok,
+            out bool AGUIRefreshRequired,
+            out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber)
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
@@ -588,6 +629,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AImportString,
                 ABatchNumber,
                 out ANeedRecipientLedgerNumber,
+                out AGUIRefreshRequired,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;

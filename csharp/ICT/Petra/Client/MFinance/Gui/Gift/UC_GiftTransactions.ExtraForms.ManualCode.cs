@@ -35,6 +35,7 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.MPartner.Gui;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 
@@ -52,11 +53,17 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// <param name="e"></param>
         public void ReverseGiftBatch(System.Object sender, System.EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseGiftBatch [raised by Client Proxy for ModuleAccessManager]");
+
             ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.ReverseGiftBatch);
         }
 
         private void ReverseGift(System.Object sender, System.EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseGift [raised by Client Proxy for ModuleAccessManager]");
+
             ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.ReverseGift);
         }
 
@@ -185,6 +192,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
         private void ReverseGiftDetail(System.Object sender, System.EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseGiftDetail [raised by Client Proxy for ModuleAccessManager]");
+
             ShowRevertAdjustForm(GiftAdjustmentFunctionEnum.ReverseGiftDetail);
         }
 

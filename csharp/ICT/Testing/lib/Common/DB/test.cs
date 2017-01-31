@@ -365,6 +365,25 @@ namespace Ict.Common.DB.Testing
                 });
         }
 
+        /// <summary>
+        /// Test LIKE -> ILIKE substitution in PostgreSQL
+        /// </summary>
+        [Test]
+        public void TestPostgreSQL_ILIKE()
+        {
+            TPostgreSQL psql = new TPostgreSQL();
+
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc and 'xyz'"), "abc and 'xyz'", "No like");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc like 'xyz'"), "abc like 'xyz'", "lower case like");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc LIKE 'xyz'"), "abc ILIKE 'xyz'", "Like before quotes");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc 'LIKE xyz'"), "abc 'LIKE xyz'", "Like inside quotes");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific(
+                    "abc 'LIKE xyz' LIKE 'pqr'"), "abc 'LIKE xyz' ILIKE 'pqr'", "Like both inside and outside quotes");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc AND 'def' LIKE 'xyz'"), "abc AND 'def' ILIKE 'xyz'", "Like between two sets of quotes");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("'abc' LIKE 'xyz'"), "'abc' ILIKE 'xyz'", "Quote at start and end");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("LIKE 'xyz'"), "ILIKE 'xyz'", "Like at start");
+        }
+
         #region GNoETransaction_throws_proper_Exception
 
         /// <summary>

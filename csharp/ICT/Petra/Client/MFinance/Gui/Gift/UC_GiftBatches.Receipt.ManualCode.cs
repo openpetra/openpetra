@@ -34,6 +34,7 @@ using Ict.Common.Printing;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner;
 

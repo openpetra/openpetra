@@ -48,5 +48,5 @@ FROM
 	best_state INNER JOIN p_location USING (p_site_key_n, p_location_key_i)
 WHERE
 	row_number = 1
-;
+
 

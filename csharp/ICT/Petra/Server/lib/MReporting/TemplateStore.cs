@@ -232,5 +232,34 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             return ChangedTemplates;
         }
+
+        /// <summary>
+        /// Fetch an s_report_template record by primary key, s_template_id_i.
+        /// </summary>
+        /// <param name="TemplateId"></param>
+        /// <returns></returns>
+        [RequireModulePermission("none")]
+        public static SReportTemplateTable GetTemplateById(int TemplateId)
+        {
+            TDataBase dbConnection = null;
+            TDBTransaction Transaction = null;
+            SReportTemplateTable TemplateTable = null;
+
+            try
+            {
+                dbConnection = TReportingDbAdapter.EstablishDBConnection(true, "GetTemplateById");
+                dbConnection.BeginAutoReadTransaction(
+                    ref Transaction,
+                    delegate
+                    {
+                        TemplateTable = SReportTemplateAccess.LoadByPrimaryKey(TemplateId, Transaction);
+                    });
+            }
+            finally
+            {
+                dbConnection.CloseDBConnection();
+            }
+            return TemplateTable;
+        }
     }
 }

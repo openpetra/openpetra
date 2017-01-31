@@ -329,7 +329,9 @@ namespace Ict.Petra.Server.MFinance.AP.UIConnectors
 
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.GDBAccessObj.BeginAutoReadTransaction(ref ReadTransaction,
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
                 delegate
                 {
                     AApDocumentPaymentTable PreviousPayments =

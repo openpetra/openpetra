@@ -59,12 +59,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
                 FPetraUtilsObject.LoadDefaultSettings();
-                FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             }
         }
 
         private void RunOnceOnActivationManual()
         {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+
             // if FastReport, then ignore columns tab
             if ((FPetraUtilsObject.GetCallerForm() != null) && FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
             {

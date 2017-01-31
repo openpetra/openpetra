@@ -23,7 +23,6 @@
 //
 using System;
 using System.Data;
-using System.Data.Odbc;
 using System.Collections;
 using System.Collections.Specialized;
 
@@ -35,8 +34,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
-
 using Npgsql;
+using System.Data.Odbc;
 
 namespace Ict.Petra.Server.MPartner.Partner
 {

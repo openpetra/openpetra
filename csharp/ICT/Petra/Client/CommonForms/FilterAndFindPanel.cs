@@ -553,6 +553,7 @@ namespace Ict.Petra.Client.CommonForms
 
                 FGrid.IncludeFixedRowsInAutoSizeColumns = false;
                 FPnlFilterFind.Width = FFilterAndFindParameters.FindAndFilterInitialWidth;
+                FPnlFilterFind.Visible = true;
                 FChkToggleFilter.Checked = true;
                 FCallerFormOrControl.FilterToggled();
 
@@ -564,7 +565,7 @@ namespace Ict.Petra.Client.CommonForms
                 // Collapse the filter panel and uncheck the button if there is no active filter
                 FGrid.IncludeFixedRowsInAutoSizeColumns = true;
                 FPnlFilterFind.Width = 0;
-                FCallerFormOrControl.FilterToggled();
+                FPnlFilterFind.Visible = false;
                 FCurrentActiveFilter = FFilterPanelControls.GetCurrentFilter(
                     true,
                     FucoFilterAndFind.KeepFilterTurnedOnButtonDepressed,
@@ -573,12 +574,12 @@ namespace Ict.Petra.Client.CommonForms
                 ((DevAge.ComponentModel.BoundDataView)FGrid.DataSource).DataView.RowFilter = FCurrentActiveFilter;
 
                 FChkToggleFilter.Checked = false;
+                FCallerFormOrControl.FilterToggled();
             }
 
             FButtonPanel.UpdateRecordNumberDisplay();
             SetRecordNumberDisplayProperties();
             FCallerFormOrControl.SelectRowInGrid(this.FCallerFormOrControl.GetSelectedRowIndex());
-            FPnlFilterFind.Visible = FPnlFilterFind.Width > 0;
         }
 
         /// <summary>

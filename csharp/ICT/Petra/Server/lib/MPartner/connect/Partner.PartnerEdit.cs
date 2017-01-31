@@ -98,7 +98,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         private PartnerEditTDS FSubmissionDS;
         private bool FTaxDeductiblePercentageEnabled = false;
         private bool FGovIdEnabled = false;
-        private String FGovIdLabel = "";
 
         #region TPartnerEditUIConnector
 
@@ -284,8 +283,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
                     SharedConstants.SYSDEFAULT_TAXDEDUCTIBLEPERCENTAGE, false);
                 FGovIdEnabled = TSystemDefaultsCache.GSystemDefaultsCache.GetBooleanDefault(
                     SharedConstants.SYSDEFAULT_GOVID_ENABLED, false);
-                FGovIdLabel = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
-                    SharedConstants.SYSDEFAULT_GOVID_LABEL, "");
                 PBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PPartnerBankingDetailsAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
                 PBankingDetailsUsageAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
@@ -297,7 +294,13 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
 
                 if (IsGovIdEnabled())
                 {
-                    PTaxAccess.LoadViaPPartner(localDS, FPartnerKey, ReadTransaction);
+                    PTaxRow template = new PTaxTable().NewRowTyped(false);
+
+                    template.PartnerKey = FPartnerKey;
+                    template.TaxType = TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(
+                        SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
+
+                    PTaxAccess.LoadUsingTemplate(localDS, template, ReadTransaction);
                 }
             }
             catch (Exception)
@@ -344,15 +347,6 @@ namespace Ict.Petra.Server.MPartner.Partner.UIConnectors
         {
             // at the moment we only allow this to be entered for Person records
             return FGovIdEnabled && (FPartnerClass == TPartnerClass.PERSON);
-        }
-
-        /// <summary>
-        /// gets system default GovIdLabel (default "")
-        /// </summary>
-        /// <returns></returns>
-        public String GetGovIdLabel()
-        {
-            return FGovIdLabel;
         }
 
         #endregion

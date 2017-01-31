@@ -363,6 +363,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             requestParams.Add("ABatchNumber", FBatchNumber);
             requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date.Value);
             requestParams.Add("AExchangeRateIntlToBase", FExchangeRateIntlToBase);
+            requestParams.Add("AReference", txtApplyRef.Text);
 
             TVerificationResultCollection Verifications = new TVerificationResultCollection();
             Int32 NewGLBatchNumber = TRemote.MFinance.GL.WebConnectors.SubmitRecurringGLBatch(ref FMainDS,

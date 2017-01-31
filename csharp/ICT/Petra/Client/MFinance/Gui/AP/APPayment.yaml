@@ -15,6 +15,8 @@ RootNode:
         actPrintReport: {Label=Reprint report, ActionClick=PrintPaymentReport}
         actPayPartial: {ActionClick=EnablePartialPayment}
         actLookupExchangeRate: {ActionClick=LookupExchangeRate}
+        actReprintRemittanceAdvice: {ActionClick=ReprintRemittanceAdvice}
+        actReprintCheque: {ActionClick=ReprintCheque}
     Controls:
         pnlContent:
             Dock: Fill
@@ -38,10 +40,11 @@ RootNode:
                 Row3: [txtReference]
                 Row4: [chkPrintRemittance, chkPrintLabel]
                 Row5: [chkPrintCheque, txtChequeNumber]
+                Row6: [txtAmountInWords]
             Padding: 5,0,10,0
             # todo: electronic payment; 
             # todo: pay by transfer (select another supplier; payment will create another invoice with the other supplier, at a given exchange rate, with the given invoice number)
-            Height: 180
+            Height: 205
             Dock:Top
         pnlExchangeRate: {ControlsOrientation = horizontal}
             Controls: [txtExchangeRate, btnLookupExchangeRate]
@@ -51,8 +54,15 @@ RootNode:
             CheckBoxAttachedLabel: right
         chkPrintCheque:
             CheckBoxAttachedLabel: right
+            OnChange: chkPrintCheque_Clicked
         txtChequeNumber:
             Width: 80
+            Enabled: false
+            Format: Integer
+        txtAmountInWords:
+            ColSpan: 2
+            Width: 400
+            Stretch: horizontally
             Enabled: false
         grpDetails:
             Controls: [grdDocuments, pnlDetails]
@@ -62,6 +72,8 @@ RootNode:
             Dock: Fill
             DetailTable: true
             ActionFocusRow: FocusedRowChangedDetails
+            ActionDoubleClick: Invoice_DoubleClicked
+            Tooltip: Double click an invoice to view the document
         pnlDetails:
             Controls: [rgrAmountToPay, chkClaimDiscount, pnlBottomLine]
             Dock: Bottom
@@ -115,3 +127,5 @@ RootNode:
         tbbRemove: {ActionClick=RemoveSelectedDocument }
         tbbMakePayment:
         tbbPrintReport:
+        tbbReprintRemittanceAdvice:
+        tbbReprintCheque:

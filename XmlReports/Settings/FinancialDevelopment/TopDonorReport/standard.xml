@@ -5,6 +5,7 @@
   <Parameter id="currentReport" value="eString:TopDonorReport" />
   <Parameter id="MaxDisplayColumns" value="eInteger:7" />
   <Parameter id="param_percentage" value="eInteger:20" />
+  <Parameter id="param_chkShowDetailedMotivationInformation" value="eBoolean:false" />
   <Parameter id="param_to_percentage" value="eInteger:0" />
   <Parameter id="param_currency" value="eString:Base" />
   <Parameter id="param_all_partners" value="eString:true" />

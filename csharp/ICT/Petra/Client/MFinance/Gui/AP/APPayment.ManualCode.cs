@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.IO;
+using System.Threading;
 using System.Data;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -30,13 +32,18 @@ using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.Conversion;
 using Ict.Common.Verification;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.MPartner.Gui;
 using Ict.Petra.Shared;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -56,6 +63,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         AccountsPayableTDSAApDocumentPaymentRow FSelectedDocumentRow = null;
         ACurrencyTable FCurrencyTable = null;
 
+        // For Templater printing of remittance advice
+        List <TFormData>FFormDataList = null;
 
         private void RunOnceOnActivationManual()
         {
@@ -131,9 +140,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 txtPaymntNum.Text = FMainDS.AApPayment[0].PaymentNumber.ToString();
                 txtAmountToPay.Enabled = false;
-                txtChequeNumber.Enabled = false;
+                txtChequeNumber.Enabled = true;
                 txtCurrency.Enabled = false;
                 txtExchangeRate.Enabled = false;
+                txtAmountInWords.Enabled = true;
                 btnLookupExchangeRate.Enabled = false;
                 txtExchangeRate.NumberValueDecimal = FMainDS.AApPayment[0].ExchangeRateToBase;
 
@@ -142,14 +152,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 cmbBankAccount.Enabled = false;
                 cmbPaymentType.Enabled = false;
 
-                grdDocuments.Enabled = false;
+                grdDocuments.Enabled = true;
                 grdPayments.Enabled = false;
 
                 tbbMakePayment.Enabled = false;
 
                 rgrAmountToPay.Enabled = false;
                 tbbPrintReport.Enabled = true;
-                chkPrintRemittance.Enabled = true;
+                chkPrintRemittance.Enabled = false;
                 chkClaimDiscount.Enabled = false;
                 chkPrintCheque.Enabled = false;
                 chkPrintLabel.Enabled = false;
@@ -157,6 +167,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 tbbPrintReport.Enabled = false;
+                tbbReprintCheque.Enabled = false;
+                tbbReprintRemittanceAdvice.Enabled = false;
             }
         }
 
@@ -247,7 +259,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TRemote.MFinance.AP.WebConnectors.CreatePaymentTableEntries(ref FMainDS, ALedgerNumber, ADocumentsToPay);
             chkPrintRemittance.Checked = true;
             chkClaimDiscount.Enabled = false;
-            chkPrintCheque.Enabled = false;
+            chkPrintCheque.Enabled = true;
             chkPrintLabel.Enabled = false;
             ShowDataManual();
             return true;
@@ -335,6 +347,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length >= 1)
             {
                 FSelectedPaymentRow = (AccountsPayableTDSAApPaymentRow)SelectedGridRow[0].Row;
+                tbbReprintRemittanceAdvice.Enabled = FSelectedPaymentRow.PaymentDate != null;
+                tbbReprintCheque.Enabled = FSelectedPaymentRow.PaymentDate != null;
 
                 if (!FSelectedPaymentRow.IsSupplierKeyNull())
                 {
@@ -378,6 +392,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdDocuments.Refresh();
                 grdDocuments.Selection.SelectRow(1, true);
                 FocusedRowChangedDetails(null, null);
+            }
+            else
+            {
+                tbbReprintRemittanceAdvice.Enabled = false;
+                tbbReprintCheque.Enabled = false;
+                tbbMakePayment.Enabled = false;
+                tbbRemove.Enabled = false;
             }
         }
 
@@ -448,6 +469,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             TFrmAP_PaymentReport.CreateReportNoGui(LedgerNumber, MinPaymentNumber, MaxPaymentNumber, this);
         }
 
+        /// <summary>
+        /// Print the remittance advice using HTML forms
+        /// </summary>
         private void PrintRemittanceAdvice()
         {
             if (chkPrintRemittance.Checked)
@@ -465,8 +489,119 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
         }
 
+        /// <summary>
+        /// Print the remittance advice using Templater
+        /// </summary>
+        private void PrintRemittanceAdviceTemplater()
+        {
+            if (chkPrintRemittance.Checked)
+            {
+                TFormLetterFinanceInfo FormLetterFinanceInfo;
+                GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_REMITTANCE, out FormLetterFinanceInfo);
+
+                if (FormLetterFinanceInfo == null)
+                {
+                    return;
+                }
+
+                List <int>paymentNumberList = new List <int>();
+                Int32 MinPaymentNumber;
+                Int32 MaxPaymentNumber;
+                GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
+
+                for (int paymentNumber = MinPaymentNumber; paymentNumber <= MaxPaymentNumber; paymentNumber++)
+                {
+                    paymentNumberList.Add(paymentNumber);
+                }
+
+                PrintRemittanceAdviceTemplater(paymentNumberList,
+                    FMainDS.AApPayment[0].LedgerNumber,
+                    FormLetterFinanceInfo,
+                    !chkPrintCheque.Checked);
+            }
+        }
+
+        /// <summary>
+        /// Print the cheque using Templater
+        /// </summary>
+        private void PrintChequeTemplater()
+        {
+            if (chkPrintCheque.Checked)
+            {
+                TFormLetterFinanceInfo FormLetterFinanceInfo;
+                GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_CHEQUE, out FormLetterFinanceInfo);
+
+                if (FormLetterFinanceInfo == null)
+                {
+                    return;
+                }
+
+                Int32 MinPaymentNumber;
+                Int32 MaxPaymentNumber;
+                GetPaymentNumbersAfterPosting(out MinPaymentNumber, out MaxPaymentNumber);
+                PrintChequeTemplater(MinPaymentNumber, MaxPaymentNumber, FMainDS.AApPayment[0].LedgerNumber, FormLetterFinanceInfo);
+            }
+        }
+
+        /// <summary>
+        /// This is called from the 'Reprint' button on the Payment screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReprintRemittanceAdvice(object sender, EventArgs e)
+        {
+            // This code uses HTML Letters
+            //TFrmAP_RemittanceAdvice PreviewFrame = new TFrmAP_RemittanceAdvice(this);
+
+            //PreviewFrame.PrintRemittanceAdvice(FSelectedDocumentRow.PaymentNumber, FMainDS.AApPayment[0].LedgerNumber);
+            //PreviewFrame.ShowDialog();
+
+            // This code uses Templater
+            TFormLetterFinanceInfo FormLetterFinanceInfo;
+
+            GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_REMITTANCE, out FormLetterFinanceInfo);
+
+            if (FormLetterFinanceInfo == null)
+            {
+                return;
+            }
+
+            List <int>paymentNumberList = new List <int>();
+            paymentNumberList.Add(FSelectedDocumentRow.PaymentNumber);
+            PrintRemittanceAdviceTemplater(paymentNumberList,
+                FMainDS.AApPayment[0].LedgerNumber,
+                FormLetterFinanceInfo,
+                !chkPrintCheque.Checked);
+        }
+
+        /// <summary>
+        /// This is called from the 'Reprint' button on the Payment screen
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ReprintCheque(object sender, EventArgs e)
+        {
+            // This code uses Templater
+            TFormLetterFinanceInfo FormLetterFinanceInfo;
+
+            GetTemplaterFinanceInfo(MCommonConstants.FORM_CODE_CHEQUE, out FormLetterFinanceInfo);
+
+            if (FormLetterFinanceInfo == null)
+            {
+                return;
+            }
+
+            int paymentNumber = FSelectedDocumentRow.PaymentNumber;
+            PrintChequeTemplater(paymentNumber, paymentNumber, FMainDS.AApPayment[0].LedgerNumber, FormLetterFinanceInfo);
+        }
+
         private void MakePayment(object sender, EventArgs e)
         {
+            if (FSelectedDocumentRow == null)
+            {
+                return;
+            }
+
             //FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
             FSelectedDocumentRow.Amount = txtAmountToPay.NumberValueDecimal.Value;
             FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
@@ -500,6 +635,32 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
+            if (chkPrintCheque.Checked)
+            {
+                if ((txtChequeNumber.NumberValueInt.HasValue == false) || (txtChequeNumber.NumberValueInt == 0))
+                {
+                    MessageBox.Show(Catalog.GetString("Please enter a cheque number"), Catalog.GetString("Print Cheque"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (txtAmountToPay.NumberValueDecimal.HasValue == false)
+                {
+                    MessageBox.Show(Catalog.GetString("Please enter an amount to pay"), Catalog.GetString("Print Cheque"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (txtAmountInWords.Text.Trim().Length == 0)
+                {
+                    MessageBox.Show(string.Format(
+                            Catalog.GetString("Please enter an amount in words to be printed on the cheque (corresponding to {0} {1})"),
+                            txtAmountToPay.Text, txtCurrency.Text),
+                        Catalog.GetString("Print Cheque"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
             TDlgGLEnterDateEffective dateEffectiveDialog = new TDlgGLEnterDateEffective(
                 FMainDS.AApDocument[0].LedgerNumber,
                 Catalog.GetString("Select payment date"),
@@ -508,7 +669,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
                 MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
-                        "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        "AP Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -545,11 +706,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ReportGui.PrintReportNoUi(FLedgerNumber, glBatchNumber);
 
                 PrintPaymentReport(sender, e);
-                PrintRemittanceAdvice();
+                // PrintRemittanceAdvice();             // Use this for HTML printing
+                PrintRemittanceAdviceTemplater();       // Use this for Templater printing
+                PrintChequeTemplater();                 // Use this for Templater printing
 
-                // TODO: show posting register of GL Batch?
-
-                // After the payments screen, The status of this document may have changed.
+                // After the payment, one or more documents may have changed.
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
                 broadcastMessage.SetMessageDataAPTransaction(String.Empty);
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
@@ -723,6 +884,155 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void OnChangePaymentType(object sender, EventArgs e)
         {
             txtChequeNumber.Enabled = (cmbPaymentType.GetSelectedString() == "Cheque");
+        }
+
+        private void Invoice_DoubleClicked(object sender, EventArgs e)
+        {
+            DataRowView[] SelectedGridRow = grdDocuments.SelectedDataRowsAsDataRowView;
+
+            if (SelectedGridRow.Length > 0)
+            {
+                try
+                {
+                    this.Cursor = Cursors.WaitCursor;
+                    AccountsPayableTDSAApDocumentPaymentRow row = (AccountsPayableTDSAApDocumentPaymentRow)SelectedGridRow[0].Row;
+                    TFrmAPEditDocument frm = new TFrmAPEditDocument(FPetraUtilsObject.GetCallerForm());
+
+                    if (frm.LoadAApDocument(FLedgerNumber, Convert.ToInt32(row.ApDocumentId)))
+                    {
+                        frm.Show();
+                    }
+                }
+                finally
+                {
+                    this.Cursor = Cursors.Default;
+                }
+            }
+        }
+
+        private void GetTemplaterFinanceInfo(string AFormCode, out TFormLetterFinanceInfo AFormLetterFinanceInfo)
+        {
+            AFormLetterFinanceInfo = null;
+
+            // not implemented in Open Source OpenPetra
+            // TFrmFormSelectionDialog formDialog = new TFrmFormSelectionDialog(this.FindForm());
+            return;
+        }
+
+        private Boolean CreateRemittanceAdviceFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
+            List <int>APaymentNumberList,
+            int ALedgerNumber,
+            ref Boolean ACallFinished)
+        {
+            bool formDataCreated = TRemote.MFinance.AP.WebConnectors.CreateRemittanceAdviceFormData(
+                AFormLetterFinanceInfo, APaymentNumberList, ALedgerNumber, out FFormDataList);
+
+            ACallFinished = true;
+            return formDataCreated;
+        }
+
+        private void PrintRemittanceAdviceTemplater(List <int>APaymentNumberList, int ALedgerNumber,
+            TFormLetterFinanceInfo AFormLetterFinanceInfo, bool ACloseThisOnCompletion)
+        {
+            Boolean ThreadFinished = false;
+            Boolean FormLetterDataCreated = false;
+
+            // create form letter data in separate thread. This will fill FFormDataList
+            Thread t = new Thread(() => FormLetterDataCreated = CreateRemittanceAdviceFormData(
+                    AFormLetterFinanceInfo, APaymentNumberList, ALedgerNumber, ref ThreadFinished));
+
+            using (TProgressDialog dialog = new TProgressDialog(t))
+            {
+                dialog.ShowDialog();
+            }
+
+            // wait here until Thread is really finished
+            while (!ThreadFinished)
+            {
+                Thread.Sleep(50);
+            }
+
+            if (FormLetterDataCreated)
+            {
+                if ((FFormDataList == null)
+                    || (FFormDataList.Count == 0))
+                {
+                    MessageBox.Show(Catalog.GetString("Failed to get data from server to print the Remittance Advice"));
+                    return;
+                }
+            }
+
+            // not implemented in OpenSource OpenPetra
+            // string targetFolder = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mFinance);
+
+            if (ACloseThisOnCompletion)
+            {
+                this.DialogResult = System.Windows.Forms.DialogResult.OK;
+                this.Close();
+            }
+        }
+
+        private Boolean CreateChequeFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
+            int AFirstPaymentNumber,
+            int ALastPaymentNumber,
+            int ALedgerNumber,
+            int AChequeNumber,
+            string AChequeAmountInWords,
+            decimal AChequeAmountToPay,
+            ref Boolean ACallFinished)
+        {
+            bool formDataCreated = TRemote.MFinance.AP.WebConnectors.CreateChequeFormData(AFormLetterFinanceInfo,
+                AFirstPaymentNumber, ALastPaymentNumber, ALedgerNumber, AChequeNumber, AChequeAmountInWords, AChequeAmountToPay, out FFormDataList);
+
+            ACallFinished = true;
+            return formDataCreated;
+        }
+
+        private void PrintChequeTemplater(int AFirstPaymentNumber,
+            int ALastPaymentNumber,
+            int ALedgerNumber,
+            TFormLetterFinanceInfo AFormLetterFinanceInfo)
+        {
+            Boolean ThreadFinished = false;
+            Boolean FormLetterDataCreated = false;
+
+            // create form letter data in separate thread. This will fill FFormDataList
+            Thread t = new Thread(() => FormLetterDataCreated = CreateChequeFormData(AFormLetterFinanceInfo, AFirstPaymentNumber, ALastPaymentNumber,
+                    ALedgerNumber, txtChequeNumber.NumberValueInt.Value, txtAmountInWords.Text, txtTotalAmount.NumberValueDecimal.Value,
+                    ref ThreadFinished));
+
+            using (TProgressDialog dialog = new TProgressDialog(t))
+            {
+                dialog.ShowDialog();
+            }
+
+            // wait here until Thread is really finished
+            while (!ThreadFinished)
+            {
+                Thread.Sleep(50);
+            }
+
+            if (FormLetterDataCreated)
+            {
+                if ((FFormDataList == null)
+                    || (FFormDataList.Count == 0))
+                {
+                    MessageBox.Show(Catalog.GetString("Failed to get data from server to print the Cheque"));
+                    return;
+                }
+            }
+
+            // not implemented in OpenSource OpenPetra
+            // string targetFolder = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mFinance);
+
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
+        }
+
+        private void chkPrintCheque_Clicked(object sender, EventArgs e)
+        {
+            txtAmountInWords.Enabled = chkPrintCheque.Checked;
+            txtChequeNumber.Enabled = chkPrintCheque.Checked;
         }
     }
 }

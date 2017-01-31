@@ -929,10 +929,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 return false;
             }
 
-            // cannot delete a person with commitment status history (table not in use yet)
+            // cannot delete a person with commitment type history (table not in use yet)
             if (PmPersonCommitmentStatusAccess.CountViaPPerson(APartnerKey, ATransaction) > 0)
             {
-                ADisplayMessage = Catalog.GetString("Unable to delete a person with commitment status history.");
+                ADisplayMessage = Catalog.GetString("Unable to delete a person with commitment type history.");
                 return false;
             }
 

@@ -138,6 +138,20 @@ namespace Ict.Petra.Server.App.Core
                 new TMaintenanceLogonMessage(),
                 ExceptionHandling_DBConnectionBrokenCallback);
 
+            // Set up the SYSADMIN user (#5650).
+            // (This is required for all SubmitChanges method calls in the server's main AppDomain because
+            // that Method references UserInfo.GUserInfo)
+            TPetraIdentity PetraIdentity = new TPetraIdentity(
+                "SYSADMIN", "", "", "", "",
+                DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+                0, -1, -1, false, false, false);
+
+            TPetraPrincipal Principal = new TPetraPrincipal(PetraIdentity, null);
+            UserInfo.GUserInfo = Principal;
+
+            //
+            // Set up 'Timed Processing'
+            //
             TTimedProcessing.DailyStartTime24Hrs = TAppSettingsManager.GetValue("Server.Processing.DailyStartTime24Hrs", "00:30");
 
             if (TAppSettingsManager.GetBoolean("Server.Processing.PartnerReminders.Enabled", true))

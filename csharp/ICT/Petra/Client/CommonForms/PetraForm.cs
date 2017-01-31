@@ -309,7 +309,7 @@ namespace Ict.Petra.Client.CommonForms
             FStatusBar = AStatusBar;
             FCallerForm = ACallerForm;
 
-            if (ACallerForm != null)
+            if ((ACallerForm != null) && !ACallerForm.IsDisposed)
             {
                 TFormsList.GFormsList.NotifyWindowOpened(ACallerForm.Handle, FWinForm.Handle);
             }

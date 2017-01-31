@@ -321,11 +321,14 @@ namespace Ict.Common.Controls
             /// <summary> The Coste Centre context </summary>
             CostCentreCode,
 
-            /// <summary> The Analaysis Type context </summary>
+            /// <summary> The Analysis Type context </summary>
             AnalysisTypeCode,
 
-            /// <summary> The Ananlysis Attribute Value context </summary>
-            AnalysisAttributeValue
+            /// <summary> The Analysis Attribute Value context </summary>
+            AnalysisAttributeValue,
+
+            /// <summary> The user is retired</summary>
+            RetiredUser
         };
 
         // Local copies of constructor parameters
@@ -523,6 +526,10 @@ namespace Ict.Common.Controls
                         else if (FCallerContext == BoundGridImage.AnnotationContextEnum.AnalysisAttributeValue)
                         {
                             return Catalog.GetString("This Analysis Attribute value is no longer active");
+                        }
+                        else if (FCallerContext == BoundGridImage.AnnotationContextEnum.RetiredUser)
+                        {
+                            return Catalog.GetString("This user has been retired");
                         }
                     }
                 }

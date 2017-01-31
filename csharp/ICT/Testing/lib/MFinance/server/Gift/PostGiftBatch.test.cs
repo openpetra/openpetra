@@ -111,8 +111,9 @@ namespace Tests.MFinance.Server.Gift
 
             TVerificationResultCollection VerificationResult = null;
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
+            bool refreshRequired;
 
-            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out refreshRequired, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
             }
@@ -156,8 +157,9 @@ namespace Tests.MFinance.Server.Gift
 
             TVerificationResultCollection VerificationResult = null;
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
+            bool refreshRequired;
 
-            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out refreshRequired, out VerificationResult))
             {
                 Assert.Fail("Gift Batch was not imported: " + VerificationResult.BuildVerificationResultString());
             }

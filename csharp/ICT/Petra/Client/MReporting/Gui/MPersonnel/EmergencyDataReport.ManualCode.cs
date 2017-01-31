@@ -37,6 +37,9 @@ using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Shared.MCommon.Data;
+using System.Collections.Generic;
+using System.Collections;
+using Ict.Petra.Client.App.Core.RemoteObjects;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
@@ -48,6 +51,64 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private void InitializeManualCode()
         {
             ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+
+            // if FastReport, then ignore columns tab
+            if ((FPetraUtilsObject.GetCallerForm() != null) && FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+            }
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            DataSet ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet("EmergencyDataReport", paramsDictionary);
+
+            if (this.IsDisposed)
+            {
+                return false;
+            }
+
+            if (ReportSet == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PersonnelData"], "PersonnelData");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Family"], "Family");
+            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["FamilyLink"], "FamilyLink");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Passports"], "Passports");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Skills"], "Skills");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Languages"], "Languages");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PersonalDocuments"], "PersonalDocuments");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PartnerAddress"], "PartnerAddress");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["EmergencyContacts"], "EmergengcyContacts");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ECAddresses"], "ECAddresses");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ECContactDetails"], "ECContactDetails");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["OtherEmergData"], "OtherEmergData");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ProofOfLife"], "ProofOfLife");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["SpecialNeeds"], "SpecialNeeds");
+
+            return true;
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

@@ -34,6 +34,7 @@ using Ict.Petra.Client.App.Core.RemoteObjects;
 
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Core;
 
 #endregion usings
 
@@ -66,6 +67,16 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     FMainDS.DonorPartners.Merge(PartnerTable);
+
+                    if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
+                    {
+                        PTaxTable taxTbl = TRemote.MFinance.Gift.WebConnectors.LoadPartnerPtax(APartnerKey);
+
+                        if ((taxTbl != null) && (taxTbl.Rows.Count > 0))
+                        {
+                            FMainDS.PTax.Merge(taxTbl);
+                        }
+                    }
                 }
 
                 DonorRow = PartnerTable[0];
@@ -273,7 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         mniDonorHistory.Enabled = true;
                     }
 
-                    ShowDonorInfo(APartnerKey);
+                    ShowDonorInfo(null, APartnerKey);
 
                     FLastDonor = APartnerKey;
                 }

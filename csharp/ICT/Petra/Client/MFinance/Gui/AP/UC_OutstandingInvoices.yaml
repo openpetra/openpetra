@@ -1,9 +1,9 @@
 RootNode:
     BaseClass: System.Windows.Forms.UserControl
-    #UtilObjectClass: TFrmPetraEditUtils
     Namespace: Ict.Petra.Client.MFinance.Gui.AP   
     #UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
     #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    #UtilObjectClass: TFrmPetraEditUtils
     FormType: edit
     Template: usercontrolUnbound
     Actions:

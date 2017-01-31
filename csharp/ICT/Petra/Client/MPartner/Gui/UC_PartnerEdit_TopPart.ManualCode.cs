@@ -308,6 +308,15 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        /// Sets the Partner Status for the current Partner
+        /// </summary>
+        /// <param name="APartnerStatus"></param>
+        public void SetPartnerStatus(string APartnerStatus)
+        {
+            cmbPartnerStatus.SetSelectedString(APartnerStatus);
+        }
+
+        /// <summary>
         /// todoComment
         /// </summary>
         /// <param name="AIncludePartnerClass"></param>

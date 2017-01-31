@@ -28,6 +28,7 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
@@ -98,17 +99,38 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 
                         do
                         {
-                            TFormDataPartner formData;
-                            AFormLetterInfo.CurrentEmailInstance = AFormLetterInfo.NextEmailInstance;
-                            formData =
-                                (TFormDataPartner)FillFormDataFromPartner(ExtractRow.PartnerKey, AFormLetterInfo, ExtractRow.SiteKey,
-                                    ExtractRow.LocationKey);
+                            String ShortName;
+                            TPartnerClass PartnerClass;
+                            TStdPartnerStatusCode PartnerStatusCode;
 
-                            // at the moment we include all partners, also the ones that had outdated addresses which have been updated during FillFormDataFromPartner
-                            //if (formData.AddressIsOriginal)
-                            //{
-                            dataList.Add(formData);
-                            //}
+                            if (MCommonMain.RetrievePartnerShortName(ExtractRow.PartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode,
+                                    ReadTransaction))
+                            {
+                                if (PartnerClass == TPartnerClass.PERSON)
+                                {
+                                    TFormDataPerson formData = new TFormDataPerson();
+                                    AFormLetterInfo.CurrentEmailInstance = AFormLetterInfo.NextEmailInstance;
+                                    FillFormDataFromPerson(ExtractRow.PartnerKey, formData, AFormLetterInfo, ExtractRow.SiteKey,
+                                        ExtractRow.LocationKey);
+                                    // at the moment we include all partners, also the ones that had outdated addresses which have been updated during FillFormDataFromPartner
+                                    //if (formData.AddressIsOriginal)
+                                    //{
+                                    dataList.Add(formData);
+                                    //}
+                                }
+                                else
+                                {
+                                    TFormDataPartner formData = new TFormDataPartner();
+                                    AFormLetterInfo.CurrentEmailInstance = AFormLetterInfo.NextEmailInstance;
+                                    FillFormDataFromPartner(ExtractRow.PartnerKey, formData, AFormLetterInfo, ExtractRow.SiteKey,
+                                        ExtractRow.LocationKey);
+                                    // at the moment we include all partners, also the ones that had outdated addresses which have been updated during FillFormDataFromPartner
+                                    //if (formData.AddressIsOriginal)
+                                    //{
+                                    dataList.Add(formData);
+                                    //}
+                                }
+                            }
                         } while (AFormLetterInfo.NextEmailInstance > AFormLetterInfo.CurrentEmailInstance);
 
                         if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
@@ -137,21 +159,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// Personnel and Finance Form Letter methods to fill Partner Data.
         /// </summary>
         /// <param name="APartnerKey">Key of partner record to be used</param>
+        /// <param name="AFormDataPartner">Form Data Object</param>
         /// <param name="AFormLetterInfo">Info class for form letter</param>
         /// <param name="ASiteKey">Site key for location record</param>
         /// <param name="ALocationKey">Key for location record</param>
         /// <returns>returns list with populated form data</returns>
         [RequireModulePermission("PTNRUSER")]
-        public static TFormData FillFormDataFromPartner(Int64 APartnerKey,
+        public static TFormDataPartner FillFormDataFromPartner(Int64 APartnerKey,
+            TFormDataPartner AFormDataPartner,
             TFormLetterInfo AFormLetterInfo,
             Int64 ASiteKey = 0,
             Int32 ALocationKey = 0)
         {
-            TPartnerClass PartnerClass;
-            String ShortName;
-            TStdPartnerStatusCode PartnerStatusCode;
-
-            TFormDataPartner formData = null;
+            if (AFormDataPartner == null)
+            {
+                return null;
+            }
 
             TDBTransaction ReadTransaction = null;
 
@@ -159,26 +182,45 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref ReadTransaction,
                 delegate
                 {
-                    if (MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, ReadTransaction))
-                    {
-                        switch (PartnerClass)
-                        {
-                            case TPartnerClass.PERSON:
-                                formData = new TFormDataPerson();
-                                formData.IsPersonRecord = true;
-                                break;
-
-                            default:
-                                formData = new TFormDataPartner();
-                                formData.IsPersonRecord = false;
-                                break;
-                        }
-
-                        FillFormDataFromPartner(APartnerKey, ref formData, AFormLetterInfo, ASiteKey, ALocationKey);
-                    }
+                    FillFormDataFromPartner(APartnerKey, AFormDataPartner, AFormLetterInfo, ReadTransaction, ASiteKey, ALocationKey);
                 });
 
-            return formData;
+            return AFormDataPartner;
+        }
+
+        /// <summary>
+        /// Populate form data for given partner key and list of fields.
+        /// This only fills Partner Data, not Personnel or Finance. This method can be called from
+        /// Personnel and Finance Form Letter methods to fill Partner Data.
+        /// </summary>
+        /// <param name="APartnerKey">Key of partner record to be used</param>
+        /// <param name="AFormDataPerson">Form Data Object</param>
+        /// <param name="AFormLetterInfo">Info class for form letter</param>
+        /// <param name="ASiteKey">Site key for location record</param>
+        /// <param name="ALocationKey">Key for location record</param>
+        /// <returns>returns list with populated form data</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static TFormDataPerson FillFormDataFromPerson(Int64 APartnerKey,
+            TFormDataPerson AFormDataPerson,
+            TFormLetterInfo AFormLetterInfo,
+            Int64 ASiteKey = 0,
+            Int32 ALocationKey = 0)
+        {
+            if (AFormDataPerson == null)
+            {
+                return null;
+            }
+
+            TDBTransaction ReadTransaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref ReadTransaction,
+                delegate
+                {
+                    FillFormDataFromPerson(APartnerKey, AFormDataPerson, AFormLetterInfo, ReadTransaction, ASiteKey, ALocationKey);
+                });
+
+            return AFormDataPerson;
         }
 
         /// <summary>
@@ -189,13 +231,15 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <param name="APartnerKey">Key of partner record to be used</param>
         /// <param name="AFormDataPartner">form letter data object to be filled</param>
         /// <param name="AFormLetterInfo">Info class for form letter</param>
+        /// <param name="AReadTransaction">Db transaction</param>
         /// <param name="ASiteKey">Site key for location record</param>
         /// <param name="ALocationKey">Key for location record</param>
         /// <returns>returns list with populated form data</returns>
         [RequireModulePermission("PTNRUSER")]
         public static void FillFormDataFromPartner(Int64 APartnerKey,
-            ref TFormDataPartner AFormDataPartner,
+            TFormDataPartner AFormDataPartner,
             TFormLetterInfo AFormLetterInfo,
+            TDBTransaction AReadTransaction,
             Int64 ASiteKey = 0,
             Int32 ALocationKey = 0)
         {
@@ -204,573 +248,592 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             TStdPartnerStatusCode PartnerStatusCode;
             Int64 FamilyKey = 0;
 
-            TFormDataPartner formData = null;
+            if (AFormDataPartner == null)
+            {
+                return;
+            }
 
-            TDBTransaction ReadTransaction = null;
+            if (MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, AReadTransaction))
+            {
+                // set current date
+                AFormDataPartner.CurrentDate = DateTime.Today;
 
-            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
-                ref ReadTransaction,
-                delegate
+                // retrieve general Partner information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eGeneral))
                 {
-                    if (MCommonMain.RetrievePartnerShortName(APartnerKey, out ShortName, out PartnerClass, out PartnerStatusCode, ReadTransaction))
+                    String SiteName;
+                    TPartnerClass SiteClass;
+
+                    if (TPartnerServerLookups.GetPartnerShortName(DomainManager.GSiteKey, out SiteName, out SiteClass))
                     {
-                        switch (PartnerClass)
-                        {
-                            case TPartnerClass.PERSON:
-                                formData = new TFormDataPerson();
-                                formData.IsPersonRecord = true;
-                                break;
+                        AFormDataPartner.RecordingField = SiteName;
+                    }
+                }
 
-                            default:
-                                formData = new TFormDataPartner();
-                                formData.IsPersonRecord = false;
-                                break;
-                        }
+                // retrieve general Partner information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.ePartner))
+                {
+                    PPartnerTable PartnerTable;
+                    PPartnerRow PartnerRow;
+                    PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, AReadTransaction);
 
-                        // set current date
-                        formData.CurrentDate = DateTime.Today;
+                    if (PartnerTable.Count > 0)
+                    {
+                        PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
 
-                        // retrieve general Partner information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eGeneral))
-                        {
-                            String SiteName;
-                            TPartnerClass SiteClass;
+                        AFormDataPartner.PartnerKey = PartnerRow.PartnerKey.ToString("0000000000");
+                        AFormDataPartner.PartnerClass = PartnerRow.PartnerClass;
+                        AFormDataPartner.StatusCode = PartnerRow.StatusCode;
+                        AFormDataPartner.Name = Calculations.FormatShortName(PartnerRow.PartnerShortName, eShortNameFormat.eReverseWithoutTitle);
+                        AFormDataPartner.ShortName = PartnerRow.PartnerShortName;
+                        AFormDataPartner.LocalName = PartnerRow.PartnerShortNameLoc;
+                        AFormDataPartner.AddresseeType = PartnerRow.AddresseeTypeCode;
+                        AFormDataPartner.LanguageCode = PartnerRow.LanguageCode;
+                        AFormDataPartner.Notes = PartnerRow.Comment;
+                        AFormDataPartner.ReceiptLetterFrequency = PartnerRow.ReceiptLetterFrequency;
 
-                            if (TPartnerServerLookups.GetPartnerShortName(DomainManager.GSiteKey, out SiteName, out SiteClass))
-                            {
-                                formData.RecordingField = SiteName;
-                            }
-                        }
+                        // initialize
+                        AFormDataPartner.Title = "";
+                        AFormDataPartner.TitleAndSpace = "";
 
-                        // retrieve general Partner information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.ePartner))
-                        {
-                            PPartnerTable PartnerTable;
-                            PPartnerRow PartnerRow;
-                            PartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                            if (PartnerTable.Count > 0)
-                            {
-                                PartnerRow = (PPartnerRow)PartnerTable.Rows[0];
-
-                                formData.PartnerKey = PartnerRow.PartnerKey.ToString("0000000000");
-                                formData.PartnerClass = PartnerRow.PartnerClass;
-                                formData.StatusCode = PartnerRow.StatusCode;
-                                formData.Name = Calculations.FormatShortName(PartnerRow.PartnerShortName, eShortNameFormat.eReverseWithoutTitle);
-                                formData.ShortName = PartnerRow.PartnerShortName;
-                                formData.LocalName = PartnerRow.PartnerShortNameLoc;
-                                formData.AddresseeType = PartnerRow.AddresseeTypeCode;
-                                formData.LanguageCode = PartnerRow.LanguageCode;
-                                formData.Notes = PartnerRow.Comment;
-                                formData.ReceiptLetterFrequency = PartnerRow.ReceiptLetterFrequency;
-
-                                // initialize
-                                formData.Title = "";
-                                formData.TitleAndSpace = "";
-
-                                if (PartnerClass == TPartnerClass.PERSON)
-                                {
-                                    PPersonTable PersonTable;
-                                    PPersonRow PersonRow;
-                                    PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                                    if (PersonTable.Count > 0)
-                                    {
-                                        PersonRow = (PPersonRow)PersonTable.Rows[0];
-
-                                        formData.FirstName = PersonRow.FirstName;
-                                        formData.LastName = PersonRow.FamilyName;
-                                        formData.Title = PersonRow.Title;
-                                    }
-                                }
-                                else if (PartnerClass == TPartnerClass.FAMILY)
-                                {
-                                    PFamilyTable FamilyTable;
-                                    PFamilyRow FamilyRow;
-                                    FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
-
-                                    if (FamilyTable.Count > 0)
-                                    {
-                                        FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
-
-                                        formData.FirstName = FamilyRow.FirstName;
-                                        formData.LastName = FamilyRow.FamilyName;
-                                        formData.Title = FamilyRow.Title;
-                                    }
-                                }
-                                else
-                                {
-                                    // last name is Partner Short Name
-                                    // except: if UNIT then don't print partner name (it should be contained in next address line)
-                                    if (PartnerClass != TPartnerClass.UNIT)
-                                    {
-                                        formData.LastName = PartnerRow.PartnerShortName;
-                                    }
-                                }
-
-                                // add space only if first name is not empty
-                                formData.FirstNameAndSpace = formData.FirstName;
-
-                                if ((formData.FirstNameAndSpace != null)
-                                    && (formData.FirstNameAndSpace.Length > 0))
-                                {
-                                    formData.FirstNameAndSpace += " ";
-                                }
-
-                                // add space only if last name is not empty
-                                formData.LastNameAndSpace = formData.LastName;
-
-                                if ((formData.LastNameAndSpace != null)
-                                    && (formData.LastNameAndSpace.Length > 0))
-                                {
-                                    formData.LastNameAndSpace += " ";
-                                }
-
-                                // add space only if title is not empty
-                                formData.TitleAndSpace = formData.Title;
-
-                                if ((formData.TitleAndSpace != null)
-                                    && (formData.TitleAndSpace.Length > 0))
-                                {
-                                    formData.TitleAndSpace += " ";
-                                }
-                            }
-
-                            if ((formData.FirstName != null)
-                                && (formData.FirstName.Length > 0))
-                            {
-                                formData.FirstInitial = ConvertIfUpperCase(formData.FirstName.Substring(0, 1), true);
-                                formData.FirstInitialAndSpace = formData.FirstInitial;
-
-                                // only add space if first initial is not empty
-                                if (formData.FirstInitialAndSpace.Length > 0)
-                                {
-                                    formData.FirstInitialAndSpace += " ";
-                                }
-                            }
-                        }
-
-                        // retrieve Person information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.ePerson)
-                            && (PartnerClass == TPartnerClass.PERSON)
-                            && (formData.GetType() == typeof(TFormDataPerson)))
+                        if (PartnerClass == TPartnerClass.PERSON)
                         {
                             PPersonTable PersonTable;
                             PPersonRow PersonRow;
-                            TFormDataPerson PersonFormData = (TFormDataPerson)formData;
-                            PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, ReadTransaction);
+                            PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, AReadTransaction);
 
                             if (PersonTable.Count > 0)
                             {
                                 PersonRow = (PPersonRow)PersonTable.Rows[0];
-                                PersonFormData.Title = PersonRow.Title;
-                                PersonFormData.Decorations = PersonRow.Decorations;
-                                PersonFormData.MiddleName = PersonRow.MiddleName1;
-                                PersonFormData.PreferredName = PersonRow.PreferedName;
-                                PersonFormData.AcademicTitle = PersonRow.AcademicTitle;
-                                PersonFormData.DateOfBirth = PersonRow.DateOfBirth;
-                                PersonFormData.Gender = PersonRow.Gender;
-                                PersonFormData.MaritalStatus = PersonRow.MaritalStatus;
 
-                                if (!PersonRow.IsMaritalStatusNull()
-                                    && (PersonRow.MaritalStatus != ""))
-                                {
-                                    // retrieve marital status description from marital status table
-                                    TPartnerCacheable CachePopulator = new TPartnerCacheable();
-                                    PtMaritalStatusTable MaritalStatusTable =
-                                        (PtMaritalStatusTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.MaritalStatusList);
-                                    PtMaritalStatusRow MaritalStatusRow =
-                                        (PtMaritalStatusRow)MaritalStatusTable.Rows.Find(new object[] { PersonRow.MaritalStatus });
+                                AFormDataPartner.FirstName = PersonRow.FirstName;
+                                AFormDataPartner.LastName = PersonRow.FamilyName;
+                                AFormDataPartner.Title = PersonRow.Title;
+                            }
+                        }
+                        else if (PartnerClass == TPartnerClass.FAMILY)
+                        {
+                            PFamilyTable FamilyTable;
+                            PFamilyRow FamilyRow;
+                            FamilyTable = PFamilyAccess.LoadByPrimaryKey(APartnerKey, AReadTransaction);
 
-                                    if (MaritalStatusRow != null)
-                                    {
-                                        PersonFormData.MaritalStatusDesc = MaritalStatusRow.Description;
-                                    }
-                                }
+                            if (FamilyTable.Count > 0)
+                            {
+                                FamilyRow = (PFamilyRow)FamilyTable.Rows[0];
 
-                                PersonFormData.OccupationCode = PersonRow.OccupationCode;
-
-                                if (!PersonRow.IsOccupationCodeNull()
-                                    && (PersonRow.OccupationCode != ""))
-                                {
-                                    // retrieve occupation description from occupation table
-                                    TPartnerCacheable CachePopulator = new TPartnerCacheable();
-                                    POccupationTable OccupationTable =
-                                        (POccupationTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.OccupationList);
-                                    POccupationRow OccupationRow = (POccupationRow)OccupationTable.Rows.Find(new object[] { PersonRow.OccupationCode });
-
-                                    if (OccupationRow != null)
-                                    {
-                                        PersonFormData.Occupation = OccupationRow.OccupationDescription;
-                                    }
-                                }
-
-                                // Get supporting church, if there is one.  (Actually there may be more than one!)
-                                // The RelationKey should hold the PERSON key and PartnerKey should hold supporter key
-                                PPartnerRelationshipTable tmpTable = new PPartnerRelationshipTable();
-                                PPartnerRelationshipRow templateRow = tmpTable.NewRowTyped(false);
-                                templateRow.RelationName = "SUPPCHURCH";
-                                templateRow.RelationKey = APartnerKey;
-
-                                PPartnerRelationshipTable supportingChurchTable =
-                                    PPartnerRelationshipAccess.LoadUsingTemplate(templateRow, ReadTransaction);
-                                int supportingChurchCount = supportingChurchTable.Rows.Count;
-
-                                // If the user has got RelationKey and PartnerKey back to front we will get no results
-                                PersonFormData.SendingChurchName = String.Empty;
-
-                                for (int i = 0; i < supportingChurchCount; i++)
-                                {
-                                    // Go round each supporting church
-                                    // Get the short name for the sending church
-                                    // Foreign key constraint means that this row is bound to exist
-                                    string churchName;
-                                    TPartnerClass churchClass;
-                                    TStdPartnerStatusCode churchStatus;
-                                    long supportingChurchKey = ((PPartnerRelationshipRow)supportingChurchTable.Rows[i]).PartnerKey;
-
-                                    if (MCommonMain.RetrievePartnerShortName(supportingChurchKey, out churchName, out churchClass, out churchStatus,
-                                            ReadTransaction))
-                                    {
-                                        // The church name can be empty but that would be unusual
-                                        // churchClass should be CHURCH or ORGANISATION if everything is the right way round
-                                        // but we do not check this - nor churchStatus
-                                        if (churchName.Length == 0)
-                                        {
-                                            churchName = Catalog.GetString("Not available");
-                                        }
-
-                                        if (supportingChurchCount > 1)
-                                        {
-                                            if (i > 0)
-                                            {
-                                                PersonFormData.SendingChurchName += Catalog.GetString(" AND ");
-                                            }
-
-                                            PersonFormData.SendingChurchName += String.Format("{0}: '{1}'", i + 1, churchName);
-                                        }
-                                        else
-                                        {
-                                            PersonFormData.SendingChurchName += String.Format("'{0}'", churchName);
-                                        }
-                                    }
-                                }
-
-                                // we need this for later in case we retrieve family members
-                                FamilyKey = PersonRow.FamilyKey;
+                                AFormDataPartner.FirstName = FamilyRow.FirstName;
+                                AFormDataPartner.LastName = FamilyRow.FamilyName;
+                                AFormDataPartner.Title = FamilyRow.Title;
+                            }
+                        }
+                        else
+                        {
+                            // last name is Partner Short Name
+                            // except: if UNIT then don't print partner name (it should be contained in next address line)
+                            if (PartnerClass != TPartnerClass.UNIT)
+                            {
+                                AFormDataPartner.LastName = PartnerRow.PartnerShortName;
                             }
                         }
 
-                        // retrieve Family member information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eFamilyMember))
+                        // add space only if first name is not empty
+                        AFormDataPartner.FirstNameAndSpace = AFormDataPartner.FirstName;
+
+                        if ((AFormDataPartner.FirstNameAndSpace != null)
+                            && (AFormDataPartner.FirstNameAndSpace.Length > 0))
                         {
-                            // Retrieve family key for FAMILY class. In case of PERSON this has already been done earlier.
-                            if (PartnerClass == TPartnerClass.FAMILY)
-                            {
-                                FamilyKey = APartnerKey;
-                            }
-
-                            if (FamilyKey != 0)
-                            {
-                                PPersonTable FamilyMembersTable;
-                                TFormDataFamilyMember FamilyMemberRecord;
-                                String PersonShortName;
-                                TPartnerClass PersonClass;
-                                FamilyMembersTable = PPersonAccess.LoadViaPFamily(FamilyKey, ReadTransaction);
-
-                                foreach (PPersonRow PersonRow in FamilyMembersTable.Rows)
-                                {
-                                    // only add this person if it is not the main record
-                                    if (PersonRow.PartnerKey != APartnerKey)
-                                    {
-                                        FamilyMemberRecord = new TFormDataFamilyMember();
-
-                                        TPartnerServerLookups.GetPartnerShortName(PersonRow.PartnerKey, out PersonShortName, out PersonClass);
-                                        FamilyMemberRecord.Name = PersonShortName;
-                                        FamilyMemberRecord.DateOfBirth = PersonRow.DateOfBirth;
-
-                                        formData.AddFamilyMember(FamilyMemberRecord);
-                                    }
-                                }
-                            }
+                            AFormDataPartner.FirstNameAndSpace += " ";
                         }
 
-                        // retrieve Contact information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContact))
+                        // add space only if last name is not empty
+                        AFormDataPartner.LastNameAndSpace = AFormDataPartner.LastName;
+
+                        if ((AFormDataPartner.LastNameAndSpace != null)
+                            && (AFormDataPartner.LastNameAndSpace.Length > 0))
                         {
-                            string Phone;
-                            string Email;
-
-                            // retrieve primary phone and primary email
-                            TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(APartnerKey, out Phone, out Email);
-
-                            formData.PrimaryPhone = Phone;
-                            formData.PrimaryEmail = Email;
-
-                            if (AFormLetterInfo.SplitEmailAddresses && (Email != null) && (Email.Length > 0))
-                            {
-                                // We have been instructed to split multiple email addresses
-                                string[] addresses = StringHelper.SplitEmailAddresses(Email);
-
-                                if (AFormLetterInfo.CurrentEmailInstance < addresses.Length)
-                                {
-                                    // Extract the correct one and use it for this partner instance
-                                    formData.PrimaryEmail = addresses[AFormLetterInfo.CurrentEmailInstance];
-                                }
-
-                                if ((AFormLetterInfo.CurrentEmailInstance + 1) < addresses.Length)
-                                {
-                                    // There is another one available so return the next instance in our FormLetterInfo
-                                    AFormLetterInfo.NextEmailInstance = AFormLetterInfo.CurrentEmailInstance + 1;
-                                }
-                                else
-                                {
-                                    AFormLetterInfo.NextEmailInstance = -1;
-                                }
-                            }
-
-                            // check for skype as it may not often be used
-                            // if there is more than one skype id then at the moment the first one found is used
-                            if (AFormLetterInfo.ContainsTag("Skype"))
-                            {
-                                PPartnerAttributeTable AttributeTable = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
-
-                                foreach (PPartnerAttributeRow AttributeRow in AttributeTable.Rows)
-                                {
-                                    if (AttributeRow.AttributeType == "Skype") // check if we can maybe use constant value instead of string
-                                    {
-                                        formData.Skype = AttributeRow.Value;
-                                        break;
-                                    }
-                                }
-                            }
+                            AFormDataPartner.LastNameAndSpace += " ";
                         }
 
-                        // retrieve Contact Detail information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContactDetail))
+                        // add space only if title is not empty
+                        AFormDataPartner.TitleAndSpace = AFormDataPartner.Title;
+
+                        if ((AFormDataPartner.TitleAndSpace != null)
+                            && (AFormDataPartner.TitleAndSpace.Length > 0))
                         {
-                            PPartnerAttributeTable ContactDetailTable;
-                            TFormDataContactDetail ContactDetailRecord;
-
-                            ContactDetailTable = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, ReadTransaction);
-
-                            foreach (PPartnerAttributeRow ContactDetailRow in ContactDetailTable.Rows)
-                            {
-                                // find attribute type row
-                                TPartnerCacheable CachePopulator = new TPartnerCacheable();
-                                PPartnerAttributeTypeTable TypeTable =
-                                    (PPartnerAttributeTypeTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.ContactTypeList);
-                                PPartnerAttributeTypeRow TypeRow = (PPartnerAttributeTypeRow)TypeTable.Rows.Find(
-                                    ContactDetailRow.AttributeType);
-
-                                if (TypeRow != null)
-                                {
-                                    // find attribute category row from type row
-                                    PPartnerAttributeCategoryTable CategoryTable =
-                                        (PPartnerAttributeCategoryTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.
-                                            ContactCategoryList);
-                                    PPartnerAttributeCategoryRow CategoryRow =
-                                        (PPartnerAttributeCategoryRow)CategoryTable.Rows.Find(TypeRow.CategoryCode);
-
-                                    // only add to contact details if category is a contact category
-                                    if (CategoryRow.PartnerContactCategory)
-                                    {
-                                        ContactDetailRecord = new TFormDataContactDetail();
-
-                                        // retrieve category from attribute type row
-                                        ContactDetailRecord.Category = TypeRow.CategoryCode;
-
-                                        ContactDetailRecord.Type = ContactDetailRow.AttributeType;
-                                        ContactDetailRecord.Value = ContactDetailRow.Value;
-                                        ContactDetailRecord.IsCurrent = ContactDetailRow.Current;
-
-                                        ContactDetailRecord.IsBusiness = ContactDetailRow.Specialised;
-                                        ContactDetailRecord.IsConfidential = ContactDetailRow.Confidential;
-                                        ContactDetailRecord.Comment = ContactDetailRow.Comment;
-
-                                        formData.AddContactDetail(ContactDetailRecord);
-                                    }
-                                }
-                            }
+                            AFormDataPartner.TitleAndSpace += " ";
                         }
+                    }
 
-                        // retrieve Subscription information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription)
-                            || ((AFormLetterInfo.FormLetterPrintOptions != null)
-                                && (AFormLetterInfo.FormLetterPrintOptions.PublicationCodes.Length > 0)))
+                    if ((AFormDataPartner.FirstName != null)
+                        && (AFormDataPartner.FirstName.Length > 0))
+                    {
+                        AFormDataPartner.FirstInitial = ConvertIfUpperCase(AFormDataPartner.FirstName.Substring(0, 1), true);
+                        AFormDataPartner.FirstInitialAndSpace = AFormDataPartner.FirstInitial;
+
+                        // only add space if first initial is not empty
+                        if (AFormDataPartner.FirstInitialAndSpace.Length > 0)
                         {
-                            PSubscriptionTable SubscriptionTable;
-                            TFormDataSubscription SubscriptionRecord;
-
-                            SubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, ReadTransaction);
-
-                            foreach (PSubscriptionRow SubscriptionRow in SubscriptionTable.Rows)
-                            {
-                                SubscriptionRecord = new TFormDataSubscription();
-
-                                SubscriptionRecord.PublicationCode = SubscriptionRow.PublicationCode;
-                                SubscriptionRecord.Status = SubscriptionRow.SubscriptionStatus;
-                                SubscriptionRecord.PublicationCopies =
-                                    SubscriptionRow.IsPublicationCopiesNull() ? 1 : SubscriptionRow.PublicationCopies;
-
-                                formData.AddSubscription(SubscriptionRecord);
-                            }
+                            AFormDataPartner.FirstInitialAndSpace += " ";
                         }
+                    }
+                }
 
-                        // retrieve Location and formality information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocation)
-                            || AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocationBlock)
-                            || AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eFormalGreetings))
+                // retrieve Family member information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eFamilyMember))
+                {
+                    // Retrieve family key for FAMILY class. In case of PERSON this has already been done earlier.
+                    if (PartnerClass == TPartnerClass.PERSON)
+                    {
+                        PPersonTable PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, AReadTransaction);
+
+                        if (PersonTable.Count > 0)
                         {
-                            PLocationTable LocationTable;
-                            PLocationRow LocationRow;
-                            String CountryName = "";
-
-                            if (ALocationKey == 0)
-                            {
-                                // no address set -> retrieve best address
-                                TAddressTools.GetBestAddress(APartnerKey, out LocationTable, out CountryName, ReadTransaction);
-                            }
-                            else
-                            {
-                                if (PPartnerLocationAccess.Exists(APartnerKey, ASiteKey, ALocationKey, ReadTransaction))
-                                {
-                                    // given location key is found for this partner
-                                    LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, ReadTransaction);
-                                    formData.AddressIsOriginal = true;
-                                }
-                                else
-                                {
-                                    // given location key not found for this partner
-                                    // -> update with best address and set flag "AddressIsOriginal" to false
-                                    TAddressTools.GetBestAddress(APartnerKey, out LocationTable, out CountryName, ReadTransaction);
-                                    formData.AddressIsOriginal = false;
-                                }
-                            }
-
-                            if (LocationTable.Count > 0)
-                            {
-                                LocationRow = (PLocationRow)LocationTable.Rows[0];
-                                formData.LocationKey = LocationRow.LocationKey;
-                                formData.Address1 = LocationRow.Locality;
-                                formData.AddressStreet2 = LocationRow.StreetName;
-                                formData.Address3 = LocationRow.Address3;
-                                formData.PostalCode = LocationRow.PostalCode;
-                                formData.County = LocationRow.County;
-                                formData.CountryName = CountryName;
-                                formData.City = LocationRow.City;
-                                formData.CountryCode = LocationRow.CountryCode;
-
-                                // retrieve country name from country table
-                                TCacheable CachePopulator = new TCacheable();
-                                PCountryTable CountryTable = (PCountryTable)CachePopulator.GetCacheableTable(TCacheableCommonTablesEnum.CountryList);
-                                PCountryRow CountryRow = (PCountryRow)CountryTable.Rows.Find(new object[] { LocationRow.CountryCode });
-
-                                if (CountryRow != null)
-                                {
-                                    formData.CountryName = CountryRow.CountryName;
-                                    formData.CountryInLocalLanguage = CountryRow.CountryNameLocal;
-                                }
-
-                                if (AFormLetterInfo.FormLetterPrintOptions != null)
-                                {
-                                    formData.MailingCode = AFormLetterInfo.FormLetterPrintOptions.MailingCode;
-                                    formData.PublicationCodes = AFormLetterInfo.FormLetterPrintOptions.PublicationCodes;
-                                    formData.Enclosures = BuildEnclosuresList(formData, AFormLetterInfo);
-                                }
-                            }
-
-                            // build address block (need to have retrieved location data beforehand)
-                            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocationBlock))
-                            {
-                                formData.AddressBlock = BuildAddressBlock(formData, AFormLetterInfo.AddressLayoutCode, PartnerClass, ReadTransaction);
-                            }
-
-                            // retrieve formality information (need to have retrieved country, language and addressee type beforehand)
-                            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eFormalGreetings))
-                            {
-                                String SalutationText;
-                                String ClosingText;
-
-                                InitializeFormality(AFormLetterInfo, ReadTransaction);
-                                AFormLetterInfo.RetrieveFormalityGreeting(formData, out SalutationText, out ClosingText);
-                                ResolveGreetingPlaceholders(formData, AFormLetterInfo, APartnerKey, ShortName, PartnerClass, ref SalutationText,
-                                    ref ClosingText, ReadTransaction);
-
-                                formData.FormalSalutation = SalutationText;
-                                formData.FormalClosing = ClosingText;
-                            }
+                            PPersonRow PersonRow = (PPersonRow)PersonTable.Rows[0];
+                            FamilyKey = PersonRow.FamilyKey;
                         }
+                    }
+                    else if (PartnerClass == TPartnerClass.FAMILY)
+                    {
+                        FamilyKey = APartnerKey;
+                    }
 
-                        // retrieve Contact Log information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContactLog))
+                    if (FamilyKey != 0)
+                    {
+                        PPersonTable FamilyMembersTable;
+                        TFormDataFamilyMember FamilyMemberRecord;
+                        String PersonShortName;
+                        TPartnerClass PersonClass;
+                        FamilyMembersTable = PPersonAccess.LoadViaPFamily(FamilyKey, AReadTransaction);
+
+                        foreach (PPersonRow PersonRow in FamilyMembersTable.Rows)
                         {
-                            PContactLogTable ContactLogTable;
-                            TFormDataContactLog ContactLogRecord;
-                            ContactLogTable = PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, ReadTransaction);
-
-                            foreach (PContactLogRow ContactLogRow in ContactLogTable.Rows)
+                            // only add this person if it is not the main record
+                            if (PersonRow.PartnerKey != APartnerKey)
                             {
-                                ContactLogRecord = new TFormDataContactLog();
+                                FamilyMemberRecord = new TFormDataFamilyMember();
 
-                                ContactLogRecord.Date = ContactLogRow.ContactDate;
-                                ContactLogRecord.Contactor = ContactLogRow.Contactor;
-                                ContactLogRecord.ContactCode = ContactLogRow.ContactCode;
-                                ContactLogRecord.Notes = ContactLogRow.ContactComment;
+                                TPartnerServerLookups.GetPartnerShortName(PersonRow.PartnerKey, out PersonShortName, out PersonClass);
+                                FamilyMemberRecord.Name = PersonShortName;
+                                FamilyMemberRecord.DateOfBirth = PersonRow.DateOfBirth;
 
-                                formData.AddContactLog(ContactLogRecord);
-                            }
-                        }
-
-                        // retrieve banking information
-                        if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eBanking))
-                        {
-                            PBankingDetailsUsageTable BankingDetailsUsageTable = new PBankingDetailsUsageTable();
-                            PBankingDetailsUsageRow BankingDetailsUsageTemplateRow = BankingDetailsUsageTable.NewRowTyped(false);
-                            BankingDetailsUsageTemplateRow.PartnerKey = APartnerKey;
-                            BankingDetailsUsageTemplateRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
-
-                            BankingDetailsUsageTable = PBankingDetailsUsageAccess.LoadUsingTemplate(BankingDetailsUsageTemplateRow, ReadTransaction);
-
-                            if (BankingDetailsUsageTable.Count > 0)
-                            {
-                                // in this case there is a main bank account for this partner
-                                PBankingDetailsTable BankingDetailsTable;
-                                PBankingDetailsRow BankingDetailsRow;
-
-                                BankingDetailsTable =
-                                    (PBankingDetailsTable)(PBankingDetailsAccess.LoadByPrimaryKey(((PBankingDetailsUsageRow)BankingDetailsUsageTable.
-                                                                                                   Rows[0]).
-                                                               BankingDetailsKey, ReadTransaction));
-
-                                if (BankingDetailsTable.Count > 0)
-                                {
-                                    BankingDetailsRow = (PBankingDetailsRow)BankingDetailsTable.Rows[0];
-                                    formData.BankAccountName = BankingDetailsRow.AccountName;
-                                    formData.BankAccountNumber = BankingDetailsRow.BankAccountNumber;
-                                    formData.IBANUnformatted = BankingDetailsRow.Iban;
-                                    //formData.IBANFormatted = ...;
-
-                                    // now retrieve bank information
-                                    PBankTable BankTable;
-                                    PBankRow BankRow;
-
-                                    BankTable = (PBankTable)(PBankAccess.LoadByPrimaryKey(BankingDetailsRow.BankKey, ReadTransaction));
-
-                                    if (BankTable.Count > 0)
-                                    {
-                                        BankRow = (PBankRow)BankTable.Rows[0];
-                                        formData.BankName = BankRow.BranchName;
-                                        formData.BankBranchCode = BankRow.BranchCode;
-                                        formData.BICSwiftCode = BankRow.Bic;
-                                    }
-                                }
+                                AFormDataPartner.AddFamilyMember(FamilyMemberRecord);
                             }
                         }
                     }
-                });
+                }
 
-            AFormDataPartner = formData;
+                // retrieve Contact information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContact))
+                {
+                    string Phone;
+                    string Email;
+
+                    // retrieve primary phone and primary email
+                    TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhone(APartnerKey, out Phone, out Email);
+
+                    AFormDataPartner.PrimaryPhone = Phone;
+                    AFormDataPartner.PrimaryEmail = Email;
+
+                    if (AFormLetterInfo.SplitEmailAddresses && (Email != null) && (Email.Length > 0))
+                    {
+                        // We have been instructed to split multiple email addresses
+                        string[] addresses = StringHelper.SplitEmailAddresses(Email);
+
+                        if (AFormLetterInfo.CurrentEmailInstance < addresses.Length)
+                        {
+                            // Extract the correct one and use it for this partner instance
+                            AFormDataPartner.PrimaryEmail = addresses[AFormLetterInfo.CurrentEmailInstance];
+                        }
+
+                        if ((AFormLetterInfo.CurrentEmailInstance + 1) < addresses.Length)
+                        {
+                            // There is another one available so return the next instance in our FormLetterInfo
+                            AFormLetterInfo.NextEmailInstance = AFormLetterInfo.CurrentEmailInstance + 1;
+                        }
+                        else
+                        {
+                            AFormLetterInfo.NextEmailInstance = -1;
+                        }
+                    }
+
+                    // check for skype as it may not often be used
+                    // if there is more than one skype id then at the moment the first one found is used
+                    if (AFormLetterInfo.ContainsTag("Skype"))
+                    {
+                        PPartnerAttributeTable AttributeTable = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, AReadTransaction);
+
+                        foreach (PPartnerAttributeRow AttributeRow in AttributeTable.Rows)
+                        {
+                            if (AttributeRow.AttributeType == "Skype") // check if we can maybe use constant value instead of string
+                            {
+                                AFormDataPartner.Skype = AttributeRow.Value;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // retrieve Contact Detail information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContactDetail))
+                {
+                    PPartnerAttributeTable ContactDetailTable;
+                    TFormDataContactDetail ContactDetailRecord;
+
+                    ContactDetailTable = PPartnerAttributeAccess.LoadViaPPartner(APartnerKey, AReadTransaction);
+
+                    foreach (PPartnerAttributeRow ContactDetailRow in ContactDetailTable.Rows)
+                    {
+                        // find attribute type row
+                        TPartnerCacheable CachePopulator = new TPartnerCacheable();
+                        PPartnerAttributeTypeTable TypeTable =
+                            (PPartnerAttributeTypeTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.ContactTypeList);
+                        PPartnerAttributeTypeRow TypeRow = (PPartnerAttributeTypeRow)TypeTable.Rows.Find(
+                            ContactDetailRow.AttributeType);
+
+                        if (TypeRow != null)
+                        {
+                            // find attribute category row from type row
+                            PPartnerAttributeCategoryTable CategoryTable =
+                                (PPartnerAttributeCategoryTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.
+                                    ContactCategoryList);
+                            PPartnerAttributeCategoryRow CategoryRow =
+                                (PPartnerAttributeCategoryRow)CategoryTable.Rows.Find(TypeRow.CategoryCode);
+
+                            // only add to contact details if category is a contact category
+                            if (CategoryRow.PartnerContactCategory)
+                            {
+                                ContactDetailRecord = new TFormDataContactDetail();
+
+                                // retrieve category from attribute type row
+                                ContactDetailRecord.Category = TypeRow.CategoryCode;
+
+                                ContactDetailRecord.Type = ContactDetailRow.AttributeType;
+                                ContactDetailRecord.Value = ContactDetailRow.Value;
+                                ContactDetailRecord.IsCurrent = ContactDetailRow.Current;
+
+                                ContactDetailRecord.IsBusiness = ContactDetailRow.Specialised;
+                                ContactDetailRecord.IsConfidential = ContactDetailRow.Confidential;
+                                ContactDetailRecord.Comment = ContactDetailRow.Comment;
+
+                                AFormDataPartner.AddContactDetail(ContactDetailRecord);
+                            }
+                        }
+                    }
+                }
+
+                // retrieve Subscription information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eSubscription)
+                    || ((AFormLetterInfo.FormLetterPrintOptions != null)
+                        && (AFormLetterInfo.FormLetterPrintOptions.PublicationCodes.Length > 0)))
+                {
+                    PSubscriptionTable SubscriptionTable;
+                    TFormDataSubscription SubscriptionRecord;
+
+                    SubscriptionTable = PSubscriptionAccess.LoadViaPPartnerPartnerKey(APartnerKey, AReadTransaction);
+
+                    foreach (PSubscriptionRow SubscriptionRow in SubscriptionTable.Rows)
+                    {
+                        SubscriptionRecord = new TFormDataSubscription();
+
+                        SubscriptionRecord.PublicationCode = SubscriptionRow.PublicationCode;
+                        SubscriptionRecord.Status = SubscriptionRow.SubscriptionStatus;
+                        SubscriptionRecord.PublicationCopies =
+                            SubscriptionRow.IsPublicationCopiesNull() ? 1 : SubscriptionRow.PublicationCopies;
+
+                        AFormDataPartner.AddSubscription(SubscriptionRecord);
+                    }
+                }
+
+                // retrieve Location and formality information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocation)
+                    || AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocationBlock)
+                    || AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eFormalGreetings))
+                {
+                    PLocationTable LocationTable;
+                    PLocationRow LocationRow;
+                    String CountryName = "";
+
+                    if (ALocationKey == 0)
+                    {
+                        // no address set -> retrieve best address
+                        TAddressTools.GetBestAddress(APartnerKey, out LocationTable, out CountryName, AReadTransaction);
+                    }
+                    else
+                    {
+                        if (PPartnerLocationAccess.Exists(APartnerKey, ASiteKey, ALocationKey, AReadTransaction))
+                        {
+                            // given location key is found for this partner
+                            LocationTable = PLocationAccess.LoadByPrimaryKey(ASiteKey, ALocationKey, AReadTransaction);
+                            AFormDataPartner.AddressIsOriginal = true;
+                        }
+                        else
+                        {
+                            // given location key not found for this partner
+                            // -> update with best address and set flag "AddressIsOriginal" to false
+                            TAddressTools.GetBestAddress(APartnerKey, out LocationTable, out CountryName, AReadTransaction);
+                            AFormDataPartner.AddressIsOriginal = false;
+                        }
+                    }
+
+                    if (LocationTable.Count > 0)
+                    {
+                        LocationRow = (PLocationRow)LocationTable.Rows[0];
+                        AFormDataPartner.LocationKey = LocationRow.LocationKey;
+                        AFormDataPartner.Address1 = LocationRow.Locality;
+                        AFormDataPartner.AddressStreet2 = LocationRow.StreetName;
+                        AFormDataPartner.Address3 = LocationRow.Address3;
+                        AFormDataPartner.PostalCode = LocationRow.PostalCode;
+                        AFormDataPartner.County = LocationRow.County;
+                        AFormDataPartner.CountryName = CountryName;
+                        AFormDataPartner.City = LocationRow.City;
+                        AFormDataPartner.CountryCode = LocationRow.CountryCode;
+
+                        // retrieve country name from country table
+                        TCacheable CachePopulator = new TCacheable();
+                        PCountryTable CountryTable = (PCountryTable)CachePopulator.GetCacheableTable(TCacheableCommonTablesEnum.CountryList);
+                        PCountryRow CountryRow = (PCountryRow)CountryTable.Rows.Find(new object[] { LocationRow.CountryCode });
+
+                        if (CountryRow != null)
+                        {
+                            AFormDataPartner.CountryName = CountryRow.CountryName;
+                            AFormDataPartner.CountryInLocalLanguage = CountryRow.CountryNameLocal;
+                        }
+
+                        if (AFormLetterInfo.FormLetterPrintOptions != null)
+                        {
+                            AFormDataPartner.MailingCode = AFormLetterInfo.FormLetterPrintOptions.MailingCode;
+                            AFormDataPartner.PublicationCodes = AFormLetterInfo.FormLetterPrintOptions.PublicationCodes;
+                            AFormDataPartner.Enclosures = BuildEnclosuresList(AFormDataPartner, AFormLetterInfo);
+                        }
+                    }
+
+                    // build address block (need to have retrieved location data beforehand)
+                    if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eLocationBlock))
+                    {
+                        AFormDataPartner.AddressBlock = BuildAddressBlock(AFormDataPartner,
+                            AFormLetterInfo.AddressLayoutCode,
+                            PartnerClass,
+                            AReadTransaction);
+                    }
+
+                    // retrieve formality information (need to have retrieved country, language and addressee type beforehand)
+                    if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eFormalGreetings))
+                    {
+                        String SalutationText;
+                        String ClosingText;
+
+                        InitializeFormality(AFormLetterInfo, AReadTransaction);
+                        AFormLetterInfo.RetrieveFormalityGreeting(AFormDataPartner, out SalutationText, out ClosingText);
+                        ResolveGreetingPlaceholders(AFormDataPartner, AFormLetterInfo, APartnerKey, ShortName, PartnerClass, ref SalutationText,
+                            ref ClosingText, AReadTransaction);
+
+                        AFormDataPartner.FormalSalutation = SalutationText;
+                        AFormDataPartner.FormalClosing = ClosingText;
+                    }
+                }
+
+                // retrieve Contact Log information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eContactLog))
+                {
+                    PContactLogTable ContactLogTable;
+                    TFormDataContactLog ContactLogRecord;
+                    ContactLogTable = PContactLogAccess.LoadViaPPartnerPPartnerContact(APartnerKey, AReadTransaction);
+
+                    foreach (PContactLogRow ContactLogRow in ContactLogTable.Rows)
+                    {
+                        ContactLogRecord = new TFormDataContactLog();
+
+                        ContactLogRecord.Date = ContactLogRow.ContactDate;
+                        ContactLogRecord.Contactor = ContactLogRow.Contactor;
+                        ContactLogRecord.ContactCode = ContactLogRow.ContactCode;
+                        ContactLogRecord.Notes = ContactLogRow.ContactComment;
+
+                        AFormDataPartner.AddContactLog(ContactLogRecord);
+                    }
+                }
+
+                // retrieve banking information
+                if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.eBanking))
+                {
+                    PBankingDetailsUsageTable BankingDetailsUsageTable = new PBankingDetailsUsageTable();
+                    PBankingDetailsUsageRow BankingDetailsUsageTemplateRow = BankingDetailsUsageTable.NewRowTyped(false);
+                    BankingDetailsUsageTemplateRow.PartnerKey = APartnerKey;
+                    BankingDetailsUsageTemplateRow.Type = MPartnerConstants.BANKINGUSAGETYPE_MAIN;
+
+                    BankingDetailsUsageTable = PBankingDetailsUsageAccess.LoadUsingTemplate(BankingDetailsUsageTemplateRow, AReadTransaction);
+
+                    if (BankingDetailsUsageTable.Count > 0)
+                    {
+                        // in this case there is a main bank account for this partner
+                        PBankingDetailsTable BankingDetailsTable;
+                        PBankingDetailsRow BankingDetailsRow;
+
+                        BankingDetailsTable =
+                            (PBankingDetailsTable)(PBankingDetailsAccess.LoadByPrimaryKey(((PBankingDetailsUsageRow)BankingDetailsUsageTable.
+                                                                                           Rows[0]).
+                                                       BankingDetailsKey, AReadTransaction));
+
+                        if (BankingDetailsTable.Count > 0)
+                        {
+                            BankingDetailsRow = (PBankingDetailsRow)BankingDetailsTable.Rows[0];
+                            AFormDataPartner.BankAccountName = BankingDetailsRow.AccountName;
+                            AFormDataPartner.BankAccountNumber = BankingDetailsRow.BankAccountNumber;
+                            AFormDataPartner.IBANUnformatted = BankingDetailsRow.Iban;
+                            //formData.IBANFormatted = ...;
+
+                            // now retrieve bank information
+                            PBankTable BankTable;
+                            PBankRow BankRow;
+
+                            BankTable = (PBankTable)(PBankAccess.LoadByPrimaryKey(BankingDetailsRow.BankKey, AReadTransaction));
+
+                            if (BankTable.Count > 0)
+                            {
+                                BankRow = (PBankRow)BankTable.Rows[0];
+                                AFormDataPartner.BankName = BankRow.BranchName;
+                                AFormDataPartner.BankBranchCode = BankRow.BranchCode;
+                                AFormDataPartner.BICSwiftCode = BankRow.Bic;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Populate form data for given partner key and list of fields.
+        /// This only fills Partner Data, not Personnel or Finance. This method can be called from
+        /// Personnel and Finance Form Letter methods to fill Partner Data.
+        /// </summary>
+        /// <param name="APartnerKey">Key of partner record to be used</param>
+        /// <param name="AFormDataPerson">form letter data object to be filled</param>
+        /// <param name="AFormLetterInfo">Info class for form letter</param>
+        /// <param name="AReadTransaction">Db transaction</param>
+        /// <param name="ASiteKey">Site key for location record</param>
+        /// <param name="ALocationKey">Key for location record</param>
+        /// <returns>returns list with populated form data</returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static void FillFormDataFromPerson(Int64 APartnerKey,
+            TFormDataPerson AFormDataPerson,
+            TFormLetterInfo AFormLetterInfo,
+            TDBTransaction AReadTransaction,
+            Int64 ASiteKey = 0,
+            Int32 ALocationKey = 0)
+        {
+            if (AFormDataPerson == null)
+            {
+                return;
+            }
+
+            // fill basic partner data
+            FillFormDataFromPartner(APartnerKey, AFormDataPerson, AFormLetterInfo, AReadTransaction, ASiteKey, ALocationKey);
+
+            AFormDataPerson.IsPersonRecord = true;
+
+            // retrieve Person information
+            if (AFormLetterInfo.IsRetrievalRequested(TFormDataRetrievalSection.ePerson))
+            {
+                PPersonTable PersonTable;
+                PPersonRow PersonRow;
+                PersonTable = PPersonAccess.LoadByPrimaryKey(APartnerKey, AReadTransaction);
+
+                if (PersonTable.Count > 0)
+                {
+                    PersonRow = (PPersonRow)PersonTable.Rows[0];
+                    AFormDataPerson.Title = PersonRow.Title;
+                    AFormDataPerson.Decorations = PersonRow.Decorations;
+                    AFormDataPerson.MiddleName = PersonRow.MiddleName1;
+                    AFormDataPerson.PreferredName = PersonRow.PreferedName;
+                    AFormDataPerson.AcademicTitle = PersonRow.AcademicTitle;
+                    AFormDataPerson.DateOfBirth = PersonRow.DateOfBirth;
+                    AFormDataPerson.Gender = PersonRow.Gender;
+                    AFormDataPerson.MaritalStatus = PersonRow.MaritalStatus;
+
+                    if (!PersonRow.IsMaritalStatusNull()
+                        && (PersonRow.MaritalStatus != ""))
+                    {
+                        // retrieve marital status description from marital status table
+                        TPartnerCacheable CachePopulator = new TPartnerCacheable();
+                        PtMaritalStatusTable MaritalStatusTable =
+                            (PtMaritalStatusTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.MaritalStatusList);
+                        PtMaritalStatusRow MaritalStatusRow =
+                            (PtMaritalStatusRow)MaritalStatusTable.Rows.Find(new object[] { PersonRow.MaritalStatus });
+
+                        if (MaritalStatusRow != null)
+                        {
+                            AFormDataPerson.MaritalStatusDesc = MaritalStatusRow.Description;
+                        }
+                    }
+
+                    AFormDataPerson.OccupationCode = PersonRow.OccupationCode;
+
+                    if (!PersonRow.IsOccupationCodeNull()
+                        && (PersonRow.OccupationCode != ""))
+                    {
+                        // retrieve occupation description from occupation table
+                        TPartnerCacheable CachePopulator = new TPartnerCacheable();
+                        POccupationTable OccupationTable =
+                            (POccupationTable)CachePopulator.GetCacheableTable(TCacheablePartnerTablesEnum.OccupationList);
+                        POccupationRow OccupationRow = (POccupationRow)OccupationTable.Rows.Find(new object[] { PersonRow.OccupationCode });
+
+                        if (OccupationRow != null)
+                        {
+                            AFormDataPerson.Occupation = OccupationRow.OccupationDescription;
+                        }
+                    }
+
+                    // Get supporting church, if there is one.  (Actually there may be more than one!)
+                    // The RelationKey should hold the PERSON key and PartnerKey should hold supporter key
+                    PPartnerRelationshipTable tmpTable = new PPartnerRelationshipTable();
+                    PPartnerRelationshipRow templateRow = tmpTable.NewRowTyped(false);
+                    templateRow.RelationName = "SUPPCHURCH";
+                    templateRow.RelationKey = APartnerKey;
+
+                    PPartnerRelationshipTable supportingChurchTable =
+                        PPartnerRelationshipAccess.LoadUsingTemplate(templateRow, AReadTransaction);
+                    int supportingChurchCount = supportingChurchTable.Rows.Count;
+
+                    // If the user has got RelationKey and PartnerKey back to front we will get no results
+                    AFormDataPerson.SendingChurchName = String.Empty;
+
+                    for (int i = 0; i < supportingChurchCount; i++)
+                    {
+                        // Go round each supporting church
+                        // Get the short name for the sending church
+                        // Foreign key constraint means that this row is bound to exist
+                        string churchName;
+                        TPartnerClass churchClass;
+                        TStdPartnerStatusCode churchStatus;
+                        long supportingChurchKey = ((PPartnerRelationshipRow)supportingChurchTable.Rows[i]).PartnerKey;
+
+                        if (MCommonMain.RetrievePartnerShortName(supportingChurchKey, out churchName, out churchClass, out churchStatus,
+                                AReadTransaction))
+                        {
+                            // The church name can be empty but that would be unusual
+                            // churchClass should be CHURCH or ORGANISATION if everything is the right way round
+                            // but we do not check this - nor churchStatus
+                            if (churchName.Length == 0)
+                            {
+                                churchName = Catalog.GetString("Not available");
+                            }
+
+                            if (supportingChurchCount > 1)
+                            {
+                                if (i > 0)
+                                {
+                                    AFormDataPerson.SendingChurchName += Catalog.GetString(" AND ");
+                                }
+
+                                AFormDataPerson.SendingChurchName += String.Format("{0}: '{1}'", i + 1, churchName);
+                            }
+                            else
+                            {
+                                AFormDataPerson.SendingChurchName += String.Format("'{0}'", churchName);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -1161,6 +1224,30 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             // use standard mechanism to build address block string
             // make sure to not use ORGANIZATION or CHURCH since Transaction parameter is null
             return BuildAddressBlock(AddressLayoutBlock, FormDataPerson, TPartnerClass.PERSON, null);
+        }
+
+        /// <summary>
+        /// Public Method to return the Address Block
+        /// </summary>
+        /// <param name="AFormData"></param>
+        /// <param name="AAddressLayoutCode"></param>
+        /// <param name="APartnerClass"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String BuildAddressBlock(TFormDataPartner AFormData, String AAddressLayoutCode, TPartnerClass APartnerClass)
+        {
+            String AddressBlock = "";
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOk = false;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+                delegate
+                {
+                    AddressBlock = BuildAddressBlock(AFormData, AAddressLayoutCode, APartnerClass, Transaction);
+                });
+
+            return AddressBlock;
         }
 
         /// <summary>
@@ -1725,12 +1812,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AExtractId">Extract ID</param>
         /// <param name="APublicationsCSVList">CSV list of publications</param>
+        /// <param name="AResultMessages"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool UpdateSubscriptionsReceivedFromExtract(Int32 AExtractId, String APublicationsCSVList)
+        public static bool UpdateSubscriptionsReceivedFromExtract(Int32 AExtractId,
+            String APublicationsCSVList,
+            out TVerificationResultCollection AResultMessages)
         {
             MExtractTable ExtractTable;
             Int32 RowCounter = 0;
+            TVerificationResultCollection messages = null;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"));
 
@@ -1739,32 +1830,52 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
                 delegate
                 {
-                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
-
-                    RowCounter = 0;
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"), 0.0m);
-
-                    // query all rows of given extract
-                    foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                    try
                     {
-                        RowCounter++;
-                        UpdateSubscriptionsReceived(ExtractRow.PartnerKey, APublicationsCSVList, Transaction);
+                        ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        RowCounter = 0;
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
+                            0.0m);
+
+                        // query all rows of given extract
+                        foreach (MExtractRow ExtractRow in ExtractTable.Rows)
                         {
-                            TLogging.Log("UpdateSubscriptionsReceivedFromExtract - Job cancelled");
-                            break;
+                            RowCounter++;
+                            UpdateSubscriptionsReceived(ExtractRow.PartnerKey, APublicationsCSVList, Transaction);
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                            {
+                                TLogging.Log("UpdateSubscriptionsReceivedFromExtract - Job cancelled");
+                                break;
+                            }
+
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
+                                (RowCounter * 100) / ExtractTable.Rows.Count);
                         }
 
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
-                            (RowCounter * 100) / ExtractTable.Rows.Count);
+                        SubmissionOk = true;
                     }
-
-                    SubmissionOk = true;
+                    catch (Exception ex)
+                    {
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
+                        {
+                            messages = new TVerificationResultCollection();
+                            messages.Add(new TVerificationResult("UpdateSubscriptions",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    finally
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    }
                 });
 
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
+            AResultMessages = messages;
             return SubmissionOk;
         }
 

@@ -116,8 +116,12 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="Partners">DataTable containing a column of partner keys</param>
         /// <param name="PartnerKeyColumn">Column number in Partners that contains the keys</param>
         /// <param name="ATransaction">The current database transaction</param>
+        /// <param name="APartnerDetails">if true: Adds partner short name and partner class columns</param>
         /// <returns></returns>
-        public static DataTable GetBestAddressForPartners(DataTable Partners, int PartnerKeyColumn, TDBTransaction ATransaction)
+        public static DataTable GetBestAddressForPartners(DataTable Partners,
+            int PartnerKeyColumn,
+            TDBTransaction ATransaction,
+            Boolean APartnerDetails = false)
         {
             List <String>PartnerList = new List <string>();
 
@@ -126,7 +130,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 PartnerList.Add(Partner[PartnerKeyColumn].ToString());
             }
 
-            return GetBestAddressForPartners(String.Join(",", PartnerList), ATransaction);
+            return GetBestAddressForPartners(String.Join(",", PartnerList), ATransaction, APartnerDetails);
         }
 
         /// <summary>
@@ -134,14 +138,26 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="DonorList">Comma-separated list of partner keys, or SQL query returning partner keys only</param>
         /// <param name="ATransaction">The current database transaction</param>
+        /// <param name="APartnerDetails">if true: Adds partner short name and partner class columns</param>
         /// <returns></returns>
-        public static DataTable GetBestAddressForPartners(String DonorList, TDBTransaction ATransaction)
+        public static DataTable GetBestAddressForPartners(String DonorList, TDBTransaction ATransaction, Boolean APartnerDetails = false)
         {
             DataTable ResultTable = new DataTable();
+
+            if (DonorList == String.Empty)
+            {
+                return ResultTable;
+            }
 
             string Query = TDataBase.ReadSqlFile("Partner.CommonAddressTools.GetBestAddress.sql");
 
             Query = Query.Replace("{DonorList}", DonorList);
+
+            if (APartnerDetails)
+            {
+                Query = "WITH AddressTable AS (" + Query +
+                        ") SELECT DISTINCT AddressTable.*, p_partner.p_partner_short_name_c, p_partner.p_partner_class_c FROM AddressTable JOIN p_partner ON p_partner.p_partner_key_n=AddressTable.p_partner_key_n";
+            }
 
             ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "PartnersAddresses", ATransaction);
             return ResultTable;

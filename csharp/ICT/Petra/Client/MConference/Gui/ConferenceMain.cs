@@ -29,6 +29,9 @@ using Ict.Petra.Client.MConference.Gui.Setup;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MConference.Data;
+using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MConference.Gui
 {

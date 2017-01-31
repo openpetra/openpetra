@@ -791,7 +791,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
                 ShowDetailsForGift(giftRow);
 
-                ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));
+                ShowDonorInfo(ARow, Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
 
@@ -918,7 +918,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ShowDonorInfo(long APartnerKey)
+        private void ShowDonorInfo(GiftBatchTDSAGiftDetailRow ARow, long APartnerKey)
         {
             string DonorInfo = string.Empty;
 
@@ -959,8 +959,25 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     DonorInfo += TSystemDefaults.GetStringDefault("GovIdLabel", "bPK") + ": ";
                     FMainDS.PTax.DefaultView.RowFilter = "p_partner_key_n=" + DonorRow.PartnerKey;
+                    Boolean DonorHasBpk = (FMainDS.PTax.DefaultView.Count > 0);
+
+                    if (DonorHasBpk)
+                    {
+                        chkDetailTaxDeductible.Checked =
+                            (ARow == null) ?
+                            true
+                            :
+                            ARow.TaxDeductible;
+                        chkDetailTaxDeductible.Enabled = true;
+                    }
+                    else
+                    {
+                        chkDetailTaxDeductible.Enabled = false;
+                        chkDetailTaxDeductible.Checked = false;
+                    }
+
                     DonorInfo +=
-                        (FMainDS.PTax.DefaultView.Count > 0)
+                        DonorHasBpk
                         ?
                         ((PTaxRow)(FMainDS.PTax.DefaultView[0].Row)).TaxRef
                         :
@@ -1244,6 +1261,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
 
             btnDeleteAll.Enabled = btnDelete.Enabled;
+        }
+
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            int prevMaxRows = grdDetails.MaxAutoSizeRows;
+
+            grdDetails.MaxAutoSizeRows = 20;
+            grdDetails.AutoResizeGrid();
+            grdDetails.MaxAutoSizeRows = prevMaxRows;
         }
 
         private void GiftDateChanged(object sender, EventArgs e)

@@ -21,14 +21,17 @@ RootNode:
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [ucoPartnerSelection]
+            Controls: [pnlContent]
             Order: AlwaysFirst
+        pnlContent:
+            Controls: [ucoPartnerSelection, chkNewPage]
+            Dock: Fill
         tpgReportDetails:
             Lable: Report Details
             Controls: [grpReportDetails]
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill
+            Height: 150
         grpReportDetails:
             Controls: [chkFamilyMembers, chkAddress, chkPassport, chkPersonalDocuments, chkOtherEmergencyData, chkSpecialNeeds, chkSkills, chkLanguages, chkEmergencyContacts, chkProofQuestion]
             
@@ -62,4 +65,6 @@ RootNode:
         chkProofQuestion:
             Label: Show Proof of Life Question
             CheckBoxAttachedLabel: right
-            
+        chkNewPage:
+            Label: Paginate
+            CheckBoxAttachedLabel: right

@@ -38,6 +38,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
@@ -47,6 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     public partial class TUC_OutstandingInvoices
     {
         private bool FKeepUpSearchFinishedCheck = false;
+        private bool FIsInvoiceDataChanged = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FInvoiceTable;
@@ -58,6 +60,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private Boolean FRequireApprovalBeforePosting = false;
 
+        /// <summary>
+        /// Set this to true to notify the class that the invoice data has changed in some way
+        /// </summary>
+        public bool IsInvoiceDataChanged
+        {
+            set
+            {
+                FIsInvoiceDataChanged = value;
+            }
+        }
 
         private void InitializeManualCode()
         {
@@ -89,9 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             lblExcludedItems.Text = string.Format(lblExcludedItems.Text, FMainForm.LedgerCurrency);
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // These methods are stubs that allow the auto-generated code to compile (we don't have a details panel)
-
         /// <summary>
         /// Method required by IGridBase.
         /// </summary>
@@ -108,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Note:  We need to be sure to focus column 1 in this case because sometimes column 0 is not visible!!
-            grdInvoices.Selection.Focus(new SourceGrid.Position(ARowNumber, 1), true);
+            grdInvoices.Selection.SelectCell(new SourceGrid.Position(ARowNumber, 1), true);
             FPrevRowChangedRow = ARowNumber;
         }
 
@@ -147,7 +156,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (FInvoiceTable != null)
             {
                 // we have loaded the results already - has anything changed?
-                if (!FMainForm.IsInvoiceDataChanged)
+                if (!FIsInvoiceDataChanged)
                 {
                     grdInvoices.Focus();
                     return;
@@ -187,7 +196,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (e.DataPage == 0)
             {
-                FMainForm.IsInvoiceDataChanged = false;
+                FIsInvoiceDataChanged = false;
             }
         }
 
@@ -709,7 +718,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             RefreshSumTagged(null, null);
         }
 
-        private void RunTagAction(object sender, EventArgs e)
+        /// Run the tagged action based on the filter radio button state
+        public void RunTagAction(object sender, EventArgs e)
         {
             if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked)
             {
@@ -849,6 +859,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void PostAllTagged(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PostAllTagged [raised by Client Proxy for ModuleAccessManager]");
+
             string MsgTitle = Catalog.GetString("Document Posting");
 
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
@@ -917,6 +930,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void ReverseAllTagged(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseAllTagged [raised by Client Proxy for ModuleAccessManager]");
+
             string MsgTitle = Catalog.GetString("Document Reversal");
 
             // I can only reverse invoices that are POSTED.
@@ -1018,6 +1034,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void PayAllTagged(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PayAllTagged [raised by Client Proxy for ModuleAccessManager]");
+
             string MsgTitle = Catalog.GetString("Document Payment");
 
             this.Cursor = Cursors.WaitCursor;
@@ -1091,12 +1110,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
 
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actOpenSelected", gotRows));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actPayTagged", canPay));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceOpenSelected", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceOpenTagged", gotRows && canTag));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceApproveTagged", canApprove));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoicePostTagged", canPost));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceDeleteTagged", canPost));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoicePayTagged", canPay));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceReverseTagged", canPay));
 
                 grdInvoices.Columns[0].Visible = canTag;
 

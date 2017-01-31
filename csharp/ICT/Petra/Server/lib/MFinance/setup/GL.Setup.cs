@@ -33,6 +33,7 @@ using System.Text;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.Remoting.Server;
@@ -4349,24 +4350,35 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                 }
 
                 DBAccess.GDBAccessObj.CommitTransaction();
-
-                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
             catch (Exception e)
             {
                 TLogging.Log(e.ToString());
 
                 AVerificationResult = new TVerificationResultCollection();
-                AVerificationResult.Add(new TVerificationResult(
-                        "Problems deleting ledger " + ALedgerNumber.ToString(),
-                        e.Message,
-                        "Cannot delete ledger",
-                        string.Empty,
-                        TResultSeverity.Resv_Critical,
-                        Guid.Empty));
+
+                if (TDBExceptionHelper.IsTransactionSerialisationException(e))
+                {
+                    AVerificationResult.Add(new TVerificationResult("DeleteLedger",
+                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                }
+                else
+                {
+                    AVerificationResult.Add(new TVerificationResult(
+                            "Problems deleting ledger " + ALedgerNumber.ToString(),
+                            e.Message,
+                            "Cannot delete ledger",
+                            string.Empty,
+                            TResultSeverity.Resv_Critical,
+                            Guid.Empty));
+                }
+
                 DBAccess.GDBAccessObj.RollbackTransaction();
-                TProgressTracker.CancelJob(DomainManager.GClientID.ToString());
                 return false;
+            }
+            finally
+            {
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
             }
 
             return true;

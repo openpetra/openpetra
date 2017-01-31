@@ -25,10 +25,12 @@ RootNode:
             Controls:
                 Row0: [txtLedgerNumber, txtBatchNumber]
                 Row1: [dtpEffectiveDate, lblValidDateRange]
+                Row2: [txtApplyRef]
         txtLedgerNumber: {ReadOnly=true, Label=Ledger, Unbound=true, SuppressChangeDetection=true}
         txtBatchNumber: {ReadOnly=true, Label=Batch, Unbound=true, SuppressChangeDetection=true}
-        lblValidDateRange: {Label=Valid Date Range}            
+        lblValidDateRange: {Label=Valid Date Range}
         dtpEffectiveDate: {Label=Set the GL Batch Date, Unbound=true, OnLeave=CheckBatchEffectiveDate, Validation=true}
+        txtApplyRef: {Label=Reference applied to each transaction, ColSpan=2, Width=360}
         pnlGrid:
             Dock: Fill
             Controls: [grdDetails]

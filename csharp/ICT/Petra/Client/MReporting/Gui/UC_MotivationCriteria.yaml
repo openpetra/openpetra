@@ -7,38 +7,21 @@ RootNode:
     FormType: edit
     Template: usercontrolUnbound
     Actions:
-        actSelectAllMotDetail: {Label=Select All, ActionClick=SelectAllMotivationDetail}
-        actDeselectAllMotDetail: {Label=Deselect All, ActionClick=DeselectAllMotivationDetail}
-        actSelectAllMotGroup: {Label=Select All, ActionClick=SelectAllMotivationGroup}
-        actDeselectAllMotGroup: {Label=Deselect All, ActionClick=DeselectAllMotivationGroup}
+        actOpenDialog: {Label=&Edit..., ActionClick=OpenDialog}
     Controls:
         grpMotivationCriteria:
             Dock: Fill
             Controls:
-                Row0: [lblMotivationGroup, clbMotivationGroup]
-                Row1: [btnSelectAllMotGroup]
-                Row2: [btnDeselectAllMotGroup]
-                Row3: [lblMotivationDetail, clbMotivationDetail]
-                Row4: [btnSelectAllMotDetail]
-                Row5: [btnDeselectAllMotDetail]
+                Row0: [btnOpenDialog,  chkShowDetailedMotivationInformation]
+                Row1: [grdMotivationSelection]
 
-        lblMotivationGroup: {Label=Motivation Group}
-        btnSelectAllMotGroup: {Label=Select all, Action=actSelectAllMotGroup}
-        btnDeselectAllMotGroup: {Label=Deselect all, Action=actDeselectAllMotGroup}
-        clbMotivationGroup:
-            NoLabel: true
-            ParameterName: param_motivation_group
-            Width: 540
-            Height: 125
-            RowSpan:3
-            Stretch: horizontally
-        lblMotivationDetail: {Label=Motivation Detail}
-        btnSelectAllMotDetail: {Label=Select all, Action=actSelectAllMotDetail}
-        btnDeselectAllMotDetail: {Label=Deselect all, Action=actDeselectAllMotDetail}
-        clbMotivationDetail:
-            NoLabel: true
-            ParameterName: param_motivation_detail
-            Width: 540
-            Height: 125
-            RowSpan:3
-            Stretch: horizontally
+        chkShowDetailedMotivationInformation:
+            ParameterName: param_chkShowDetailedMotivationInformation
+            CheckBoxAttachedLabel : right
+            Label: Show Detailed Motivation Information on first page
+            Visible: false
+        btnOpenDialog: {Action=actOpenDialog}
+        grdMotivationSelection:
+            Height: 260
+            Width: 665
+            ColSpan: 2

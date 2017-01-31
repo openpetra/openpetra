@@ -80,7 +80,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             grdCommitmentStatusChoices.Columns.Clear();
 
             grdCommitmentStatusChoices.AddCheckBoxColumn("", FCommitmentStatusTable.Columns["Selection"], false);
-            grdCommitmentStatusChoices.AddTextColumn("Status", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetCodeDBName()]);
+            grdCommitmentStatusChoices.AddTextColumn("Type", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetCodeDBName()]);
             grdCommitmentStatusChoices.AddTextColumn("Description", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetDescDBName()]);
 
             FCommitmentStatusTable.DefaultView.AllowNew = false;

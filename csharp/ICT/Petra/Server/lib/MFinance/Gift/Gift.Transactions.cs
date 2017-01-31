@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christophert
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -34,6 +34,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Verification.Exceptions;
@@ -228,6 +229,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ALedgerNumber;
             Int32 ABatchNumber;
             DateTime AEffectiveDate;
+            String AReference;
             Decimal AExchangeRateToBase;
             Decimal AExchangeRateIntlToBase;
 
@@ -238,6 +240,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ALedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
                 ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
                 AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
+                AReference = (String)ARequestParams["AReference"];
                 AExchangeRateToBase = (Decimal)ARequestParams["AExchangeRateToBase"];
                 AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
             }
@@ -390,7 +393,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         gift.SetMethodOfPaymentCodeNull();
                                     }
 
-                                    gift.Reference = recGift.Reference;
+                                    if (AReference != "")
+                                    {
+                                        gift.Reference = AReference;
+                                    }
+                                    else
+                                    {
+                                        gift.Reference = recGift.Reference;
+                                    }
+
                                     gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
 
                                     MainDS.AGift.Rows.Add(gift);
@@ -2836,9 +2847,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     parameters.ToArray(), 0, 0);
 
                 // In Austria, the donors may have Govt. Tax Ids:
-                if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
+                if (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, false))
                 {
-                    String query = "SELECT * FROM p_tax WHERE p_tax_type_c='GovId' AND p_partner_key_n IN" +
+                    String taxTypeFieldValue = TSystemDefaults.GetStringDefault("GovIdDbKeyName", "bPK");
+
+                    String query = "SELECT * FROM p_tax WHERE p_tax_type_c='" + taxTypeFieldValue + "' AND p_partner_key_n IN" +
                                    " (SELECT DISTINCT p_donor_key_n FROM a_gift WHERE" +
                                    " a_gift.a_ledger_number_i = " + ALedgerNumber +
                                    " AND a_gift.a_batch_number_i = " + ABatchNumber + ")";
@@ -4549,11 +4562,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
+                {
+                    VerificationResult = new TVerificationResultCollection();
+                    VerificationResult.Add(new TVerificationResult("PostGiftBatches",
+                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                }
+                else
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            finally
+            {
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            }
 
             AVerifications = VerificationResult;
 
@@ -4587,6 +4611,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="importString">The import file as a simple String</param>
         /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
         /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AClientRefreshRequired">Will be set to true if the client should refresh its data after importing.
+        /// Normally this will be obvious (because the import was successful) but some handled Exceptions imply that the data has changed
+        /// behind the client's back!</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -4594,12 +4621,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Hashtable requestParams,
             String importString,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGiftImporting Importing = new TGiftImporting();
 
-            return Importing.ImportGiftBatches(requestParams, importString, out ANeedRecipientLedgerNumber, out AMessages);
+            return Importing.ImportGiftBatches(requestParams, importString, out ANeedRecipientLedgerNumber, out AClientRefreshRequired, out AMessages);
         }
 
         /// <summary>
@@ -4612,6 +4640,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftBatchNumber">The gift batch number into which the transactions will be imported</param>
         /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
         /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AClientRefreshRequired">Will be true if the client should update the GUI due to missing or updated information</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -4620,12 +4649,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             String importString,
             Int32 AGiftBatchNumber,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGiftImporting Importing = new TGiftImporting();
 
-            return Importing.ImportGiftTransactions(requestParams, importString, AGiftBatchNumber, out ANeedRecipientLedgerNumber, out AMessages);
+            return Importing.ImportGiftTransactions(requestParams,
+                importString,
+                AGiftBatchNumber,
+                out ANeedRecipientLedgerNumber,
+                out AClientRefreshRequired,
+                out AMessages);
         }
 
         /// <summary>
@@ -4929,6 +4964,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
 
             return PartnerTaxDeductiblePct;
+        }
+
+        /// <summary>
+        /// Load any Tax record for this partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PTaxTable LoadPartnerPtax(long APartnerKey)
+        {
+            PTaxTable taxTbl = new PTaxTable();
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    taxTbl = PTaxAccess.LoadViaPPartner(APartnerKey, Transaction);
+                });
+
+            return taxTbl;
         }
 
         /// <summary>

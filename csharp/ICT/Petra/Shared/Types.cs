@@ -218,7 +218,12 @@ namespace Ict.Petra.Shared
         /// <summary>
         /// System Manager module
         /// </summary>
-        mSysMan
+        mSysMan,
+
+        /// <summary>
+        /// ConferenceModule
+        /// </summary>
+        mConference
     }
 
     /// <summary>

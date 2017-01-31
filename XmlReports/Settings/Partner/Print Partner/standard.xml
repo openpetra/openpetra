@@ -16,4 +16,7 @@
   <Parameter id="param_chkLocations" value="eString:true" />
   <Parameter id="param_chkFinanceDetails" value="eString:true" />
   <Parameter id="param_chkHideEmpty" value="eString:true" />
+  <Parameter id="param_chkContactDetails" value="eString:true" />
+  <Parameter id="param_chkSpecialTypes" value="eString:true" />
+  <Parameter id="param_chkPaginate" value="eString:true" />
 </Parameters>

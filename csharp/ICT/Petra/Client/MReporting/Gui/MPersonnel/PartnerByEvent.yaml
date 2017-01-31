@@ -8,8 +8,7 @@
     TemplateParameters:
         CALCULATEFROMMETHOD: Ict.Petra.Server.MPersonnel.queries.QueryPartnerByEvent.CalculateExtract
         ISOLATIONLEVEL: serializable
-        #REPORTNAME: will be set in cs files later on as it covers both 'Partner By Conference' and 'Partner By Outreach'
-        REPORTNAME:
+        REPORTNAME: Partner by Event
         CURRENTREPORT: Partner By Event 
         CONTROLSUSPENDLAYOUT: BLANK
         CONTROLRESUMELAYOUT: BLANK

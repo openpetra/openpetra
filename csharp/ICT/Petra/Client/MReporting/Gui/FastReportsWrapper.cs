@@ -50,6 +50,9 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Text;
 using System.Security;
 using System.Net.Mail;
+//using Ict.Petra.Client.MFastReport;
+//using Ict.Petra.Client.MFastReport.Gui;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -100,6 +103,43 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 FPetraUtilsObject.SetWindowTitle();
             }
+        }
+
+        /// <summary>Restore a previously saved FastReport Template</summary>
+        /// <param name="AParameters"></param>
+        /// <returns>true if I think I've loaded something</returns>
+        public Boolean SetTemplateFromParameters(TParameterList AParameters)
+        {
+            if (AParameters.Exists("param_SelectedTemplate"))
+            {
+                Int32 savedTemplate = AParameters.GetParameter("param_SelectedTemplate").value.ToInt32();
+                SReportTemplateTable TemplateTable = TRemote.MReporting.WebConnectors.GetTemplateVariants(FReportName,
+                    UserInfo.GUserInfo.UserID,
+                    false);
+                TemplateTable.DefaultView.RowFilter = "s_template_id_i=" + savedTemplate;
+
+                if (TemplateTable.DefaultView.Count > 0)
+                {
+                    SetTemplate((SReportTemplateRow)TemplateTable.DefaultView[0].Row);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>Remember which template was selected</summary>
+        /// <param name="AParameters"></param>
+        /// <returns>true if I was able to set the parameter</returns>
+        public Boolean SaveTemplateInParameters(TParameterList AParameters)
+        {
+            if (FSelectedTemplate != null)
+            {
+                AParameters.Add("param_SelectedTemplate", FSelectedTemplate.TemplateId);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>The Id of the currently selected FastReport template (or 0)</summary>
@@ -334,107 +374,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ACalc"></param>
         public void DesignReport(TRptCalculator ACalc)
         {
-            ACalc.GetParameters().Add("param_design_template", true);
-
-            if (FSelectedTemplate != null)
-            {
-                if (FDataGetter != null)
-                {
-                    if (!FDataGetter(ACalc))
-                    {
-                        return;
-                    }
-                }
-
-                FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
-                    new object[] { FSelectedTemplate.XmlText });
-
-                LoadReportParams(ACalc);
-                FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
-
-                //
-                // The user can change the report template - if it's changed I'll update the server
-                // (unless the template is read-only, in which case I'll need to make a copy.)
-                object ret = FFastReportType.GetMethod("SaveToString", new Type[0]).Invoke(FfastReportInstance, null);
-                String XmlString = (String)ret;
-                //
-                // I only want to check part of the report to assess whether it's changed, otherwise it always detects a change
-                // (the modified date is changed, and the parameters may also be different.)
-
-                Boolean TemplateChanged = false;
-                Int32 Page1Pos = XmlString.IndexOf("<ReportPage");
-                Int32 PrevPage1Pos = FSelectedTemplate.XmlText.IndexOf("<ReportPage");
-
-                if ((Page1Pos < 1) || (PrevPage1Pos < 1))
-                {
-                    TemplateChanged = true;
-                }
-                else
-                {
-                    if (XmlString.Substring(Page1Pos) != FSelectedTemplate.XmlText.Substring(PrevPage1Pos))
-                    {
-                        TemplateChanged = true;
-                    }
-                }
-
-                if (TemplateChanged)
-                {
-                    Boolean MakeACopy = false;
-
-                    if (FSelectedTemplate.Readonly)
-                    {
-                        if (MessageBox.Show(
-                                String.Format(Catalog.GetString("{0} cannot be ovewritten.\r\nMake a copy instead?"), FSelectedTemplate.ReportVariant),
-                                Catalog.GetString("Design Template"),
-                                MessageBoxButtons.YesNo) == DialogResult.No)
-                        {
-                            return;
-                        }
-
-                        MakeACopy = true;
-                    }
-                    else
-                    {
-                        if (MessageBox.Show(
-                                String.Format(Catalog.GetString("Save changes to {0}?"), FSelectedTemplate.ReportVariant),
-                                Catalog.GetString("Design Template"),
-                                MessageBoxButtons.YesNo) == DialogResult.No)
-                        {
-                            return;
-                        }
-                    }
-
-                    SReportTemplateTable TemplateTable = new SReportTemplateTable();
-                    SReportTemplateRow NewRow = TemplateTable.NewRowTyped();
-                    DataUtilities.CopyAllColumnValues(FSelectedTemplate, NewRow);
-                    TemplateTable.Rows.Add(NewRow);
-
-                    if (MakeACopy)
-                    {
-                        String currentUser = UserInfo.GUserInfo.UserID;
-                        NewRow.TemplateId = -1; // The value will come from the sequence
-                        NewRow.ReportVariant = String.Format(Catalog.GetString("{0} copy of {1}"), currentUser, TemplateTable[0].ReportVariant);
-                        NewRow.Author = currentUser;
-                        NewRow.Readonly = false;
-                        NewRow.Default = false;
-                        NewRow.PrivateDefault = false;
-                    }
-                    else
-                    {
-                        TemplateTable.AcceptChanges(); // Don't allow this one-row table to be seen as "new"
-                    }
-
-                    NewRow.XmlText = XmlString;
-                    SReportTemplateTable Tbl = TRemote.MReporting.WebConnectors.SaveTemplates(TemplateTable);
-                    Tbl.AcceptChanges();
-                    SetTemplate(Tbl[0]);
-                }
-            }
-
-            if (FPetraUtilsObject != null)
-            {
-                FPetraUtilsObject.UpdateParentFormEndOfReport();
-            }
+            // in OpenPetra OpenSource, we do not use the FastReport DLLs
+            return;
         }
 
         /// <summary>
@@ -706,6 +647,15 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             LinkedPartners = TRemote.MFinance.Setup.WebConnectors.GetLinkedPartners(ALedgerNumber, ACostCentreFilter);
             LinkedPartners.DefaultView.Sort = "CostCentreCode";
+            String myLedgerName = "";
+            DataTable CostCentreList = null;
+
+            if (ACostCentreFilter == "Foreign")
+            {
+                myLedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(ALedgerNumber);
+                CostCentreList = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.CostCentreList,
+                    ALedgerNumber);
+            }
 
             foreach (DataRowView rv in LinkedPartners.DefaultView)
             {
@@ -740,9 +690,28 @@ namespace Ict.Petra.Client.MReporting.Gui
                         EmailBody = sr.ReadToEnd();
                     }
 
+                    String subjectLine;
+
+                    if (ACostCentreFilter == "Foreign")
+                    {
+                        String recipientLedgerName = "";
+                        CostCentreList.DefaultView.RowFilter = "a_cost_centre_code_c='" + LinkedPartner["CostCentreCode"].ToString() + "'";
+
+                        if (CostCentreList.DefaultView.Count > 0)
+                        {
+                            recipientLedgerName = CostCentreList.DefaultView[0].Row["a_cost_centre_name_c"].ToString();
+                        }
+
+                        subjectLine = "HOSA & RGS from " + myLedgerName + " to " + recipientLedgerName;
+                    }
+                    else
+                    {
+                        subjectLine = ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"];
+                    }
+
                     Boolean SentOk = EmailSender.SendEmail(
                         LinkedPartner["EmailAddress"].ToString(),
-                        ReportEngine.FReportName + " Report for " + LinkedPartner["PartnerShortName"] + ", Address=" + LinkedPartner["EmailAddress"],
+                        subjectLine,
                         EmailBody);
 
                     if (SentOk)
@@ -769,12 +738,12 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (SuccessfulCount == 1)
             {
                 SendReport.Add(
-                    String.Format(Catalog.GetString("{0} emailed to {1} address."), ReportEngine.FReportName, SuccessfulCount));
+                    String.Format(Catalog.GetString("{0} emailed to {1} partner."), ReportEngine.FReportName, SuccessfulCount));
             }
             else if (SuccessfulCount > 1)
             {
                 SendReport.Add(
-                    String.Format(Catalog.GetString("{0} emailed to {1} addresses."), ReportEngine.FReportName, SuccessfulCount));
+                    String.Format(Catalog.GetString("{0} emailed to {1} partners."), ReportEngine.FReportName, SuccessfulCount));
             }
             else
             {

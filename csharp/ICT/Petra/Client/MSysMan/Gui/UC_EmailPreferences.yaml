@@ -18,15 +18,19 @@ RootNode:
             Controls: [txtSenderAddress,txtDisplayName,txtReplyTo]
             Width: 410
         txtSenderAddress:
+            Width: 230
             LabelWidth: 150
         txtDisplayName:
+            Width: 230
         txtReplyTo:
+            Width: 230
             Label: Reply-To
 
         grpMessage:
             Controls: [txtCopyMessagesTo,chkReportsAsAttachment,txtEmailBody]
             Width: 410
         txtCopyMessagesTo:
+            Width: 230
             LabelWidth: 150
         chkReportsAsAttachment:
         txtEmailBody:

@@ -94,7 +94,7 @@ namespace Ict.Petra.Server.MFinance.Gift
             {
                 ALastGiftDate = LastGiftDate;
 
-                if (TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT) == "true")
+                if (TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT).ToLower() == "true")
                 {
                     if ((UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE1))
                         || (UserInfo.GUserInfo.IsInGroup(SharedConstants.PETRAGROUP_FINANCE2))
