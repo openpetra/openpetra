@@ -335,6 +335,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (SelectedGridRow.Length >= 1)
             {
                 FSelectedPaymentRow = (AccountsPayableTDSAApPaymentRow)SelectedGridRow[0].Row;
+                tbbReprintRemittanceAdvice.Enabled = FSelectedPaymentRow.PaymentDate != null;
 
                 if (!FSelectedPaymentRow.IsSupplierKeyNull())
                 {
@@ -378,6 +379,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 grdDocuments.Refresh();
                 grdDocuments.Selection.SelectRow(1, true);
                 FocusedRowChangedDetails(null, null);
+            }
+            else
+            {
+                tbbReprintRemittanceAdvice.Enabled = false;
             }
         }
 
@@ -463,6 +468,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     PreviewFrame.ShowDialog();
                 }
             }
+        }
+
+        private void ReprintRemittanceAdvice(object sender, EventArgs e)
+        {
+            TFrmAP_RemittanceAdvice PreviewFrame = new TFrmAP_RemittanceAdvice(this);
+
+            PreviewFrame.PrintRemittanceAdvice(FSelectedDocumentRow.PaymentNumber, FMainDS.AApPayment[0].LedgerNumber);
+            PreviewFrame.ShowDialog();
         }
 
         private void MakePayment(object sender, EventArgs e)

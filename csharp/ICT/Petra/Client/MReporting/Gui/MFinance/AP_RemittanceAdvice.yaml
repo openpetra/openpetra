@@ -15,8 +15,12 @@
         pnlTop:
             Dock: Top
             Controls:
-                Row1: [txtPaymentNum, btnLoad, btnCopy, btnPDF]
+                Row1: [pnlAction]
                 Row2: [lblLoadStatus]
+        pnlAction:
+            Controls: [txtPaymentNum, btnLoad, btnCopy, btnPDF]
+            ControlsOrientation: horizontal
+            Align: Top
         txtPaymentNum:
             Label: Payment Number
             Format: Integer
@@ -31,7 +35,11 @@
             ToolTip: Generate PDF document
             Visible: false;
         lblLoadStatus:
-            Label: Status
+            Margin: 12,0,3,3
+            Width: 700
+            NoLabel: true
+            Align: Top
+            Stretch: horizontally
         preLetters:
             Dock: Fill
     Menu:

@@ -315,6 +315,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             grdSuppliers.SetHeaderTooltip(3, Catalog.GetString("Status"));
 
             UpdateRecordNumberDisplay();
+            FMainForm.SupplierCount = grdSuppliers.Rows.Count - 1;
         }
 
         /// <summary>
@@ -506,6 +507,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 this.Cursor = Cursors.Default;
 
                 frm.Show();
+
+                FMainForm.IsInvoiceDataChanged = true;
             }
         }
 
@@ -526,6 +529,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 this.Cursor = Cursors.Default;
 
                 frm.Show();
+
+                FMainForm.IsInvoiceDataChanged = true;
             }
         }
 

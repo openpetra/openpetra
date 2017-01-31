@@ -38,6 +38,7 @@ using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
@@ -57,6 +58,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private TFrmAPMain FMainForm = null;
 
         private Boolean FRequireApprovalBeforePosting = false;
+        private bool FIsInvoiceDataChanged = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FPagedDataTable;
@@ -70,6 +72,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private TSgrdDataGrid grdDetails;
         private int FPrevRowChangedRow = -1;
         private DataRow FPreviouslySelectedDetailRow = null;
+
+        /// <summary>
+        /// Set this to true to notify the class that the invoice data has changed in some way
+        /// </summary>
+        public bool IsInvoiceDataChanged
+        {
+            set
+            {
+                FIsInvoiceDataChanged = value;
+            }
+        }
 
         /// <summary>
         /// Standard method
@@ -268,7 +281,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="APartnerKey"></param>
         public void LoadSupplier(Int32 ALedgerNumber, Int64 APartnerKey)
         {
-            if ((ALedgerNumber == FLedgerNumber) && (APartnerKey == FPartnerKey))
+            if ((ALedgerNumber == FLedgerNumber) && (APartnerKey == FPartnerKey) && !FIsInvoiceDataChanged)
             {
                 // We already have the details loaded for this supplier, so we just put the focus on the grid...
                 // However we have to do that after a short delay because we won't be starting a thread to get the data in the grid
@@ -322,6 +335,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void Timer_Elapsed(object state)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             // Now we can focus the grid
             if (InvokeRequired)
             {
@@ -623,6 +641,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void Reload()
         {
+            FMainForm.IsInvoiceDataChanged = true;
             LoadSupplier(FLedgerNumber, FPartnerKey);
         }
 
@@ -900,6 +919,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (SelectedGridRow.Length >= 1)
             {
+                if (MessageBox.Show(Catalog.GetString("Delete the selected invoice?"),
+                        Catalog.GetString("Delete Invoice"),
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.No)
+                {
+                    return;
+                }
+
                 // I can only delete invoices that are not posted already.
                 // This method is only enabled when the grid shows items for Posting
                 List <int>DeleteTheseDocs = new List <int>();
@@ -913,6 +939,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     this.Cursor = Cursors.WaitCursor;
                     TRemote.MFinance.AP.WebConnectors.DeleteAPDocuments(FLedgerNumber, DeleteTheseDocs);
+                    Reload();
                     this.Cursor = Cursors.Default;
                 }
             }
@@ -921,6 +948,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// Reverse the selected transaction
         public void ReverseSelected(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseSelected [raised by Client Proxy for ModuleAccessManager]");
+
             DataRowView[] SelectedGridRow = grdResult.SelectedDataRowsAsDataRowView;
 
             if (SelectedGridRow.Length >= 1)
@@ -1091,6 +1121,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     this.Cursor = Cursors.Default;
                     MessageBox.Show(Catalog.GetString("The tagged documents have been approved successfully!"), MsgTitle);
+                    Reload();
                 }
                 else
                 {
@@ -1110,6 +1141,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void PostTaggedDocuments(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PostTaggedDocuments [raised by Client Proxy for ModuleAccessManager]");
+
             List <Int32>TaggedDocuments = new List <Int32>();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 
@@ -1146,14 +1180,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 MessageBox.Show(Catalog.GetString("The AP documents have been posted successfully!"));
 
                 // TODO: show posting register of GL Batch?
-
-                LoadSupplier(FLedgerNumber, FPartnerKey);
+                Reload();
             }
         }
 
         /// Add all selected invoices to the payment list and show that list so that the user can make the payment
         public void AddTaggedToPayment(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "AddTaggedToPayment [raised by Client Proxy for ModuleAccessManager]");
+
             List <Int32>TaggedDocuments = new List <Int32>();
             AccountsPayableTDS TempDS = new AccountsPayableTDS();
 

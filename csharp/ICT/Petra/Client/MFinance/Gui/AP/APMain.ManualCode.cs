@@ -66,7 +66,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         // Flags to indicate if the data has changed
         private Boolean FIsSupplierDataChanged = true;      // Initially we don't have any!
-        private Boolean FIsInvoiceDataChanged = true;
 
         /// <summary>
         /// Static method to get a supplier from a partner key.  Used by the AP subsystem.
@@ -181,18 +180,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// Gets/sets whether there has been a change to the invoice data that would require a re-load
+        /// Sets whether there has been a change to the invoice data that would require a re-load of the tabs
         /// </summary>
         public Boolean IsInvoiceDataChanged
         {
-            get
-            {
-                return FIsInvoiceDataChanged;
-            }
-
             set
             {
-                FIsInvoiceDataChanged = value;
+                ucoSupplierTransactionHistory.IsInvoiceDataChanged = value;
+                ucoOutstandingInvoices.IsInvoiceDataChanged = value;
             }
         }
 
@@ -208,21 +203,23 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
+        /// Sets the number of suppliers displayed in the suppliers grid.  Used only to detenine whether to enable the transaction history tab.
+        /// </summary>
+        public int SupplierCount
+        {
+            set
+            {
+                tpgSupplierTransactionHistory.Enabled = (value > 0);
+                tabSearchResult.Refresh();
+            }
+        }
+
+        /// <summary>
         /// (Re)loads the outstanding invoices.  Does nothing if the invoice data has not changed.
         /// </summary>
         public void LoadOutstandingInvoices()
         {
             ucoOutstandingInvoices.LoadInvoices();
-        }
-
-        /// <summary>
-        /// Displays the Supplier Transaction History tab for the selected supplier
-        /// </summary>
-        /// <param name="APartnerKey"></param>
-        public void LoadSupplierTransactions(Int64 APartnerKey)
-        {
-            ucoSupplierTransactionHistory.LoadSupplier(FLedgerNumber, APartnerKey);
-            tabSearchResult.SelectedTab = tpgSupplierTransactionHistory;
         }
 
         /// <summary>Select the specified tab</summary>
@@ -264,6 +261,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // In order for nant test to succeed we must ensure that we do not make any other server calls now - except to get data
             tabSearchResult.SelectedIndexChanged += TabChange;
             TabChange(null, null);
+
+            tpgSupplierTransactionHistory.Enabled = false;
         }
 
         #region Supplier menu handlers
@@ -327,7 +326,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoSupplierTransactionHistory.ReverseSelected(sender, e);
         }
 
-        private void RunTagAction(object sender, EventArgs e)
+        private void TransactionRunTagAction(object sender, EventArgs e)
         {
             ucoSupplierTransactionHistory.RunTagAction(sender, e);
         }
@@ -351,24 +350,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoOutstandingInvoices.DeleteAllTagged(sender, e);
         }
 
-        private void InvoiceApproveAllTagged(object sender, EventArgs e)
-        {
-            ucoOutstandingInvoices.ApproveAllTagged(sender, e);
-        }
-
-        private void InvoicePostAllTagged(object sender, EventArgs e)
-        {
-            ucoOutstandingInvoices.PostAllTagged(sender, e);
-        }
-
         private void InvoiceReverseAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.ReverseAllTagged(sender, e);
         }
 
-        private void InvoicePayAllTagged(object sender, EventArgs e)
+        private void InvoiceRunTagAction(object sender, EventArgs e)
         {
-            ucoOutstandingInvoices.PayAllTagged(sender, e);
+            ucoOutstandingInvoices.RunTagAction(sender, e);
         }
 
         #endregion
@@ -505,11 +494,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcAPTransactionChanged)
             {
                 // Refresh the outstanding invoices
-                FIsInvoiceDataChanged = true;
+                IsInvoiceDataChanged = true;
 
                 if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
                 {
                     ucoOutstandingInvoices.LoadInvoices();
+                }
+                else if (tabSearchResult.SelectedTab == tpgSupplierTransactionHistory)
+                {
+                    TabChange(null, null);
                 }
 
                 MessageProcessed = true;

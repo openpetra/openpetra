@@ -77,15 +77,15 @@ RootNode:
             Tooltip: Delete the selected invoice that has been opened or approved
         actTransactionApproveTagged:
             Label: &Approve Tagged
-            ActionClick: RunTagAction
+            ActionClick: TransactionRunTagAction
             Tooltip: Approve all the tagged invoices
         actTransactionPostTagged:
             Label: &Post Tagged
-            ActionClick: RunTagAction
+            ActionClick: TransactionRunTagAction
             Tooltip: Post all the tagged invoices
         actTransactionAddTaggedToPayment:
             Label: Pa&y Tagged
-            ActionClick: RunTagAction
+            ActionClick: TransactionRunTagAction
             Tooltip: Pay all the tagged invoices
 
         ## Invoice menu actions
@@ -109,16 +109,16 @@ RootNode:
             Tooltip: Delete the tagged invoices that have been opened or approved
         actInvoiceApproveTagged:
             Label: &Approve Tagged
-            ActionClick: RunTagAction
+            ActionClick: InvoiceRunTagAction
             Tooltip: Approve all the tagged invoices
         actInvoicePostTagged:
             Label: &Post Tagged
-            ActionClick: RunTagAction
+            ActionClick: InvoiceRunTagAction
             Tooltip: Post all the tagged invoices
         actInvoicePayTagged:
             Label: Pa&y Tagged
             #Enabled: cndCanDelete
-            ActionClick: RunTagAction
+            ActionClick: InvoiceRunTagAction
             Tooltip: Pay all the tagged invoices
 
 

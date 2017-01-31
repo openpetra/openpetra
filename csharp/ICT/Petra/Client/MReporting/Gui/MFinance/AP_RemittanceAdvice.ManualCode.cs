@@ -54,23 +54,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         }
 
         /// <summary>
-        /// The main screen will call this on creation, to give me my Ledger Number.
-        /// </summary>
-        public Int32 LedgerNumber
-        {
-            set
-            {
-                FLedgerNumber = value;
-            }
-        }
-
-        /// <summary>
         ///
         /// </summary>
         /// <param name="APaymentNum"></param>
         /// <param name="ALedgerNumber"></param>
         public void PrintRemittanceAdvice(Int32 APaymentNum, Int32 ALedgerNumber)
         {
+            FLedgerNumber = ALedgerNumber;
+
             txtPaymentNum.NumberValueInt = APaymentNum;
             AccountsPayableTDS PaymentDetails = TRemote.MFinance.AP.WebConnectors.LoadAPPayment(ALedgerNumber, APaymentNum);
 

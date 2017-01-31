@@ -15,6 +15,7 @@ RootNode:
         actPrintReport: {Label=Reprint report, ActionClick=PrintPaymentReport}
         actPayPartial: {ActionClick=EnablePartialPayment}
         actLookupExchangeRate: {ActionClick=LookupExchangeRate}
+        actReprintRemittanceAdvice: {ActionClick=ReprintRemittanceAdvice}
     Controls:
         pnlContent:
             Dock: Fill
@@ -115,3 +116,4 @@ RootNode:
         tbbRemove: {ActionClick=RemoveSelectedDocument }
         tbbMakePayment:
         tbbPrintReport:
+        tbbReprintRemittanceAdvice:

@@ -38,6 +38,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Shared.Security;
 using Ict.Petra.Shared.Interfaces.MFinance;
 using System.Threading;
 using Ict.Petra.Client.MReporting.Gui.MFinance;
@@ -47,6 +48,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
     public partial class TUC_OutstandingInvoices
     {
         private bool FKeepUpSearchFinishedCheck = false;
+        private bool FIsInvoiceDataChanged = false;
 
         /// <summary>DataTable that holds all Pages of data (also empty ones that are not retrieved yet!)</summary>
         private DataTable FInvoiceTable;
@@ -58,6 +60,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private Boolean FRequireApprovalBeforePosting = false;
 
+        /// <summary>
+        /// Set this to true to notify the class that the invoice data has changed in some way
+        /// </summary>
+        public bool IsInvoiceDataChanged
+        {
+            set
+            {
+                FIsInvoiceDataChanged = value;
+            }
+        }
 
         private void InitializeManualCode()
         {
@@ -147,7 +159,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (FInvoiceTable != null)
             {
                 // we have loaded the results already - has anything changed?
-                if (!FMainForm.IsInvoiceDataChanged)
+                if (!FIsInvoiceDataChanged)
                 {
                     grdInvoices.Focus();
                     return;
@@ -187,7 +199,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (e.DataPage == 0)
             {
-                FMainForm.IsInvoiceDataChanged = false;
+                FIsInvoiceDataChanged = false;
             }
         }
 
@@ -850,6 +862,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void PostAllTagged(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PostAllTagged [raised by Client Proxy for ModuleAccessManager]");
+
             string MsgTitle = Catalog.GetString("Document Posting");
 
             AccountsPayableTDS TempDS = LoadTaggedDocuments();
@@ -918,6 +933,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void ReverseAllTagged(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseAllTagged [raised by Client Proxy for ModuleAccessManager]");
+
             string MsgTitle = Catalog.GetString("Document Reversal");
 
             // I can only reverse invoices that are POSTED.
@@ -1019,6 +1037,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// <param name="e"></param>
         public void PayAllTagged(object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "PayAllTagged [raised by Client Proxy for ModuleAccessManager]");
+
             string MsgTitle = Catalog.GetString("Document Payment");
 
             this.Cursor = Cursors.WaitCursor;
