@@ -110,8 +110,11 @@ namespace Ict.Petra.Shared.MCommon
         /// <summary>Partner</summary>
         public const String FORM_CODE_PARTNER = "PARTNER";
 
-        /// <summary>Partner</summary>
+        /// <summary>Personnel</summary>
         public const String FORM_CODE_PERSONNEL = "PERSONNEL";
+
+        /// <summary>Conference</summary>
+        public const String FORM_CODE_CONFERENCE = "CONFERENCE";
 
         /// <summary>Cheque</summary>
         public const String FORM_CODE_CHEQUE = "CHEQUE";
@@ -171,6 +174,9 @@ namespace Ict.Petra.Shared.MCommon
 
         /// <summary>Form Letter Contexts</summary>
         public const string FORM_LETTER_CONTEXT_PERSONNEL = "PERSONNEL";
+
+        /// <summary>Form Letter Contexts</summary>
+        public const string FORM_LETTER_CONTEXT_CONFERENCE = "CONFERENCE";
 
         #endregion
     }

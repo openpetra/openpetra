@@ -1680,6 +1680,203 @@ namespace Ict.Petra.Shared.MCommon
     }
 
     /// <summary>
+    ///
+    /// </summary>
+    [Serializable()]
+    public class TFormDataApplicant : TFormDataPerson
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TFormDataApplicant()
+        {
+        }
+
+        ///
+        public String EventPartnerKey
+        {
+            get; set;
+        }
+
+        ///
+        public DateTime RegistrationDate
+        {
+            get; set;
+        }
+
+        ///
+        public DateTime ? ArrivalDate
+        {
+            get; set;
+        }
+
+        ///
+        public DateTime ? ArrivalTime
+        {
+            get; set;
+        }
+
+        ///
+        public String ArrivalFlightNumber
+        {
+            get; set;
+        }
+
+        ///
+        public String ArrivalComment
+        {
+            get; set;
+        }
+
+        ///
+        public DateTime ? DepartureDate
+        {
+            get; set;
+        }
+
+        ///
+        public DateTime ? DepartureTime
+        {
+            get; set;
+        }
+
+        ///
+        public String DepartureFlightNumber
+        {
+            get; set;
+        }
+
+        ///
+        public String DepartureComment
+        {
+            get; set;
+        }
+
+        ///
+        public String EventRole
+        {
+            get; set;
+        }
+
+        ///
+        public String CampaignType
+        {
+            get; set;
+        }
+
+        ///
+        public String FellowshipGroup
+        {
+            get; set;
+        }
+
+        ///
+        public String SendingFieldKey
+        {
+            get; set;
+        }
+
+        ///
+        public String SendingFieldName
+        {
+            get; set;
+        }
+
+        ///
+        public String ChargedFieldKey
+        {
+            get; set;
+        }
+
+        ///
+        public String ChargedFieldName
+        {
+            get; set;
+        }
+
+        ///
+        public String ReceivingFieldKey
+        {
+            get; set;
+        }
+
+        ///
+        public String ReceivingFieldName
+        {
+            get; set;
+        }
+
+        ///
+        public String ApplicationComment
+        {
+            get; set;
+        }
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    [Serializable()]
+    public class TFormDataAttendee : TFormDataApplicant
+    {
+        /// <summary>
+        /// constructor
+        /// </summary>
+        public TFormDataAttendee()
+        {
+        }
+
+        ///
+        public String Venue
+        {
+            get; set;
+        }
+
+        ///
+        public String Building
+        {
+            get; set;
+        }
+
+        ///
+        public String Room
+        {
+            get; set;
+        }
+
+        ///
+        public String RoomIn
+        {
+            get; set;
+        }
+
+        ///
+        public String RoomOut
+        {
+            get; set;
+        }
+
+        ///
+        public Boolean RoomDatesMatchTravelDates
+        {
+            get; set;
+        }
+
+
+        ///
+        public String DiscoveryGroup
+        {
+            get; set;
+        }
+
+        ///
+        public String WorkGroup
+        {
+            get; set;
+        }
+    }
+
+    /// <summary>
     /// Contains data for a Unit to be used for export to forms
     /// </summary>
     [Serializable()]

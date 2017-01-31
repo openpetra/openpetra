@@ -4,10 +4,10 @@
 #
 InterfacesUsingNamespaces:
     Common: [Ict.Petra.Shared.MCommon,Ict.Petra.Shared.MCommon.Data,Ict.Petra.Shared.MPartner.Partner.Data,Ict.Petra.Shared.MPartner.Mailroom.Data]
-    Conference: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference]
+    Conference: [Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MConference.Data, Ict.Petra.Shared.MConference, Ict.Petra.Shared.MCommon, Ict.Common.DB]
     Finance: [Ict.Petra.Shared.MFinance, Ict.Petra.Shared.MFinance.Account.Data, Ict.Petra.Shared.MFinance.AP.Data, Ict.Petra.Shared.MFinance.CrossLedger.Data, Ict.Petra.Shared.MFinance.GL.Data, Ict.Petra.Shared.MFinance.Gift.Data, Ict.Petra.Shared.MPartner.Partner.Data]
-    Partner: [Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MCommon, Ict.Petra.Shared.MCommon.Data]
-    Personnel: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person]
+    Partner: [Ict.Petra.Shared.MPartner, Ict.Petra.Shared.MPartner.Partner.Data, Ict.Petra.Shared.MPartner.Mailroom.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MCommon, Ict.Petra.Shared.MCommon.Data, Ict.Common.DB]
+    Personnel: [Ict.Petra.Shared.MPersonnel.Personnel.Data, Ict.Petra.Shared.MPersonnel.Person, Ict.Common.DB]
     SysMan: [Ict.Common.IO, Ict.Petra.Shared.MCommon.Data, Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MSysMan, Ict.Petra.Shared.Security]
     Reporting: [Ict.Petra.Shared.MSysMan.Data, Ict.Petra.Shared.MFinance.GL.Data]
     
