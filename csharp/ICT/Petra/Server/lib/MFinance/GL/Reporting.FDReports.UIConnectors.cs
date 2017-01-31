@@ -36,6 +36,7 @@ using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MPartner.DataAggregates;
+using Ict.Petra.Server.App.Core.Security;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -496,6 +497,151 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             Results.Tables.Add(Donors);
             Results.Tables.Add(Contacts);
             return Results;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        /// <param name="AParameters">Parameter dictionary</param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataSet TopDonorReport(Dictionary<string, TVariant> AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataSet ReturnDataSet = new DataSet();
+
+            TDBTransaction Transaction = null;
+            DataTable dt = new DataTable("TopDonorReport");
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+            IsolationLevel.ReadCommitted,
+            TEnforceIsolationLevel.eilMinimum,
+            ref Transaction,
+            delegate
+            {
+                String MotivationQuery = "";
+                if (!AParameters["param_all_motivation_groups"].ToBool())
+                {
+                    MotivationQuery += String.Format("AND detail.a_motivation_group_code_c IN ({0}) ",
+                        AParameters["param_motivation_group_quotes"]);
+                }
+
+                if (!AParameters["param_all_motivation_details"].ToBool())
+                {
+                    MotivationQuery += String.Format("AND (detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c) IN ({0}) ",
+                        AParameters["param_motivation_group_detail_pairs"]);
+                }
+
+                String giftAmountColumn;
+                if (AParameters["param_currency"].ToString() == "International")
+                {
+                    giftAmountColumn = "a_gift_amount_intl_n";
+                }
+                else
+                {
+                    giftAmountColumn = "a_gift_amount_n";
+                }
+
+                String recipientKey = "";
+                if(AParameters["param_recipientkey"].ToString() != "0")
+                {
+                    recipientKey = " AND a_recipient_ledger_number_n = " + AParameters["param_recipientkey"].ToString();
+                }
+                
+
+                String Query =
+                    @"WITH GiftTotals AS (
+	                    SELECT p_donor_key_n AS donorKey, p_partner_class_c AS partnerClass, p_partner_short_name_c AS donorName, 
+		                SUM(detail." + giftAmountColumn + @") AS totalamount
+
+
+                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner";
+                //Add extract parameter
+                if (AParameters["param_extract"].ToBool())
+                {
+                     Query +=
+                              ", m_extract," +
+                              " m_extract_master" +
+                              " WHERE" +
+                             " p_donor_key_n = m_extract.p_partner_key_n" +
+                             " AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i" +
+                              " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" + 
+                              " AND";
+                }
+                else
+                {
+                    Query += " WHERE";
+                }
+
+                Query += " detail.a_ledger_number_i = gift.a_ledger_number_i" +
+                            recipientKey +
+		                    @" AND detail.a_batch_number_i = gift.a_batch_number_i
+		                    AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
+		                    AND gift.a_date_entered_d BETWEEN '" + AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
+                            AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND gift.a_ledger_number_i = a_gift_batch.a_ledger_number_i
+		                    AND a_gift_batch.a_ledger_number_i =" + AParameters["param_ledger_number_i"] +
+                            @" AND a_gift_batch.a_batch_number_i = gift.a_batch_number_i
+                            AND ( a_gift_batch.a_batch_status_c = 'Posted' OR a_gift_batch.a_batch_status_c = 'posted')
+		                    AND p_partner.p_partner_key_n = gift.p_donor_key_n " + MotivationQuery +
+                        @" GROUP BY gift.p_donor_key_n, p_partner.p_partner_class_c, p_partner.p_partner_short_name_c
+
+	                    ORDER BY totalamount DESC
+                    ), 
+                        CumulativeTotals AS (
+	                        SELECT *,
+		                        SUM(totalamount) OVER (ORDER BY totalamount DESC) AS CumulativeTotal,
+		                        SUM(totalamount) OVER () AS GrandTotal,
+		                        ROUND(totalamount / (SUM(totalamount) OVER ()) * 100, 2) AS PercentTotal,
+		                        ROUND((SUM(totalamount) OVER (ORDER BY totalamount DESC)) / (SUM(totalamount) OVER ()) * 100, 2) AS PercentCumulative
+	                        FROM GiftTotals WHERE totalamount >= 0
+                        )
+                SELECT *
+                FROM CumulativeTotals WHERE PercentCumulative";
+
+                switch (AParameters["param_donor_type"].ToString())
+                {
+                    case "top":
+                        Query += " < " + AParameters["param_percentage"];
+                        break;
+                    case "bottom":
+                        Query += " > " + AParameters["param_to_percentage"];
+                        break;
+                    case "middle":
+                        Query += " BETWEEN " + AParameters["param_to_percentage"] + " AND " + AParameters["param_percentage"];
+                        break;
+                    default:
+                        Query += " IS NOT 0";
+                        break;
+                }
+
+                //Add the first entry that is param_percentage or higher
+                Query += String.Format(" UNION ALL SELECT * FROM CumulativeTotals WHERE PercentCumulative = (SELECT MIN(percentcumulative) FROM CumulativeTotals WHERE percentcumulative >= {0})", AParameters["param_percentage"]);
+
+                dt = DbAdapter.RunQuery(Query, "TopDonorReport", Transaction);
+            });
+
+            DataTable DonorAddresses = new DataTable("DonorAddresses");
+            foreach (DataRow Row in dt.Rows)
+            {
+                // get best address for donor
+                Int64 DonorKey = (Int64)Row["DonorKey"];
+                DataTable tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(DbAdapter, DonorKey);
+
+                if (tempTable != null)
+                {
+                    DonorAddresses.Merge(tempTable);
+                }
+
+                if (DbAdapter.IsCancelled)
+                {
+                    return null;
+                }
+            }
+
+            ReturnDataSet.Tables.Add(dt);
+            ReturnDataSet.Tables.Add(DonorAddresses);
+            return ReturnDataSet;
+
         }
     }
 }

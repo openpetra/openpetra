@@ -244,6 +244,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultSet = TFinanceReportingWebConnector.GiftsOverMinimum(AParameters, FDbAdapter);
                     break;
 
+                case "TopDonorReport":
+                    ResultSet = TFinanceReportingWebConnector.TopDonorReport(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDataSetThread unknown ReportType: " + AReportType);
                     break;
