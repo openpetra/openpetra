@@ -386,7 +386,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                       "' AND gift.a_ledger_number_i = " + LedgerNumber +
                                       @" AND ( batch.a_batch_status_c = 'Posted' OR
 			                                          batch.a_batch_status_c = 'posted') "
-                                      + MotivationQuery;
+                                      +
+                                      MotivationQuery;
 
 
                     dtDonations = DbAdapter.RunQuery(QueryDonations, "DonorReportDetail", Transaction);
@@ -823,7 +824,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         @"WITH GiftTotals AS (
 	                    SELECT p_donor_key_n AS donorKey, p_partner_class_c AS partnerClass, p_partner_short_name_c AS donorName,
 		                SUM(CASE WHEN TRUE "
-                        + MotivationQuery + "  THEN detail."
+                        +
+                        MotivationQuery + "  THEN detail."
                         +
                         giftAmountColumn +
                         @" ELSE 0 END) AS totalamount
@@ -939,7 +941,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                     ELSE p_partner_short_name_c
 
                                     END AS RecipientShortName, "
-                        + giftAmountColumn +
+                        +
+                        giftAmountColumn +
                         @", a_motivation_detail_desc_c
 
                             FROM a_gift AS gift
@@ -949,7 +952,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                             WHERE
                                 p_donor_key_n IN("
-                        + Donors + ") AND a_date_entered_d BETWEEN '" +
+                        +
+                        Donors + ") AND a_date_entered_d BETWEEN '" +
                         AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
                         AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd") + "' " + MotivationQuery + " ORDER BY p_donor_key_n ";
 
