@@ -498,6 +498,21 @@ namespace Tests.MainNavigationScreens
 
             GotServerAccessDeniedException = false;
 
+            string actionClick = TYml2Xml.GetAttribute(ActionNode, "ActionClick");
+            string actionOpenScreen = TYml2Xml.GetAttribute(ActionNode, "ActionOpenScreen");
+            string className = string.Empty;
+
+            if (actionClick.Contains("."))
+            {
+                className = actionClick.Substring(0, actionClick.IndexOf("."));
+            }
+            else if (actionOpenScreen.Length > 0)
+            {
+                className = actionOpenScreen;
+            }
+
+            TLogging.Log("Opening " + className);
+
             try
             {
                 // Execute the action by calling the TLstTasks static method

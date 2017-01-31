@@ -1,7 +1,7 @@
 ﻿RootNode:
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
-    FormTitle: AP Aged Supplier List
+    FormTitle: AP Outstanding Invoice By Supplier
     WindowWidth: 680
     WindowHeight: 480
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance

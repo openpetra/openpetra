@@ -24,17 +24,24 @@
 //
 using System;
 using System.Data;
+using System.IO;
+using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using GNU.Gettext;
 using Ict.Common.Verification;
 using Ict.Common;
 using Ict.Petra.Client.CommonControls;
+using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
+using Ict.Petra.Client.App.Gui;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MFinance.Gui.GL;
 using Ict.Petra.Client.MFinance.Gui.Setup;
+using Ict.Petra.Client.MPartner.Gui;
+using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Shared.MFinance;
@@ -54,6 +61,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         SourceGrid.Cells.Editors.ComboBox cmbAnalAttribValues;
         AApAnalAttribRow FPSAttributesRow;
         Boolean FRequireApprovalBeforePosting;
+        List <TFormData>FFormDataList = null;
 
         /// <summary>
         /// Before saving the document, I'll remove any ApAnalAttrib rows that have no values set
@@ -96,6 +104,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             // When a doument is saved, I'll see about updating my caller.
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(BeforeDataSave);
+
+            btnHint.Height = txtDocumentStatus.Height;
         }
 
         private void RunOnceOnActivationManual()
@@ -261,6 +271,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
             tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
+            tbbReprintRemittanceAdvice.Enabled = ("|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
+            btnHint.Enabled = ("|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
 
             if (FRequireApprovalBeforePosting)
             {
@@ -569,11 +581,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 return;
             }
 
-            grdDetails.Columns[1].Width = pnlDetailGrid.Width - 380;   // It doesn't really work having these here -
-            grdDetails.Columns[0].Width = 90;                          // there's something else that overrides these settings.
-            grdDetails.Columns[2].Width = 200;
-            grdDetails.Columns[3].Width = 90;
-
             // if this document was already posted, then we need all account and cost centre codes, because old codes might have been used
             bool ActiveOnly = ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
 
@@ -592,13 +599,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (ARow.IsAmountNull() || (ExchangeRateToBase == 0))
             {
-                txtDetailBaseAmount.NumberValueDecimal = null;
+                if (txtDetailBaseAmount.NumberValueDecimal != null)
+                {
+                    txtDetailBaseAmount.NumberValueDecimal = null;
+                }
             }
             else
             {
                 decimal DetailAmount = Convert.ToDecimal(ARow.Amount);
                 DetailAmount /= ExchangeRateToBase;
-                txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
+
+                if (txtDetailBaseAmount.NumberValueDecimal != DetailAmount)
+                {
+                    txtDetailBaseAmount.NumberValueDecimal = DetailAmount;
+                }
             }
         }
 
@@ -1075,6 +1089,152 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 PaymentScreen.Show();
             }
+        }
+
+        private void DocumentStatusHint_Click(object sender, EventArgs e)
+        {
+            // Find the payments that relate to this invoice
+            string msgPayments = Catalog.GetString("This following payment number(s) relate to this invoice:");
+
+            foreach (AApDocumentPaymentRow paymentRow in FMainDS.AApDocumentPayment.Rows)
+            {
+                msgPayments += Environment.NewLine;
+                msgPayments += "- " + paymentRow.PaymentNumber.ToString();
+            }
+
+            MessageBox.Show(msgPayments, Catalog.GetString("Payments"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void ReprintRemittanceAdvice(object sender, EventArgs e)
+        {
+            List <int>paymentNumberList = new List <int>();
+
+            DataView dv = new DataView(FMainDS.AApDocumentPayment);
+            dv.RowFilter = string.Format("{0}={1} and {2}={3}",
+                AccountsPayableTDSAApDocumentPaymentTable.GetLedgerNumberDBName(), FDocumentLedgerNumber,
+                AccountsPayableTDSAApDocumentPaymentTable.GetApDocumentIdDBName(), FMainDS.AApDocument[0].ApDocumentId);
+            dv.Sort = string.Format("{0} ASC", AccountsPayableTDSAApDocumentPaymentTable.GetPaymentNumberDBName());
+
+            if (dv.Count > 0)
+            {
+                for (int i = 0; i < dv.Count; i++)
+                {
+                    paymentNumberList.Add(((AccountsPayableTDSAApDocumentPaymentRow)dv[i].Row).PaymentNumber);
+                }
+            }
+
+            if (paymentNumberList.Count > 0)
+            {
+                TFormLetterFinanceInfo FormLetterFinanceInfo;
+
+                GetTemplaterFinanceInfo(out FormLetterFinanceInfo);
+
+                if (FormLetterFinanceInfo == null)
+                {
+                    return;
+                }
+
+                PrintRemittanceAdviceTemplater(paymentNumberList, FDocumentLedgerNumber, FormLetterFinanceInfo);
+            }
+            else
+            {
+                MessageBox.Show(Catalog.GetString("Could not find payment associated with this invoice"),
+                    Catalog.GetString("Reprint Remittance Advice"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void GetTemplaterFinanceInfo(out TFormLetterFinanceInfo AFormLetterFinanceInfo)
+        {
+            AFormLetterFinanceInfo = null;
+            TFrmFormSelectionDialog formDialog = new TFrmFormSelectionDialog(this.FindForm());
+
+            formDialog.SetParameters(MCommonConstants.FORM_CODE_REMITTANCE, "STANDARD");
+
+            if (formDialog.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            formDialog.GetResult(out AFormLetterFinanceInfo);
+        }
+
+        private Boolean CreateRemittanceAdviceFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
+            List <int>APaymentNumberList,
+            int ALedgerNumber,
+            ref Boolean ACallFinished)
+        {
+            bool formDataCreated = TRemote.MFinance.AP.WebConnectors.CreateRemittanceAdviceFormData(
+                AFormLetterFinanceInfo, APaymentNumberList, ALedgerNumber, out FFormDataList);
+
+            ACallFinished = true;
+            return formDataCreated;
+        }
+
+        private void PrintRemittanceAdviceTemplater(List <int>APaymentNumberList,
+            int ALedgerNumber,
+            TFormLetterFinanceInfo AFormLetterFinanceInfo)
+        {
+            Boolean ThreadFinished = false;
+            Boolean FormLetterDataCreated = false;
+
+            // create form letter data in separate thread. This will fill FFormDataList
+            Thread t = new Thread(() => FormLetterDataCreated = CreateRemittanceAdviceFormData(
+                    AFormLetterFinanceInfo, APaymentNumberList, ALedgerNumber, ref ThreadFinished));
+
+            using (TProgressDialog dialog = new TProgressDialog(t))
+            {
+                dialog.ShowDialog();
+            }
+
+            // wait here until Thread is really finished
+            while (!ThreadFinished)
+            {
+                Thread.Sleep(50);
+            }
+
+            if (FormLetterDataCreated)
+            {
+                if ((FFormDataList == null)
+                    || (FFormDataList.Count == 0))
+                {
+                    MessageBox.Show(Catalog.GetString("Failed to get data from server to print the Remittance Advice"));
+                    return;
+                }
+            }
+
+            // set cursor to wait state
+            this.Cursor = Cursors.WaitCursor;
+            string targetFolder = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mFinance);
+            TTemplaterAccess.AppendUserAndDateInfo(ref targetFolder, Path.GetFileNameWithoutExtension(AFormLetterFinanceInfo.FileName));
+            TTemplaterAccess.InsertAPPaymentNumbersIntoFolderName(APaymentNumberList, ref targetFolder);
+
+            bool allDocumentsOpened;
+            bool printOnCompletion;
+            String InitialDirectory = TTemplaterAccess.PrintTemplaterDocument(TModule.mFinance,
+                FFormDataList,
+                AFormLetterFinanceInfo.FileName,
+                false,
+                false,
+                false,
+                out allDocumentsOpened,
+                out printOnCompletion,
+                targetFolder);
+            FFormDataList = null;
+
+            // reset cursor to default state
+            this.Cursor = Cursors.Default;
+
+            if (InitialDirectory != null)
+            {
+                // now show dialog with formletters created
+                TFrmFormLetterPreviewDialog PreviewDlg = new TFrmFormLetterPreviewDialog(this.FindForm());
+                PreviewDlg.FinanceContext = MFinanceConstants.FINANCE_PRINT_CONTEXT_REMITTANCE;
+                PreviewDlg.SetParameters(TModule.mFinance, true, true, InitialDirectory);
+                PreviewDlg.Show();
+            }
+
+            this.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.Close();
         }
     }
 }

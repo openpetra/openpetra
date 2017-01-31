@@ -1076,6 +1076,7 @@ namespace Ict.Petra.Shared.MCommon
             Subscription = new List <TFormDataSubscription>();
             Gift = new List <TFormDataGift>();
             FamilyMember = new List <TFormDataFamilyMember>();
+            Payment = new List <TFormDataAPPayment>();
             Custom1 = Custom2 = Custom3 = Custom4 = Custom5 = Custom6 = Custom7 = Custom8 = String.Empty;
             AddressIsOriginal = true;
         }
@@ -1339,6 +1340,50 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        // APRemittance related
+        ///
+        public String PaymentDate {
+            get; set;
+        }
+        ///
+        public String OurReference {
+            get; set;
+        }
+        ///
+        public String TotalPayment {
+            get; set;
+        }
+        ///
+        public String CurrencyCode {
+            get; set;
+        }
+        ///
+        public int PaymentNumber {
+            get; set;
+        }
+
+        // APCheque related
+        ///
+        public String ChequeDate {
+            get; set;
+        }
+        ///
+        public String ChequePayee {
+            get; set;
+        }
+        ///
+        public String ChequeAmountInWords {
+            get; set;
+        }
+        ///
+        public String ChequeAmountToPay {
+            get; set;
+        }
+        ///
+        public String ChequeNumber {
+            get; set;
+        }
+
         // Custom fields
         ///
         public String Custom1 {
@@ -1385,6 +1430,9 @@ namespace Ict.Petra.Shared.MCommon
         /// list of gifts
         public List <TFormDataGift>Gift;
 
+        /// list of AP Payments
+        public List <TFormDataAPPayment>Payment;
+
         /// list of family members
         /// for Family: all members
         /// for Person: all members except this Person
@@ -1420,6 +1468,14 @@ namespace Ict.Petra.Shared.MCommon
         public void AddGift(TFormDataGift ARecord)
         {
             Gift.Add(ARecord);
+        }
+
+        /// <summary>
+        ///  add payment record to list
+        /// </summary>
+        public void AddPayment(TFormDataAPPayment ARecord)
+        {
+            Payment.Add(ARecord);
         }
 
         /// <summary>
@@ -2591,6 +2647,43 @@ namespace Ict.Petra.Shared.MCommon
 
         /// Extra Field 10
         public String Field10
+        {
+            get; set;
+        }
+    }
+
+    /// <summary>
+    /// Contains data for individual AP Invoice payments
+    /// </summary>
+    [Serializable()]
+    public class TFormDataAPPayment : TFormData
+    {
+        ///
+        public string InvoiceNumber
+        {
+            get; set;
+        }
+
+        ///
+        public string InvoiceDate
+        {
+            get; set;
+        }
+
+        ///
+        public string InvoiceAmount
+        {
+            get; set;
+        }
+
+        ///
+        public string PaymentAmount
+        {
+            get; set;
+        }
+
+        ///
+        public string InvoiceCurrencyCode
         {
             get; set;
         }

@@ -40,8 +40,13 @@ namespace Ict.Petra.Client.App.Core
             Catalog.GetString("Sorry: At the same time that you needed to read or write database records another user was changing them.") +
             Environment.NewLine + Environment.NewLine;
 
-        private static readonly string StrConcurrentServerTransactionMessage2 =
+        private static readonly string StrConcurrentServerTransactionMessage2a =
             Catalog.GetString("If you wait a few seconds and then repeat your last action, it may succeed.") +
+            Environment.NewLine + Environment.NewLine;
+
+        private static readonly string StrConcurrentServerTransactionMessage2b =
+            Catalog.GetString("The program needs to close now in order to recover from this error.  However, " +
+                "if you repeat your last action when the program restarts, it will almost certainly succeed.") +
             Environment.NewLine + Environment.NewLine;
 
         private static readonly string StrConcurrentServerTransactionMessage3 =
@@ -54,8 +59,13 @@ namespace Ict.Petra.Client.App.Core
 
         /// <summary>todoComment</summary>
         private static readonly string StrConcurrentServerTransactionMessage =
-            StrConcurrentServerTransactionMessage1 + StrConcurrentServerTransactionMessage2 +
+            StrConcurrentServerTransactionMessage1 + StrConcurrentServerTransactionMessage2a +
             StrConcurrentServerTransactionMessage3 + StrConcurrentServerTransactionMessage4;
+
+        /// <summary>todoComment</summary>
+        private static readonly string StrConcurrentServerTransactionMessageWithShutdown =
+            StrConcurrentServerTransactionMessage1 + StrConcurrentServerTransactionMessage2b +
+            StrConcurrentServerTransactionMessage4;
 
         /// <summary>todoComment</summary>
         private static readonly string StrConcurrentServerTransactionTitle = Catalog.GetString("Message From the OpenPetra Server");
@@ -66,12 +76,22 @@ namespace Ict.Petra.Client.App.Core
         /// <summary>
         /// Shows a message box apologising that a user's action failed due to conncurrent serialisable transactions
         /// </summary>
-        public static void ShowTransactionSerializationExceptionDialog()
+        public static void ShowTransactionSerializationExceptionDialog(bool AIsTerminating = false)
         {
-            MessageBox.Show(StrConcurrentServerTransactionMessage,
-                StrConcurrentServerTransactionTitle,
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Information);
+            if (AIsTerminating)
+            {
+                MessageBox.Show(StrConcurrentServerTransactionMessageWithShutdown,
+                    StrConcurrentServerTransactionTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
+            else
+            {
+                MessageBox.Show(StrConcurrentServerTransactionMessage,
+                    StrConcurrentServerTransactionTitle,
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information);
+            }
         }
     }
 }

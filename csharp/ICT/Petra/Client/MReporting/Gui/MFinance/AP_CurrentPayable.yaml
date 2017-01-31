@@ -1,7 +1,7 @@
 ﻿RootNode:
     BaseYaml: FinanceReportingForm.yaml
     FormType: report
-    FormTitle: Current Accounts Payable
+    FormTitle: Payments Due On Report Date
     WindowWidth: 500
     WindowHeight: 300
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinance

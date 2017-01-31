@@ -18,6 +18,7 @@ RootNode:
         actPostDocument: {Label=Post, ActionClick=PostDocument}
         actPayDocument: {Label=Pay, ActionClick=PayDocument}
         actLookupExchangeRate: {ActionClick=LookupExchangeRate}
+        actReprintRemittanceAdvice: {ActionClick=ReprintRemittanceAdvice}
     Controls:
         pnlContent:
             Controls: [pnlSupplierInfo, grpDocumentInfo, grpDetails]
@@ -31,17 +32,19 @@ RootNode:
         grpDocumentInfo:
             Label: Document Information
             Controls: 
-                Row0: [txtDocumentCode, cmbDocumentType]
+                Row0: [txtDocumentCode, cmbDocumentType, txtDocumentStatus, btnHint]
                 Row1: [txtReference]
                 Row2: [dtpDateIssued, dtpDateDue, nudCreditTerms]
                 Row3: [nudDiscountDays, txtDiscountPercentage]
                 Row4: [txtTotalAmount, txtExchangeRateToBase, btnLookupExchangeRate]
             Dock: Top
-        txtDocumentCode: {Label=Invoice &Number}
+        txtDocumentCode: {Label=Invoice &Number, RequiredField=true}
         cmbDocumentType:
             OptionalValues: [=Invoice, Credit Note]
             Label: T&ype
             DataField: CreditNoteFlag
+        txtDocumentStatus: {Label=Status, Width=80, ReadOnly=true}
+        btnHint: {Label=?, Width=15, ActionClick=DocumentStatusHint_Click, Tooltip=Show the payment(s) that relate to this invoice}
         txtReference: {Label=&Reference, ColSpan=2}
         dtpDateIssued: {Label=&Date Issued, OnChange=UpdateCreditTerms}
         nudCreditTerms:
@@ -69,6 +72,8 @@ RootNode:
             Controls: [pnlDetailGrid, pnlDetails]
         pnlDetailGrid:
             Height:120
+            Dock: Fill
+            #Stretch: Fully
             Controls: [pnlDetailButtons, grdDetails]
         pnlDetailButtons:
             Dock: Bottom
@@ -99,6 +104,7 @@ RootNode:
             Tooltip: Use cursor keys to select and edit an Analysis Attribute
 
         pnlDetails:
+            Dock: Bottom
             Height:200
             Controls:
                 Row0: [txtDetailNarrative]
@@ -136,11 +142,13 @@ RootNode:
         btnAddDetail:
             Width: 120
             Action: actNewDetail
+            Tooltip: Add a new charge detail
         btnDelete:
             Enabled: false
             Label: &Remove Detail
             Width: 120
             Action: actDelete
+            Tooltip: Remove the selected charge detail
 # TODO: Approval completely disabled for the moment
 #        btnApproveDetail:
 #            Label: A&pprove Detail
@@ -154,3 +162,4 @@ RootNode:
             Action: actPostDocument
         tbbPayDocument:
             Action: actPayDocument
+        tbbReprintRemittanceAdvice:

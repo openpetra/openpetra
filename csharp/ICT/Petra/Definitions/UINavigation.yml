@@ -242,12 +242,14 @@ OpenPetra:
                     AccountsPayable: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
                         SuppliersAndInvoices: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
                         InvoicesAndPayments: {Description=Manage outstanding invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
+                    APPrinting: {Label=Printing, Description=Reprint Remittance Advice or Cheque, Namespace=Ict.Petra.Client.MFinance.Gui}
+                        ReprintRemittanceAdvice: {Description=Reprint payment advice sent to supplier, ActionClick=TFinanceMain.PrintFinanceFormLetter, FinanceContext=REMITTANCE}
+                        ReprintCheque: {Description=Reprint cheque sent to supplier, ActionClick=TFinanceMain.PrintFinanceFormLetter, FinanceContext=CHEQUE}
                     APReports: {Label=Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, PermissionsRequired=FINANCE-1+FINANCE-RPT}  # Icon=Print.ico
-                        DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
-                        AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}
-                        CurrentAccountsPayable: {Description="Invoices payable today, or on a specified date", ActionOpenScreen=TFrmAP_CurrentPayable}
+                        DetailReport: {Label=AP Detail Report, Description=Report for the AP Cost Centre, ActionOpenScreen=TFrmAP_AccountDetailReport}
+                        AgedSupplierList: {Label=Outstanding Invoices By Supplier, Description=Due and Overdue invoices report, ActionOpenScreen=TFrmAP_AgedSupplierList}
+                        CurrentAccountsPayable: {Label=Payments Due By Date, Description="Invoices payable today, or on a specified date", ActionOpenScreen=TFrmAP_CurrentPayable}
                         PaymentReport: {Description=Report for a Payment or group of payments, ActionOpenScreen=TFrmAP_PaymentReport}
-                        RemittanceAdvice: {Description=Reprint Payment advice sent to supplier, ActionOpenScreen=TFrmAP_RemittanceAdvice}
                 Budgets: {Namespace=Ict.Petra.Client.MFinance.Gui.Budget, DontShowNestedTasksAsLinks=true}
                     General:
                         MaintainBudget: {Description=Enter/Import and maintain budgets, ActionOpenScreen=TFrmMaintainBudget}

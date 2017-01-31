@@ -147,6 +147,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         AApDocumentDetailAccess.LoadViaAApDocument(MainDS, AApDocumentId, transaction);
                         AApSupplierAccess.LoadByPrimaryKey(MainDS, DocumentRow.PartnerKey, transaction);
+                        AApDocumentPaymentAccess.LoadViaAApDocument(MainDS, AApDocumentId, transaction);
 
                         AApAnalAttribAccess.LoadViaAApDocument(MainDS, AApDocumentId, transaction);
 

@@ -1124,6 +1124,9 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
         private void ReverseBatch(System.Object sender, EventArgs e)
         {
+            // This will throw an exception if insufficient permissions
+            TSecurityChecks.CheckUserModulePermissions("FINANCE-2", "ReverseBatch [raised by Client Proxy for ModuleAccessManager]");
+
             //get index position of row to post
             int newCurrentRowPos = GetSelectedRowIndex();
 

@@ -165,6 +165,10 @@ namespace Ict.Petra.Client.App.Core
                 MessageBox.Show(FunctionalityNotImplementedMsg, AppCoreResourcestrings.StrFunctionalityNotAvailableYetTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
+            else if (TDBExceptionHelper.IsTransactionSerialisationException(TheException))
+            {
+                TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog(AEventArgs.IsTerminating);
+            }
             else if ((TheException is EOPDBException)
                      && ((TheException.InnerException != null)
                          && (TheException.InnerException is EDBAccessLackingCoordinationException)))
@@ -294,6 +298,10 @@ namespace Ict.Petra.Client.App.Core
 
                 MessageBox.Show(FunctionalityNotImplementedMsg, AppCoreResourcestrings.StrFunctionalityNotAvailableYetTitle,
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else if (TDBExceptionHelper.IsTransactionSerialisationException(TheException))
+            {
+                TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
             }
             else if ((TheException is EOPDBException)
                      && ((TheException.InnerException != null)
