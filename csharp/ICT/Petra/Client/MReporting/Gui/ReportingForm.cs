@@ -1021,21 +1021,20 @@ namespace Ict.Petra.Client.MReporting.Gui
         }
 
         /// <summary>
-        /// Allow to store and load settings
+        /// Hide/show menu items related to FastReports
         /// </summary>
         /// <param name="AEnabled">True if the store and load settings are to be enabled.</param>
-        public void EnableDisableSettings(bool AEnabled)
+        public void EnableDisableFastReports(bool AEnabled)
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
-//          ToolStrip tbrMain = (ToolStrip)FFormReportUi.Controls["tbrMain"];
-            ToolStripMenuItem nmuFile = (ToolStripMenuItem)mnuMain.Items[0];
+            ToolStripMenuItem mnuFile = (ToolStripMenuItem)mnuMain.Items[0];
 
-            nmuFile.DropDownItems["mniLoadSettings"].Visible = AEnabled;
-            nmuFile.DropDownItems["mniSaveSettings"].Visible = AEnabled;
-            nmuFile.DropDownItems["mniSaveSettingsAs"].Visible = AEnabled;
-            nmuFile.DropDownItems["mniMaintainSettings"].Visible = AEnabled;
+            if (mnuFile.DropDownItems["mniSeparator1"] != null)
+            {
+                mnuFile.DropDownItems["mniSeparator1"].Visible = AEnabled;
+            }
 
-            nmuFile.DropDownItems["mniMaintainTemplates"].Visible = !AEnabled;
+            mnuFile.DropDownItems["mniMaintainTemplates"].Visible = AEnabled;
         }
 
         /// <summary>
@@ -1048,7 +1047,15 @@ namespace Ict.Petra.Client.MReporting.Gui
         public bool GetRecentSettingsItems(int AIndex, out ToolStripItem mniItem, out ToolStripItem tbbItem)
         {
             MenuStrip mnuMain = (MenuStrip)FFormReportUi.Controls["mnuMain"];
-            ToolStripMenuItem mniLoadSettings = (ToolStripMenuItem)mnuMain.Items["mniLoadSettings"];
+            ToolStripMenuItem mnuFile = (ToolStripMenuItem)mnuMain.Items[0];
+
+            ToolStripItem[] arrayMniLoadSettings = mnuFile.DropDown.Items.Find("mniLoadSettings", false);
+            ToolStripMenuItem mniLoadSettings = null;
+
+            if (arrayMniLoadSettings != null)
+            {
+                mniLoadSettings = (ToolStripMenuItem)arrayMniLoadSettings[0];
+            }
 
             if ((mniLoadSettings == null) || (AIndex < 0) || (AIndex >= mniLoadSettings.DropDownItems.Count - 2))
             {
