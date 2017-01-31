@@ -32,11 +32,8 @@ using Ict.Common.Data;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Session;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -44,6 +41,9 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Common.Remoting.Shared;
+using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared.Interfaces.MPartner;
 
 namespace Ict.Petra.Server.MPartner.PartnerFind
 {

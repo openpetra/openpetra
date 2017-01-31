@@ -337,6 +337,10 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         Clipboard.SetDataObject(PrimaryEmailAddress);
                     }
+                    else
+                    {
+                        Clipboard.SetDataObject(String.Empty);
+                    }
                 }
                 else
                 {

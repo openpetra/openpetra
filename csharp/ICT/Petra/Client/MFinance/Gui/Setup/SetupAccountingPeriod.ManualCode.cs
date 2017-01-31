@@ -38,6 +38,8 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MFinance.Validation;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Client.App.Gui;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup
 {
@@ -263,6 +265,18 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                     }
                 }
             }
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    AAccountingPeriodTable.ColumnAccountingPeriodNumberId,
+                    AAccountingPeriodTable.ColumnAccountingPeriodDescId,
+                    AAccountingPeriodTable.ColumnPeriodStartDateId,
+                    AAccountingPeriodTable.ColumnPeriodEndDateId
+                });
         }
     }
 }

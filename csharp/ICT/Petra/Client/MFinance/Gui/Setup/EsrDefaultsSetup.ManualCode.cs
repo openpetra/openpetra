@@ -21,7 +21,6 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-using Ict.Common;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MFinance.Logic;
 using SourceGrid;
@@ -30,6 +29,9 @@ using System.ComponentModel;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Shared.Security;
+using Ict.Petra.Client.App.Gui;
+using Ict.Common;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 {
@@ -325,6 +327,59 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
             }
 
             return Res;
+        }
+
+        private void PrintUsingWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, false);
+        }
+
+        private void PrintUsingExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, false);
+        }
+
+        private void PrintPreviewInWord(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Word, true);
+        }
+
+        private void PrintPreviewInExcel(System.Object sender, EventArgs e)
+        {
+            PrintGrid(TStandardFormPrint.TPrintUsing.Excel, true);
+        }
+
+        private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            DataView EsrDataView = new DataView(TRemote.MFinance.Gift.WebConnectors.GetEsrDefaults());
+
+            TFormDataKeyDescriptionList recordList = new TFormDataKeyDescriptionList();
+
+            recordList.Title = "ESR Defaults";
+
+            recordList.KeyTitle = Catalog.GetString("ESR Key");
+            recordList.DescriptionTitle = Catalog.GetString("Substitute");
+            recordList.Field3Title = Catalog.GetString("Motivation Group");
+            recordList.Field4Title = Catalog.GetString("Motivation Detail");
+
+            foreach (DataRowView typeRowView in EsrDataView)
+            {
+                TFormDataKeyDescription record = new TFormDataKeyDescription();
+
+                record.Key = typeRowView[0].ToString();
+                record.Description = typeRowView[1].ToString();
+                record.Field3 = typeRowView[2].ToString();
+                record.Field4 = typeRowView[3].ToString();
+                recordList.Add(record);
+            }
+
+            TStandardFormPrint.PrintRecordList(recordList,
+                4,
+                APrintApplication,
+                EsrDataView.Count,
+                EsrDataView,
+                "",
+                APreviewMode);
         }
     }
 }

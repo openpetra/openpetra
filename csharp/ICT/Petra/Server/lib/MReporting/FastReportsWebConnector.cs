@@ -35,6 +35,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
+using Ict.Petra.Server.MPartner.Reporting.WebConnectors;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -230,6 +231,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* Partner Reports */
+
+                case "PrintPartner":
+                    ResultSet = TPartnerReportingWebConnector.PrintPartner(AParameters, FDbAdapter);
+                    break;
+
                 /* Personnel Reports */
 
                 case "EmergencyDataReport":
