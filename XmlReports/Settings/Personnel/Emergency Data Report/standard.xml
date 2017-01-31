@@ -17,6 +17,7 @@
   <Parameter id="param_chkLanguages" value="eString:true" />
   <Parameter id="param_chkEmergencyContacts" value="eString:true" />
   <Parameter id="param_chkProofQuestion" value="eString:true" />
+  <Parameter id="param_chkNewPage" value="eString:true" />
   <Parameter id="ColumnPosition" column="0" value="eInteger:0" />
   <Parameter id="ColumnPositionIndented" column="0" value="eInteger:0" />
   <Parameter id="ColumnWidth" column="0" value="eInteger:19" />

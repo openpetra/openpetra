@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: Donors Report - Detail
     WindowWidth: 650
-    WindowHeight: 600
+    WindowHeight: 725
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\donorreportdetail.xml, common.xml]
@@ -20,10 +20,16 @@
     Controls:
         tpgGeneralSettings:
             Label: GeneralSettings
-            Controls: [pnlTitle, rgrPartnerSelection, grpDateSelection, grpCurrencySelection, rgrSorting]
+            Controls: [pnlTitle, rgrPartnerSelection, grpDateSelection, grpCurrencySelection, rgrSorting, ucoMotivationCriteria]
         tpgColumns:
             Label: Columns
             Controls: [ucoReportColumns]
+
+        ucoMotivationCriteria:
+            Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
+            Stretch: horizontally
+            Height: 315
+            Dock: Top
           
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns

@@ -31,6 +31,11 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 {
@@ -49,6 +54,67 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
                 lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+
+            // if FastReport, then ignore columns tab
+            if ((FPetraUtilsObject.GetCallerForm() != null) && FPetraUtilsObject.FFastReportsPlugin.LoadedOK)
+            {
+                tabReportSettings.Controls.Remove(tpgColumns);
+                tabReportSettings.Controls.Remove(tpgAdditionalSettings);
+            }
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            DataSet ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorReportShort", paramsDictionary);
+
+            if (this.IsDisposed)
+            {
+                return false;
+            }
+
+            if (ReportSet == null)
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            //
+            // I need to get the name of the current ledger..
+            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+            DataView LedgerView = new DataView(LedgerNameTable);
+            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
+            String LedgerName = "";
+
+            if (LedgerView.Count > 0)
+            {
+                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+            }
+
+            ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["DonorReportShort"], "DonorReportShort");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["DonorAddresses"], "DonorAddresses");
+
+            return true;
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

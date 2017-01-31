@@ -649,6 +649,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     if (Results.Rows.Count == 0)
                     {
+                        DataColumnCollection columns = Results.Columns;
+
+                        if (!columns.Contains("Locality"))
+                        {
+                            Results.Columns.Add("Locality");
+                        }
                         DataRow NewRow = Results.NewRow();
                         NewRow["Locality"] = "UNKNOWN";
                         Results.Rows.Add(NewRow);

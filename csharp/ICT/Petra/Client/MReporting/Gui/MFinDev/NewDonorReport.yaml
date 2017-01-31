@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: New Donor Report
     WindowWidth: 700
-    WindowHeight: 625
+    WindowHeight: 660
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\newdonorreport.xml, common.xml]
@@ -33,7 +33,7 @@
         ucoMotivationCriteria:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
             Stretch: horizontally
-            Height: 280
+            Height: 315
         ucoReportColumns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns
             Dock: Fill

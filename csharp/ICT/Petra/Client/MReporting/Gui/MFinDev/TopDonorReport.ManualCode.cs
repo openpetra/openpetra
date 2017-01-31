@@ -59,6 +59,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private void InitializeManualCode()
         {
             txtRecipient.PartnerClass = "WORKER,UNIT,FAMILY";
+            ucoMotivationCriteria.ShowchkShowDetailedMotivationInformation();
         }
 
         private void DonorTypeChanged(object Sender, EventArgs e)
@@ -269,6 +270,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             }
 
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ds.Tables["Recipients"], "Recipients");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ds.Tables["TopDonorReport"], "TopDonorReport");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ds.Tables["DonorAddresses"], "DonorAddresses");
 

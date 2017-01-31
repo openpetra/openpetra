@@ -5,7 +5,7 @@
     FormType: report
     FormTitle: Top Donor Report
     WindowWidth: 700
-    WindowHeight: 645
+    WindowHeight: 680
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\topdonorreport.xml, common.xml]
@@ -41,7 +41,7 @@
         ucoMotivationCriteria:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria
             Stretch: horizontally
-            Height: 280
+            Height: 315
 
         lblLedger:
             Label: Ledger

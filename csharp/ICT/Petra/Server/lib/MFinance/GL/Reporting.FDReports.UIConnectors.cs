@@ -37,6 +37,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.App.Core.Security;
+using System.Linq;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
@@ -210,6 +211,268 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 });
 
             return ReturnTable;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataSet DonorReportShort(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+            String StartDate = AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd");
+            String EndDate = AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd");
+            bool Extract = AParameters["param_extract"].ToBool();
+
+            // create new datatable
+            DataTable Results = new DataTable();
+            DataTable DonorAddresses = new DataTable();
+            DataSet ReturnSet = new DataSet();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        @"SELECT
+
+                                        gift.p_donor_key_n AS DonorKey,
+	                                    p_partner_class_c AS PartnerClass,
+	                                    p_partner_short_name_c AS ShortName,
+	                                    SUM(detail."
+                        + Currency +
+                        @") AS TotalGiven
+                                    FROM
+
+                                        a_gift as gift
+
+                                        JOIN a_gift_batch AS batch ON(gift.a_ledger_number_i = batch.a_ledger_number_i AND gift.a_batch_number_i = batch.a_batch_number_i)
+
+                                        JOIN a_gift_detail AS detail ON(gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
+
+                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
+
+                    if (Extract)
+                    {
+                        Query +=
+                            ", PUB_m_extract," +
+                            " PUB_m_extract_master" +
+                            " WHERE" +
+                            " gift.p_donor_key_n = PUB_m_extract.p_partner_key_n" +
+                            " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
+                            " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" + // {param_extract_name}" +
+                            " AND ";
+                    }
+                    else
+                    {
+                        Query += " WHERE ";
+                    }
+
+                    Query +=
+                        @"gift.a_date_entered_d BETWEEN '" + StartDate + "' AND '" + EndDate +
+                        @"'
+
+                                        AND batch.a_batch_status_c = 'Posted'
+                                    AND detail.a_ledger_number_i = "
+                        + LedgerNumber +
+                        @"
+                                    GROUP BY gift.p_donor_key_n,p_partner_short_name_c, p_partner_class_c
+
+                                    ORDER BY p_partner_short_name_c"                                                                                                                                          ;
+
+                    Results = DbAdapter.RunQuery(Query, "DonorReportShort", Transaction);
+
+                    if (DbAdapter.IsCancelled)
+                    {
+                        Results = null;
+                        return;
+                    }
+
+                    DonorAddresses = TAddressTools.GetBestAddressForPartners(Results, 0, Transaction);
+                    DonorAddresses.TableName = "DonorAddresses";
+                });
+
+            ReturnSet.Tables.Add(Results);
+            ReturnSet.Tables.Add(DonorAddresses);
+            return ReturnSet;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        /// <param name="AParameters">Parameter dictionary</param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataSet DonorReportDetail(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataSet ReturnDataSet = new DataSet();
+            String StartDate = AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd");
+            String EndDate = AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd");
+            int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            string Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+            TDBTransaction Transaction = null;
+            DataTable dtDonations = new DataTable("NewDonorReportDonations");
+            DataTable DonorAddresses = new DataTable("DonorAddresses");
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String MotivationQuery = "";
+
+                    if (!AParameters["param_all_motivation_groups"].ToBool())
+                    {
+                        MotivationQuery += String.Format("AND detail.a_motivation_group_code_c IN ({0}) ",
+                            AParameters["param_motivation_group_quotes"]);
+                    }
+
+                    if (!AParameters["param_all_motivation_details"].ToBool())
+                    {
+                        MotivationQuery += String.Format("AND (detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c) IN ({0}) ",
+                            AParameters["param_motivation_group_detail_pairs"]);
+                    }
+
+                    String QueryDonations =
+                        @"	SELECT
+                        p_donor_key_n AS DonorPartnerKey,
+                        p_receipt_letter_frequency_c,
+	                    a_date_entered_d AS GiftDate,
+	                    detail.p_recipient_key_n AS RecipientKey,
+	                    CASE WHEN detail.p_recipient_key_n = 0
+		                    THEN a_motivation_detail_desc_c
+		                    ELSE p_partner_short_name_c
+		                    END AS RecipientShortName,
+	                    detail."
+                        + Currency +
+                        @" AS giftamount
+	
+                      FROM
+	                        a_gift AS gift
+	                        JOIN a_gift_detail AS detail ON (gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i
+                                                                AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
+	                        JOIN a_gift_batch AS batch ON (batch.a_ledger_number_i = gift.a_ledger_number_i AND batch.a_batch_number_i = gift.a_batch_number_i)
+	                        JOIN p_partner AS partner ON p_recipient_key_n = p_partner_key_n
+                            JOIN a_motivation_detail AS mot ON (detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ;
+
+                    //Add extract parameter
+                    if (AParameters["param_extract"].ToBool())
+                    {
+                        QueryDonations +=
+                            ", m_extract," +
+                            " m_extract_master" +
+                            " WHERE" +
+                            " p_donor_key_n = m_extract.p_partner_key_n" +
+                            " AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i" +
+                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                            " AND";
+                    }
+                    else
+                    {
+                        QueryDonations += " WHERE ";
+                    }
+
+                    QueryDonations += @" gift.a_date_entered_d BETWEEN '" + StartDate + "' AND '" + EndDate +
+                                      "' AND gift.a_ledger_number_i = " + LedgerNumber +
+                                      @" AND ( batch.a_batch_status_c = 'Posted' OR
+			                                          batch.a_batch_status_c = 'posted') "  + MotivationQuery;
+
+
+                    dtDonations = DbAdapter.RunQuery(QueryDonations, "DonorReportDetail", Transaction);
+
+                    DonorAddresses = TAddressTools.GetBestAddressForPartners(dtDonations, 0, Transaction, true);
+                });
+
+            DonorAddresses.TableName = "DonorAddresses";
+
+            //DonorAddresses should not be empty or OP will crash
+            if (DonorAddresses.Columns.Count == 0)
+            {
+                String[] Columns =
+                {
+                    "p_partner_key_n", "p_date_effective_d", "p_date_good_until_d", "p_location_type_c", "p_send_mail_l", "p_site_key_n",
+                    "p_location_key_i", "p_building_1_c",
+                    "p_building_2_c", "p_street_name_c", "p_locality_c", "p_suburb_c", "p_city_c", "p_county_c", "p_postal_code_c",
+                    "p_country_code_c", "p_address_3_c", "p_geo_latitude_n",
+                    "p_geo_longitude_n", "p_geo_km_x_i", "p_geo_km_y_i", "p_geo_accuracy_i", "p_restricted_l", "s_date_created_d", "s_created_by_c",
+                    "s_date_modified_d", "s_modified_by_c",
+                    "s_modification_id_t", "p_partner_short_name_c", "p_partner_class_c"
+                };
+                DataColumn[] DataColumns = new DataColumn[Columns.Length];
+
+                for (int i = 0; i < Columns.Length; i++)
+                {
+                    DataColumns[i] = new DataColumn(Columns[i]);
+                }
+
+                DonorAddresses.Columns.AddRange(DataColumns);
+            }
+
+            //Add a part Sum Column for Sorting
+            DonorAddresses.Columns.Add("partSum", typeof(decimal));
+
+            if (AParameters["param_rgrSorting"].ToString() == "Amount")
+            {
+                DataView dvAddr = DonorAddresses.DefaultView;
+                DataView dvDon = dtDonations.DefaultView;
+
+                dvAddr.Sort = "p_partner_key_n";
+                dvDon.Sort = "donorpartnerkey";
+
+                DonorAddresses = dvAddr.ToTable();
+                dtDonations = dvDon.ToTable();
+
+                int counter = 0;
+                String currentDonor = dtDonations.Rows[counter]["donorpartnerkey"].ToString();
+                decimal partSum = 0;
+
+                foreach (DataRow dr in dtDonations.Rows)
+                {
+                    if (currentDonor != dr["donorpartnerkey"].ToString())
+                    {
+                        DonorAddresses.Rows[counter]["partSum"] = partSum;
+                        partSum = 0;
+                        currentDonor = dr["donorpartnerkey"].ToString();
+                        counter++;
+                    }
+
+                    partSum += Decimal.Parse(dr["giftamount"].ToString());
+                }
+
+                DonorAddresses.Rows[counter]["partSum"] = partSum;
+            }
+
+            //sort it
+            DataView dvAddresses = DonorAddresses.DefaultView;
+
+            switch (AParameters["param_rgrSorting"].ToString())
+            {
+                case "Donor Name":
+                    dvAddresses.Sort = "p_partner_short_name_c";
+                    break;
+
+                case "Partner Key":
+                    dvAddresses.Sort = "p_partner_key_n";
+                    break;
+
+                case "Amount":
+                    dvAddresses.Sort = "partSum DESC";
+                    break;
+
+                default:
+                    break;
+            }
+
+            ReturnDataSet.Tables.Add(dtDonations);
+            ReturnDataSet.Tables.Add(dvAddresses.ToTable());
+            return ReturnDataSet;
         }
 
         /// <summary>
@@ -512,6 +775,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             TDBTransaction Transaction = null;
             DataTable dt = new DataTable("TopDonorReport");
+            DataTable recipients = new DataTable("Recipients");
 
             DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
@@ -554,13 +818,13 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String Query =
                         @"WITH GiftTotals AS (
 	                    SELECT p_donor_key_n AS donorKey, p_partner_class_c AS partnerClass, p_partner_short_name_c AS donorName,
-		                SUM(detail."
+		                SUM(CASE WHEN TRUE " + MotivationQuery + "  THEN detail."
                         +
                         giftAmountColumn +
-                        @") AS totalamount
+                        @" ELSE 0 END) AS totalamount
 
 
-                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner"                                                ;
+                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner";
 
                     //Add extract parameter
                     if (AParameters["param_extract"].ToBool())
@@ -638,6 +902,49 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             AParameters["param_percentage"]);
 
                     dt = DbAdapter.RunQuery(Query, "TopDonorReport", Transaction);
+
+                    string Donors = String.Empty;
+
+                    foreach (DataRow dr in dt.Rows)
+                    {
+                        Donors += dr[0].ToString() + ",";
+                    }
+
+                    //Delete last comma or if empty add -1 so SQL won't crash
+                    if(Donors.Length > 1)
+                    {
+                        Donors = Donors.Remove(Donors.Length - 1);
+                    }
+                    else
+                    {
+                        Donors = "-1";
+                    }
+                    
+
+                    Query = @"SELECT
+
+                                p_donor_key_n, a_date_entered_d, 
+	                            a_recipient_ledger_number_n, 
+	                            p_partner.s_created_by_c AS contactor,
+                                CASE WHEN detail.p_recipient_key_n = 0
+
+                                    THEN a_motivation_detail_desc_c
+
+                                    ELSE p_partner_short_name_c
+
+                                    END AS RecipientShortName, " + giftAmountColumn + @", a_motivation_detail_desc_c
+
+                            FROM a_gift AS gift
+                            LEFT JOIN a_gift_detail AS detail ON(gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
+                            LEFT JOIN p_partner ON a_recipient_ledger_number_n = p_partner_key_n
+                            JOIN a_motivation_detail AS mot ON(detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)
+
+                            WHERE
+                                p_donor_key_n IN(" + Donors + ") AND a_date_entered_d BETWEEN '" + 
+                                AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
+                             AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd")+ "' " + MotivationQuery +  " ORDER BY p_donor_key_n ";
+
+                    recipients = DbAdapter.RunQuery(Query, "Recipients", Transaction);
                 });
 
             DataTable DonorAddresses = new DataTable("DonorAddresses");
@@ -659,7 +966,145 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 }
             }
 
+            ReturnDataSet.Tables.Add(recipients);
             ReturnDataSet.Tables.Add(dt);
+            ReturnDataSet.Tables.Add(DonorAddresses);
+            return ReturnDataSet;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        /// <param name="AParameters">Parameter dictionary</param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataSet NewDonorReport(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataSet ReturnDataSet = new DataSet();
+            String StartDate = AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd");
+            String EndDate = AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd");
+            string Currency = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+            TDBTransaction Transaction = null;
+            DataTable dtDonations = new DataTable("NewDonorReportDonations");
+            DataTable DonorAddresses = new DataTable("DonorAddresses");
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String MotivationQuery = "";
+
+                    if (!AParameters["param_all_motivation_groups"].ToBool())
+                    {
+                        MotivationQuery += String.Format("AND detail.a_motivation_group_code_c IN ({0}) ",
+                            AParameters["param_motivation_group_quotes"]);
+                    }
+
+                    if (!AParameters["param_all_motivation_details"].ToBool())
+                    {
+                        MotivationQuery += String.Format("AND (detail.a_motivation_group_code_c, detail.a_motivation_detail_code_c) IN ({0}) ",
+                            AParameters["param_motivation_group_detail_pairs"]);
+                    }
+
+                    String QueryDonations =
+                        @"SELECT
+	                                            p_donor_key_n AS DonorPartnerKey,
+	                                            a_date_entered_d AS GiftDate,
+	                                            detail.p_recipient_key_n AS RecipientKey,
+	                                            p_partner_short_name_c AS RecipientShortName,
+	                                            detail.a_motivation_detail_code_c AS MotivationDetail,
+	                                            a_motivation_detail_desc_c AS MotivationDetailDescription,
+	                                            detail.a_motivation_group_code_c AS MotivationGroup,
+	                                            a_motivation_detail_desc_c AS MotivationGroupDescription,
+                                                "
+                        + Currency +
+                        @" AS GiftAmount
+	
+                                            FROM
+	                                            a_gift AS gift
+	                                            JOIN a_gift_detail AS detail ON (gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
+	                                            JOIN a_gift_batch AS batch ON (batch.a_ledger_number_i = gift.a_ledger_number_i AND batch.a_batch_number_i = gift.a_batch_number_i)
+	                                            JOIN p_partner AS partner ON p_recipient_key_n = p_partner_key_n
+	                                            JOIN a_motivation_detail AS motivationdetail ON (motivationdetail.a_ledger_number_i = detail.a_ledger_number_i AND motivationdetail.a_motivation_group_code_c=detail.a_motivation_group_code_c AND motivationdetail.a_motivation_detail_code_c=detail.a_motivation_detail_code_c) "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ;
+
+                    //Add extract parameter
+                    if (AParameters["param_extract"].ToBool())
+                    {
+                        QueryDonations +=
+                            ", m_extract," +
+                            " m_extract_master" +
+                            " WHERE" +
+                            " p_donor_key_n = m_extract.p_partner_key_n" +
+                            " AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i" +
+                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                            " AND";
+                    }
+                    else
+                    {
+                        QueryDonations += " WHERE ";
+                    }
+
+                    QueryDonations += @" gift.a_date_entered_d BETWEEN '" + StartDate + "' AND '" + EndDate +
+                                      @"' AND gift.a_first_time_gift_l = true
+	                                            AND gift.a_ledger_number_i = "
+                                      + AParameters["param_ledger_number_i"] +
+                                      @"
+
+
+                                                AND ( batch.a_batch_status_c = 'Posted' OR
+			                                              batch.a_batch_status_c = 'posted')
+			
+	                                            AND EXISTS (SELECT 1    FROM a_motivation_detail WHERE a_motivation_detail.a_ledger_number_i = detail.a_ledger_number_i
+	                                            AND a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c
+						                                                   AND a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
+							                                            AND a_motivation_detail.a_receipt_l)
+                                                "
+                                      + MotivationQuery + " AND " + Currency + ">= " + AParameters["param_minimum_amount"] + " ";
+
+                    if (AParameters["param_rgrRecipientSelection"].ToString() == "OneRecipient")
+                    {
+                        QueryDonations += " AND detail.p_recipient_key_n = " + AParameters["param_recipientkey"] + " ";
+                    }
+
+                    if (AParameters["param_rgrSorting"].ToString() == "Amount")
+                    {
+                        QueryDonations += " ORDER BY GiftAmount";
+                    }
+
+                    dtDonations = DbAdapter.RunQuery(QueryDonations, "NewDonorReportDonations", Transaction);
+
+                    DonorAddresses = TAddressTools.GetBestAddressForPartners(dtDonations, 0, Transaction, true);
+                });
+
+            DonorAddresses.TableName = "DonorAddresses";
+
+            //DonorAddresses should not be empty or OP will crash
+            if (DonorAddresses.Columns.Count == 0)
+            {
+                String[] Columns =
+                {
+                    "p_partner_key_n", "p_date_effective_d", "p_date_good_until_d", "p_location_type_c", "p_send_mail_l", "p_site_key_n",
+                    "p_location_key_i", "p_building_1_c",
+                    "p_building_2_c", "p_street_name_c", "p_locality_c", "p_suburb_c", "p_city_c", "p_county_c", "p_postal_code_c",
+                    "p_country_code_c", "p_address_3_c", "p_geo_latitude_n",
+                    "p_geo_longitude_n", "p_geo_km_x_i", "p_geo_km_y_i", "p_geo_accuracy_i", "p_restricted_l", "s_date_created_d", "s_created_by_c",
+                    "s_date_modified_d", "s_modified_by_c",
+                    "s_modification_id_t", "p_partner_short_name_c", "p_partner_class_c"
+                };
+                DataColumn[] DataColumns = new DataColumn[Columns.Length];
+
+                for (int i = 0; i < Columns.Length; i++)
+                {
+                    DataColumns[i] = new DataColumn(Columns[i]);
+                }
+
+                DonorAddresses.Columns.AddRange(DataColumns);
+            }
+
+            ReturnDataSet.Tables.Add(dtDonations);
             ReturnDataSet.Tables.Add(DonorAddresses);
             return ReturnDataSet;
         }

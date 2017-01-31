@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -228,6 +229,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* Personnel Reports */
+
+                case "EmergencyDataReport":
+                    ResultSet = TPersonnelReportingWebConnector.EmergencyDataReport(AParameters, FDbAdapter);
+                    break;
+
                 /* Finance */
                 case "RecipientGiftStatement":
                     ResultSet = GetRecipientGiftStatementDataSet(AParameters, FDbAdapter);
@@ -248,8 +255,22 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultSet = TFinanceReportingWebConnector.TopDonorReport(AParameters, FDbAdapter);
                     break;
 
+                case "NewDonorReport":
+                    ResultSet = TFinanceReportingWebConnector.NewDonorReport(AParameters, FDbAdapter);
+                    break;
+
+                case "DonorReportShort":
+
+                    ResultSet = TFinanceReportingWebConnector.DonorReportShort(AParameters, FDbAdapter);
+                    break;
+
                 default:
                     TLogging.Log("GetDataSetThread unknown ReportType: " + AReportType);
+                    break;
+
+                case "DonorReportDetail":
+
+                    ResultSet = TFinanceReportingWebConnector.DonorReportDetail(AParameters, FDbAdapter);
                     break;
             }
 
