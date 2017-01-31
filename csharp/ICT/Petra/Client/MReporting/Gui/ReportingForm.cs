@@ -376,7 +376,10 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </returns>
         public virtual bool InitialiseData(String AReportParameter)
         {
-            bool ReturnValue = true;
+            if (FReportName == "")
+            {
+                return false; // Come back when you have more information!
+            }
 
             if (!HasSufficientPermissions())
             {
@@ -402,7 +405,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 SetAvailableFunctions();
             }
 
-            return ReturnValue;
+            return true;
         }
 
         /// <summary>
@@ -1172,6 +1175,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         public void LoadDefaultSettings()
         {
+            if (FStoredSettings == null)
+            {
+                return; // Call back here after FStoredSettings is initialised!
+            }
+
             StringCollection RecentlyUsedSettings;
 
             RecentlyUsedSettings = FStoredSettings.GetRecentlyUsedSettings();

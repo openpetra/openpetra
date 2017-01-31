@@ -397,6 +397,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 tbbReprintRemittanceAdvice.Enabled = false;
                 tbbReprintCheque.Enabled = false;
+                tbbMakePayment.Enabled = false;
+                tbbRemove.Enabled = false;
             }
         }
 
@@ -595,6 +597,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void MakePayment(object sender, EventArgs e)
         {
+            if (FSelectedDocumentRow == null)
+            {
+                return;
+            }
+
             //FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
             FSelectedDocumentRow.Amount = txtAmountToPay.NumberValueDecimal.Value;
             FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
@@ -662,7 +669,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (dateEffectiveDialog.ShowDialog() != DialogResult.OK)
             {
                 MessageBox.Show(Catalog.GetString("The payment was cancelled."), Catalog.GetString(
-                        "No Success"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        "AP Payment"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -703,9 +710,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 PrintRemittanceAdviceTemplater();       // Use this for Templater printing
                 PrintChequeTemplater();                 // Use this for Templater printing
 
-                // TODO: show posting register of GL Batch?
-
-                // After the payments screen, The status of this document may have changed.
+                // After the payment, one or more documents may have changed.
                 TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPTransactionChanged);
                 broadcastMessage.SetMessageDataAPTransaction(String.Empty);
                 TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);

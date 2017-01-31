@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -118,25 +118,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
 
             UpdateRecordNumberDisplay();
-
-/*
- * All this moved out to ShowAnalysisAttributesForAccount, because doing it here is too late:
- *          if (grdAnalAttributes.Columns.Count < 2)
- *          {
- *              grdAnalAttributes.SpecialKeys = GridSpecialKeys.Default | GridSpecialKeys.Tab;
- *
- *              FAnalAttribTypeVal = new SourceGrid.Cells.Editors.ComboBox(typeof(string));
- *              FAnalAttribTypeVal.EnableEdit = true;
- *              FAnalAttribTypeVal.Control.DropDownStyle = ComboBoxStyle.DropDownList;
- *              FAnalAttribTypeVal.EditableMode = EditableMode.Focus;
- *              FAnalAttribTypeVal.Control.SelectedValueChanged += new EventHandler(AnalysisAttributeValueChanged);
- *              grdAnalAttributes.AddTextColumn("Value",
- *                  FMainDS.AApAnalAttrib.Columns[AApAnalAttribTable.GetAnalysisAttributeValueDBName()], 100,
- *                  FAnalAttribTypeVal);
- *
- *              grdAnalAttributes.Selection.SelectionChanged += new RangeRegionChangedEventHandler(AnalysisAttributesGrid_RowSelected);
- *          }
- */
         }
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
@@ -1235,6 +1216,31 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();
+        }
+
+        /// <summary>
+        /// Will be called by TFormsList to inform any Form that is registered in TFormsList
+        /// about any 'Forms Messages' that are broadcasted.
+        /// </summary>
+        /// <remarks>This form 'listens' to such 'Forms Message' broadcasts by
+        /// implementing this virtual Method. This Method will be called each time a
+        /// 'Forms Message' broadcast occurs.
+        /// </remarks>
+        /// <param name="AFormsMessage">An instance of a 'Forms Message'. This can be
+        /// inspected for parameters in the Method Body and the Form can use those to choose
+        /// to react on the Message, or not.</param>
+        /// <returns>True if I acted on the Message.</returns>
+        public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
+        {
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcAPTransactionChanged)
+            {
+                LoadAApDocument(FMainDS.AApDocument[0].LedgerNumber, FMainDS.AApDocument[0].ApDocumentId);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

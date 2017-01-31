@@ -374,6 +374,7 @@ namespace Ict.Petra.Server.MFinance.GL
             TransactionRow.AmountInBaseCurrency = Aamount;
             TransactionRow.TransactionAmount = Aamount;
             TransactionRow.TransactionDate = F_batch.DateEffective;
+            TransactionRow.SystemGenerated = false;  // Setting true will prohibit reversal of this batch
 
             F_GLDataset.ATransaction.Rows.Add(TransactionRow);
         }

@@ -1249,7 +1249,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         {
                             transactionRowBank = (ATransactionRow)GLDataset.ATransaction.DefaultView[0].Row;
                             transactionRowBank.TransactionAmount += documentPaymentRow.Amount; // This TransactionAmount is unsigned until later.
-                            transactionRowBank.Narrative = "AP Payment: Multiple suppliers";
+                            transactionRowBank.Narrative = "AP Payment: Multiple documents";
                         }
                         else
                         {

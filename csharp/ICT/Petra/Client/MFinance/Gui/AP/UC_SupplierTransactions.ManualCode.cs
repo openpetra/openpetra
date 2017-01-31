@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -332,6 +332,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             this.Text = Catalog.GetString("Supplier Transactions") + " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
+
+        //
+        // Called from LoadSupplier after a short delay of 250ms.
 
         private void Timer_Elapsed(object state)
         {

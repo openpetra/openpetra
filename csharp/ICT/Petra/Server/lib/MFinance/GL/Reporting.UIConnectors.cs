@@ -1368,7 +1368,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String isNextYear = " Year=" + (AccountingYear + 1);
 
                     Int32 LastPeriod = Math.Max(ReportPeriodEnd,
-                        NumberOfAccountingPeriods);                                          // I need the whole year to see "whole year budget".
+                        NumberOfAccountingPeriods);                         // I need the whole year to see "whole year budget".
                     String PeriodFilter = " AND glmp.a_period_number_i<=" + LastPeriod;
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
@@ -1377,7 +1377,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualGLM ELSE 0 END) AS ActualTemp, ";
 
                     String PrevPeriodQuery = (ReportPeriodStart == 1) ?
-                                             "SUM (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS LastMonthTemp, "
+                                             "AVG (CASE WHEN " + isThisYear + " THEN StartBalance ELSE 0 END) AS LastMonthTemp, "
                                              :
                                              "SUM (CASE WHEN " + isThisYear + " AND " + isPrevPeriod +
                                              " THEN ActualGLM ELSE 0 END) AS LastMonthTemp, ";
@@ -1398,12 +1398,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                      (ReportPeriodStart +  - NumberOfAccountingPeriods -
                                                       1) + " THEN ActualGLM ELSE 0 END) AS LastYearLastMonthYtd, "
                                                      : (ReportPeriodStart == 1) ?
-                                                     "SUM (CASE WHEN " + isLastYear + " THEN StartBalance ELSE 0 END) AS LastYearLastMonthYtd, "
+                                                     "AVG (CASE WHEN " + isLastYear + " THEN StartBalance ELSE 0 END) AS LastYearLastMonthYtd, "
                                                      :
                                                      "SUM (CASE WHEN " + isLastYear + " AND " + isPrevPeriod +
                                                      " THEN ActualGLM ELSE 0 END) AS LastYearLastMonthYtd, ";
 
-                    String LastYearEndQuery = "SUM (CASE WHEN " + isLastYear + " THEN EndBalance ELSE 0 END) AS LastYearEnd, ";
+                    String LastYearEndQuery = "AVG (CASE WHEN " + isLastYear + " THEN EndBalance ELSE 0 END) AS LastYearEnd, ";
 
                     String BudgetQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year I can get next year's budget (if it's there!)
                                          "SUM (CASE WHEN " + isNextYear + " AND Period>=" + (ReportPeriodStart - NumberOfAccountingPeriods) +
@@ -1536,7 +1536,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                             ") AS Summarised ";
 
 
-                        String Query = "SELECT " +                                                          // This query adds extra columns to Summarised
+                        String Query = "SELECT " +                              // This query adds extra columns to Summarised
 
                                        " '" + Parts[0].Replace("'", "''") + "' AS CostCentreCode," +
                                        " '" + Parts[1].Replace("'",

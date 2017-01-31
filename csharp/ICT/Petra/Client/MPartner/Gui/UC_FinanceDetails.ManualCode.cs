@@ -1453,6 +1453,13 @@ namespace Ict.Petra.Client.MPartner.Gui
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
             TScreenVerificationResult VerificationResult = null;
+
+            if (FMainDS.PPartnerTaxDeductiblePct == null) // If I don't have this table yet - apparently I can just go ahead and create one...
+            {
+                FMainDS.Tables.Add(new PPartnerTaxDeductiblePctTable());
+                FMainDS.InitVars();
+            }
+
             DataColumn ValidationColumn = FMainDS.PPartnerTaxDeductiblePct.ColumnDateValidFrom;
             bool ReturnValue = true;
 

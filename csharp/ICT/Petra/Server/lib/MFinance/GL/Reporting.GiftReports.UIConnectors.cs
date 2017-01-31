@@ -208,21 +208,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " AND EXISTS (SELECT * FROM PUB_p_partner_gift_destination WHERE PUB_p_partner_gift_destination.p_partner_key_n = Recipient.p_partner_key_n))"
                                    +
                                    " OR (PUB_p_partner.p_partner_key_n = um_unit_structure.um_parent_unit_key_n" +
-                                   " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))";
+                                   " AND EXISTS (SELECT * FROM um_unit_structure WHERE um_unit_structure.um_child_unit_key_n = Recipient.p_partner_key_n))"
+                                   +
+                                   " WHERE" +
 
-                    Query += " WHERE";
+                                   " detail.a_ledger_number_i = gift.a_ledger_number_i" +
+                                   " AND detail.a_batch_number_i = gift.a_batch_number_i" +
+                                   " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                                   " AND PUB_a_gift_batch.a_ledger_number_i = gift.a_ledger_number_i" +
+                                   " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
+                                   donorKeyFilter +
+                                   " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
+                                   " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
+                                   " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
 
-                    Query += " detail.a_ledger_number_i = gift.a_ledger_number_i" +
-                             " AND detail.a_batch_number_i = gift.a_batch_number_i" +
-                             " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
-                             " AND PUB_a_gift_batch.a_ledger_number_i = gift.a_ledger_number_i" +
-                             " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
-                             donorKeyFilter +
-                             " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
-                             " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
-                             " AND PUB_a_gift_batch.a_ledger_number_i = " + LedgerNumber +
-
-                             " AND Recipient.p_partner_key_n = detail.p_recipient_key_n";
+                                   " AND Recipient.p_partner_key_n = detail.p_recipient_key_n";
 
                     if (RecipientSelection == "One Recipient")
                     {
@@ -277,7 +277,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         }
 
         /// <summary>
-        /// Returns a DataTable to the client for use in client-side reporting
+        /// Retrieves values for use in client-side reporting
         /// </summary>
         [NoRemoting]
         public static Boolean GetGiftStatementTotals(Dictionary <String, TVariant>AParameters,
@@ -470,13 +470,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             filterDonorList = true;
                         }
 
+                        String taxTypeFieldValue = TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "bPK");
                         pTaxFieldAsRequired =
                             ", PUB_p_tax.p_tax_ref_c AS TaxRef, PUB_p_person.p_date_of_birth_d AS DOB, PUB_p_partner_attribute.p_value_c AS Email";
                         Boolean requireBpk = filterDonorList ? AParameters["param_chkRequireBpkCode"].ToBool() : false;
                         pTaxJoinAsRequired = (requireBpk) ?
-                                             " INNER JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = 'GovId') "
+                                             " INNER JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = '" +
+                                             taxTypeFieldValue + "') "
                                              :
-                                             " LEFT JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = 'GovId') ";
+                                             " LEFT JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = '" +
+                                             taxTypeFieldValue + "') ";
                         //
                         // If the donor is a person, I can also get their DOB here.
                         pTaxJoinAsRequired += "LEFT JOIN PUB_p_person ON (p_donor_key_n = PUB_p_person.p_partner_key_n) ";
@@ -506,6 +509,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " detail.p_recipient_key_n AS RecipientKey," +
                                    " detail.a_motivation_group_code_c AS MotivationGroup," +
                                    " detail.a_motivation_detail_code_c AS MotivationDetail," +
+                                   " PUB_a_motivation_detail.a_motivation_detail_desc_c AS MotivationDesc," +
                                    " detail.a_confidential_gift_flag_l AS Confidential," +
                                    " detail." + giftAmountField + " AS GiftAmount," +
                                    " gift.a_receipt_number_i AS Receipt," +
@@ -534,7 +538,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " PUB_a_gift_detail as detail," +
                                    " PUB_a_gift_batch," +
                                    " PUB_p_partner AS DonorPartner," +
-                                   " PUB_p_partner AS RecipientLedgerPartner" +
+                                   " PUB_p_partner AS RecipientLedgerPartner," +
+                                   " PUB_a_motivation_detail" +
 
                                    " WHERE" +
                                    " detail.a_ledger_number_i = gift.a_ledger_number_i" +
@@ -551,6 +556,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " AND gift.a_ledger_number_i = " + LedgerNumber +
                                    " AND detail.a_batch_number_i = gift.a_batch_number_i" +
                                    " AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i" +
+                                   " AND PUB_a_motivation_detail.a_ledger_number_i = " + LedgerNumber +
+                                   " AND PUB_a_motivation_detail.a_motivation_group_code_c = detail.a_motivation_group_code_c" +
+                                   " AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                                    pTaxFieldFilterAsRequired;
 
                     String requestedSort = "";

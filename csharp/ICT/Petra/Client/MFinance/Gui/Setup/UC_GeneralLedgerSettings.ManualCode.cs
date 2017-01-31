@@ -122,10 +122,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <param name="ARow">The ledger row for which details will be shown</param>
         private void ShowDataManual(ALedgerRow ARow)
         {
-            // Someone at some time must have thought that this table might be useful...
-            // It does contain a lot of this info as well
-            //AAccountingSystemParameterRow ParameterRow = (AAccountingSystemParameterRow)FMainDS.AAccountingSystemParameter.Rows[0];
-
             // In these steps we 'force' the data to be within specified limits.  Then we are free to set the max/min of the spin buttons.
             int currentPeriodMax = 13;
             int currentPeriodMin = 1;

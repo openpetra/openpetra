@@ -2847,9 +2847,11 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     parameters.ToArray(), 0, 0);
 
                 // In Austria, the donors may have Govt. Tax Ids:
-                if (TSystemDefaults.GetBooleanDefault("GovIdEnabled", false))
+                if (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, false))
                 {
-                    String query = "SELECT * FROM p_tax WHERE p_tax_type_c='GovId' AND p_partner_key_n IN" +
+                    String taxTypeFieldValue = TSystemDefaults.GetStringDefault("GovIdDbKeyName", "bPK");
+
+                    String query = "SELECT * FROM p_tax WHERE p_tax_type_c='" + taxTypeFieldValue + "' AND p_partner_key_n IN" +
                                    " (SELECT DISTINCT p_donor_key_n FROM a_gift WHERE" +
                                    " a_gift.a_ledger_number_i = " + ALedgerNumber +
                                    " AND a_gift.a_batch_number_i = " + ABatchNumber + ")";
