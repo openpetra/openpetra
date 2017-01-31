@@ -1162,6 +1162,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             btnDeleteAll.Enabled = btnDelete.Enabled;
         }
 
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            int prevMaxRows = grdDetails.MaxAutoSizeRows;
+
+            grdDetails.MaxAutoSizeRows = 20;
+            grdDetails.AutoResizeGrid();
+            grdDetails.MaxAutoSizeRows = prevMaxRows;
+        }
+
         #endregion event handlers
 
         #region saving methods

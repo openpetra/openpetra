@@ -2042,6 +2042,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
                             listNumericColumns.Add(dbColumnName);
                         }
                     }
+                    else if (columnDataType == "bool")
+                    {
+                        // It must be a custom field
+                        columnDataType = "bit";
+                    }
                 }
             }
 

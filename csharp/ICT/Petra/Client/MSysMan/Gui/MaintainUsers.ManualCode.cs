@@ -26,6 +26,7 @@ using System.Collections.Specialized;
 using System.Windows.Forms;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Controls;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Petra.Client.App.Core;
@@ -40,7 +41,7 @@ using Ict.Common.Remoting.Client;
 namespace Ict.Petra.Client.MSysMan.Gui
 {
     /// manual methods for the generated window
-    public partial class TFrmMaintainUsers
+    public partial class TFrmMaintainUsers : IBoundImageEvaluator
     {
         #region Resourcetexts
 
@@ -87,15 +88,33 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 this.FPetraUtilsObject.EnableAction("cndChangePermissions", false);
             }
 
-            LoadUsers();
+            this.FormClosing += TFrmMaintainUsers_FormClosing;
 
             txtDetailPasswordHash.Enter += TxtDetailPasswordHash_Enter;
             txtDetailPasswordHash.Click += TxtDetailPasswordHash_Click;
             txtDetailPasswordHash.KeyUp += TxtDetailPasswordHash_KeyUp;
+        }
+
+        private void BeforeDataBindingManual()
+        {
+            grdDetails.AddAnnotationImage(this, 0, BoundGridImage.AnnotationContextEnum.RetiredUser, BoundGridImage.DisplayImageEnum.Inactive);
 
             // SModuleTable is loaded with the users, therefore we can only now fill the checked list box.
             // TODO: should use cached table instead?
+            LoadUsers();
             LoadAvailableModulesIntoCheckedListBox();
+
+            clbUserGroup.Columns[0].AutoSizeMode = SourceGrid.AutoSizeMode.None;
+            clbUserGroup.Columns[1].AutoSizeMode = SourceGrid.AutoSizeMode.EnableAutoSize;
+            clbUserGroup.Columns[2].AutoSizeMode = SourceGrid.AutoSizeMode.EnableStretch | SourceGrid.AutoSizeMode.EnableAutoSize;
+        }
+
+        private void TFrmMaintainUsers_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // When the form is closing we remember the current state of the 'Retired Users' filter
+            CheckBox chk = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkRetired");
+
+            TUserDefaults.SetDefault("MaintainUsers_InitialFilter", ((int)chk.CheckState).ToString());
         }
 
         private void TxtDetailPasswordHash_Enter(object sender, EventArgs e)
@@ -233,6 +252,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             clbUserGroup.SetCheckedStringList(currentPermissions);
+            clbUserGroup.AutoResizeGrid();
         }
 
         private void CheckForCurrentUser(SUserRow ARow)
@@ -532,5 +552,40 @@ namespace Ict.Petra.Client.MSysMan.Gui
                 ref VerificationResultCollection,
                 FPetraUtilsObject.ValidationControlsDict);
         }
+
+        private bool FInitialActiveUserCheckSet = false;
+
+        private void FilterToggledManual(bool IsCollapsed)
+        {
+            // We resize the grid whenever the filter toggles.  When it is collapsed the headers are included in the column width.
+            // When it is visible the headers are excluded from the column width, which keeps all the columns in the same space as when it is collapsed.
+            grdDetails.AutoResizeGrid();
+
+            // The first time the panel is shown we want to set the 'Retired' checkbox to unticked so all retired users get excluded
+            if ((FFilterAndFindObject.FilterFindPanel != null) && !FFilterAndFindObject.FilterFindPanel.IsCollapsed && !FInitialActiveUserCheckSet)
+            {
+                short defaultValue = TUserDefaults.GetInt16Default("MaintainUsers_InitialFilter", 2);
+                CheckBox chk = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkRetired");
+                chk.CheckState = (CheckState)defaultValue;
+                FInitialActiveUserCheckSet = true;
+            }
+        }
+
+        #region BoundImage interface implementation
+
+        /// <summary>
+        /// Implementation of the interface member
+        /// </summary>
+        /// <param name="AContext">The context that identifies the column for which an image is to be evaluated</param>
+        /// <param name="ADataRowView">The data containing the column of interest.  You will evaluate whether this column contains data that should have the image or not.</param>
+        /// <returns>True if the image should be displayed in the current context</returns>
+        public bool EvaluateBoundImage(BoundGridImage.AnnotationContextEnum AContext, DataRowView ADataRowView)
+        {
+            SUserRow row = (SUserRow)ADataRowView.Row;
+
+            return row.Retired;
+        }
+
+        #endregion
     }
 }

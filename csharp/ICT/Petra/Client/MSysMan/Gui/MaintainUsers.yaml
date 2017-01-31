@@ -18,7 +18,7 @@
         cndChangePermissions:
     Controls:
         pnlContent:
-            Controls: [sptContent]
+            Controls: [pnlFilterAndFind, sptContent]
             Dock: Fill
         sptContent:
             SplitterOrientation: Horizontal
@@ -31,10 +31,14 @@
         pnlDetailGrid:
             Dock: Fill
             BackColor: System.Drawing.SystemColors.Control
-            Controls: [pnlFilterAndFind, pnlDetailButtons, grdDetails]
+            Controls: [pnlDetailButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
-            FilterControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName, Column:AccountLocked, Column:Retired]
+            InitiallyExpanded: true     
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            FilterControls: [Column:Retired]
+            ExtraFilterControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName, Column:AccountLocked]
             FindControls: [txtDetailUserId, txtDetailFirstName, txtDetailLastName]
             ControlAttributes: 
                 chkAccountLocked: {Text=Account Locked}
@@ -67,6 +71,7 @@
             Tooltip: User's Password
         llbCopyPassword:
             Label: Copy Password
+            Width: 90
             Tooltip: Copy User's Password to the Clipboard
             Action: actCopyPasswordClicked
         txtDetailFirstName:
@@ -76,8 +81,7 @@
         chkDetailRetired: {Label=User Retired, ReadOnly=true}
         clbUserGroup:
             Label: This User can access
-            ColSpan: 3
-            Width: 500
+            ColSpan: 4
+            Width: 600
             Height: 155
-            Stretch: fully
             #Enabled: cndChangePermissions

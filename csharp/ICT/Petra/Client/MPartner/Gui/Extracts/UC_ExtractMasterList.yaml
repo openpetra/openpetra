@@ -7,23 +7,29 @@ RootNode:
     UsingNamespaces: [Ict.Petra.Shared.MPartner.Mailroom.Data,Ict.Petra.Shared.MPartner.Mailroom.Validation,Ict.Petra.Shared.MPartner.Partner.Data]
     FormType: edit
     Template: controlMaintainTable
+    WindowWidth: 750
+    WindowHeight: 570
     Actions:
         actMaintain: {Label=M&aintain, ActionClick=MaintainExtract}      
         actDelete: {Label=&Delete, SkipReferenceCheck=true, ActionClick=DeleteRecord}
 #        actRefreshGrid: {ActionClick=RefreshExtractList, Image: Refresh.ico}
     Controls:
         pnlContent: 
-            Controls: [pnlGrid, pnlDetails]
+            Controls: [pnlFilterAndFind, pnlGrid, pnlDetails]
             Dock: Fill
         pnlGrid:
             Dock: Fill
-            Controls: [pnlFilterAndFind, pnlButtons, grdDetails]
+            Controls: [pnlButtons, grdDetails]
         pnlFilterAndFind:
+            Dock: Left
             ExpandedWidth: 175
             InitiallyExpanded: true     
-            FilterControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc, Column:Frozen]
+            ShowFilterIsAlwaysOnLabel: FilterContext.StandardFilterOnly
+            FilterControls: [Column:Active]
+            ExtraFilterControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc, Column:Frozen]
             FindControls: [txtExtractName, cmbCreatedBy, cmbModifiedBy, dtpDateCreated, dtpDateModified, txtExtractDesc]
             ControlAttributes:
+                chkActive: {Text=Active Users}
                 cmbCreatedBy: {Label=Created By}
                 cmbModifiedBy: {Label=Modified By}
                 dtpDateCreated: {Label=From Created Date, Comparison=gte}
@@ -59,7 +65,7 @@ RootNode:
         txtKeyCount: {Label=Key Count, ReadOnly=true}
         chkDeletable:{Label=Deletable}
         chkFrozen:{Label=Frozen}
-        txtExtractDesc: {Label=Description, ColSpan=2, Multiline=true, ScrollBars=Vertical, Height=50, Width=500}
+        txtExtractDesc: {Label=Description, ColSpan=2, Multiline=true, ScrollBars=Vertical, Height=50, Width=80, Stretch=horizontally}
         #chkManualMod:{Label=Manually updated, ReadOnly=true}
         dtpManualMod:{Label=Manually modified, ReadOnly=true}
         cmbManualModBy:{Label=By, ReadOnly=true, List=UserList, AllowDbNull=true}

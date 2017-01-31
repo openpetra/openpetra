@@ -101,6 +101,7 @@ namespace {#NAMESPACE}
 {#ENDIF SAVEDETAILS}
       
 {#IFDEF DETAILTABLE}
+      {#BEFOREDATABINDINGMANUAL}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
 {#IFDEF GRIDSORT}
       myDataView.Sort = "{#GRIDSORT}";

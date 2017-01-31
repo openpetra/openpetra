@@ -1050,5 +1050,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //Need to refresh FPreviouslySelectedDetailRow else it points to a deleted row
             SelectRowInGrid(grdDetails.GetFirstHighlightedRowIndex());
         }
+
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.AutoResizeGrid();
+            }
+        }
     }
 }

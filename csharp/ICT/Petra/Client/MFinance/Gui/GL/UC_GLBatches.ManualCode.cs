@@ -732,12 +732,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             }
         }
 
-        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        private void AutoResizeGrid()
         {
             if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
             {
                 grdDetails.AutoResizeGrid();
             }
+        }
+
+        private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)
+        {
+            AutoResizeGrid();
+        }
+
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            AutoResizeGrid();
         }
 
         private void ImportFromSpreadSheet(object sender, EventArgs e)

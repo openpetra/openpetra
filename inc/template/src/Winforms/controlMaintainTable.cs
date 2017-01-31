@@ -166,6 +166,7 @@ namespace {#NAMESPACE}
         if((FMainDS != null)
           && (FMainDS.{#DETAILTABLE} != null))
         {
+            {#BEFOREDATABINDINGMANUAL}
             DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);

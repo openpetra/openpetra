@@ -2702,6 +2702,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
 
                 FDoneComboInitialise = true;
             }
+
+            int prevMaxRows = grdDetails.MaxAutoSizeRows;
+            grdDetails.MaxAutoSizeRows = 20;
+            grdDetails.AutoResizeGrid();
+            grdDetails.MaxAutoSizeRows = prevMaxRows;
         }
 
         /// <summary>

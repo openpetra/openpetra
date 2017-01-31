@@ -71,6 +71,7 @@ namespace {#NAMESPACE}
       FPetraUtilsObject.ActionEnablingEvent += ActionEnabledEvent;
 {#ENDIF ACTIONENABLING}
       {#INITMANUALCODE}
+      {#BEFOREDATABINDINGMANUAL}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
 {#IFDEF GRIDSORT}
       myDataView.Sort = "{#GRIDSORT}";

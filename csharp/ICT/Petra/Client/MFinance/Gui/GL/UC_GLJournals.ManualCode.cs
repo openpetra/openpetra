@@ -879,5 +879,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 CurrencyCodeChanged(null, null);
             }
         }
+
+        private void FilterToggledManual(bool AIsCollapsed)
+        {
+            if (grdDetails.CanFocus && (grdDetails.Rows.Count > 1))
+            {
+                grdDetails.AutoResizeGrid();
+            }
+        }
     }
 }

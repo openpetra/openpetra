@@ -1252,9 +1252,11 @@ namespace Ict.Tools.CodeGeneration.Winforms
             FTemplate.AddToCodelet("BEFORERUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("AFTERRUNONCEONACTIVATIONMANUAL", "");
             FTemplate.AddToCodelet("FINALRUNONCEONACTIVATIONACTIONMANUAL", "");
+            FTemplate.AddToCodelet("BEFOREDATABINDINGMANUAL", "");
 
             FTemplate.AddToCodelet("INITACTIONSTATE", "FPetraUtilsObject.InitActionState();" + Environment.NewLine);
 
+            CallHandlerIfProvided("void BeforeDataBindingManual", "BEFOREDATABINDINGMANUAL", "BeforeDataBindingManual();");
             CallHandlerIfProvided("void BeforeShowDetailsManual", "SHOWDETAILS", "BeforeShowDetailsManual(ARow);");
             CallHandlerIfProvided("InitializeManualCode", "INITMANUALCODE", "InitializeManualCode();");
             CallHandlerIfProvided("BeforeRunOnceOnActivationManual", "BEFORERUNONCEONACTIVATIONMANUAL", "BeforeRunOnceOnActivationManual();");

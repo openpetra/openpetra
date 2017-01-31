@@ -55,6 +55,11 @@ namespace Ict.Petra.Client.CommonControls
                 instance = Activator.CreateInstance <T>();
                 instance.Text = AControlToClone.Text;
                 instance.BackColor = System.Drawing.Color.Transparent;
+
+                if (instance.Text.EndsWith("*"))
+                {
+                    instance.Text = instance.Text.Substring(0, instance.Text.Length - 1);
+                }
             }
             else if (AControlToClone is TextBox || AControlToClone is TtxtPetraDate)
             {

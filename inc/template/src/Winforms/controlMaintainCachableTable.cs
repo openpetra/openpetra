@@ -189,6 +189,7 @@ namespace {#NAMESPACE}
 {#ENDIF SAVEDETAILS}
       pnlDetails.Enabled = false;
       
+      {#BEFOREDATABINDINGMANUAL}
       DataView myDataView = FMainDS.{#DETAILTABLE}.DefaultView;
       myDataView.AllowNew = false;
       grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
