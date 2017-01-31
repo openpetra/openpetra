@@ -1373,6 +1373,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String isEndPeriod = "Period=" + ReportPeriodEnd;
                     String isPrevPeriod = "Period=" + (ReportPeriodStart - 1);
                     String is12MothsBeforeEnd = "Period=" + (ReportPeriodEnd - 12);
+                    String isLastPeriod = "Period=" + NumberOfAccountingPeriods;
 
                     String ActualYtdQuery = "SUM (CASE WHEN " + isThisYear + " AND " + isEndPeriod + " THEN ActualGLM ELSE 0 END) AS ActualTemp, ";
 
@@ -1403,8 +1404,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                      "SUM (CASE WHEN " + isLastYear + " AND " + isPrevPeriod +
                                                      " THEN ActualGLM ELSE 0 END) AS LastYearLastMonthYtd, ";
 
-                    String LastYearEndQuery = "AVG (CASE WHEN " + isLastYear + " THEN EndBalance ELSE 0 END) AS LastYearEnd, ";
-
+                    String LastYearEndQuery = "SUM(CASE WHEN " + isLastYear + " AND " + isLastPeriod + " THEN ActualGLM ELSE 0 END) AS LastYearEnd,";
                     String BudgetQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year I can get next year's budget (if it's there!)
                                          "SUM (CASE WHEN " + isNextYear + " AND Period>=" + (ReportPeriodStart - NumberOfAccountingPeriods) +
                                          " AND Period <= " + (ReportPeriodEnd - NumberOfAccountingPeriods) +
@@ -1420,15 +1420,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                             "SUM (CASE WHEN " + isThisYear + " AND Period<=" + ReportPeriodEnd +
                                             " THEN Budget ELSE 0 END) AS BudgetYTD, ";
 
-                    String BudgetWholeYearQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year it's next year's budget I'm showing
+                    String budgetWholeYearQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year it's next year's budget I'm showing
                                                   "SUM (CASE WHEN " + isNextYear + " THEN Budget ELSE 0 END) AS WholeYearBudget, "
                                                   :
                                                   "SUM (CASE WHEN " + isThisYear + " THEN Budget ELSE 0 END) AS WholeYearBudget, ";
 
-                    String BudgetLastYearQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year it's this year's budget I'm showing
+                    String budgetLastYearQuery = (ReportPeriodEnd > NumberOfAccountingPeriods) ? // After the end of the year it's this year's budget I'm showing
                                                  "SUM (CASE WHEN " + isThisYear + " THEN Budget ELSE 0 END) AS LastYearBudget, "
                                                  :
                                                  "SUM (CASE WHEN " + isLastYear + " THEN Budget ELSE 0 END) AS LastYearBudget, ";
+                    String budgetNextYearQuery = "SUM (CASE WHEN " + isNextYear + " THEN Budget ELSE 0 END) AS NextYearBudget, ";
 
                     String MonthlyBreakdownQuery =
                         "0.0 AS P1, 0.0 AS P2, 0.0 AS P3, 0.0 AS P4, 0.0 AS P5, 0.0 AS P6 , 0.0 AS P7, 0.0 AS P8, 0.0 AS P9, 0.0 AS P10, 0.0 AS P11, 0.0 AS P12 ";
@@ -1462,8 +1463,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         LastYearEndQuery = "0.0 AS LastYearEnd, ";
                         BudgetQuery = "0.0 AS Budget,";
                         BudgetYtdQuery = "0.0 AS BudgetYTD,";
-                        BudgetWholeYearQuery = "0.0 AS WholeYearBudget, ";
-                        BudgetLastYearQuery = "0.0 AS LastYearBudget, ";
+                        budgetWholeYearQuery = "0.0 AS WholeYearBudget, ";
+                        budgetLastYearQuery = "0.0 AS LastYearBudget, ";
+                        budgetNextYearQuery = "0.0 AS NextYearBudget, ";
 
                         YearFilter = " AND glm.a_year_i=" + AccountingYear;
                         PeriodFilter = " AND glmp.a_period_number_i<=12";
@@ -1525,8 +1527,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                             LastYearEndQuery +
                                             BudgetQuery +
                                             BudgetYtdQuery +
-                                            BudgetWholeYearQuery +
-                                            BudgetLastYearQuery +
+                                            budgetWholeYearQuery +
+                                            budgetLastYearQuery +
+                                            budgetNextYearQuery +
                                             "AccountTypeOrder, " +
                                             MonthlyBreakdownQuery +
                                             "FROM " +
