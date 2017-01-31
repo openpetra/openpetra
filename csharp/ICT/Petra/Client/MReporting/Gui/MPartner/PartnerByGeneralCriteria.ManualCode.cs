@@ -77,6 +77,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             cmbPartnerStatus.cmbCombobox.AllowBlankValue = true;
             cmbPartnerStatus.Enabled = false;
             cmbPartnerStatus.SetSelectedString("ACTIVE");
+            // Remove 'MERGED' status
+            cmbPartnerStatus.Filter = "p_status_code_c NOT LIKE 'MERGED'";
             cmbDenomination.cmbCombobox.AllowBlankValue = true;
             cmbBusiness.cmbCombobox.AllowBlankValue = true;
             cmbLanguage.cmbCombobox.AllowBlankValue = true;

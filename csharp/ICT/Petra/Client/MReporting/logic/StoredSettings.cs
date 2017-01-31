@@ -59,19 +59,12 @@ namespace Ict.Petra.Client.MReporting.Logic
         /// <returns>void</returns>
         public TStoredSettings(String AReportName, String ASettingsDirectory, String AUserSettingsDirectory)
         {
-            Initialize(AReportName, ASettingsDirectory, AUserSettingsDirectory);
-        }
+            if (AReportName == "")
+            {
+                // An empty string as report name causes various issues with this class like wrongly set path variables.
+                throw new ArgumentException("The given report name must not be an empty String.", "AReportName");
+            }
 
-        /// <summary>
-        /// Initialize TStoredSettings object
-        ///
-        /// </summary>
-        /// <param name="AReportName">the name of the report (to know where to search/store settings)</param>
-        /// <param name="ASettingsDirectory">this is where the default settings are stored (in subdirectories for each report type)</param>
-        /// <param name="AUserSettingsDirectory">this is where the user settings are stored (in subdirectories for each report type)</param>
-        /// <returns>void</returns>
-        public void Initialize(String AReportName, String ASettingsDirectory, String AUserSettingsDirectory)
-        {
             this.FReportName = AReportName;
             this.FSettingsDirectory = ASettingsDirectory + System.IO.Path.DirectorySeparatorChar;
             this.FUserSettingsDirectory = AUserSettingsDirectory + System.IO.Path.DirectorySeparatorChar;
