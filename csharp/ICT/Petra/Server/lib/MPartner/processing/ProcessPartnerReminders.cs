@@ -77,13 +77,6 @@ namespace Ict.Petra.Server.MPartner.Processing
                 TLogging.Log("Entering TProcessPartnerReminders.Process...");
             }
 
-            // SubmitChanges references a user
-            TPetraIdentity PetraIdentity = new TPetraIdentity(
-                "SYSADMIN", "", "", "", "", DateTime.MinValue,
-                DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
-
-            UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
-
             ReadWriteTransaction = ADataBaseObj.GetNewOrExistingTransaction(IsolationLevel.ReadCommitted,
                 out NewTransaction);
 

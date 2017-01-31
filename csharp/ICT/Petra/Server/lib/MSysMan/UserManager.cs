@@ -227,10 +227,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             catch (EUserNotExistantException)
             {
                 // Logging
-                // we need to create a dummy user because the generated code to store the failed login to the database requires UserInfo.GUserInfo.UserID
-                TPetraIdentity dummy = new TPetraIdentity("SYSADMIN", string.Empty, string.Empty, string.Empty, string.Empty, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, -1, -1, -1, true, true, false);
-                UserInfo.GUserInfo = new TPetraPrincipal(dummy, new SUserGroupTable());
-
                 TLoginLog.AddLoginLogEntry(AUserID, TLoginLog.LOGIN_STATUS_TYPE_LOGIN_ATTEMPT_FOR_NONEXISTING_USER,
                     String.Format(Catalog.GetString(
                             "User with User ID '{0}' attempted to log in, but there is no user account for this user! "),
@@ -240,8 +236,6 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 // Only now throw the Exception!
                 throw;
             }
-
-            UserInfo.GUserInfo = PetraPrincipal;
 
             if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
@@ -447,8 +441,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
             UserDR.FailedLoginTime = Conversions.DateTimeToInt32Time(UserDR.FailedLoginDate.Value);
 
             // Check if User Account should be Locked due to too many successive failed log-in attempts
-            if ((UserInfo.GUserInfo.PetraIdentity.FailedLogins >= FailedLoginsUntilAccountGetsLocked)
-                && ((!UserInfo.GUserInfo.PetraIdentity.AccountLocked)))
+            if ((UserDR.FailedLogins >= FailedLoginsUntilAccountGetsLocked)
+                && ((!UserDR.AccountLocked)))
             {
                 // Lock User Account (this user will no longer be able to log in until a Sysadmin resets this flag!)
                 UserDR.AccountLocked = true;

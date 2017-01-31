@@ -100,12 +100,6 @@ namespace Ict.Petra.Server.App.Core
 
             if (db != null)
             {
-                TPetraIdentity PetraIdentity = new TPetraIdentity(
-                    "SYSADMIN", "", "", "", "", DateTime.MinValue,
-                    DateTime.MinValue, DateTime.MinValue, 0, -1, -1, false, false, false);
-
-                UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
-
                 TProcessDelegate TypedDelegate = FProcessDelegates[(string)ADelegateName];
 
                 TypedDelegate(db, ARunManually);
