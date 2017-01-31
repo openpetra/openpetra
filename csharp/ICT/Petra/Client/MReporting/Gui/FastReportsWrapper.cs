@@ -50,8 +50,8 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Text;
 using System.Security;
 using System.Net.Mail;
-using Ict.Petra.Client.MFastReport;
-using Ict.Petra.Client.MFastReport.Gui;
+//using Ict.Petra.Client.MFastReport;
+//using Ict.Petra.Client.MFastReport.Gui;
 using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui
@@ -374,39 +374,8 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ACalc"></param>
         public void DesignReport(TRptCalculator ACalc)
         {
-            ACalc.GetParameters().Add("param_design_template", true);
-
-            if (FSelectedTemplate != null)
-            {
-                if (FDataGetter != null)
-                {
-                    if (!FDataGetter(ACalc))
-                    {
-                        return;
-                    }
-                }
-
-                ACalc.GetParameters().Add("param_design_template_id", FSelectedTemplate.TemplateId);
-                FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
-                    new object[] { FSelectedTemplate.XmlText });
-
-                LoadReportParams(ACalc);
-
-                // The FastReportsWrapper constructor has called IctConfig.InitIctConfig(), connecting the Save methods of the Designer to
-                // our own Ict.Petra.Client.MFastReport.DesignerSettings_CustomSaveReport() handler to save the report design to the
-                // OpenPetra database and Backup_*.sql file from within Designer itself.
-                FfastReportInstance.Report.FileName = FReportName;
-                FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
- 
-               // Re-fetch the template id from the report, in case a new template was created, and make this the current template.
-                var Tbl = TRemote.MReporting.WebConnectors.GetTemplateById((int)FfastReportInstance.GetParameterValue("param_design_template_id"));
-                SetTemplate(Tbl[0]);
-            }
-
-            if (FPetraUtilsObject != null)
-            {
-                FPetraUtilsObject.UpdateParentFormEndOfReport();
-            }
+            // in OpenPetra OpenSource, we do not use the FastReport DLLs
+            return;
         }
 
         /// <summary>

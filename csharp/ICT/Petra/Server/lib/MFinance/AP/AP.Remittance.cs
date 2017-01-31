@@ -27,6 +27,7 @@ using System.Collections.Generic;
 
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.Remoting.Server;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance.AP.Data;
 using Ict.Petra.Server.MPartner.Common;

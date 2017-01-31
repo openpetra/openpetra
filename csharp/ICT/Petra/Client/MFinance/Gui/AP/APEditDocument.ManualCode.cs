@@ -1224,16 +1224,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void GetTemplaterFinanceInfo(out TFormLetterFinanceInfo AFormLetterFinanceInfo)
         {
             AFormLetterFinanceInfo = null;
-            TFrmFormSelectionDialog formDialog = new TFrmFormSelectionDialog(this.FindForm());
 
-            formDialog.SetParameters(MCommonConstants.FORM_CODE_REMITTANCE, "STANDARD");
+            // not implemented in Open Source OpenPetra
+            // TFrmFormSelectionDialog formDialog = new TFrmFormSelectionDialog(this.FindForm());
 
-            if (formDialog.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            formDialog.GetResult(out AFormLetterFinanceInfo);
+            return;
         }
 
         private Boolean CreateRemittanceAdviceFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
@@ -1280,36 +1275,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
             }
 
-            // set cursor to wait state
-            this.Cursor = Cursors.WaitCursor;
-            string targetFolder = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mFinance);
-            TTemplaterAccess.AppendUserAndDateInfo(ref targetFolder, Path.GetFileNameWithoutExtension(AFormLetterFinanceInfo.FileName));
-            TTemplaterAccess.InsertAPPaymentNumbersIntoFolderName(APaymentNumberList, ref targetFolder);
-
-            bool allDocumentsOpened;
-            bool printOnCompletion;
-            String InitialDirectory = TTemplaterAccess.PrintTemplaterDocument(TModule.mFinance,
-                FFormDataList,
-                AFormLetterFinanceInfo.FileName,
-                false,
-                false,
-                false,
-                out allDocumentsOpened,
-                out printOnCompletion,
-                targetFolder);
-            FFormDataList = null;
-
-            // reset cursor to default state
-            this.Cursor = Cursors.Default;
-
-            if (InitialDirectory != null)
-            {
-                // now show dialog with formletters created
-                TFrmFormLetterPreviewDialog PreviewDlg = new TFrmFormLetterPreviewDialog(this.FindForm());
-                PreviewDlg.FinanceContext = MFinanceConstants.FINANCE_PRINT_CONTEXT_REMITTANCE;
-                PreviewDlg.SetParameters(TModule.mFinance, true, true, InitialDirectory);
-                PreviewDlg.Show();
-            }
+            // not implemented in Open Source OpenPetra
+            // string targetFolder = TTemplaterAccess.GetFormLetterBaseDirectory(TModule.mFinance);
 
             this.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.Close();

@@ -46,35 +46,6 @@ namespace Ict.Petra.Client.MConference.Gui
         private static string ERRORMESSAGE = String.Format("A conference must be selected before the setup screens can be used.");
 
         /// <summary>
-        /// create a new Conference Form Letter
-        /// </summary>
-        public static void CreateConferenceFormLetter(Form AParentForm)
-        {
-            TFrmFormLetterDialog frm = new TFrmFormLetterDialog(AParentForm);
-
-            frm.Context = MCommonConstants.FORM_LETTER_CONTEXT_CONFERENCE;
-            System.Reflection.MethodInfo Method = AParentForm.GetType().GetMethod("GetSelectedConferenceKey");
-
-            if (Method != null)
-            {
-                frm.EventPartnerKey = Convert.ToInt64(Method.Invoke(AParentForm, null));
-            }
-
-            frm.Show();
-        }
-
-        /// <summary>
-        /// print a new Conference Form Letter
-        /// </summary>
-        public static void PrintConferenceFormLetter(Form AParentForm)
-        {
-            TFrmFormLetterPreviewDialog frm = new TFrmFormLetterPreviewDialog(AParentForm);
-
-            frm.SetParameters(TModule.mConference, false);
-            frm.Show();
-        }
-
-        /// <summary>
         /// opens Early Late Registration screen for pre selected conference
         /// </summary>
         public static void EarlyLateRegistrationsForSelectedConference(Form AParentForm)
