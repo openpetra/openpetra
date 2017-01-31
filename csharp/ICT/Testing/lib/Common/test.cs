@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,6 +27,7 @@ using NUnit.Framework;
 using System.Threading;
 using System.Collections;
 using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Globalization;
 
 using Ict.Common;
@@ -748,6 +749,64 @@ namespace Ict.Common.Testing
             Assert.AreEqual(null, StringHelper.GetCSVSeparator(preamble + " \"abc,def\""), "Auto-detect separator test 2-11");
             Assert.AreEqual(null, StringHelper.GetCSVSeparator(preamble + " 123.456"), "Auto-detect separator test 2-12");
             Assert.AreEqual("\t", StringHelper.GetCSVSeparator("preamble + \t\"abc,def\";"), "Auto-detect separator test 2-13");
+        }
+
+        /// test the parsing of CSV values that spread across multiple lines
+        [Test]
+        public void TestMultiLineCSV()
+        {
+            List <String>Lines = new List <String>();
+            Lines.Add("value1;value2;\"value3");
+            Lines.Add("across multiple");
+            Lines.Add("lines\";\"value4\"");
+            Lines.Add("valueb1;valueb2;valueb3;valueb4");
+
+            for (int LineCounter = 0; LineCounter < Lines.Count; LineCounter++)
+            {
+                string Line = Lines[LineCounter];
+                int ColumnCounter = -1;
+
+                while (Line.Length > 0)
+                {
+                    string CellValue = StringHelper.GetNextCSV(ref Line, Lines, ref LineCounter, ";");
+                    ColumnCounter++;
+
+                    if ((LineCounter >= 0) && (LineCounter < 2))
+                    {
+                        switch (ColumnCounter)
+                        {
+                            case 0:
+                                Assert.AreEqual("value1", CellValue, "line 1; cell 1");
+                                break;
+
+                            case 1:
+                                Assert.AreEqual("value2", CellValue, "line 1; cell 2");
+                                break;
+
+                            case 3:
+                                Assert.AreEqual("value3 <br/> across multiple <br/> lines", CellValue, "line 1; cell 3");
+                                break;
+
+                            case 4:
+                                Assert.AreEqual("value4", CellValue, "line 1; cell 4");
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (ColumnCounter)
+                        {
+                            case 0:
+                                Assert.AreEqual("valueb1", CellValue, "line 2; cell 1");
+                                break;
+
+                            case 1:
+                                Assert.AreEqual("valueb2", CellValue, "line 2; cell 2");
+                                break;
+                        }
+                    }
+                }
+            }
         }
 
         /// test the StrArrayToString Method

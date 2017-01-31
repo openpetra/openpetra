@@ -4,7 +4,7 @@
 // @Authors:
 //       ChristianK, timop, PeterS
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -514,10 +514,20 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             // p_partner_location records of each Partner that gets loaded.
 //            TLogging.Log(String.Format("We have entries for {0} Partners.", FPartnerClassInformation.Count));
 
+            if (FPartnerClassInformation.Keys.Count == 0)
+            {
+                throw new Exception("need to process p_partner first! rm fulldump/p_partner.sql.gz");
+            }
+
             // Process each Partner and its p_partner_location records
             foreach (Int64 PartnerKey in FPartnerClassInformation.Keys)
             {
                 FInsertionOrderPerPartner = -1;
+
+                if (FPartnerLocationRecords == null)
+                {
+                    throw new Exception("need to process p_partner_location first! rm fulldump/p_partner_location.sql.gz");
+                }
 
                 // Get that Partner's p_partner_location records from PPartnerLocationRecords
                 DataRow[] CurrentRows = FPartnerLocationRecords[Math.Abs(PartnerKey) % NumberOfTables].Select(
