@@ -134,7 +134,12 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             if (FGovIdEnabled)
             {
-                lblGovId.Text = FPartnerEditUIConnector.GetGovIdLabel() + ":";
+                lblGovId.Text = TSystemDefaults.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_LABEL, "") + ":";
+                chkNoUpload.Text = TSystemDefaults.GetStringDefault(
+                    SharedConstants.SYSDEFAULT_GOVID_NO_UPLOAD_LABEL, "");
+                chkNoUpload.Width = 200;
+
                 pnlMiscSettings.Height += 36;
                 pnlLeftMiscSettings.Height += 36;
                 pnlRightMiscSettings.Height += 26;
@@ -382,6 +387,8 @@ namespace Ict.Petra.Client.MPartner.Gui
                 String GovIdKeyName = TSystemDefaults.GetStringDefault(
                     SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
 
+                chkNoUpload.Checked = false;
+                txtGovId.Enabled = true;
                 txtGovId.Text = "";
 
                 if (FMainDS.PTax != null)
@@ -395,7 +402,32 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (TaxView.Count > 0)
                     {
                         // take first row with tax type filtered
-                        txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef;
+
+                        if (((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef == "NoUpload")
+                        {
+                            chkNoUpload.Checked = true;
+                        }
+                        else
+                        {
+                            txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[0]).TaxRef;
+                        }
+
+                        if (TaxView.Count > 1)
+                        {
+                            if (((PTaxRow)FMainDS.PTax.Rows[1]).TaxRef == "NoUpload")
+                            {
+                                chkNoUpload.Checked = true;
+                            }
+                            else
+                            {
+                                txtGovId.Text = ((PTaxRow)FMainDS.PTax.Rows[1]).TaxRef;
+                            }
+                        }
+
+                        if (chkNoUpload.Checked)
+                        {
+                            txtGovId.Enabled = false;
+                        }
                     }
                 }
             }
@@ -610,6 +642,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     String GovIdKeyName = TSystemDefaults.GetStringDefault(
                         SharedConstants.SYSDEFAULT_GOVID_DB_KEY_NAME, "");
                     PTaxRow taxRow;
+                    Boolean RowFound = false;
 
                     if (FMainDS.PTax == null)
                     {
@@ -618,24 +651,46 @@ namespace Ict.Petra.Client.MPartner.Gui
                     }
 
                     DataView TaxView = new DataView(FMainDS.PTax);
+                    String TaxRef;
+
+                    if (chkNoUpload.Checked)
+                    {
+                        TaxRef = "NoUpload";
+                    }
+                    else
+                    {
+                        TaxRef = txtGovId.Text;
+                    }
 
                     TaxView.RowFilter = String.Format("{0}='{1}'",
                         PTaxTable.GetTaxTypeDBName(),
                         GovIdKeyName);
 
-                    if (TaxView.Count == 0)
+                    if (TaxView.Count > 0)
+                    {
+                        foreach (DataRowView rowView in TaxView)
+                        {
+                            taxRow = (PTaxRow)rowView.Row;
+
+                            if (taxRow.TaxRef == TaxRef)
+                            {
+                                RowFound = true;
+                            }
+                            else
+                            {
+                                // since TaxRef is part of primary key we cannot modify it but need to delete/create if needed
+                                taxRow.Delete();
+                            }
+                        }
+                    }
+
+                    if (!RowFound)
                     {
                         taxRow = FMainDS.PTax.NewRowTyped();
                         taxRow.PartnerKey = FMainDS.PPartner[0].PartnerKey;
                         taxRow.TaxType = GovIdKeyName;
-                        taxRow.TaxRef = txtGovId.Text;
+                        taxRow.TaxRef = TaxRef;
                         FMainDS.PTax.Rows.Add(taxRow);
-                    }
-                    else
-                    {
-                        // take first row with tax type filtered
-                        taxRow = (PTaxRow)FMainDS.PTax.Rows[0];
-                        taxRow.TaxRef = txtGovId.Text;
                     }
                 }
             }
@@ -1160,6 +1215,39 @@ namespace Ict.Petra.Client.MPartner.Gui
             if (dtpTaxDeductibleValidFrom.Enabled && string.IsNullOrEmpty(dtpTaxDeductibleValidFrom.Text))
             {
                 dtpTaxDeductibleValidFrom.Text = DateTime.Today.ToString();
+            }
+        }
+
+        private void ChkNoUpload_Change(System.Object sender, System.EventArgs e)
+        {
+            if (FFirstTime)
+            {
+                // don't do this while screen is initialized with data
+                return;
+            }
+
+            if (chkNoUpload.Checked)
+            {
+                if (txtGovId.Text.Length > 0)
+                {
+                    if (MessageBox.Show(string.Format(Catalog.GetString(
+                                    "Selecting the '{0}' Box will clear the entry for '{1}'. Are you sure you want to continue?"), chkNoUpload.Text,
+                                lblGovId.Text),
+                            Catalog.GetString("Select No Upload"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Information) == DialogResult.No)
+                    {
+                        chkNoUpload.Checked = false;
+                        return;
+                    }
+                }
+
+                txtGovId.Text = "";
+                txtGovId.Enabled = false;
+            }
+            else
+            {
+                txtGovId.Enabled = true;
             }
         }
 

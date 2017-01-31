@@ -203,6 +203,9 @@ namespace Ict.Petra.Shared
         public const String SYSDEFAULT_GOVID_LABEL = "GovIdLabel";
 
         /// <summary>System Defaults</summary>
+        public const String SYSDEFAULT_GOVID_NO_UPLOAD_LABEL = "GovIdNoUploadLabel";
+
+        /// <summary>System Defaults</summary>
         public const String SYSDEFAULT_DONORZEROISVALID = "DonorZeroIsValid";
 
         /// <summary>System Defaults</summary>

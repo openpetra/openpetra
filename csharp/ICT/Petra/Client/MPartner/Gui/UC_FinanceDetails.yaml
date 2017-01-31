@@ -126,8 +126,10 @@ RootNode:
             #Enabled: false
             Width: 250
         chkNoUpload:
-            Label: Not implemented yet
+            Label: No Upload
             CheckBoxAttachedLabel: right
+            OnChange: ChkNoUpload_Change
+            Width: 250
         chkLimitTaxDeductibility:
            Visible: false
            OnChange: ChkLimitTaxDeductibility_Change
