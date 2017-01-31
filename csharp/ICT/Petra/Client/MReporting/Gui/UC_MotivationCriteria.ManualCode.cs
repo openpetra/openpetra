@@ -44,7 +44,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         private bool FDuringLoadSettings = true;
 
         /*private String FCheckedMotGroupStringList = "";
-        private String FCheckedMotDetailStringList = "";*/
+         * private String FCheckedMotDetailStringList = "";*/
 
         private Int32 FLedgerNumber = -1;
 
@@ -69,9 +69,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// </summary>
         private void InitializeManualCode()
         {
-            
         }
-
 
         /// <summary>
         /// Return true if any motivation detail code is selected
@@ -89,10 +87,11 @@ namespace Ict.Petra.Client.MReporting.Gui
         public void SetControls(TParameterList AParameters)
         {
             FParameters = AParameters;
+
             /*
-            clbMotivationGroup.SetCheckedStringList(AParameters.Get("param_motivation_group").ToString());
-            clbMotivationDetail.SetCheckedStringList(AParameters.Get("param_motivation_detail").ToString());
-            */
+             * clbMotivationGroup.SetCheckedStringList(AParameters.Get("param_motivation_group").ToString());
+             * clbMotivationDetail.SetCheckedStringList(AParameters.Get("param_motivation_detail").ToString());
+             */
         }
 
         /// <summary>
@@ -114,8 +113,6 @@ namespace Ict.Petra.Client.MReporting.Gui
             FPetraUtilsObject.DelegateLoadSettingsStarting = @LoadSettingsStarting;
             FPetraUtilsObject.DelegateLoadSettingsFinished = @LoadSettingsFinished;
         }
-
-       
 
         private void LoadSettingsStarting()
         {
@@ -167,7 +164,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             string CheckedMotivationGroups = FSelectMotDialog.GetGroupsCheckedString();
             string Filter = "";
 
-            
+
             DataView MotDetailView = new DataView(FMotDetailTable);
 
             MotDetailView.Sort = Value2MemberMotDetail + "," + Value1MemberMotDetail;
@@ -204,7 +201,7 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             grdMotivationSelection.Columns.Clear();
             grdMotivationSelection.AddTextColumn(Catalog.GetString("Group Code"), NewMotDetailTable.Columns[Value2MemberMotDetail]);
-            grdMotivationSelection.AddTextColumn(Catalog.GetString("Detail Code"), NewMotDetailTable.Columns[Value1MemberMotDetail]);       
+            grdMotivationSelection.AddTextColumn(Catalog.GetString("Detail Code"), NewMotDetailTable.Columns[Value1MemberMotDetail]);
             grdMotivationSelection.AddTextColumn(Catalog.GetString("Description"), NewMotDetailTable.Columns[DisplayMemberMotDetail]);
             DataView tempDataView = NewMotDetailTable.DefaultView;
             tempDataView.AllowNew = false;
@@ -223,30 +220,30 @@ namespace Ict.Petra.Client.MReporting.Gui
             if (chkShowDetailedMotivationInformation.Checked)
             {
                 ACalc.AddParameter("param_chkShowDetailedMotivationInformation", true);
-                
             }
             else
             {
                 ACalc.AddParameter("param_chkShowDetailedMotivationInformation", false);
             }
-            
+
             FSelectMotDialog.ReadControls(ACalc, AReportAction);
-        }    
-        
+        }
+
         private void OpenDialog(System.Object sender, EventArgs e)
         {
             FSelectMotDialog.ShowDialog(this);
 
-            if(FSelectMotDialog.DialogResult == System.Windows.Forms.DialogResult.OK)
+            if (FSelectMotDialog.DialogResult == System.Windows.Forms.DialogResult.OK)
             {
                 RefreshMotivationDetailList();
-                SetGroupBoxLabel();   
+                SetGroupBoxLabel();
             }
         }
 
         private void SetGroupBoxLabel()
         {
             string sum = "0";
+
             if (grdMotivationSelection.Rows.Count > FSelectMotDialog.GetTotalDetailsCount())
             {
                 sum = "all";
@@ -255,6 +252,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 sum = (grdMotivationSelection.Rows.Count - 1).ToString();
             }
+
             grpMotivationCriteria.Text = Catalog.GetString("Motivation Criteria ") + String.Format("[{0}]", sum);
         }
     }

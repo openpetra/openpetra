@@ -655,6 +655,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         {
                             Results.Columns.Add("Locality");
                         }
+
                         DataRow NewRow = Results.NewRow();
                         NewRow["Locality"] = "UNKNOWN";
                         Results.Rows.Add(NewRow);

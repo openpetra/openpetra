@@ -38,11 +38,10 @@ using System.Windows.Forms;
 namespace Ict.Petra.Client.MReporting.Gui
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public partial class TFrmSelectMotivationCriteriaDialog
     {
-
         /// Indicator if settings are currently loaded. Initially set to true until after initial settings are loaded.
         private bool FDuringLoadSettings = true;
 
@@ -58,7 +57,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <summary>
         /// ParameterList
         /// </summary>
-        public TParameterList FParameters { set; get; }
+        public TParameterList FParameters {
+            set; get;
+        }
 
         /// <summary>
         /// the report should be run for this ledger
@@ -85,14 +86,14 @@ namespace Ict.Petra.Client.MReporting.Gui
             this.clbMotivationDetail.AutoFindMode = Ict.Common.Controls.TAutoFindModeEnum.FirstCharacter;
 
             btnCancel.Click += new System.EventHandler(BtnCancel_Click);
-            
+
             this.Shown += new System.EventHandler(DialogShown);
         }
 
         private void ResizeLeftAndRight(System.Object sender, EventArgs e)
         {
-            pnlLeft.Width = (int) this.Width / 2;
-            pnlRight.Width = (int) this.Width / 2;
+            pnlLeft.Width = (int)this.Width / 2;
+            pnlRight.Width = (int)this.Width / 2;
             clbMotivationDetail.Width = (int)this.Width / 2 - 20;
             clbMotivationGroup.Width = (int)this.Width / 2 - 20;
         }
@@ -117,7 +118,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             string ValueMemberMotGroup = AMotivationGroupTable.GetMotivationGroupCodeDBName();
             string DisplayMemberMotGroup = AMotivationGroupTable.GetMotivationGroupDescriptionDBName();
 
-            if(FMotGroupTable == null)
+            if (FMotGroupTable == null)
             {
                 SetGroupTable();
             }
@@ -172,13 +173,13 @@ namespace Ict.Petra.Client.MReporting.Gui
             string Value1MemberMotDetail = AMotivationDetailTable.GetMotivationGroupCodeDBName();
             string Value2MemberMotDetail = AMotivationDetailTable.GetMotivationDetailCodeDBName();
             string DisplayMemberMotDetail = AMotivationDetailTable.GetMotivationDetailDescDBName();
-            List<String> KeyColumnList = new List<String>();
+            List <String>KeyColumnList = new List <String>();
             KeyColumnList.Add(Value1MemberMotDetail);
             KeyColumnList.Add(Value2MemberMotDetail);
             string CheckedMotivationGroups = clbMotivationGroup.GetCheckedStringList();
             string Filter = "";
 
-            if(FMotDetailTable == null)
+            if (FMotDetailTable == null)
             {
                 SetDetailTable();
             }
@@ -272,7 +273,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             // restart normal user interface processing when user ticks/unticks motivation group
-            clbMotivationGroup.ValueChanged += new EventHandler(MotivationGroupColumnChanged);    
+            clbMotivationGroup.ValueChanged += new EventHandler(MotivationGroupColumnChanged);
         }
 
         private void SetGroupTable()
@@ -319,7 +320,8 @@ namespace Ict.Petra.Client.MReporting.Gui
             string Group_Detail_Individual_quotes = string.Empty;
 
             // are all motivation details selected?
-            if (clbMotivationDetail.GetAllStringList() == clbMotivationDetail.GetCheckedStringList() && clbMotivationGroup.GetAllStringList() == clbMotivationGroup.GetCheckedStringList())
+            if ((clbMotivationDetail.GetAllStringList() == clbMotivationDetail.GetCheckedStringList())
+                && (clbMotivationGroup.GetAllStringList() == clbMotivationGroup.GetCheckedStringList()))
             {
                 ACalc.AddParameter("param_all_motivation_details", true);
 
@@ -332,7 +334,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 ACalc.AddParameter("param_all_motivation_details", false);
 
                 // Motivation Group and Detail Code in Pairs. First value is group code, second is detail code.
-                List<String> param_motivation_detail = new List<String>(ACalc.GetParameters().Get("param_motivation_detail").ToString().Split(','));
+                List <String>param_motivation_detail = new List <String>(ACalc.GetParameters().Get("param_motivation_detail").ToString().Split(','));
 
                 int Index = 0;
 
@@ -469,9 +471,7 @@ namespace Ict.Petra.Client.MReporting.Gui
                 clbMotivationGroup.SetCheckedStringList(FCheckedMotGroupStringList);
                 FDuringLoadSettings = false;
                 clbMotivationDetail.SetCheckedStringList(FCheckedMotDetailStringList);
-                
             }
-            
         }
 
         /// <summary>

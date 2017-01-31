@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private void InitializeManualCode()
         {
-            txtRecipient.PartnerClass = "WORKER,UNIT,FAMILY";            
+            txtRecipient.PartnerClass = "WORKER,UNIT,FAMILY";
         }
 
         private void RunOnceOnActivationManual()
@@ -72,6 +72,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
                 tabReportSettings.Controls.Remove(tpgColumns);
                 tabReportSettings.Controls.Remove(tpgAdditionalSettings);
             }
+
             ucoMotivationCriteria.ShowchkShowDetailedMotivationInformation();
         }
 

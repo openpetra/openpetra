@@ -50,6 +50,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Text;
 using System.Security;
 using System.Net.Mail;
+using Ict.Petra.Client.MFastReport;
 using Ict.Petra.Client.MFastReport.Gui;
 
 namespace Ict.Petra.Client.MReporting.Gui
@@ -347,89 +348,21 @@ namespace Ict.Petra.Client.MReporting.Gui
                     }
                 }
 
+                ACalc.GetParameters().Add("param_design_template_id", FSelectedTemplate.TemplateId);
                 FFastReportType.GetMethod("LoadFromString", new Type[] { FSelectedTemplate.XmlText.GetType() }).Invoke(FfastReportInstance,
                     new object[] { FSelectedTemplate.XmlText });
 
                 LoadReportParams(ACalc);
+
+                // The FastReportsWrapper constructor has called IctConfig.InitIctConfig(), connecting the Save methods of the Designer to
+                // our own Ict.Petra.Client.MFastReport.DesignerSettings_CustomSaveReport() handler to save the report design to the
+                // OpenPetra database and Backup_*.sql file from within Designer itself.
+                FfastReportInstance.Report.FileName = FReportName;
                 FFastReportType.GetMethod("Design", new Type[0]).Invoke(FfastReportInstance, null);
-
-                //
-                // The user can change the report template - if it's changed I'll update the server
-                // (unless the template is read-only, in which case I'll need to make a copy.)
-                object ret = FFastReportType.GetMethod("SaveToString", new Type[0]).Invoke(FfastReportInstance, null);
-                String XmlString = (String)ret;
-                //
-                // I only want to check part of the report to assess whether it's changed, otherwise it always detects a change
-                // (the modified date is changed, and the parameters may also be different.)
-
-                Boolean TemplateChanged = false;
-                Int32 Page1Pos = XmlString.IndexOf("<ReportPage");
-                Int32 PrevPage1Pos = FSelectedTemplate.XmlText.IndexOf("<ReportPage");
-
-                if ((Page1Pos < 1) || (PrevPage1Pos < 1))
-                {
-                    TemplateChanged = true;
-                }
-                else
-                {
-                    if (XmlString.Substring(Page1Pos) != FSelectedTemplate.XmlText.Substring(PrevPage1Pos))
-                    {
-                        TemplateChanged = true;
-                    }
-                }
-
-                if (TemplateChanged)
-                {
-                    Boolean MakeACopy = false;
-
-                    if (FSelectedTemplate.Readonly)
-                    {
-                        if (MessageBox.Show(
-                                String.Format(Catalog.GetString("{0} cannot be ovewritten.\r\nMake a copy instead?"), FSelectedTemplate.ReportVariant),
-                                Catalog.GetString("Design Template"),
-                                MessageBoxButtons.YesNo) == DialogResult.No)
-                        {
-                            return;
-                        }
-
-                        MakeACopy = true;
-                    }
-                    else
-                    {
-                        if (MessageBox.Show(
-                                String.Format(Catalog.GetString("Save changes to {0}?"), FSelectedTemplate.ReportVariant),
-                                Catalog.GetString("Design Template"),
-                                MessageBoxButtons.YesNo) == DialogResult.No)
-                        {
-                            return;
-                        }
-                    }
-
-                    SReportTemplateTable TemplateTable = new SReportTemplateTable();
-                    SReportTemplateRow NewRow = TemplateTable.NewRowTyped();
-                    DataUtilities.CopyAllColumnValues(FSelectedTemplate, NewRow);
-                    TemplateTable.Rows.Add(NewRow);
-
-                    if (MakeACopy)
-                    {
-                        String currentUser = UserInfo.GUserInfo.UserID;
-                        NewRow.TemplateId = -1; // The value will come from the sequence
-                        NewRow.ReportVariant = String.Format(Catalog.GetString("{0} copy of {1}"), currentUser, TemplateTable[0].ReportVariant);
-                        NewRow.Author = currentUser;
-                        NewRow.Readonly = false;
-                        NewRow.Default = false;
-                        NewRow.PrivateDefault = false;
-                    }
-                    else
-                    {
-                        TemplateTable.AcceptChanges(); // Don't allow this one-row table to be seen as "new"
-                    }
-
-                    NewRow.XmlText = XmlString;
-                    SReportTemplateTable Tbl = TRemote.MReporting.WebConnectors.SaveTemplates(TemplateTable);
-                    Tbl.AcceptChanges();
-                    SetTemplate(Tbl[0]);
-                }
+ 
+               // Re-fetch the template id from the report, in case a new template was created, and make this the current template.
+                var Tbl = TRemote.MReporting.WebConnectors.GetTemplateById((int)FfastReportInstance.GetParameterValue("param_design_template_id"));
+                SetTemplate(Tbl[0]);
             }
 
             if (FPetraUtilsObject != null)

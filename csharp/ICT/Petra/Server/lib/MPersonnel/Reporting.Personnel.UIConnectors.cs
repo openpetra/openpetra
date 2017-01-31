@@ -58,7 +58,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             {
                 Selection =
                     " IN (SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
-                    + AParameters["param_extract"] + "'))";
+                    +
+                    AParameters["param_extract"] + "'))";
             }
             else if (AParameters["param_selection"].ToString() == "all current staff")
             {
@@ -147,7 +148,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                     FROM p_partner AS partner
                     JOIN p_person AS person ON person.p_partner_key_n = partner.p_partner_key_n
                     WHERE partner.p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
                     PersonnelData = DbAdapter.RunQuery(Query,
                         "PersonnelData",
                         Transaction);
@@ -187,7 +189,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         FROM pm_passport_details
 
                         WHERE p_partner_key_n"
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkPassport"].ToBool())
                     {
@@ -224,7 +227,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             AND pm_blood_type_c = NULL
                             AND pm_ethnic_origin_c = NULL)
                             AND p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkOtherEmergencyData"].ToBool())
                     {
@@ -262,7 +266,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             AND pm_life_question_4_c = ''
                             AND pm_life_answer_4_c = '')
                             AND p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkProofQuestion"].ToBool())
                     {
@@ -285,7 +290,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             FROM pm_special_need
 
                             WHERE p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkSpecialNeeds"].ToBool())
                     {
@@ -318,7 +324,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             JOIN pt_skill_level ON pm_person_skill.pm_skill_level_i = pt_skill_level.pt_level_i
 
                             WHERE p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkSkills"].ToBool())
                     {
@@ -347,7 +354,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             JOIN p_language ON p_language.p_language_code_c = pm_person_language.p_language_code_c
                             WHERE
                             p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkLanguages"].ToBool())
                     {
@@ -373,7 +381,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
 
                             FROM pm_document WHERE p_partner_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkPersonalDocuments"].ToBool())
                     {
@@ -397,7 +406,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             FROM p_partner_relationship
                             JOIN p_partner ON p_partner.p_partner_key_n = p_partner_relationship.p_partner_key_n
                             WHERE p_relation_name_c LIKE 'EMER%' AND p_relation_key_n "
-                        + Selection;
+                        +
+                        Selection;
 
                     if (!AParameters["param_chkEmergencyContacts"].ToBool())
                     {

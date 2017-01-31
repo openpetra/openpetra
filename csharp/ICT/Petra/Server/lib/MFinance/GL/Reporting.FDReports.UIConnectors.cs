@@ -245,7 +245,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                                    p_partner_class_c AS PartnerClass,
 	                                    p_partner_short_name_c AS ShortName,
 	                                    SUM(detail."
-                        + Currency +
+                        +
+                        Currency +
                         @") AS TotalGiven
                                     FROM
 
@@ -279,11 +280,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                         AND batch.a_batch_status_c = 'Posted'
                                     AND detail.a_ledger_number_i = "
-                        + LedgerNumber +
+                        +
+                        LedgerNumber +
                         @"
                                     GROUP BY gift.p_donor_key_n,p_partner_short_name_c, p_partner_class_c
 
-                                    ORDER BY p_partner_short_name_c"                                                                                                                                          ;
+                                    ORDER BY p_partner_short_name_c"                                                                                                                                         ;
 
                     Results = DbAdapter.RunQuery(Query, "DonorReportShort", Transaction);
 
@@ -351,7 +353,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 		                    ELSE p_partner_short_name_c
 		                    END AS RecipientShortName,
 	                    detail."
-                        + Currency +
+                        +
+                        Currency +
                         @" AS giftamount
 	
                       FROM
@@ -360,7 +363,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                                 AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
 	                        JOIN a_gift_batch AS batch ON (batch.a_ledger_number_i = gift.a_ledger_number_i AND batch.a_batch_number_i = gift.a_batch_number_i)
 	                        JOIN p_partner AS partner ON p_recipient_key_n = p_partner_key_n
-                            JOIN a_motivation_detail AS mot ON (detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ;
+                            JOIN a_motivation_detail AS mot ON (detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
 
                     //Add extract parameter
                     if (AParameters["param_extract"].ToBool())
@@ -382,7 +385,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     QueryDonations += @" gift.a_date_entered_d BETWEEN '" + StartDate + "' AND '" + EndDate +
                                       "' AND gift.a_ledger_number_i = " + LedgerNumber +
                                       @" AND ( batch.a_batch_status_c = 'Posted' OR
-			                                          batch.a_batch_status_c = 'posted') "  + MotivationQuery;
+			                                          batch.a_batch_status_c = 'posted') "
+                                      + MotivationQuery;
 
 
                     dtDonations = DbAdapter.RunQuery(QueryDonations, "DonorReportDetail", Transaction);
@@ -818,13 +822,14 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String Query =
                         @"WITH GiftTotals AS (
 	                    SELECT p_donor_key_n AS donorKey, p_partner_class_c AS partnerClass, p_partner_short_name_c AS donorName,
-		                SUM(CASE WHEN TRUE " + MotivationQuery + "  THEN detail."
+		                SUM(CASE WHEN TRUE "
+                        + MotivationQuery + "  THEN detail."
                         +
                         giftAmountColumn +
                         @" ELSE 0 END) AS totalamount
 
 
-                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner";
+                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner"                                                           ;
 
                     //Add extract parameter
                     if (AParameters["param_extract"].ToBool())
@@ -911,20 +916,21 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     }
 
                     //Delete last comma or if empty add -1 so SQL won't crash
-                    if(Donors.Length > 1)
+                    if (Donors.Length > 1)
                     {
-                        Donors = Donors.Remove(Donors.Length - 1);
+                        Donors = Donors.Remove(
+                            Donors.Length - 1);
                     }
                     else
                     {
                         Donors = "-1";
                     }
-                    
 
-                    Query = @"SELECT
+                    Query =
+                        @"SELECT
 
-                                p_donor_key_n, a_date_entered_d, 
-	                            a_recipient_ledger_number_n, 
+                                p_donor_key_n, a_date_entered_d,
+	                            a_recipient_ledger_number_n,
 	                            p_partner.s_created_by_c AS contactor,
                                 CASE WHEN detail.p_recipient_key_n = 0
 
@@ -932,7 +938,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                     ELSE p_partner_short_name_c
 
-                                    END AS RecipientShortName, " + giftAmountColumn + @", a_motivation_detail_desc_c
+                                    END AS RecipientShortName, "
+                        + giftAmountColumn +
+                        @", a_motivation_detail_desc_c
 
                             FROM a_gift AS gift
                             LEFT JOIN a_gift_detail AS detail ON(gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
@@ -940,9 +948,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             JOIN a_motivation_detail AS mot ON(detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)
 
                             WHERE
-                                p_donor_key_n IN(" + Donors + ") AND a_date_entered_d BETWEEN '" + 
-                                AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
-                             AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd")+ "' " + MotivationQuery +  " ORDER BY p_donor_key_n ";
+                                p_donor_key_n IN("
+                        + Donors + ") AND a_date_entered_d BETWEEN '" +
+                        AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
+                        AParameters["param_end_date"].ToDate().ToString("yyyy-MM-dd") + "' " + MotivationQuery + " ORDER BY p_donor_key_n ";
 
                     recipients = DbAdapter.RunQuery(Query, "Recipients", Transaction);
                 });
@@ -1020,7 +1029,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                                            detail.a_motivation_group_code_c AS MotivationGroup,
 	                                            a_motivation_detail_desc_c AS MotivationGroupDescription,
                                                 "
-                        + Currency +
+                        +
+                        Currency +
                         @" AS GiftAmount
 	
                                             FROM
@@ -1050,7 +1060,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     QueryDonations += @" gift.a_date_entered_d BETWEEN '" + StartDate + "' AND '" + EndDate +
                                       @"' AND gift.a_first_time_gift_l = true
 	                                            AND gift.a_ledger_number_i = "
-                                      + AParameters["param_ledger_number_i"] +
+                                      +
+                                      AParameters["param_ledger_number_i"] +
                                       @"
 
 
@@ -1062,7 +1073,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 						                                                   AND a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c
 							                                            AND a_motivation_detail.a_receipt_l)
                                                 "
-                                      + MotivationQuery + " AND " + Currency + ">= " + AParameters["param_minimum_amount"] + " ";
+                                      +
+                                      MotivationQuery + " AND " + Currency + ">= " + AParameters["param_minimum_amount"] + " ";
 
                     if (AParameters["param_rgrRecipientSelection"].ToString() == "OneRecipient")
                     {
