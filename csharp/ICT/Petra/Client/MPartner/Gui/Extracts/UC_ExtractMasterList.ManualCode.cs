@@ -40,6 +40,7 @@ using Ict.Petra.Client.MCommon;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MPartner.Logic;
 
@@ -1208,6 +1209,43 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
                 CheckBox chk = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
                 chk.CheckState = CheckState.Checked;
                 FInitialActiveUserCheckSet = true;
+            }
+        }
+
+        private void ApplyFilterManual(ref string AFilterString)
+        {
+            // Depending on the setting for the 'Active Users' check box we want to filter the CreatedBy and ModifiedBy user lists
+            CheckBox chk = (CheckBox)FFilterAndFindObject.FilterPanelControls.FindControlByName("chkActive");
+            TCmbAutoComplete cmbCreated = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbCreatedBy");
+            TCmbAutoComplete cmbModified = (TCmbAutoComplete)FFilterAndFindObject.FilterPanelControls.FindControlByName("cmbModifiedBy");
+
+            DataView dvCreated = (DataView)cmbCreated.DataSource;
+            DataView dvModified = (DataView)cmbModified.DataSource;
+            string currentRowFilter = dvCreated.RowFilter;
+
+            if (chk.CheckState == CheckState.Indeterminate)
+            {
+                string newRowFilter = string.Empty;
+
+                if ((currentRowFilter != newRowFilter) && cmbCreated.CanFocus)
+                {
+                    dvCreated.RowFilter = newRowFilter;
+                    cmbCreated.SetSelectedString("", -1);
+                    dvModified.RowFilter = newRowFilter;
+                    cmbModified.SetSelectedString("", -1);
+                }
+            }
+            else
+            {
+                string newRowFilter = string.Format("{0}={1}", SUserTable.GetRetiredDBName(), chk.CheckState == CheckState.Checked ? 0 : 1);
+
+                if ((currentRowFilter != newRowFilter) && cmbCreated.CanFocus)
+                {
+                    dvCreated.RowFilter = newRowFilter;
+                    cmbCreated.SetSelectedString("", -1);
+                    dvModified.RowFilter = newRowFilter;
+                    cmbModified.SetSelectedString("", -1);
+                }
             }
         }
 

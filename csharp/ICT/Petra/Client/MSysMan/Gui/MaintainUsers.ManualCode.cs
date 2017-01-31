@@ -257,7 +257,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         private void CheckForCurrentUser(SUserRow ARow)
         {
-            if (ARow.UserId == UserInfo.GUserInfo.UserID)
+            if ((ARow != null) && (ARow.UserId == UserInfo.GUserInfo.UserID))
             {
                 FChangesForCurrentUser = true;
             }

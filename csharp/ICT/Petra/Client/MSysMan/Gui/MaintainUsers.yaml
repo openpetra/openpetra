@@ -8,7 +8,7 @@
     FormType: edit
     Template: windowEdit
     WindowHeight: 700
-    WindowWidth: 845
+    WindowWidth: 950
     Actions:
         actNewUser: {ActionClick=NewUser, Image=New_Record.ico}
         actLockUnlock: {ActionClick=LockUnlockUser}
@@ -22,7 +22,7 @@
             Dock: Fill
         sptContent:
             SplitterOrientation: Horizontal
-            SplitterDistance: 400
+            SplitterDistance: 250
             Height: 600
             Dock: Fill
             BackColor: System.Drawing.SystemColors.ControlDark
@@ -84,4 +84,5 @@
             ColSpan: 4
             Width: 600
             Height: 155
+            Stretch: fully
             #Enabled: cndChangePermissions
