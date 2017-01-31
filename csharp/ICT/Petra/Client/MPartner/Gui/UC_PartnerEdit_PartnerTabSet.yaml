@@ -43,6 +43,7 @@ RootNode:
             Label: Subscriptions ({0})
             Image: Subscriptions.ico
             DynamicControlType: Ict.Petra.Client.MPartner.Gui.TUC_Subscriptions
+            SeparateDynamicControlSetupMethod: true
 
         tpgContacts: {LoadPageDynamically=true}
             Label: Contact Logs ({0})

@@ -50,6 +50,7 @@ using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MPartner;
 using Ict.Petra.Client.MPartner.Logic;
 using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.MCommon.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -745,6 +746,10 @@ namespace Ict.Petra.Client.MPartner.Gui
             else if (AToolStripItem.Name == "mniEditCopyAddress")
             {
                 OpenCopyAddressToClipboardScreen();
+            }
+            else if (AToolStripItem.Name == "mniEditCopyEmailAddress")
+            {
+                FLogic.SendEmailToPartner(FPetraUtilsObject, true);
             }
             else
             {
@@ -1462,21 +1467,10 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// </summary>
         private void OpenCopyAddressToClipboardScreen()
         {
-            throw new NotImplementedException();
+            TFrmCopyPartnerAddressDialog CopyPartnerAddressDialog = new TFrmCopyPartnerAddressDialog(ParentForm);
 
-// TODO OpenCopyAddressToClipboardScreen
-#if TODO
-            TLocationPK LocationPK;
-
-            Ict.Petra.Client.MPartner.
-            TCopyPartnerAddressDialogWinForm cpad = new TCopyPartnerAddressDialogWinForm();
-
-            LocationPK = FLogic.DetermineCurrentLocationPK();
-
-            cpad.SetParameters(FLogic.PartnerKey, LocationPK.SiteKey, LocationPK.LocationKey);
-            cpad.ShowDialog();
-            cpad.Dispose();
-#endif
+            CopyPartnerAddressDialog.SetFormData(SelectedDataRowsAsDataRowView);
+            CopyPartnerAddressDialog.Show();
         }
 
         private void OpenPartnerFindForLocation()

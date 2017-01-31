@@ -125,6 +125,9 @@ namespace Ict.Petra.Shared.MCommon
 
         #region Common Form Design Codes
 
+        /// <summary>System</summary>
+        public const String FORM_CODE_SYSTEM = "SYSTEM";
+
         /// <summary>Partner</summary>
         public const String FORM_CODE_PARTNER = "PARTNER";
 

@@ -377,7 +377,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         {
             if (ValidateAllData(true, TErrorProcessingMode.Epm_All) && FPetraUtilsObject.IsDataSaved())
             {
-                TStandardFormPrint.PrintGrid(APrintUsing, APreviewOnly, TModule.mPartner,
+                TStandardFormPrint.PrintGrid(APrintUsing, APreviewOnly,
                     FPetraUtilsObject.GetForm().Text,
                     grdDetails,
                     new int[]

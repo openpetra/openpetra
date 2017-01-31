@@ -64,13 +64,12 @@ namespace Ict.Petra.Client.App.Gui
         /// </summary>
         /// <param name="APrintApplication">The print application to use - either Word or Excel</param>
         /// <param name="APreviewOnly">True if preview, False to print without preview</param>
-        /// <param name="AModule">The module that is making the call</param>
         /// <param name="ATitleText">Title for the page</param>
         /// <param name="AGrid">A grid displaying data</param>
         /// <param name="AGridColumnOrder">Zero-based grid column number order for column titles</param>
         /// <param name="ATableColumnOrder">Zero-based table column order that matches the grid columns</param>
         /// <param name="ABaseFilter">A filter that is always applied to the grid even when it is apparently showing all rows</param>
-        public static void PrintGrid(TPrintUsing APrintApplication, bool APreviewOnly, TModule AModule, string ATitleText, TSgrdDataGrid AGrid,
+        public static void PrintGrid(TPrintUsing APrintApplication, bool APreviewOnly, string ATitleText, TSgrdDataGrid AGrid,
             int[] AGridColumnOrder, int[] ATableColumnOrder, string ABaseFilter = "")
         {
             //TFrmSelectPrintFields TFrmSelectPFields = new TFrmSelectPrintFields();
@@ -140,7 +139,7 @@ namespace Ict.Petra.Client.App.Gui
                 recordList.Add(record);
             }
 
-            PrintRecordList(recordList, numColumns, APrintApplication, AModule, AGrid.Rows.Count - 1, dv, ABaseFilter, APreviewOnly);
+            PrintRecordList(recordList, numColumns, APrintApplication, AGrid.Rows.Count - 1, dv, ABaseFilter, APreviewOnly);
         }
 
         private static string GetStringOrSymbol(string AStringToConvert, Type ADatatype)
@@ -173,15 +172,14 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ARecordList"></param>
         /// <param name="ANumColumns"></param>
         /// <param name="APrintApplication"></param>
-        /// <param name="AModule"></param>
         /// <param name="ARowsCount"></param>
         /// <param name="ADv"></param>
         /// <param name="ABaseFilter"></param>
         /// <param name="APreviewOnly"></param>
-        public static void PrintCustomData(TFormDataKeyDescriptionList ARecordList, int ANumColumns, TPrintUsing APrintApplication, TModule AModule,
+        public static void PrintCustomData(TFormDataKeyDescriptionList ARecordList, int ANumColumns, TPrintUsing APrintApplication,
             int ARowsCount, DataView ADv, string ABaseFilter, bool APreviewOnly)
         {
-            PrintRecordList(ARecordList, ANumColumns, APrintApplication, AModule, ARowsCount, ADv, ABaseFilter, APreviewOnly);
+            PrintRecordList(ARecordList, ANumColumns, APrintApplication, ARowsCount, ADv, ABaseFilter, APreviewOnly);
         }
 
         /// <summary>
@@ -190,12 +188,11 @@ namespace Ict.Petra.Client.App.Gui
         /// <param name="ARecordList"></param>
         /// <param name="ANumColumns"></param>
         /// <param name="APrintApplication"></param>
-        /// <param name="AModule"></param>
         /// <param name="ARowsCount"></param>
         /// <param name="ADv"></param>
         /// <param name="ABaseFilter"></param>
         /// <param name="APreviewOnly"></param>
-        public static void PrintRecordList(TFormDataKeyDescriptionList ARecordList, int ANumColumns, TPrintUsing APrintApplication, TModule AModule,
+        public static void PrintRecordList(TFormDataKeyDescriptionList ARecordList, int ANumColumns, TPrintUsing APrintApplication,
             int ARowsCount, DataView ADv, string ABaseFilter, bool APreviewOnly)
         {
             List <TFormData>formDataList = new List <TFormData>();
@@ -221,7 +218,7 @@ namespace Ict.Petra.Client.App.Gui
             }
 
             // Get the template from the db or file system
-            string templatePath = GetTemplatePath(AModule, APrintApplication, formName);
+            string templatePath = GetTemplatePath(APrintApplication, formName);
 
             // Tell the user if we didn't find it - and quit
             if (templatePath.Length == 0)
@@ -348,7 +345,7 @@ namespace Ict.Petra.Client.App.Gui
             return ReturnValue;
         }
 
-        private static string GetTemplatePath(TModule AModule, TPrintUsing APrintApplication, string AFormName)
+        private static string GetTemplatePath(TPrintUsing APrintApplication, string AFormName)
         {
             string ReturnValue = string.Empty;
             string msgTitle = Catalog.GetString("Print");
@@ -356,23 +353,7 @@ namespace Ict.Petra.Client.App.Gui
 #if USING_TEMPLATER
             PFormTable formTable = null;
 
-            switch (AModule)
-            {
-                case TModule.mPartner:
-                    formTable = TRemote.MCommon.FormTemplates.WebConnectors.DownloadPartnerFormTemplate(AFormName, "99");
-                    break;
-
-                case TModule.mPersonnel:
-                    formTable = TRemote.MCommon.FormTemplates.WebConnectors.DownloadPersonnelFormTemplate(AFormName, "99");
-                    break;
-
-                case TModule.mFinance:
-                    formTable = TRemote.MCommon.FormTemplates.WebConnectors.DownloadFinanceFormTemplate("PRINTGRID", AFormName, "99");
-                    break;
-
-                default:
-                    break;
-            }
+            formTable = TRemote.MCommon.FormTemplates.WebConnectors.DownloadSystemFormTemplate(AFormName, "99");
 
             if ((formTable != null) && (formTable.Rows.Count == 1))
             {

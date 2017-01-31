@@ -462,6 +462,26 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AValidTo"></param>
+        /// <returns></returns>
+        public bool PerformCancelAllSubscriptions(DateTime AValidTo)
+        {
+            return ucoPartnerTabSet.PerformCancelAllSubscriptions(AValidTo);
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AValidTo"></param>
+        /// <returns></returns>
+        public void ExpireAllCurrentAddresses(DateTime AValidTo)
+        {
+            ucoPartnerTabSet.ExpireAllCurrentAddresses(AValidTo);
+        }
+
+        /// <summary>
         /// Returns true if a new location is being added, otherwise false.
         /// </summary>
         /// <returns>True if a new location is being added, otherwise false.</returns>

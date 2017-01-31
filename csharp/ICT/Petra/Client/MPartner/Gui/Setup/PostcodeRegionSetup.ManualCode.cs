@@ -685,7 +685,6 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 TStandardFormPrint.PrintRecordList(recordList,
                     5,
                     APrintApplication,
-                    TModule.mPartner,
                     regionsAndRangesDataView.Count,
                     regionsAndRangesDataView,
                     "",

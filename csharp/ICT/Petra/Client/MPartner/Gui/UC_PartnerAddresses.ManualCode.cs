@@ -43,6 +43,7 @@ using Ict.Petra.Client.CommonControls;
 using Ict.Petra.Client.MCommon;
 using Ict.Petra.Client.MCommon.Gui;
 using Ict.Petra.Shared.MPartner.Validation;
+using SourceGrid;
 
 namespace Ict.Petra.Client.MPartner.Gui
 {
@@ -129,6 +130,150 @@ namespace Ict.Petra.Client.MPartner.Gui
                 " DESC", DataViewRowState.CurrentRows);
             myDataView.AllowNew = false;
             grdDetails.DataSource = new DevAge.ComponentModel.BoundDataView(myDataView);
+        }
+
+        /// <summary>
+        /// Sets the value of the Valid To field
+        /// </summary>
+        /// <param name="AValidTo"></param>
+        public void SetValidToForCurrentAddress(DateTime AValidTo)
+        {
+            dtpPPartnerLocationDateGoodUntil.Date = AValidTo;
+        }
+
+        /// <summary>
+        /// Expires all Addresses
+        /// </summary>
+        /// <param name="ACancelDate"></param>
+        public void ExpireAllCurrentAddresses(DateTime ACancelDate)
+        {
+            int TotalAddresses;
+            int CurrentAddresses;
+            ArrayList AddrExpired;
+            int UpdateCounter;
+            String AddrExpiredString;
+            TRecalculateScreenPartsEventArgs RecalculateScreenPartsEventArgs;
+
+            AddrExpiredString = "";
+
+            /* Check whether there are any (Current) Addresses that can be expired */
+            Calculations.CalculateTabCountsAddresses(FMainDS.PPartnerLocation, out TotalAddresses, out CurrentAddresses);
+
+            if (CurrentAddresses > 0)
+            {
+                /* Expire all Current Addresses */
+                AddrExpired = ExpireAllCurrentAddressesLogic(ACancelDate);
+
+                /*
+                 * Build a String to tell the user what Addresses were expired.
+                 */
+                for (UpdateCounter = 0; UpdateCounter <= AddrExpired.Count - 1; UpdateCounter += 1)
+                {
+                    AddrExpiredString = AddrExpiredString + "   " + AddrExpired[UpdateCounter].ToString() + Environment.NewLine;
+                }
+
+                if (AddrExpiredString != "")
+                {
+                    /* Now refresh the Grid with the changed data */
+                    RefreshRecordsAfterMerge();
+                    grdDetails.Refresh();
+
+                    /* Finally, select the first record in the Grid and update the Detail */
+                    /* UserControl (this one might have been Expired) */
+                    grdDetails.Selection.ResetSelection(false);
+                    grdDetails.Selection.SelectRow(1, true);
+
+                    /* Scroll grid to line where the selected record is displayed */
+                    grdDetails.ShowCell(new Position(1, 0), true);
+
+
+                    /* Fire OnRecalculateScreenParts event to update the Tab Counters */
+                    RecalculateScreenPartsEventArgs = new TRecalculateScreenPartsEventArgs();
+                    RecalculateScreenPartsEventArgs.ScreenPart = TScreenPartEnum.spCounters;
+                    OnRecalculateScreenParts(RecalculateScreenPartsEventArgs);
+
+                    /* Tell the user that Expriring of Addresses was succesful */
+                    MessageBox.Show(String.Format(Catalog.GetString("The following {0} Address(es) was/were expired:") + "\r\n" + "{1}" + "\r\n" +
+                            Catalog.GetString("The Partner has no Current Addresses left."),
+                            AddrExpired.Count,
+                            AddrExpiredString), Catalog.GetString("All Addresses Expired"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    /* Tell the user that there are no (Current) Addresses that can be expired. */
+                    MessageBox.Show(Catalog.GetString("There are no Current Addresses that can be expired."),
+                        Catalog.GetString("Expire All Current Addresses"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                /* Tell the user that there are no (Current) Addresses that can be expired. */
+                MessageBox.Show(Catalog.GetString("There are no Current Addresses, therefore none need to be expired."),
+                    Catalog.GetString("Expire All Current Addresses"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        /// <summary>
+        /// Expires all Current Addresses (that is, non-Past and non-Future Addresses).
+        ///
+        /// </summary>
+        /// <param name="ACancelDate">Date when the Subscriptions should end (can be empty)</param>
+        /// <returns>ArrayList holding Addresses that were Expired
+        /// </returns>
+        private ArrayList ExpireAllCurrentAddressesLogic(DateTime ACancelDate)
+        {
+            //Expire the selected Address
+            SetValidToForCurrentAddress(ACancelDate);
+
+            ArrayList ReturnValue;
+            DataView CurrentAddresses;
+            int Counter;
+            PPartnerLocationRow PartnerLocationRow;
+
+            PPartnerLocationRow[] PartnerLocationRows;
+            PLocationRow LocationRow;
+            int Counter2;
+            ReturnValue = new ArrayList();
+            CurrentAddresses = Calculations.DetermineCurrentAddresses(FMainDS.PPartnerLocation);
+            PartnerLocationRows = new PPartnerLocationRow[CurrentAddresses.Count];
+
+            for (Counter = 0; Counter <= CurrentAddresses.Count - 1; Counter += 1)
+            {
+                PartnerLocationRows[Counter] = (PPartnerLocationRow)CurrentAddresses[Counter].Row;
+            }
+
+            for (Counter2 = 0; Counter2 <= PartnerLocationRows.Length - 1; Counter2 += 1)
+            {
+                PartnerLocationRow = PartnerLocationRows[Counter2];
+                LocationRow = (PLocationRow)FMainDS.PLocation.Rows.Find(new object[] { PartnerLocationRow.SiteKey, PartnerLocationRow.LocationKey });
+
+                if (PartnerLocationRow.IsDateGoodUntilNull())
+                {
+                    if ((PartnerLocationRow.IsDateEffectiveNull()) || (PartnerLocationRow.DateEffective <= ACancelDate))
+                    {
+                        PartnerLocationRow.BeginEdit();
+                        PartnerLocationRow.DateGoodUntil = ACancelDate;
+                        PartnerLocationRow.EndEdit();
+                        ReturnValue.Add(Calculations.DetermineLocationString(LocationRow,
+                                Calculations.TPartnerLocationFormatEnum.plfCommaSeparated));
+                    }
+                    else
+                    {
+                        String StrAddressCannotBeExpired = "The Address" + "\r\n" + "\r\n" + "   {0}" + "\r\n" + "\r\n" +
+                                                           "has a Valid-From date that lies after the date that you entered for" + "\r\n" +
+                                                           "expiration." + "\r\n" + "\r\n" +
+                                                           "This Address will not be expired because the Valid-To date cannot lie" + "\r\n" +
+                                                           "before the Valid-From date!";
+                        MessageBox.Show(String.Format(Catalog.GetString(StrAddressCannotBeExpired), Calculations.DetermineLocationString(
+                                    LocationRow, Calculations.TPartnerLocationFormatEnum.plfCommaSeparated)),
+                            Catalog.GetString("Address Cannot be Expired"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+
+            return ReturnValue;
         }
 
         /// <summary>used for passing through the Clientside Proxy for the UIConnector</summary>

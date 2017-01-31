@@ -455,7 +455,7 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
                 recordList.Add(record);
             }
 
-            TStandardFormPrint.PrintRecordList(recordList, 3, APrintApplication, TModule.mPartner, typeDataView.Count, typeDataView, "", APreviewMode);
+            TStandardFormPrint.PrintRecordList(recordList, 3, APrintApplication, typeDataView.Count, typeDataView, "", APreviewMode);
         }
     }
 }

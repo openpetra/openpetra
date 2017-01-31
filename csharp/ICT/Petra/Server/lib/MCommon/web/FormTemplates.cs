@@ -200,6 +200,17 @@ namespace Ict.Petra.Server.MCommon.FormTemplates.WebConnectors
         /// <summary>
         /// Returns a single row PFormTable that contains the full template text as a base64 string.
         /// The parameters are two of the three elements of the table primary key.
+        /// Use for Partner form downloads
+        /// </summary>
+        [RequireModulePermission("PTNRUSER")]
+        public static PFormTable DownloadSystemFormTemplate(String AFormName, String ALanguageCode)
+        {
+            return DownloadFormTemplate(MCommonConstants.FORM_CODE_SYSTEM, AFormName, ALanguageCode);
+        }
+
+        /// <summary>
+        /// Returns a single row PFormTable that contains the full template text as a base64 string.
+        /// The parameters are two of the three elements of the table primary key.
         /// Use for Personnel form downloads
         /// </summary>
         [RequireModulePermission("PERSONNEL")]

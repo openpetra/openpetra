@@ -1227,6 +1227,30 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         }
 
         /// <summary>
+        /// Public Method to return the Address Block
+        /// </summary>
+        /// <param name="AFormData"></param>
+        /// <param name="AAddressLayoutCode"></param>
+        /// <param name="APartnerClass"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static String BuildAddressBlock(TFormDataPartner AFormData, String AAddressLayoutCode, TPartnerClass APartnerClass)
+        {
+            String AddressBlock = "";
+
+            TDBTransaction Transaction = null;
+            bool SubmissionOk = false;
+
+            DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
+                delegate
+                {
+                    AddressBlock = BuildAddressBlock(AFormData, AAddressLayoutCode, APartnerClass, Transaction);
+                });
+
+            return AddressBlock;
+        }
+
+        /// <summary>
         /// build and return the address according to country and address layout code
         /// </summary>
         /// <param name="AFormData"></param>

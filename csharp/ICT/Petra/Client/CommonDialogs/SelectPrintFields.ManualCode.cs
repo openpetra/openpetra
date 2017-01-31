@@ -270,7 +270,7 @@ namespace Ict.Petra.Client.CommonDialogs
 
             if (SelectPrintFields.DialogResult == DialogResult.OK)
             {
-                TStandardFormPrint.PrintGrid(APrintApplication, APreviewOnly, TModule.mPartner, ATitleText, AGrid, SelectPrintFields.GetColumnOrder(),
+                TStandardFormPrint.PrintGrid(APrintApplication, APreviewOnly, ATitleText, AGrid, SelectPrintFields.GetColumnOrder(),
                     SelectPrintFields.GetColumnID());
             }
         }

@@ -42,13 +42,13 @@ RootNode:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailPublicationCode, txtDetailPublicationDescription]
-                Row1: [txtDetailPublicationLabelCode, txtDetailNumberOfIssues, txtDetailNumberOfReminders]
+                Row1: [txtDetailPublicationLabelCode, txtDetailNumberOfIssues] #, txtDetailNumberOfReminders
                 Row2: [cmbDetailFrequencyCode]
                 Row3: [chkDetailValidPublication]
         txtDetailPublicationCode: {Label=Publication Code, Width=100, CharacterCasing=Upper, OnLeave=UpdatePublicationLabelCode}
-        txtDetailPublicationDescription: {Width=278, ColSpan=2}
+        txtDetailPublicationDescription: {Width=278}
         txtDetailPublicationLabelCode: {Width=30}
         txtDetailNumberOfIssues: {Width=30}
-        cmbDetailFrequencyCode: {List=FrequencyList, ColSpan=3}
-        txtDetailNumberOfReminders: {Width=30}
+        cmbDetailFrequencyCode: {List=FrequencyList, ColSpan=2}
+        #txtDetailNumberOfReminders: {Width=30}
         chkDetailValidPublication: 

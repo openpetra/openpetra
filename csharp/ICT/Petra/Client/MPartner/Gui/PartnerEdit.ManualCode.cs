@@ -2092,7 +2092,39 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void FileDeactivatePartner(System.Object sender, System.EventArgs e)
         {
-            throw new NotImplementedException();
+            TFrmPartnerDeactivateDialog DeactivateDialog = new TFrmPartnerDeactivateDialog(this);
+
+            DeactivateDialog.ShowDialog(this);
+
+            if (DeactivateDialog.DialogResult == DialogResult.OK)
+            {
+                bool ChangePartnerStatus;
+                string NewPartnerStatusCode;
+                bool CancelAllSubscriptions;
+                bool ExpireAllCurrentAddresses;
+                DateTime ValidTo;
+                DeactivateDialog.GetReturnedParameters(out ChangePartnerStatus, out NewPartnerStatusCode, out CancelAllSubscriptions,
+                    out ExpireAllCurrentAddresses, out ValidTo);
+
+                //Perform the changes
+                if (ChangePartnerStatus)
+                {
+                    ucoUpperPart.SetPartnerStatus(NewPartnerStatusCode);
+                }
+
+                if (CancelAllSubscriptions)
+                {
+                    ucoLowerPart.PerformCancelAllSubscriptions(ValidTo);
+                }
+
+                if (ExpireAllCurrentAddresses)
+                {
+                    ucoLowerPart.ExpireAllCurrentAddresses(ValidTo);
+                }
+
+                MessageBox.Show(this, Catalog.GetString("Please press 'Save' to confirm the deactivation!"),
+                    Catalog.GetString("Confirm Deactivate Partner"));
+            }
         }
 
         private void FileDeletePartner(System.Object sender, System.EventArgs e)
