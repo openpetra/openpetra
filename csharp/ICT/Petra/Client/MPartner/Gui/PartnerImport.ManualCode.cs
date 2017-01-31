@@ -1647,12 +1647,23 @@ namespace Ict.Petra.Client.MPartner.Gui
             PPartnerRow ExistingPartnerRow = (PPartnerRow)AExistingPartnerDS.PPartner.DefaultView[0].Row;
 
             // At this point we can't remove and add any partner row, so we need ot make sure we update the existing one
-            // (as other parts of the code rely on the order of records in the Parnter Table)
+            // (as other parts of the code rely on the order of records in the Partner Table)
             // Therefore we copy the imported values to a temporary row, then update the imported row with values
             // from the existing (db) one. Then we need to call AcceptChanges so we can start fresh. And finally we
             // move the values of the temporary row into the imported one so they get saved to the db.
             PPartnerRow ImportedPartnerRowCopy = AImportPartnerDS.PPartner.NewRowTyped(false);
             ImportedPartnerRowCopy.ItemArray = (object[])ImportedPartnerRow.ItemArray.Clone();
+
+            // If this partner was already imported with an earlier record in the import file then we need to locate the
+            // already existing record and update it (otherwise there will be an exception if we try to set the already existing
+            // partner key for this record.
+            AImportPartnerDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerTable.GetPartnerKeyDBName(), ExistingPartnerRow.PartnerKey);
+
+            if (AImportPartnerDS.PPartner.DefaultView.Count > 0)
+            {
+                ImportedPartnerRow = (PPartnerRow)AImportPartnerDS.PPartner.DefaultView[0].Row;
+            }
 
             if (ImportedPartnerRow.PartnerShortName != ExistingPartnerRow.PartnerShortName)
             {
@@ -2561,6 +2572,9 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <returns>Partner key of imported record (although no-one cares)</returns>
         private Int64 CreateOrUpdatePartner(PPartnerRow APartnerRow, Boolean StepAfterImport)
         {
+            Boolean PartnerImportedPreviously = false;
+            PPartnerRow PreviouslyImportedPartnerRow = null;
+
             if ((FCurrentNumberOfRecord < 1) || (FCurrentNumberOfRecord > FTotalNumberOfRecords))
             {
                 return 0;
@@ -2592,13 +2606,29 @@ namespace Ict.Petra.Client.MPartner.Gui
             bool UpdateExistingRecord = false;
             bool IgnoreImportAddressForCsv = false;
 
+            FMainDS.PPartner.DefaultView.RowFilter = String.Format("{0}={1}",
+                PPartnerTable.GetPartnerKeyDBName(), ExistingPartnerKey);
+
+            if (FMainDS.PPartner.DefaultView.Count > 0)
+            {
+                OrigPartnerKey = ((PPartnerRow)FMainDS.PPartner.DefaultView[0].Row).PartnerKey;
+                PreviouslyImportedPartnerRow = (PPartnerRow)FMainDS.PPartner.DefaultView[0].Row;
+                PartnerImportedPreviously = true;
+
+                MessageBox.Show(string.Format(Catalog.GetString(
+                            "The Record with this Partner Key ({0}) has already been updated during this Import and will not be updated again."),
+                        ExistingPartnerKey),
+                    Catalog.GetString("Update Name"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+
             // If the import file had a negative PartnerKey, I need to create a new one here,
             // and use it on all the dependent tables.
 
             if ((FFileFormat == TImportFileFormat.csv)
-                && (ExistingPartnerKey > 0)
-                && (OrigPartnerKey < 0))
+                && (ExistingPartnerKey > 0))
             {
+                /*&& (OrigPartnerKey < 0)*/ // TODOWB: remove this line so that message box to overwrite existing name is always shown
                 // If csv import file did not have a partner key and we want to update an existing partner
                 // then we need to retrieve existing data for that partner in order to determine which records
                 // have to be added/updated.
@@ -2629,7 +2659,14 @@ namespace Ict.Petra.Client.MPartner.Gui
                 }
             }
 
-            NewPartnerDS.PPartner.ImportRow(APartnerRow);
+            if (PartnerImportedPreviously)
+            {
+                NewPartnerDS.PPartner.ImportRow(PreviouslyImportedPartnerRow);
+            }
+            else
+            {
+                NewPartnerDS.PPartner.ImportRow(APartnerRow);
+            }
 
             if (UpdateExistingRecord)
             {
