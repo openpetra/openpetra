@@ -40,6 +40,21 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 {
     public partial class TFrmAPMain
     {
+        /// <summary>
+        /// Enumeration of tabs on this form
+        /// </summary>
+        public enum APMainTabEnum
+        {
+            /// <summary>Suppliers tab</summary>
+            Suppliers,
+
+            /// <summary>Supplier Transaction History tab</summary>
+            SupplierHistory,
+
+            /// <summary>Invoices tab</summary>
+            Invoices
+        }
+
         private IAPUIConnectorsFind FSupplierFindObject = null;
         private IAPUIConnectorsFind FInvoiceFindObject = null;
 
@@ -72,6 +87,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             return (AApSupplierRow)Tbl.DefaultView[indexSupplier].Row;
         }
+
+        #region Public Properties and Methods
 
         /// <summary>
         /// AP is opened in this ledger
@@ -198,9 +215,40 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ucoOutstandingInvoices.LoadInvoices();
         }
 
+        /// <summary>
+        /// Displays the Supplier Transaction History tab for the selected supplier
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        public void LoadSupplierTransactions(Int64 APartnerKey)
+        {
+            ucoSupplierTransactionHistory.LoadSupplier(FLedgerNumber, APartnerKey);
+            tabSearchResult.SelectedTab = tpgSupplierTransactionHistory;
+        }
+
+        /// <summary>Select the specified tab</summary>
+        /// <param name="ATabEnum"></param>
+        public void SelectTab(APMainTabEnum ATabEnum)
+        {
+            if (ATabEnum == APMainTabEnum.Suppliers)
+            {
+                tabSearchResult.SelectedTab = tpgSuppliers;
+            }
+            else if (ATabEnum == APMainTabEnum.SupplierHistory)
+            {
+                tabSearchResult.SelectedTab = tpgSupplierTransactionHistory;
+            }
+            else if (ATabEnum == APMainTabEnum.Invoices)
+            {
+                tabSearchResult.SelectedTab = tpgOutstandingInvoices;
+            }
+        }
+
+        #endregion
+
         private void InitializeManualCode()
         {
             ucoSuppliers.InitializeGUI(this);
+            ucoSupplierTransactionHistory.InitializeGUI(this);
             ucoOutstandingInvoices.InitializeGUI(this);
         }
 
@@ -214,73 +262,116 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             // This call will result in the creation of the server Find objects and asynchronous loading of the data for the selected tab.
             // In order for nant test to succeed we must ensure that we do not make any other server calls now - except to get data
+            tabSearchResult.SelectedIndexChanged += TabChange;
             TabChange(null, null);
         }
 
+        #region Supplier menu handlers
+
         private void SupplierTransactions(object sender, EventArgs e)
         {
-            ucoSuppliers.SupplierTransactions(sender, e);
+            SelectTab(APMainTabEnum.SupplierHistory);
         }
 
-        private void OpenSelectedInvoice(object sender, EventArgs e)
-        {
-            ucoOutstandingInvoices.OpenSelectedInvoice(sender, e);
-        }
-
-        private void NewSupplier(object sender, EventArgs e)
+        private void SupplierNewSupplier(object sender, EventArgs e)
         {
             ucoSuppliers.NewSupplier(sender, e);
         }
 
-        private void EditDetails(object sender, EventArgs e)
+        private void SupplierEditDetails(object sender, EventArgs e)
         {
             ucoSuppliers.EditDetails(sender, e);
         }
 
-        private void CreateInvoice(object sender, EventArgs e)
+        private void SupplierCreateInvoice(object sender, EventArgs e)
         {
             ucoSuppliers.CreateInvoice(sender, e);
         }
 
-        private void CreateCreditNote(object sender, EventArgs e)
+        private void SupplierCreateCreditNote(object sender, EventArgs e)
         {
             ucoSuppliers.CreateCreditNote(sender, e);
         }
 
-        //private AccountsPayableTDS LoadTaggedDocuments()
-        //{
-        //    return ucoOutstandingInvoices.LoadTaggedDocuments();
-        //}
+        #endregion
 
-        private void OpenAllTagged(object sender, EventArgs e)
+        #region Transaction menu handlers
+
+        private void TransactionOpenSelectedInvoice(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.OpenSelectedTransaction(sender, e);
+        }
+
+        private void TransactionCreateInvoice(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.CreateInvoice(sender, e);
+        }
+
+        private void TransactionCreateCreditNote(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.CreateCreditNote(sender, e);
+        }
+
+        private void TransactionOpenAllTagged(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.OpenTaggedDocuments(sender, e);
+        }
+
+        private void TransactionDeleteSelected(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.DeleteSelected(sender, e);
+        }
+
+        private void TransactionReverseSelected(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.ReverseSelected(sender, e);
+        }
+
+        private void RunTagAction(object sender, EventArgs e)
+        {
+            ucoSupplierTransactionHistory.RunTagAction(sender, e);
+        }
+
+        #endregion
+
+        #region Invoice menu handlers
+
+        private void InvoiceOpenSelectedInvoice(object sender, EventArgs e)
+        {
+            ucoOutstandingInvoices.OpenSelectedInvoice(sender, e);
+        }
+
+        private void InvoiceOpenAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.OpenAllTagged(sender, e);
         }
 
-        private void DeleteAllTagged(object sender, EventArgs e)
+        private void InvoiceDeleteAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.DeleteAllTagged(sender, e);
         }
 
-        private void ApproveAllTagged(object sender, EventArgs e)
+        private void InvoiceApproveAllTagged(object sender, EventArgs e)
         {
-            throw new NotImplementedException("Sorry - not implemented yet");
+            ucoOutstandingInvoices.ApproveAllTagged(sender, e);
         }
 
-        private void PostAllTagged(object sender, EventArgs e)
+        private void InvoicePostAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.PostAllTagged(sender, e);
         }
 
-        private void ReverseAllTagged(object sender, EventArgs e)
+        private void InvoiceReverseAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.ReverseAllTagged(sender, e);
         }
 
-        private void PayAllTagged(object sender, EventArgs e)
+        private void InvoicePayAllTagged(object sender, EventArgs e)
         {
             ucoOutstandingInvoices.PayAllTagged(sender, e);
         }
+
+        #endregion
 
         private void mniDefaults_Click(object sender, EventArgs e)
         {
@@ -301,9 +392,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             if (tabSearchResult.SelectedTab == tpgOutstandingInvoices)
             {
                 // Invoice tab has been selected...
-                mniInvoice.Visible = true;
-                mniSupplier.Visible = false;
-
                 if (FInvoiceFindObject == null)
                 {
                     FInvoiceFindObject = TRemote.MFinance.AP.UIConnectors.Find();
@@ -311,12 +399,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                 ucoOutstandingInvoices.LoadInvoices();
             }
+            else if (tabSearchResult.SelectedTab == tpgSupplierTransactionHistory)
+            {
+                // Supplier transaction history tab has been selected...
+                ucoSupplierTransactionHistory.LoadSupplier(FLedgerNumber, ucoSuppliers.GetCurrentlySelectedSupplier());
+            }
             else
             {
                 // Suppliers tab has been selected...
-                mniSupplier.Visible = true;
-                mniInvoice.Visible = false;
-
                 if (FSupplierFindObject == null)
                 {
                     FSupplierFindObject = TRemote.MFinance.AP.UIConnectors.Find();
@@ -325,7 +415,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ucoSuppliers.LoadSuppliers();
             }
 
+            SetEnabledStates(tabSearchResult.SelectedTab);
+
             this.Cursor = Cursors.Default;
+        }
+
+        private void SetEnabledStates(TabPage ASelectedTabPage)
+        {
+            mniSupplier.Visible = (ASelectedTabPage == tpgSuppliers);
+            mniTransaction.Visible = (ASelectedTabPage == tpgSupplierTransactionHistory);
+            mniInvoice.Visible = (ASelectedTabPage == tpgOutstandingInvoices);
         }
 
         private void Form_Closed(object sender, EventArgs e)

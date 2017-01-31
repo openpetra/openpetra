@@ -240,8 +240,8 @@ OpenPetra:
                         TotalForRecipients: {Label=Historic Totals per Recipient, Description=Summary Report of Annual Giving to selected Recipients, ActionOpenScreen=TFrmTotalForRecipients}
                 AccountsPayable: {Namespace=Ict.Petra.Client.MFinance.Gui.AP, DontShowNestedTasksAsLinks=true}
                     AccountsPayable: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain}
-                        Suppliers: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
-                        OutstandingInvoices: {Description=Manage payments, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
+                        SuppliersAndInvoices: {Description=Manage suppliers and invoices, ActionOpenScreen=TFrmAPMain, InitialTab=Suppliers}
+                        InvoicesAndPayments: {Description=Manage payments, ActionOpenScreen=TFrmAPMain, InitialTab=Invoices}
                     APReports: {Label=Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, PermissionsRequired=FINANCE-1+FINANCE-RPT}  # Icon=Print.ico
                         DetailReport: {ActionOpenScreen=TFrmAP_AccountDetailReport}
                         AgedSupplierList: {ActionOpenScreen=TFrmAP_AgedSupplierList}

@@ -25,14 +25,14 @@ RootNode:
             Image: Edit_Record.ico
             ShortCut: Ctrl+E
             Enabled: cndSelectedSupplier
-        actCreateInvoice:
-            Label: Create &Invoice
+        actNewInvoice:
+            Label: New &Invoice
             ShortCut: Ctrl+I
             Image: New_Record.ico
             ActionClick: CreateInvoice
             Enabled: cndSelectedSupplier
-        actCreateCreditNote:
-            Label: Create &Credit Note
+        actNewCreditNote:
+            Label: New &Credit Note
             ShortCut: Ctrl+R
             Image: New_Credit.ico
             ActionClick: CreateCreditNote
@@ -46,7 +46,7 @@ RootNode:
             Controls: [pnlFilterAndFind, grdSuppliers]
             Dock: Fill
         pnlButtons:
-            Controls: [btnNewSupplier, btnEditDetails, btnCreateInvoice, btnCreateCreditNote]
+            Controls: [btnNewSupplier, btnEditDetails, btnNewInvoice, btnNewCreditNote]
             ControlsOrientation: horizontal
             Dock:Bottom
         pnlFilterAndFind:
@@ -77,5 +77,5 @@ RootNode:
             Type: Ict.Common.Controls.TSgrdDataGridPaged
         btnNewSupplier: {Width=120}
         btnEditDetails: {Width=120}
-        btnCreateInvoice: {Width=120, StartNewButtonGroup=true}
-        btnCreateCreditNote: {Width=140}
+        btnNewInvoice: {Width=120, StartNewButtonGroup=true}
+        btnNewCreditNote: {Width=140}

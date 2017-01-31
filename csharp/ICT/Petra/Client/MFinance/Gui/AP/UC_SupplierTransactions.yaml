@@ -1,23 +1,20 @@
 RootNode:
-    BaseYaml: ../../../CommonForms/PetraForm.yaml
-    FormTitle: Supplier Transactions
-    Namespace: Ict.Petra.Client.MFinance.Gui.AP
-    MasterTable: AApSupplier
-    UsingNamespaces: [Ict.Petra.Shared.MFinance.AP.Data,Ict.Petra.Shared.MFinance.AP.Validation]
-    FormType: browse
-    Template: windowFind
-    WindowWidth: 950
-    WindowHeight: 700
+    BaseClass: System.Windows.Forms.UserControl
+    Namespace: Ict.Petra.Client.MFinance.Gui.AP   
+    #UsingNamespaces: [Ict.Petra.Shared.MPartner.Partner.Data]
+    #DatasetType: Ict.Petra.Shared.MPartner.Partner.Data.PartnerEditTDS
+    FormType: edit
+    Template: usercontrolUnbound
     Actions:
         actNewInvoice: {Label=New &Invoice, ShortCut=Ctrl+I, ActionClick=CreateInvoice, Image=New_Record.ico, Tooltip=Create a new invoice relating to the current supplier}        
         actNewCreditNote:{Label=New &Credit Note, ShortCut=Ctrl+R, ActionClick=CreateCreditNote, Image=New_Credit.ico, Tooltip=Create a new credit note relating to the current supplier}
         actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction, Image=Edit_Record.ico, Tooltip=View details of the selected transaction}
         actOpenTagged: {Label=Open Ta&gged, ShortCut=Ctrl+O, ActionClick=OpenTaggedDocuments, Tooltip=View details of all the tagged transactions}
-        actApproveTagged: {Label=&Approve Tagged, ShortCut=F6, ActionClick=ApproveTaggedDocuments, Tooltip=Approve all the tagged invoices}
+        #actApproveTagged: {Label=&Approve Tagged, ShortCut=F6, ActionClick=ApproveTaggedDocuments, Tooltip=Approve all the tagged invoices}
         actDeleteSelected: {Label=De&lete Selected, ShortCut=F5, ActionClick=DeleteSelected, Image=Delete_Record.ico, Tooltip=Delete the selected invoice/payment}
         actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected, Tooltip=Reverse the selected invoice/payment}
-        actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments, Tooltip=Post all the tagged invoices}
-        actAddTaggedToPayment: {Label=Pa&y Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment, Tooltip=Pay or part-pay all the tagged invoices}
+        #actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments, Tooltip=Post all the tagged invoices}
+        #actAddTaggedToPayment: {Label=Pa&y Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment, Tooltip=Pay or part-pay all the tagged invoices}
         #actTagPayable: {ActionClick=TagAllPayable}
         #actTagPostable: {ActionClick=TagAllPostable}
         actRunTagAction: {ActionClick=RunTagAction}
@@ -47,7 +44,8 @@ RootNode:
             Width:120
             Dock:Right
         txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
-        txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        #txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
+        txtSupplierCurrency: {Label=Currency, ReadOnly=true}
         pnlButtons:
             Controls: [btnNewInvoice, btnNewCreditNote, btnTagAll, btnUntagAll, btnRunTagAction, btnReverseSelected, btnDeleteSelected]
             ControlsOrientation: horizontal
@@ -64,9 +62,6 @@ RootNode:
                 Row2: [lblExcludedItems]
             Height: 90
             Dock: Top
-        #btnTagApprovable: {Label=Tag all Appro&vable}
-        #btnTagPostable: {Label=Tag all P&ostable}
-        #btnTagPayable: {Label=Tag all Paya&ble}
         btnNewInvoice:
         btnNewCreditNote:
         btnTagAll: {StartNewButtonGroup=true}
@@ -130,48 +125,3 @@ RootNode:
             Type: Ict.Common.Controls.TSgrdDataGridPaged
             ActionDoubleClick: actOpenSelected
             ActionEnterKeyPressed: actOpenSelected
-    Menu:
-        mniFile:
-            mniReloadList:
-            mniSeparator: {Label=-}
-            mniReprintRemittanceAdvice: {Label=Reprint Re&mittance Advice}
-            mniReprintCheque: {Label=Reprint &Cheque}
-            mniReprintPaymentReport: {Label=Reprint Pa&yment Report}
-        mniEdit:
-            Label:&Edit
-            mniEditFilter: 
-              Label:Filte&r...
-              ActionClick:MniFilterFind_Click
-            mniEditFind: 
-              Label:&Find...
-              ActionClick:MniFilterFind_Click
-            mniEditFindNext:
-              Label:Find &Next
-              ActionClick:MniFilterFind_Click
-            mniEditFindPrevious:
-              Label:Find &Previous
-              ActionClick:MniFilterFind_Click
-        mniAction:
-            Label: Tran&saction
-            mniActionNew:
-                Label: &New
-                mniNewInvoice: {Label=&Invoice...}
-                mniNewCreditNote: {Label=&Credit Note...}
-            mniOpenSelected:
-            mniReverseSelected:
-            mniDeleteSelected:
-            mniSeparator: {Label=-}
-            mniOpenTagged:
-            mniApproveTagged:
-            mniPostTagged:
-            mniAddTaggedToPayment:
-    Toolbar:
-        #tbbNewInvoice:
-        #tbbNewCreditNote:
-        #tbbSeparator: {Label=-}
-        #tbbOpenSelected:
-        #tbbReverseSelected:
-        #tbbSeparator: {Label=-}
-        #tbbApproveTagged:
-        #tbbPostTagged:
-        #tbbAddTaggedToPayment:

@@ -709,7 +709,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             RefreshSumTagged(null, null);
         }
 
-        private void RunTagAction(object sender, EventArgs e)
+        /// Run the tagged action based on the filter radio button state
+        public void RunTagAction(object sender, EventArgs e)
         {
             if (((RadioButton)FFilterAndFindObject.FilterPanelControls.FindControlByName("rbtForApproval")).Checked)
             {
@@ -1091,12 +1092,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
                 ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
 
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actOpenSelected", gotRows));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actApproveTagged", canApprove));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actPostTagged", canPost));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actDeleteTagged", canPost));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actPayTagged", canPay));
-                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actReverseTagged", canPay));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceOpenSelected", gotRows));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceOpenTagged", gotRows && canTag));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceApproveTagged", canApprove));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoicePostTagged", canPost));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceDeleteTagged", canPost));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoicePayTagged", canPay));
+                FMainForm.ActionEnabledEvent(null, new ActionEventArgs("actInvoiceReverseTagged", canPay));
 
                 grdInvoices.Columns[0].Visible = canTag;
 
