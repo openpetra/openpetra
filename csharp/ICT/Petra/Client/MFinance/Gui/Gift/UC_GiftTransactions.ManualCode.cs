@@ -791,7 +791,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 AGiftRow giftRow = GetGiftRow(ARow.GiftTransactionNumber);
                 ShowDetailsForGift(giftRow);
 
-                ShowDonorInfo(Convert.ToInt64(txtDetailDonorKey.Text));
+                ShowDonorInfo(ARow, Convert.ToInt64(txtDetailDonorKey.Text));
 
                 UpdateControlsProtection(ARow);
 
@@ -918,7 +918,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             }
         }
 
-        private void ShowDonorInfo(long APartnerKey)
+        private void ShowDonorInfo(GiftBatchTDSAGiftDetailRow ARow, long APartnerKey)
         {
             string DonorInfo = string.Empty;
 
@@ -963,7 +963,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
                     if (DonorHasBpk)
                     {
-                        chkDetailTaxDeductible.Checked = true;
+                        chkDetailTaxDeductible.Checked =
+                            (ARow == null) ?
+                            true
+                            :
+                            ARow.TaxDeductible;
                         chkDetailTaxDeductible.Enabled = true;
                     }
                     else

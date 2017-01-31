@@ -4321,6 +4321,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
             Int32 ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
             DateTime AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
             Decimal AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
+            String AReference = (String)ARequestParams["AReference"];
 
             ALedgerRow LedgerRow = (ALedgerRow)AGLMainDS.ALedger[0];
             ARecurringBatchRow RBatchRow = (ARecurringBatchRow)AGLMainDS.ARecurringBatch[0];
@@ -4540,7 +4541,15 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
                                                 TransactionRow.HeaderNumber = recTransaction.HeaderNumber;
                                                 TransactionRow.DetailNumber = recTransaction.DetailNumber;
                                                 TransactionRow.SubType = recTransaction.SubType;
-                                                TransactionRow.Reference = recTransaction.Reference;
+
+                                                if (AReference != "")
+                                                {
+                                                    TransactionRow.Reference = AReference;
+                                                }
+                                                else
+                                                {
+                                                    TransactionRow.Reference = recTransaction.Reference;
+                                                }
 
                                                 GLMainDS.ATransaction.Rows.Add(TransactionRow);
 

@@ -284,7 +284,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                         mniDonorHistory.Enabled = true;
                     }
 
-                    ShowDonorInfo(APartnerKey);
+                    ShowDonorInfo(null, APartnerKey);
 
                     FLastDonor = APartnerKey;
                 }

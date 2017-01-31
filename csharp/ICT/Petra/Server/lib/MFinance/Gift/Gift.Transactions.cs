@@ -228,6 +228,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Int32 ALedgerNumber;
             Int32 ABatchNumber;
             DateTime AEffectiveDate;
+            String AReference;
             Decimal AExchangeRateToBase;
             Decimal AExchangeRateIntlToBase;
 
@@ -238,6 +239,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                 ALedgerNumber = (Int32)ARequestParams["ALedgerNumber"];
                 ABatchNumber = (Int32)ARequestParams["ABatchNumber"];
                 AEffectiveDate = (DateTime)ARequestParams["AEffectiveDate"];
+                AReference = (String)ARequestParams["AReference"];
                 AExchangeRateToBase = (Decimal)ARequestParams["AExchangeRateToBase"];
                 AExchangeRateIntlToBase = (Decimal)ARequestParams["AExchangeRateIntlToBase"];
             }
@@ -390,7 +392,15 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                         gift.SetMethodOfPaymentCodeNull();
                                     }
 
-                                    gift.Reference = recGift.Reference;
+                                    if (AReference != "")
+                                    {
+                                        gift.Reference = AReference;
+                                    }
+                                    else
+                                    {
+                                        gift.Reference = recGift.Reference;
+                                    }
+
                                     gift.ReceiptLetterCode = recGift.ReceiptLetterCode;
 
                                     MainDS.AGift.Rows.Add(gift);

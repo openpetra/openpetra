@@ -38,7 +38,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MConference
         /// Constructor
         /// </summary>
         /// <param name="AParentForm"></param>
-        public TFrmReceivingFieldReport(Form AParentForm) : base(AParentForm)
+        /// <param name="ASecurityContext"></param>
+        public TFrmReceivingFieldReport(Form AParentForm, string ASecurityContext = "") : base(AParentForm)
         {
             this.Text = Catalog.GetString("Receiving Field Report");
             BaseGrpChargedFields.Visible = false;

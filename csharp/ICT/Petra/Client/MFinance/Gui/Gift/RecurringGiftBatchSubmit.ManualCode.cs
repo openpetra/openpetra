@@ -247,7 +247,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             Hashtable requestParams = new Hashtable();
             requestParams.Add("ALedgerNumber", FLedgerNumber);
             requestParams.Add("ABatchNumber", FBatchNumber);
-            requestParams.Add("AEffectiveDate", dtpEffectiveDate.Date.Value);
+            requestParams.Add("AEffectiveDate", TheDateValue);
+            requestParams.Add("AReference", txtReference.Text);
             requestParams.Add("AExchangeRateToBase", FExchangeRateToBase);
             requestParams.Add("AExchangeRateIntlToBase", FExchangeRateIntlToBase);
 

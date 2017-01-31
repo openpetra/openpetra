@@ -5,7 +5,7 @@ RootNode:
     FormType: browse
     Template: window
     WindowWidth: 410
-    WindowHeight: 230
+    WindowHeight: 260
     Actions:
         actSubmitBatch: {Label=&OK, ActionClick=SubmitBatch}
         actClose: {Label=&Cancel, ActionClick=BtnCloseClick}
@@ -20,9 +20,10 @@ RootNode:
             Controls:
                 Row0: [lblValidDateRange]
                 Row1: [dtpEffectiveDate]
-                Row2: [txtExchangeRateToBase, btnGetSetExchangeRate]
-                Row3: [txtCurrencyCodeFrom]
-                Row4: [txtCurrencyCodeTo]
+                Row2: [txtReference]
+                Row3: [txtExchangeRateToBase, btnGetSetExchangeRate]
+                Row4: [txtCurrencyCodeFrom]
+                Row5: [txtCurrencyCodeTo]
             Dock: Top
         pnlButtons:
             Dock:Bottom
@@ -36,6 +37,7 @@ RootNode:
         dtpEffectiveDate: {Label=Enter the Gift Batch Date to use, Validation=true}
         txtCurrencyCodeFrom: {Label=From, ReadOnly=true}
         txtCurrencyCodeTo: {Label=To, ReadOnly=true}
+        txtReference: {Label=Reference applied to each gift}
         txtExchangeRateToBase: {Label=Exchange Rate, ReadOnly=true, Format=Decimal(10), Width=150}
         btnGetSetExchangeRate: {Label=..., Height=22, Action=actSetExchangeRate}
     Toolbar:
