@@ -50,7 +50,7 @@ RootNode:
                 Row1: [pnlEmailAddress]
             ColWidths: [0=Fixed:210]
         cmbDetailFileCode: {Label=File Code, OnChange=OnFileCodeChange}
-            OptionalValues: [ =AFO, BRANCH, FUND BALS-AFO, FUND BALANCE, HOSA, STEWARDSHIP, ICH, GIFT STATEMENT ]
+            OptionalValues: [ =AFO, BRANCH, FUND BALS-AFO, FUND BALANCE, HOSA, ICH, GIFT STATEMENT ]
         txtDetailConditionalValue: {Label=Condition value, Width=210}
         pnlEmailAddress:
             Controls:

@@ -1,0 +1,70 @@
+RootNode:
+    BaseYaml: ../../CommonForms/PetraFormDialog.yaml
+    Namespace: Ict.Petra.Client.MFastReport.Gui
+    FormType: dialog
+    Template: window
+    FormTitle: Send E-mail
+    WindowWidth: 436
+    WindowHeight: 377
+
+    Events:
+        Shown: {class=System.EventHandler, method=Form_Shown}
+        FormClosing: {class=FormClosingEventHandler, method=Form_FormClosing}
+
+    Controls:
+        pnlDialogContent:
+            Controls: [pnlAddresses, pnlMessage, pnlOptions]
+
+        pnlAddresses:
+            Dock: Top
+            Controls: [cmbTo, txtCC]
+            TabIndex: 1
+        pnlMessage:
+            Dock: Fill
+            Controls: [txtSubject, txtMessage]
+            TabIndex: 2
+        pnlOptions:
+            Dock: Bottom
+            Controls: [cmbType, pnlPDFExport, pnlExcel2007Export]
+            ControlsOrientation: Horizontal
+            TabIndex: 3
+
+        cmbTo:
+            MarginTop: 25
+            Label: &To
+            LabelWidth: 66
+            Stretch: Horizontally
+        txtCC:
+            Label: &CC
+            LabelWidth: 66
+            Stretch: Horizontally
+
+        txtSubject:
+            Label: &Subject
+            LabelWidth: 66
+            Stretch: Horizontally
+        txtMessage:
+            Label: &Message
+            LabelWidth: 66
+            Stretch: Fully
+            Multiline: true
+            OnEnter: txtMessage_Enter
+            OnLeave: txtMessage_Leave
+
+        cmbType:
+            Label: T&ype
+            LabelWidth: 66
+            Width: 200
+            OnChange: cmbType_Changed
+
+        pnlPDFExport:
+            Padding: 0, -7
+            Visible: False
+            Controls: [chkEmbedFonts]
+        chkEmbedFonts:
+
+        pnlExcel2007Export:
+            Padding: -145, -7
+            Visible: False
+            Controls: [chkPageBreaks]
+        chkPageBreaks:

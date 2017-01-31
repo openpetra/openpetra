@@ -26,6 +26,7 @@ System.Data*=${csharpStdLibs}/System.Data.dll
 System.Design*=${csharpStdLibs}/System.Design.dll
 System.Drawing.Design*=${csharpStdLibs}/System.Drawing.Design.dll
 System.Drawing*=${csharpStdLibs}/System.Drawing.dll
+System.Linq*=${csharpStdLibs}/System.Core.dll
 System.Security*=${csharpStdLibs}/System.Security.dll
 System.Runtime.Remoting=${csharpStdLibs}/System.Runtime.Remoting.dll
 System.Web.Services=${csharpStdLibs}/System.Web.Services.dll

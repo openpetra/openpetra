@@ -14,12 +14,12 @@ RootNode:
         pnlDialogContent:
             Padding: 0,0,3,0
             Controls:
-                Row0: [txtEmail]
+                Row0: [cmbEmail]
                 Row1: [chkExcelFile]
                 Row2: [chkCSVFile]
                 Row3: [chkPDF]
                 
-        txtEmail:
+        cmbEmail:
             Label: Send to these Email Addresses
             Stretch: horizontally
 

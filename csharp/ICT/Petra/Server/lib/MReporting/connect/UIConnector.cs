@@ -321,7 +321,18 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
             TPdfPrinter pdfPrinter = new TPdfPrinter(doc, TGfxPrinter.ePrinterBehaviour.eReport);
             TReportPrinterLayout layout = new TReportPrinterLayout(FResultList, FParameterList, pdfPrinter, AWrapColumn);
 
-            pdfPrinter.Init(eOrientation.ePortrait, layout, eMarginType.ePrintableArea);
+            eOrientation Orientation;
+
+            if (pdfPrinter.Document.DefaultPageSettings.Landscape)
+            {
+                Orientation = eOrientation.eLandscape;
+            }
+            else
+            {
+                Orientation = eOrientation.ePortrait;
+            }
+
+            pdfPrinter.Init(Orientation, layout, eMarginType.ePrintableArea);
 
             pdfPrinter.SavePDF(AFilename);
 

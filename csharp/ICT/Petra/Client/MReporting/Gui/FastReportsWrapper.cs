@@ -50,6 +50,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using System.Text;
 using System.Security;
 using System.Net.Mail;
+using Ict.Petra.Client.MFastReport.Gui;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
