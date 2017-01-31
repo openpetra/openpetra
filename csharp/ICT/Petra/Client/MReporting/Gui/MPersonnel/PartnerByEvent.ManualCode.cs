@@ -134,7 +134,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             view.RowFilter = ucoFilter.GetFilterCriteria();
 
             clbEvent.DataBindGrid(
-                view.ToTable(), PPartnerTable.GetPartnerShortNameDBName(), "CHECKED", PPartnerTable.GetPartnerKeyDBName(), false, true, false);
+                view.ToTable(), PPartnerTable.GetPartnerShortNameDBName() + " DESC", "CHECKED",
+                PPartnerTable.GetPartnerKeyDBName(), false, true, false);
             clbEvent.SetCheckedStringList("");
 
             clbEvent.AutoStretchColumnsToFitWidth = true;

@@ -57,7 +57,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             grdStatuses.Columns.Clear();
 
             grdStatuses.AddCheckBoxColumn("", FCommitmentStatusTable.Columns["Selection"], false);
-            grdStatuses.AddTextColumn("Status", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetCodeDBName()]);
+            grdStatuses.AddTextColumn("Type", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetCodeDBName()]);
             grdStatuses.AddTextColumn("Description", FCommitmentStatusTable.Columns[PmCommitmentStatusTable.GetDescDBName()]);
 
             FCommitmentStatusTable.DefaultView.AllowNew = false;
@@ -92,9 +92,9 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                      && (chkSelectedStatus.Checked)
                      && (!chkNoSelectedStatus.Checked))
             {
-                // at least one commitment status must be checked
-                TVerificationResult VerificationResult = new TVerificationResult("Select at least one commitment status.",
-                    "No commitment status selected!",
+                // at least one commitment type must be checked
+                TVerificationResult VerificationResult = new TVerificationResult("Select at least one commitment type.",
+                    "No commitment type selected!",
                     TResultSeverity.Resv_Critical);
                 FPetraUtilsObject.AddVerificationResult(VerificationResult);
             }

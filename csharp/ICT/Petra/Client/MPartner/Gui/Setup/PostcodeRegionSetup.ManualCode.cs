@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Validation;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Client.MPartner.Gui.Setup
 {
@@ -654,11 +655,42 @@ namespace Ict.Petra.Client.MPartner.Gui.Setup
 
         private void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
         {
-            TFrmSelectPrintFields.SelectAndPrintGridFields(this, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
-                new int[]
+            if (MessageBox.Show(this, Catalog.GetString("You are about to print a combined table of regions and ranges. Do you want to proceed?"),
+                    Catalog.GetString("Printing"), MessageBoxButtons.OKCancel) == DialogResult.OK)
+            {
+                DataTable RegionsAndRangesTable = TRemote.MPartner.Mailroom.WebConnectors.GetPostCodeRegionsAndRanges();
+                DataView regionsAndRangesDataView = new DataView(RegionsAndRangesTable);
+
+                TFormDataKeyDescriptionList recordList = new TFormDataKeyDescriptionList();
+                recordList.Title = "Regions and Ranges";
+
+                recordList.KeyTitle = Catalog.GetString("Region");
+                recordList.DescriptionTitle = Catalog.GetString("Region Description");
+                recordList.Field3Title = Catalog.GetString("Range");
+                recordList.Field4Title = Catalog.GetString("From");
+                recordList.Field5Title = Catalog.GetString("To");
+
+                foreach (DataRowView typeRowView in regionsAndRangesDataView)
                 {
-                    PPostcodeRegionTable.ColumnRegionId
-                });
+                    TFormDataKeyDescription record = new TFormDataKeyDescription();
+
+                    record.Key = typeRowView[0].ToString();
+                    record.Description = typeRowView[1].ToString();
+                    record.Field3 = typeRowView[2].ToString();
+                    record.Field4 = typeRowView[3].ToString();
+                    record.Field5 = typeRowView[4].ToString();
+                    recordList.Add(record);
+                }
+
+                TStandardFormPrint.PrintRecordList(recordList,
+                    5,
+                    APrintApplication,
+                    TModule.mPartner,
+                    regionsAndRangesDataView.Count,
+                    regionsAndRangesDataView,
+                    "",
+                    APreviewMode);
+            }
         }
     }
 }

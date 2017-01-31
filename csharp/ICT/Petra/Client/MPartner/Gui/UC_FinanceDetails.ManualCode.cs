@@ -128,13 +128,36 @@ namespace Ict.Petra.Client.MPartner.Gui
             // set up access to Government Id (e.g. bPK) when needed
             FGovIdEnabled = FPartnerEditUIConnector.IsGovIdEnabled();
 
+            grpRecipientGiftReceipting.Anchor = (AnchorStyles.Left | AnchorStyles.Right);
+
+            grpOther.Anchor = (AnchorStyles.Left | AnchorStyles.Right);
+
             if (FGovIdEnabled)
             {
                 lblGovId.Text = FPartnerEditUIConnector.GetGovIdLabel() + ":";
+                pnlMiscSettings.Height += 36;
+                pnlLeftMiscSettings.Height += 36;
+                pnlRightMiscSettings.Height += 26;
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    grpOther.Top -= 13;
+                    grpRecipientGiftReceipting.Top -= 13;
+                    grpOther.Height += 35;
+                    pnlRightMiscSettings.Height += 5;
+                    grpOther.Width += pnlRightMiscSettings.Width - grpOther.Width - 5;
+                    grpRecipientGiftReceipting.Width += pnlRightMiscSettings.Width - grpRecipientGiftReceipting.Width - 5;
+                }
             }
             else
             {
                 pnlLeftMiscSettings.Controls.Remove(this.grpGovId);
+
+                if (FTaxDeductiblePercentageEnabled)
+                {
+                    grpOther.Width += pnlRightMiscSettings.Width - grpOther.Width - 5;
+                    grpRecipientGiftReceipting.Width += pnlRightMiscSettings.Width - grpRecipientGiftReceipting.Width - 5;
+                }
             }
 
             if (FTaxDeductiblePercentageEnabled)
@@ -170,21 +193,25 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
             else
             {
+                grpOther.Dock = DockStyle.Fill;
+
                 //Remove RecipientGiftReceipting
                 grpRecipientGiftReceipting.Controls.Remove(this.lblLimitTaxDeductibility);
                 grpRecipientGiftReceipting.Visible = false;
                 pnlRightMiscSettings.Controls.Remove(grpRecipientGiftReceipting);
 
                 //Reset and rescale the Finance Comment
-                grpOther.Top = grpRecipientGiftReceipting.Top;
-                txtFinanceComment.Height += grpLeftMiscSettings.Height - grpOther.Height;
-                grpOther.Height = grpLeftMiscSettings.Height;
+                //grpOther.Top = grpRecipientGiftReceipting.Top + 10;
+                pnlRightMiscSettings.Height = pnlLeftMiscSettings.Height - 19;
+                pnlRightMiscSettings.Top += 3;
 
                 // make sure we have enough space
                 if (FGovIdEnabled)
                 {
                     pnlMiscSettings.Height += 27;
                     pnlLeftMiscSettings.Height += 27;
+                    pnlRightMiscSettings.Height += 32;
+                    grpOther.Height += 27;
                 }
             }
         }

@@ -18458,7 +18458,7 @@
                 descr="Display Index (for sorting other than alphabetically)."
                 label="Display Index"
                 columnlabel="Display Index"
-                help="Determines the order the commitment statuses will appear in."/>
+                help="Determines the order the commitment types will appear in."/>
     <tablefield name="pm_unassignable_flag_l"
                 type="bit"
                 descr="Indicates if this code can still be assigned?"
@@ -18488,9 +18488,9 @@
     <!-- Explicit Indexes on table pm_commitment_status  -->
   </table>
   <table name="pm_person_commitment_status"
-         descr="This table holds the commitment status history of a person"
+         descr="This table holds the commitment type history of a person"
          area="Petra Data"
-         label="Commitment Status History for a Person"
+         label="Commitment Type History for a Person"
          dumpname="pm_pe_st"
          group="personnel">
     <tablefield name="p_partner_key_n"

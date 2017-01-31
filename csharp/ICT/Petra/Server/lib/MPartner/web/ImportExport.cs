@@ -1268,16 +1268,16 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
             ref TVerificationResultCollection ReferenceResults,
             TDBTransaction Transaction)
         {
-            // Commitment Status Code: I'm not going to add this, but I should inform the user...
+            // Commitment Type Code: I'm not going to add this, but I should inform the user...
             foreach (PmStaffDataRow rv in MainDS.PmStaffData.Rows)
             {
                 if ((rv.StatusCode != "") && (!PmCommitmentStatusAccess.Exists(rv.StatusCode, Transaction)))
                 {
-                    AddVerificationResult(ref ReferenceResults, "Removing unknown Commitment Status " + rv.StatusCode);
+                    AddVerificationResult(ref ReferenceResults, "Removing unknown Commitment Type " + rv.StatusCode);
                     rv.StatusCode = "";
 
 /*
- *                  TLogging.Log("Adding new commitment status code " + rv.StatusCode);
+ *                  TLogging.Log("Adding new commitment type code " + rv.StatusCode);
  *                  PmCommitmentStatusRow commitmentStatusRow = MainDS.PmCommitmentStatus.NewRowTyped();
  *                  commitmentStatusRow.Code = rv.StatusCode;
  *                  commitmentStatusRow.Desc = NewRowDescription;

@@ -22,7 +22,7 @@
   <Parameter id="ColumnWidth" column="3" value="eInteger:3" />
   <Parameter id="param_calculation" column="4" value="eString:Field Name" />
   <Parameter id="ColumnWidth" column="4" value="eInteger:2" />
-  <Parameter id="param_calculation" column="5" value="eString:Commitment Status" />
+  <Parameter id="param_calculation" column="5" value="eString:Commitment Type" />
   <Parameter id="ColumnWidth" column="5" value="eInteger:3" />
   <Parameter id="param_calculation" column="6" value="eString:Partner Type" />
   <Parameter id="ColumnWidth" column="6" value="eInteger:2" />

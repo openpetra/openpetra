@@ -1250,5 +1250,25 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         }
 
         #endregion
+
+        #region Printing Methods
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="APrintApplication"></param>
+        /// <param name="APreviewMode"></param>
+        public void PrintGrid(TStandardFormPrint.TPrintUsing APrintApplication, bool APreviewMode)
+        {
+            TFrmSelectPrintFields.SelectAndPrintGridFields(ParentForm, APrintApplication, APreviewMode, TModule.mPartner, this.Text, grdDetails,
+                new int[]
+                {
+                    MExtractMasterTable.ColumnExtractNameId,
+                    MExtractMasterTable.ColumnCreatedById,
+                    MExtractMasterTable.ColumnKeyCountId,
+                    MExtractMasterTable.ColumnExtractDescId
+                });
+        }
+
+        #endregion
     }
 }

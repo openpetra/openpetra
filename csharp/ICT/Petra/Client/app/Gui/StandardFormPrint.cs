@@ -76,9 +76,6 @@ namespace Ict.Petra.Client.App.Gui
             //TFrmSelectPrintFields TFrmSelectPFields = new TFrmSelectPrintFields();
             TFormDataKeyDescriptionList recordList = new TFormDataKeyDescriptionList();
 
-            List <TFormData>formDataList = new List <TFormData>();
-            string msgTitle = Catalog.GetString("Print");
-
             int numColumns = Math.Min(AGridColumnOrder.GetLength(0), ATableColumnOrder.GetLength(0));
 
             // Title of the document
@@ -108,29 +105,113 @@ namespace Ict.Petra.Client.App.Gui
                 TFormDataKeyDescription record = new TFormDataKeyDescription();
                 DataRowView drv = dv[i];
 
-                record.Key = GetPrintableText(AGrid, AGridColumnOrder[0], drv.Row[ATableColumnOrder[0]]);
-                record.Description = numColumns > 1 ? GetPrintableText(AGrid, AGridColumnOrder[1], drv.Row[ATableColumnOrder[1]]) : string.Empty;
-                record.Field3 = numColumns > 2 ? GetPrintableText(AGrid, AGridColumnOrder[2], drv.Row[ATableColumnOrder[2]]) : string.Empty;
-                record.Field4 = numColumns > 3 ? GetPrintableText(AGrid, AGridColumnOrder[3], drv.Row[ATableColumnOrder[3]]) : string.Empty;
-                record.Field5 = numColumns > 4 ? GetPrintableText(AGrid, AGridColumnOrder[4], drv.Row[ATableColumnOrder[4]]) : string.Empty;
-                record.Field6 = numColumns > 5 ? GetPrintableText(AGrid, AGridColumnOrder[5], drv.Row[ATableColumnOrder[5]]) : string.Empty;
-                record.Field7 = numColumns > 6 ? GetPrintableText(AGrid, AGridColumnOrder[6], drv.Row[ATableColumnOrder[6]]) : string.Empty;
-                record.Field8 = numColumns > 7 ? GetPrintableText(AGrid, AGridColumnOrder[7], drv.Row[ATableColumnOrder[7]]) : string.Empty;
-                record.Field9 = numColumns > 8 ? GetPrintableText(AGrid, AGridColumnOrder[8], drv.Row[ATableColumnOrder[8]]) : string.Empty;
-                record.Field10 = numColumns > 9 ? GetPrintableText(AGrid, AGridColumnOrder[9], drv.Row[ATableColumnOrder[9]]) : string.Empty;
+                //GetStringToSymbol converts a "True" to a check symbol and a "False" to ""if the Type is System.Boolean
+                record.Key =
+                    GetStringOrSymbol(GetPrintableText(AGrid,
+                            AGridColumnOrder[0],
+                            drv.Row[ATableColumnOrder[0]]), drv.Row[ATableColumnOrder[0]].GetType());
+                record.Description = numColumns > 1 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[1],
+                        drv.Row[ATableColumnOrder[1]]), drv.Row[ATableColumnOrder[1]].GetType()) : string.Empty;
+                record.Field3 = numColumns > 2 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[2],
+                        drv.Row[ATableColumnOrder[2]]), drv.Row[ATableColumnOrder[2]].GetType()) : string.Empty;
+                record.Field4 = numColumns > 3 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[3],
+                        drv.Row[ATableColumnOrder[3]]), drv.Row[ATableColumnOrder[3]].GetType()) : string.Empty;
+                record.Field5 = numColumns > 4 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[4],
+                        drv.Row[ATableColumnOrder[4]]), drv.Row[ATableColumnOrder[4]].GetType()) : string.Empty;
+                record.Field6 = numColumns > 5 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[5],
+                        drv.Row[ATableColumnOrder[5]]), drv.Row[ATableColumnOrder[5]].GetType()) : string.Empty;
+                record.Field7 = numColumns > 6 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[6],
+                        drv.Row[ATableColumnOrder[6]]), drv.Row[ATableColumnOrder[6]].GetType()) : string.Empty;
+                record.Field8 = numColumns > 7 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[7],
+                        drv.Row[ATableColumnOrder[7]]), drv.Row[ATableColumnOrder[7]].GetType()) : string.Empty;
+                record.Field9 = numColumns > 8 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[8],
+                        drv.Row[ATableColumnOrder[8]]), drv.Row[ATableColumnOrder[8]].GetType()) : string.Empty;
+                record.Field10 = numColumns > 9 ? GetStringOrSymbol(GetPrintableText(AGrid,
+                        AGridColumnOrder[9],
+                        drv.Row[ATableColumnOrder[9]]), drv.Row[ATableColumnOrder[9]].GetType()) : string.Empty;
                 recordList.Add(record);
             }
 
-            formDataList.Add(recordList);
+            PrintRecordList(recordList, numColumns, APrintApplication, AModule, AGrid.Rows.Count - 1, dv, ABaseFilter, APreviewOnly);
+        }
+
+        private static string GetStringOrSymbol(string AStringToConvert, Type ADatatype)
+        {
+            if (ADatatype == typeof(System.Boolean))
+            {
+                char True = '\u2714';
+
+                switch (AStringToConvert)
+                {
+                    case "True":
+                        return True.ToString();
+
+                    case "False":
+                        return string.Empty;
+
+                    default:
+                        return AStringToConvert;
+                }
+            }
+            else
+            {
+                return AStringToConvert;
+            }
+        }
+
+        /// <summary>
+        /// Prints custom data.
+        /// </summary>
+        /// <param name="ARecordList"></param>
+        /// <param name="ANumColumns"></param>
+        /// <param name="APrintApplication"></param>
+        /// <param name="AModule"></param>
+        /// <param name="ARowsCount"></param>
+        /// <param name="ADv"></param>
+        /// <param name="ABaseFilter"></param>
+        /// <param name="APreviewOnly"></param>
+        public static void PrintCustomData(TFormDataKeyDescriptionList ARecordList, int ANumColumns, TPrintUsing APrintApplication, TModule AModule,
+            int ARowsCount, DataView ADv, string ABaseFilter, bool APreviewOnly)
+        {
+            PrintRecordList(ARecordList, ANumColumns, APrintApplication, AModule, ARowsCount, ADv, ABaseFilter, APreviewOnly);
+        }
+
+        /// <summary>
+        /// Prints from either a grid or a custom print.
+        /// </summary>
+        /// <param name="ARecordList"></param>
+        /// <param name="ANumColumns"></param>
+        /// <param name="APrintApplication"></param>
+        /// <param name="AModule"></param>
+        /// <param name="ARowsCount"></param>
+        /// <param name="ADv"></param>
+        /// <param name="ABaseFilter"></param>
+        /// <param name="APreviewOnly"></param>
+        public static void PrintRecordList(TFormDataKeyDescriptionList ARecordList, int ANumColumns, TPrintUsing APrintApplication, TModule AModule,
+            int ARowsCount, DataView ADv, string ABaseFilter, bool APreviewOnly)
+        {
+            List <TFormData>formDataList = new List <TFormData>();
+
+            string msgTitle = Catalog.GetString("Print");
+
+            formDataList.Add(ARecordList);
 
             // Work out the template file name to use.
             string formName;
             //Chooses the template depending on the number of columns
-            formName = "OM Print Grid " + numColumns + " ";
+            formName = "OM Print Grid " + ANumColumns + " ";
 
             formName += (APrintApplication == TPrintUsing.Excel ? "X" : "W");
 
-            if (numColumns <= 4)
+            if (ANumColumns <= 4)
             {
                 formName += "P";        // Portrait
             }
@@ -153,22 +234,22 @@ namespace Ict.Petra.Client.App.Gui
             TTemplaterAccess.AppendUserAndDateInfo(ref targetDir, Path.GetFileNameWithoutExtension(templatePath));
 
             // Set up the last few data items
-            recordList.PrintedBy = UserInfo.GUserInfo.UserID;
-            recordList.Date = StringHelper.DateToLocalizedString(DateTime.Now, true, true);
-            recordList.Filename = Path.Combine(targetDir, ATitleText + Path.GetExtension(templatePath));
+            ARecordList.PrintedBy = UserInfo.GUserInfo.UserID;
+            ARecordList.Date = StringHelper.DateToLocalizedString(DateTime.Now, true, true);
+            ARecordList.Filename = Path.Combine(targetDir, ARecordList.Title + Path.GetExtension(templatePath));
 
             // And the sub-title
-            int nGridRowsData = AGrid.Rows.Count - 1;
-            int nFullViewRowsData = new DataView(dv.Table, ABaseFilter, "", DataViewRowState.CurrentRows).Count;
+            int nGridRowsData = ARowsCount; //AGrid.Rows.Count - 1;
+            int nFullViewRowsData = new DataView(ADv.Table, ABaseFilter, "", DataViewRowState.CurrentRows).Count;
 
             if (nGridRowsData == nFullViewRowsData)
             {
-                recordList.SubTitle = String.Format(
+                ARecordList.SubTitle = String.Format(
                     Catalog.GetString("The table below shows all {0} rows of data in the data table."), nGridRowsData);
             }
             else
             {
-                recordList.SubTitle = String.Format(
+                ARecordList.SubTitle = String.Format(
                     Catalog.GetString("The table below shows a filtered selection of {0} out of {1} rows of data in the complete data table."),
                     nGridRowsData, nFullViewRowsData);
             }
@@ -187,7 +268,7 @@ namespace Ict.Petra.Client.App.Gui
                     out allDocumentsOpened,
                     out printOnCompletion,
                     targetDir,
-                    ATitleText);
+                    ARecordList.Title);
 
                 if (printOnCompletion)
                 {

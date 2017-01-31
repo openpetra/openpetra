@@ -70,5 +70,46 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
 
             return TSubmitChangesResult.scrOK;
         }
+
+        /// <summary>
+        /// This method returns a table with postcode regions and ranges combined. Columns: Region, Range, From (Range), To (Range), Description (Region)
+        /// </summary>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static DataTable GetPostCodeRegionsAndRanges()
+        {
+            List <OdbcParameter>SqlParameterList = new List <OdbcParameter>();
+            DataTable RegionsRangesTable = new DataTable();
+
+            if (TLogging.DL >= 9)
+            {
+                Console.WriteLine("GetPostCodeRegionsAndRanges called!");
+            }
+
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    string SqlStmt =
+                        "SELECT " + PPostcodeRegionRangeTable.GetTableDBName() + "." + PPostcodeRegionRangeTable.GetRegionDBName() +
+                        ", " + PPostcodeRegionTable.GetDescriptionDBName() + ", " +
+                        PPostcodeRegionRangeTable.GetTableDBName() + "." + PPostcodeRegionRangeTable.GetRangeDBName() + ", " +
+                        PPostcodeRangeTable.GetFromDBName() + ", " + PPostcodeRangeTable.GetToDBName() +
+                        " FROM " + PPostcodeRegionRangeTable.GetTableDBName() + " INNER JOIN " + PPostcodeRangeTable.GetTableDBName() + " ON " +
+                        PPostcodeRegionRangeTable.GetTableDBName() + "." + PPostcodeRegionRangeTable.GetRangeDBName() + " = " +
+                        PPostcodeRangeTable.GetTableDBName() + "." + PPostcodeRangeTable.GetRangeDBName() + " INNER JOIN " +
+                        PPostcodeRegionTable.GetTableDBName() +
+                        " ON " + PPostcodeRegionTable.GetTableDBName() + "." + PPostcodeRegionTable.GetRegionDBName() + " = " +
+                        PPostcodeRegionRangeTable.GetTableDBName() + "." + PPostcodeRegionRangeTable.GetRegionDBName() +
+                        " ORDER BY " + PPostcodeRegionTable.GetRegionDBName();
+
+                    RegionsRangesTable = DBAccess.GDBAccessObj.SelectDT(SqlStmt, "events",
+                        Transaction, SqlParameterList.ToArray());
+                });
+
+            return RegionsRangesTable;
+        }
     }
 }

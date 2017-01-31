@@ -43,7 +43,7 @@ RootNode:
                 PrevRole: {Label=Role}
                 OtherOrganisation: {Label=Organisation}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: PrevLocation ASC
+            SortOrder: StartDate DESC
             
         pnlDetails:
             Dock: Fill

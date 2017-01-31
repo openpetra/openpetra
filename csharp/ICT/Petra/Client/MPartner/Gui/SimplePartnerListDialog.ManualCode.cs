@@ -78,6 +78,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             // show this dialog in center of screen
             this.StartPosition = FormStartPosition.CenterScreen;
+            this.AcceptButton = btnOK;
         }
 
         private void CustomClosingHandler(System.Object sender, System.ComponentModel.CancelEventArgs e)

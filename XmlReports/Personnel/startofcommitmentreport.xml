@@ -4,9 +4,9 @@
   <report id="Start of Commitment Report">
     <description>
       All selected active partners within given date range are printed
-      1) - all, but no commitment status is given
-      2) - only the ones with commmitment status; status is given
-      3) - the ones with commitment status and the ones with no status; status is given, if any
+      1) - all, but no commitment type is given
+      2) - only the ones with commmitment type; type is given
+      3) - the ones with commitment type and the ones with no type; type is given, if any
 
       requires personnel.xml
 
@@ -104,7 +104,7 @@
                 PUB_pm_staff_data AS staff,
                 PUB_p_unit AS unit
               WHERE
-        <!--  Prints only records without commitment status  -->
+        <!--  Prints only records without commitment type  -->
                 person.p_partner_key_n = partner.p_partner_key_n
                 AND person.p_partner_key_n = staff.p_partner_key_n
                 AND staff.pm_receiving_field_n = unit.p_partner_key_n
@@ -115,14 +115,14 @@
           </queryDetail>
           <queryDetail condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},false))">
             <value>
-        <!--  Prints only records with commitment status  -->
+        <!--  Prints only records with commitment type  -->
             AND
           </value>
             <value function = "csv" text="staff.pm_status_code_c" variable="param_commitmentstatuses"/>
           </queryDetail>
           <queryDetail condition="and(eq({param_chkSelectedStatus},true),eq({param_chkNoSelectedStatus},true))">
             <value>
-        <!--  Prints all chosen records with commitment statuses incl blanks   -->
+        <!--  Prints all chosen records with commitment types incl blanks   -->
               AND (
             </value>
             <value function = "csv" text="staff.pm_status_code_c" variable="param_commitmentstatuses"/>
@@ -187,9 +187,9 @@
         </query>
       </calculation>
 
-      <calculation id="Commitment Status" returnsFormat="csvlistslash:text" returns="text">
+      <calculation id="Commitment Type" returnsFormat="csvlistslash:text" returns="text">
         <caption>
-          <value text="Commit. Status"/>
+          <value text="Commit. Type"/>
         </caption>
         <query>
           <queryDetail>

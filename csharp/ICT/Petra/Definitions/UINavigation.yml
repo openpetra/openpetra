@@ -62,7 +62,7 @@ OpenPetra:
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extract, Namespace=Ict.Petra.Client.MPersonnel.Gui, PermissionsRequired=PTNRUSER+PERSONNEL}  # Permissions are AND'ed
                         PartnerByEvent: {Label=Partner by Event, Description=Create Extract of Partners with specific application status at selected event, ActionClick=TPersonnelMain.PartnerByEventExtract}
                         PartnerByEventRole: {Label=Partner by Event Role, Description=Create Extract of Partners with specific role at selected event, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
-                        PartnerByCommitment: {Label=Partner by Commitment, Description=Create Extract of Partners with selected Commitment Status, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
+                        PartnerByCommitment: {Label=Partner by Commitment, Description=Create Extract of Partners with selected Commitment Type, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Label=Partner by Field, Description=Create Extract of Partners received/sent by selected Fields, ActionClick=TPersonnelMain.PartnerByFieldExtract}
                     GenerateFinanceExtracts: {Label=Generate Finance Extract, Namespace=Ict.Petra.Client.MFinance.Gui, PermissionsRequired=PTNRUSER+FINANCE-1}  # Permissions are AND'ed
                         RecipientByField: {Label=Recipient by Field, Description=Create Extract of Recipients in selected Fields, ActionClick=TFinanceMain.RecipientByFieldExtractCrossLedger}
@@ -326,7 +326,7 @@ OpenPetra:
                     GeneratePersonnelExtracts: {Label=Generate Personnel Extracts, Namespace=Ict.Petra.Client.MPersonnel.Gui}
                         PartnerByEvent: {Label=Partner by Event, Description=Create Extract of Partners with specific application status for selected event, ActionClick=TPersonnelMain.PartnerByEventExtract}
                         PartnerByEventRole: {Label=Partner by Event Role, Description=Create Extract of Partners with specific role at selected event, ActionClick=TPersonnelMain.PartnerByEventRoleExtract}
-                        PartnerByCommitment: {Label=Partner by Commitment, Description=Create Extract of Partners with selected Commitment Status, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
+                        PartnerByCommitment: {Label=Partner by Commitment, Description=Create Extract of Partners with selected Commitment Type, ActionClick=TPersonnelMain.PartnerByCommitmentExtract}
                         PartnerByField: {Label=Partner by Field, Description=Create Extract of Partners received/sent by selected Fields, ActionClick=TPersonnelMain.PartnerByFieldExtract}
                 PersonnelReports: {Label=Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel, DontShowNestedTasksAsLinks=true}  # Icon=Print.ico
                     PersonnelReports: {Label=Reports}

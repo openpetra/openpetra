@@ -33,7 +33,7 @@ RootNode:
             Dock: Top
             Controls: [dtpStartDate, dtpEndDate]
         grpStatus:
-            Label: Commitment Status
+            Label: Commitment Type
             Dock: Fill
             Controls: [chkSelectedStatus, grdStatuses, chkNoSelectedStatus]
 
@@ -42,7 +42,7 @@ RootNode:
         dtpEndDate:
             Label: and
         chkSelectedStatus:
-            Label: Include only Persons with selected Commitment
+            Label: Include only Persons with selected Commitment Type
             CheckBoxAttachedLabel: right
             OnChange: chkSelectedStatusChanged
         grdStatuses:
@@ -50,7 +50,7 @@ RootNode:
             Height: 200
             Width: 420
         chkNoSelectedStatus:
-            Label: Include Persons with no Commitment Status set
+            Label: Include Persons with no Commitment Type set
             CheckBoxAttachedLabel: right
 
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
@@ -64,7 +64,7 @@ RootNode:
             Name: Field Name
             Parameter: 2.0
         Para4:
-            Name: Commitment Status
+            Name: Commitment Type
             Parameter: 3.0
         Para5:
             Name: Partner Key

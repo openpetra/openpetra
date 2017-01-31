@@ -32,7 +32,7 @@ RootNode:
             Dock: Fill
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:
-            Name: Commitment Status
+            Name: Commitment Type
             Parameter: 3.0
         Para2:
             Name: End Date

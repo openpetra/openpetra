@@ -57,6 +57,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
         bool FNewRecordBeingAdded = false;
         ToolTip FTipPwd = new ToolTip();
+        bool FChangesForCurrentUser = false;
 
         private void InitializeManualCode()
         {
@@ -151,9 +152,12 @@ namespace Ict.Petra.Client.MSysMan.Gui
 
             if (Result == TSubmitChangesResult.scrOK)
             {
-                MessageBox.Show(Catalog.GetString("Changes to any users will take effect only at their next login!"),
-                    Catalog.GetString("Maintain Users: Saving of Data Successful"),
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (FChangesForCurrentUser)
+                {
+                    MessageBox.Show(Catalog.GetString("If you made any changes to your user they will only take effect at the next login!"),
+                        Catalog.GetString("Maintain Users: Saving of Data Successful"),
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
 
                 // Reload the grid after every successful save. (This will add new password's hash and salt to the table.)
                 Int32 rowIdx = GetSelectedRowIndex();
@@ -177,6 +181,7 @@ namespace Ict.Petra.Client.MSysMan.Gui
         /// <param name="ARow"></param>
         private void ShowDetailsManual(SUserRow ARow)
         {
+            CheckForCurrentUser(ARow);
             string currentPermissions = String.Empty;
 
             if (ARow != null)
@@ -228,6 +233,14 @@ namespace Ict.Petra.Client.MSysMan.Gui
             }
 
             clbUserGroup.SetCheckedStringList(currentPermissions);
+        }
+
+        private void CheckForCurrentUser(SUserRow ARow)
+        {
+            if (ARow.UserId == UserInfo.GUserInfo.UserID)
+            {
+                FChangesForCurrentUser = true;
+            }
         }
 
         private void GetDetailDataFromControlsManual(SUserRow ARow)

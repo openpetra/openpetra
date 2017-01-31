@@ -175,8 +175,8 @@
 				</query>
 			</calculation>
 			
-			<calculation id="Commitment Status" returnsFormat="text" returns="text">
-				<caption><value text="Comm. Status"/></caption>
+			<calculation id="Commitment Type" returnsFormat="text" returns="text">
+				<caption><value text="Comm. Type"/></caption>
 				<query>
 					<queryDetail>
 						<value variable="CommitmentStatus"/>

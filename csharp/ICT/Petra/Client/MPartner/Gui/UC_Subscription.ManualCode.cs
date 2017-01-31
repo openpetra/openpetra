@@ -370,7 +370,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         {
             /* if anwered OK to question below, the Issuesgroupbox screenparts are enabled. */
             if (MessageBox.Show(Catalog.GetString(
-                        "Issues data is usually automatically maintained by Petra. Are you sure you want to manually change it?"),
+                        "Issues data is usually automatically maintained by OpenPetra. Are you sure you want to manually change it?"),
                     Catalog.GetString("Edit Issues"),
                     MessageBoxButtons.OKCancel,
                     MessageBoxIcon.Question) == DialogResult.OK)

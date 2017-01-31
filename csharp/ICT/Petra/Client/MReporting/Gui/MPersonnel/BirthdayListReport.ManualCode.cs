@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private void grdTypes_InitialiseData(TFrmPetraReportingUtils APetraUtilsObject)
         {
-            // Get list of commitment statuses
+            // Get list of partner types
             FTypesTable = (PTypeTable)TDataCache.TMPartner.GetCacheablePartnerTable(
                 TCacheablePartnerTablesEnum.PartnerTypeList);
 

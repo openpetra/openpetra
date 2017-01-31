@@ -63,7 +63,7 @@ namespace Ict.Petra.Server.MPersonnel.queries
         /// <param name="ASQLParameterList"></param>
         protected override void RetrieveParameters(TParameterList AParameters, ref string ASqlStmt, ref List <OdbcParameter>ASQLParameterList)
         {
-            // prepare list of commitment statuses
+            // prepare list of commitment types
             List <String>param_commitment_status_choices = new List <String>();
 
             foreach (TVariant choice in AParameters.Get("param_commitment_status_choices").ToComposite())

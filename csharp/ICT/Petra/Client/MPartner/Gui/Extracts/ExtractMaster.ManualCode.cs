@@ -36,6 +36,7 @@ using Ict.Petra.Client.MReporting.Gui.MFinance;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
 using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Client.MReporting.Gui;
+using Ict.Petra.Client.App.Gui;
 
 namespace Ict.Petra.Client.MPartner.Gui.Extracts
 {
@@ -1315,6 +1316,26 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
         public bool ProcessFormsMessage(TFormsMessage AFormsMessage)
         {
             return ucoExtractMasterList.ProcessFormsMessage(AFormsMessage);
+        }
+
+        private void PrintUsingWord(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.PrintGrid(TStandardFormPrint.TPrintUsing.Word, false);
+        }
+
+        private void PrintUsingExcel(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.PrintGrid(TStandardFormPrint.TPrintUsing.Excel, false);
+        }
+
+        private void PrintPreviewInWord(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.PrintGrid(TStandardFormPrint.TPrintUsing.Word, true);
+        }
+
+        private void PrintPreviewInExcel(System.Object sender, EventArgs e)
+        {
+            ucoExtractMasterList.PrintGrid(TStandardFormPrint.TPrintUsing.Excel, true);
         }
     }
 

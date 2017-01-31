@@ -53,17 +53,17 @@ RootNode:
 
         rbtAllPartners:
             Dock: Top
-            Label: Include Persons with any Commitment Status (including no Commitment Status)
+            Label: Include Persons with any Commitment Type (including no Commitment Type)
             Checked: true
             ParameterValue: param_all_partners
         rbtSelectedCommitmentStatus:
             Dock: Top
-            Label: Include only Persons with one or more of the selected Commitment Status(es)
+            Label: Include only Persons with one or more of the selected Commitment Type(s)
             OnChange: CommitmentStatus_Changed
 
         grpCommitmentStatus:
             Dock: Fill
-            Label: Commitment Statuses
+            Label: Commitment Types
             Controls:
                 Row0: [rbtAllPartners]
                 Row1: [rbtSelectedCommitmentStatus]
@@ -79,7 +79,7 @@ RootNode:
             Controls: [chkCommitmentStatusOthers]
             Enabled: false
         chkCommitmentStatusOthers:
-            Label: "Include Persons with &no Commitment Status set"
+            Label: "Include Persons with &no Commitment Type set"
             CheckBoxAttachedLabel: right
             ParameterName: param_include_no_commitment_status
         ucoChkFilter:

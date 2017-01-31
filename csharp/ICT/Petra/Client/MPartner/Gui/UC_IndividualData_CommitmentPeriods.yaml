@@ -37,13 +37,13 @@ RootNode:
             TableName: PmStaffData
             Columns: [StatusCode, StartOfCommitment, EndOfCommitment, ReceivingField, HomeOffice]
             CustomColumns:
-                StatusCode: {Label=Commitment Status}
+                StatusCode: {Label=Commitment Type}
                 StartOfCommitment: {Label=Start Date, Type=DateTime}
                 EndOfCommitment: {Label=End Date, Type=DateTime}
                 ReceivingField: {Label=Receiving Field, Type=PartnerKey}
                 HomeOffice: {Label=Sending Field, Type=PartnerKey}
             ActionFocusRow: FocusedRowChanged
-            SortOrder: StatusCode ASC
+            SortOrder: StartOfCommitment DESC
             
         pnlDetails:
             Dock: Fill
@@ -67,7 +67,7 @@ RootNode:
         dtpStartDate: {Label=Commitment Start Date, DataField=PmStaffData.StartOfCommitment, Validation=true}
         dtpEndDate: {Label=Commitment End Date, DataField=PmStaffData.EndOfCommitment, Validation=Pair(dtpStartDate)}
         cmbCommitmentStatus:
-            Label: Commitment Status
+            Label: Commitment Type
             DataField: PmStaffData.StatusCode
             List: CommitmentStatusList
             Width: 400
