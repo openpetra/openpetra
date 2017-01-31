@@ -88,7 +88,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     {
                         String SelectionQuery =
                             "SELECT p_partner_key_n FROM m_extract JOIN m_extract_master ON m_extract.m_extract_id_i = m_extract_master.m_extract_id_i WHERE m_extract_name_c = '"
-                            + AParameters["param_extract"] + "'";
+                            +
+                            AParameters["param_extract"] + "'";
 
                         PartnerSelectionTable = DbAdapter.RunQuery(SelectionQuery, "PartnerSelection", Transaction);
                         List <String>PartnerList = new List <string>();
@@ -127,7 +128,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
                                             FROM p_partner
                                             WHERE p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     Partners = DbAdapter.RunQuery(PartnersQuery,
                         "Partners",
@@ -155,7 +157,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                 WHERE
 
                                                     p_person.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkPartnerClassData"].ToBool())
                     {
@@ -189,7 +192,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                                 OR p_partner_gift_destination.p_date_expires_d >= '2015-11-25'
                                                                 AND p_partner_gift_destination.p_date_effective_d != p_partner_gift_destination.p_date_expires_d))
                                                 WHERE p_family.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkPartnerClassData"].ToBool())
                     {
@@ -214,7 +218,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                         WHERE
 
                                                             p_organisation.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkPartnerClassData"].ToBool())
                     {
@@ -254,7 +259,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     p_church
                                                 WHERE
                                                     p_church.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkPartnerClassData"].ToBool())
                     {
@@ -282,7 +288,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 	                                            p_unit
                                             WHERE
 	                                            p_unit.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkPartnerClassData"].ToBool())
                     {
@@ -327,7 +334,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     p_subscription
                                                 WHERE
                                                     p_subscription.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkSubscriptions"].ToBool())
                     {
@@ -350,7 +358,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 	                                                p_partner_relationship, p_relation, p_partner
                                                 WHERE
 	                                                p_partner_relationship.p_partner_key_n IN("
-                        + PartnerSelection +
+                        +
+                        PartnerSelection +
                         @")
 	                                                AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
 	                                                AND p_partner.p_partner_key_n = p_partner_relationship.p_relation_key_n"                                                                                                                                                    ;
@@ -389,7 +398,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                                  FROM s_user_group
 
                                                                  WHERE s_user_id_c = '"
-                        + UserInfo.GUserInfo.UserID +
+                        +
+                        UserInfo.GUserInfo.UserID +
                         @"'
 
                                                                    AND s_group_id_c = 'ADDRESSCAN') = 0
@@ -420,7 +430,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     WHERE
 
                                                     p_partner_key_n IN("
-                        + PartnerSelection +
+                        +
+                        PartnerSelection +
                         @") AND
 
                                                     p_partner_attribute_type.p_attribute_type_c = p_partner_attribute.p_attribute_type_c AND
@@ -431,7 +442,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     ORDER BY
 
                                                     p_partner_key_n,
-	                                                PCIndex ASC, PTIndex ASC, PAIndex ASC"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ;
+	                                                PCIndex ASC, PTIndex ASC, PAIndex ASC"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
 
                     if (!AParameters["param_chkContactDetails"].ToBool())
                     {
@@ -459,7 +470,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     WHERE
 
                                                         p_partner_banking_details.p_partner_key_n IN("
-                        + PartnerSelection +
+                        +
+                        PartnerSelection +
                         @")
 
                                                         AND p_banking_details.p_banking_details_key_i = p_partner_banking_details.p_banking_details_key_i
@@ -494,7 +506,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     WHERE
 
                                                         p_partner_interest.p_partner_key_n IN("
-                        + PartnerSelection +
+                        +
+                        PartnerSelection +
                         @")
 
                                                         AND p_interest.p_interest_c = p_partner_interest.p_interest_c"                               ;
@@ -524,7 +537,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     WHERE
 
                                                         p_partner_contact.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkContacts"].ToBool())
                     {
@@ -558,7 +572,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                             WHERE
 
                                                 p_partner_reminder.p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkReminders"].ToBool())
                     {
@@ -592,7 +607,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                 p_partner_location, p_location, p_country
                                             WHERE
                                                 p_partner_location.p_partner_key_n IN("
-                        + PartnerSelection +
+                        +
+                        PartnerSelection +
                         @")
 
                                                 AND p_location.p_location_key_i = p_partner_location.p_location_key_i
@@ -615,7 +631,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                 FROM p_partner_type
                                                 JOIN p_type ON p_partner_type.p_type_code_c=p_type.p_type_code_c
                                                 WHERE p_partner_key_n IN("
-                        + PartnerSelection + ")";
+                        +
+                        PartnerSelection + ")";
 
                     if (!AParameters["param_chkSpecialTypes"].ToBool())
                     {
