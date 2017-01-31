@@ -406,7 +406,11 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                             // now we also need to delete the contact attributes (linked with this contact log)
                             PPartnerContactAttributeRow template = new PPartnerContactAttributeTable().NewRowTyped(false);
                             template.ContactId = ContactLogId;
-                            PPartnerContactAttributeAccess.DeleteUsingTemplate(template, null, Transaction);
+
+                            if (PPartnerContactAttributeAccess.CountUsingTemplate(template, null, Transaction) > 0)
+                            {
+                                PPartnerContactAttributeAccess.DeleteUsingTemplate(template, null, Transaction);
+                            }
 
                             // and the contact log itself needs to be deleted (if no other partner refers to it)
                             PContactLogAccess.DeleteByPrimaryKey(ContactLogId, Transaction);
