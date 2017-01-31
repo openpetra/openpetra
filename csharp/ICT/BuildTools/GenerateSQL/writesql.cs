@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -381,6 +381,11 @@ namespace GenerateSQL
                     DumpConstraints(ASw, ATable, eInclude.eInCreateTable, true);
                     DumpIndexes(ASw, ATable, eInclude.eInCreateTable, true);
                 }
+            }
+            else
+            {
+                // always add the primary key
+                DumpConstraints(ASw, ATable, eInclude.eOnlyLocal, true);
             }
 
             ASw.WriteLine();

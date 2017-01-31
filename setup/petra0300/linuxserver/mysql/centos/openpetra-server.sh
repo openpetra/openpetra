@@ -123,7 +123,8 @@ init() {
       systemctl enable mariadb
       echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
       echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "GRANT ALL ON $OPENPETRA_DBNAME TO $OPENPETRA_DBUSER@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "USE $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "GRANT ALL ON $OPENPETRA_DBNAME.* TO $OPENPETRA_DBUSER@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
       mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createdb-MySQL.sql
       rm -f $OpenPetraPath/tmp30/createdb-MySQL.sql
     fi
@@ -151,7 +152,7 @@ init() {
     chown -R $userName:$userName /home/$userName
 
     echo "creating tables..."
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/db30/createtables-MySQL.sql
+    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createtables-MySQL.sql
 
     echo "initial data..."
     # insert initial data so that loadymlgz will work
