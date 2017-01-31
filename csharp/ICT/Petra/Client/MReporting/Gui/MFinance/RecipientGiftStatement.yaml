@@ -60,7 +60,7 @@
 
         cmbReportType:
             ParameterName: param_report_type
-            OptionalValues: [=Complete, Donors Only]
+            OptionalValues: [=Complete, Donors Only, Gifts Only]
             OnChange: ReportTypeChanged
         dtpFromDate:
             Label: From

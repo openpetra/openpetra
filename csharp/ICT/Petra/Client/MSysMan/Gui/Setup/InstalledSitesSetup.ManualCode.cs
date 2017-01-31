@@ -122,7 +122,8 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             // save default site key
             if (cmbDefaultSite.SelectedValue != null)
             {
-                TSystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY, String.Format("{0:0000000000}", Convert.ToInt64(cmbDefaultSite.SelectedValue)));
+                TSystemDefaults.SetSystemDefault(SharedConstants.SYSDEFAULT_SITEKEY,
+                    String.Format("{0:0000000000}", Convert.ToInt64(cmbDefaultSite.SelectedValue)));
             }
 
             Result = TRemote.MSysMan.WebConnectors.SaveSiteKeys(AddedSiteKeyList, RemovedSiteKeyList);
@@ -241,7 +242,6 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
                 {
                     SelectedDefaultSite = Convert.ToInt64(cmbDefaultSite.SelectedValue);
                 }
-
             }
 
             String[] SiteKeyArray = SelectedSites.Split(',');

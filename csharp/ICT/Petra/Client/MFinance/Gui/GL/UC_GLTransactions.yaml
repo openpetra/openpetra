@@ -9,6 +9,7 @@ RootNode:
     Template: controlMaintainTable
     Actions:
         actNew: {Label=&Add, ActionClick=NewRow}
+        actInsert: {Label=&Insert, ActionClick=InsertRow}
         actDelete: {Label=&Delete, ActionClick=DeleteRecord, SkipReferenceCheck=true}
         actDeleteAll: {Label=Delete All, ActionClick=DeleteAllTrans}
         actImportTransactions: {Label=&Import Transactions From File, ActionClick=ImportTransactionsFromFile}
@@ -44,9 +45,10 @@ RootNode:
                 txtTransactionAmount-2: {Label=To Dr/Cr amount, Comparison=lte}
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNew, btnDelete, btnDeleteAll]
+            Controls: [btnNew, btnInsert, btnDelete, btnDeleteAll]
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
+        btnInsert: {Action= actInsert, Width=120}
         btnDelete: {Action=actDelete, Width=120}
         btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all the transactions}
 

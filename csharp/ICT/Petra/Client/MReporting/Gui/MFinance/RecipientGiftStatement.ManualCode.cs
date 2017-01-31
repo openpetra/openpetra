@@ -146,7 +146,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // register datatables with the report
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
+            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["PartnersAddresses"], "DonorAddresses");
 
             //
             // I need the name of the ledger, and the currency formatter..

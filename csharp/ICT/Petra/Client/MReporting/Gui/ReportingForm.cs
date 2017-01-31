@@ -1507,6 +1507,7 @@ namespace Ict.Petra.Client.MReporting.Gui
             ((IFrmReporting)FTheForm).ReadControls(FCalculator, AReportAction);
 
             TParameterList CurrentParameters = FCalculator.GetParameters();
+            FFastReportsPlugin.SaveTemplateInParameters(CurrentParameters);
 
             // if the current parameters don't have any columns, but the backup list has, copy all columns
             if ((CurrentParameters.Get("MaxDisplayColumns").ToInt32() == 0) && (FParametersFromFile.Get("MaxDisplayColumns").ToInt32() > 0))
@@ -1531,6 +1532,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <returns>void</returns>
         public virtual void SetControls(TParameterList AParameters)
         {
+            FFastReportsPlugin.SetTemplateFromParameters(AParameters);
             ((IFrmReporting)FTheForm).SetControls(AParameters);
         }
 

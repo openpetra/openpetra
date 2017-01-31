@@ -81,6 +81,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     Row.Delete();
                 }
             }
+
+            ApDocumentCanPost(FMainDS, FMainDS.AApDocument[0], true); // Various warnings may be generated, but the save still goes ahead.
         }
 
         /// <summary>
@@ -108,16 +110,62 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             btnHint.Height = txtDocumentStatus.Height;
         }
 
+        // When the user enters a total amount for the invoice,
+        // I'll copy it into the detail line,
+        // IFF there's only one detail, and no value has yet been entered.
+        private void InitialiseDetailAmount(object sender, EventArgs e)
+        {
+            decimal? invoiceTotal = txtTotalAmount.NumberValueDecimal;
+
+            if (!invoiceTotal.HasValue)
+            {
+                return;
+            }
+
+            if (FMainDS.AApDocumentDetail.DefaultView.Count == 1)
+            {
+                decimal? detailAmount = txtDetailAmount.NumberValueDecimal;
+
+                if (!detailAmount.HasValue || (detailAmount.Value == 0))
+                {
+                    txtDetailAmount.NumberValueDecimal = invoiceTotal.Value;
+                }
+            }
+        }
+
         private void RunOnceOnActivationManual()
         {
             lblDiscountDays.Visible = false;
             nudDiscountDays.Visible = false;        // There's currently no discounting, so this
             lblDiscountPercentage.Visible = false;  // just hides the associated controls.
             txtDiscountPercentage.Visible = false;
-            txtDetailAmount.TextChanged += new EventHandler(UpdateDetailBaseAmount);
-            txtExchangeRateToBase.TextChanged += new EventHandler(UpdateDetailBaseAmount);
+            txtDetailAmount.Leave += new EventHandler(UpdateDetailBaseAmount);
+            txtExchangeRateToBase.Leave += new EventHandler(UpdateDetailBaseAmount);
+            txtTotalAmount.Leave += InitialiseDetailAmount;
 
             UpdateRecordNumberDisplay();
+
+            // If this is a new invoice, move the focus so the user can begin entering it!
+            // (Immediately after this method, the grid will get the focus.)
+            if (txtDocumentCode.Text == "")
+            {
+                System.Windows.Forms.Timer focusCorrectionTimer = new System.Windows.Forms.Timer();
+                focusCorrectionTimer.Interval = 10;
+                focusCorrectionTimer.Tick += new EventHandler(TimerDrivenFocusCorrection);
+                focusCorrectionTimer.Start();
+            }
+        }
+
+        private void TimerDrivenFocusCorrection(Object Sender, EventArgs e)
+        {
+            System.Windows.Forms.Timer SendingTimer = Sender as System.Windows.Forms.Timer;
+
+            if (SendingTimer != null)
+            {
+                SendingTimer.Stop();
+            }
+
+            txtDocumentCode.Focus();
         }
 
         private void AnalysisAttributesGrid_RowSelected(System.Object sender, RangeRegionChangedEventArgs e)
@@ -437,7 +485,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     {
                         if (detailRow.RowState != DataRowState.Deleted)
                         {
-                            DetailAmount -= detailRow.Amount;
+                            DetailAmount -= detailRow.IsAmountNull() ? 0 : detailRow.Amount;
                         }
                     }
                 }
@@ -721,15 +769,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
+        /// <param name="Awarning">May be set to show that this is just a warning (eg during save operation)</param>
         /// <returns>true if the document TotalAmount equals the sum of its parts!</returns>
-        public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        public static bool BatchBalancesOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument, String Awarning = "")
         {
-            decimal DocumentBalance = AApDocument.TotalAmount;
+            decimal DocumentBalance = AApDocument.IsTotalAmountNull() ? 0 : AApDocument.TotalAmount;
 
             if (DocumentBalance == 0)
             {
+                String msg = String.Format(Catalog.GetString("The document {0} is empty.{1}"),
+                    AApDocument.DocumentCode,
+                    Awarning);
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format(Catalog.GetString("The document {0} is empty."), AApDocument.DocumentCode),
+                    msg,
                     Catalog.GetString("Balance Problem"));
                 return false;
             }
@@ -738,7 +790,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 if (Row.ApDocumentId == AApDocument.ApDocumentId) // NOTE: When called from elsewhere, the TDS could contain data for several documents.
                 {
-                    DocumentBalance -= Row.Amount;
+                    DocumentBalance -= Row.IsAmountNull() ? 0 : Row.Amount;
                 }
             }
 
@@ -749,7 +801,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             else
             {
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format(Catalog.GetString("The document {0} Amount does not equal the sum of the detail lines."), AApDocument.DocumentCode),
+                    String.Format(Catalog.GetString("The document {0} Amount does not equal the sum of the detail lines.{1}"),
+                        AApDocument.DocumentCode,
+                        Awarning),
                     Catalog.GetString("Balance Problem"));
                 return false;
             }
@@ -760,8 +814,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
+        /// <param name="Awarning">May be set to show that this is just a warning (eg during save operation)</param>
         /// <returns>false if any detail lines have incompatible cost centres.</returns>
-        public static bool AllLinesAccountsOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        public static bool AllLinesAccountsOK(AccountsPayableTDS Atds, AApDocumentRow AApDocument, String Awarning = "")
         {
             List <String>AccountCodesCostCentres = new List <string>();
 
@@ -772,7 +827,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     if ((Row.AccountCode == "") || (Row.CostCentreCode == ""))
                     {
                         MessageBox.Show(
-                            String.Format(Catalog.GetString("Account and Cost Centre must be specified in Document {0}."), AApDocument.DocumentCode),
+                            String.Format(
+                                Catalog.GetString("Account and Cost Centre must be specified in Document {0}.{1}"),
+                                AApDocument.DocumentCode,
+                                Awarning),
                             Catalog.GetString("Post Document"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
                         return false;
                     }
@@ -793,7 +851,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
             if (ReportMsg != "")
             {
-                MessageBox.Show(ReportMsg, Catalog.GetString("Invalid Account"), MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                ReportMsg += Awarning;
+                MessageBox.Show(ReportMsg, Catalog.GetString("Invalid Account"),
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return false;
             }
 
@@ -805,8 +865,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
+        /// <param name="Awarning">May be set to show that this is just a warning (eg during save operation)</param>
         /// <returns>false if any lines don't have the analysis attributes they require</returns>
-        public static bool AllLinesHaveAttributes(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        public static bool AllLinesHaveAttributes(AccountsPayableTDS Atds, AApDocumentRow AApDocument, String Awarning = "")
         {
             foreach (AApDocumentDetailRow Row in Atds.AApDocumentDetail.Rows)
             {
@@ -819,8 +880,11 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         if (!AllPresent)
                         {
                             System.Windows.Forms.MessageBox.Show(
-                                String.Format(Catalog.GetString("Analysis Attributes are required for account {0} in Document {1}."),
-                                    Row.AccountCode, AApDocument.DocumentCode),
+                                String.Format(
+                                    Catalog.GetString("Analysis Attributes are required for account {0} in Document {1}.{2}"),
+                                    Row.AccountCode,
+                                    AApDocument.DocumentCode,
+                                    Awarning),
                                 Catalog.GetString("Analysis Attributes"));
                             return false;
                         }
@@ -831,13 +895,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             return true;
         }
 
-        private static bool CurrencyIsOkForPosting(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        private static bool CurrencyIsOkForPosting(AccountsPayableTDS Atds, AApDocumentRow AApDocument, String Awarning = "")
         {
             if (AApDocument.CurrencyCode != Atds.AApSupplier[0].CurrencyCode)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format(Catalog.GetString("Document {0} cannot be posted because the supplier currency has been changed."),
-                        AApDocument.DocumentCode),
+                    String.Format(
+                        Catalog.GetString("Document {0} cannot be posted because the supplier currency has been changed.{1}"),
+                        AApDocument.DocumentCode,
+                        Awarning),
                     Catalog.GetString("Post Document"));
                 return false;
             }
@@ -850,13 +916,16 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="AApDocument"></param>
+        /// <param name="Awarning">May be set to show that this is just a warning (eg during save operation)</param>
         /// <returns></returns>
-        public static bool ExchangeRateIsOk(AccountsPayableTDS Atds, AApDocumentRow AApDocument)
+        public static bool ExchangeRateIsOk(AccountsPayableTDS Atds, AApDocumentRow AApDocument, String Awarning = "")
         {
             if (AApDocument.ExchangeRateToBase == 0)
             {
                 System.Windows.Forms.MessageBox.Show(
-                    String.Format(Catalog.GetString("No Exchange Rate has been set."), AApDocument.DocumentCode),
+                    String.Format(Catalog.GetString("No {0} Exchange Rate has been set.{1}"),
+                        AApDocument.CurrencyCode,
+                        Awarning),
                     Catalog.GetString("Post Document"));
                 return false;
             }
@@ -869,37 +938,65 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         /// <param name="Atds"></param>
         /// <param name="Adocument"></param>
+        /// <param name="AWarningOnly">Set true to show that this is just a warning (eg during save operation)</param>
         /// <returns>true if this document seems OK to post.</returns>
-        public static bool ApDocumentCanPost(AccountsPayableTDS Atds, AApDocumentRow Adocument)
+        public static bool ApDocumentCanPost(AccountsPayableTDS Atds, AApDocumentRow Adocument, Boolean AWarningOnly = false)
         {
             // If the batch will not balance, or required attributes are missing, I'll stop right here..
+            Boolean returnValue = true;
+            String warningMsg = AWarningOnly ? "\nThis problem will prevent the document being posted." : "";
 
-            if (!BatchBalancesOK(Atds, Adocument))
+            if (!BatchBalancesOK(Atds, Adocument, warningMsg))
             {
-                return false;
+                returnValue = false;
+
+                if (!AWarningOnly)
+                {
+                    return false;
+                }
             }
 
-            if (!AllLinesAccountsOK(Atds, Adocument))
+            if (!AllLinesAccountsOK(Atds, Adocument, warningMsg))
             {
-                return false;
+                returnValue = false;
+
+                if (!AWarningOnly)
+                {
+                    return false;
+                }
             }
 
-            if (!AllLinesHaveAttributes(Atds, Adocument))
+            if (!AllLinesHaveAttributes(Atds, Adocument, warningMsg))
             {
-                return false;
+                returnValue = false;
+
+                if (!AWarningOnly)
+                {
+                    return false;
+                }
             }
 
-            if (!ExchangeRateIsOk(Atds, Adocument))
+            if (!ExchangeRateIsOk(Atds, Adocument, warningMsg))
             {
-                return false;
+                returnValue = false;
+
+                if (!AWarningOnly)
+                {
+                    return false;
+                }
             }
 
-            if (!CurrencyIsOkForPosting(Atds, Adocument))
+            if (!CurrencyIsOkForPosting(Atds, Adocument, warningMsg))
             {
-                return false;
+                returnValue = false;
+
+                if (!AWarningOnly)
+                {
+                    return false;
+                }
             }
 
-            return true;
+            return returnValue;
         }
 
         /// <summary>
@@ -1234,7 +1331,20 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcAPTransactionChanged)
             {
+                if (FPetraUtilsObject.HasChanges)
+                {
+                    if (MessageBox.Show(
+                            Catalog.GetString("Something changed - do you need to reload this document? (You will lose any changes)"),
+                            Catalog.GetString("AP Edit Document"),
+                            MessageBoxButtons.YesNo,
+                            MessageBoxIcon.Exclamation) == DialogResult.No)
+                    {
+                        return false;
+                    }
+                }
+
                 LoadAApDocument(FMainDS.AApDocument[0].LedgerNumber, FMainDS.AApDocument[0].ApDocumentId);
+                FPetraUtilsObject.DisableSaveButton();
                 return true;
             }
             else

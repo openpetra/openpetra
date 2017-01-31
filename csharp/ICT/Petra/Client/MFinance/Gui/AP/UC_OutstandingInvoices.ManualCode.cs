@@ -101,9 +101,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             lblExcludedItems.Text = string.Format(lblExcludedItems.Text, FMainForm.LedgerCurrency);
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////////////////////////
-        // These methods are stubs that allow the auto-generated code to compile (we don't have a details panel)
-
         /// <summary>
         /// Method required by IGridBase.
         /// </summary>
@@ -120,7 +117,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Note:  We need to be sure to focus column 1 in this case because sometimes column 0 is not visible!!
-            grdInvoices.Selection.Focus(new SourceGrid.Position(ARowNumber, 1), true);
+            grdInvoices.Selection.SelectCell(new SourceGrid.Position(ARowNumber, 1), true);
             FPrevRowChangedRow = ARowNumber;
         }
 

@@ -71,7 +71,7 @@
             RowSpan:2
         cmbReportType:
             ParameterName: param_report_type
-            OptionalValues: [Complete, Totals]
+            OptionalValues: [Complete, Totals, Gifts Only]
             OnChange: ReportTypeChanged
         ucoMotivationCriteria:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_MotivationCriteria

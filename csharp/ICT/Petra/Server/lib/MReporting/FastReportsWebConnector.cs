@@ -33,6 +33,7 @@ using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
@@ -574,24 +575,14 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 Totals = Totals.DefaultView.ToTable();
             }
 
-            DataTable DonorAddresses = new DataTable("DonorAddresses");
-
-            foreach (DataRow Row in DistinctDonors.Rows)
-            {
-                // get best address for donor
-                Int64 DonorKey = (Int64)Row["DonorKey"];
-                tempTable = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, DonorKey);
-
-                if (tempTable != null)
+            DataTable DonorAddresses = null;
+            TDBTransaction Transaction = null;
+            ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+                ref Transaction,
+                delegate
                 {
-                    DonorAddresses.Merge(tempTable);
-                }
-
-                if (ADbAdapter.IsCancelled)
-                {
-                    return null;
-                }
-            }
+                    DonorAddresses = TAddressTools.GetBestAddressForPartners(DistinctDonors, 0, Transaction);
+                });
 
             if (ADbAdapter.IsCancelled)
             {
@@ -679,21 +670,13 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             if ((ReportType == "Complete") || (ReportType == "Donors Only") || (ReportType == "Gifts Only"))
             {
-                foreach (DataRow Row in DistinctDonors.Rows)
-                {
-                    // get best address for each distinct donor
-                    DataTable DonorTemp = TFinanceReportingWebConnector.GiftStatementDonorAddressesTable(ADbAdapter, Convert.ToInt64(Row["DonorKey"]));
-
-                    if (DonorTemp != null)
+                TDBTransaction Transaction = null;
+                ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
+                    ref Transaction,
+                    delegate
                     {
-                        DonorAddresses.Merge(DonorTemp);
-                    }
-
-                    if (ADbAdapter.IsCancelled)
-                    {
-                        return null;
-                    }
-                }
+                        DonorAddresses = TAddressTools.GetBestAddressForPartners(DistinctDonors, 0, Transaction);
+                    });
             }
             else
             {
