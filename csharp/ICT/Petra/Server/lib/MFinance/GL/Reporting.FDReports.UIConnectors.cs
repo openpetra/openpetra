@@ -555,7 +555,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         @"WITH GiftTotals AS (
 	                    SELECT p_donor_key_n AS donorKey, p_partner_class_c AS partnerClass, p_partner_short_name_c AS donorName,
 		                SUM(detail."
-                        + giftAmountColumn +
+                        +
+                        giftAmountColumn +
                         @") AS totalamount
 
 
@@ -583,7 +584,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                              @" AND detail.a_batch_number_i = gift.a_batch_number_i
 		                    AND detail.a_gift_transaction_number_i = gift.a_gift_transaction_number_i
 		                    AND gift.a_date_entered_d BETWEEN '"
-                             + AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
+                             +
+                             AParameters["param_start_date"].ToDate().ToString("yyyy-MM-dd") + @"' AND '" +
                              AParameters["param_end_date"].ToDate().ToString(
                         "yyyy-MM-dd") +
                              @"' AND gift.a_ledger_number_i = a_gift_batch.a_ledger_number_i
@@ -593,7 +595,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                              @" AND a_gift_batch.a_batch_number_i = gift.a_batch_number_i
                             AND ( a_gift_batch.a_batch_status_c = 'Posted' OR a_gift_batch.a_batch_status_c = 'posted')
 		                    AND p_partner.p_partner_key_n = gift.p_donor_key_n "
-                             + MotivationQuery +
+                             +
+                             MotivationQuery +
                              @" GROUP BY gift.p_donor_key_n, p_partner.p_partner_class_c, p_partner.p_partner_short_name_c
 
 	                    ORDER BY totalamount DESC
@@ -607,7 +610,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                        FROM GiftTotals WHERE totalamount >= 0
                         )
                 SELECT *
-                FROM CumulativeTotals WHERE PercentCumulative"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
+                FROM CumulativeTotals WHERE PercentCumulative"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ;
 
                     switch (AParameters["param_donor_type"].ToString())
                     {
