@@ -186,7 +186,7 @@ OpenPetra:
                     PeriodEnd:
                         MonthEnd: {Description:Close a month, PermissionsRequired=FINANCE-1+FINANCE-2, ActionOpenScreen=TPeriodEndMonth}
                         YearEnd: {Description:Close a year, PermissionsRequired=FINANCE-1+FINANCE-3, ActionOpenScreen=TPeriodEndYear}
-                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, ActionOpenScreen=TGLRevaluation}
+                        ForeignCurrencyRevaluation: {Description:Runs a Foreign Currency Revaluation, PermissionsRequired=FINANCE-1+FINANCE-2, ActionOpenScreen=TGLRevaluation}
                     Reports: {Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, PermissionsRequired=FINANCE-1+FINANCE-RPT}  # Icon=Print.ico
                         AccountDetailReport: {Description=Create a Detailed Report of selected Accounts/Cost Centres, ActionOpenScreen=TFrmAccountDetail}
 #                       AccountDetailWithAnalysisAttribute: {ActionOpenScreen=TFrmAnalysisAttribute}
@@ -462,10 +462,7 @@ OpenPetra:
                 Users: {DontShowNestedTasksAsLinks=true}
                     Maintenance:
                         MaintainUsers: {Description: Add new users and manage permissions, ActionOpenScreen=TFrmMaintainUsers}
-                        #DeleteUser:
-                        #ModifyUserPermissions:
-                        #ImportUserPermissions:
-                    Activity:
+                    #Activity:
                         #ViewCurrentUsers:
                         #ViewLoginLog:
                 SecuritySetup: {DontShowNestedTasksAsLinks=true, Label=Setup}
@@ -477,11 +474,11 @@ OpenPetra:
                         ExportAllData: {ActionClick=TSysManMain.ExportAllData}
                     RestoreDatabase:
                         RestoreDatabaseFromBackup: {ActionClick=TSysManMain.RestoreDatabase, Description=Replaces all existing data with backed-up data}
-            Auditing:
-                Logs: {DontShowNestedTasksAsLinks=true}
+            #Auditing:
+                #Logs: {DontShowNestedTasksAsLinks=true}
                     #ErrorLog
                     #SystemStatusLog
-                AuditingReports: {DontShowNestedTasksAsLinks=true, Label=Reports}
+                #AuditingReports: {DontShowNestedTasksAsLinks=true, Label=Reports}
                     #PartnerFullReport
             SystemSettings:
                 SettingsSetup: {DontShowNestedTasksAsLinks=true, Namespace=Ict.Petra.Client.MSysMan.Gui.Setup, Label=Setup}

@@ -1152,10 +1152,10 @@ namespace Ict.Petra.Server.MFinance.GL
             int nonCriticalErrorCount = 0;
 
             string costCentreCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Cost centre"),
-                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
+                AMainDS.ATransaction.ColumnCostCentreCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
 
             string accountCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Account code"),
-                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
+                AMainDS.ATransaction.ColumnAccountCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
 
             // This might add a non-critical error
             int msgCount = AMessages.Count;
@@ -1167,10 +1167,10 @@ namespace Ict.Petra.Server.MFinance.GL
             NewTransaction.AccountCode = accountCode;
 
             NewTransaction.Narrative = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Narrative"),
-                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnNarrative, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
 
             NewTransaction.Reference = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Reference"),
-                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                AMainDS.ATransaction.ColumnReference, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
 
             DateTime TransactionDate = TCommonImport.ImportDate(ref FImportLine, FDelimiter, FCultureInfoDate, ADatesMayBeIntegers,
                 Catalog.GetString(
@@ -1188,9 +1188,9 @@ namespace Ict.Petra.Server.MFinance.GL
             for (int i = 0; i < 10; i++)
             {
                 String analysisType = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Type") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper();
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisTypeCode, ARowNumber, AMessages, AValidationControlsDictTransaction).ToUpper().Trim();
                 String analysisValue = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Analysis Value") + "#" + i,
-                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages, AValidationControlsDictTransaction);
+                    AMainDS.ATransAnalAttrib.ColumnAnalysisAttributeValue, ARowNumber, AMessages, AValidationControlsDictTransaction).Trim();
 
                 bool gotType = (analysisType != null) && (analysisType.Length > 0);
                 bool gotValue = (analysisValue != null) && (analysisValue.Length > 0);

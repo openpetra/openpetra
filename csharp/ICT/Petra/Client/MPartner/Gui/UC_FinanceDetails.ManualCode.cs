@@ -214,6 +214,19 @@ namespace Ict.Petra.Client.MPartner.Gui
                     grpOther.Height += 27;
                 }
             }
+
+            //
+            // Validation will not be called for the fields above the grid,
+            // unless there's a selected row in the grid.
+
+            txtTaxDeductiblePercentage.Leave += PerformLocalValidation;
+            chkLimitTaxDeductibility.Leave += PerformLocalValidation;
+            dtpTaxDeductibleValidFrom.Leave += PerformLocalValidation;
+        }
+
+        private void PerformLocalValidation(object sender, EventArgs e)
+        {
+            ValidateDataDetailsManual(null);
         }
 
         /// <summary>
@@ -537,7 +550,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     {
                         if (!dtpTaxDeductibleValidFrom.ValidDate(false))
                         {
-                            ValidateValidFromDate();
+                            ValidateTaxDeductibleFromDate();
                             return false;
                         }
 
@@ -1284,17 +1297,35 @@ namespace Ict.Petra.Client.MPartner.Gui
 
         private void ValidateDataDetailsManual(PBankingDetailsRow ARow)
         {
+            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
+
+            if (FTaxDeductiblePercentageEnabled)
+            {
+                if (chkLimitTaxDeductibility.Checked)
+                {
+                    // validate dtpTaxDeductibleValidFrom
+                    ValidateTaxDeductibleFromDate();
+                }
+
+                Decimal? enteredPercentage = txtTaxDeductiblePercentage.NumberValueDecimal;
+
+                if (enteredPercentage.HasValue)
+                {
+                    if (enteredPercentage.Value > 100)
+                    {
+                        txtTaxDeductiblePercentage.NumberValueDecimal = 100;
+                    }
+
+                    if (enteredPercentage.Value < 0)
+                    {
+                        txtTaxDeductiblePercentage.NumberValueDecimal = 0;
+                    }
+                }
+            }
+
             if (ARow == null)
             {
                 return;
-            }
-
-            TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
-
-            if (FTaxDeductiblePercentageEnabled && chkLimitTaxDeductibility.Checked)
-            {
-                // validate dtpTaxDeductibleValidFrom
-                ValidateValidFromDate();
             }
 
             // obtain the bank's country code (if it exists)
@@ -1329,7 +1360,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// Adds validation for dtpTaxDeductibleValidFrom
         /// </summary>
         /// <returns>Returns false if validation error</returns>
-        private bool ValidateValidFromDate()
+        private bool ValidateTaxDeductibleFromDate()
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 

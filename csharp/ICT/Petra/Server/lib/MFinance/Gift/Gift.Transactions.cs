@@ -4932,6 +4932,27 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         }
 
         /// <summary>
+        /// Load any Tax record for this partner
+        /// </summary>
+        /// <param name="APartnerKey"></param>
+        /// <returns></returns>
+        [RequireModulePermission("FINANCE-1")]
+        public static PTaxTable LoadPartnerPtax(long APartnerKey)
+        {
+            PTaxTable taxTbl = new PTaxTable();
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted,
+                ref Transaction,
+                delegate
+                {
+                    taxTbl = PTaxAccess.LoadViaPPartner(APartnerKey, Transaction);
+                });
+
+            return taxTbl;
+        }
+
+        /// <summary>
         /// Find the cost centre associated with the partner
         /// </summary>
         /// <returns>Cost Centre code</returns>

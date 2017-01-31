@@ -129,6 +129,8 @@ namespace Ict.Petra.Server.MFinance.Gift
                 return;
             }
 
+            ACommentType = ACommentType.Trim();
+
             if (String.Compare(ACommentType, MFinanceConstants.GIFT_COMMENT_TYPE_DONOR, false) == 0)
             {
                 ACommentType = MFinanceConstants.GIFT_COMMENT_TYPE_DONOR;
@@ -1547,9 +1549,9 @@ namespace Ict.Petra.Server.MFinance.Gift
             AGiftDetails.ConfidentialGiftFlag = TCommonImport.ImportBoolean(ref FImportLine, FDelimiter, Catalog.GetString("Confidential gift"),
                 FMainDS.AGiftDetail.ColumnConfidentialGiftFlag, ARowNumber, AMessages, null);
             AGiftDetails.MotivationGroupCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation group code"),
-                FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages, null).ToUpper();
+                FMainDS.AGiftDetail.ColumnMotivationGroupCode, ARowNumber, AMessages, null).ToUpper().Trim();
             AGiftDetails.MotivationDetailCode = TCommonImport.ImportString(ref FImportLine, FDelimiter, Catalog.GetString("Motivation detail"),
-                FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper();
+                FMainDS.AGiftDetail.ColumnMotivationDetailCode, ARowNumber, AMessages, null).ToUpper().Trim();
 
             //Always lookup the RecipientLedgerNumber
             AGiftDetails.RecipientLedgerNumber = TGiftTransactionWebConnector.GetRecipientFundNumber(AGiftDetails.RecipientKey,
@@ -1626,7 +1628,7 @@ namespace Ict.Petra.Server.MFinance.Gift
 
             if (AGiftDetails.MailingCode != null)
             {
-                AGiftDetails.MailingCode = AGiftDetails.MailingCode.ToUpper();
+                AGiftDetails.MailingCode = AGiftDetails.MailingCode.Trim().ToUpper();
             }
 
             // Find the default Tax deductabilty from the motivation detail. This ensures that the column can be missing.

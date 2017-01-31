@@ -4148,6 +4148,15 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             "' AND a_cost_centre_code_c <='" + AParameters["param_cost_centre_code_end"].ToString() + "'";
                     break;
                 } // "CostCentreRange"
+
+                case "AccountLevel":
+                {
+                    string StandardSummaryCostCentre = LedgerNumber.ToString("00") + "00S";
+                    Query = "SELECT a_cost_centre_code_c AS CC, a_cost_centre_name_c AS Name FROM a_cost_centre WHERE a_ledger_number_i= " +
+                            LedgerNumber +
+                            " AND a_cost_centre_code_c='" + StandardSummaryCostCentre + "'";
+                    break;
+                } // "AccountLevel"
             } // switch
 
             TDBTransaction Transaction = null;

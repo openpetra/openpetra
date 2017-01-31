@@ -463,9 +463,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     if (TSystemDefaults.GetBooleanDefault("GovIdEnabled",
                             false))                                               // This gets the Austrian bPK field...
                     {
+                        Boolean filterDonorList = false;
+
+                        if ((AParameters.ContainsKey("param_donor")) && (AParameters["param_donor"].ToString() == "All Donors"))
+                        {
+                            filterDonorList = true;
+                        }
+
                         pTaxFieldAsRequired =
                             ", PUB_p_tax.p_tax_ref_c AS TaxRef, PUB_p_person.p_date_of_birth_d AS DOB, PUB_p_partner_attribute.p_value_c AS Email";
-                        Boolean requireBpk = AParameters["param_chkRequireBpkCode"].ToBool();
+                        Boolean requireBpk = filterDonorList ? AParameters["param_chkRequireBpkCode"].ToBool() : false;
                         pTaxJoinAsRequired = (requireBpk) ?
                                              " INNER JOIN PUB_p_tax ON (p_donor_key_n = PUB_p_tax.p_partner_key_n AND p_tax_type_c = 'GovId') "
                                              :
@@ -481,7 +488,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                               " ON (p_donor_key_n = p_partner_attribute.p_partner_key_n" +
                                               " AND p_partner_attribute.p_primary_l = TRUE), ";
 
-                        Boolean requireNoBpk = AParameters["param_chkRequireNoBpkCode"].ToBool();
+                        Boolean requireNoBpk = filterDonorList ? AParameters["param_chkRequireNoBpkCode"].ToBool() : false;
 
                         if (requireNoBpk)
                         {

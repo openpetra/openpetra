@@ -959,8 +959,21 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 {
                     DonorInfo += TSystemDefaults.GetStringDefault("GovIdLabel", "bPK") + ": ";
                     FMainDS.PTax.DefaultView.RowFilter = "p_partner_key_n=" + DonorRow.PartnerKey;
+                    Boolean DonorHasBpk = (FMainDS.PTax.DefaultView.Count > 0);
+
+                    if (DonorHasBpk)
+                    {
+                        chkDetailTaxDeductible.Checked = true;
+                        chkDetailTaxDeductible.Enabled = true;
+                    }
+                    else
+                    {
+                        chkDetailTaxDeductible.Enabled = false;
+                        chkDetailTaxDeductible.Checked = false;
+                    }
+
                     DonorInfo +=
-                        (FMainDS.PTax.DefaultView.Count > 0)
+                        DonorHasBpk
                         ?
                         ((PTaxRow)(FMainDS.PTax.DefaultView[0].Row)).TaxRef
                         :

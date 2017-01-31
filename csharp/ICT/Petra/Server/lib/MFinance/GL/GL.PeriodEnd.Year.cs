@@ -177,36 +177,6 @@ namespace Ict.Petra.Server.MFinance.GL
             }
         }
 
-        private void PurgeIchStewardshipTable()
-        {
-            if (TPeriodEndOperations.FwasCancelled)
-            {
-                return;
-            }
-
-            TDBTransaction Transaction = null;
-            Boolean ShouldCommit = true;
-
-            if (!FInfoMode)
-            {
-                DBAccess.GDBAccessObj.GetNewOrExistingAutoTransaction(IsolationLevel.Serializable,
-                    TEnforceIsolationLevel.eilMinimum,
-                    ref Transaction,
-                    ref ShouldCommit,
-                    delegate
-                    {
-                        String Query = "DELETE FROM a_ich_stewardship WHERE" +
-                                       " a_ledger_number_i=" + FledgerInfo.LedgerNumber +
-                                       " AND a_period_number_i<=" + FledgerInfo.NumberOfAccountingPeriods;
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
-
-                        Query = "UPDATE a_ich_stewardship SET a_period_number_i = a_period_number_i-" + FledgerInfo.NumberOfAccountingPeriods +
-                                " WHERE a_ledger_number_i=" + FledgerInfo.LedgerNumber;
-                        DBAccess.GDBAccessObj.ExecuteNonQuery(Query, Transaction);
-                    });
-            }
-        }
-
         /// <summary>
         /// Master routine ...
         /// </summary>
@@ -248,11 +218,6 @@ namespace Ict.Petra.Server.MFinance.GL
             RunPeriodEndSequence(new TGlmNewYearInit(FledgerInfo, OldYearNum, this),
                 Catalog.GetString("Initialize the database for next year"));
 
-            /* As far as we can tell, there's nothing to do for budgets:
-             *          RunPeriodEndSequence(new TNewYearBudgets(FledgerInfo),
-             *              Catalog.GetString("Initialise budgets for next year"));
-             */
-
             RunPeriodEndSequence(new TResetForwardPeriodBatches(FledgerInfo, OldYearNum),
                 Catalog.GetString("Re-base last year's forward-posted batches so they're in the new year."));
 
@@ -260,7 +225,6 @@ namespace Ict.Petra.Server.MFinance.GL
                 Catalog.GetString("Re-base last year's forward-posted ICH Stewardship to the new year."));
 
             PurgeProcessedFeeTable();
-            PurgeIchStewardshipTable();
 
             if (TPeriodEndOperations.FwasCancelled)
             {
@@ -1107,6 +1071,29 @@ namespace Ict.Petra.Server.MFinance.GL
                     try
                     {
                         String Query =
+                            "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
+                            " PUB_a_journal.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
+                            " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
+                            " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
+                            " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
+                        AJournalTable JournalTbl = new AJournalTable();
+                        DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, Transaction);
+
+                        if (JournalTbl.Rows.Count > 0)
+                        {
+                            if (!FInfoMode)
+                            {
+                                foreach (AJournalRow JournalRow in JournalTbl.Rows)
+                                {
+                                    JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
+                                }
+
+                                AJournalAccess.SubmitChanges(JournalTbl, Transaction);
+                                SubmissionOK = true;
+                            }
+                        }
+
+                        Query =
                             "SELECT * FROM PUB_a_batch WHERE " +
                             "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                             " AND a_batch_year_i=" + FOldYearNum +
@@ -1127,29 +1114,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                 }
 
                                 ABatchAccess.SubmitChanges(BatchTbl, Transaction);
-                                SubmissionOK = true;
-                            }
-                        }
-
-                        Query =
-                            "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
-                            " PUB_a_journal.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                            " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
-                            " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
-                            " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;
-                        AJournalTable JournalTbl = new AJournalTable();
-                        DBAccess.GDBAccessObj.SelectDT(JournalTbl, Query, Transaction);
-
-                        if (JournalTbl.Rows.Count > 0)
-                        {
-                            if (!FInfoMode)
-                            {
-                                foreach (AJournalRow JournalRow in JournalTbl.Rows)
-                                {
-                                    JournalRow.JournalPeriod -= FLedgerInfo.NumberOfAccountingPeriods;
-                                }
-
-                                AJournalAccess.SubmitChanges(JournalTbl, Transaction);
                                 SubmissionOK = true;
                             }
                         }
@@ -1247,17 +1211,17 @@ namespace Ict.Petra.Server.MFinance.GL
                 {
                     try
                     {
+                        AIchStewardshipTable StewardshipTbl = new AIchStewardshipTable();
                         String Query =
                             "SELECT * FROM PUB_a_ich_stewardship WHERE " +
                             "a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
-                            " AND (a_year_i=" + FoldYearNum + " OR a_year_i=0)";
-                        DataTable Tbl = DBAccess.GDBAccessObj.SelectDT(Query, "AIchStewardship", Transaction);
+                            " AND (a_year_i=" + FoldYearNum +
+                            " OR a_year_i=0)"; // a_year_i may be zero because previously we didn't have a_year, but now we do.
 
-                        if (Tbl.Rows.Count > 0)
+                        DBAccess.GDBAccessObj.SelectDT(StewardshipTbl, Query, Transaction);
+
+                        if (StewardshipTbl.Rows.Count > 0)
                         {
-                            AIchStewardshipTable StewardshipTbl = new AIchStewardshipTable();
-                            StewardshipTbl.Merge(Tbl);
-
                             for (Int32 Idx = StewardshipTbl.Rows.Count - 1; Idx >= 0; Idx--)
                             {
                                 AIchStewardshipRow StewardshipRow = StewardshipTbl[Idx];
@@ -1268,15 +1232,6 @@ namespace Ict.Petra.Server.MFinance.GL
                                     StewardshipRow.Year = FoldYearNum + 1;
                                     JobSize++;
                                 }
-
-/*
- * This kind of purge is not required now - we're keeping old Stewardship rows, until further notice:
- *
- *                              else
- *                              {
- *                                  StewardshipRow.Delete();
- *                              }
- */
                             }
 
                             if (!FInfoMode)

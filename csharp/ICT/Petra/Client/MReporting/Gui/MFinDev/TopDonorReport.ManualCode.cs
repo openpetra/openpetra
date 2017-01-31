@@ -232,7 +232,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         {
             ArrayList reportParam = ACalc.GetParameters().Elems;
 
-            Dictionary<String, TVariant> paramsDictionary = new Dictionary<string, TVariant>();
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
 
             foreach (Shared.MReporting.TParameter p in reportParam)
             {

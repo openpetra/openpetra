@@ -47,24 +47,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <summary>
         /// The user can insert a recipient key manualy and so each key has to be checked for
         /// usability. Parallel to this request you can check the values of MotivationGroup and
-        /// MotivationDetail. In normal cases the global defaul values shall be used.
-        /// But in some cases the "PartnerKey"-specific defaults shall be used.
+        /// MotivationDetail. In normal cases the global default values will be used.
+        /// But in some cases "PartnerKey"-specific defaults are used instead.
         ///
         /// This Routine
         /// 1. Checks if PartnerKey is available in p_partner
-        /// 2. If PartnerKey is not available the result PartnerKeyIsValid = false and the other
-        ///    parameter are not changed.
-        /// 3. If PartnerKey is available then PartnerKeyIsValid = false and:
+        /// 2. If PartnerKey is not available the result PartnerKeyIsValid = false
+        ///   and the other parameters are not changed.
+        /// 3. If PartnerKey is available then PartnerKeyIsValid = true and:
         /// 4. The Table-Entry p_partner_class_c is checked for the value "unit"
-        /// 5. If p_partner_class_c does not hold the value unit, then the routine is done, the other
-        ///    parameters are not changed
-        /// 6. If p_partner_class_c holds the value "unit" then the table p_unit shall be checked.
-        /// 7. If p_unit.p_partner_class_c holds the value "KEYMIN" then the value of MotivationDetail
-        ///    shall be changed to KEY-MIN.
+        /// 5. If p_partner_class_c does not hold the value unit, then the routine is done;
+        ///   the other parameters are not changed
+        /// 6. If p_partner_class_c holds the value "unit" then the table p_unit is checked.
+        /// 7. If p_unit.p_partner_class_c holds the value "KEYMIN" then MotivationDetail
+        ///    is changed to KEY-MIN.
         /// 8. If p_unit.p_partner_class_c does not hold the value "KEYMIN" the routine is done.
         /// </summary>
         /// <param name="APartnerKey"></param>
-        /// <param name="AMotivationGroup">Output: Always set to GIFT</param>
+        /// <param name="AMotivationGroup">Output: Probably set to GIFT</param>
         /// <param name="AMotivationDetail">Input: default value; unlikely to be used!
         ///                               Output: value depending on APartnerKey. </param>
         /// <returns>true if parther key is valid</returns>
@@ -87,28 +87,23 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                     ref readTransaction,
                     delegate
                     {
-                        PPartnerTable myPPartnerTable = null;
-
-                        myPPartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+                        PPartnerTable myPPartnerTable = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
                         if (myPPartnerTable.Rows.Count == 1)
                         {
-                            // Entry for partnerKey is valid
+                            // partnerKey is valid
                             PartnerKeyIsValid = true;
-                            PPartnerRow partnerRow = null;
+                            PPartnerRow partnerRow = myPPartnerTable[0];
 
-                            partnerRow = (PPartnerRow)myPPartnerTable.Rows[0];
-
-                            // Change motivationDetail if ColumnPartnerClass is UNIT
+                            // Change motivationDetail if PartnerClass is UNIT
                             if (partnerRow.PartnerClass.Equals(MPartnerConstants.PARTNERCLASS_UNIT))
                             {
                                 // AND KEY-MIN
                                 bool KeyMinFound = false;
 
-                                // first check if a motivation detail is linked to this potential key min
-                                AMotivationDetailTable MotivationDetailTable = null;
-
-                                MotivationDetailTable = AMotivationDetailAccess.LoadViaPPartner(APartnerKey, readTransaction);
+                                // first check if a specific motivation detail is linked to this partner
+                                AMotivationDetailTable MotivationDetailTable
+                                    = AMotivationDetailAccess.LoadViaPPartner(APartnerKey, readTransaction);
 
                                 if ((MotivationDetailTable != null) && (MotivationDetailTable.Rows.Count > 0))
                                 {
@@ -120,39 +115,41 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                             motivationDetail = MotivationDetailTable[0].MotivationDetailCode;
 
                                             KeyMinFound = true;
-                                            break;
+                                            break; // Go with the first entry found.
                                         }
                                     }
                                 }
 
-                                // second check to see if this is a key min
                                 if (!KeyMinFound)
                                 {
-                                    PUnitTable pUnitTable = null;
-
-                                    pUnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
+                                    // Is this is a key min, or a field?
+                                    PUnitTable pUnitTable = PUnitAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
                                     if (pUnitTable.Rows.Count == 1)
                                     {
-                                        PUnitRow unitRow = null;
+                                        PUnitRow unitRow = pUnitTable[0];
 
-                                        unitRow = (PUnitRow)pUnitTable.Rows[0];
-
-                                        if (unitRow.UnitTypeCode.Equals(MPartnerConstants.UNIT_TYPE_KEYMIN))
+                                        switch (unitRow.UnitTypeCode)
                                         {
-                                            motivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
-                                        }
-                                        else
-                                        {
-                                            motivationDetail =
-                                                TSystemDefaults.GetStringDefault(SharedConstants.SYSDEFAULT_DEFAULTFIELDMOTIVATION,
-                                                    MFinanceConstants.GROUP_DETAIL_FIELD);
-
-                                            // if system default is empty then set to FIELD
-                                            if (string.IsNullOrEmpty(motivationDetail))
-                                            {
+                                            case MPartnerConstants.UNIT_TYPE_AREA:
+                                            case MPartnerConstants.UNIT_TYPE_FUND:
+                                            case MPartnerConstants.UNIT_TYPE_FIELD:
                                                 motivationDetail = MFinanceConstants.GROUP_DETAIL_FIELD;
-                                            }
+                                                break;
+
+                                            case MPartnerConstants.UNIT_TYPE_KEYMIN:
+                                                motivationDetail = MFinanceConstants.GROUP_DETAIL_KEY_MIN;
+                                                break;
+
+                                            case MPartnerConstants.UNIT_TYPE_COUNTRY:
+                                            case MPartnerConstants.UNIT_TYPE_CONFERENCE:
+                                            case MPartnerConstants.UNIT_TYPE_OTHER:
+                                            case MPartnerConstants.UNIT_TYPE_ROOT:
+                                            case MPartnerConstants.UNIT_TYPE_TEAM:
+                                            case MPartnerConstants.UNIT_TYPE_WORKING_GROUP:
+                                            default:
+                                                motivationDetail = MFinanceConstants.GROUP_DETAIL_SUPPORT;
+                                                break;
                                         }
                                     }
                                 }

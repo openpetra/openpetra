@@ -22,6 +22,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+#if apparently_noone_needs_anything_in_this_module
 using System;
 using System.Collections.Specialized;
 using System.Data;
@@ -2046,3 +2047,4 @@ namespace Ict.Petra.Server.MFinance.ICH
         }
     }
 }
+#endif

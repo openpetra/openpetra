@@ -169,7 +169,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
             //
             // For reports that must be sent on email, one page at a time,
-            // I'm calling the FastReports plugin multiple times,
+            // I'm using the AutoEmailReports method which calls the FastReports plugin multiple times,
             // and then I'm going to return false, which will prevent the default action using this dataset.
 
             Shared.MReporting.TParameterList pm = ACalc.GetParameters();

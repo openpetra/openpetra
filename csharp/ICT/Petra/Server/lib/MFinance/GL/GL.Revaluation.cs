@@ -67,7 +67,7 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// <param name="glBatchNumber">If a batch was generated, the caller should print it.</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
         /// <returns>true if a forex batch was posted.</returns>
-        [RequireModulePermission("FINANCE-1")]
+        [RequireModulePermission("FINANCE-2")]
         public static bool Revaluate(
             int ALedgerNum,
             string[] AForeignAccount,

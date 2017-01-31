@@ -610,7 +610,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 Int64 recipientKey = (Int64)Row["RecipientKey"];
 
-                if (ReportType == "Complete")
+                if ((ReportType == "Complete") || (ReportType == "Gifts Only"))
                 {
                     // get historical totals for recipient
                     Decimal thisYearTotal = 0;
@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             DataTable DonorAddresses = new DataTable("DonorAddresses");
 
-            if ((ReportType == "Complete") || (ReportType == "Donors Only"))
+            if ((ReportType == "Complete") || (ReportType == "Donors Only") || (ReportType == "Gifts Only"))
             {
                 foreach (DataRow Row in DistinctDonors.Rows)
                 {
@@ -673,6 +673,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         return null;
                     }
                 }
+            }
+            else
+            {
+                DonorAddresses.Columns.Add("DonorKey", typeof(Int64));
+                DonorAddresses.Columns.Add("DonorName", typeof(String));
+                DonorAddresses.Columns.Add("Locality", typeof(String));
+                DonorAddresses.Columns.Add("p_street_name_c", typeof(String));
+                DonorAddresses.Columns.Add("p_address_3_c", typeof(String));
+                DonorAddresses.Columns.Add("p_postal_code_c", typeof(String));
+                DonorAddresses.Columns.Add("p_city_c", typeof(String));
+                DonorAddresses.Columns.Add("p_county_c", typeof(String));
+                DonorAddresses.Columns.Add("p_country_code_c", typeof(String));
+                DonorAddresses.Columns.Add("p_address_order_i", typeof(String));
             }
 
             if (ReportType == "Donors Only")
