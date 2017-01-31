@@ -108,7 +108,7 @@ OpenPetra:
                     MergePartners: {Label=Merge Partners}
                         MergePartners: {Label=Merge Partners, Description=Merge two partner records together, ActionOpenScreen=TFrmMergePartnersDialog}
                     Subscriptions: {Label=Subscriptions}
-                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=Cancel Subscriptions, Description=Cancel all expired Subscriptions}
+                        CancelSubscriptions: {ActionClick=TPartnerMain.CancelExpiredSubscriptions, Label=End Expired Subscriptions, Description=Update Status for all expired Subscriptions}
                 PartnerSetup: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, DontShowNestedTasksAsLinks=true, Label=Setup}
                     Address:  
                         AddresseeTypes: {Label=Addressee Types, Description=Maintain Addressee Types, ActionOpenScreen=TFrmAddresseeTypeSetup}

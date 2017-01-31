@@ -467,24 +467,30 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         /// <summary>
-        /// Cancel all subscriptions that have a past expiry date and that are not cancelled yet
+        /// End all subscriptions that have a past expiry date and that have no cancel date yet
         /// </summary>
         /// <param name="AParentForm">Form where this method is called from</param>
         /// <returns>void</returns>
         public static void CancelExpiredSubscriptions(Form AParentForm)
         {
-            if (MessageBox.Show(Catalog.GetString("You are about to cancel all subscriptions that have already expired. \r\nDo you want to continue?"),
-                    Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(Catalog.GetString("You are about to end all Subscriptions which have passed their Expiry Date.\r\n\r\n" +
+                        "This will set:\r\n" +
+                        "  * Status to \'Expired\'\r\n" +
+                        "  * Reason Ended to \'Complete\'\r\n" +
+                        "  * Date Ended to today\r\n\r\n" +
+                        "for all Subscriptions where the Expiry Date has passed and the Date Ended has not been set.\r\n\r\n\r\n" +
+                        "Do you want to continue?"),
+                    Catalog.GetString("End Subscriptions"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 if (TRemote.MPartner.Partner.WebConnectors.CancelExpiredSubscriptions())
                 {
-                    MessageBox.Show(Catalog.GetString("Expired Subscriptions are now cancelled"),
-                        Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show(Catalog.GetString("Expired Subscriptions are now ended"),
+                        Catalog.GetString("End Subscriptions"), MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
-                    MessageBox.Show(Catalog.GetString("Error while cancelling expired Subscriptions"),
-                        Catalog.GetString("Subscription Cancellation"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(Catalog.GetString("Error while ending Subscriptions"),
+                        Catalog.GetString("End Subscriptions"), MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

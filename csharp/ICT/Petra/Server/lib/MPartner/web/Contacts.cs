@@ -333,10 +333,10 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// <summary>
         /// Determines whether this ContactLog is associated with more than one Partner
         /// </summary>
-        /// <param name="contactLogId"></param>
+        /// <param name="AContactLogId"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool IsContactLogAssociatedWithMoreThanOnePartner(long contactLogId)
+        public static bool IsContactLogAssociatedWithMoreThanOnePartner(long AContactLogId)
         {
             bool returnValue = false;
             TDBTransaction Transaction = null;
@@ -345,10 +345,22 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    returnValue = PPartnerContactAccess.CountViaPContactLog(contactLogId, Transaction) > 1;
+                    returnValue = IsContactLogAssociatedWithMoreThanOnePartner(AContactLogId, Transaction);
                 });
 
             return returnValue;
+        }
+
+        /// <summary>
+        /// Determines whether this ContactLog is associated with more than one Partner
+        /// </summary>
+        /// <param name="AContactLogId"></param>
+        /// <param name="ATransaction"></param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool IsContactLogAssociatedWithMoreThanOnePartner(long AContactLogId, TDBTransaction ATransaction)
+        {
+            return PPartnerContactAccess.CountViaPContactLog(AContactLogId, ATransaction) > 1;
         }
 
         /// <summary>
@@ -368,14 +380,37 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
                 ref SubmissionOK,
                 delegate
                 {
+                    Boolean LastPartnerForThisContactLog = true;
+
                     foreach (DataRow contactLogRow in AContactLogs.Rows)
                     {
+                        Int64 ContactLogId = Convert.ToInt64(contactLogRow["p_contact_log_id_i"]);
+                        Int64 PartnerKey = Convert.ToInt64(contactLogRow["p_partner_key_n"]);
+
+                        LastPartnerForThisContactLog = true;
+
+                        if (IsContactLogAssociatedWithMoreThanOnePartner(ContactLogId, Transaction))
+                        {
+                            LastPartnerForThisContactLog = false;
+                        }
+
                         PPartnerContactTable contactLogs = PPartnerContactAccess.LoadByPrimaryKey(
-                            Convert.ToInt64(contactLogRow["p_partner_key_n"]), Convert.ToInt64(contactLogRow["p_contact_log_id_i"]), Transaction);
+                            PartnerKey, ContactLogId, Transaction);
 
                         contactLogs[0].Delete();
 
                         PPartnerContactAccess.SubmitChanges(contactLogs, Transaction);
+
+                        if (LastPartnerForThisContactLog)
+                        {
+                            // now we also need to delete the contact attributes (linked with this contact log)
+                            PPartnerContactAttributeRow template = new PPartnerContactAttributeTable().NewRowTyped(false);
+                            template.ContactId = ContactLogId;
+                            PPartnerContactAttributeAccess.DeleteUsingTemplate(template, null, Transaction);
+
+                            // and the contact log itself needs to be deleted (if no other partner refers to it)
+                            PContactLogAccess.DeleteByPrimaryKey(ContactLogId, Transaction);
+                        }
 
                         SubmissionOK = true;
                     }

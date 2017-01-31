@@ -60,10 +60,10 @@ RootNode:
                 Row6: [txtDetailUnitLabelSingular, lblAndSingular, txtDetailDecimalLabelSingular]
                 Row7: [txtDetailUnitLabelPlural, lblAndPlural, txtDetailDecimalLabelPlural]
                 Row8: [cmbDetailSpecialCode]
-            ColWidths: [1=Fixed:150, 2=Fixed:30, 3=Fixed:2]
+            ColWidths: [1=Fixed:150, 2=Fixed:30, 3=Fixed:20]
         cmbDetailCurrencyCode: {Label=Currency Code, List=CurrencyCodeList, ColSpan=3, ComboBoxWidth=90}
         cmbDetailLanguageCode: {Label=Language Code, List=LanguageCodeList, ColSpan=3, ComboBoxWidth=90}
-        lblUnit: {Text=Unit Name (e.g. Dollar), Align=Right}
+        lblUnit: {Text=Unit Name (e.g. Dollar), Width=145}
         Empty:
         lblDecimal: {Text=Decimal Name (e.g. Cent)}
         txtDetailUnitLabelSingular: {Label=Singular amount, Width=145}
