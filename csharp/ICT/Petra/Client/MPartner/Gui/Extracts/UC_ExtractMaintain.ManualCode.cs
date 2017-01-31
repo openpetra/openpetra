@@ -177,7 +177,16 @@ namespace Ict.Petra.Client.MPartner.Gui.Extracts
 
                     //Ict.Common.Data.TTypedDataTable SubmitDT = FMainDS.MExtract.GetChangesTyped();
                     MExtractTable SubmitDT = new MExtractTable();
-                    SubmitDT.Merge(FMainDS.MExtract.GetChangesTyped());
+                    ExtractTDSMExtractTable ChangesDT = FMainDS.MExtract.GetChangesTyped();
+
+                    if (ChangesDT != null)
+                    {
+                        SubmitDT.Merge(ChangesDT);
+                    }
+                    else
+                    {
+                        SubmitDT = null;
+                    }
 
                     if (SubmitDT == null)
                     {
