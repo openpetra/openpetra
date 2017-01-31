@@ -81,8 +81,9 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
             strContent = strContent.Replace("{ledgernumber}", FLedgerNumber.ToString());
 
             TVerificationResultCollection verificationResult;
+            bool refreshRequired;
 
-            bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(requestParams, strContent, out verificationResult);
+            bool importSuccess = TGLTransactionWebConnector.ImportGLBatches(requestParams, strContent, out refreshRequired, out verificationResult);
 
             if (!TVerificationHelper.IsNullOrOnlyNonCritical(verificationResult))
             {

@@ -36,6 +36,7 @@ using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
@@ -99,6 +100,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ImportBatches(TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
+            bool RefreshGUIAfterImport = false;
             OpenFileDialog dialog = null;
 
             if (FPetraUtilsObject.HasChanges)
@@ -194,14 +196,22 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                             requestParams,
                             FdlgSeparator.FileContent,
                             out AMessages,
-                            out ok));
+                            out ok,
+                            out RefreshGUIAfterImport));
 
                     using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
                     {
                         ImportDialog.ShowDialog();
                     }
 
-                    ShowMessages(AMessages);
+                    if (TVerificationHelper.ResultsContainErrorCode(AMessages, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                    {
+                        TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                    }
+                    else
+                    {
+                        ShowMessages(AMessages);
+                    }
                 }
 
                 // We save the defaults even if ok is false - because the client will probably want to try and import
@@ -214,12 +224,20 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         Catalog.GetString("Batch Import"),
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
+                }
 
+                if (ok)
+                {
                     FMyUserControl.ReloadBatches();
                     FMyForm.GetBatchControl().SelectRowInGrid(1);
-
                     FPetraUtilsObject.SetChangedFlag();
                     FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction);
+                }
+                else if (RefreshGUIAfterImport)
+                {
+                    // The import failed and the server needs us to refresh the GUI
+                    FMyUserControl.ReloadBatches(true);
+                    FMyForm.GetBatchControl().SelectRowInGrid(1);
                 }
             }
             finally
@@ -235,6 +253,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         public void ImportTransactions(ABatchRow ACurrentBatchRow, AJournalRow ACurrentJournalRow, TImportDataSourceEnum AImportDataSource)
         {
             bool ok = false;
+            bool RefreshGUIAfterImport = false;
             OpenFileDialog dialog = null;
 
             if (FPetraUtilsObject.HasChanges && !FMyForm.SaveChanges())
@@ -341,6 +360,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 requestParams.Add("DatesMayBeIntegers", datesMayBeIntegers);
                 requestParams.Add("NumberFormat", FdlgSeparator.NumberFormat);
                 requestParams.Add("NewLine", Environment.NewLine);
+                requestParams.Add("LastTransactionNumber", ACurrentJournalRow.LastTransactionNumber);
 
                 TVerificationResultCollection AMessages = new TVerificationResultCollection();
 
@@ -349,7 +369,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                         ACurrentBatchRow.BatchNumber,
                         ACurrentJournalRow.JournalNumber,
                         out AMessages,
-                        out ok));
+                        out ok,
+                        out RefreshGUIAfterImport));
 
                 using (TProgressDialog ImportDialog = new TProgressDialog(ImportThread))
                 {
@@ -363,12 +384,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             //   because in that case the user will want to import the same file again after fixing it.
             SaveUserDefaults(dialog);
 
-            if (ok)
+            if (ok || RefreshGUIAfterImport)
             {
-                MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
-                    Catalog.GetString("Transactions Import"),
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Information);
+                if (ok)
+                {
+                    MessageBox.Show(Catalog.GetString("Your data was imported successfully!"),
+                        Catalog.GetString("Transactions Import"),
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
 
                 // Update the client side with new information from the server
                 FMyForm.Cursor = Cursors.WaitCursor;
@@ -667,11 +691,13 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AImportString"></param>
         /// <param name="AMessages"></param>
         /// <param name="ok"></param>
+        /// <param name="AClientRefreshRequired"></param>
         private void ImportGLBatches(
             Hashtable ARequestParams,
             string AImportString,
             out TVerificationResultCollection AMessages,
-            out bool ok)
+            out bool ok,
+            out bool AClientRefreshRequired)
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
@@ -679,6 +705,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             ImportIsSuccessful = TRemote.MFinance.GL.WebConnectors.ImportGLBatches(
                 ARequestParams,
                 AImportString,
+                out AClientRefreshRequired,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;
@@ -694,13 +721,15 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         /// <param name="AJournalNumber"></param>
         /// <param name="AMessages"></param>
         /// <param name="ok"></param>
+        /// <param name="AClientRefreshRequired"></param>
         private void ImportGLTransactions(
             Hashtable ARequestParams,
             string AImportString,
             Int32 ABatchNumber,
             Int32 AJournalNumber,
             out TVerificationResultCollection AMessages,
-            out bool ok)
+            out bool ok,
+            out bool AClientRefreshRequired)
         {
             TVerificationResultCollection AResultMessages;
             bool ImportIsSuccessful;
@@ -711,6 +740,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                 FLedgerNumber,
                 ABatchNumber,
                 AJournalNumber,
+                out AClientRefreshRequired,
                 out AResultMessages);
 
             ok = ImportIsSuccessful;

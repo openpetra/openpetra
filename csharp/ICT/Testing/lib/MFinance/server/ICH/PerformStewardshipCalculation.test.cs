@@ -108,8 +108,9 @@ namespace Tests.MFinance.Server.ICH
 
             TVerificationResultCollection VerificationResult;
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
+            bool refreshRequired;
 
-            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult);
+            importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out refreshRequired, out VerificationResult);
 
             CommonNUnitFunctions.EnsureNullOrOnlyNonCriticalVerificationResults(VerificationResult,
                 "error when importing gift batch:");

@@ -30,11 +30,13 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Verification;
 
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonDialogs;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MFinance.Logic;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Shared.MFinance.Validation;
@@ -92,17 +94,22 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
         /// Main method to post a specified batch
         /// </summary>
         /// <param name="ACurrentBatchRow">The batch row to post</param>
+        /// <param name="ARefreshGUIAfterPosting">Will be set to true if the GUI should be updated.  Can be true even if Posting fails
         /// <param name="AWarnOfInactiveValues">True means user is warned if inactive values exist</param>
         /// <param name="ADonorZeroIsValid"></param>
         /// <param name="ARecipientZeroIsValid"></param>
         /// <param name="APostingAlreadyConfirmed">True means ask user if they want to post</param>
+        /// if the server gets a SerializableTransactionException</param>
         /// <returns>True if the batch was successfully posted</returns>
         public bool PostBatch(AGiftBatchRow ACurrentBatchRow,
+            out bool ARefreshGUIAfterPosting,
             bool AWarnOfInactiveValues = true,
             bool ADonorZeroIsValid = false,
             bool ARecipientZeroIsValid = false,
             bool APostingAlreadyConfirmed = false)
         {
+            ARefreshGUIAfterPosting = false;
+
             if ((ACurrentBatchRow == null) || (ACurrentBatchRow.BatchStatus != MFinanceConstants.BATCH_UNPOSTED))
             {
                 return false;
@@ -366,7 +373,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                     dialog.ShowDialog();
                 }
 
-                if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
+                if (TVerificationHelper.ResultsContainErrorCode(Verifications, PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                {
+                    TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                    ARefreshGUIAfterPosting = true;
+                    return false;
+                }
+                else if (!TVerificationHelper.IsNullOrOnlyNonCritical(Verifications))
                 {
                     TFrmExtendedMessageBox extendedMessageBox = new TFrmExtendedMessageBox(FMyForm);
 
@@ -392,6 +405,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 else
                 {
                     MessageBox.Show(Catalog.GetString("The batch has been posted successfully!"));
+                    ARefreshGUIAfterPosting = true;
                 }
             }
             catch (Exception ex)

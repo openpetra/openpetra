@@ -303,7 +303,7 @@ OpenPetra:
                     CreateNewLedger: {Label=Create New Ledger}
                         #LedgerSetupShepherd:
                         CreateLedger: {Description=Create a new Ledger, ActionOpenScreen=TFrmGLCreateLedgerDialog, PermissionsRequired="FINANCE-3", Singleton=true}
-                    DeleteExistingLedger: {Label=Delete Existing Ledger}
+                    DeleteExistingLedger: {Label=Delete Existing Ledger, DependsOnLedger=true}
                         DeleteLedger: {Description="Careful: Deletes the ledger with all finance data", ActionClick=TDeleteLedger.DeleteLedger, PermissionsRequired=FINANCE-3}
         Personnel: {Icon=personel.ico, PermissionsRequired=PERSONNEL}
             # Module

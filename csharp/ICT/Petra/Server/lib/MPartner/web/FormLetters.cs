@@ -28,6 +28,7 @@ using System.Data.Odbc;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
@@ -1787,12 +1788,16 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         /// </summary>
         /// <param name="AExtractId">Extract ID</param>
         /// <param name="APublicationsCSVList">CSV list of publications</param>
+        /// <param name="AResultMessages"></param>
         /// <returns></returns>
         [RequireModulePermission("PTNRUSER")]
-        public static bool UpdateSubscriptionsReceivedFromExtract(Int32 AExtractId, String APublicationsCSVList)
+        public static bool UpdateSubscriptionsReceivedFromExtract(Int32 AExtractId,
+            String APublicationsCSVList,
+            out TVerificationResultCollection AResultMessages)
         {
             MExtractTable ExtractTable;
             Int32 RowCounter = 0;
+            TVerificationResultCollection messages = null;
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"));
 
@@ -1801,32 +1806,52 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoTransaction(IsolationLevel.Serializable, ref Transaction, ref SubmissionOk,
                 delegate
                 {
-                    ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
-
-                    RowCounter = 0;
-                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"), 0.0m);
-
-                    // query all rows of given extract
-                    foreach (MExtractRow ExtractRow in ExtractTable.Rows)
+                    try
                     {
-                        RowCounter++;
-                        UpdateSubscriptionsReceived(ExtractRow.PartnerKey, APublicationsCSVList, Transaction);
+                        ExtractTable = MExtractAccess.LoadViaMExtractMaster(AExtractId, Transaction);
 
-                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        RowCounter = 0;
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
+                            0.0m);
+
+                        // query all rows of given extract
+                        foreach (MExtractRow ExtractRow in ExtractTable.Rows)
                         {
-                            TLogging.Log("UpdateSubscriptionsReceivedFromExtract - Job cancelled");
-                            break;
+                            RowCounter++;
+                            UpdateSubscriptionsReceived(ExtractRow.PartnerKey, APublicationsCSVList, Transaction);
+
+                            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                            {
+                                TLogging.Log("UpdateSubscriptionsReceivedFromExtract - Job cancelled");
+                                break;
+                            }
+
+                            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
+                                (RowCounter * 100) / ExtractTable.Rows.Count);
                         }
 
-                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Updating Partner Subscriptions"),
-                            (RowCounter * 100) / ExtractTable.Rows.Count);
+                        SubmissionOk = true;
                     }
-
-                    SubmissionOk = true;
+                    catch (Exception ex)
+                    {
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
+                        {
+                            messages = new TVerificationResultCollection();
+                            messages.Add(new TVerificationResult("UpdateSubscriptions",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    finally
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                    }
                 });
 
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
-
+            AResultMessages = messages;
             return SubmissionOk;
         }
 

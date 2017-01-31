@@ -209,7 +209,11 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 FException = Exc;
             }
 
-            if (FException is Exception && FException.InnerException is EOPDBException)
+            if (TDBExceptionHelper.IsTransactionSerialisationException(FException))
+            {
+                // do nothing - we want this exception to bubble up
+            }
+            else if (FException is Exception && FException.InnerException is EOPDBException)
             {
                 EOPDBException DbExc = (EOPDBException)FException.InnerException;
 

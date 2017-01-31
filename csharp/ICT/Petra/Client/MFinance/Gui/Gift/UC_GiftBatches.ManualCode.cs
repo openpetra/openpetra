@@ -1301,6 +1301,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
 
             bool Success = false;
             bool PostingAlreadyConfirmed = false;
+            bool RefreshGUIAfterPosting = false;
 
             if ((GetSelectedRowIndex() < 0) || (FPreviouslySelectedDetailRow == null))
             {
@@ -1339,19 +1340,23 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 LoadDialogVisible = false;
 
                 Success = FPostingLogicObject.PostBatch(FPreviouslySelectedDetailRow,
+                    out RefreshGUIAfterPosting,
                     FWarnOfInactiveValuesOnPosting,
                     FDonorZeroIsValid,
                     FRecipientZeroIsValid,
                     PostingAlreadyConfirmed);
 
-                if (Success)
+                if (Success || RefreshGUIAfterPosting)
                 {
-                    // Posting succeeded so now deal with gift receipting ...
-                    GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
-                        FSelectedBatchNumber,
-                        false);
+                    if (Success)
+                    {
+                        // Posting succeeded so now deal with gift receipting ...
+                        GiftBatchTDS PostedGiftTDS = TRemote.MFinance.Gift.WebConnectors.LoadAGiftBatchAndRelatedData(FLedgerNumber,
+                            FSelectedBatchNumber,
+                            false);
 
-                    FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
+                        FReceiptingLogicObject.PrintGiftBatchReceipts(PostedGiftTDS);
+                    }
 
                     // Now we need to get the data back from the server to pick up all the changes
                     RefreshAllData();

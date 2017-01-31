@@ -130,6 +130,12 @@ namespace Ict.Petra.Shared
              ErrorMessageTitle = "File Name or Path")]
         public const String ERR_GENERAL_FILE_NOT_FOUND = "GEN.00012V";
 
+        /// <summary>Npgsql 40001 serializable transaction exception was raised by the server</summary>
+        [ErrCodeAttribute("Concurrent User Conflict",
+             ErrorMessageText = "Another user was writing to the same records at the same time that you were trying to read or write them.",
+             ErrorMessageTitle = "Message From Server")]
+        public const String ERR_DB_SERIALIZATION_EXCEPTION = "GEN.00013V";
+
         #endregion
 
         #region Conference Module-specific error codes

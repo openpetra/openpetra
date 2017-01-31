@@ -91,8 +91,9 @@ namespace Tests.MFinance.Server.Gift
             parameters.Add("NewLine", Environment.NewLine);
 
             GiftBatchTDSAGiftDetailTable NeedRecipientLedgerNumber;
+            bool refreshRequired;
 
-            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out VerificationResult))
+            if (!importer.ImportGiftBatches(parameters, FileContent, out NeedRecipientLedgerNumber, out refreshRequired, out VerificationResult))
             {
                 return false;
             }

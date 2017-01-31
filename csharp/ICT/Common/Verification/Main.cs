@@ -1989,6 +1989,25 @@ namespace Ict.Common.Verification
                 //            MessageBox.Show("SetColumnErrorText: After resetting the value: " + AEventArgs.ProposedValue.ToString());
             }
         }
+
+        /// <summary>
+        /// Examines a TVerificationResultCollection and returns true if one of the results has the specified error code
+        /// </summary>
+        public static bool ResultsContainErrorCode(TVerificationResultCollection AResultsCollection, string AErrorCode)
+        {
+            if (AResultsCollection != null)
+            {
+                for (int i = 0; i < AResultsCollection.Count; i++)
+                {
+                    if (AResultsCollection[i].ResultCode == AErrorCode)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
     }
 
     #endregion

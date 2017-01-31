@@ -34,6 +34,7 @@ using System.Windows.Forms;
 using Ict.Common;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Verification.Exceptions;
@@ -4559,11 +4560,22 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
+                {
+                    VerificationResult = new TVerificationResultCollection();
+                    VerificationResult.Add(new TVerificationResult("PostGiftBatches",
+                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                }
+                else
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            finally
+            {
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            }
 
             AVerifications = VerificationResult;
 
@@ -4597,6 +4609,9 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="importString">The import file as a simple String</param>
         /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
         /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AClientRefreshRequired">Will be set to true if the client should refresh its data after importing.
+        /// Normally this will be obvious (because the import was successful) but some handled Exceptions imply that the data has changed
+        /// behind the client's back!</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -4604,12 +4619,13 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             Hashtable requestParams,
             String importString,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGiftImporting Importing = new TGiftImporting();
 
-            return Importing.ImportGiftBatches(requestParams, importString, out ANeedRecipientLedgerNumber, out AMessages);
+            return Importing.ImportGiftBatches(requestParams, importString, out ANeedRecipientLedgerNumber, out AClientRefreshRequired, out AMessages);
         }
 
         /// <summary>
@@ -4622,6 +4638,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
         /// <param name="AGiftBatchNumber">The gift batch number into which the transactions will be imported</param>
         /// <param name="ANeedRecipientLedgerNumber">Gifts in this table are responsible for failing the
         /// import becuase their Family recipients do not have an active Gift Destination</param>
+        /// <param name="AClientRefreshRequired">Will be true if the client should update the GUI due to missing or updated information</param>
         /// <param name="AMessages">Additional messages to display in a messagebox</param>
         /// <returns>false if error</returns>
         [RequireModulePermission("FINANCE-1")]
@@ -4630,12 +4647,18 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             String importString,
             Int32 AGiftBatchNumber,
             out GiftBatchTDSAGiftDetailTable ANeedRecipientLedgerNumber,
+            out bool AClientRefreshRequired,
             out TVerificationResultCollection AMessages
             )
         {
             TGiftImporting Importing = new TGiftImporting();
 
-            return Importing.ImportGiftTransactions(requestParams, importString, AGiftBatchNumber, out ANeedRecipientLedgerNumber, out AMessages);
+            return Importing.ImportGiftTransactions(requestParams,
+                importString,
+                AGiftBatchNumber,
+                out ANeedRecipientLedgerNumber,
+                out AClientRefreshRequired,
+                out AMessages);
         }
 
         /// <summary>

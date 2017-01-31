@@ -27,6 +27,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 
+using Npgsql;
 using Ict.Common.Exceptions;
 
 namespace Ict.Common.DB.Exceptions
@@ -2351,4 +2352,147 @@ namespace Ict.Common.DB.Exceptions
     }
 
     #endregion
+
+    #region EDB40001TransactionSerialisationException
+
+    /// <summary>
+    /// Thrown during a serializable transaction if another concurrent transaction has messed with the same records
+    /// for the PostgreSQL database.
+    /// </summary>
+    [Serializable()]
+    public class EDBTransactionSerialisationException : EOPDBException
+    {
+        /// <summary>
+        /// Initializes a new instance of this Exception Class.
+        /// </summary>
+        public EDBTransactionSerialisationException() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        public EDBTransactionSerialisationException(String AMessage) : base(AMessage)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with a specified error message and Inner Exception.
+        /// </summary>
+        /// <param name="AMessage">The error message that explains the reason for the <see cref="Exception" />.</param>
+        /// <param name="AInnerException"></param>
+        public EDBTransactionSerialisationException(String AMessage, Exception AInnerException) : base(AMessage, AInnerException)
+        {
+        }
+
+        #region Remoting and serialization
+
+        /// <summary>
+        /// Initializes a new instance of this Exception Class with serialized data. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public EDBTransactionSerialisationException(SerializationInfo AInfo, StreamingContext AContext) : base(AInfo, AContext)
+        {
+        }
+
+        /// <summary>
+        /// Sets the <see cref="SerializationInfo" /> with information about this Exception. Needed for Remoting and general serialization.
+        /// </summary>
+        /// <remarks>
+        /// Only to be used by the .NET Serialization system (eg within .NET Remoting).
+        /// </remarks>
+        /// <param name="AInfo">The <see cref="SerializationInfo" /> that holds the serialized object data about the <see cref="Exception" /> being thrown.</param>
+        /// <param name="AContext">The <see cref="StreamingContext" /> that contains contextual information about the source or destination.</param>
+        public override void GetObjectData(SerializationInfo AInfo, StreamingContext AContext)
+        {
+            if (AInfo == null)
+            {
+                throw new ArgumentNullException("AInfo");
+            }
+
+            // We must call through to the base class to let it save its own state!
+            base.GetObjectData(AInfo, AContext);
+        }
+
+        #endregion
+    }
+
+    #endregion
+
+    #region Static Helper Class with methods dealing with DB Exception
+
+    /// <summary>
+    /// Static helper class for DB Exceptions
+    /// </summary>
+    public static class TDBExceptionHelper
+    {
+        /// <summary>
+        /// Tests to see if the exception was raised by Npgsql and is an ERROR 40001.  This is the error raised when serializable transactions collide.
+        /// </summary>
+        public static bool IsFirstChanceNpgsql40001Exception(Exception AException)
+        {
+            if (AException is NpgsqlException)
+            {
+                NpgsqlException e = (NpgsqlException)AException;
+
+                if ((e.Code == "40001") && (e.Severity == "ERROR"))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tests to see if the exception was raised by Npgsql and is an ERROR 23505 and the constraint is a primary key.
+        /// This error is PROBABLY raised when serializable transactions collide.
+        /// </summary>
+        public static bool IsFirstChanceNpgsql23505Exception(Exception AException)
+        {
+            if (AException is NpgsqlException)
+            {
+                NpgsqlException e = (NpgsqlException)AException;
+
+                // AlanP note: We check for these three things...  The error could also be raised by a unique key constraint error that is not a primary key.
+                // But we will assume that that is not a transaction collision for now.
+                // Note that we may get a pk constraint error that is not a transaction collision but then it would probably be a programming error??
+                // Raising this exception will result in a friendly message suggesting there was another user that used this pk at the same time.
+                if ((e.Code == "23505") && (e.Severity == "ERROR") && (e.ConstraintName.EndsWith("_pk")))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Tests to see if the exception looks like it was caused by serializable transactions colliding.
+        /// </summary>
+        public static bool IsTransactionSerialisationException(Exception AException)
+        {
+            Exception ex = AException;
+
+            while (ex != null)
+            {
+                // Check if it is one of our specific exceptions
+                if (ex is EDBTransactionSerialisationException)
+                {
+                    return true;
+                }
+
+                ex = ex.InnerException;
+            }
+
+            return false;
+        }
+
+        #endregion
+    }
 }

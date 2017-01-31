@@ -28,8 +28,10 @@ using System.Data;
 using System.IO;
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
@@ -405,6 +407,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                         // Now create the optional extract
                         if (submissionOK && (partnerTaxCodesImported.Count > 0) && createExtract)
                         {
+                            // we have more server work to do so we reset submission OK to false
+                            submissionOK = false;
+
                             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                                 Catalog.GetString("Creating new Extract ..."),
                                 97);
@@ -429,6 +434,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                                 false,
                                 out extractKeyCount,
                                 out ignoredKeys);
+
+                            submissionOK = true;
                         }
                     }
                     catch (Exception ex)
@@ -437,8 +444,17 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
                             Catalog.GetString("Exception Occurred"),
                             0);
 
-                        errorMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, rowNumber),
-                                ex.Message, TResultSeverity.Resv_Critical));
+                        if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
+                        {
+                            errorMessages.Add(new TVerificationResult("ImportPartnerTaxCodes",
+                                    ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                        }
+                        else
+                        {
+                            errorMessages.Add(new TVerificationResult(String.Format(MCommonConstants.StrExceptionWhileParsingLine, rowNumber),
+                                    ex.Message, TResultSeverity.Resv_Critical));
+                        }
+
                         partnerTaxCodesImported.Clear();
                     }
                     finally

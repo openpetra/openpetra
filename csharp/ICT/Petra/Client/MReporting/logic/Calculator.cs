@@ -26,9 +26,11 @@ using System.Collections.Specialized;
 using System.Threading;
 
 using Ict.Common;
+using Ict.Common.DB.Exceptions;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Client;
 using Ict.Common.Remoting.Shared;
+using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared;
@@ -598,7 +600,15 @@ namespace Ict.Petra.Client.MReporting.Logic
                             // to give it visibility
                             if (ServersideException != null)
                             {
-                                throw ServersideException;
+                                if (TDBExceptionHelper.IsTransactionSerialisationException(ServersideException))
+                                {
+                                    FStatusBarProcedure(string.Empty);
+                                    TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                                }
+                                else
+                                {
+                                    throw ServersideException;
+                                }
                             }
                         }
                     }

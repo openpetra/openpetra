@@ -37,7 +37,9 @@ using Ict.Common.Verification;
 using Ict.Common.Verification.Exceptions;
 using Ict.Common.Data;
 using Ict.Common.DB;
+using Ict.Common.DB.Exceptions;
 
+using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance;
 using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.GL.Data;
@@ -2387,11 +2389,22 @@ namespace Ict.Petra.Server.MFinance.Common
             }
             catch (Exception ex)
             {
-                TLogging.LogException(ex, Utilities.GetMethodSignature());
-                throw;
+                if (TDBExceptionHelper.IsTransactionSerialisationException(ex))
+                {
+                    VerificationResult = new TVerificationResultCollection();
+                    VerificationResult.Add(new TVerificationResult("PostGLBatches",
+                            ErrorCodeInventory.RetrieveErrCodeInfo(PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION)));
+                }
+                else
+                {
+                    TLogging.LogException(ex, Utilities.GetMethodSignature());
+                    throw;
+                }
             }
-
-            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            finally
+            {
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+            }
 
             AVerifications = VerificationResult;
 

@@ -2084,7 +2084,19 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
-                if (AFillDataSet.Tables[ADataTableName] != null)
+                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException("EDB40001 exception in TDatabase.Select", exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException("EDB23505 exception in TDatabase.Select", exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+                else if (AFillDataSet.Tables[ADataTableName] != null)
                 {
                     DataRow[] BadRows = AFillDataSet.Tables[ADataTableName].GetErrors();
 
@@ -2322,6 +2334,27 @@ namespace Ict.Common.DB
                     ReturnValue = -1;
                 }
             }
+            catch (Exception exp)
+            {
+                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                        "EDB40001 exception in TDatabase.SelectUsingDataAdapter",
+                        exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                        "EDB23505 exception in TDatabase.SelectUsingDataAdapter",
+                        exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+
+                throw;
+            }
             finally
             {
                 ReleaseCoordinatedDBAccess();
@@ -2389,6 +2422,23 @@ namespace Ict.Common.DB
                 TheAdapter = FDataBaseRDBMS.NewAdapter();
 
                 TheAdapter.SelectCommand = TheCommand;
+            }
+            catch (Exception exp)
+            {
+                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException("EDB40001 exception in TDatabase.SelectDA", exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException("EDB23505 exception in TDatabase.SelectDA", exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+
+                throw;
             }
             finally
             {
@@ -2501,6 +2551,23 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
+                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                        "EDB40001 exception in TDatabase.SelectDTInternal",
+                        exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                        "EDB23505 exception in TDatabase.SelectDTInternal",
+                        exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
             finally
@@ -2567,6 +2634,19 @@ namespace Ict.Common.DB
             }
             catch (Exception exp)
             {
+                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException("EDB40001 exception in TDatabase.SelectDT", exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException("EDB23505 exception in TDatabase.SelectDT", exp);
+                    LogException(e, "Error fetching records.");
+                    throw e;
+                }
+
                 LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error fetching records.");
             }
             finally
@@ -3318,9 +3398,26 @@ namespace Ict.Common.DB
                         DBAccess.DB_DEBUGLEVEL_TRANSACTION);
                 }
             }
-            catch (Exception Exc)
+            catch (Exception exp)
             {
-                LogExceptionAndThrow(Exc, "Exception while attempting Transaction commit");
+                if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                        "EDB40001 exception in TDatabase.CommitTransaction",
+                        exp);
+                    LogException(e, "Exception while attempting Transaction commit.");
+                    throw e;
+                }
+                else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                {
+                    EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                        "EDB23505 exception in TDatabase.CommitTransaction",
+                        exp);
+                    LogException(e, "Exception while attempting Transaction commit.");
+                    throw e;
+                }
+
+                LogExceptionAndThrow(exp, "Exception while attempting Transaction commit.");
             }
             finally
             {
@@ -3812,6 +3909,23 @@ namespace Ict.Common.DB
                     }
                     catch (Exception exp)
                     {
+                        if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
+                        {
+                            EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                                "EDB40001 exception in TDatabase.ExecuteNonQuery",
+                                exp);
+                            LogException(e, "Error executing non-query SQL statement.");
+                            throw e;
+                        }
+                        else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                        {
+                            EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                                "EDB23505 exception in TDatabase.ExecuteNonQuery",
+                                exp);
+                            LogException(e, "Error executing non-query SQL statement.");
+                            throw e;
+                        }
+
                         LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing non-query SQL statement.");
                     }
 
@@ -4181,16 +4295,32 @@ namespace Ict.Common.DB
                     {
                         LogExceptionAndThrow(Exc, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
                     }
-                    catch (Exception Exc)
+                    catch (Exception exp)
                     {
-                        if ((!Exc.StackTrace.Contains("IsDBConnectionOK"))
-                            && (!Exc.StackTrace.Contains("The Connection is broken")))
+                        if (TDBExceptionHelper.IsFirstChanceNpgsql40001Exception(exp))
                         {
-                            LogExceptionAndThrow(Exc, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
+                            EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                                "EDB40001 exception in TDatabase.ExecuteScalar",
+                                exp);
+                            LogException(e, "Error executing scalar SQL statement.");
+                            throw e;
+                        }
+                        else if (TDBExceptionHelper.IsFirstChanceNpgsql23505Exception(exp))
+                        {
+                            EDBTransactionSerialisationException e = new EDBTransactionSerialisationException(
+                                "EDB23505 exception in TDatabase.ExecuteScalar",
+                                exp);
+                            LogException(e, "Error executing scalar SQL statement.");
+                            throw e;
+                        }
+                        else if ((!exp.StackTrace.Contains("IsDBConnectionOK"))
+                                 && (!exp.StackTrace.Contains("The Connection is broken")))
+                        {
+                            LogExceptionAndThrow(exp, ASqlStatement, AParametersArray, "Error executing scalar SQL statement.");
                         }
                         else
                         {
-                            throw new EOPDBException(Exc);
+                            throw new EOPDBException(exp);
                         }
                     }
 

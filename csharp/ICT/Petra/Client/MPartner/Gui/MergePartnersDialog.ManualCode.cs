@@ -317,6 +317,13 @@ namespace Ict.Petra.Client.MPartner.Gui
                         MessageBox.Show(mergeCancelledText, mergePartnersTitle, MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
+                    else if ((FWebConnectorResult == false)
+                             && TVerificationHelper.ResultsContainErrorCode(FVerificationResultsOfMerge,
+                                 PetraErrorCodes.ERR_DB_SERIALIZATION_EXCEPTION))
+                    {
+                        TConcurrentServerTransactions.ShowTransactionSerializationExceptionDialog();
+                        return;
+                    }
                     else if (FWebConnectorResult == false)   // if merge is unsuccessful
                     {
                         msg = Catalog.GetString("The merge operation failed");

@@ -35,7 +35,6 @@ RootNode:
         btnMaintain: {Width=80}
             Action: actMaintain
         btnDelete: {Width=80}
-            Label: Delete
             Action: actDelete
 #        btnRefreshGrid: {NoLabel=true, Width=50}
 #            Action: actRefreshGrid
