@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -35,7 +35,7 @@ namespace GenerateSQL
     public class TLoadMysql
     {
         /// load data from csv files and sql statements
-        public static bool LoadData(string ADatabaseName, string AUsername, string APassword, string ALoadSQLFileName)
+        public static bool LoadData(string AHostname, string ADatabaseName, string AUsername, string APassword, string ALoadSQLFileName)
         {
             StreamReader sr = null;
             TDBTransaction WriteTransaction = null;
@@ -44,7 +44,7 @@ namespace GenerateSQL
             DBAccess.GDBAccessObj = new TDataBase(TDBType.MySQL);
             try
             {
-                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.MySQL, "localhost", "", ADatabaseName, AUsername, APassword, "",
+                DBAccess.GDBAccessObj.EstablishDBConnection(TDBType.MySQL, AHostname, "", ADatabaseName, AUsername, APassword, "",
                     "GenerateSQL.TLoadMysql.LoadData DB Connection");
                 sr = new StreamReader(ALoadSQLFileName);
             }

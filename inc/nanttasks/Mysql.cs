@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -120,6 +120,22 @@ namespace Ict.Tools.NAntTasks
             }
         }
 
+        private string FHost = "localhost";
+
+        /// <summary>
+        /// the host where the database server runs
+        /// </summary>
+        [TaskAttribute("host", Required = false)]
+        public string Host {
+            get
+            {
+                return FHost;
+            }
+            set
+            {
+                FHost = value;
+            }
+        }
         private string FUser = String.Empty;
 
         /// <summary>
@@ -196,6 +212,11 @@ namespace Ict.Tools.NAntTasks
             if (FUser.Length > 0)
             {
                 process.StartInfo.Arguments += " --user=" + FUser;
+            }
+
+            if (FHost.Length > 0)
+            {
+                process.StartInfo.Arguments += " --host=" + FHost;
             }
 
             if (FDatabase.Length > 0)

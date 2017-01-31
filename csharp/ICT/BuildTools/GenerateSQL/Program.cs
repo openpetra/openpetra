@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -79,7 +79,7 @@ namespace Ict.Tools.GenerateSQL
                 {
                     if (dbms == TWriteSQL.eDatabaseType.MySQL)
                     {
-                        TLoadMysql.LoadData(cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"),
+                        TLoadMysql.LoadData(cmdLine.GetOptValue("host"), cmdLine.GetOptValue("database"), cmdLine.GetOptValue("username"),
                             cmdLine.GetOptValue("password"), cmdLine.GetOptValue("sqlfile"));
                     }
                     else if (dbms == TWriteSQL.eDatabaseType.Sqlite)
