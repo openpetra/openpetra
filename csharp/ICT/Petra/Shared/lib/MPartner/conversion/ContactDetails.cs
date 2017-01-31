@@ -305,6 +305,8 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 ReturnValue.Columns.Add(new System.Data.DataColumn("p_url_c", typeof(string)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("s_created_by_c", typeof(string)));
                 ReturnValue.Columns.Add(new System.Data.DataColumn("s_date_created_d", typeof(System.DateTime)));
+                ReturnValue.Columns.Add(new System.Data.DataColumn("s_modified_by_c", typeof(string)));
+                ReturnValue.Columns.Add(new System.Data.DataColumn("s_date_modified_d", typeof(System.DateTime)));
 
                 // Add special DataColumns that are needed for the 'Best Address' calculation
                 ReturnValue.Columns.Add(new System.Data.DataColumn(PARTNERLOCATION_ICON_COLUMN, typeof(Int32)));
@@ -501,6 +503,22 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             /// CreatedDate Column data.
             /// </summary>
             public DateTime ? DateCreated
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// ModifiedByUser Column data.
+            /// </summary>
+            public String ModifiedByUser
+            {
+                get; set;
+            }
+
+            /// <summary>
+            /// ModifiedDate Column data.
+            /// </summary>
+            public DateTime ? DateModified
             {
                 get; set;
             }
@@ -892,13 +910,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             string EmailAddressString = (string)APartnerLocationDR["p_email_address_c"];
             string CountryCode = GetCountryCode(APartnerLocationDR);
             string CountryCodeOrig = (CountryCode != null ? String.Copy(CountryCode) : CountryCode);
-            string CreatedByUser = APartnerLocationDR.IsNull("s_created_by_c") ? null : (string)APartnerLocationDR["s_created_by_c"];
-            DateTime ? DateCreated = null;
-
-            if (!APartnerLocationDR.IsNull("s_date_created_d"))
-            {
-                DateCreated = Convert.ToDateTime((string)APartnerLocationDR["s_date_created_d"]);
-            }
 
             ACurrentFieldEmail.Trim().Replace("\t", " ");  // The last statement replaces any <TAB> characters inside the string with a single space character each, see Bugs #4620, #4625!
 
@@ -978,9 +989,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                     {
                         SpecialSkypeIDProcessing(ref PPARecordEmail);
                     }
-
-                    PPARecordEmail.CreatedByUser = CreatedByUser == null ? null : CreatedByUser;
-                    PPARecordEmail.DateCreated = DateCreated;
 
                     // Caveat: Adding to PPARecordList happens AFTER any potential Telephone got processed
                     // (important only for helping in comparing various outputs of the data conversion)
@@ -1063,9 +1071,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                                 SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                             }
                         }
-
-                        PPARecord.CreatedByUser = CreatedByUser == null ? null : CreatedByUser;
-                        PPARecord.DateCreated = DateCreated;
 
                         PPARecordList.Add(PPARecord);
                     }
@@ -1154,9 +1159,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                         SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                     }
-
-                    PPARecord.CreatedByUser = CreatedByUser == null ? null : CreatedByUser;
-                    PPARecord.DateCreated = DateCreated;
 
                     PPARecordList.Add(PPARecord);
                 }
@@ -1260,9 +1262,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         }
                     }
 
-                    PPARecord.CreatedByUser = CreatedByUser == null ? null : CreatedByUser;
-                    PPARecord.DateCreated = DateCreated;
-
                     PPARecordList.Add(PPARecord);
                 }
 
@@ -1362,9 +1361,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                         }
                     }
 
-                    PPARecord.CreatedByUser = CreatedByUser == null ? null : CreatedByUser;
-                    PPARecord.DateCreated = DateCreated;
-
                     PPARecordList.Add(PPARecord);
                 }
 
@@ -1435,9 +1431,6 @@ namespace Ict.Petra.Shared.MPartner.Conversion
 
                         SplitValues.Add(new Tuple <string, string>("Skype (!)", PPARecord.Value));
                     }
-
-                    PPARecord.CreatedByUser = CreatedByUser == null ? null : CreatedByUser;
-                    PPARecord.DateCreated = DateCreated;
 
                     PPARecordList.Add(PPARecord);
                 }
@@ -2130,6 +2123,19 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                 SpecialisedFlag = true;
             }
 
+            DateTime ? dateCreated = null;
+            DateTime ? dateModified = null;
+
+            if (!APartnerLocationDR.IsNull("s_date_created_d"))
+            {
+                dateCreated = Convert.ToDateTime(APartnerLocationDR["s_date_created_d"]);
+            }
+
+            if (!APartnerLocationDR.IsNull("s_date_modified_d"))
+            {
+                dateModified = Convert.ToDateTime(APartnerLocationDR["s_date_modified_d"]);
+            }
+
             return new TPartnerContactDetails.PPartnerAttributeRecord() {
                        InsertionOrderPerPartner = FInsertionOrderPerPartner,
                        PartnerKey = APartnerKey,
@@ -2140,7 +2146,11 @@ namespace Ict.Petra.Shared.MPartner.Conversion
                        Confidential = ((string)APartnerLocationDR["p_location_type_c"]).EndsWith(SECURITY_CAN_LOCATIONTYPE,
                            StringComparison.InvariantCulture),
                        NoLongerCurrentFrom = NoLongerCurrentFromDate,
-                       ValueCountry = null
+                       ValueCountry = null,
+                       CreatedByUser = APartnerLocationDR.IsNull("s_created_by_c") ? null : (string)APartnerLocationDR["s_created_by_c"],
+                       DateCreated = dateCreated,
+                       ModifiedByUser = APartnerLocationDR.IsNull("s_modified_by_c") ? null : (string)APartnerLocationDR["s_modified_by_c"],
+                       DateModified = dateModified
             };
         }
 
