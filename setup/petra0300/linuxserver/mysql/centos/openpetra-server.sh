@@ -205,7 +205,7 @@ initdb() {
       rm -f $OpenPetraPath/tmp30/createdb-MySQL.sql
     fi
     echo "creating tables..."
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createtables-MySQL.sql
+    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createdb-MySQL.sql
 
     echo "initial data..."
     # insert initial data so that loadymlgz will work
@@ -216,9 +216,6 @@ insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_ac
 insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
 FINISH
     mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/tmp30/init-MySQL.sql
-
-    echo "enabling indexes and constraints..."
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createconstraints-MySQL.sql
 
     # load the base database with demo and sysadmin user
     ymlgzfile=$OpenPetraPath/db30/base.yml.gz
