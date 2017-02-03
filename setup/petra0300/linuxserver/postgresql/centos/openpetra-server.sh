@@ -16,7 +16,7 @@ then
   export OPENPETRA_DBPWD=@RandomDBPassword@
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
-  export OPENPETRA_PORT=@HostedPort@
+  export OPENPETRA_PORT=9000
 fi
 
 if [ -z "$backupfile" ]

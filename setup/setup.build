@@ -430,7 +430,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <filterchain>
             <replacetokens>
                 <token key="RandomDBPassword" value="${RandomDBPassword}" />
-                <token key="HostedPort" value="${HostedPort}" />
                 <token key="PostgreSQL.Version" value="${PostgreSQL.Version}" />
             </replacetokens>
         </filterchain>
