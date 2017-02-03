@@ -26,7 +26,6 @@ using System.Data;
 using System.Configuration;
 using System.IO;
 using System.Collections.Generic;
-using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.App.Core;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
@@ -44,7 +43,9 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
         /// main method
         public static void Main(string[] args)
         {
-            TPetraServerConnector.Connect();
+            new TAppSettingsManager();
+            new TLogging();
+            TServerManager.TheServerManager = new TServerManager();
 
             // we need to see progress during the load, otherwise the build server thinks the job is hanging
             TLogging.DebugLevel = 1;
@@ -75,15 +76,15 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
                 else if (Action == "load")
                 {
                     string restoreFile = Path.GetFullPath(YmlFile);
-        
+
                     if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
                     {
                         Console.WriteLine("invalid filename or no read permission for " + restoreFile + ", please try again");
                         Environment.Exit(-1);
                     }
-        
+
                     string YmlGZData = string.Empty;
-        
+
                     try
                     {
                         FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
@@ -98,7 +99,7 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
                         TLogging.Log(e.ToString());
                         Environment.Exit(-1);
                     }
-        
+
                     if (TImportExportWebConnector.ResetDatabase(YmlGZData))
                     {
                         TLogging.Log("backup has been restored from " + restoreFile);
