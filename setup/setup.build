@@ -320,9 +320,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
-  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
-  <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.Library.dll" overwrite="true"/>
-  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" tofile="${dir.setup}/bin30/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" todir="${dir.setup}/bin30" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" todir="${dir.setup}/bin30" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/bin30" overwrite="true"/>
 
   <copy todir="${dir.setup}/js30">
     <fileset basedir="${dir.root}/js">

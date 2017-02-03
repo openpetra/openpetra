@@ -183,7 +183,7 @@ FINISH
 }
 
 generatepwd() {
-  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9!#?-_&.' | fold -w 32 | head -n 1`
+  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9#?_&' | fold -w 32 | head -n 1`
 }
 
 # this will overwrite all existing data
