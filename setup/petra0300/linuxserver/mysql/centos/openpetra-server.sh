@@ -5,17 +5,18 @@
 
 export OpenPetraPath=/usr/local/openpetra
 export documentroot=/var/www/openpetra
-export OPENPETRA_DBPORT=5432
+export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 
 if [ -z "$NAME" ]
 then
   export NAME=openpetra-server
   export userName=openpetra
+  export OPENPETRA_URL=demo.openpetra.org
   export OPENPETRA_DBPWD=@RandomDBPassword@
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
-  export OPENPETRA_PORT=@HostedPort@
+  export OPENPETRA_PORT=9000
   export OPENPETRA_DBHOST=localhost
 fi
 
@@ -147,6 +148,7 @@ init() {
        | sed -e "s/OPENPETRA_DBNAME/$OPENPETRA_DBNAME/" \
        | sed -e "s/OPENPETRA_DBPORT/$OPENPETRA_DBPORT/" \
        | sed -e "s~PG_OPENPETRA_DBPWD~$OPENPETRA_DBPWD~" \
+       | sed -e "s~OPENPETRA_URL~$OPENPETRA_URL~" \
        | sed -e "s/USERNAME/$userName/" \
        > /home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/etc30/PetraServerAdminConsole.config \

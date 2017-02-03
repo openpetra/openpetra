@@ -15,13 +15,13 @@
 !define ORGNAME "{#ORGNAME}"
 !define ORGNAMEWITHOUTSPACE "{#ORGNAMEWITHOUTSPACE}"
 !define VERSION "{#RELEASEVERSION}"
-!define PRODUCT_WEB_SITE "http://{#PUBLISHERURL}"
+!define PRODUCT_WEB_SITE "{#PUBLISHERURL}"
 
-!define MUI_PRODUCT "OpenPetra.org ${ORGNAME}"
+!define MUI_PRODUCT "OpenPetra ${ORGNAME}"
 
   ;Name and file
   Name "${MUI_PRODUCT}"
-  OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${ORGNAMEWITHOUTSPACE}-${VERSION}.exe"
+  OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${VERSION}.exe"
   BrandingText "by developers of OpenPetra.org"
 
 
@@ -82,6 +82,39 @@
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
+; see http://nsis.sourceforge.net/Sharing_functions_between_Installer_and_Uninstaller
+!macro MGETAFTERCHAR un
+; see http://nsis.sourceforge.net/Get_last_directory_path_part
+Function ${un}GetAfterChar
+  Exch $0 ; chop char
+  Exch
+  Exch $1 ; input string
+  Push $2
+  Push $3
+  StrCpy $2 0
+  loop:
+    IntOp $2 $2 - 1
+    StrCpy $3 $1 1 $2
+    StrCmp $3 "" 0 +3
+      StrCpy $0 ""
+     Goto exit2
+    StrCmp $3 $0 exit1
+    Goto loop
+  exit1:
+    IntOp $2 $2 + 1
+    StrCpy $0 $1 "" $2
+  exit2:
+    Pop $3
+    Pop $2
+    Pop $1
+    Exch $0 ; output
+FunctionEnd
+!macroend
+
+; Insert function as an installer and uninstaller function.
+!insertmacro MGETAFTERCHAR ""
+!insertmacro MGETAFTERCHAR "un."
+
 ;--------------------------------
 ;Installer Sections
 
@@ -92,6 +125,8 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\log30"
   CreateDirectory "$INSTDIR\patches30"
   CreateDirectory "$INSTDIR\bin30"
+  ${StrTok} $0 $EXEFILE "-" "1" "1"
+  CreateDirectory "$INSTDIR\patches30\$0"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
   File ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll
@@ -139,11 +174,15 @@ Section "Main Section" SecInstallFiles
   WriteRegStr HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" "" $INSTDIR
 
   ; Now create shortcuts
-  CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
+  Push "$INSTDIR"
+  Push "\"
+  Call GetAfterChar
+  Pop $R0
+  CreateDirectory "$SMPROGRAMS\$R0"
   SetOutPath "$INSTDIR\bin30"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra.org Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
+  CreateShortCut "$SMPROGRAMS\$R0\$R0.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
   ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra.org (connecting to your OpenPetra server)"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\$R0\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
  
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -219,9 +258,14 @@ Section "Uninstall"
   RMDir "$INSTDIR"
   
   ;Delete Start Menu Shortcuts
-  Delete "$DESKTOP\${MUI_PRODUCT}.lnk"
-  Delete "$SMPROGRAMS\${MUI_PRODUCT}\*.*"
-  RmDir  "$SMPROGRAMS\${MUI_PRODUCT}"  
+  Push "$INSTDIR"
+  Push "\"
+  Call un.GetAfterChar
+  Pop $R0
+
+  Delete "$DESKTOP\$R0.lnk"
+  Delete "$SMPROGRAMS\$R0\*.*"
+  RmDir  "$SMPROGRAMS\$R0"
 
   DeleteRegKey /ifempty HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}"
 
