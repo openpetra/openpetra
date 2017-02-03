@@ -60,12 +60,12 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 /Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:load -YmlGzFile:$ymlgzfile"
 }
 
 # dump the database to a yml.gz file
 dumpYmlGz() {
-    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 /Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile"
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/PetraServerConsole.config -Action:dump -YmlGzFile:$ymlgzfile"
 }
 
 # display a menu to check for logged in users etc
@@ -118,28 +118,14 @@ restore() {
 }
 
 init() {
-    echo "preparing OpenPetra..."
-
-    mkdir -p $OpenPetraPath/tmp30
-
-    if [ "$OPENPETRA_DBHOST" == "localhost" ]
-    then
-      echo "initialise database"
-      systemctl start mariadb
-      systemctl enable mariadb
-      echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "USE $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "GRANT ALL ON $OPENPETRA_DBNAME.* TO $OPENPETRA_DBUSER@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
-      mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createdb-MySQL.sql
-      rm -f $OpenPetraPath/tmp30/createdb-MySQL.sql
-    fi
+    echo "preparing OpenPetra server..."
 
     useradd --home /home/$userName $userName
     mkdir -p /home/$userName/log
     mkdir -p /home/$userName/tmp
     mkdir -p /home/$userName/etc
     mkdir -p /home/$userName/backup
+
     # copy config files (server, serveradmin.config) to etc, with adjustments
     cat $OpenPetraPath/etc30/PetraServerConsole.config \
        | sed -e "s/OPENPETRA_RDBMSType/$OPENPETRA_RDBMSType/" \
@@ -157,22 +143,6 @@ init() {
        > /home/$userName/etc/PetraServerAdminConsole.config
 
     chown -R $userName:$userName /home/$userName
-
-    echo "creating tables..."
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createtables-MySQL.sql
-
-    echo "initial data..."
-    # insert initial data so that loadymlgz will work
-    cat > $OpenPetraPath/tmp30/init-MySQL.sql <<FINISH
-insert into s_user(s_user_id_c) values ('SYSADMIN');
-insert into s_module(s_module_id_c) values ('SYSMAN');
-insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_access_l) values('SYSADMIN', 'SYSMAN', true);
-insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
-FINISH
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/tmp30/init-MySQL.sql
-
-    echo "enabling indexes and constraints..."
-    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createconstraints-MySQL.sql
 
     # configure lighttpd
     cat > /etc/lighttpd/vhosts.d/openpetra$OPENPETRA_PORT.conf <<FINISH
@@ -199,13 +169,60 @@ FINISH
     sed -i 's~#include_shell "cat /etc/lighttpd/vhosts\.d/\*\.conf"~include_shell "cat /etc/lighttpd/vhosts.d/*.conf"~g' /etc/lighttpd/lighttpd.conf
     systemctl restart lighttpd
     systemctl enable lighttpd
+
+    if [[ "$NAME" != "openpetra-server" ]]
+    then
+      # create the service script
+      cp /usr/lib/systemd/system/openpetra-server.service /usr/lib/systemd/system/${NAME}.service
+      sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${NAME}.service
+      sed -i "s~User=openpetra~User=$userName\nOPENPETRA_DBUSER=$OPENPETRA_DBUSER\nOPENPETRA_DBPWD='$OPENPETRA_DBPWD'\nOPENPETRA_DBHOST=$OPENPETRA_DBHOST\nOPENPETRA_DBPORT=$OPENPETRA_DBPORT\nOPENPETRA_DBNAME=$OPENPETRA_DBNAME~g" /usr/lib/systemd/system/${NAME}.service
+    fi
     systemctl enable ${NAME}
     systemctl start ${NAME}
+
+}
+
+generatepwd() {
+  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9!#?-_&.' | fold -w 32 | head -n 1`
+}
+
+# this will overwrite all existing data
+initdb() {
+    echo "preparing OpenPetra database..."
+
+    mkdir -p $OpenPetraPath/tmp30
+
+    if [ "$OPENPETRA_DBHOST" == "localhost" ]
+    then
+      echo "initialise database"
+      systemctl start mariadb
+      systemctl enable mariadb
+      echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "USE $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "GRANT ALL ON $OPENPETRA_DBNAME.* TO $OPENPETRA_DBUSER@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createdb-MySQL.sql
+      rm -f $OpenPetraPath/tmp30/createdb-MySQL.sql
+    fi
+    echo "creating tables..."
+    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createtables-MySQL.sql
+
+    echo "initial data..."
+    # insert initial data so that loadymlgz will work
+    cat > $OpenPetraPath/tmp30/init-MySQL.sql <<FINISH
+insert into s_user(s_user_id_c) values ('SYSADMIN');
+insert into s_module(s_module_id_c) values ('SYSMAN');
+insert into s_user_module_access_permission(s_user_id_c, s_module_id_c, s_can_access_l) values('SYSADMIN', 'SYSMAN', true);
+insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSADMIN', true);
+FINISH
+    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/tmp30/init-MySQL.sql
+
+    echo "enabling indexes and constraints..."
+    mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/db30/createconstraints-MySQL.sql
 
     # load the base database with demo and sysadmin user
     ymlgzfile=$OpenPetraPath/db30/base.yml.gz
     loadYmlGz
-}
 
 case "$1" in
     start)
@@ -225,8 +242,14 @@ case "$1" in
     restore)
         restore
         ;;
+    generatepwd)
+        generatepwd
+        ;;
     init)
         init
+        ;;
+    initdb)
+        initdb
         ;;
     loadYmlGz)
         loadYmlGz
@@ -238,7 +261,7 @@ case "$1" in
         menu
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|backup|restore|init|loadYmlGz|dumpYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|backup|restore|init|initdb|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac

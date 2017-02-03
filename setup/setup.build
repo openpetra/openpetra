@@ -322,6 +322,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
   </copy>
   <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
   <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.Library.dll" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" tofile="${dir.setup}/bin30/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" overwrite="true"/>
 
   <copy todir="${dir.setup}/js30">
     <fileset basedir="${dir.root}/js">
@@ -349,6 +350,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <include name="${dir.setup}/bin30/Ict.Petra.Plugins.*.Server.dll" />
         <include name="${dir.setup}/bin30/Ict.Petra.Server*" />
         <include name="${dir.setup}/bin30/PetraServer*" />
+        <include name="${dir.setup}/bin30/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" />
         <include name="${dir.setup}/*.sh" />
         <include name="${dir.setup}/INSTALL" />
       </fileset>
