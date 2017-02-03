@@ -223,6 +223,7 @@ FINISH
     # load the base database with demo and sysadmin user
     ymlgzfile=$OpenPetraPath/db30/base.yml.gz
     loadYmlGz
+}
 
 case "$1" in
     start)
