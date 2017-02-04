@@ -7,12 +7,9 @@
 <script language="C#">
 <references>
   <include name="System.dll" />
-  <include name="System.Web.dll" /> 
 </references>
 <imports>
   <import namespace="System.Text.RegularExpressions" />
-  <import namespace="System.Web.Security" />
-  <import namespace="System.Security.Cryptography" /> 
 </imports>    
 <code><![CDATA[
 [Function("ReplaceInFile")]
@@ -79,29 +76,6 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
   return true;
 }
 
-            [Function("GetPasswordSalt")]
-            public static string GetPasswordSalt() {
-                  //Generate a cryptographic random number.
-                  RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-                  byte[] buff = new byte[32];
-                  rng.GetBytes(buff);
-
-                  // Return a Base64 string representation of the random number.
-                  return Convert.ToBase64String(buff);
-            }
-            [Function("GetPasswordHash")]
-            public static string GetPasswordHash(string APassword, string ASalt) {
-                SHA1 algorithm = SHA1.Create();
-                byte[] data = algorithm.ComputeHash(Encoding.UTF8.GetBytes(String.Concat(APassword, ASalt)));
-                string sh1 = "";
-
-                for (int i = 0; i < data.Length; i++)
-                {
-                    sh1 += data[i].ToString("x2").ToUpperInvariant();
-                }
-
-                return sh1;
-            }
   ]]>
   </code>
 </script>

@@ -8,12 +8,15 @@ export documentroot=/var/www/openpetra
 export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 
+generatepwd() {
+  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9#?_&' | fold -w 32 | head -n 1`
+}
+
 if [ -z "$NAME" ]
 then
-  export NAME=openpetra-server
+  export NAME=openpetra
   export userName=openpetra
-  export OPENPETRA_URL=demo.openpetra.org
-  export OPENPETRA_DBPWD=@RandomDBPassword@
+  export OPENPETRA_DBPWD=`generatepwd`
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
   export OPENPETRA_PORT=9000
@@ -118,6 +121,18 @@ restore() {
 }
 
 init() {
+    if [ -z "$OPENPETRA_URL" ]
+    then
+      echo "please define the URL for your OpenPetra, eg. OPENPETRA_URL=demo.openpetra.org openpetra-server init
+      exit -1
+    fi
+
+    if [ -f /home/$userName/etc/PetraServerConsole.config ]
+    then
+      echo "it seems there is already an instance configured"
+      exit -1
+    fi
+
     echo "preparing OpenPetra server..."
 
     useradd --home /home/$userName $userName
@@ -175,15 +190,11 @@ FINISH
       # create the service script
       cp /usr/lib/systemd/system/openpetra-server.service /usr/lib/systemd/system/${NAME}.service
       sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${NAME}.service
-      sed -i "s~User=openpetra~User=$userName\nOPENPETRA_DBUSER=$OPENPETRA_DBUSER\nOPENPETRA_DBPWD='$OPENPETRA_DBPWD'\nOPENPETRA_DBHOST=$OPENPETRA_DBHOST\nOPENPETRA_DBPORT=$OPENPETRA_DBPORT\nOPENPETRA_DBNAME=$OPENPETRA_DBNAME~g" /usr/lib/systemd/system/${NAME}.service
+      sed -i "s~User=openpetra~User=$userName\nOPENPETRA_DBUSER=$OPENPETRA_DBUSER\nOPENPETRA_DBPWD=\"$OPENPETRA_DBPWD\"\nOPENPETRA_DBHOST=$OPENPETRA_DBHOST\nOPENPETRA_DBPORT=$OPENPETRA_DBPORT\nOPENPETRA_DBNAME=$OPENPETRA_DBNAME~g" /usr/lib/systemd/system/${NAME}.service
     fi
     systemctl enable ${NAME}
     systemctl start ${NAME}
 
-}
-
-generatepwd() {
-  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9#?_&' | fold -w 32 | head -n 1`
 }
 
 # this will overwrite all existing data

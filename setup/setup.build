@@ -98,7 +98,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
 
   <property name="BuildArchive" value="server" overwrite="true"/>
   <call target="prepareSetupDirForTarFile"/>
-  <move file="${dir.setup}/centos/openpetra-server.sh" tofile="${dir.setup}/openpetra-server.sh"/>
 
   <!-- result is in dir.setup for building the rpm package -->
 </target>
@@ -425,17 +424,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <foreach item="String" property="LinuxTargetDistribution" delim="," in="${LinuxTargetDistribution-list}" >
      <if test="${string::contains(LinuxTargetDistribution, DBMS.Type)}">
       <property name="LinuxTargetDistribution" value="${string::replace(LinuxTargetDistribution, '-' + DBMS.Type, '')}"/>
-      <!-- ***************  create the linux config script for the server side ***************  -->
-      <property name="RandomDBPassword" value="${script::GetPasswordSalt()}" overwrite="false"/>
+      <!-- ***************  copy the linux config script for the server side ***************  -->
       <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/${LinuxTargetDistribution}/openpetra-server.sh"
-        tofile="${dir.setup}/${LinuxTargetDistribution}/openpetra-server.sh" overwrite="true" outputencoding="latin1">
-        <filterchain>
-            <replacetokens>
-                <token key="RandomDBPassword" value="${RandomDBPassword}" />
-                <token key="PostgreSQL.Version" value="${PostgreSQL.Version}" />
-            </replacetokens>
-        </filterchain>
-      </copy>
+        tofile="${dir.setup}/openpetra-server.sh" overwrite="true"/>
      </if>
     </foreach>
 

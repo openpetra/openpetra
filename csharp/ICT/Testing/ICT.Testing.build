@@ -31,8 +31,9 @@
     <if test="${not file::exists(dir.root + '/demoWith1ledger.yml.gz')}">
         <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
     </if>
+    <!-- need to set DebugLevel 1 so that the build server will be notified about progress -->
     <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
-        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz -Server.DebugLevel=1"/>
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.Reporting.dll" />
 
 <!-- TODO
@@ -69,8 +70,9 @@
     <if test="${not file::exists(dir.root + '/demoWith1ledger.yml.gz')}">
         <fail message="Please download demoWith1ledger.yml.gz into the root of the OpenPetra working tree..."/>
     </if>
+    <!-- need to set DebugLevel 1 so that the build server will be notified about progress -->
     <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
-        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz"/>
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz -Server.DebugLevel=1"/>
 
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MPartner.server.Reporting.dll" />
     <NUnitConsole assemblyname="${dir.bin}/Ict.Testing.lib.MFinance.server.Reporting.dll" />
