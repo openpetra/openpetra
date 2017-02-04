@@ -14,7 +14,7 @@ generatepwd() {
 
 if [ -z "$NAME" ]
 then
-  export NAME=openpetra
+  export NAME=openpetra-server
   export userName=openpetra
   export OPENPETRA_DBPWD=`generatepwd`
   export OPENPETRA_DBUSER=petraserver
