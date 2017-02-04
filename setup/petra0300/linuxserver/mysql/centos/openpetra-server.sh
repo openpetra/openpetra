@@ -9,7 +9,7 @@ export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 
 generatepwd() {
-  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9#?_&' | fold -w 32 | head -n 1`
+  echo `cat /dev/urandom | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1`
 }
 
 if [ -z "$NAME" ]
