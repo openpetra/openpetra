@@ -155,6 +155,7 @@ public static bool ReplaceInFile(string filename, string oldValue, string newVal
 <property name="PetraRelease" value="0300" overwrite="false" />
 <property name="dir.sqlite" value="${dir.root}/delivery/sqlite" overwrite="false" />
 <property name="SQLitedbEmpty.file" value="${dir.sqlite}/empty.db" overwrite="false" />
+<property name="SQLitedbClean.file" value="${dir.sqlite}/clean.db" overwrite="false" />
 <property name="SQLitedbBase.file" value="${dir.sqlite}/base.db" overwrite="false" />
 <property name="SQLitedbWork.file" value="${dir.sqlite}/work.db" overwrite="false" />
 <property name="BuildToolsExe.dir" value="${dir.bin}" overwrite="true" />
