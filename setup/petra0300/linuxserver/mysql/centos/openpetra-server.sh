@@ -239,9 +239,11 @@ insert into s_system_status (s_user_id_c, s_system_login_status_l) values ('SYSA
 FINISH
     mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT $OPENPETRA_DBNAME < $OpenPetraPath/tmp30/init-MySQL.sql
 
-    # load the base database with demo and sysadmin user
-    ymlgzfile=$OpenPetraPath/db30/base.yml.gz
+    # load the clean database with sysadmin user but without ledger, partners etc
+    ymlgzfile=$OpenPetraPath/db30/clean.yml.gz
     loadYmlGz
+
+    echo "For production use, please change the password for SYSADMIN immediately"
 }
 
 case "$1" in
