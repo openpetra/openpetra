@@ -123,7 +123,7 @@ restore() {
 init() {
     if [ -z "$OPENPETRA_URL" ]
     then
-      echo "please define the URL for your OpenPetra, eg. OPENPETRA_URL=demo.openpetra.org openpetra-server init
+      echo "please define the URL for your OpenPetra, eg. OPENPETRA_URL=demo.openpetra.org openpetra-server init"
       exit -1
     fi
 
