@@ -266,8 +266,8 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
          
          <property name="passwordChangeme" value="CHANGEME"/>
-         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
-         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#PASSWORDHASHSYSADMIN}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
@@ -275,8 +275,8 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
          <property name="passwordChangeme" value="demo"/>
-         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
-         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#PASSWORDHASHDEMO}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
@@ -284,8 +284,8 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
          <property name="passwordChangeme" value="TOBESETBYINSTALLER2"/>
-         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
-         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#PASSWORDHASHANONYMOUS}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
