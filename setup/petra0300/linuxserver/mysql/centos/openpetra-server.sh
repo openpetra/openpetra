@@ -9,14 +9,13 @@ export OPENPETRA_DBPORT=3306
 export OPENPETRA_RDBMSType=mysql
 
 generatepwd() {
-  dd bs=1024 count=1 if=/dev/urandom | tr -dc 'a-zA-Z0-9#?_&' | fold -w 32 | head -n 1
+  dd bs=1024 count=1 if=/dev/urandom status=none | tr -dc 'a-zA-Z0-9#?_' | fold -w 32 | head -n 1
 }
 
 if [ -z "$NAME" ]
 then
   export NAME=openpetra-server
   export userName=openpetra
-  export OPENPETRA_DBPWD=`generatepwd`
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
   export OPENPETRA_PORT=9000
@@ -127,6 +126,12 @@ init() {
       exit -1
     fi
 
+    if [ -z "$OPENPETRA_DBPWD" ]
+    then
+      echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
+      exit -1
+    fi
+
     if [ -f /home/$userName/etc/PetraServerConsole.config ]
     then
       echo "it seems there is already an instance configured"
@@ -199,6 +204,12 @@ FINISH
 
 # this will overwrite all existing data
 initdb() {
+    if [ -z "$OPENPETRA_DBPWD" ]
+    then
+      echo "please define a password for your OpenPetra database, eg. OPENPETRA_PWD=topsecret openpetra-server init"
+      exit -1
+    fi
+
     echo "preparing OpenPetra database..."
 
     mkdir -p $OpenPetraPath/tmp30
