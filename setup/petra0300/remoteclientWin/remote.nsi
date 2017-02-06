@@ -24,12 +24,11 @@
   OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${VERSION}.exe"
   BrandingText "by developers of OpenPetra.org"
 
+  ; get the url of the server from the name of the installer exe
+  ${StrTok} $SERVERURL $EXEFILE "-" "1" "1"
 
   ;Default installation folder
-  InstallDir "$APPDATA\OpenPetra${ORGNAMEWITHOUTSPACE}"
-
-  ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" ""
+  InstallDir "$APPDATA\OpenPetra $SERVERURL"
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel user
@@ -39,14 +38,6 @@
 
   !define MUI_ABORTWARNING
 
-;--------------------------------
-;Language Selection Dialog Settings
-
-  ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKCU" 
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" 
-  !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
-  
 ;--------------------------------
 ;Pages
 
@@ -125,8 +116,7 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\log30"
   CreateDirectory "$INSTDIR\patches30"
   CreateDirectory "$INSTDIR\bin30"
-  ${StrTok} $0 $EXEFILE "-" "1" "1"
-  CreateDirectory "$INSTDIR\patches30\$0"
+  CreateDirectory "$INSTDIR\patches30\$SERVERURL"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
   File ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll
@@ -170,9 +160,6 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\LICENSE
   File ..\..\..\resources\petraico-big.ico
   
-  ;Store installation folder
-  WriteRegStr HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" "" $INSTDIR
-
   ; Now create shortcuts
   Push "$INSTDIR"
   Push "\"
@@ -266,7 +253,5 @@ Section "Uninstall"
   Delete "$DESKTOP\$R0.lnk"
   Delete "$SMPROGRAMS\$R0\*.*"
   RmDir  "$SMPROGRAMS\$R0"
-
-  DeleteRegKey /ifempty HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}"
 
 SectionEnd
