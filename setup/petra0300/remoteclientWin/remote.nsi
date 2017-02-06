@@ -24,11 +24,8 @@
   OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${VERSION}.exe"
   BrandingText "by developers of OpenPetra.org"
 
-  ; get the url of the server from the name of the installer exe
-  ${StrTok} $SERVERURL $EXEFILE "-" "1" "1"
-
   ;Default installation folder
-  InstallDir "$APPDATA\OpenPetra $SERVERURL"
+  InstallDir "$APPDATA\OpenPetra {#ORGNAME}"
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel user
@@ -44,6 +41,7 @@
   !define MUI_WELCOMEPAGE_TITLE_3LINES
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "..\..\..\LICENSE"
+  !define MUI_PAGE_CUSTOMFUNCTION_SHOW CalculateDefaultInstDir
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
@@ -116,6 +114,8 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\log30"
   CreateDirectory "$INSTDIR\patches30"
   CreateDirectory "$INSTDIR\bin30"
+  ; get the url of the server from the name of the installer exe
+  ${StrTok} $SERVERURL $EXEFILE "-" "1" "1"
   CreateDirectory "$INSTDIR\patches30\$SERVERURL"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
@@ -185,6 +185,16 @@ Function .onInit
 FunctionEnd
 ;--------------------------------
 
+; see http://stackoverflow.com/questions/8706332/set-value-of-installdir-in-a-function-or-set-auto-populate-value-somehow
+Function CalculateDefaultInstDir
+  ; get the url of the server from the name of the installer exe
+  ${StrTok} $SERVERURL $EXEFILE "-" "1" "1"
+  StrCpy $INSTDIR "$APPDATA\OpenPetra $SERVERURL"
+  Pop $0
+  !insertmacro MUI_INNERDIALOG_TEXT 1019 $INSTDIR
+FunctionEnd
+;--------------------------------
+;
 ; see also http://nsis.sourceforge.net/Get_.NET_Version and http://nsis.sourceforge.net/DotNET and http://nsis.sourceforge.net/How_to_Detect_any_.NET_Framework
 ; see https://msdn.microsoft.com/en-us/library/hh925568%28v=vs.110%29.aspx#net_b
 ; we don't want to install .Net directly, since the user might not have admin permissions
