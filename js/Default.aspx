@@ -89,7 +89,7 @@
     <div class="container">
 
 <%
-      if (ServerUrl.StartsWith("demo"))
+      if (ServerUrl.StartsWith("demo."))
       {
 %>
         <div class="form-signin">
