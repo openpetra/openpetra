@@ -243,7 +243,14 @@ FINISH
     ymlgzfile=$OpenPetraPath/db30/clean.yml.gz
     loadYmlGz
 
-    echo "For production use, please change the password for SYSADMIN immediately"
+    # if url does not start with demo.
+    if [[ ! $OPENPETRA_URL == demo.* ]]
+    then
+      mysql -u $OPENPETRA_DBUSER --password="$OPENPETRA_DBPWD" --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT \
+           -e "UPDATE s_user SET s_password_needs_change_l = 1 WHERE s_user_id_c = 'SYSADMIN'" $OPENPETRA_DBNAME
+    fi
+
+    echo "For production use, please change the password for user SYSADMIN immediately (initial password: CHANGEME)"
 }
 
 case "$1" in
