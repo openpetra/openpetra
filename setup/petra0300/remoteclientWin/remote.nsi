@@ -41,7 +41,6 @@
   !define MUI_WELCOMEPAGE_TITLE_3LINES
   !insertmacro MUI_PAGE_WELCOME
   !insertmacro MUI_PAGE_LICENSE "..\..\..\LICENSE"
-  !define MUI_PAGE_CUSTOMFUNCTION_SHOW CalculateDefaultInstDir
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
   !insertmacro MUI_PAGE_FINISH
@@ -115,8 +114,8 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\patches30"
   CreateDirectory "$INSTDIR\bin30"
   ; get the url of the server from the name of the installer exe
-  ${StrTok} $SERVERURL $EXEFILE "-" "1" "1"
-  CreateDirectory "$INSTDIR\patches30\$SERVERURL"
+  ${StrTok} $0 $EXEFILE "-" "1" "1"
+  CreateDirectory "$INSTDIR\patches30\$0"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
   File ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll
@@ -182,16 +181,10 @@ Function .onInit
 
   !insertmacro MUI_LANGDLL_DISPLAY
 
-FunctionEnd
-;--------------------------------
-
-; see http://stackoverflow.com/questions/8706332/set-value-of-installdir-in-a-function-or-set-auto-populate-value-somehow
-Function CalculateDefaultInstDir
   ; get the url of the server from the name of the installer exe
-  ${StrTok} $SERVERURL $EXEFILE "-" "1" "1"
-  StrCpy $INSTDIR "$APPDATA\OpenPetra $SERVERURL"
-  Pop $0
-  !insertmacro MUI_INNERDIALOG_TEXT 1019 $INSTDIR
+  ${StrTok} $0 $EXEFILE "-" "1" "1"
+  StrCpy $INSTDIR "$APPDATA\OpenPetra $0"
+
 FunctionEnd
 ;--------------------------------
 ;
