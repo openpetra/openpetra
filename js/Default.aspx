@@ -150,7 +150,7 @@
        {
 %>
               <h4>Unterst&uuml;tzung</h4>
-              <p>Bei Problemen bitte das <a href="https://forum.openpetra.de">&ouml;ffentliche OpenPetra-Forum</a> besuchen, dort k&ouml;nnen gerne Fragen gestellt!</p>
+              <p>Bei Problemen bitte das <a href="https://forum.openpetra.de">&ouml;ffentliche OpenPetra-Forum</a> besuchen, dort k&ouml;nnen gerne Fragen gestellt werden!</p>
 <%
        }
        else
