@@ -24,7 +24,7 @@
                 new TAppSettingsManager(ConfigFileName);
                 string ServerUrl = TAppSettingsManager.GetValue("Server.Url");
 
-                string [] files = System.IO.Directory.GetFiles("../client", "OpenPetraRemoteSetup-*.exe");
+                string [] files = System.IO.Directory.GetFiles("client", "OpenPetraRemoteSetup-*.exe");
                 string filename = String.Empty;
                 foreach (string f in files)
                 {
@@ -33,19 +33,21 @@
                         continue;
                     }
                     filename = f.Replace("-", "-" + ServerUrl + "-");
-                    if (!System.IO.File.Exists(filename))
+                    filename=System.IO.Path.GetFileName(filename);
+                    if (Request["download"] == filename)
                     {
-                        System.IO.File.Copy(f, filename);
-                        // delete older installers
-                        string currentversion = System.IO.Path.GetFileName(f).Substring("OpenPetraRemoteSetup".Length);
-                        string [] oldinstallers = System.IO.Directory.GetFiles("../client", "OpenPetraRemoteSetup-*.exe");
-                        foreach (string oldinstaller in oldinstallers)
-                        {
-                            if (!oldinstaller.EndsWith(currentversion))
-                            {
-                                System.IO.File.Delete(oldinstaller);
-                            }
-                        }
+                        FileInfo file = new FileInfo(f);
+                        Response.Clear();
+                        Response.ClearHeaders();
+                        Response.ClearContent();
+                        Response.AddHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+                        Response.AddHeader("Content-Length", file.Length.ToString());
+                        Response.ContentType = "application/octet-stream";
+                        Response.Flush();
+                        Response.TransmitFile(file.FullName);
+                        Response.End();
+
+                        return;
                     }
                     filename=System.IO.Path.GetFileName(filename);
                 }
@@ -96,7 +98,7 @@
           <div class="bs-callout bs-callout-warning"><h4>Download</h4>
             <p>Install the Windows client and connect to our Demo OpenPetra server:</p>
                <button id="btnDownload" class="btn btn-lg btn-primary btn-block"
-                  onclick="location.href = '/client/<% Response.Write(filename); %>'">
+                  onclick="location.href = '?download=<% Response.Write(filename); %>'">
                     Get the Windows Client!
                </button>
           </div>
