@@ -165,16 +165,16 @@ init() {
     chown -R $userName:$userName /home/$userName
 
     # configure lighttpd
-    cat > /etc/lighttpd/vhosts.d/openpetra$OPENPETRA_PORT.conf <<FINISH
-\$HTTP["url"] =~ "^/openpetra$OPENPETRA_PORT" {
-  var.server_name = "openpetra$OPENPETRA_PORT"
+    cat > /etc/lighttpd/vhosts.d/$userName.conf <<FINISH
+\$HTTP["url"] =~ "^/$userName" {
+  var.server_name = "$userName"
 
-  server.name = "localhost/openpetra$OPENPETRA_PORT"
+  server.name = "localhost/$userName"
 
   server.document-root = "$documentroot"
 
   fastcgi.server = (
-        "/openpetra$OPENPETRA_PORT" => ((
+        "/$userName" => ((
                 "host" => "127.0.0.1",
                 "port" => $OPENPETRA_PORT,
                 "check-local" => "disable"
