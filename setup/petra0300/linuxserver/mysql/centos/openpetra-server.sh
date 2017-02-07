@@ -159,7 +159,7 @@ init() {
        > /home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/etc30/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
-       | sed -e "s/OPENPETRA_PORT/$OPENPETRA_PORT/" \
+       | sed -e "s/openpetra_OPENPETRA_PORT/$userName/" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
     chown -R $userName:$userName /home/$userName
@@ -195,7 +195,7 @@ FINISH
       # create the service script
       cp /usr/lib/systemd/system/openpetra-server.service /usr/lib/systemd/system/${NAME}.service
       sed -i "s~OpenPetra Server~OpenPetra Server for $userName~g" /usr/lib/systemd/system/${NAME}.service
-      sed -i "s~User=openpetra~User=$userName\nOPENPETRA_DBUSER=$OPENPETRA_DBUSER\nOPENPETRA_DBPWD=\"$OPENPETRA_DBPWD\"\nOPENPETRA_DBHOST=$OPENPETRA_DBHOST\nOPENPETRA_DBPORT=$OPENPETRA_DBPORT\nOPENPETRA_DBNAME=$OPENPETRA_DBNAME~g" /usr/lib/systemd/system/${NAME}.service
+      sed -i "s~User=openpetra~User=$userName\nEnvironment=NAME=$userName\nEnvironment=userName=$userName\nEnvironment=OPENPETRA_DBUSER=$OPENPETRA_DBUSER\nEnvironment=OPENPETRA_DBPWD='$OPENPETRA_DBPWD'\nEnvironment=OPENPETRA_DBHOST=$OPENPETRA_DBHOST\nEnvironment=OPENPETRA_DBPORT=$OPENPETRA_DBPORT\nEnvironment=OPENPETRA_DBNAME=$OPENPETRA_DBNAME\nEnvironment=OPENPETRA_PORT=$OPENPETRA_PORT~g" /usr/lib/systemd/system/${NAME}.service
     fi
     systemctl enable ${NAME}
     systemctl start ${NAME}
