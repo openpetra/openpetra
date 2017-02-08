@@ -72,7 +72,7 @@
     </if>
     <!-- need to set DebugLevel 1 so that the build server will be notified about progress -->
     <ExecDotNet program="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe"
-        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz -Server.DebugLevel=1"/>
+        commandline="-C:${path::combine(dir.root, 'etc/TestServer.config')} -Action:load -YmlGzFile:${dir.root}/demoWith1ledger.yml.gz -Server.DebugLevel=1 -interactive=false"/>
 </target>
 
 <target name="test-server-reports">
