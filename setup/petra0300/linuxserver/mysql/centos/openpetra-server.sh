@@ -96,11 +96,11 @@ restore() {
     echo `date` "Start restoring from " $backupfile
     echo "creating database..."
 
-    echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createtables-MySQL.sql
-    echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
-    echo "use $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "DROP DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
     cat $OpenPetraPath/db30/createtables-MySQL.sql >> $OpenPetraPath/tmp30/createtables-MySQL.sql
-    echo "GRANT SELECT,UPDATE,DELETE,INSERT ON * TO $OPENPETRA_DBUSER IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\` IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
     mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createtables-MySQL.sql
     rm $OpenPetraPath/tmp30/createtables-MySQL.sql
 
@@ -219,10 +219,10 @@ initdb() {
       echo "initialise database"
       systemctl start mariadb
       systemctl enable mariadb
-      echo "drop database if exists $OPENPETRA_DBNAME;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "create database if not exists $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "USE $OPENPETRA_DBNAME;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
-      echo "GRANT ALL ON $OPENPETRA_DBNAME.* TO $OPENPETRA_DBUSER@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "DROP DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
       mysql -u root --host=$OPENPETRA_DBHOST --port=$OPENPETRA_DBPORT < $OpenPetraPath/tmp30/createdb-MySQL.sql
       rm -f $OpenPetraPath/tmp30/createdb-MySQL.sql
     fi
