@@ -26,6 +26,7 @@ using System.Web;
 using System.Web.UI;
 using System.IO;
 using Ict.Common;
+using Ict.Petra.Server.App.WebService;
 
 namespace Ict.Petra.WebServer
 {
@@ -90,6 +91,17 @@ namespace Ict.Petra.WebServer
 
             new TAppSettingsManager(ConfigFileName);
             this.ServerUrl = TAppSettingsManager.GetValue("Server.Url", "demo.openpetra.org");
+
+            // check for valid user
+            TOpenPetraOrgSessionManager myServer = new TOpenPetraOrgSessionManager();
+
+            if (myServer.IsUserLoggedIn())
+            {
+                // redirect to the main application
+                this.Response.Redirect("/Main.aspx");
+                return;
+            }
+
             this.Filename = GetDownloadFile();
             this.Filename = this.Filename.Replace("-", "-" + ServerUrl + "-");
 

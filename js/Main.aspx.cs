@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2013-2014 by SolidCharity.com
+// Copyright 2013-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -38,7 +38,7 @@ namespace Ict.Petra.WebServer
             if (!myServer.IsUserLoggedIn())
             {
                 // we need the absolute path
-                this.Response.Redirect(this.Request.Url.AbsolutePath.Replace("Main", "Default"));
+                this.Response.Redirect("/Default.aspx");
                 return;
             }
         }
