@@ -99,7 +99,8 @@ function keepConnection() {
             // console.log("keepConnection call succeeded");
         }});
 
-    setTimeout(keepConnection, 5000);
+    // call every 30 seconds
+    setTimeout(keepConnection, 30000);
 }
 
 function init() {
