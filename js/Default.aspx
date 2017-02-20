@@ -1,64 +1,8 @@
-<%@ Page Language="C#" %>
-<%@ Import Namespace="System.IO" %>
-<%@ Import Namespace="Ict.Common" %>
-<%
-                string ConfigFileName;
-                // make sure the correct config file is used
-                if (Environment.CommandLine.Contains("/appconfigfile="))
-                {
-                    // this happens when we use fastcgi-mono-server4
-                    ConfigFileName = Environment.CommandLine.Substring(
-                        Environment.CommandLine.IndexOf("/appconfigfile=") + "/appconfigfile=".Length);
+<%@ Page Language="C#"
+    Inherits="Ict.Petra.WebServer.TLoginWindow"
+    validateRequest="false"
+    src="Default.aspx.cs" %>
 
-                    if (ConfigFileName.IndexOf(" ") != -1)
-                    {
-                        ConfigFileName = ConfigFileName.Substring(0, ConfigFileName.IndexOf(" "));
-                    }
-                }
-                else
-                {
-                    // this is the normal behaviour when running with local http server
-                    ConfigFileName = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "web.config";
-                }
-
-                new TAppSettingsManager(ConfigFileName);
-                string ServerUrl = TAppSettingsManager.GetValue("Server.Url");
-
-                string [] files = System.IO.Directory.GetFiles("client", "OpenPetraRemoteSetup-*.exe");
-                string filename = String.Empty;
-                foreach (string f in files)
-                {
-                    if (f.Length - f.Replace("-", "").Length != 1)
-                    {
-                        continue;
-                    }
-                    filename = f.Replace("-", "-" + ServerUrl + "-");
-                    filename=System.IO.Path.GetFileName(filename);
-                    if (Request["download"] == filename)
-                    {
-                        FileInfo file = new FileInfo(f);
-                        Response.Clear();
-                        Response.ClearHeaders();
-                        Response.ClearContent();
-                        Response.AddHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
-                        Response.AddHeader("Content-Length", file.Length.ToString());
-                        Response.ContentType = "application/octet-stream";
-                        Response.Flush();
-                        Response.TransmitFile(file.FullName);
-                        Response.End();
-
-                        return;
-                    }
-                    filename=System.IO.Path.GetFileName(filename);
-                }
-
-                string language="en";
-                if ((Request.UserLanguages.Length > 1)
-                   && Request.UserLanguages[0].StartsWith("de")) {
-                    language="de";
-                }
-
-%>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -98,7 +42,7 @@
           <div class="bs-callout bs-callout-warning"><h4>Download</h4>
             <p>Install the Windows client and connect to our Demo OpenPetra server:</p>
                <button id="btnDownload" class="btn btn-lg btn-primary btn-block"
-                  onclick="location.href = '?download=<% Response.Write(filename); %>'">
+                  onclick="location.href = '?download=<% Response.Write(Filename); %>'">
                     Get the Windows Client!
                </button>
           </div>
@@ -134,7 +78,7 @@
           <div class="bs-callout bs-callout-warning"><h4>Download</h4>
             <p>Install the Windows client and connect to your OpenPetra server:</p>
                <button id="btnDownload" class="btn btn-lg btn-primary btn-block"
-                  onclick="location.href = '/client/<% Response.Write(filename); %>'">
+                  onclick="location.href = '/client/<% Response.Write(Filename); %>'">
                     Get the Windows Client!
                </button>
           </div>
@@ -148,7 +92,7 @@
 
         <div class="form-signin">
           <div class="bs-callout bs-callout-info">
-<%     if (language == "de")
+<%     if (Language == "de")
        {
 %>
               <h4>Unterst&uuml;tzung</h4>
