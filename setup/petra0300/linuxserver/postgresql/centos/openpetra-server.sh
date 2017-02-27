@@ -16,7 +16,7 @@ then
   export OPENPETRA_DBPWD=@RandomDBPassword@
   export OPENPETRA_DBUSER=petraserver
   export OPENPETRA_DBNAME=openpetra
-  export OPENPETRA_PORT=@HostedPort@
+  export OPENPETRA_PORT=9000
 fi
 
 if [ -z "$backupfile" ]
@@ -59,7 +59,12 @@ stop() {
 
 # load a new database from a yml.gz file. this will overwrite the current database!
 loadYmlGz() {
-    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 --server PetraServerAdminConsole.exe -C:/home/$userName/etc/PetraServerAdminConsole.config -Command:LoadYmlGz -YmlGzFile:$ymlgzfile"
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 /Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/P
+}
+
+# dump the database to a yml.gz file
+dumpYmlGz() {
+    su - $userName -c "cd $OpenPetraPath/bin30; mono --runtime=v4.0 /Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe -C:/home/$userName/etc/P
 }
 
 # display a menu to check for logged in users etc
@@ -249,11 +254,14 @@ case "$1" in
     loadYmlGz)
         loadYmlGz
         ;;
+    dumpYmlGz)
+        dumpYmlGz
+        ;;
     menu)
         menu
         ;;
     *)
-        echo "Usage: $0 {start|stop|restart|menu|backup|restore|init|loadYmlGz}"
+        echo "Usage: $0 {start|stop|restart|menu|backup|restore|init|loadYmlGz|dumpYmlGz}"
         exit 1
         ;;
 esac

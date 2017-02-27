@@ -121,6 +121,13 @@ namespace Ict.Petra.Client.CommonDialogs
 
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(null, this, null);
 
+            string url = TAppSettingsManager.GetValue("OpenPetra.HTTPServer", string.Empty);
+
+            if (url.Length > 0 && !url.Contains("://demo.") && !url.Contains("://localhost"))
+            {
+                label1.Visible = false;
+            }
+
             this.Text = StrPetraLoginFormTitle;
 
             this.lblPetraVersion.Text = Catalog.GetString("Version") + " " + TApplicationVersion.GetApplicationVersion();

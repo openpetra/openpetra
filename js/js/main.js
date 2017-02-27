@@ -92,6 +92,17 @@ function AddMenuItem(parent, name, title, tabtitle)
     $("#" + name).click(function() {OpenTab(this.id, tabtitle);});
 }
 
+function keepConnection() {
+    $.ajax({
+        url: '/serverSessionManager.asmx/PollClientTasks',
+        success: function(data) {
+            // console.log("keepConnection call succeeded");
+        }});
+
+    // call every 30 seconds
+    setTimeout(keepConnection, 30000);
+}
+
 function init() {
     $('[data-toggle=offcanvas]').click(function() {
         $('.row-offcanvas').toggleClass('active');
@@ -102,7 +113,9 @@ function init() {
         }
         $('#btnShow').toggle();
     });
-    
+
+    setTimeout(keepConnection, 5000);
+ 
     $("#logout").click(function() {
       $.ajax({
           type: "POST",

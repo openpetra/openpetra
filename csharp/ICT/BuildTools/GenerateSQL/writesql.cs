@@ -110,6 +110,8 @@ namespace GenerateSQL
 
             List <TTable>Tables = AStore.GetTables();
 
+            Tables = TTableSort.TopologicalSort(AStore, Tables);
+
             foreach (TTable Table in Tables)
             {
                 if (!WriteTable(ATargetDatabase, sw, Table, true))

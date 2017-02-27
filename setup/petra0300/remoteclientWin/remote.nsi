@@ -15,21 +15,17 @@
 !define ORGNAME "{#ORGNAME}"
 !define ORGNAMEWITHOUTSPACE "{#ORGNAMEWITHOUTSPACE}"
 !define VERSION "{#RELEASEVERSION}"
-!define PRODUCT_WEB_SITE "http://{#PUBLISHERURL}"
+!define PRODUCT_WEB_SITE "{#PUBLISHERURL}"
 
-!define MUI_PRODUCT "OpenPetra.org ${ORGNAME}"
+!define MUI_PRODUCT "OpenPetra ${ORGNAME}"
 
   ;Name and file
   Name "${MUI_PRODUCT}"
-  OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${ORGNAMEWITHOUTSPACE}-${VERSION}.exe"
+  OutFile "{#DELIVERY.DIR}/OpenPetraRemoteSetup-${VERSION}.exe"
   BrandingText "by developers of OpenPetra.org"
 
-
   ;Default installation folder
-  InstallDir "$APPDATA\OpenPetra${ORGNAMEWITHOUTSPACE}"
-
-  ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" ""
+  InstallDir "$APPDATA\OpenPetra {#ORGNAME}"
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel user
@@ -39,14 +35,6 @@
 
   !define MUI_ABORTWARNING
 
-;--------------------------------
-;Language Selection Dialog Settings
-
-  ;Remember the installer language
-  !define MUI_LANGDLL_REGISTRY_ROOT "HKCU" 
-  !define MUI_LANGDLL_REGISTRY_KEY "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" 
-  !define MUI_LANGDLL_REGISTRY_VALUENAME "Installer Language"
-  
 ;--------------------------------
 ;Pages
 
@@ -82,6 +70,39 @@
   !insertmacro MUI_LANGUAGE "English"
 ;  !insertmacro MUI_LANGUAGE "German"
 
+; see http://nsis.sourceforge.net/Sharing_functions_between_Installer_and_Uninstaller
+!macro MGETAFTERCHAR un
+; see http://nsis.sourceforge.net/Get_last_directory_path_part
+Function ${un}GetAfterChar
+  Exch $0 ; chop char
+  Exch
+  Exch $1 ; input string
+  Push $2
+  Push $3
+  StrCpy $2 0
+  loop:
+    IntOp $2 $2 - 1
+    StrCpy $3 $1 1 $2
+    StrCmp $3 "" 0 +3
+      StrCpy $0 ""
+     Goto exit2
+    StrCmp $3 $0 exit1
+    Goto loop
+  exit1:
+    IntOp $2 $2 + 1
+    StrCpy $0 $1 "" $2
+  exit2:
+    Pop $3
+    Pop $2
+    Pop $1
+    Exch $0 ; output
+FunctionEnd
+!macroend
+
+; Insert function as an installer and uninstaller function.
+!insertmacro MGETAFTERCHAR ""
+!insertmacro MGETAFTERCHAR "un."
+
 ;--------------------------------
 ;Installer Sections
 
@@ -92,6 +113,9 @@ Section "Main Section" SecInstallFiles
   CreateDirectory "$INSTDIR\log30"
   CreateDirectory "$INSTDIR\patches30"
   CreateDirectory "$INSTDIR\bin30"
+  ; get the url of the server from the name of the installer exe
+  ${StrTok} $0 $EXEFILE "-" "1" "1"
+  CreateDirectory "$INSTDIR\patches30\$0"
   SetOutPath "$INSTDIR\bin30"
   File ..\..\..\csharp\ThirdParty\DevAge\SourceGrid.dll
   File ..\..\..\csharp\ThirdParty\SQLite\Mono.Data.Sqlite.dll
@@ -101,6 +125,7 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\csharp\ThirdParty\Npgsql\Npgsql.dll
   File ..\..\..\csharp\ThirdParty\A1Panel\Owf.Controls.A1Panel.dll
   File ..\..\..\csharp\ThirdParty\OrientedTextControls\CustomControl.OrientedTextControls.dll
+  File ..\..\..\csharp\ThirdParty\PasswordUtilities\PasswordUtilities.dll
   File ..\..\..\delivery\bin\Ict.Common*dll
   File ..\..\..\delivery\bin\Ict.Petra.Client*dll
   File ..\..\..\delivery\bin\Ict.Petra.Plugins.*.data.dll
@@ -135,15 +160,16 @@ Section "Main Section" SecInstallFiles
   File ..\..\..\LICENSE
   File ..\..\..\resources\petraico-big.ico
   
-  ;Store installation folder
-  WriteRegStr HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}" "" $INSTDIR
-
   ; Now create shortcuts
-  CreateDirectory "$SMPROGRAMS\${MUI_PRODUCT}"
+  Push "$INSTDIR"
+  Push "\"
+  Call GetAfterChar
+  Pop $R0
+  CreateDirectory "$SMPROGRAMS\$R0"
   SetOutPath "$INSTDIR\bin30"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\OpenPetra.org Client.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
+  CreateShortCut "$SMPROGRAMS\$R0\$R0.lnk" "$INSTDIR\bin30\PetraClient.exe" '-C:"$INSTDIR\etc30\PetraClientRemote.config"' $INSTDIR\petraico-big.ico 0 SW_SHOWNORMAL
   ; avoid problems with empty hotkey. so no comment for the moment for the shortcut: "Start OpenPetra.org (connecting to your OpenPetra server)"
-  CreateShortCut "$SMPROGRAMS\${MUI_PRODUCT}\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
+  CreateShortCut "$SMPROGRAMS\$R0\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
  
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -156,9 +182,13 @@ Function .onInit
 
   !insertmacro MUI_LANGDLL_DISPLAY
 
+  ; get the url of the server from the name of the installer exe
+  ${StrTok} $0 $EXEFILE "-" "1" "1"
+  StrCpy $INSTDIR "$APPDATA\OpenPetra $0"
+
 FunctionEnd
 ;--------------------------------
-
+;
 ; see also http://nsis.sourceforge.net/Get_.NET_Version and http://nsis.sourceforge.net/DotNET and http://nsis.sourceforge.net/How_to_Detect_any_.NET_Framework
 ; see https://msdn.microsoft.com/en-us/library/hh925568%28v=vs.110%29.aspx#net_b
 ; we don't want to install .Net directly, since the user might not have admin permissions
@@ -219,10 +249,13 @@ Section "Uninstall"
   RMDir "$INSTDIR"
   
   ;Delete Start Menu Shortcuts
-  Delete "$DESKTOP\${MUI_PRODUCT}.lnk"
-  Delete "$SMPROGRAMS\${MUI_PRODUCT}\*.*"
-  RmDir  "$SMPROGRAMS\${MUI_PRODUCT}"  
+  Push "$INSTDIR"
+  Push "\"
+  Call un.GetAfterChar
+  Pop $R0
 
-  DeleteRegKey /ifempty HKCU "Software\OpenPetra${ORGNAMEWITHOUTSPACE}"
+  Delete "$DESKTOP\$R0.lnk"
+  Delete "$SMPROGRAMS\$R0\*.*"
+  RmDir  "$SMPROGRAMS\$R0"
 
 SectionEnd

@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -371,6 +371,18 @@ namespace Ict.Common
             if ((AKey != "ApplicationDirectory") && (FApplicationDirectory != null))
             {
                 ReturnValue = ReturnValue.Replace("{applicationbindir}", ApplicationDirectory);
+            }
+
+            if (AKey == "OpenPetra.HTTPServer" || AKey == "OpenPetra.Path.RemotePatches")
+            {
+               if (Directory.Exists(TAppSettingsManager.ApplicationDirectory + "/../patches30"))
+               {
+                   string [] NameOfInstance = Directory.GetDirectories(TAppSettingsManager.ApplicationDirectory + "/../patches30");
+                   if (NameOfInstance.Length == 1)
+                   {
+                       ReturnValue = ReturnValue.Replace("placeholder", Path.GetFileName(NameOfInstance[0].ToLower()));
+                   }
+                }
             }
 
             return ReturnValue;

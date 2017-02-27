@@ -237,6 +237,8 @@ namespace Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors
                 throw;
             }
 
+            UserInfo.GUserInfo = PetraPrincipal;
+
             if ((AUserID == "SYSADMIN") && TSession.HasVariable("ServerAdminToken"))
             {
                 // Login via server admin console authenticated by file token

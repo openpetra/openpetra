@@ -66,6 +66,26 @@ namespace Ict.Petra.Client.MPartner.Gui
             // The InitializeComponent() call is required for Windows Forms designer support.
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnOK.Text = Catalog.GetString("&OK");
+            this.btnCancel.Text = Catalog.GetString("&Cancel");
+            this.lblHeading.Text = Catalog.GetString("The Partner that you have selected,");
+            this.lblHeading2.Text = Catalog.GetString("was Merged into another Partner and is therefore no longer accessible.");
+            this.txtMergedPartner.LabelText = Catalog.GetString("Merged, Partner, A   [PERSON]");
+            this.label3.Text = Catalog.GetString("Merge Date") + ":";
+            this.label1.Text = Catalog.GetString("Partner Class") + ":";
+            this.txtMergedIntoPartner.LabelText = Catalog.GetString("Merged-Into, Partner, A");
+            this.lblMergedIntoPartnerKeyName.Text = Catalog.GetString("Partner Key && Name") + ":";
+            this.txtMergedIntoPartnerClass.Text = Catalog.GetString("PERSON");
+            this.label2.Text = Catalog.GetString("Merged By") + ":";
+            this.txtMergedBy.Text = Catalog.GetString("DUMMY");
+            this.txtMergeDate.Text = Catalog.GetString("17-FEB-2009");
+            this.lblMergedIntoPartnerInfo.Text = Catalog.GetString("This is the Partner that it got merged into") + ":";
+            this.lblInstructions.Text = Catalog.GetString("Choose \'OK\' to accept the Merged-Into Partner, or \'Cancel\' to stop the operation ");
+            this.Text = Catalog.GetString("Merged Partner Information");
+            #endregion
 
             FPetraUtilsObject = new Ict.Petra.Client.CommonForms.TFrmPetraUtils(AParentForm, this, stbMain);
         }

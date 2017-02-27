@@ -26,7 +26,6 @@ using System.Data;
 using System.Configuration;
 using System.IO;
 using System.Collections.Generic;
-using Ict.Testing.NUnitPetraServer;
 using Ict.Petra.Server.App.Core;
 using Ict.Common.Remoting.Server;
 using Ict.Common.Remoting.Shared;
@@ -41,85 +40,115 @@ namespace Ict.Petra.Tools.MSysMan.YmlGzImportExport
     /// This will import and export the database via YmlGz file
     public class TYmlGzImportExport
     {
-        /// main method
-        public static void Main(string[] args)
+        private static bool DumpYmlGz(string YmlFile)
         {
-            TPetraServerConnector.Connect();
+            string YmlGZData = TImportExportWebConnector.ExportAllTables();
+            YmlFile = Path.GetFullPath(YmlFile);
 
-            // we need to see progress during the load, otherwise the build server thinks the job is hanging
-            TLogging.DebugLevel = 1;
+            FileStream fs = new FileStream(YmlFile, FileMode.Create);
+            byte[] buffer = Convert.FromBase64String(YmlGZData);
+            fs.Write(buffer, 0, buffer.Length);
+            fs.Close();
+            TLogging.Log("backup has been written to " + YmlFile);
+
+            return true;
+        }
+
+        private static bool LoadYmlGz(string YmlFile)
+        {
+            string restoreFile = Path.GetFullPath(YmlFile);
+
+            if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+            {
+                Console.WriteLine("invalid filename or no read permission for " + restoreFile + ", please try again");
+                return false;
+            }
+
+            string YmlGZData = string.Empty;
 
             try
             {
-                if (!TAppSettingsManager.HasValue("YmlGzFile") || !TAppSettingsManager.HasValue("Action"))
-                {
-                    TLogging.Log("sample call: -C:../../etc/TestServer.config -Action:dump -YmlGzFile:test.yml.gz");
-                    TLogging.Log("sample call: -C:../../etc/TestServer.config -Action:load -YmlGzFile:test.yml.gz");
-                    Environment.Exit(-1);
-                }
+                FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
+                byte[] buffer = new byte[fs.Length];
+                fs.Read(buffer, 0, buffer.Length);
+                fs.Close();
+                YmlGZData = Convert.ToBase64String(buffer);
+            }
+            catch (Exception e)
+            {
+                TLogging.Log("cannot open file " + restoreFile);
+                TLogging.Log(e.ToString());
+                return false;
+            }
 
-                string YmlFile = TAppSettingsManager.GetValue("YmlGzFile");
-                string Action = TAppSettingsManager.GetValue("Action");
+            if (TImportExportWebConnector.ResetDatabase(YmlGZData))
+            {
+                TLogging.Log("backup has been restored from " + restoreFile);
+            }
+            else
+            {
+                TLogging.Log("there have been problems with the restore");
+                return false;
+            }
 
+            return true;
+        }
+
+        /// main method
+        public static void Main(string[] args)
+        {
+            new TAppSettingsManager();
+            new TLogging();
+
+            if (!TAppSettingsManager.HasValue("YmlGzFile") || !TAppSettingsManager.HasValue("Action"))
+            {
+                TLogging.Log("sample call: -C:../../etc/TestServer.config -Action:dump -YmlGzFile:test.yml.gz");
+                TLogging.Log("sample call: -C:../../etc/TestServer.config -Action:load -YmlGzFile:test.yml.gz");
+                Environment.Exit(-1);
+            }
+
+            string YmlFile = TAppSettingsManager.GetValue("YmlGzFile");
+            string Action = TAppSettingsManager.GetValue("Action");
+            TLogging.DebugLevel = TAppSettingsManager.GetInt32("Server.DebugLevel", 0);
+
+            TServerManager.TheServerManager = new TServerManager();
+
+            bool ExitWithError = false;
+
+            try
+            {
                 if (Action == "dump")
                 {
-                    string YmlGZData = TImportExportWebConnector.ExportAllTables();
-                    YmlFile = Path.GetFullPath(YmlFile);
-
-                    FileStream fs = new FileStream(YmlFile, FileMode.Create);
-                    byte[] buffer = Convert.FromBase64String(YmlGZData);
-                    fs.Write(buffer, 0, buffer.Length);
-                    fs.Close();
-                    TLogging.Log("backup has been written to " + YmlFile);
+                    if (!DumpYmlGz(YmlFile))
+                    {
+                        ExitWithError = true;
+                    }
                 }
                 else if (Action == "load")
                 {
-                    string restoreFile = Path.GetFullPath(YmlFile);
-        
-                    if (!File.Exists(restoreFile) || !restoreFile.EndsWith(".yml.gz"))
+                    if (!LoadYmlGz(YmlFile))
                     {
-                        Console.WriteLine("invalid filename or no read permission for " + restoreFile + ", please try again");
-                        Environment.Exit(-1);
-                    }
-        
-                    string YmlGZData = string.Empty;
-        
-                    try
-                    {
-                        FileStream fs = new FileStream(restoreFile, FileMode.Open, FileAccess.Read);
-                        byte[] buffer = new byte[fs.Length];
-                        fs.Read(buffer, 0, buffer.Length);
-                        fs.Close();
-                        YmlGZData = Convert.ToBase64String(buffer);
-                    }
-                    catch (Exception e)
-                    {
-                        TLogging.Log("cannot open file " + restoreFile);
-                        TLogging.Log(e.ToString());
-                        Environment.Exit(-1);
-                    }
-        
-                    if (TImportExportWebConnector.ResetDatabase(YmlGZData))
-                    {
-                        TLogging.Log("backup has been restored from " + restoreFile);
-                        return;
-                    }
-                    else
-                    {
-                        TLogging.Log("there have been problems with the restore");
-                        Environment.Exit(-1);
+                        ExitWithError = true;
                     }
                 }
             }
             catch (Exception e)
             {
                 TLogging.Log(e.ToString());
+                ExitWithError = true;
             }
+
+            TServerManager.TheServerManager.StopServer();
 
             if (TAppSettingsManager.GetValue("interactive", "true") == "true")
             {
                 Console.WriteLine("Please press Enter to continue...");
                 Console.ReadLine();
+            }
+
+            if (ExitWithError)
+            {
+                Environment.Exit(-1);
             }
         }
     }

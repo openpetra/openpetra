@@ -24,12 +24,15 @@
 <script language="C#" prefix="OP" >
   <references>
     <include name="System.Xml.dll" />
+    <include name="System.Web.dll" />
   </references>
   <imports>
     <import namespace="System.Collections.Generic" />
     <import namespace="System.Text" />
     <import namespace="System.Xml" />
     <import namespace="System.IO" />
+    <import namespace="System.Web.Security" />
+    <import namespace="System.Security.Cryptography" />
   </imports>
   <code>
     <![CDATA[
@@ -83,6 +86,29 @@
                 sw.Close();
             }
         }
+    [Function("GetPasswordSalt")]
+    public static string GetPasswordSalt() {
+	  //Generate a cryptographic random number.
+	  RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
+	  byte[] buff = new byte[32];
+	  rng.GetBytes(buff);
+
+	  // Return a Base64 string representation of the random number.
+	  return Convert.ToBase64String(buff);
+    }
+    [Function("GetPasswordHash")]
+    public static string GetPasswordHash(string APassword, string ASalt) {
+	SHA1 algorithm = SHA1.Create();
+	byte[] data = algorithm.ComputeHash(Encoding.UTF8.GetBytes(String.Concat(APassword, ASalt)));
+	string sh1 = "";
+
+	for (int i = 0; i < data.Length; i++)
+	{
+	    sh1 += data[i].ToString("x2").ToUpperInvariant();
+	}
+
+	return sh1;
+    }
 ]]>
         </code>
     </script>
@@ -199,6 +225,7 @@
     </target>
 
     <target name="resetDatabase" depends="init" description="useful for debugging the creation of fresh database"> <!-- depends: recreateDatabase --> 
+         <property name="WithDemoDataGermany" value="true" overwrite="false"/>
          <if test="${not platform::is-windows()}" >
              <property name="OpenPetraRoot.dir" value="${path::get-full-path(OpenPetraRoot.dir)}"/>
          </if>
@@ -239,8 +266,8 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, ReleaseVersion)}'/>
          
          <property name="passwordChangeme" value="CHANGEME"/>
-         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
-         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${BaseData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#PASSWORDHASHSYSADMIN}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
@@ -248,8 +275,8 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
          <property name="passwordChangeme" value="demo"/>
-         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
-         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#PASSWORDHASHDEMO}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
@@ -257,8 +284,8 @@
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordsalt)}'/>
 
          <property name="passwordChangeme" value="TOBESETBYINSTALLER2"/>
-         <property name="passwordsalt" value="${script::GetPasswordSalt()}"/>
-         <property name="passwordhash" value="${script::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
+         <property name="passwordsalt" value="${OP::GetPasswordSalt()}"/>
+         <property name="passwordhash" value="${OP::GetPasswordHash(passwordChangeme, passwordsalt)}"/>
          <property name="Current.File" value="${DemoData.Dir}/init.sql.local"/>
          <property name="toReplace" value="{#PASSWORDHASHANONYMOUS}"/>
          <echo message='${script::ReplaceInFile(Current.File, toReplace, passwordhash)}'/>
@@ -267,18 +294,35 @@
 
         <if test="${DBMS.Type=='sqlite'}">
              <move file="${SQLitedbWork.file}" tofile="${SQLitedbWork.file}.bak" if="${file::exists(SQLitedbWork.file)}"/>
-             <if test="${file::exists(SQLitedbBase.file)}">
+             <if test="${file::exists(SQLitedbBase.file) and (WithDemoDataGermany=='true')}">
                 <copy file="${SQLitedbBase.file}" tofile="${SQLitedbWork.file}"/>
              </if>
-             <if test="${not file::exists(SQLitedbBase.file)}">
-                 <copy file="${SQLitedbEmpty.file}" tofile="${SQLitedbBase.file}"/>
-                 <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbBase.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
-                 <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbBase.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
-                 <if test="${CreateDBForPublicInstaller=='true'}">
-                     <echo message='Modifying Database for the public installer!'/>
-                     <copy file="${PublicInstallerDemoData.Dir}/init.sql"
-                         tofile="${PublicInstallerDemoData.Dir}/init.sql.local" overwrite="true"/>
-                     <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbBase.file} -datapath:${DemoData.Dir} -sqlfile:${PublicInstallerDemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+             <if test="${file::exists(SQLitedbClean.file) and (WithDemoDataGermany=='false')}">
+                <copy file="${SQLitedbClean.file}" tofile="${SQLitedbWork.file}"/>
+             </if>
+             <if test="${not file::exists(SQLitedbWork.file)}">
+                 <if test="${WithDemoDataGermany=='true'}">
+                     <copy file="${SQLitedbEmpty.file}" tofile="${SQLitedbBase.file}"/>
+                     <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbBase.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+                     <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbBase.file} -datapath:${DemoData.Dir} -sqlfile:${DemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+                     <if test="${CreateDBForPublicInstaller=='true'}">
+                         <echo message='Modifying Database for the public installer!'/>
+                         <copy file="${PublicInstallerDemoData.Dir}/init.sql"
+                             tofile="${PublicInstallerDemoData.Dir}/init.sql.local" overwrite="true"/>
+                         <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbBase.file} -datapath:${DemoData.Dir} -sqlfile:${PublicInstallerDemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+                     </if>
+                     <copy file="${SQLitedbBase.file}" tofile="${SQLitedbWork.file}"/>
+                 </if>
+                 <if test="${WithDemoDataGermany=='false'}">
+                     <copy file="${SQLitedbEmpty.file}" tofile="${SQLitedbClean.file}"/>
+                     <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbClean.file} -datapath:${BaseData.Dir} -sqlfile:${BaseData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+                     <if test="${CreateDBForPublicInstaller=='true'}">
+                         <echo message='Modifying Database for the public installer!'/>
+                         <copy file="${PublicInstallerDemoData.Dir}/init.sql"
+                             tofile="${PublicInstallerDemoData.Dir}/init.sql.local" overwrite="true"/>
+                         <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:${SQLitedbClean.file} -datapath:${DemoData.Dir} -sqlfile:${PublicInstallerDemoData.Dir}/init.sql.local -password:${DBMS.Password}" failonerror="true"/>
+                     </if>
+                     <copy file="${SQLitedbClean.file}" tofile="${SQLitedbWork.file}"/>
                  </if>
             </if>
         </if>
@@ -295,12 +339,16 @@
              </if>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
              <psql exe="${PostgreSQL.exe}" sqlfile="${BaseData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
-             <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             <if test="${WithDemoDataGermany=='true'}">
+                 <psql exe="${PostgreSQL.exe}" sqlfile="${DemoData.Dir}/init.sql.local" host="${DBMS.DBHostOrFile}" port="${DBMS.DBPort}" database="${DBMS.DBName}" username="${DBMS.UserName}" password="${DBMS.Password}"/>
+             </if>
         </if>
         <if test="${DBMS.Type=='mysql'}">
              <mysql exe="${MySQL.exe}" sqlfile="${BaseData.Dir}/clean.sql" host="${DBMS.DBHostOrFile}" database="${DBMS.DBName}" user="${DBMS.UserName}" password="${DBMS.Password}"/>
              <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${BaseData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
-             <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
+             <if test="${WithDemoDataGermany=='true'}">
+                 <ExecDotNet program="${BuildToolsExe.dir}/Ict.Tools.GenerateSQL.exe" commandline="-do:load -dbms:${DBMS.Type} -petraxml:${PetraXML.file} -outputFile:empty  -sqlfile:${DemoData.Dir}/init.sql.local -host:${DBMS.DBHostOrFile} -database:${DBMS.DBName} -username:${DBMS.UserName} -password:${DBMS.Password}" failonerror="true"/>
+             </if>
         </if>
     </target>
 

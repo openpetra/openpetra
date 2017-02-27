@@ -78,24 +78,34 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </code>
 </script> 
 
-<target name="buildLinuxSourceforgeRelease">
-  <property name="WithLinuxClient" value="true"/>
-  <property name="WithWindowsClient" value="false"/>
-  <property name="LinuxTargetDistribution-list" value="debian-postgresql,centos-postgresql"/>
-  <property name="OrgName" value="MyOpenPetra"/>
-  <property name="OrgNameWithoutSpace" value="MyOpenPetra"/>
-  <property name="HostedServer" value="localhost"/>
-  <property name="HostedPort" value="9000"/>
-  <property name="PublisherUrl" value="www.solidcharity.com"/>
-  <property name="RandomDBPassword" value="CHANGEME"/>
-  <call target="buildRemoteInstallers"/>
+<target name="buildRPM">
+  <property name="WithLinuxClient" value="false"/>
+  <property name="WithWindowsClient" value="true"/>
+  <property name="OpenBuildService" value="true"/>
+  <property name="RemotePatchesURL" value="https://placeholder/client/" overwrite="true"/>
+  <property name="HostedServerURL" value="https://placeholder" overwrite="true"/>
+
+  <call target="nanttasks"/>
+  <call target="minimalGenerateSolution"/>
+  <call target="quickCompile"/>
+  <call target="createSQLStatements"/>
+  <call target="translation"/>
+
+  <!-- build Remote Setup Windows installer -->
+  <property name="BuildArchive" value="client" overwrite="true"/>
+  <call target="prepareSetupDirForTarFile"/>
+  <call target="setupRemote"/>
+
+  <property name="BuildArchive" value="server" overwrite="true"/>
+  <call target="prepareSetupDirForTarFile"/>
+
+  <!-- result is in dir.setup for building the rpm package -->
 </target>
 
 <!-- Windows -->
 <target name="buildWindowsStandalone">
   <property name="compileForStandalone" value="true" overwrite="true"/>
   <call target="generateSolution" unless="${target::has-executed('quickCompile')}"/>
-  <call target="packageReports" />
   <property name="CreateDBForPublicInstaller" value="true"/>
   <call target="createSQLiteDB" unless="${target::has-executed('createSQLiteDB')}"/>
   <call target="translation" unless="${target::has-executed('translation')}"/>
@@ -187,12 +197,10 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SETUP.DIR}', dir.setup)}"/>
 
     <!-- for remote installer -->
-    <if test="${property::exists('HostedServer')}">
+    <if test="${property::exists('PublisherUrl')}">
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAME}', OrgName)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#ORGNAMEWITHOUTSPACE}', OrgNameWithoutSpace)}"/>
         <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#PUBLISHERURL}', PublisherUrl)}"/>
-        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERHOST}', HostedServer)}"/>
-        <property name="dummy" value="${script::ReplaceInFile(Current.File, '{#SERVERPORT}', HostedPort)}"/>
     </if>
     <if test="${string::ends-with(SetupOriginal.File, '.nsi')}">
         <exec program="${makensis.exe}" commandline=" &quot;${Current.File}&quot;"
@@ -221,133 +229,6 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         </fileset>
       </tar>
   </if>
-</target>
-
-<!-- this will be called from Open Build Service to build the windows client -->
-<target name="buildLinuxClientOBS">
-  <property name="WithLinuxClient" value="true"/>
-  <property name="WithWindowsClient" value="false"/>
-  <property name="LinuxTargetDistribution-list" value="no-server"/>
-  <property name="OrgName" value="MyOpenPetra" overwrite="false"/>
-  <property name="OrgNameWithoutSpace" value="MyOpenPetra" overwrite="false"/>
-  <property name="HostedServer" value="localhost" overwrite="false"/>
-  <property name="HostedPort" value="9000" overwrite="false"/>
-  <property name="PublisherUrl" value="www.solidcharity.com" overwrite="false"/>
-  <call target="nanttasks"/>
-  <call target="minimalGenerateSolution"/>
-  <property name="solution" value="Client"/>
-  <call target="quickCompile"/>
-  <call target="translation"/>
-  <property name="BuildArchive" value="client" overwrite="true"/>
-  <call target="prepareSetupDirForTarFile"/>
-  <!-- copy startclient sh und remote config -->
-  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/startClient.sh"
-              tofile="${dir.setup}/startClient.sh"/>
-  <copy file="${dir.root}/setup/petra${PetraRelease}/linuxclient/PetraClientRemote.config"
-              tofile="${dir.setup}/etc30/PetraClientRemote.config" outputencoding="utf-8">
-        <filterchain>
-            <expandproperties />
-        </filterchain>
-  </copy>
-
-  <!-- result is in dir.setup for building the rpm or deb package -->
-</target>
-
-<target name="buildServerCentOSPostgresqlOBS">
-  <property name="WithLinuxClient" value="false"/>
-  <property name="WithWindowsClient" value="false"/>
-  <property name="LinuxTargetDistribution-list" value="centos-postgresql"/>
-  <property name="HostedPort" value="9000"/>
-  <property name="PostgreSQL.Version" value="9.2"/>
-  <call target="nanttasks"/>
-  <call target="minimalGenerateSolution"/>
-  <call target="packageReports" />
-  <property name="solution" value="Server"/>
-  <call target="quickCompile"/>
-  <property name="DBMS.Type" value="postgresql"/>
-  <call target="createSQLStatements"/>
-  <property name="BuildArchive" value="server" overwrite="true"/>
-  <call target="prepareSetupDirForTarFile"/>
-  <move file="${dir.setup}/centos/openpetra-server.sh" tofile="${dir.setup}/openpetra-server.sh"/>
-
-  <!-- result is in dir.setup for building the rpm package -->
-</target>
-
-<target name="buildServerDebianPostgresqlOBS">
-  <property name="WithLinuxClient" value="false"/>
-  <property name="WithWindowsClient" value="false"/>
-  <property name="LinuxTargetDistribution-list" value="debian-postgresql"/>
-  <property name="HostedPort" value="9000"/>
-  <property name="PostgreSQL.Version" value="9.2"/>
-  <call target="nanttasks"/>
-  <call target="minimalGenerateSolution"/>
-  <call target="packageReports" />
-  <property name="solution" value="Server"/>
-  <call target="quickCompile"/>
-  <property name="DBMS.Type" value="postgresql"/>
-  <call target="createSQLStatements"/>
-  <property name="BuildArchive" value="server" overwrite="true"/>
-  <call target="prepareSetupDirForTarFile"/>
-  <move file="${dir.setup}/debian/openpetra-server.sh" tofile="${dir.setup}/openpetra-server.sh"/>
-
-  <!-- result is in dir.setup for building the rpm package -->
-</target>
-
-<target name="buildWindowsRemoteClient" help="build the windows remote client, and the patches">
-  <property name="WithLinuxClient" value="false"/>
-  <property name="WithWindowsClient" value="true"/>
-  <property name="LinuxTargetDistribution-list" value="no-server"/>
-  <property name="OrgName" value="MyOpenPetra" overwrite="false"/>
-  <property name="OrgNameWithoutSpace" value="MyOpenPetra" overwrite="false"/>
-  <property name="HostedServer" value="localhost" overwrite="false"/>
-  <property name="HostedPort" value="9000" overwrite="false"/>
-  <property name="PublisherUrl" value="www.solidcharity.com" overwrite="false"/>
-  <property name="RemotePatchesURL" value="http://${PublisherUrl}/patches/${OrgNameWithoutSpace}/" overwrite="false"/>
-  <property name="HostedServerURL" value="http://${HostedServer}/openpetra${HostedPort}" overwrite="false"/>
-  <call target="nanttasks"/>
-  <call target="minimalGenerateSolution"/>
-  <property name="solution" value="Client"/>
-  <call target="quickCompile"/>
-  <call target="translation"/>
-  <property name="BuildArchive" value="client" overwrite="true"/>
-  <call target="prepareSetupDirForTarFile"/>
-  <!-- build Remote Setup Windows installer -->
-  <if test="${WithWindowsClient}">
-    <call target="setupRemote"/>
-  </if>
-  <delete dir="${dir.setup}"/>
-</target>
-
-<target name="buildRemoteInstallers" help="build a tar.gz file for the server, the remote installer for the client, and a backup for future patches">
-  <call target="nanttasks"/>
-  <call target="generateSolution"/>
-  <call target="packageReports" />
-  <call target="translation" unless="${target::has-executed('translation')}"/>
-
-  <if test="${string::contains(LinuxTargetDistribution-list, 'postgresql')}">
-    <property name="DBMS.Type" value="postgresql"/>
-    <call target="createSQLStatements"/>
-    <call target="createServerTarFilePerDBSystem"/>
-  </if>
-  <if test="${string::contains(LinuxTargetDistribution-list, 'mysql')}">
-    <property name="DBMS.Type" value="mysql"/>
-    <call target="createSQLStatements"/>
-    <call target="createMySQLDB"/>
-    <call target="createServerTarFilePerDBSystem"/>
-  </if>
-
-  <!-- build Remote Setup Windows installer -->
-  <if test="${WithWindowsClient}">
-    <call target="setupRemote"/>
-  </if>
-  
-
-  <!-- ********* build Linux Client tar.gz ********* -->
-  <if test="${WithLinuxClient == 'true'}">
-    <call target="buildLinuxClient"/>
-  </if>
-
-  <delete dir="${dir.setup}"/>
 </target>
 
 <target name="createRemoteClientPatch" depends="init">
@@ -437,8 +318,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
       <include name="*/*.dll" /> <!-- i18n DLLs-->
     </fileset>
   </copy>
-  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.exe" overwrite="true"/>
-  <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" tofile="${dir.setup}/bin30/Ict.Tools.PatchTool.Library.dll" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.exe" todir="${dir.setup}/bin30" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Tools.PatchTool.Library.dll" todir="${dir.setup}/bin30" overwrite="true"/>
+  <copy file="${dir.bin}/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" todir="${dir.setup}/bin30" overwrite="true"/>
 
   <copy todir="${dir.setup}/js30">
     <fileset basedir="${dir.root}/js">
@@ -466,6 +348,7 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
         <include name="${dir.setup}/bin30/Ict.Petra.Plugins.*.Server.dll" />
         <include name="${dir.setup}/bin30/Ict.Petra.Server*" />
         <include name="${dir.setup}/bin30/PetraServer*" />
+        <include name="${dir.setup}/bin30/Ict.Petra.Tools.MSysMan.YmlGzImportExport.exe" />
         <include name="${dir.setup}/*.sh" />
         <include name="${dir.setup}/INSTALL" />
       </fileset>
@@ -540,18 +423,9 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     <foreach item="String" property="LinuxTargetDistribution" delim="," in="${LinuxTargetDistribution-list}" >
      <if test="${string::contains(LinuxTargetDistribution, DBMS.Type)}">
       <property name="LinuxTargetDistribution" value="${string::replace(LinuxTargetDistribution, '-' + DBMS.Type, '')}"/>
-      <!-- ***************  create the linux config script for the server side ***************  -->
-      <property name="RandomDBPassword" value="${script::GetPasswordSalt()}" overwrite="false"/>
+      <!-- ***************  copy the linux config script for the server side ***************  -->
       <copy file="${dir.root}/setup/petra${PetraRelease}/linuxserver/${DBMS.Type}/${LinuxTargetDistribution}/openpetra-server.sh"
-        tofile="${dir.setup}/${LinuxTargetDistribution}/openpetra-server.sh" overwrite="true" outputencoding="latin1">
-        <filterchain>
-            <replacetokens>
-                <token key="RandomDBPassword" value="${RandomDBPassword}" />
-                <token key="HostedPort" value="${HostedPort}" />
-                <token key="PostgreSQL.Version" value="${PostgreSQL.Version}" />
-            </replacetokens>
-        </filterchain>
-      </copy>
+        tofile="${dir.setup}/openpetra-server.sh" overwrite="true"/>
      </if>
     </foreach>
 
@@ -606,6 +480,8 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
                 tofile="${dir.setup}/db30/createtables-MySQL.sql"/>
       <copy file="${dir.root}/setup/petra${PetraRelease}/createconstraints-MySQL.sql"
                 tofile="${dir.setup}/db30/createconstraints-MySQL.sql"/>
+      <copy file="${dir.root}/setup/petra${PetraRelease}/petra.sql"
+                tofile="${dir.setup}/db30/createdb-MySQL.sql"/>
       <if test="${file::exists(dir.root + '/setup/petra' + PetraRelease + '/demodata-MySQL.sql')}">
           <copy file="${dir.root}/setup/petra${PetraRelease}/demodata-MySQL.sql"
                 tofile="${dir.setup}/db30/demodata-MySQL.sql"/>
@@ -640,9 +516,5 @@ public static string InsertRecursiveAllFilesFromSubdirectoriesForDeletion(string
     </copy>
   </if>
 </target> 
-
-<target name="packageReports">
-       <exec program="${dir.delivery}/bin/Ict.Tools.PackageReports.exe" commandline="&quot;${dir.root}/XmlReports&quot; &quot;${dir.delivery}&quot;" />
-</target>
 
 </project>
