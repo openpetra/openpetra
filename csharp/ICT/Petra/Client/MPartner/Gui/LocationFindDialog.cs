@@ -111,6 +111,27 @@ namespace Ict.Petra.Client.MPartner.Gui
             // Required for Windows Form Designer support
             //
             InitializeComponent();
+            #region CATALOGI18N
+
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
+            this.btnOK.Text = Catalog.GetString("&Accept");
+            this.lblSearchInfo.Text = Catalog.GetString("Searching...");
+            this.btnClearCriteria.Text = Catalog.GetString("Clea&r");
+            this.grpCriteria.Text = Catalog.GetString("&Find Criteria");
+            this.lblPostCode.Text = Catalog.GetString("P&ost Code") + ":";
+            this.lblCounty.Text = Catalog.GetString("Co&unty") + ":";
+            this.lblCountry.Text = Catalog.GetString("Co&untry") + ":";
+            this.lblLocationKey.Text = Catalog.GetString("Location &Key") + ":";
+            this.lblCity.Text = Catalog.GetString("Cit&y/Town") + ":";
+            this.lblStreet2.Text = Catalog.GetString("Address &2") + ":";
+            this.lblAddr3.Text = Catalog.GetString("Address &3") + ":";
+            this.lblAddr1.Text = Catalog.GetString("Address &1") + ":";
+            this.btnSearch.Text = Catalog.GetString(" &Search");
+            this.grpResult.Text = Catalog.GetString("Find R&esult");
+            this.btnOK.Text = Catalog.GetString("&Accept");
+            this.btnCancel.Text = Catalog.GetString("&Cancel");
+            this.Text = Catalog.GetString("Location Find");
+            #endregion
 
             FDefaultValues = FFindCriteriaDataTable.NewRow();
 

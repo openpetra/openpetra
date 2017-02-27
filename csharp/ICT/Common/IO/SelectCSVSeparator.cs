@@ -172,15 +172,19 @@ namespace Ict.Common.IO
             InitializeComponent();
             #region CATALOGI18N
 
+            // this code has been inserted by GenerateI18N, all changes in this region will be overwritten by GenerateI18N
             this.rbtComma.Text = Catalog.GetString("Comma");
             this.rbtTabulator.Text = Catalog.GetString("Tab");
             this.rbtOther.Text = Catalog.GetString("Other Separator") + ":";
             this.rbtSemicolon.Text = Catalog.GetString("Semicolon");
             this.btnCancel.Text = Catalog.GetString("Cancel");
             this.btnOK.Text = Catalog.GetString("OK");
-            this.lblDateFormat.Text = Catalog.GetString("Ambiguous dates") + ":";
             this.lblNumberFormat.Text = Catalog.GetString("Number format") + ":";
+            this.lblNumberFormatHint.Text = Catalog.GetString("Number format Hint") + ":";
+            this.lblDateFormat.Text = Catalog.GetString("Ambiguous dates") + ":";
+            this.lblDateFormatHint.Text = Catalog.GetString("Date format Hint") + ":";
             this.lblTextEncoding.Text = Catalog.GetString("Text encoding") + ":";
+            this.lblTextEncodingHint.Text = Catalog.GetString("Hint: Where a choice of encodings exists, a file exported from OpenPetra or Excel");
             this.Text = Catalog.GetString("Select CSV Separator");
             #endregion
 
