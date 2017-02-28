@@ -941,6 +941,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                               "p_donor_key_n AS DonorKey," +
                                               "p_partner_class_c AS DonorClass," +
                                               "a_reference_c AS Reference, " +
+                                              "a_receipt_number_i AS ReceiptNumber," +
                                               "a_currency_code_c AS GiftCurrency " +
                                               "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n "
                                               +
@@ -975,6 +976,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                             GiftRow.GiftTransactionNumber = Convert.ToInt32(Row["TransactionNumber"]);
                             GiftRow.Reference = TempRow["Reference"].ToString();
                             GiftRow.DateEntered = Convert.ToDateTime(TempRow["DateEntered"]);
+                            GiftRow.ReceiptNumber = Convert.ToInt32(TempRow["ReceiptNumber"]);
                             GiftsPerDonor[DonorKey].Rows.Add(GiftRow);
                         } // foreach Row
 

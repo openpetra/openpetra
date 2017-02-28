@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.DataAggregates;
 using System.Linq;
 
 namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
@@ -40,6 +41,125 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
     ///</summary>
     public partial class TPartnerReportingWebConnector
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataSet BriefAddressReport(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataSet ReturnDataSet = new DataSet();
+
+            TDBTransaction Transaction = null;
+            DataTable Partners = new DataTable("Partners");
+            DataTable Locations = new DataTable("Locations");
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String PartnerSelection = "";
+
+                    if (AParameters["param_selection"].ToString() == "one partner")
+                    {
+                        PartnerSelection = AParameters["param_partnerkey"].ToInt32().ToString();
+                    }
+
+                    String PartnersQuery =
+                        @"SELECT
+	                                            p_partner_key_n AS PartnerKey,
+	                                            p_partner_class_c AS PartnerClass,
+	                                            p_partner_short_name_c AS PartnerShortName,
+	                                            p_status_code_c AS StatusCode
+
+                                            FROM p_partner
+                                            WHERE p_partner_key_n IN ("
+                        +
+                        PartnerSelection + ")";
+
+                    Partners = DbAdapter.RunQuery(PartnersQuery,
+                        "Partners",
+                        Transaction);
+
+                    if ((AParameters["param_addressdetail"]).ToString() == "GetBestAddressForPartner")
+                    {
+                        // Get best Addresses for every partner
+                        Locations = TAddressTools.GetBestAddressForPartners(Partners,
+                            0,
+                            Transaction);
+                    }
+                    else
+                    {
+                        // in this case we want to get all addresses (including expired ones)
+                        String LocationsQuery =
+                            @"SELECT
+                                               p_partner_location.*,
+                                               p_location.*,
+                                               p_country.p_address_order_i
+                                           FROM
+                                               p_partner_location, p_location, p_country
+                                           WHERE
+                                               p_partner_location.p_partner_key_n IN("
+                            +
+
+                            PartnerSelection +
+                            @")
+
+                                               AND p_location.p_location_key_i = p_partner_location.p_location_key_i
+
+                                               AND p_country.p_country_code_c = p_location.p_country_code_c"                                                                                                                                                                                                 ;
+
+                        Locations = DbAdapter.RunQuery(LocationsQuery,
+                            "Locations",
+                            Transaction);
+                    }
+
+                    Locations.TableName = "Locations";
+
+                    //Add fields and retrieve data for contact details
+                    TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(Partners, 0, DbAdapter, true, true, true);
+
+                    //Retrieve "field" information
+                    DateTime FieldDate = DateTime.Today;
+
+                    if (AParameters.ContainsKey("param_currentstaffdate"))
+                    {
+                        FieldDate = AParameters["param_currentstaffdate"].ToDate();
+                    }
+
+                    TPartnerReportTools.AddFieldNameToTable(Partners, 0, FieldDate, DbAdapter);
+
+                    //Make the Column Names great again.
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(Partners);
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(Locations);
+
+                    //Sort and filter
+                    Locations.CaseSensitive = false;
+                    DataView dv = Locations.DefaultView;
+
+                    Dictionary <string, string>Mapping = new Dictionary <string, string>();
+                    Mapping.Add("PartnerName", "PartnerShortName");
+                    Mapping.Add("AddressType", "LocationType");
+                    Mapping.Add("Addressvalidfrom", "DateEffective");
+                    Mapping.Add("Addressvalidto", "DateGoodUntil");
+                    Mapping.Add("FirstAddressLine", "Locality");
+                    Mapping.Add("PostCode", "PostalCode");
+                    Mapping.Add("ThirdAddressLine", "Address3");
+                    Mapping.Add("Country", "CountryCode");
+                    dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), Locations.Columns, Mapping);
+                    Locations = dv.ToTable();
+                });
+
+            ReturnDataSet.Tables.Add(Partners);
+            ReturnDataSet.Tables.Add(Locations);
+
+            return ReturnDataSet;
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -849,12 +969,11 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                         "'").Insert(AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0, "'").Length, "'") + ") ";
 
 
-                    TPartnerReportTools.UCExtractChkFilterSQLConditions(Query, AParameters);
+                    Query += TPartnerReportTools.UCExtractChkFilterSQLConditions(AParameters);
 
                     ReturnTable = DbAdapter.RunQuery(Query, "PartnerBySpecialType", Transaction);
 
                     //Add Contact Information, Address, Field
-                    //TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0);
                     TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0, DbAdapter);
                     ReturnTable = TAddressTools.GetBestAddressForPartnersAsJoinedTable(ReturnTable, 0, Transaction, false);
                     TPartnerReportTools.AddFieldNameToTable(ReturnTable, 0, AParameters["param_address_date_valid_on"].ToDate(), DbAdapter);
@@ -872,7 +991,6 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     Mapping.Add("AddressType", "LocationType");
                     Mapping.Add("Addressvalidfrom", "DateEffective");
                     Mapping.Add("Addressvalidto", "DateGoodUntil");
-                    Mapping.Add("Fax", "PrimaryFax");
                     Mapping.Add("FirstAddressLine", "Locality");
                     Mapping.Add("PostCode", "PostalCode");
                     Mapping.Add("ThirdAddressLine", "Address3");

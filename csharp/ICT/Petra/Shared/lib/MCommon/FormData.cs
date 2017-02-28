@@ -1962,6 +1962,11 @@ namespace Ict.Petra.Shared.MCommon
             get; set;
         }
 
+        /// Gift Receipt Number
+        public String ReceiptNr {
+            get; set;
+        }
+
         /// Is Gift in Kind?
         public Boolean IsTypeGiftInKind {
             get; set;

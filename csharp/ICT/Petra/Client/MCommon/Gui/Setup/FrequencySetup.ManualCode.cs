@@ -79,12 +79,7 @@ namespace Ict.Petra.Client.MCommon.Gui.Setup
                 new int[]
                 {
                     AFrequencyTable.ColumnFrequencyCodeId,
-                    AFrequencyTable.ColumnFrequencyDescriptionId,
-                    AFrequencyTable.ColumnNumberOfYearsId,
-                    AFrequencyTable.ColumnNumberOfMonthsId,
-                    AFrequencyTable.ColumnNumberOfDaysId,
-                    AFrequencyTable.ColumnNumberOfHoursId,
-                    AFrequencyTable.ColumnNumberOfMinutesId
+                    AFrequencyTable.ColumnFrequencyDescriptionId
                 });
         }
     }

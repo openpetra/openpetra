@@ -262,6 +262,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 /* Partner Reports */
 
+                case "BriefAddressReport":
+                    ResultSet = TPartnerReportingWebConnector.BriefAddressReport(AParameters, FDbAdapter);
+                    break;
+
                 case "Relationship":
                     ResultSet = TPartnerReportingWebConnector.PartnerByRelationship(AParameters, FDbAdapter);
                     break;

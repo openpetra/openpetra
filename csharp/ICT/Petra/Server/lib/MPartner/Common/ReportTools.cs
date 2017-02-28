@@ -92,56 +92,28 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <summary>
         /// Adds the conditions for a UC_ExtractChkFilter to a Query
         /// </summary>
-        /// <param name="Query"></param>
         /// <param name="AParameters"></param>
-        public static void UCExtractChkFilterSQLConditions(string Query, Dictionary <String, TVariant>AParameters)
+        /// <returns></returns>
+        public static string UCExtractChkFilterSQLConditions(Dictionary <String, TVariant>AParameters)
         {
+            string query = "";
+
             if (AParameters["param_active"].ToBool())
             {
-                Query += " AND p_status_code_c = 'ACTIVE' ";
+                query += " AND p_status_code_c = 'ACTIVE' ";
             }
 
             if (AParameters["param_families_only"].ToBool())
             {
-                Query += " AND p_partner.p_partner_class_c LIKE 'FAMILY%' ";
+                query += " AND p_partner.p_partner_class_c LIKE 'FAMILY%' ";
             }
 
             if (AParameters["param_exclude_no_solicitations"].ToBool())
             {
-                Query += "AND NOT p_partner.p_no_solicitations_l";
-            }
-        }
-
-        /// <summary>
-        /// OBSOLETE!!! Adds the primary Phone Email and Fax to a DataTable
-        /// </summary>
-        /// <param name="ADataTable"></param>
-        /// <param name="APartnerKeyColumnNumber"></param>
-        public static void AddPrimaryPhoneEmailFaxToTable(DataTable ADataTable, int APartnerKeyColumnNumber)
-        {
-            ADataTable.Columns.Add("PrimaryPhone");
-            ADataTable.Columns.Add("PrimaryEmail");
-            ADataTable.Columns.Add("PrimaryFax");
-
-            DataView dv = ADataTable.DefaultView;
-
-            foreach (DataRow dr in ADataTable.Rows)
-            {
-                long PartnerKey = long.Parse(dr[APartnerKeyColumnNumber].ToString());
-                string PrimaryPhone = "";
-                string PrimaryEmailAddress = "";
-                string FaxNumber = "";
-                TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(PartnerKey,
-                    out PrimaryPhone, out PrimaryEmailAddress, out FaxNumber);
-                dv.RowFilter = ADataTable.Columns[APartnerKeyColumnNumber].ColumnName + " = " + PartnerKey;
-                dv[0]["PrimaryPhone"] = PrimaryPhone;
-                dv[0]["PrimaryEmail"] = PrimaryEmailAddress;
-                dv[0]["PrimaryFax"] = FaxNumber;
+                query += "AND NOT p_partner.p_no_solicitations_l";
             }
 
-            dv.RowFilter = "";
-
-            ADataTable = dv.ToTable();
+            return query;
         }
 
         /// <summary>
@@ -150,9 +122,20 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ADataTable"></param>
         /// <param name="APartnerKeyColumn"></param>
         /// <param name="ADbAdapter"></param>
-        public static void AddPrimaryPhoneEmailFaxToTable(DataTable ADataTable, int APartnerKeyColumn, TReportingDbAdapter ADbAdapter)
+        /// <param name="AIncludeMobile"></param>
+        /// <param name="AIncludeAlternateTelephone"></param>
+        /// <param name="AIncludeURL"></param>
+        public static void AddPrimaryPhoneEmailFaxToTable(DataTable ADataTable, int APartnerKeyColumn, TReportingDbAdapter ADbAdapter,
+            Boolean AIncludeMobile = false, Boolean AIncludeAlternateTelephone = false, Boolean AIncludeURL = false)
         {
             TDBTransaction Transaction = null;
+            String SelectMobile = "";
+            String SelectAlternateTelephone = "";
+            String SelectURL = "";
+            int IdxMobile = 0;
+            int IdxAlternateTelephone = 0;
+            int IdxURL = 0;
+            int NextIdx = 4;
 
             List <string>partnerlist = new List <string>();
 
@@ -164,6 +147,49 @@ namespace Ict.Petra.Server.MPartner.Common
             if (partnerlist.Count == 0)
             {
                 partnerlist.Add("-1");
+            }
+
+            if (AIncludeMobile)
+            {
+                SelectMobile = 
+                                @", (
+                                      SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
+
+                                      FROM p_partner_attribute AS pattribute
+
+                                      JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
+
+                                      WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Mobile Phone' LIMIT 1
+	                               ) AS Mobie";
+            }
+
+            if (AIncludeAlternateTelephone)
+            {
+                SelectAlternateTelephone =
+                                @", (
+                                      SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
+
+                                      FROM p_partner_attribute AS pattribute
+
+                                      JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
+
+                                      WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND NOT p_primary_l AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Phone' LIMIT 1
+	                                ) AS AlternateTelephone";
+            }
+
+            if (AIncludeURL)
+            {
+                SelectURL =
+                                @", (
+                                      SELECT p_value_c
+
+                                      FROM p_partner_attribute AS pattribute
+
+                                      JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
+
+                                      WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_category_code_c = 'Digital Media' AND pattribute.p_attribute_type_c = 'Web Site' LIMIT 1
+	                                ) AS URL";
+
             }
 
             DataTable PhoneFaxMailDT = new DataTable();
@@ -178,7 +204,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                     WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c != 'Fax'
-	                            ) AS primary_phone,
+	                            ) AS Primary_Phone,
 
                                 (
                                     SELECT p_value_c
@@ -188,7 +214,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                     WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'E-Mail'
-	                            ) AS primary_email,
+	                            ) AS Primary_Email,
 
                                 (
                                     SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
@@ -198,9 +224,16 @@ namespace Ict.Petra.Server.MPartner.Common
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                     WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Fax' LIMIT 1
-	                            ) AS primary_fax
-                            FROM p_partner AS partner
-                            WHERE p_partner_key_n IN("
+	                            ) AS Fax"
+                +
+                SelectMobile
+                +
+                SelectAlternateTelephone
+                +
+                SelectURL
+                +
+                          @" FROM p_partner AS partner
+                             WHERE p_partner_key_n IN("
                 +
                 String.Join(",", partnerlist) + ")";
 
@@ -213,18 +246,50 @@ namespace Ict.Petra.Server.MPartner.Common
                     PhoneFaxMailDT = ADbAdapter.RunQuery(Query, "PhoneFaxMail", Transaction);
                 });
 
-            ADataTable.Columns.Add("primary_phone");
-            ADataTable.Columns.Add("primary_email");
-            ADataTable.Columns.Add("primary_fax");
+            ADataTable.Columns.Add("Primary_Phone");
+            ADataTable.Columns.Add("Primary_Email");
+            ADataTable.Columns.Add("Fax");
+
+            if (AIncludeMobile)
+            {
+                ADataTable.Columns.Add("Mobile");
+                IdxMobile = NextIdx;
+                NextIdx++;
+            }
+            if (AIncludeAlternateTelephone)
+            {
+                ADataTable.Columns.Add("Alternate_Telephone");
+                IdxAlternateTelephone = NextIdx;
+                NextIdx++;
+            }
+            if (AIncludeURL)
+            {
+                ADataTable.Columns.Add("URL");
+                IdxURL = NextIdx;
+                NextIdx++;
+            }
 
             DataView dv = ADataTable.DefaultView;
 
             foreach (DataRow dr in PhoneFaxMailDT.Rows)
             {
                 dv.RowFilter = ADataTable.Columns[APartnerKeyColumn].ColumnName + " = " + dr[0].ToString();
-                dv[0]["primary_phone"] = dr[1];
-                dv[0]["primary_email"] = dr[2];
-                dv[0]["primary_fax"] = dr[3];
+                dv[0]["Primary_Phone"] = dr[1];
+                dv[0]["Primary_Email"] = dr[2];
+                dv[0]["Fax"] = dr[3];
+
+                if (AIncludeMobile)
+                {
+                    dv[0]["Mobile"] = dr[IdxMobile];
+                }
+                if (AIncludeAlternateTelephone)
+                {
+                    dv[0]["Alternate_Telephone"] = dr[IdxAlternateTelephone];
+                }
+                if (AIncludeURL)
+                {
+                    dv[0]["URL"] = dr[IdxURL];
+                }
             }
 
             dv.RowFilter = String.Empty;
@@ -454,7 +519,7 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (delete)
                 {
                     TLogging.Log(String.Format(Catalog.GetString(
-                                "FastReport Sorting Error: The column name '{0}' coun't be found in the DataTable. Therefore it has been ignored."),
+                                "FastReport Sorting Error: The column name '{0}' couldn't be found in the DataTable. Therefore it has been ignored."),
                             list[i]));
                     list.Remove(list[i]);
                     i--;

@@ -49,6 +49,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             ucoPartnerSelection.ShowAllStaffOption(false);
             ucoPartnerSelection.ShowCurrentStaffOption(false);
+
+            // correct tab order (two columns of checkboxes for data sections, we want to go down first column and then down second column)
+            chkPartnerClassData.TabIndex = 0;
+            chkSubscriptions.TabIndex = 10;
+            chkRelationships.TabIndex = 20;
+            chkLocations.TabIndex = 30;
+            chkContactDetails.TabIndex = 40;
+            chkFinanceDetails.TabIndex = 50;
+            chkInterests.TabIndex = 60;
+            chkContacts.TabIndex = 70;
+            chkReminders.TabIndex = 80;
+            chkSpecialTypes.TabIndex = 90;
+            btnSelectAll.TabIndex = 100;
+            btnDeselectAll.TabIndex = 110;
+            chkHideEmpty.TabIndex = 120;
+            chkPaginate.TabIndex = 130;
         }
 
         private void SelectAll(Object sender, EventArgs e)

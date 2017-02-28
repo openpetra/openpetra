@@ -62,7 +62,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             foreach (PDataLabelUseRow UseRow in DataLabelUse.Rows)
             {
-                if ((UseRow.Use == "Person")
+                if ((UseRow.Use == "Bank")
+                    || (UseRow.Use == "Church")
+                    || (UseRow.Use == "Family")
+                    || (UseRow.Use == "Organisation")
+                    || (UseRow.Use == "Person")
+                    || (UseRow.Use == "Unit")
                     || (UseRow.Use == "Venue"))
                 {
                     filteredRows = DataLabels.Select(PDataLabelTable.GetKeyDBName() + " = " + UseRow.DataLabelKey.ToString());

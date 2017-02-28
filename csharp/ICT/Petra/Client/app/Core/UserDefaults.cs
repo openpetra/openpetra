@@ -309,7 +309,10 @@ namespace Ict.Petra.Client.App.Core
         public const String PARTNER_EXTRAC_LAST_EXTRACT_NAME = "Extract";
 
         /// <summary>todoComment</summary>
-        public const String PERSONNEL_APPLICATION_STATUS = "ApplicationStatus";
+        public const String PERSONNEL_APPLICATION_STATUS_SHORT_TERM = "ApplicationStatusShortTerm";
+
+        /// <summary>todoComment</summary>
+        public const String PERSONNEL_APPLICATION_STATUS_LONG_TERM = "ApplicationStatusLongTerm";
 
         /// <summary>
         /// ------------------------------------------------------------------------------

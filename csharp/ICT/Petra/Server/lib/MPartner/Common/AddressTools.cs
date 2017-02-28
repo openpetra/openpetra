@@ -198,7 +198,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             foreach (DataColumn dc in Addresses.Columns)
             {
-                Partners.Columns.Add("addr_" + dc.ColumnName);
+                Partners.Columns.Add("addr_" + dc.ColumnName, dc.DataType);
             }
 
             DataView dv = Partners.DefaultView;
