@@ -298,10 +298,14 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                 INNER JOIN p_family ON p_family.p_partner_key_n = p_partner.p_partner_key_n
                                                 LEFT JOIN p_partner_gift_destination
                                                                 ON(p_family.p_partner_key_n = p_partner_gift_destination.p_partner_key_n
-                                                                AND(p_partner_gift_destination.p_date_effective_d <= '2015-11-25'
-                                                                AND p_partner_gift_destination.p_date_expires_d IS NULL
-                                                                OR p_partner_gift_destination.p_date_expires_d >= '2015-11-25'
-                                                                AND p_partner_gift_destination.p_date_effective_d != p_partner_gift_destination.p_date_expires_d))
+                                                                AND(p_partner_gift_destination.p_date_effective_d <= '"
+                        + DateTime.Today.ToString(
+                            "yyyy-MM-dd") +
+                        @"' AND p_partner_gift_destination.p_date_expires_d IS NULL
+                                                                OR p_partner_gift_destination.p_date_expires_d >= '"
+                        + DateTime.Today.ToString(
+                            "yyyy-MM-dd") +
+                        @"' AND p_partner_gift_destination.p_date_effective_d != p_partner_gift_destination.p_date_expires_d))
                                                 WHERE p_family.p_partner_key_n IN("
                         +
                         PartnerSelection + ")";
