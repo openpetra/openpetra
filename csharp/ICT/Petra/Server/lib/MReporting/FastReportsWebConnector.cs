@@ -491,7 +491,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             Dictionary <int, object[]>ParameterValues = new Dictionary <int, object[]>();
             List <object[]>ParameterValuesList = new List <object[]>();
             int ledgerNumber = AParameters["param_ledger_number_i"].ToInt32();
-            int currentYear = DateTime.Now.Year - 1;
+            int currentYear = DateTime.Now.Year;
             int NumRows = 0;
             bool userCancel = false;
 
