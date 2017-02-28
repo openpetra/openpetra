@@ -5069,7 +5069,8 @@ namespace Ict.Common.DB
         {
             const string StrWaitingMessage =
                 "Waiting to obtain Thread-safe access to the Database Abstraction Layer... " + Utilities.StrThreadAndAppDomainCallInfo;
-            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " + Utilities.StrThreadAndAppDomainCallInfo;
+            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " +
+                                                Utilities.StrThreadAndAppDomainCallInfo;
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
             {

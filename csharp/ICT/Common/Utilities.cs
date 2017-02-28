@@ -330,5 +330,5 @@ namespace Ict.Common
             Clipboard.Clear();
             Clipboard.SetText(data, TextDataFormat.Html);
         }
-    }   
+    }
 }
