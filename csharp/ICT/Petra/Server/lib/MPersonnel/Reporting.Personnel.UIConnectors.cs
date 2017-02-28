@@ -607,7 +607,6 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                         p_partner.p_partner_key_n AS PartnerKey,
 	                                    p_partner.p_partner_short_name_c AS PartnerName,
                                         p_type_code_c AS PartnerType,
-                                        fieldpartner.p_partner_short_name_c AS Field,
 	                                    pm_passport_details.pm_date_of_expiration_d AS PassportExpiryDate,
 	                                    pm_passport_details.pm_passport_number_c AS PassportNumber,
 	                                    pm_passport_details.pm_passport_details_type_c AS PassportType,
@@ -637,19 +636,9 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                         LEFT JOIN (SELECT MAX(p_type_code_c) p_type_code_c, p_partner_key_n FROM p_partner_type
                                             WHERE p_type_code_c LIKE 'OMER%' OR p_type_code_c LIKE 'EX-OMER%' GROUP BY p_partner_key_n) AS type
                                             ON TRUE
-                                        LEFT JOIN p_partner AS fieldpartner ON TRUE
                                       WHERE
 
                                         pm_passport_details.p_partner_key_n = p_partner.p_partner_key_n
-
-                                        AND pm_staff_data.p_partner_key_n = p_partner.p_partner_key_n
-                                        AND (pm_end_of_commitment_d >= '"
-                        +
-                        DateTime.Today.ToString(
-                            "yyyy-MM-dd") +
-                        @"' OR NULL)
-
-                                        AND pm_receiving_field_n = fieldpartner.p_partner_key_n
 
                                         AND p_occupation.p_occupation_code_c = p_person.p_occupation_code_c
 
@@ -669,6 +658,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             DbAdapter) + ") ORDER BY " + AParameters["param_sortby_readable"].ToString().Replace(" ", "");;
 
                     PassportExpiryReport = DbAdapter.RunQuery(Query, "PassportExpiryReport", Transaction);
+
+                    TPartnerReportTools.AddFieldNameToTable(PassportExpiryReport, 0, AParameters, "param_currentstaffdate", DbAdapter);
                 });
 
             return PassportExpiryReport;

@@ -28,7 +28,7 @@
   <Parameter id="param_calculation" column="7" value="eString:Primary Phone" />
   <Parameter id="ColumnWidth" column="7" value="eInteger:4" />
   <Parameter id="param_calculation" column="8" value="eString:Field" />
-  <Parameter id="ColumnWidth" column="8" value="eInteger:2" />
+  <Parameter id="ColumnWidth" column="8" value="eInteger:3" />
   <Parameter id="param_explicit_specialtypes" value="eString:" />
   <Parameter id="param_exclude_specialtypes" value="eString:" />
   <Parameter id="param_active" value="eBoolean:true" />

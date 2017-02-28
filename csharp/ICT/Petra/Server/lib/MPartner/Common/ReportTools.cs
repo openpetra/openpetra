@@ -202,7 +202,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
-                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c != 'Fax'
+                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c != 'Fax' LIMIT 1
 	                            ) AS Primary_Phone,
 
                                 (
@@ -212,7 +212,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
-                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'E-Mail'
+                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'E-Mail' LIMIT 1
 	                            ) AS Primary_Email,
 
                                 (
@@ -350,11 +350,23 @@ namespace Ict.Petra.Server.MPartner.Common
         /// </summary>
         /// <param name="ADataTable"></param>
         /// <param name="APartnerKeyColumn"></param>
-        /// <param name="ACurrentDate"></param>
+        /// <param name="AParameters"></param>
+        /// <param name="ADateKey"></param>
         /// <param name="ADbAdapter"></param>
-        public static void AddFieldNameToTable(DataTable ADataTable, int APartnerKeyColumn, DateTime ACurrentDate, TReportingDbAdapter ADbAdapter)
+        public static void AddFieldNameToTable(DataTable ADataTable,
+            int APartnerKeyColumn,
+            Dictionary <String, TVariant>AParameters,
+            String ADateKey,
+            TReportingDbAdapter ADbAdapter)
         {
             TDBTransaction Transaction = null;
+
+            DateTime CurrentDate = DateTime.Today;
+
+            if (AParameters.ContainsKey(ADateKey))
+            {
+                CurrentDate = AParameters[ADateKey].ToDate();
+            }
 
             List <string>partnerlist = new List <string>();
 
@@ -389,12 +401,12 @@ namespace Ict.Petra.Server.MPartner.Common
                                     staff.p_partner_key_n IN((SELECT * FROM partnertable))
                                     AND pm_start_of_commitment_d <= '"
                            +
-                           ACurrentDate.ToString("yyyy-MM-dd") + @"'
+                           CurrentDate.ToString("yyyy-MM-dd") + @"'
 
-                                    AND(pm_end_of_commitment_d >= '"                                                                         +
-                           ACurrentDate.ToString(
+                                    AND(pm_end_of_commitment_d >= '"                                                                        +
+                           CurrentDate.ToString(
                 "yyyy-MM-dd") +
-                           @"' OR pm_end_of_commitment_d = NULL)
+                           @"' OR pm_end_of_commitment_d IS NULL)
                                 )
 
                             SELECT
@@ -409,7 +421,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                             WHERE p_partner_key_n = partner.p_partner_key_n
                                             AND p_date_effective_d <= '"
                            +
-                           ACurrentDate.ToString("yyyy-MM-dd") + "' AND (p_date_expires_d >= '" + ACurrentDate.ToString("yyyy-MM-dd") +
+                           CurrentDate.ToString("yyyy-MM-dd") + "' AND (p_date_expires_d >= '" + CurrentDate.ToString("yyyy-MM-dd") +
                            @"
                                                 ' OR p_date_expires_d = NULL))
 
@@ -445,7 +457,7 @@ namespace Ict.Petra.Server.MPartner.Common
                     PartnerAndField = ADbAdapter.RunQuery(Query, "PartnerAndField", Transaction);
                 });
 
-            ADataTable.Columns.Add("Field");
+            ADataTable.Columns.Add("Field", typeof(string));
 
             DataView dv = ADataTable.DefaultView;
 

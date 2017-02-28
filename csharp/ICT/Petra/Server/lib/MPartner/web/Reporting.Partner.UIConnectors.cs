@@ -120,14 +120,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(Partners, 0, DbAdapter, true, true, true);
 
                     //Retrieve "field" information
-                    DateTime FieldDate = DateTime.Today;
-
-                    if (AParameters.ContainsKey("param_currentstaffdate"))
-                    {
-                        FieldDate = AParameters["param_currentstaffdate"].ToDate();
-                    }
-
-                    TPartnerReportTools.AddFieldNameToTable(Partners, 0, FieldDate, DbAdapter);
+                    TPartnerReportTools.AddFieldNameToTable(Partners, 0, AParameters, "param_currentstaffdate", DbAdapter);
 
                     //Make the Column Names great again.
                     TPartnerReportTools.ConvertDbFieldNamesToReadable(Partners);
@@ -972,7 +965,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     //Add Contact Information, Address, Field
                     TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0, DbAdapter);
                     ReturnTable = TAddressTools.GetBestAddressForPartnersAsJoinedTable(ReturnTable, 0, Transaction, false);
-                    TPartnerReportTools.AddFieldNameToTable(ReturnTable, 0, AParameters["param_address_date_valid_on"].ToDate(), DbAdapter);
+                    TPartnerReportTools.AddFieldNameToTable(ReturnTable, 0, AParameters, "param_address_date_valid_on", DbAdapter);
 
                     //Make the Column Names great again.
                     TPartnerReportTools.ConvertDbFieldNamesToReadable(ReturnTable);
