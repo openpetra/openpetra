@@ -62,12 +62,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    String PartnerSelection = "";
-
-                    if (AParameters["param_selection"].ToString() == "one partner")
-                    {
-                        PartnerSelection = AParameters["param_partnerkey"].ToInt32().ToString();
-                    }
+                    String PartnerSelection = GetPartnerKeysAsString(AParameters,
+                        DbAdapter);
 
                     String PartnersQuery =
                         @"SELECT
@@ -1000,6 +996,60 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                 });
 
             return ReturnTable;
+        }
+
+        private static String GetPartnerKeysAsString(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            if (AParameters["param_selection"].ToString() == "one partner")
+            {
+                return AParameters["param_partnerkey"].ToString();
+            }
+
+            List <string>PartnerKeys = new List <string>();
+
+            DataTable Partners = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "";
+
+                    if (AParameters["param_selection"].ToString() == "an extract")
+                    {
+                        Query =
+                            "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
+                            +
+                            AParameters["param_extract"] + "')";
+                    }
+                    else if (AParameters["param_selection"].ToString() == "all current staff")
+                    {
+                        string date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+                        Query = "SELECT p_partner_key_n FROM pm_staff_data WHERE pm_start_of_commitment_d <= '" + date +
+                                "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
+                    }
+
+                    if (Query != "")
+                    {
+                        Partners = DbAdapter.RunQuery(Query, "Partners", Transaction);
+                    }
+                    else
+                    {
+                        Partners.Columns.Add("partnerkey");
+                        Partners.Rows.Add(new object[] { 0 });
+                    }
+                });
+
+            foreach (DataRow dr in Partners.Rows)
+            {
+                PartnerKeys.Add(dr[0].ToString());
+            }
+
+            return String.Join(",", PartnerKeys);
         }
     }
 }
