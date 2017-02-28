@@ -88,3 +88,4 @@ RootNode:
         btnApply:
             Label: A&pply
             Action: actApplyColumn
+            

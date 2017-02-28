@@ -97,6 +97,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* Personnel Report*/
+                case "PreviousExperience":
+                    ResultTbl = TPersonnelReportingWebConnector.PreviousExperience(AParameters, FDbAdapter);
+                    break;
+
                 /* GL Reports */
 
                 case "BalanceSheet":

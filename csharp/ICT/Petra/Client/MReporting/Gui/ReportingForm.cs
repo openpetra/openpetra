@@ -36,6 +36,8 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using System.Collections.Generic;
+using System.Data;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -318,6 +320,82 @@ namespace Ict.Petra.Client.MReporting.Gui
 
             FStoredSettings.SaveWrapOption(FWrapColumn);
             base.TFrmPetra_Closing(sender, e);
+        }
+
+        /// <summary>
+        /// Loads the Report Data
+        /// </summary>
+        /// <param name="AReportName">The Name of the Report</param>
+        /// <param name="AUseDataSet">True, if a ReportSet is used</param>
+        /// <param name="ATableNames">The Names of the Tables</param>
+        /// <param name="ACalc">ACalc object</param>
+        /// <param name="AWindow">"Parent" Window</param>
+        /// <param name="AUseColumnTab">"Parent" Window</param>
+        /// <returns></returns>
+        public bool LoadReportData(string AReportName, bool AUseDataSet, string[] ATableNames, TRptCalculator ACalc, Form AWindow, bool AUseColumnTab)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
+                {
+                    paramsDictionary.Add(p.name, p.value);
+                }
+            }
+
+            if (AUseColumnTab)
+            {
+                TColumnSettingCollection tcsc = new TColumnSettingCollection();
+
+                for (int counter = 0; counter <= ACalc.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
+                {
+                    TColumnSetting tcs = new TColumnSetting(ACalc.GetParameters().Get("param_calculation", counter).ToString().Replace(" ", ""),
+                        float.Parse(ACalc.GetParameters().Get("ColumnWidth", counter).ToString()), counter + 1);
+                    tcsc.SetSettingForColumn(tcs);
+                }
+
+                ACalc.AddParameter("param_columns", tcsc.SerialiseCollection());
+            }
+
+            DataTable ReportTable = null;
+            DataSet ReportSet = null;
+
+            if (AUseDataSet)
+            {
+                ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet(AReportName, paramsDictionary);
+            }
+            else
+            {
+                ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable(AReportName, paramsDictionary);
+            }
+
+            if ((AWindow == null) || AWindow.IsDisposed)
+            {
+                return false;
+            }
+
+            if ((ReportTable == null) && (ReportSet == null))
+            {
+                this.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            if (AUseDataSet)
+            {
+                foreach (string TableName in ATableNames)
+                {
+                    this.FFastReportsPlugin.RegisterData(ReportSet.Tables[TableName], TableName);
+                }
+            }
+            else
+            {
+                this.FFastReportsPlugin.RegisterData(ReportTable, ATableNames[0]);
+            }
+
+            return true;
         }
 
 #if TODO

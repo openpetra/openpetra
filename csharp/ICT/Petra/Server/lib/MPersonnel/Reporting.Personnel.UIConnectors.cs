@@ -511,5 +511,75 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             return ReturnSet;
         }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable PreviousExperience(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            string date = "";
+
+            if (AParameters["param_currentstaffdate"].ToString() != String.Empty)
+            {
+                date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+            }
+
+            TDBTransaction Transaction = null;
+
+            DataTable PreviousExperience = new DataTable();
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String Query =
+                        @"SELECT DISTINCT
+                                            p_partner.p_partner_key_n AS PartnerKey,
+	                                        p_partner.p_partner_short_name_c AS PartnerName,
+	                                        pm_past_experience.pm_start_date_d AS StartDate,
+	                                        pm_past_experience.pm_end_date_d AS EndDate,
+	                                        pm_past_experience.pm_prev_location_c AS Location,
+	                                        pm_past_experience.pm_prev_role_c AS Role,
+	                                        pm_past_experience.pm_other_organisation_c AS Organisation,
+	                                        pm_past_experience.pm_prev_work_here_l AS PrevWorkHere,
+                                            p_type_code_c AS Type
+                                        FROM
+                                            p_partner
+                                            LEFT JOIN pm_past_experience ON p_partner.p_partner_key_n = pm_past_experience.p_partner_key_n
+                                            LEFT JOIN (SELECT MAX(p_type_code_c) p_type_code_c, p_partner_key_n FROM p_partner_type
+                                            WHERE p_type_code_c LIKE 'OMER%' OR p_type_code_c LIKE 'EX-OMER%' GROUP BY p_partner_key_n) AS type
+                                            ON p_partner.p_partner_key_n = type.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+
+                    if (AParameters["param_selection"].ToString() == "an extract")
+                    {
+                        Query +=
+                            @" LEFT JOIN m_extract ON m_extract.p_partner_key_n=p_partner.p_partner_key_n
+                                        LEFT JOIN m_extract_master ON m_extract_master.m_extract_id_i = m_extract.m_extract_id_i
+                                      WHERE
+                                        m_extract_name_c = '"
+                            + AParameters["param_extract"].ToString() + "'";
+                    }
+                    else if (AParameters["param_selection"].ToString() == "all current staff")
+                    {
+                        Query +=
+                            " LEFT JOIN pm_staff_data ON pm_staff_data.p_partner_key_n=p_partner.p_partner_key_n WHERE pm_start_of_commitment_d <= '"
+                            + date +
+                            "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
+                    }
+                    else
+                    {
+                        Query += " WHERE p_partner.p_partner_key_n = " + AParameters["param_partnerkey"];
+                    }
+
+                    Query += " ORDER BY " + AParameters["param_sortby_readable"].ToString().Replace(" ", "");
+
+
+                    PreviousExperience = DbAdapter.RunQuery(Query, "PreviousExperience", Transaction);
+                });
+
+            return PreviousExperience;
+        }
     }
 }
