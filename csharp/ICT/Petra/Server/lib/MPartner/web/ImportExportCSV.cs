@@ -516,7 +516,8 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
             catch (System.FormatException)
             {
-                AddVerificationResult(string.Format("Bad date of birth: {0} (Partner key: {1})", TimeString, newPartner.PartnerKey.ToString()));
+                string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                AddVerificationResult(string.Format("Bad date of birth: {0} (Expected format: {1})", TimeString, fmt), TResultSeverity.Resv_Critical);
             }
 
 
@@ -705,7 +706,10 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         }
                         catch (FormatException)
                         {
-                            AddVerificationResult(string.Format("Bad general application date: {0} (Partner key: {1})", appDate, APartnerKey.ToString()));
+                            string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                            AddVerificationResult(string.Format("Bad general application date: {0} (Expected format: {1})",
+                                    appDate,
+                                    fmt), TResultSeverity.Resv_Critical);
                         }
                     }
                 }
@@ -757,8 +761,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 }
                 catch (System.FormatException)
                 {
-                    AddVerificationResult(string.Format("Bad arrival/departure date format in Application: {0} (Partner key: {1})", TimeString,
-                            APartnerKey));
+                    string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                    AddVerificationResult(string.Format("Bad arrival/departure date format in Application: {0} (Expected format: {1})", TimeString,
+                            APartnerKey), TResultSeverity.Resv_Critical);
                 }
 
                 DateTime TempTime;
@@ -775,7 +780,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     catch (System.FormatException)
                     {
-                        AddVerificationResult(string.Format("Bad arrival time format in Application: {0} (Partner key: {1})", TimeString, APartnerKey));
+                        string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                        AddVerificationResult(string.Format("Bad arrival time format in Application: {0} (Expected format: {1})", TimeString,
+                                fmt), TResultSeverity.Resv_Critical);
                     }
                 }
 
@@ -791,8 +798,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     catch (System.FormatException)
                     {
-                        AddVerificationResult(string.Format("Bad departure time format in Application: {0} (Partner key: {1})", TimeString,
-                                APartnerKey));
+                        string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                        AddVerificationResult(string.Format("Bad departure time format in Application: {0} (Expected format: {1})", TimeString,
+                                fmt), TResultSeverity.Resv_Critical);
                     }
                 }
 
@@ -869,7 +877,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     catch (FormatException)
                     {
-                        AddVerificationResult(string.Format("Bad passport date of issue: {0} (Partner key: {1})", DateString, APartnerKey));
+                        string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                        AddVerificationResult(string.Format("Bad passport date of issue: {0} (Expected format: {1})", DateString, fmt),
+                            TResultSeverity.Resv_Critical);
                     }
                 }
 
@@ -883,7 +893,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     catch (FormatException)
                     {
-                        AddVerificationResult(string.Format("Bad passport date of expiry: {0} (Partner key: {1})", DateString, APartnerKey));
+                        string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                        AddVerificationResult(string.Format("Bad passport date of expiry: {0} (Expected format: {1})", DateString, fmt),
+                            TResultSeverity.Resv_Critical);
                     }
                 }
             }
@@ -997,7 +1009,9 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     }
                     catch (FormatException)
                     {
-                        AddVerificationResult(string.Format("Bad contact date: {0} (Partner key: {1})", DateString, APartnerKey));
+                        string fmt = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "month-day-year" : "day-month-year";
+                        AddVerificationResult(string.Format("Bad contact date: {0} (Expected format: {1})", DateString, fmt),
+                            TResultSeverity.Resv_Critical);
                     }
                 }
 

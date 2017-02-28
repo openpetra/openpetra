@@ -2475,6 +2475,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            if (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, true) == false)
+            {
+                lblDetailReference.Text = lblDetailReference.Text.Replace("*", ":");
+            }
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)

@@ -45,10 +45,11 @@ RootNode:
                 txtTransactionAmount-2: {Label=To Dr/Cr amount, Comparison=lte}
         pnlDetailButtons:
             Dock: Bottom
-            Controls: [btnNew, btnInsert, btnDelete, btnDeleteAll]
+            #Controls: [btnNew, btnInsert, btnDelete, btnDeleteAll]
+            Controls: [btnNew, btnDelete, btnDeleteAll]
             ControlsOrientation: horizontal
         btnNew: {Action=actNew, Width=120}
-        btnInsert: {Action= actInsert, Width=120}
+        #btnInsert: {Action= actInsert, Width=120}
         btnDelete: {Action=actDelete, Width=120}
         btnDeleteAll: {Action=actDeleteAll, Width=120, StartNewButtonGroup=true, Tooltip=Click to delete all the transactions}
 

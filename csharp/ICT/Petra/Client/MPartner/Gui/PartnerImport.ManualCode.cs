@@ -424,15 +424,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
                     {
                         string ErrorMessages = String.Empty;
+                        int count = 0;
 
                         foreach (TVerificationResult verif in VerificationResult)
                         {
-                            ErrorMessages += "[" + verif.ResultContext + "] " +
-                                             verif.ResultTextCaption + ": " +
-                                             verif.ResultText + Environment.NewLine;
+                            if (verif.ResultSeverity == TResultSeverity.Resv_Critical)
+                            {
+                                count++;
+
+                                if (count < 5)
+                                {
+                                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                                     verif.ResultTextCaption + ": " +
+                                                     verif.ResultText + Environment.NewLine;
+                                }
+                            }
                         }
 
-                        MessageBox.Show(ErrorMessages, Catalog.GetString("Import of partners failed!"));
+                        if (count >= 5)
+                        {
+                            ErrorMessages += string.Format("There were {0} errors in total.  Did you specify the wrong date format?", count);
+                        }
+
+                        MessageBox.Show(ErrorMessages, Catalog.GetString(
+                                "Import of partners failed!"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                         FMainDS = null;
 
