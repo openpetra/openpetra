@@ -706,11 +706,13 @@ namespace PetraServerAdminConsole
                         case 'k':
                             ListGpgKeys(TRemote, out GpgList);
                             Console.WriteLine(GpgList);
+                            Console.Write(ServerAdminPrompt);
                             break;
 
                         case 'K':
                             ImportGpgKeys(TRemote, out GpgList);
                             Console.WriteLine(GpgList);
+                            Console.Write(ServerAdminPrompt);
                             break;
 
                         case 'x':
