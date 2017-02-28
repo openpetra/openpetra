@@ -212,6 +212,20 @@ namespace Ict.Common.Remoting.Shared
         bool AddUser(string AUserID, string APassword = "");
 
         /// <summary>
+        /// Lists the GPG keys for the Intranet server that are available to the Petra Server.
+        /// </summary>
+        /// <param name="List">Return the output of the gpg command.</param>
+        /// <returns>Return code of external gpg command.</returns>
+        int ListGpgKeys(out string List);
+
+        /// <summary>
+        /// Imports the GPG encryption keys for the Intranet server.
+        /// </summary>
+        /// <param name="List">Return the output of the gpg command.</param>
+        /// <returns>Return code of external gpg command.</returns>
+        int ImportGpgKeys(out string List);
+
+        /// <summary>
         /// Whether the 'Server Timed Processing' has been set up.
         /// </summary>
         bool ServerTimedProcessingSetup

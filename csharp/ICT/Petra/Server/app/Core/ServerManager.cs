@@ -40,6 +40,8 @@ using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core.Security;
 using GNU.Gettext;
 using Npgsql;
+using System.Diagnostics;
+using System.IO;
 
 namespace Ict.Petra.Server.App.Core
 {
@@ -605,6 +607,94 @@ namespace Ict.Petra.Server.App.Core
             UserInfo.GUserInfo = new TPetraPrincipal(PetraIdentity, null);
 
             return FUserManager.AddUser(AUserID, APassword);
+        }
+
+        /// <summary>
+        /// Lists the GPG keys for the Intranet server that are available to the Petra Server.
+        /// </summary>
+        /// <param name="List">Return the output of the gpg command.</param>
+        /// <returns>Return code of external gpg command.</returns>
+        public override int ListGpgKeys(out string List)
+        {
+            return ExecuteGpgCommand("--list-keys", out List);
+        }
+
+        /// <summary>
+        /// Imports the GPG encryption keys for the Intranet server.
+        /// </summary>
+        /// <remarks>Keys are stored in Application\data30\gnupg for Live installs, and Application\setup\petra0300\winServer for Developer installs.</remarks>
+        /// <param name="List">Return the output of the gpg command.</param>
+        /// <returns>Return code of external gpg command, or 2 if gpg.exe can't be found.</returns>
+        public override int ImportGpgKeys(out string List)
+        {
+            var InstallLocation = Path.Combine(TSrvSetting.ApplicationBinFolder, "..", "data30", "gnupg");
+
+            if (Directory.Exists(InstallLocation))
+            {
+                return ImportGpgKeysFrom(InstallLocation, out List);
+            }
+
+            var DeveloperLocation = Path.Combine(TSrvSetting.ApplicationBinFolder, "..", "..", "setup", "petra0300", "winServer");
+
+            if (Directory.Exists(DeveloperLocation))
+            {
+                return ImportGpgKeysFrom(DeveloperLocation, out List);
+            }
+
+            List = "Unable to locate GPG key files.";
+            return 2;
+        }
+
+        private int ImportGpgKeysFrom(string Directory, out string List)
+        {
+            return ExecuteGpgCommand(String.Format("--import {0}", Path.Combine(Directory, "*.asc")), out List);
+        }
+
+        /// <summary>
+        /// Executes a gpg command, returns its output and return code.
+        /// </summary>
+        /// <param name="AArguments">Arguments passed to the command.</param>
+        /// <param name="Output">The Standard Error stream from the external command.</param>
+        /// <returns>The command's return code, 2 if it couldn't be started or it hung, or -1 if an unexpected exception occurs while setting up the process.</returns>
+        public int ExecuteGpgCommand(string AArguments, out string Output)
+        {
+            Process proc = null;
+
+            Output = "";
+            var ReturnCode = -1;
+            try
+            {
+                var ProcInfo = new ProcessStartInfo("gpg.exe", AArguments);
+                ProcInfo.UseShellExecute = false;
+                ProcInfo.RedirectStandardOutput = true;
+                ProcInfo.RedirectStandardError = true;
+
+                proc = Process.Start(ProcInfo);
+
+                if (proc == null)
+                {
+                    Output = Catalog.GetString("Error starting gpg.");
+                    return 2;
+                }
+
+                if (!proc.WaitForExit(5000))
+                {
+                    TLogging.Log(String.Format("'gpg {0}'did not exit within 5 seconds.", AArguments));
+                    return 2;
+                }
+
+                Output = proc.StandardOutput.ReadToEnd() + proc.StandardError.ReadToEnd();
+                ReturnCode = proc.ExitCode;
+            }
+            catch (Exception e)
+            {
+                TLogging.Log(e.ToString());
+            }
+            finally
+            {
+                proc.Close();
+            }
+            return ReturnCode;
         }
 
         /// <summary>
