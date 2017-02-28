@@ -56,8 +56,8 @@ namespace Ict.Petra.Server.MPartner.Common
             if (AParameters["param_only_addresses_valid_on"].ToBool())
             {
                 returnstring += @" AND SendMail = true";
-                returnstring += " AND " + AParameters["param_today"].ToDate().ToString("yyyy-MM-dd") + " >= DateEffective AND (" +
-                                AParameters["param_today"].ToString() + " <= DateGoodUntil OR DateGoodUntil IS NULL)";
+                returnstring += " AND '" + AParameters["param_today"].ToDate().ToString("yyyy-MM-dd") + "' >= DateEffective AND ('" +
+                                AParameters["param_today"].ToDate().ToString("yyyy-MM-dd") + "' <= DateGoodUntil OR DateGoodUntil IS NULL)";
             }
 
             if (AParameters["param_city"].ToString() != String.Empty)
@@ -160,7 +160,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Mobile Phone' LIMIT 1
-	                               ) AS Mobie"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
+                                   ) AS Mobile"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ;
             }
 
             if (AIncludeAlternateTelephone)
@@ -174,7 +174,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND NOT p_primary_l AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Phone' LIMIT 1
-	                                ) AS AlternateTelephone"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
+                                    ) AS AlternateTelephone"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
             }
 
             if (AIncludeURL)
@@ -188,14 +188,14 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_category_code_c = 'Digital Media' AND pattribute.p_attribute_type_c = 'Web Site' LIMIT 1
-	                                ) AS URL"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+                                    ) AS URL"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
             }
 
             DataTable PhoneFaxMailDT = new DataTable();
             string Query =
                 @"SELECT
                                 p_partner_key_n AS partner_key,
-	                            (
+                                (
                                     SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
 
                                     FROM p_partner_attribute AS pattribute
@@ -203,7 +203,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                     WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c != 'Fax' LIMIT 1
-	                            ) AS Primary_Phone,
+                                ) AS Primary_Phone,
 
                                 (
                                     SELECT p_value_c
@@ -213,7 +213,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                     WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'E-Mail' LIMIT 1
-	                            ) AS Primary_Email,
+                                ) AS Primary_Email,
 
                                 (
                                     SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
@@ -223,7 +223,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                     JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                     WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Fax' LIMIT 1
-	                            ) AS Fax"
+                                ) AS Fax"
                 +
                 SelectMobile
                 +
