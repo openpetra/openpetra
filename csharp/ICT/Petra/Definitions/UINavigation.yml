@@ -221,7 +221,7 @@ OpenPetra:
                         PrintAnnualReceipts: {Description:Print the annual gift receipts, ActionOpenScreen=TFrmGiftReceiptPrinting}
                         DonorRecipientHistory: {Label=Donor/Recipient History, Description=Gift history for a Donor and/or Recipient, ActionOpenScreen=TFrmDonorRecipientHistory}
                         #PrintSingleReceipt:
-                        ReceiptControl:{ActionOpenScreen=TFrmReceiptControl}
+                        ReceiptControl:{ActionOpenScreen=TFrmReceiptControl, Description=Print outstanding gift receipts}
                     FinanceReports: {Label=Reports, Namespace=Ict.Petra.Client.MReporting.Gui.MFinance, PermissionsRequired=FINANCE-1+FINANCE-RPT}  # Icon=Print.ico
                         RecipientGiftStatement: {Description=Create RGS using selected Report Type, ActionOpenScreen=TFrmRecipientGiftStatement}
                         DonorGiftStatement: {Description=Create DGS using specified criteria, ActionOpenScreen=TFrmDonorGiftStatement}

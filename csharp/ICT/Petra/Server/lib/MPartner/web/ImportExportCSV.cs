@@ -78,9 +78,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// Import data from a CSV file
         /// </summary>
         /// <param name="ANode"></param>
+        /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
+        /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AReferenceResults"></param>
         /// <returns></returns>
-        public static PartnerImportExportTDS ImportData(XmlNode ANode, ref TVerificationResultCollection AReferenceResults)
+        public static PartnerImportExportTDS ImportData(XmlNode ANode, string ADateFormat, ref TVerificationResultCollection AReferenceResults)
         {
             PartnerImportExportTDS ResultDS = new PartnerImportExportTDS();
 
@@ -125,13 +127,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                         if (PartnerClass == MPartnerConstants.PARTNERCLASS_PERSON)
                         {
                             ResultsContext = "CSV Import Person";
-                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ref ResultDS, ReadTransaction);
-                            CreateShortTermApplication(ANode, PersonKey, ref ResultDS, ReadTransaction);
+                            Int64 PersonKey = CreateNewPerson(PartnerKey, LocationKey, ANode, ADateFormat, ref ResultDS, ReadTransaction);
+                            CreateShortTermApplication(ANode, PersonKey, ADateFormat, ref ResultDS, ReadTransaction);
                             CreateSpecialTypes(ANode, PersonKey, ref ResultDS, ReadTransaction);
                             CreateSubscriptions(ANode, PersonKey, ref ResultDS, ReadTransaction);
-                            CreateContacts(ANode, PersonKey, ref ResultDS, "_1", ReadTransaction);
-                            CreateContacts(ANode, PersonKey, ref ResultDS, "_2", ReadTransaction);
-                            CreatePassport(ANode, PersonKey, ref ResultDS, ReadTransaction);
+                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_1", ReadTransaction);
+                            CreateContacts(ANode, PersonKey, ADateFormat, ref ResultDS, "_2", ReadTransaction);
+                            CreatePassport(ANode, PersonKey, ADateFormat, ref ResultDS, ReadTransaction);
                             CreateSpecialNeeds(ANode, PersonKey, ref ResultDS, ReadTransaction);
                             CreateOutputData(ANode, PersonKey, PartnerClass, true, ref ResultDS);
                         }
@@ -388,9 +390,11 @@ namespace Ict.Petra.Server.MPartner.ImportExport
         /// <param name="AFamilyKey"></param>
         /// <param name="ALocationKey"></param>
         /// <param name="ANode"></param>
+        /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
+        /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
         /// <param name="AMainDS"></param>
         /// <param name="ATransaction"></param>
-        private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode,
+        private static Int64 CreateNewPerson(Int64 AFamilyKey, int ALocationKey, XmlNode ANode, string ADateFormat,
             ref PartnerImportExportTDS AMainDS, TDBTransaction ATransaction)
         {
             Int64 PersonKey = 0;
@@ -507,12 +511,12 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (TimeString.Length > 0)
                 {
-                    newPerson.DateOfBirth = DateTime.Parse(TimeString);
+                    newPerson.DateOfBirth = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                 }
             }
             catch (System.FormatException)
             {
-                AddVerificationResult("Bad date of birth: " + TimeString);
+                AddVerificationResult(string.Format("Bad date of birth: {0} (Partner key: {1})", TimeString, newPartner.PartnerKey.ToString()));
             }
 
 
@@ -596,6 +600,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private static void CreateShortTermApplication(XmlNode ANode,
             Int64 APartnerKey,
+            string ADateFormat,
             ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
@@ -690,7 +695,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 // Make sure that application date is definitely set. If not in import file then use today's date.
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE))
                 {
-                    GenAppRow.GenAppDate = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE));
+                    string appDate = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPDATE);
+
+                    if (appDate.Length > 0)
+                    {
+                        try
+                        {
+                            GenAppRow.GenAppDate = DateTime.Parse(appDate, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                        }
+                        catch (FormatException)
+                        {
+                            AddVerificationResult(string.Format("Bad general application date: {0} (Partner key: {1})", appDate, APartnerKey.ToString()));
+                        }
+                    }
                 }
 
                 if (IsNewApplication
@@ -728,19 +745,20 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                     if (TimeString.Length > 0)
                     {
-                        ShortTermRow.Arrival = DateTime.Parse(TimeString);
+                        ShortTermRow.Arrival = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                     }
 
                     TimeString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_DEPARTUREDATE);
 
                     if (TimeString.Length > 0)
                     {
-                        ShortTermRow.Departure = DateTime.Parse(TimeString);
+                        ShortTermRow.Departure = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                     }
                 }
                 catch (System.FormatException)
                 {
-                    AddVerificationResult("Bad date format in Application: " + TimeString);
+                    AddVerificationResult(string.Format("Bad arrival/departure date format in Application: {0} (Partner key: {1})", TimeString,
+                            APartnerKey));
                 }
 
                 DateTime TempTime;
@@ -751,13 +769,13 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     try
                     {
-                        TempTime = DateTime.Parse(TimeString);
+                        TempTime = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                         ShortTermRow.ArrivalHour = TempTime.Hour;
                         ShortTermRow.ArrivalMinute = TempTime.Minute;
                     }
                     catch (System.FormatException)
                     {
-                        AddVerificationResult("Bad time format in Application: " + TimeString);
+                        AddVerificationResult(string.Format("Bad arrival time format in Application: {0} (Partner key: {1})", TimeString, APartnerKey));
                     }
                 }
 
@@ -767,13 +785,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     try
                     {
-                        TempTime = DateTime.Parse(TimeString);
+                        TempTime = DateTime.Parse(TimeString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
                         ShortTermRow.DepartureHour = TempTime.Hour;
                         ShortTermRow.DepartureMinute = TempTime.Minute;
                     }
                     catch (System.FormatException)
                     {
-                        AddVerificationResult("Bad time format in Application: " + TimeString);
+                        AddVerificationResult(string.Format("Bad departure time format in Application: {0} (Partner key: {1})", TimeString,
+                                APartnerKey));
                     }
                 }
 
@@ -798,7 +817,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
             }
         }
 
-        private static void CreatePassport(XmlNode ANode, Int64 APartnerKey, ref PartnerImportExportTDS AMainDS,
+        private static void CreatePassport(XmlNode ANode, Int64 APartnerKey, string ADateFormat, ref PartnerImportExportTDS AMainDS,
             TDBTransaction ATransaction)
         {
             string PassportNum = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTNUMBER);
@@ -844,14 +863,28 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (DateString.Length > 0)
                 {
-                    NewRow.DateOfIssue = DateTime.Parse(DateString);
+                    try
+                    {
+                        NewRow.DateOfIssue = DateTime.Parse(DateString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    }
+                    catch (FormatException)
+                    {
+                        AddVerificationResult(string.Format("Bad passport date of issue: {0} (Partner key: {1})", DateString, APartnerKey));
+                    }
                 }
 
                 DateString = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_PASSPORTDATEOFEXPIRATION);
 
                 if (DateString.Length > 0)
                 {
-                    NewRow.DateOfExpiration = DateTime.Parse(DateString);
+                    try
+                    {
+                        NewRow.DateOfExpiration = DateTime.Parse(DateString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    }
+                    catch (FormatException)
+                    {
+                        AddVerificationResult(string.Format("Bad passport date of expiry: {0} (Partner key: {1})", DateString, APartnerKey));
+                    }
                 }
             }
         }
@@ -938,6 +971,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
         private static void CreateContacts(XmlNode ANode,
             Int64 APartnerKey,
+            string ADateFormat,
             ref PartnerImportExportTDS AMainDS,
             string Suffix,
             TDBTransaction ATransaction)
@@ -957,7 +991,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport
 
                 if (DateString.Length > 0)
                 {
-                    ContactLogRow.ContactDate = DateTime.Parse(DateString);
+                    try
+                    {
+                        ContactLogRow.ContactDate = DateTime.Parse(DateString, StringHelper.GetCultureInfoForDateFormat(ADateFormat));
+                    }
+                    catch (FormatException)
+                    {
+                        AddVerificationResult(string.Format("Bad contact date: {0} (Partner key: {1})", DateString, APartnerKey));
+                    }
                 }
 
                 //DateTime ContactTime = DateTime.Parse(TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_CONTACTTIME + Suffix));

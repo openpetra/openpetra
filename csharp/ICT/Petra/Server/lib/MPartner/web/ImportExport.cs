@@ -218,8 +218,14 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
         /// <summary>
         /// This imports partners from a CSV file
         /// </summary>
+        /// <param name="AXmlPartnerData">The data to import</param>
+        /// <param name="ADateFormat">A date format string like MDY or DMY.  Only the first character is significant and must be M for month first.
+        /// The date format string is only relevant to ambiguous dates which typically have a 1 or 2 digit month</param>
+        /// <param name="AVerificationResult">A collection of import errors</param>
         [RequireModulePermission("PTNRUSER")]
-        public static PartnerImportExportTDS ImportFromCSVFile(string AXmlPartnerData, out TVerificationResultCollection AVerificationResult)
+        public static PartnerImportExportTDS ImportFromCSVFile(string AXmlPartnerData,
+            string ADateFormat,
+            out TVerificationResultCollection AVerificationResult)
         {
             AVerificationResult = new TVerificationResultCollection();
 
@@ -229,7 +235,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 
             XmlNode root = doc.FirstChild.NextSibling.FirstChild;
 
-            PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root, ref AVerificationResult);
+            PartnerImportExportTDS MainDS = TPartnerImportCSV.ImportData(root, ADateFormat, ref AVerificationResult);
 
             return MainDS;
         }

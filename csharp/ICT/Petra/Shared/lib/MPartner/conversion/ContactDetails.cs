@@ -1704,15 +1704,29 @@ namespace Ict.Petra.Shared.MPartner.Conversion
             // to the end of the Telephone Number string
             ATelephoneNumber = ATelephoneNumber.Trim();
 
+            string trySiteInternatAccessCode = FSiteInternatAccessCode;
             Int64 Tmp1;
 
-            if (!Int64.TryParse(FSiteInternatAccessCode, out Tmp1))
+            if (!Int64.TryParse(trySiteInternatAccessCode, out Tmp1))
             {
-                FSiteInternatAccessCodeIsANumber = false;
+                // It looks like the access code is not a number - but if it contains ~ (wait for dial tone) we can check again
+                //  having replaced ~ with nothing
+                if (trySiteInternatAccessCode.Contains('~'))
+                {
+                    trySiteInternatAccessCode = trySiteInternatAccessCode.Replace("~", "");
+
+                    // If this works we will use the modified trySiteInternatAccessCode in our MoveAnyTexualPrefixesToEndOfTelephoneNumber method below
+                    if (!Int64.TryParse(trySiteInternatAccessCode, out Tmp1))
+                    {
+                        // Still no good so we really do have a bad code.  Put things back to the original with the ~ in it
+                        FSiteInternatAccessCodeIsANumber = false;
+                        trySiteInternatAccessCode = FSiteInternatAccessCode;
+                    }
+                }
             }
 
             // Turn any textual prefixes into textual postfixes and clad them in parenthesis [e.g. 'xxx 01234 56789' becomes '01234 56789 (xxx)']
-            MoveAnyTexualPrefixesToEndOfTelephoneNumber(ref ATelephoneNumber, FSiteInternatAccessCode,
+            MoveAnyTexualPrefixesToEndOfTelephoneNumber(ref ATelephoneNumber, trySiteInternatAccessCode,
                 FSiteInternatAccessCodeIsANumber);
 
             //

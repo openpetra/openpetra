@@ -4325,6 +4325,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
                          ASystemInterfaceTable.GetTableDBName(),
                          AAccountingSystemParameterTable.GetTableDBName(),
                          ACostCentreTypesTable.GetTableDBName(),
+                         AAnalysisTypeTable.GetTableDBName(),
 
                          ALedgerInitFlagTable.GetTableDBName(),
                          ATaxTableTable.GetTableDBName(),

@@ -108,6 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         TImportFileFormat FFileFormat = TImportFileFormat.unknown;
         string FFileName = string.Empty;
         string FFileContent = string.Empty;
+        string FDateFormat = "DMY";
         string FImportIDHeaderText = string.Empty;
 
         private void AddStatus(String ANewStuff)
@@ -322,6 +323,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 SaveUserDefaults(dlgSeparator);
                                 FSelectedSeparator = dlgSeparator.SelectedSeparator;
+                                FDateFormat = dlgSeparator.DateFormat;
                                 XmlDocument doc = TCsv2Xml.ParseCSVContent2Xml(dlgSeparator.FileContent, FSelectedSeparator);
                                 FFileContent = TXMLParser.XmlToString(doc);
                                 GetImportIDHeaderText(doc);
@@ -488,7 +490,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FFileContent = FFileContent.Replace(AOldPartnerKey.ToString(), ANewPartnerKey.ToString());
                 }
 
-                FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(FFileContent, out AVerificationResult);
+                FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(FFileContent, FDateFormat, out AVerificationResult);
             }
             else if (FFileFormat == TImportFileFormat.ext)
             {

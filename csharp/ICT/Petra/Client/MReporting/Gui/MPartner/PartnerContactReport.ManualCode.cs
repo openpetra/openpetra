@@ -127,12 +127,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             // Load User List
             SUserTable UserTable = (SUserTable)TDataCache.TMSysMan.GetCacheableSysManTable(TCacheableSysManTablesEnum.UserList);
+            DataView dvActive = new DataView(UserTable);
+            dvActive.RowFilter = string.Format("{0}=0 AND {1}=0", SUserTable.GetRetiredDBName(), SUserTable.GetAccountLockedDBName());
+            dvActive.Sort = string.Format("{0}", SUserTable.GetUserIdDBName());
 
             cmbContactor.Items.Add("*");
 
-            foreach (SUserRow Row in UserTable.Rows)
+            foreach (DataRowView drv in dvActive)
             {
-                cmbContactor.Items.Add(Row.UserId);
+                SUserRow row = (SUserRow)drv.Row;
+                cmbContactor.Items.Add(row.UserId);
             }
 
             cmbContactor.SelectedIndex = 0;

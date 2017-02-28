@@ -73,6 +73,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
                 grdDetails.AddTextColumn("Donor", FGiftTbl.Columns["Donor"]);
                 grdDetails.AddTextColumn("Batch#", FGiftTbl.Columns["BatchNumber"]);
                 grdDetails.AddTextColumn("Ref", FGiftTbl.Columns["Reference"]);
+
+                grdDetails.Selection.EnableMultiSelection = true;
             }
 
             UpdateRecordNumberDisplay();
@@ -127,6 +129,28 @@ namespace Ict.Petra.Client.MFinance.Gui.Gift
             catch (Exception)  // if the user presses Cancel, an exception may be raised!
             {
             }
+        }
+
+        private void BtnToggleTagSelectedFiles_Click(Object sender, EventArgs e)
+        {
+            this.Cursor = Cursors.WaitCursor;
+
+            bool current = false;
+            bool isFirst = true;
+            DataRowView[] selectedFiles = grdDetails.SelectedDataRowsAsDataRowView;
+
+            foreach (DataRowView drv in selectedFiles)
+            {
+                if (isFirst)
+                {
+                    current = Convert.ToBoolean(drv.Row["Selected"]);
+                    isFirst = false;
+                }
+
+                drv.Row["Selected"] = !current;
+            }
+
+            this.Cursor = Cursors.Default;
         }
 
         private void OnBtnPrint(Object sender, EventArgs e)
