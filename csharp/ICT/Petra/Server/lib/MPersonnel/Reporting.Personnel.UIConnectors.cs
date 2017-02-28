@@ -550,7 +550,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                             LEFT JOIN pm_past_experience ON p_partner.p_partner_key_n = pm_past_experience.p_partner_key_n
                                             LEFT JOIN (SELECT MAX(p_type_code_c) p_type_code_c, p_partner_key_n FROM p_partner_type
                                             WHERE p_type_code_c LIKE 'OMER%' OR p_type_code_c LIKE 'EX-OMER%' GROUP BY p_partner_key_n) AS type
-                                            ON p_partner.p_partner_key_n = type.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
+                                            ON p_partner.p_partner_key_n = type.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ;
 
                     if (AParameters["param_selection"].ToString() == "an extract")
                     {
@@ -559,13 +559,15 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                         LEFT JOIN m_extract_master ON m_extract_master.m_extract_id_i = m_extract.m_extract_id_i
                                       WHERE
                                         m_extract_name_c = '"
-                            + AParameters["param_extract"].ToString() + "'";
+                            +
+                            AParameters["param_extract"].ToString() + "'";
                     }
                     else if (AParameters["param_selection"].ToString() == "all current staff")
                     {
                         Query +=
                             " LEFT JOIN pm_staff_data ON pm_staff_data.p_partner_key_n=p_partner.p_partner_key_n WHERE pm_start_of_commitment_d <= '"
-                            + date +
+                            +
+                            date +
                             "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
                     }
                     else

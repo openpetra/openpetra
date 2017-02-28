@@ -1608,8 +1608,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             AglBatchNumber = -1;
 
-            AVerificationResult = VerificationResult;
-
             if ((MainDS.AApPayment.Rows.Count < 1) || (MainDS.AApDocumentPayment.Rows.Count < 1))
             {
                 AVerificationResult = new TVerificationResultCollection();
@@ -1749,6 +1747,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 AglBatchNumber = batch.BatchNumber;
             }
 
+            AVerificationResult = VerificationResult;
             return SubmissionOK;
         } // Post AP Payments
 

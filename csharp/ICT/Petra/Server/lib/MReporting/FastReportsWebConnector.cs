@@ -200,6 +200,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.TotalForRecipients(AParameters, FDbAdapter);
                     break;
 
+                /* Accounts Payable*/
+                case "APCurrentPayable":
+                    ResultTbl = TFinanceReportingWebConnector.APCurrentPayable(AParameters, FDbAdapter);
+                    break;
+
                 /* Financial Development */
 
                 case "SYBUNT":
@@ -255,6 +260,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 case "DonorGiftStatement":
                     ResultSet = GetDonorGiftStatementDataSet(AParameters, FDbAdapter);
+                    break;
+
+                /* AP Reports */
+                case "APAgedSupplierList":
+                    ResultSet = TFinanceReportingWebConnector.APAgedSupplierList(AParameters, FDbAdapter);
+                    break;
+
+                case "APPaymentReport":
+                    ResultSet = TFinanceReportingWebConnector.APPaymentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "APAccountDetail":
+                    ResultSet = TFinanceReportingWebConnector.APAccountDetail(AParameters, FDbAdapter);
                     break;
 
                 /* Financial Development */

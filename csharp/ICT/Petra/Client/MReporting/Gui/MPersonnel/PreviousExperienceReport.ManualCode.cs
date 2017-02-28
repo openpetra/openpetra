@@ -54,7 +54,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            return FPetraUtilsObject.LoadReportData("PreviousExperience", false, new string[] { "PreviousExperience" }, ACalc, this, true);
+            return FPetraUtilsObject.LoadReportData("PreviousExperience", false, new string[] { "PreviousExperience" }, ACalc, this, true, false);
         }
     }
 }

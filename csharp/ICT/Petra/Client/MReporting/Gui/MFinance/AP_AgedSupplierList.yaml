@@ -27,7 +27,7 @@
             Label: Ledger
         grpSelection:
             Label: Settings
-            Controls: [dtpDateSelection, chkInvoice, chkDiscounted]
+            Controls: [dtpDateSelection, chkInvoice]
         
         dtpDateSelection:
             Label: Date for Report
@@ -35,7 +35,7 @@
         chkInvoice:
             Label: Show Invoices
             ParameterName: param_show_invoices
-        chkDiscounted:
-            Label: Discounted Only
-            ParameterName: param_discounted_only
+        #chkDiscounted:
+         #   Label: Discounted Only
+          #  ParameterName: param_discounted_only
         

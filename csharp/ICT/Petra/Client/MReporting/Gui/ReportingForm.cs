@@ -38,6 +38,8 @@ using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using System.Collections.Generic;
 using System.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -331,8 +333,17 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="ACalc">ACalc object</param>
         /// <param name="AWindow">"Parent" Window</param>
         /// <param name="AUseColumnTab">"Parent" Window</param>
+        /// <param name="AAddLedger">"Adds the Ledger Number to the Parameters"</param>
+        /// /// <param name="ALedgerNumber">"The Ledger Number if used"</param>
         /// <returns></returns>
-        public bool LoadReportData(string AReportName, bool AUseDataSet, string[] ATableNames, TRptCalculator ACalc, Form AWindow, bool AUseColumnTab)
+        public bool LoadReportData(string AReportName,
+            bool AUseDataSet,
+            string[] ATableNames,
+            TRptCalculator ACalc,
+            Form AWindow,
+            bool AUseColumnTab,
+            bool AAddLedger,
+            Int32 ALedgerNumber = -1)
         {
             ArrayList reportParam = ACalc.GetParameters().Elems;
 
@@ -381,6 +392,21 @@ namespace Ict.Petra.Client.MReporting.Gui
             {
                 this.WriteToStatusBar("Report Cancelled.");
                 return false;
+            }
+
+            if (AAddLedger)
+            {
+                DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+                DataView LedgerView = new DataView(LedgerNameTable);
+                LedgerView.RowFilter = "LedgerNumber=" + ALedgerNumber;
+                String LedgerName = "";
+
+                if (LedgerView.Count > 0)
+                {
+                    LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+                }
+
+                ACalc.AddStringParameter("param_ledger_name", LedgerName);
             }
 
             if (AUseDataSet)
