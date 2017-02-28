@@ -741,6 +741,7 @@ namespace Ict.Common.DB.Testing
                             {
                                 FProgressUpdateCounter++;
                                 FProgressUpdateNumber = AProgressUpdateCounter;
+                                return false;
                             }),
                         "SelectUsingDataAdapterMulti using a Prepared Command did not yield 2 records, but ought to.");
 
@@ -757,6 +758,7 @@ namespace Ict.Common.DB.Testing
                             {
                                 FProgressUpdateCounter++;
                                 FProgressUpdateNumber = AProgressUpdateCounter;
+                                return false;
                             }),
                         "SelectUsingDataAdapterMulti using NO Prepared Command did not yield 2 records, but ought to.");
 

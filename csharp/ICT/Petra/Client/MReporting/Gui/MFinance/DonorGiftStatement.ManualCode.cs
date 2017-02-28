@@ -264,7 +264,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         {
             Results = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", AParameters);
 
-            if ((Results.Tables["Donors"] != null) && (Results.Tables["Donors"].Rows.Count != 0))
+            if ((Results != null) && (Results.Tables["Donors"] != null) && (Results.Tables["Donors"].Rows.Count != 0))
             {
                 // Moved this lot in here from LoadReportData() and added AWaitForThreadComplete so that we can keep the progress bar open during this step, which in
                 // testing on a large report (~2000 pages) was rather substantial (10-15 seconds) which might lead the user to think it had hung.
@@ -326,7 +326,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             // if no Donors
-            if ((ReportDataSet.Tables["Donors"] == null) || (ReportDataSet.Tables["Donors"].Rows.Count == 0))
+            if ((ReportDataSet == null) || (ReportDataSet.Tables["Donors"] == null) || (ReportDataSet.Tables["Donors"].Rows.Count == 0))
             {
                 MessageBox.Show(Catalog.GetString("No Donors found."), "Donor Gift Statement");
                 return false;

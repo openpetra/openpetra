@@ -933,7 +933,7 @@ namespace Ict.Common.DB
         /// Parameterised Query executions take place.
         /// </summary>
         /// <param name="ANumberOfProcessedParameterVariations"></param>
-        public delegate void MultipleParamQueryProgressUpdateDelegate(Int32 ANumberOfProcessedParameterVariations);
+        public delegate bool MultipleParamQueryProgressUpdateDelegate(Int32 ANumberOfProcessedParameterVariations);
 
         #region Constructors
 
@@ -2352,9 +2352,10 @@ namespace Ict.Common.DB
             out TDataAdapterCanceller ADataAdapterCanceller, TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
             int ASelectCommandTimeout = -1, DbParameter[] AParameterDefinitions = null, List <object[]>AParameterValues = null,
             bool APrepareSelectCommand = false,
-            Int16 AProgressUpdateEveryNRecs = 0, MultipleParamQueryProgressUpdateDelegate AMultipleParamQueryProgressUpdateCallback = null)
+            int AProgressUpdateEveryNRecs = 0, MultipleParamQueryProgressUpdateDelegate AMultipleParamQueryProgressUpdateCallback = null)
         {
             int ReturnValue = 0;
+            bool userCancel = false;
             DbDataAdapter SelectDataAdapter;
             IDictionaryEnumerator ColumNameMappingEnumerator = null;
             string MappingsString;
@@ -2459,9 +2460,9 @@ namespace Ict.Common.DB
                         // Iterate over the AParameterValues entries and assign the individual Parameter Values of a given entry to
                         // the SelectDataAdapter.SelectCommand.Parameters' Values, then execute SelectDataAdapter.Fill.
                         // Thus the resulting DataRows of all the iterations will all be appended to AFillDataTable.
-                        for (int OuterCounter = 0; OuterCounter < AParameterValues.Count; OuterCounter++)
+                        for (int OuterCounter = 0; OuterCounter < AParameterValues.Count && !userCancel; OuterCounter++)
                         {
-                            for (int InnerCounter = 0; InnerCounter < AParameterValues[OuterCounter].Length; InnerCounter++)
+                            for (int InnerCounter = 0; InnerCounter < AParameterValues[OuterCounter].Length && !userCancel; InnerCounter++)
                             {
                                 SelectDataAdapter.SelectCommand.Parameters[InnerCounter].Value = AParameterValues[OuterCounter][InnerCounter];
                             }
@@ -2478,7 +2479,7 @@ namespace Ict.Common.DB
                             if (ExecuteProgressUpdateCallback
                                 && ((OuterCounter + 1) % AProgressUpdateEveryNRecs == 0))
                             {
-                                AMultipleParamQueryProgressUpdateCallback(OuterCounter + 1);
+                                userCancel = AMultipleParamQueryProgressUpdateCallback(OuterCounter + 1);
                             }
                         }
                     }
