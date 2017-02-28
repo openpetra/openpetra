@@ -4291,8 +4291,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
              *
              * Modified Jan 2017 Tim Ingham
              *
-             *****#region Validate Data
-             *
              *         if ((AMainDS.AMotivationDetailFee != null) && (AMainDS.AMotivationDetailFee.Count > 0)
              *             && ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Rows.Count == 0))
              *             && ((AMainDS.AFeesReceivable == null) || (AMainDS.AFeesReceivable.Rows.Count == 0)))
@@ -4305,8 +4303,6 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
              *                     AGiftDetail.BatchNumber,
              *                     AGiftDetail.LedgerNumber));
              *         }
-             *
-             *****#endregion Validate Data
              */
         }
 
