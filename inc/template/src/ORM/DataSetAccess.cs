@@ -63,9 +63,9 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
     {
         TLogging.Log(
             String.Format("An Exception occurred during the saving of Typed DataSet '{#DATASETNAME}' in {0} DB Transaction!  " +
+            Utilities.GetThreadAndAppDomainCallInfo() + Environment.NewLine +
             "The last action that was taken and which has caused the Exception is this: '{1}'." + Environment.NewLine + 
-            "Exception Details: {2}" + Environment.NewLine +
-            "StackTrace: {3}",
+            "Exception Details: {2}" + Environment.NewLine + "StackTrace: {3}",
             (NewTransaction ? "a separately established" : "an already running"),
             SavingOperation, e.ToString(), new StackTrace().ToString()));
             

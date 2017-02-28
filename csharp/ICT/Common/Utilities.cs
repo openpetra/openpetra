@@ -29,7 +29,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Ict.Common;
 
 namespace Ict.Common
 {
@@ -39,6 +38,12 @@ namespace Ict.Common
     /// </summary>
     public class Utilities
     {
+        /// <summary>
+        /// String that gets utilised by Method <see cref="GetThreadAndAppDomainCallInfo"/> but can also be utilised
+        /// elsewhere.
+        /// </summary>
+        public const string StrThreadAndAppDomainCallInfo = "(Call performed in Thread {0} in AppDomain '{1}')";
+
         /// <summary>
         /// Shorthand function that returns the current time in the HH:mm:ss format
         /// (24 hrs).
@@ -165,6 +170,18 @@ namespace Ict.Common
             }
 
             return RetVal;
+        }
+
+        /// <summary>
+        /// Returns a formatted string that contains information about the current Thread and the AppDomain in which
+        /// the code gets executed. Useful for logging!
+        /// </summary>
+        /// <returns>Formatted string that contains information about the current Thread and the AppDomain in which
+        /// the code gets executed.</returns>
+        public static string GetThreadAndAppDomainCallInfo()
+        {
+            return String.Format(StrThreadAndAppDomainCallInfo, ThreadingHelper.GetCurrentThreadIdentifier(),
+                AppDomain.CurrentDomain.FriendlyName);
         }
 
         private static void SplitPascalName(ref string APascalCaseString)
@@ -313,5 +330,5 @@ namespace Ict.Common
             Clipboard.Clear();
             Clipboard.SetText(data, TextDataFormat.Html);
         }
-    }
+    }   
 }

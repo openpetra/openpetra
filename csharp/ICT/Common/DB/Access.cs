@@ -849,8 +849,6 @@ namespace Ict.Common.DB
                                                            "The attempt to begin a DB Transaction NOW occured on Thread {5} in AppDomain '{6}.'   " +
                                                            "The StackTrace of the *previously* started DB Transaction is as follows:\r\n  PREVIOUS Stracktrace: {7}\r\n  CURRENT Stracktrace: {8}";
 
-        private const string StrThreadAndAppDomainCallInfo = "(Call performed in Thread {0} in AppDomain '{1}')";
-
         /// <summary>An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies a DB Connection once it
         /// gets created. It is used for internal 'sanity checks'. It also gets logged and hence can aid debugging (also useful for
         /// Unit Testing).</summary>
@@ -1628,8 +1626,7 @@ namespace Ict.Common.DB
         {
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO)
             {
-                return String.Format(StrThreadAndAppDomainCallInfo, ThreadingHelper.GetCurrentThreadIdentifier(),
-                    AppDomain.CurrentDomain.FriendlyName);
+                return Utilities.GetThreadAndAppDomainCallInfo();
             }
 
             return String.Empty;
@@ -5071,8 +5068,8 @@ namespace Ict.Common.DB
         internal void WaitForCoordinatedDBAccess()
         {
             const string StrWaitingMessage =
-                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... " + StrThreadAndAppDomainCallInfo;
-            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " + StrThreadAndAppDomainCallInfo;
+                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... " + Utilities.StrThreadAndAppDomainCallInfo;
+            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " + Utilities.StrThreadAndAppDomainCallInfo;
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
             {
@@ -5111,7 +5108,7 @@ namespace Ict.Common.DB
         internal void ReleaseCoordinatedDBAccess()
         {
             const string StrReleasedCoordinatedDBAccess =
-                "Released Thread-safe access to the Database Abstraction Layer. " + StrThreadAndAppDomainCallInfo + "...";
+                "Released Thread-safe access to the Database Abstraction Layer. " + Utilities.StrThreadAndAppDomainCallInfo + "...";
 
             FCoordinatedDBAccess.Release();
 
