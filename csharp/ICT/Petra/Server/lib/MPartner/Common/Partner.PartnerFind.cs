@@ -41,6 +41,7 @@ using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.PartnerFind
 {
@@ -1449,7 +1450,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                     }
 
                     // Find the best address for the new partner
-//                    bestLocationPK = ServerCalculations.DetermineBestAddress(NewPartnerKey);
+                    bestLocationPK = ServerCalculations.DetermineBestAddress(NewPartnerKey);
                     CurrentPartnerKey = NewPartnerKey;
                 }
 

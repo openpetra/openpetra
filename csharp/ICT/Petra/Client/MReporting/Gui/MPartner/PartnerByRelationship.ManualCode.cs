@@ -381,7 +381,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             return FPetraUtilsObject.FFastReportsPlugin.LoadReportData(
                 "Relationship",                 // AReportName
                 true,                           // AUseDataSet
-                new String[] { "Relationship" }, // ATableNames
+                new String[] { "Relationship", "Church", "Organisation", "PartnersAddresses" }, // ATableNames
                 ACalc,                          // ACalc
                 this,                           // AWindow
                 true                            // AUseColumnTab

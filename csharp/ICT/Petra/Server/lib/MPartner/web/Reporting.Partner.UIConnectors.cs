@@ -4,7 +4,7 @@
 // @Authors:
 //       Jakob Englert
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -364,7 +364,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                         PartnerSelection +
                         @")
 	                                                AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
-	                                                AND p_partner.p_partner_key_n = p_partner_relationship.p_relation_key_n"                                                                                                                                                    ;
+	                                                AND p_partner.p_partner_key_n = p_partner_relationship.p_relation_key_n"                                                                                                                                                  ;
 
                     if (!AParameters["param_chkRelationships"].ToBool())
                     {
@@ -444,7 +444,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                     ORDER BY
 
                                                     p_partner_key_n,
-	                                                PCIndex ASC, PTIndex ASC, PAIndex ASC"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
+	                                                PCIndex ASC, PTIndex ASC, PAIndex ASC"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ;
 
                     if (!AParameters["param_chkContactDetails"].ToBool())
                     {
@@ -480,7 +480,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
                                                         AND p_banking_details.p_banking_type_i != '1'
 
-                                                        AND p_bank.p_partner_key_n = p_banking_details.p_bank_key_n"                                                                                                                                                                                                                                                                                                     ;
+                                                        AND p_bank.p_partner_key_n = p_banking_details.p_bank_key_n"                                                                                                                                                                                                                                                                                               ;
 
                     if (!AParameters["param_chkFinanceDetails"].ToBool())
                     {
@@ -512,7 +512,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                         PartnerSelection +
                         @")
 
-                                                        AND p_interest.p_interest_c = p_partner_interest.p_interest_c"                               ;
+                                                        AND p_interest.p_interest_c = p_partner_interest.p_interest_c"                             ;
 
                     if (!AParameters["param_chkInterests"].ToBool())
                     {
@@ -615,7 +615,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
                                                 AND p_location.p_location_key_i = p_partner_location.p_location_key_i
 
-                                                AND p_country.p_country_code_c = p_location.p_country_code_c"                                                                                                                                                        ;
+                                                AND p_country.p_country_code_c = p_location.p_country_code_c"                                                                                                                                                    ;
 
                     if (!AParameters["param_chkLocations"].ToBool())
                     {
@@ -676,6 +676,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable relationship = new DataTable();
             DataTable church = new DataTable();
             DataTable address = new DataTable();
+            DataTable organisation = new DataTable();
             TDBTransaction Transaction = null;
 
             DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
@@ -689,7 +690,10 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                             "PUB_p_partner_relationship.p_relation_key_n"
                                             :
                                             "PUB_p_partner_relationship.p_partner_key_n";
-
+                    String DescrField = (useRecipropcal) ?
+                                        "PUB_p_relation.p_reciprocal_description_c"
+                                        :
+                                        "PUB_p_relation.p_relation_description_c";
                     String paramPartnerSelection = AParameters["param_selection"].ToString();
                     String extraTables = "";
                     String partnerSelection = "";
@@ -734,24 +738,26 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     String orderBy = " ORDER BY " + byPartnerField;
                     String Query =
                         @"SELECT DISTINCT
-                        PUB_p_partner_relationship.p_relation_name_c AS Relationship,
+                        PUB_p_partner_relationship.p_relation_name_c AS Relationship, "                                           +
+                        DescrField +
+                        @" AS RelationshipDescr,
                         PUB_p_partner_relationship.p_partner_key_n AS Rel1PartnerKey,
                         PUB_p_partner_relationship.p_relation_key_n AS Rel2PartnerKey,
                         Rel1.p_partner_short_name_c AS Rel1PartnerName,
                         Rel2.p_partner_short_name_c AS Rel2PartnerName,
                         Rel1.p_partner_class_c AS Rel1PartnerClass,
                         Rel2.p_partner_class_c AS Rel2PartnerClass
-                        PUB_p_church.p_contact_partner_key_n AS ChurchContactKey,
-                        ChurchPartner.p_partner_short_name_c AS ChurchContactName,
                         FROM
                         PUB_p_partner_relationship,
+                        PUB_p_relation,
                         PUB_p_partner AS Rel1,
                         PUB_p_partner AS Rel2
                         "
                         +
                         extraTables +
                         " WHERE" +
-                        " Rel1.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n" +
+                        " PUB_p_partner_relationship.p_relation_name_c = PUB_p_relation.p_relation_name_c" +
+                        " AND Rel1.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n" +
                         " AND Rel2.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n" +
                         partnerSelection +
                         relationshipSelection +
@@ -776,14 +782,25 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     }
 
                     String partnerKeys = partnerKeysBuilder.ToString().TrimEnd(new char[] { ',' });
-                    Query = "SELECT p_church.p_partner_key_n, p_partner.p_partner_short_name_c AS ChurchContactPersonName, " +
+                    Query = "SELECT p_church.p_partner_key_n AS PartnerKey, " +
+                            " p_church.p_church_name_c AS ChurchName, " +
+                            " p_partner.p_partner_short_name_c AS ChurchContactPersonName, " +
                             " p_church.p_contact_partner_key_n AS ChurchContactPersonKey" +
                             " FROM p_church, p_partner" +
                             " WHERE p_church.p_partner_key_n in (" + partnerKeys + ")" +
-                            " AND p_partner.p_partner_key= p_church.p_contact_partner_key_n";
+                            " AND p_partner.p_partner_key_n = p_church.p_contact_partner_key_n";
                     church = DbAdapter.RunQuery(Query, "Church", Transaction);
 
-                    address = TAddressTools.GetBestAddressForPartners(partnerKeys, Transaction);
+                    address = TAddressTools.GetBestAddressForPartners(partnerKeys, Transaction, false, true);
+
+                    Query = "SELECT p_organisation.p_partner_key_n AS PartnerKey, " +
+                            " p_organisation.p_organisation_name_c AS OrganisationName, " +
+                            " p_partner.p_partner_short_name_c AS OrganisationContactPersonName, " +
+                            " p_organisation.p_contact_partner_key_n AS OrganisationContactPersonKey" +
+                            " FROM p_organisation, p_partner" +
+                            " WHERE p_organisation.p_partner_key_n in (" + partnerKeys + ")" +
+                            " AND p_partner.p_partner_key_n = p_organisation.p_contact_partner_key_n";
+                    organisation = DbAdapter.RunQuery(Query, "Organisation", Transaction);
                 });
 
             if (relationship.Rows.Count == 0)
@@ -793,6 +810,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
             ResultSet.Merge(relationship);
             ResultSet.Merge(church);
+            ResultSet.Merge(address);
+            ResultSet.Merge(organisation);
             return ResultSet;
         }
 
@@ -824,7 +843,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                         ptype.p_partner_key_n = p_partner.p_partner_key_n
                                         AND NOT p_partner.p_partner_key_n = 0
                                         AND p_partner_location.p_partner_key_n = p_partner.p_partner_key_n
-                                        AND p_partner_location.p_location_key_i = p_location.p_location_key_i"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ;
+                                        AND p_partner_location.p_location_key_i = p_location.p_location_key_i"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
 
                     Query += " AND ptype.p_type_code_c IN(" + AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0,
                         "'").Insert(AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0, "'").Length, "'") + ") ";

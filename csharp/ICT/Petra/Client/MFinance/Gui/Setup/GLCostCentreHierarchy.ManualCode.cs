@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -952,16 +952,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             CostCentreNodeDetails Parent = (CostCentreNodeDetails)FCurrentCostCentre.linkedTreeNode.Parent.Tag;
             ACostCentreRow SelectedRow = FCurrentCostCentre.CostCentreRow;
-            FMainDS.ACostCentre.Rows.Remove(SelectedRow);
+//          FMainDS.ACostCentre.Rows.Remove(SelectedRow);
+            SelectedRow.Delete();
             FIAmUpdating++;
             ucoCostCentreTree.SelectedCostCentre = null;
             ucoCostCentreList.SelectedCostCentre = null;
             ucoCostCentreTree.PopulateTreeView(FMainDS);
             ucoCostCentreList.PopulateListView(FMainDS);
 
-//          ucoCostCentreTree.DeleteSelectedCostCentre();
             FCurrentCostCentre = Parent;
-            FIAmUpdating--;
             ucoCostCentreTree.SelectedCostCentre = FCurrentCostCentre;
             ucoCostCentreList.SelectedCostCentre = FCurrentCostCentre;
 
@@ -969,7 +968,15 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             if (FCurrentCostCentre != null)
             {
                 FCurrentCostCentre.GetAttrributes();
+                ShowDetails(FCurrentCostCentre.CostCentreRow);
+                FRecentlyUpdatedDetailCostCentreCode = txtDetailCostCentreCode.Text;
             }
+            else
+            {
+                ShowDetails(null);
+            }
+
+            FIAmUpdating--;
 
             FPetraUtilsObject.SetChangedFlag();
         }

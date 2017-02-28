@@ -417,6 +417,7 @@ namespace Ict.Common.Remoting.Server
         ///
         /// </summary>
         /// <param name="AClientID">Server-assigned ID of the Client</param>
+        /// <param name="AReason"></param>
         /// <param name="ACantDisconnectReason">In case the function returns false, this
         /// contains the reason why the disconnection cannot take place.</param>
         /// <returns>true if disconnection will take place, otherwise false.

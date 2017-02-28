@@ -507,7 +507,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 if (!feeTransactionCreated)
                 {
                     AVerificationResults.Add(new TVerificationResult(Catalog.GetString("Admin Fee Batch"),
-                            String.Format(Catalog.GetString("No admin fees charged in period ({0})."), APeriodNumber),
+                            String.Format(Catalog.GetString("No admin fee batch required for period ({0})."), APeriodNumber),
                             TResultSeverity.Resv_Status));
 
                     // An empty GL Batch now exists, which I need to delete.
@@ -519,6 +519,7 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                         out batchCancelResult);
 
                     AVerificationResults.AddCollection(batchCancelResult);
+                    IsSuccessful = true;
                 }
                 else
                 {
@@ -542,12 +543,6 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
 
                     AVerificationResults.Add(new TVerificationResult(ErrorContext, ErrorMessage, ErrorType));
                     return false;
-                }
-
-                /* Print the Admin Fee Calculations report, if requested */
-                if (APrintReport && IsSuccessful)
-                {
-                    //TODO
                 }
             } // try
             catch (Exception ex)

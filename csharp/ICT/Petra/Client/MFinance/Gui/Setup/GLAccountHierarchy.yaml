@@ -75,10 +75,10 @@ RootNode:
             OnChange: OnAccountTypeChanged
             Width: 100
         # TODO: still need english and local description? easier to use different account hierarchies?
-        txtDetailEngAccountCodeLongDesc: {Width=650, Stretch=horizontally, ColSpan=2, Label=Descr Long English}
-        txtDetailEngAccountCodeShortDesc: {Stretch=horizontally, ColSpan=2, Label=Descr Short English}
-        txtDetailAccountCodeLongDesc: {Stretch=horizontally, ColSpan=2, Label=Descr Long Local}
-        txtDetailAccountCodeShortDesc: {Stretch=horizontally, ColSpan=2, Label=Descr Short Local}
+        txtDetailEngAccountCodeLongDesc: {Width=650, Stretch=horizontally, ColSpan=2, Label=Long English Descr}
+        txtDetailEngAccountCodeShortDesc: {Stretch=horizontally, ColSpan=2, Label=Short English Descr}
+        txtDetailAccountCodeLongDesc: {Stretch=horizontally, ColSpan=2, Label=Long Local Descr}
+        txtDetailAccountCodeShortDesc: {Stretch=horizontally, ColSpan=2, Label=Short Local Descr}
         cmbDetailValidCcCombo: {Label=Valid Cost Centres, Width=100}
             OptionalValues: [All, Foreign, Local]
         # TODO: budget type, budget control

@@ -121,11 +121,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         foreach (string Range in GiftsInRangeArray)
                         {
                             Query += " AND (gift.a_date_entered_d BETWEEN '" + Range.Substring(0, 10) + "' AND '" + Range.Substring(13,
-                                10) + "') AND";
+                                10) + "')";
                         }
                     }
 
-                    Query += " gift.a_ledger_number_i = " + LedgerNumber +
+                    Query += " AND gift.a_ledger_number_i = " + LedgerNumber +
                              " AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n" +
                              " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
                              " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
