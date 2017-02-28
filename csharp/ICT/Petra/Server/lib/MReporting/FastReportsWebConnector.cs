@@ -102,6 +102,18 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TPersonnelReportingWebConnector.PreviousExperience(AParameters, FDbAdapter);
                     break;
 
+                case "PassportExpiryReport":
+                    ResultTbl = TPersonnelReportingWebConnector.PassportExpiryReport(AParameters, FDbAdapter);
+                    break;
+
+                case "ProgressReport":
+                    ResultTbl = TPersonnelReportingWebConnector.ProgressReport(AParameters, FDbAdapter);
+                    break;
+
+                case "EndOfCommitmentReport":
+                    ResultTbl = TPersonnelReportingWebConnector.EndOfCommitmentReport(AParameters, FDbAdapter);
+                    break;
+
                 /* GL Reports */
 
                 case "BalanceSheet":

@@ -363,7 +363,8 @@ namespace Ict.Petra.Client.MReporting.Gui
 
                 for (int counter = 0; counter <= ACalc.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
                 {
-                    TColumnSetting tcs = new TColumnSetting(ACalc.GetParameters().Get("param_calculation", counter).ToString().Replace(" ", ""),
+                    TColumnSetting tcs = new TColumnSetting(ACalc.GetParameters().Get("param_calculation", counter).ToString().Replace(" ",
+                            "").Replace("-", "").Replace("/", "").Replace("#", ""),
                         float.Parse(ACalc.GetParameters().Get("ColumnWidth", counter).ToString()), counter + 1);
                     tcsc.SetSettingForColumn(tcs);
                 }

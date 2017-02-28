@@ -164,6 +164,43 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
+        /// Returns the Table handed in with the best addresses
+        /// </summary>
+        /// <param name="Partners"></param>
+        /// <param name="PartnerKeyColumn"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="APartnerDetails"></param>
+        /// <returns></returns>
+        public static DataTable GetBestAddressForPartnersAsJoinedTable(DataTable Partners,
+            int PartnerKeyColumn,
+            TDBTransaction ATransaction,
+            Boolean APartnerDetails = false)
+        {
+            DataTable Addresses = GetBestAddressForPartners(Partners, PartnerKeyColumn, ATransaction, APartnerDetails);
+
+            foreach (DataColumn dc in Addresses.Columns)
+            {
+                Partners.Columns.Add("addr_" + dc.ColumnName);
+            }
+
+            DataView dv = Partners.DefaultView;
+
+            foreach (DataRow dr in Addresses.Rows)
+            {
+                dv.RowFilter = "partnerkey = " + dr[0].ToString();
+
+                for (int i = 0; i < Addresses.Columns.Count; i++)
+                {
+                    dv[0]["addr_" + Addresses.Columns[i].ColumnName] = dr[i];
+                }
+            }
+
+            dv.RowFilter = String.Empty;
+
+            return dv.ToTable();
+        }
+
+        /// <summary>
         /// Return the country code for this installation of OpenPetra.
         /// using the SiteKey to determine the country
         /// </summary>

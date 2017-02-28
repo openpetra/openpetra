@@ -583,5 +583,269 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
             return PreviousExperience;
         }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable PassportExpiryReport(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable PassportExpiryReport = new DataTable();
+
+            TDBTransaction Transaction = null;
+
+            DataTable PreviousExperience = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        @"SELECT DISTINCT
+                                        p_partner.p_partner_key_n AS PartnerKey,
+	                                    p_partner.p_partner_short_name_c AS PartnerName,
+                                        p_type_code_c AS PartnerType,
+                                        fieldpartner.p_partner_short_name_c AS Field,
+	                                    pm_passport_details.pm_date_of_expiration_d AS PassportExpiryDate,
+	                                    pm_passport_details.pm_passport_number_c AS PassportNumber,
+	                                    pm_passport_details.pm_passport_details_type_c AS PassportType,
+	                                    pm_passport_details.p_passport_nationality_code_c AS PassportNationality,
+	                                    pm_passport_details.p_country_of_issue_c AS CountryofIssue,
+	                                    pm_passport_details.pm_passport_dob_d AS PassportDateofBirth,
+	                                    pm_passport_details.pm_date_of_issue_d AS PassportDateofIssue,
+	                                    pm_passport_details.pm_full_passport_name_c AS PassportName,
+	                                    pm_passport_details.pm_place_of_birth_c AS PassportPlaceofBirth,
+	                                    pm_passport_details.pm_place_of_issue_c AS PassportPlaceofIssue,
+	                                    p_person.p_first_name_c AS PersonFirstName,
+	                                    p_person.p_prefered_name_c AS PersonPreferedName,
+	                                    p_person.p_middle_name_1_c AS PersonMiddleName,
+	                                    p_person.p_family_name_c AS PersonLastName,
+	                                    p_person.p_gender_c AS Gender,
+	                                    p_person.p_date_of_birth_d AS PersonDateofBirth,
+	                                    p_person.p_occupation_code_c AS Occupation,
+                                        p_occupation.p_occupation_description_c AS OccupationDescription,
+	                                    p_country.p_country_name_c AS CountryName
+                                    FROM
+                                        p_partner,
+	                                    p_person,
+	                                    pm_passport_details,
+                                        pm_staff_data,
+	                                    p_country,
+                                        p_occupation
+                                        LEFT JOIN (SELECT MAX(p_type_code_c) p_type_code_c, p_partner_key_n FROM p_partner_type
+                                            WHERE p_type_code_c LIKE 'OMER%' OR p_type_code_c LIKE 'EX-OMER%' GROUP BY p_partner_key_n) AS type
+                                            ON TRUE
+                                        LEFT JOIN p_partner AS fieldpartner ON TRUE
+                                      WHERE
+
+                                        pm_passport_details.p_partner_key_n = p_partner.p_partner_key_n
+
+                                        AND pm_staff_data.p_partner_key_n = p_partner.p_partner_key_n
+                                        AND (pm_end_of_commitment_d >= '"
+                        + DateTime.Today.ToString(
+                            "yyyy-MM-dd") +
+                        @"' OR NULL)
+
+                                        AND pm_receiving_field_n = fieldpartner.p_partner_key_n
+
+                                        AND p_occupation.p_occupation_code_c = p_person.p_occupation_code_c
+
+                                        AND p_partner.p_partner_key_n = type.p_partner_key_n
+
+                                        AND p_person.p_partner_key_n = p_partner.p_partner_key_n
+
+                                        AND(p_country.p_country_code_c = pm_passport_details.p_passport_nationality_code_c
+
+                                            OR(pm_passport_details.p_passport_nationality_code_c IS NULL
+
+                                                AND p_country.p_country_code_c = '99'))
+
+                                        AND p_partner.p_partner_key_n IN("
+                        + GetPartnerKeysAsString(AParameters,
+                            DbAdapter) + ") ORDER BY " + AParameters["param_sortby_readable"].ToString().Replace(" ", "");;
+
+                    PassportExpiryReport = DbAdapter.RunQuery(Query, "PassportExpiryReport", Transaction);
+                });
+
+            return PassportExpiryReport;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable ProgressReport(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable ProgressReport = new DataTable();
+
+            TDBTransaction Transaction = null;
+
+            DataTable PreviousExperience = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        @"SELECT DISTINCT
+	                                    person.p_partner_key_n AS PartnerKey,
+	                                    partner.p_partner_short_name_c AS PartnerName,
+	                                    evaluation.pm_evaluation_date_d AS ReportDate,
+	                                    evaluation.pm_evaluation_type_c AS ReportType,
+	                                    evaluation.pm_evaluator_c AS Reporter,
+	                                    evaluation.pm_next_evaluation_date_d AS NextReportDate,
+	                                    evaluation.pm_evaluation_comments_c AS ReportComment
+                                    FROM p_person AS person,
+	                                    p_partner AS partner,
+	                                    pm_person_evaluation AS evaluation
+                                    WHERE
+	                                    person.p_partner_key_n = partner.p_partner_key_n
+	                                    AND person.p_partner_key_n = evaluation.p_partner_key_n
+	                                    AND partner.p_status_code_c = 'ACTIVE' AND person.p_partner_key_n
+                                    IN("
+                        + GetPartnerKeysAsString(AParameters,
+                            DbAdapter) + ") ORDER BY " + AParameters["param_sortby_readable"].ToString().Replace(" ", "");;
+
+                    ProgressReport = DbAdapter.RunQuery(Query, "ProgressReport", Transaction);
+                });
+
+            return ProgressReport;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataTable EndOfCommitmentReport(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable EndofCommitment = new DataTable();
+
+            TDBTransaction Transaction = null;
+
+            DataTable PreviousExperience = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        @"SELECT DISTINCT person.p_partner_key_n AS PartnerKey,
+                                       partner.p_partner_short_name_c AS PartnerName,
+                                       staff.pm_end_of_commitment_d AS EndDate,
+                                       staff.pm_start_of_commitment_d AS StartDate,
+                                       staff.pm_status_code_c AS CommitmentStatus,
+                                       unit.p_unit_name_c AS FieldName,
+                                       string_agg(p_type_code_c, ' / ') AS PartnerType
+                                    FROM p_person AS person,
+	                                    p_partner AS partner,
+	                                    pm_staff_data AS staff
+					                LEFT JOIN p_unit AS unit
+						                ON staff.pm_receiving_field_n = unit.p_partner_key_n
+						            LEFT JOIN p_partner_type AS pptype ON TRUE
+	                                WHERE
+	                                    person.p_partner_key_n = partner.p_partner_key_n
+	                                    AND pptype.p_partner_key_n = person.p_partner_key_n
+							            AND  ( pptype.p_type_code_c LIKE 'EX-OMER%' OR
+								            pptype.p_type_code_c LIKE 'OMER%' OR
+								            pptype.p_type_code_c LIKE 'ASSOC%' )
+	                                    AND person.p_partner_key_n = staff.p_partner_key_n
+	                                    AND (staff.pm_end_of_commitment_d >= '2016-12-15'
+		                                    OR staff.pm_end_of_commitment_d IS NULL)
+		                                AND person.p_partner_key_n IN("
+                        + GetPartnerKeysAsString(AParameters,
+                            DbAdapter) +
+                        @")
+                                    GROUP BY person.p_partner_key_n,
+                                            staff.pm_end_of_commitment_d,
+                                            staff.pm_start_of_commitment_d,
+                                            staff.pm_status_code_c,
+                                            partner.p_partner_short_name_c,
+                                            unit.p_unit_name_c
+                                    ORDER BY "
+                        + AParameters["param_sortby_readable"].ToString().Replace(" ", "");
+
+
+                    EndofCommitment = DbAdapter.RunQuery(Query, "EndofCommitment", Transaction);
+                    EndofCommitment = TAddressTools.GetBestAddressForPartnersAsJoinedTable(EndofCommitment, 0, Transaction);
+
+                    EndofCommitment.Columns.Add("PrimaryPhone");
+                    EndofCommitment.Columns.Add("PrimaryEmailAddress");
+                    EndofCommitment.Columns.Add("FaxNumber");
+
+                    foreach (DataRow dr in EndofCommitment.Rows)
+                    {
+                        long ECPartnerKey = long.Parse(dr["PartnerKey"].ToString());
+                        string APrimaryPhone = "";
+                        string APrimaryEmailAddress = "";
+                        string AFaxNumber = "";
+                        TContactDetailsAggregate.GetPrimaryEmailAndPrimaryPhoneAndFax(ECPartnerKey,
+                            out APrimaryPhone, out APrimaryEmailAddress, out AFaxNumber);
+                        dr["PrimaryPhone"] = APrimaryPhone;
+                        dr["PrimaryEmailAddress"] = APrimaryEmailAddress;
+                        dr["FaxNumber"] = AFaxNumber;
+                    }
+                });
+
+            return EndofCommitment;
+        }
+
+        private static String GetPartnerKeysAsString(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            if (AParameters["param_selection"].ToString() == "one partner")
+            {
+                return AParameters["param_partnerkey"].ToString();
+            }
+
+            List <string>PartnerKeys = new List <string>();
+
+            DataTable Partners = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "";
+
+                    if (AParameters["param_selection"].ToString() == "an extract")
+                    {
+                        Query =
+                            "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
+                            + AParameters["param_extract"] + "')";
+                    }
+                    else if (AParameters["param_selection"].ToString() == "all current staff")
+                    {
+                        string date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+                        Query = "SELECT p_partner_key_n FROM pm_staff_data WHERE pm_start_of_commitment_d <= '" + date +
+                                "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
+                    }
+
+                    if (Query != "")
+                    {
+                        Partners = DbAdapter.RunQuery(Query, "Partners", Transaction);
+                    }
+                    else
+                    {
+                        Partners.Columns.Add("partnerkey");
+                        Partners.Rows.Add(new object[] { 0 });
+                    }
+                });
+
+            foreach (DataRow dr in Partners.Rows)
+            {
+                PartnerKeys.Add(dr[0].ToString());
+            }
+
+            return String.Join(",", PartnerKeys);
+        }
     }
 }
