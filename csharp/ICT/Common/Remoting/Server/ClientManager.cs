@@ -60,6 +60,8 @@ namespace Ict.Common.Remoting.Server
     /// </summary>
     public class TClientManager
     {
+        const string CLIENTINITIATED_DISCONNECTION = "Disconnection requested by Client";
+
         #region Resourcestrings
 
         private static readonly string StrClientServerExeProgramVersionMismatchMessage = Catalog.GetString(
@@ -419,7 +421,7 @@ namespace Ict.Common.Remoting.Server
         /// contains the reason why the disconnection cannot take place.</param>
         /// <returns>true if disconnection will take place, otherwise false.
         /// </returns>
-        public static bool ServerDisconnectClient(System.Int32 AClientID, out String ACantDisconnectReason)
+        public static bool ServerDisconnectClient(System.Int32 AClientID, String AReason, out String ACantDisconnectReason)
         {
             bool ReturnValue;
 
@@ -430,7 +432,7 @@ namespace Ict.Common.Remoting.Server
                     && (((TConnectedClient)UClientObjects[(object)AClientID]).SessionStatus != TSessionStatus.adsStopped))
                 {
                     // this.DisconnectClient would not work here since we are executing inside a static function...
-                    ReturnValue = TClientManager.DisconnectClient(AClientID, out ACantDisconnectReason);
+                    ReturnValue = TClientManager.DisconnectClient(AClientID, AReason, out ACantDisconnectReason);
                 }
                 else
                 {
@@ -1204,7 +1206,7 @@ namespace Ict.Common.Remoting.Server
         /// </returns>
         public static Boolean DisconnectClient(System.Int32 AClientID, out String ACantDisconnectReason)
         {
-            return DisconnectClient(AClientID, "Client closed", out ACantDisconnectReason);
+            return DisconnectClient(AClientID, CLIENTINITIATED_DISCONNECTION, out ACantDisconnectReason);
         }
 
         /// <summary>
@@ -1242,8 +1244,14 @@ namespace Ict.Common.Remoting.Server
 
             if (SessionEntry.FAppDomainStatus == TSessionStatus.adsStopped)
             {
-                ACantDisconnectReason = "Can't disconnect ClientID: " + AClientID.ToString() +
-                                        ": this client has been disconnected already!";
+                ACantDisconnectReason = "Can't disconnect ClientID " + AClientID.ToString() + " (for the reason '" +
+                                        AReason + "'): Client is already disconnected!" +
+                                        (AReason == CLIENTINITIATED_DISCONNECTION ?
+                                        "  [non-critical]  (This message got recorded because a user has now closed a Client exe instance "
+                                        +
+                                        "which was already disconnected. It might have been disconnected earlier because of a "
+                                        +
+                                        "very serious error, or it could have failed to contact the server regularly.)" : "");
                 TLogging.Log(ACantDisconnectReason, TLoggingType.ToConsole | TLoggingType.ToLogfile);
                 return false;
             }

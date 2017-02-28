@@ -509,7 +509,8 @@ CheckAllClientsDisconnected:
         /// </returns>
         public bool DisconnectClient(System.Int16 AClientID, out String ACantDisconnectReason)
         {
-            return TClientManager.ServerDisconnectClient(AClientID, out ACantDisconnectReason);
+            return TClientManager.ServerDisconnectClient(AClientID,
+                "Client disconnection requested by Adminstrator!", out ACantDisconnectReason);
         }
 
         /// <summary>
