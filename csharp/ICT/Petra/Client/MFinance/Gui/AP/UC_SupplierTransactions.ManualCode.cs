@@ -152,6 +152,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void SelectRowInGrid(int ARowNumber)
         {
+            SelectAndFocus(ARowNumber);
+        }
+
+        /// <summary>Use this to avoid the form pulling forward when the data is loaded.</summary>
+        /// <param name="ARowNumber"></param>
+        /// <param name="AndFocus"></param>
+        public void SelectAndFocus(int ARowNumber, Boolean AndFocus = true)
+        {
             if (ARowNumber >= grdDetails.Rows.Count)
             {
                 ARowNumber = grdDetails.Rows.Count - 1;
@@ -163,7 +171,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Note:  We need to be sure to focus column 1 in this case because sometimes column 0 is not visible!!
-            grdDetails.Selection.Focus(new SourceGrid.Position(ARowNumber, 1), true);
+            if (AndFocus)
+            {
+                grdDetails.Selection.Focus(new SourceGrid.Position(ARowNumber, 1), true);
+            }
+            else
+            {
+                grdDetails.SelectRowWithoutFocus(ARowNumber);
+            }
+
             FPrevRowChangedRow = ARowNumber;
         }
 
@@ -329,8 +345,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FKeepUpSearchFinishedCheck = true;
             Thread FinishedCheckThread = new Thread(new ThreadStart(SearchFinishedCheckThread));
             FinishedCheckThread.Start();
-
-            this.Text = Catalog.GetString("Supplier Transactions") + " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
         }
 
         //
@@ -356,7 +370,10 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         private void FocusGrid()
         {
-            grdDetails.Focus();
+            if (this.Focused) // I want to hand my focus to the grid,
+            {                 // but if another form is currently in focus, don't usurp that.
+                grdDetails.Focus();
+            }
         }
 
         private void grdResult_DataPageLoaded(object Sender, TDataPageLoadEventArgs e)
@@ -483,7 +500,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 // Highlight first Row
-                SelectRowInGrid(1);
+                SelectAndFocus(1, false);
             }
 
             grdResult.AutoResizeGrid();

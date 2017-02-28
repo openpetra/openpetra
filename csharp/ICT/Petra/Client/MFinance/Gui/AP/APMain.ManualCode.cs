@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -99,7 +99,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 FLedgerNumber = value;
 
                 // Set the window caption using a call to the data cache
-                this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
+                this.Text = "Accounts Payable - " + TFinanceControls.GetLedgerNumberAndName(FLedgerNumber);
 
                 // This will involve a trip to the server to access GLSetupTDS
                 TFrmLedgerSettingsDialog settings = new TFrmLedgerSettingsDialog(this, FLedgerNumber);
@@ -476,16 +476,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             bool MessageProcessed = false;
 
-            if ((AFormsMessage.MessageClass == TFormsMessageClassEnum.mcNewPartnerSaved)
-                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcExistingPartnerSaved)
-                || (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcPartnerDeleted))
+            if (AFormsMessage.MessageClass == TFormsMessageClassEnum.mcAPSupplierChanged)
             {
-                // Refreshes the Suppliers list on the Suppliers tab
-                FIsSupplierDataChanged = true;
+                IsSupplierDataChanged = true;  // Suppliers list will be refreshed when next shown.
 
                 if (tabSearchResult.SelectedTab == tpgSuppliers)
                 {
-                    ucoSuppliers.LoadSuppliers();
+                    ucoSuppliers.LoadSuppliers();  // Refresh the list now.
                 }
 
                 MessageProcessed = true;

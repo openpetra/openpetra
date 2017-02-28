@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham, alanP
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -80,6 +80,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void SelectRowInGrid(int ARowNumber)
         {
+            SelectAndFocus(ARowNumber);
+        }
+
+        /// <summary>Use this to avoid the form pulling forward when the data is loaded.</summary>
+        /// <param name="ARowNumber"></param>
+        /// <param name="AndFocus"></param>
+        public void SelectAndFocus(int ARowNumber, Boolean AndFocus = true)
+        {
             if (ARowNumber >= grdSuppliers.Rows.Count)
             {
                 ARowNumber = grdSuppliers.Rows.Count - 1;
@@ -90,7 +98,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 ARowNumber = 1;
             }
 
-            grdSuppliers.SelectRowInGrid(ARowNumber);
+            if (AndFocus)
+            {
+                grdSuppliers.SelectRowInGrid(ARowNumber);
+            }
+            else
+            {
+                grdSuppliers.SelectRowWithoutFocus(ARowNumber);
+            }
+
             FPrevRowChangedRow = ARowNumber;
         }
 
@@ -303,7 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 // Highlight first Row
-                SelectRowInGrid(1);
+                SelectAndFocus(1, false);
             }
 
             // Size it

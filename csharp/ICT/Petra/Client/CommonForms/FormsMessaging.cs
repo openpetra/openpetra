@@ -174,6 +174,9 @@ namespace Ict.Petra.Client.CommonForms
         /// <summary>An AP transaction has been saved.</summary>
         mcAPTransactionChanged,
 
+        /// <summary>An AP Supplier has been saved.</summary>
+        mcAPSupplierChanged,
+
         /// <summary>Unit Hierarchy has been changed and saved.</summary>
         mcUnitHierarchyChanged,
 

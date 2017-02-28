@@ -3,7 +3,7 @@
 // @Authors:
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -58,7 +58,6 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         // The CostCentre selected in the parent form
         CostCentreNodeDetails FSelectedCostCentre;
-//      Int32 FLedgerNumber;
         DataView FDataView = null;
 
         /// <summary>
@@ -75,7 +74,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             {
                 FSelectedCostCentre = value;
 
-                // FSelectionMadeInList will be tree if the change was made in the list view.
+                // FSelectionMadeInList will be true if the change was made in the list view.
                 // We only need to run this code if selection was made in tree view
                 if ((FDataView != null) && !FSelectionMadeInList)
                 {
@@ -132,6 +131,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
         private void grdCostCentres_FocusRowLeaving(object sender, SourceGrid.RowCancelEventArgs e)
         {
+            if (FParentForm.FIAmUpdating > 0)
+            {
+                return;
+            }
+
             if (!FParentForm.CheckControlsValidateOk())
             {
                 e.Cancel = true;
@@ -181,10 +185,8 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         /// <summary>
         /// Show all the data (CostCentre Code and description)
         /// </summary>
-        public void PopulateListView(GLSetupTDS MainDS, Int32 LedgerNumber)
+        public void PopulateListView(GLSetupTDS MainDS)
         {
-//          FLedgerNumber = LedgerNumber;
-
             FDataView = new DataView(MainDS.ACostCentre);
             FDataView.Sort = "a_cost_centre_code_c";
             FDataView.AllowNew = false;
