@@ -47,7 +47,7 @@ using Ict.Petra.Server.MFinance.GL.Data.Access;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MSysMan.Security;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MCommon;

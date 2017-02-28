@@ -32,7 +32,7 @@ using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
 using Ict.Petra.Server.MPartner.Reporting.WebConnectors;
@@ -99,7 +99,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
-                /* Personnel Report*/
+                /* Partner Reports*/
+
+                /* Personnel Reports*/
                 case "PreviousExperience":
                     ResultTbl = TPersonnelReportingWebConnector.PreviousExperience(AParameters, FDbAdapter);
                     break;
@@ -256,6 +258,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             switch (AReportType)
             {
                 /* Partner Reports */
+
+                case "Relationship":
+                    ResultSet = TPartnerReportingWebConnector.PartnerByRelationship(AParameters, FDbAdapter);
+                    break;
 
                 case "PrintPartner":
                     ResultSet = TPartnerReportingWebConnector.PrintPartner(AParameters, FDbAdapter);

@@ -4,7 +4,7 @@
 // @Authors:
 //     Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,23 +33,16 @@ using System.Windows.Forms;
 //using FastReport;
 
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.IO;
 
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Client.MSysMan.Gui;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using System.Text;
-using System.Security;
-using System.Net.Mail;
 //using Ict.Petra.Client.MFastReport;
 //using Ict.Petra.Client.MFastReport.Gui;
 using Ict.Petra.Shared.MReporting;
@@ -336,6 +329,119 @@ namespace Ict.Petra.Client.MReporting.Gui
             FFastReportType.GetMethod("RegisterData", new Type[] { data.GetType(), name.GetType() }).Invoke(FfastReportInstance,
                 new object[] { data, name });
             FClientDataTable = data;
+        }
+
+        /// <summary>Load the Parameters from ACalc into a .NET dictionary</summary>
+        /// <param name="ACalc"></param>
+        /// <returns>All the Parameters that start with "param". Protects against duplicates.</returns>
+        public Dictionary <String, TVariant>ParamsToDictionary(TRptCalculator ACalc)
+        {
+            ArrayList reportParam = ACalc.GetParameters().Elems;
+
+            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
+
+            foreach (Shared.MReporting.TParameter p in reportParam)
+            {
+                if (p.name.StartsWith("param") && (p.name != "param_calculation"))
+                {
+                    if (!paramsDictionary.ContainsKey(p.name))
+                    {
+                        paramsDictionary.Add(p.name, p.value);
+                    }
+                }
+            }
+
+            return paramsDictionary;
+        }
+
+        /// <summary>
+        /// Helper function to load the Report Data in the standard case where no client-side processing is required.
+        /// </summary>
+        /// <param name="AReportName">The Name of the Report</param>
+        /// <param name="AUseDataSet">True, if a ReportSet is used</param>
+        /// <param name="ATableNames">The Names of the Tables</param>
+        /// <param name="ACalc">ACalc object</param>
+        /// <param name="AWindow">"Parent" Window</param>
+        /// <param name="AUseColumnTab">"Parent" Window</param>
+        /// <param name="AAddLedger">"Adds the Ledger Name to the Parameters"</param>
+        /// /// <param name="ALedgerNumber">"The Ledger Number if used"</param>
+        /// <returns></returns>
+        public bool LoadReportData(string AReportName,
+            bool AUseDataSet,
+            string[] ATableNames,
+            TRptCalculator ACalc,
+            Form AWindow,
+            bool AUseColumnTab,
+            bool AAddLedger = false,
+            Int32 ALedgerNumber = -1)
+        {
+            Dictionary <String, TVariant>paramsDictionary = ParamsToDictionary(ACalc);
+
+            if (AUseColumnTab)
+            {
+                TColumnSettingCollection tcsc = new TColumnSettingCollection();
+
+                for (int counter = 0; counter <= ACalc.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
+                {
+                    TColumnSetting tcs = new TColumnSetting(ACalc.GetParameters().Get("param_calculation", counter).ToString().Replace(" ", ""),
+                        float.Parse(ACalc.GetParameters().Get("ColumnWidth", counter).ToString()), counter + 1);
+                    tcsc.SetSettingForColumn(tcs);
+                }
+
+                ACalc.AddParameter("param_columns", tcsc.SerialiseCollection());
+            }
+
+            DataTable ReportTable = null;
+            DataSet ReportSet = null;
+
+            if (AUseDataSet)
+            {
+                ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet(AReportName, paramsDictionary);
+            }
+            else
+            {
+                ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable(AReportName, paramsDictionary);
+            }
+
+            if ((AWindow == null) || AWindow.IsDisposed)
+            {
+                return false;
+            }
+
+            if ((ReportTable == null) && (ReportSet == null))
+            {
+                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            if (AAddLedger)
+            {
+                DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
+                DataView LedgerView = new DataView(LedgerNameTable);
+                LedgerView.RowFilter = "LedgerNumber=" + ALedgerNumber;
+                String LedgerName = "";
+
+                if (LedgerView.Count > 0)
+                {
+                    LedgerName = LedgerView[0].Row["LedgerName"].ToString();
+                }
+
+                ACalc.AddStringParameter("param_ledger_name", LedgerName);
+            }
+
+            if (AUseDataSet)
+            {
+                foreach (string TableName in ATableNames)
+                {
+                    RegisterData(ReportSet.Tables[TableName], TableName);
+                }
+            }
+            else
+            {
+                RegisterData(ReportTable, ATableNames[0]);
+            }
+
+            return true;
         }
 
         private void LoadReportParams(TRptCalculator ACalc)

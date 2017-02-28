@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -43,11 +43,11 @@ using Ict.Petra.Server.MFinance.Gift;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
-using Ict.Petra.Server.MPartner.Partner;
+using Ict.Petra.Server.MPartner.Processing;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon;

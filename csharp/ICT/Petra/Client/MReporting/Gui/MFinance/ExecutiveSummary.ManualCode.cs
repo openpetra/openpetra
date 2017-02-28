@@ -4,7 +4,7 @@
 // @Authors:
 //       peters
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,7 +31,6 @@ using Ict.Common;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
 

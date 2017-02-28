@@ -44,8 +44,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MConference.Data;
@@ -58,7 +57,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Shared.MSysMan;
-
+using Ict.Petra.Server.MPartner.Processing;
 
 namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
 {

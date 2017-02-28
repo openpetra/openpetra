@@ -54,8 +54,8 @@ using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
-using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Partner.WebConnectors;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 {

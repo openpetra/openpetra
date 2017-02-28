@@ -44,7 +44,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            return FPetraUtilsObject.LoadReportData("ProgressReport", false, new string[] { "ProgressReport" }, ACalc, this, true, false);
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("ProgressReport",
+                false,
+                new string[] { "ProgressReport" },
+                ACalc,
+                this,
+                true,
+                false);
         }
     }
 }

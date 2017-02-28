@@ -39,7 +39,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Server.MPartner.Partner;
+//using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using System.Collections.Specialized;

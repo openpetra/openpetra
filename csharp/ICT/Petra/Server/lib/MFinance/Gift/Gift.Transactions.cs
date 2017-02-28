@@ -51,7 +51,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;

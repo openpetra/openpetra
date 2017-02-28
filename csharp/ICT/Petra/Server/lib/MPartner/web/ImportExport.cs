@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       ChristianK
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -36,7 +36,6 @@ using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Conversion;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
@@ -48,13 +47,15 @@ using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MPartner.Import;
-using Ict.Petra.Server.MPartner.Partner;
+//using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Common.Remoting.Server;
+using Ict.Petra.Shared.MPartner;
+using Ict.Petra.Server.MPartner.Processing;
 
 namespace Ict.Petra.Server.MPartner.ImportExport.WebConnectors
 {

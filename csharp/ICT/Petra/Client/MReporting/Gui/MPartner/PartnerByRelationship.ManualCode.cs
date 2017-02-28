@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr, andreww
+//       berndr, andreww, Tim Ingham
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,26 +22,18 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Drawing;
 using System.Collections;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Windows.Forms;
 using System.Data;
 using System.Linq;
-using GNU.Gettext;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
-using Ict.Petra.Shared.MPersonnel;
-using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.Verification;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.MReporting.Logic;
-using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using System.Collections.Generic;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPartner
 {
@@ -53,6 +45,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         private void InitializeManualCode()
         {
             //ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)
@@ -83,18 +76,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
                 rbtReciprocalRelationship.Visible = false;
                 grdReciprocalRelationship.Visible = true;
                 lblSelectReciprocalRelationship.Visible = true;
-
                 tabReportSettings.Controls.Remove(tpgColumns);
-                tabReportSettings.Controls.Remove(tpgReportSorting);
             }
             else
             {
                 grdReciprocalRelationship.Visible = false;
                 lblSelectReciprocalRelationship.Visible = false;
-
-                //TODO: Unfortunately can't allow sorting at the moment as the xml report is a multi level report and
-                //      they don't allow sorting but raise an exception --> hide sorting tab for now
-                tabReportSettings.Controls.Remove(tpgReportSorting);
             }
 
             rbtDirectRelationship.Checked = true;
@@ -107,6 +94,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             //TODO: Unfortunately can't allow sorting at the moment as the xml report is a multi level report and
             //      they don't allow sorting but raise an exception --> hide sorting tab for now
+            tabReportSettings.Controls.Remove(tpgReportSorting);
             tpgReportSorting.Hide();
         }
 
@@ -158,14 +146,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
             {
                 if (rbtReciprocalRelationship.Checked)
                 {
-                    ACalc.AddParameter("param_use_reciprocal_relationship", "true");
+                    ACalc.AddParameter("param_use_reciprocal_relationship", true);
                 }
                 else
                 {
-                    ACalc.AddParameter("param_use_reciprocal_relationship", "false");
+                    ACalc.AddParameter("param_use_reciprocal_relationship", false);
                 }
 
-                String RelationshipTypeList = GetSelectedRelationshipsAsCsv();
+                String RelationshipTypeList = GetSelectedRelationshipsAsCsv(false);
                 ACalc.AddParameter("param_relationship_types", RelationshipTypeList);
             }
             else
@@ -317,7 +305,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// Returns the visible and selected Relationship types from the visible relationship type grid
         /// </summary>
         /// <returns></returns>
-        private string GetSelectedRelationshipsAsCsv(bool directRelationship = false)
+        private string GetSelectedRelationshipsAsCsv(bool directRelationship)
         {
             String RelationshipTypeList = "";
 
@@ -358,7 +346,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         /// <summary>
         /// Select the relationship types in the visible grid which are in the ARelationshipTypeList
         /// </summary>
-        /// <param name="ARelationshipTypeList">A comma separated list with the relationship types which will be selected</param>
+        /// <param name="ARelationshipTypeList">A comma separated list with the relationship types to be selected</param>
         private void SelectRelationshipTypes(String ARelationshipTypeList)
         {
             if ((FDirectRelationshipTable != null) && (FReciprocalRelationshipTable != null))
@@ -387,5 +375,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         }
 
         #endregion
+
+        private Boolean LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData(
+                "Relationship",                 // AReportName
+                true,                           // AUseDataSet
+                new String[] { "Relationship" }, // ATableNames
+                ACalc,                          // ACalc
+                this,                           // AWindow
+                true                            // AUseColumnTab
+                );
+        }
     }
 }

@@ -38,7 +38,7 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Common.ServerLookups.WebConnectors
 {

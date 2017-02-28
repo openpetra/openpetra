@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -45,7 +45,7 @@ using Ict.Petra.Server.MCommon.Data.Cascading;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
-using Ict.Petra.Server.MPartner;
+using Ict.Petra.Server.MPartner.Processing;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
@@ -79,7 +79,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             bool ResultValue = false;
 
-            ResultValue = Server.MPartner.Partner.TRecentPartnersHandling.AddRecentlyUsedPartner
+            ResultValue = TRecentPartnersHandling.AddRecentlyUsedPartner
                               (APartnerKey, APartnerClass, ANewPartner, ALastPartnerUse);
 
             return ResultValue;
@@ -108,7 +108,7 @@ namespace Ict.Petra.Server.MPartner.Partner.WebConnectors
         {
             bool ResultValue = false;
 
-            ResultValue = Server.MPartner.Partner.TFamilyHandling.ChangeFamily(APersonKey,
+            ResultValue = TFamilyHandling.ChangeFamily(APersonKey,
                 AOldFamilyKey,
                 ANewFamilyKey,
                 out AProblemMessage);

@@ -27,7 +27,7 @@ using Ict.Common.Verification;
 using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 namespace Ict.Petra.Server.MSysMan.Maintenance.WebConnectors
 {

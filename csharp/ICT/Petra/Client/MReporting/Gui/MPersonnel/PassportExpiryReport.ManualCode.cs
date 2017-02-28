@@ -44,7 +44,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            return FPetraUtilsObject.LoadReportData("PassportExpiryReport", false, new string[] { "PassportExpiryReport" }, ACalc, this, true, false);
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("PassportExpiryReport",
+                false,
+                new string[] { "PassportExpiryReport" },
+                ACalc,
+                this,
+                true,
+                false);
         }
     }
 }

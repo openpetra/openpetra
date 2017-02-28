@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         public DataTable GetCacheableTable(TCacheablePartnerTablesEnum ACacheableTable)
         {
             System.Type TmpType;
-            return GetCacheableTable(ACacheableTable, "", false, out TmpType, DBAccess.GDBAccessObj);
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
         }
 
         /// <summary>

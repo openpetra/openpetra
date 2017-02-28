@@ -30,7 +30,7 @@ using Ict.Common.DB;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MFinance.Gift.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared.MPartner.Partner.Data;

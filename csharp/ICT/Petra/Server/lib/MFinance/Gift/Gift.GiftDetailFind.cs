@@ -187,7 +187,7 @@ namespace Ict.Petra.Server.MFinance.Gift
         {
             DataTable ReturnValue;
 
-            TLogging.LogAtLevel(7, "TPartnerFind.GetDataPagedResult called.");
+            TLogging.LogAtLevel(7, "TGiftDetailFind.GetDataPagedResult called.");
             ReturnValue = FPagedDataSetObject.GetData(APage, APageSize);
             ATotalPages = FPagedDataSetObject.TotalPages;
             ATotalRecords = FPagedDataSetObject.TotalRecords;

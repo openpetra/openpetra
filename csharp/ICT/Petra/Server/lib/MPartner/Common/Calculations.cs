@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,10 +27,11 @@ using System.Data;
 using Ict.Common;
 using Ict.Common.DB;
 using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
+using Ict.Petra.Shared.MCommon;
+using Ict.Petra.Server.MPartner.Partner.Data.Access;
 
-namespace Ict.Petra.Server.MPartner
+namespace Ict.Petra.Server.MPartner.Common
 {
     /// <summary>
     /// Contains functions to be used by the Server that perform
@@ -82,7 +83,7 @@ namespace Ict.Petra.Server.MPartner
             Boolean NewTransaction;
 
             TDBTransaction ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
-                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 
@@ -160,7 +161,7 @@ namespace Ict.Petra.Server.MPartner
             BestLocation = DetermineBestAddress(APartnerKey, out APartnerLocationDR);
 
             TDBTransaction ReadTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(
-                Ict.Petra.Shared.MCommon.MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
+                MCommonConstants.CACHEABLEDT_ISOLATIONLEVEL,
                 TEnforceIsolationLevel.eilMinimum,
                 out NewTransaction);
 

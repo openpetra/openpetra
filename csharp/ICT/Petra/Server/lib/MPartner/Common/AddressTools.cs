@@ -23,32 +23,16 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
-using System.Data.Odbc;
-
-using GNU.Gettext;
-
-using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.DB;
-using Ict.Common.Remoting.Server;
-using Ict.Common.Verification;
-
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data;
-
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MFinance.Common;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -81,8 +65,8 @@ namespace Ict.Petra.Server.MPartner.Common
             // find all locations of the partner, put it into a dataset
             PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, ATransaction);
 
-            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
-            Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
+            Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
+            Calculations.DetermineBestAddress(PartnerLocationsDS);
 
             foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
             {

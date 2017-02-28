@@ -46,7 +46,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>True if the System Default is defined, false if it isn't.</returns>
         public static bool IsSystemDefaultDefined(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.IsSystemDefaultDefined(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.IsSystemDefaultDefined(ASystemDefaultName);
         }
 
         /// <summary>
@@ -59,7 +59,7 @@ namespace Ict.Petra.Client.App.Core
         /// </returns>
         public static String GetSystemDefault(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefault(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetSystemDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -72,7 +72,7 @@ namespace Ict.Petra.Client.App.Core
         /// specified System Default was not found.</returns>
         public static String GetSystemDefault(String ASystemDefaultName, String ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSystemDefault(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetSystemDefault(ASystemDefaultName, ADefault);
         }
 
         // The following set of functions serve as shortcuts to get User Defaults of a
@@ -87,7 +87,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static bool GetBooleanDefault(String ASystemDefaultName, bool ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetBooleanDefault(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetBooleanDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace Ict.Petra.Client.App.Core
         /// was not found.</returns>
         public static bool GetBooleanDefault(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetBooleanDefault(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetBooleanDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static System.Char GetCharDefault(String ASystemDefaultName, System.Char ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetCharDefault(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetCharDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Ict.Petra.Client.App.Core
         /// was not found.</returns>
         public static System.Char GetCharDefault(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetCharDefault(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetCharDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static double GetDoubleDefault(String ASystemDefaultName, double ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetDoubleDefault(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetDoubleDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>The value of the System Default as a double, or 0.0 if the specified System Default was not found.</returns>
         public static double GetDoubleDefault(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetDoubleDefault(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetDoubleDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static System.Int16 GetInt16Default(String ASystemDefaultName, System.Int16 ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetInt16Default(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetInt16Default(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>The value of the System Default as an Int16, or 0 if the specified System Default was not found.</returns>
         public static System.Int16 GetInt16Default(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetInt16Default(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetInt16Default(ASystemDefaultName);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static System.Int32 GetInt32Default(String ASystemDefaultName, System.Int32 ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetInt32Default(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetInt32Default(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -187,7 +187,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>The value of the System Default as an Int32, or 0 if the specified System Default was not found.</returns>
         public static System.Int32 GetInt32Default(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetInt32Default(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetInt32Default(ASystemDefaultName);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static System.Int64 GetInt64Default(String ASystemDefaultName, System.Int64 ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetInt64Default(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetInt64Default(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>The value of the System Default as an Int64, or 0 if the specified System Default was not found.</returns>
         public static System.Int64 GetInt64Default(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetInt64Default(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetInt64Default(ASystemDefaultName);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static String GetStringDefault(String ASystemDefaultName, String ADefault)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetStringDefault(ASystemDefaultName, ADefault);
+            return TRemote.MSysMan.Common.WebConnectors.GetStringDefault(ASystemDefaultName, ADefault);
         }
 
         /// <summary>
@@ -236,7 +236,7 @@ namespace Ict.Petra.Client.App.Core
         /// if the specified System Default was not found.</returns>
         public static String GetStringDefault(String ASystemDefaultName)
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetStringDefault(ASystemDefaultName);
+            return TRemote.MSysMan.Common.WebConnectors.GetStringDefault(ASystemDefaultName);
         }
 
         /// <summary>
@@ -248,7 +248,7 @@ namespace Ict.Petra.Client.App.Core
         /// <returns>The SiteKey of the Site.</returns>
         public static Int64 GetSiteKeyDefault()
         {
-            return TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.GetSiteKeyDefault();
+            return TRemote.MSysMan.Common.WebConnectors.GetSiteKeyDefault();
         }
 
         /// <summary>
@@ -271,7 +271,7 @@ namespace Ict.Petra.Client.App.Core
         /// <param name="AAdded">True if the System Default got added, false if it already existed.</param>
         public static void SetSystemDefault(String AKey, String AValue, out bool AAdded)
         {
-            TRemote.MSysMan.Maintenance.SystemDefaults.WebConnectors.SetSystemDefault(AKey, AValue, out AAdded);
+            TRemote.MSysMan.Common.WebConnectors.SetSystemDefault(AKey, AValue, out AAdded);
         }
     }
 }

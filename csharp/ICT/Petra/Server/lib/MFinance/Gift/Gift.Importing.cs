@@ -52,7 +52,7 @@ using Ict.Petra.Shared.MFinance.Account.Data;
 using Ict.Petra.Shared.MFinance.Gift.Data;
 using Ict.Petra.Server.MFinance.Gift.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MCommon.FormTemplates.WebConnectors;
 
 

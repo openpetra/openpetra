@@ -31,7 +31,7 @@ using Ict.Common.DB;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Shared.MFinance;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.queries
 {

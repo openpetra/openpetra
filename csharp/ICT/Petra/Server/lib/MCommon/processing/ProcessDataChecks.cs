@@ -31,7 +31,7 @@ using Ict.Common.Data;
 using Ict.Common.IO;
 using Ict.Petra.Server.MSysMan.Cacheable.WebConnectors;
 using Ict.Petra.Shared.MSysMan.Data;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MSysMan.Data.Access;
 
 namespace Ict.Petra.Server.MCommon.Processing

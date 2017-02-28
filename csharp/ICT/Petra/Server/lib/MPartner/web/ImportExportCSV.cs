@@ -37,9 +37,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPartner.Mailroom.Data;
 using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.MSysMan;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
@@ -48,6 +46,7 @@ using Ict.Common.DB;
 using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Shared.MSysMan;
 
 namespace Ict.Petra.Server.MPartner.ImportExport
 {

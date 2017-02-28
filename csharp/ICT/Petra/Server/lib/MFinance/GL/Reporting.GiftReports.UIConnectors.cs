@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {

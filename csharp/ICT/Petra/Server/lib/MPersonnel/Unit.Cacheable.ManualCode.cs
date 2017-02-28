@@ -42,7 +42,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Units.Data;
 using Ict.Petra.Server.MPersonnel.Units.Data.Access;
-using Ict.Petra.Server.MPartner.Partner;
+//using Ict.Petra.Server.MPartner.Partner;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MPersonnel.Units.Validation;
 

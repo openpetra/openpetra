@@ -43,7 +43,7 @@ using Ict.Petra.Shared.Interfaces.Plugins.MSysMan;
 using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core.Security;
 using Ict.Petra.Server.MSysMan.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MSysMan.Maintenance.WebConnectors;
 using Ict.Petra.Server.MSysMan.Security.UserManager.WebConnectors;
 
