@@ -829,7 +829,9 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             ParentRow["LastYearBudget"] = Convert.ToDecimal(ParentRow["LastYearBudget"]) +
                                                           (Sign * Convert.ToDecimal(NewDataRow["LastYearBudget"]));
                             ParentRow["WholeYearBudget"] = Convert.ToDecimal(ParentRow["WholeYearBudget"]) +
-                                                           (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
+                                                          (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
+                            ParentRow["NextYearBudget"] = Convert.ToDecimal(ParentRow["NextYearBudget"]) +
+                                                          (Sign * Convert.ToDecimal(NewDataRow["NextYearBudget"]));
                         }
                     }
 
@@ -1202,6 +1204,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                (Sign * Convert.ToDecimal(NewDataRow["LastYearBudget"]));
                 SummaryRow["WholeYearBudget"] = Convert.ToDecimal(SummaryRow["WholeYearBudget"]) +
                                                 (Sign * Convert.ToDecimal(NewDataRow["WholeYearBudget"]));
+                SummaryRow["NextYearBudget"] = Convert.ToDecimal(SummaryRow["NextYearBudget"]) +
+                                                (Sign * Convert.ToDecimal(NewDataRow["NextYearBudget"]));
             }
         } // Add To CostCentre Breakdown Summary
 
@@ -1227,6 +1231,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 AccumulatingRow["BudgetYTD"] = Convert.ToDecimal(DetailRow["BudgetYTD"]);
                 AccumulatingRow["LastYearBudget"] = Convert.ToDecimal(DetailRow["LastYearBudget"]);
                 AccumulatingRow["WholeYearBudget"] = Convert.ToDecimal(DetailRow["WholeYearBudget"]);
+                AccumulatingRow["NextYearBudget"] = Convert.ToDecimal(DetailRow["NextYearBudget"]);
             }
             else
             {
@@ -1245,6 +1250,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                     Convert.ToDecimal(DetailRow["LastYearBudget"]);
                 AccumulatingRow["WholeYearBudget"] = Convert.ToDecimal(AccumulatingRow["WholeYearBudget"]) +
                                                      Convert.ToDecimal(DetailRow["WholeYearBudget"]);
+                AccumulatingRow["NextYearBudget"] = Convert.ToDecimal(AccumulatingRow["NextYearBudget"]) +
+                                                     Convert.ToDecimal(DetailRow["NextYearBudget"]);
 
                 DetailRow["Actual"] = Convert.ToDecimal(AccumulatingRow["Actual"]);
                 DetailRow["ActualYTD"] = Convert.ToDecimal(AccumulatingRow["ActualYTD"]);
@@ -1256,6 +1263,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                 DetailRow["BudgetYTD"] = Convert.ToDecimal(AccumulatingRow["BudgetYTD"]);
                 DetailRow["LastYearBudget"] = Convert.ToDecimal(AccumulatingRow["LastYearBudget"]);
                 DetailRow["WholeYearBudget"] = Convert.ToDecimal(AccumulatingRow["WholeYearBudget"]);
+                DetailRow["NextYearBudget"] = Convert.ToDecimal(AccumulatingRow["NextYearBudget"]);
             }
         } // Accumulate Totals Per CostCentre
 
@@ -1288,7 +1296,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
              *   Budget
              *   BudgetYTD
              *   LastYearBudget
-             *   BudgetWholeYear
+             *   WholeYearBudget
+             *   NextYearBudget
              */
 
 
