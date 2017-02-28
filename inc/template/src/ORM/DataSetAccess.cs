@@ -107,7 +107,7 @@ if (AInspectDS.{#TABLEVARIABLENAME} != null)
 
     if (AInspectDS.{#TABLEVARIABLENAME} != null)
     {
-        SavingOperation = "Table: " + AInspectDS.{#TABLEVARIABLENAME}.TableName + "; Action: {#SQLOPERATION}";
+        SavingOperation = "Table: " + AInspectDS.{#TABLEVARIABLENAME}.TableName + "; Action: TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION}";
         
         TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
             TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
