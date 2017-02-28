@@ -518,6 +518,10 @@ namespace Ict.Petra.Server.MReporting
                         ReturnValue.ApplyFormatString(rptCalculation.strReturnsFormat);
                         return ReturnValue;
                     }
+
+                    // Removed some code from here due to Bug 3081 Reports crash if data contains the word SELECT
+                    // Even if there were a case for running SQL at this point, it wouldn't work anyway due
+                    // to the "" parameter in the call to DatabaseConnection.SelectDT().
                 }
 
                 ReturnValue.ApplyFormatString(rptCalculation.strReturnsFormat);
