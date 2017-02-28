@@ -201,7 +201,8 @@ namespace Ict.Petra.Server.MPartner.Common
 	                            ) AS primary_fax
                             FROM p_partner AS partner
                             WHERE p_partner_key_n IN("
-                + String.Join(",", partnerlist) + ")";
+                +
+                String.Join(",", partnerlist) + ")";
 
             ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,

@@ -136,6 +136,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                 }
             }
 
+            // As part of bug 5556 testing, checked if this DataTable contained any Added rows.  It didn't, so there isn't an issue here.
+            // Findings: DataTable summary: 1 rows; 0 Added, 0 deleted, 0 detached, 1 modified, 0 unchanged.  Table name PPartnerLedger
             return TmpInstalledSitesDT;
         }
 

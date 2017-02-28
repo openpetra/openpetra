@@ -1648,6 +1648,7 @@ namespace Ict.Petra.Client.App.Core
 
                 // Just turn the view into a standard data table and, if appropriate, get it back to a typed table of the correct type
                 ReturnValue = CacheableDataTableFilteredDV.ToTable();
+                ReturnValue.AcceptChanges(); // bug 5556; ToTable() changes all the RowStates to Added, which is not what we want.
 
                 if (ADataTableType.IsSubclassOf(typeof(TTypedDataTable)))
                 {
@@ -1974,6 +1975,7 @@ namespace Ict.Petra.Client.App.Core
                     // , System.Text.Encoding.Unicode
                     CacheDTStreamReader = new StreamReader(ISFStream);
                     BinaryDT = (DataTable)(CacheDTFormatter.Deserialize(CacheDTStreamReader.BaseStream));
+                    BinaryDT.AcceptChanges(); // bug 5556: make sure nothing retrieved from file has Added rows; should all be Unchanged.
                 }
                 finally
                 {

@@ -759,7 +759,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 								            pptype.p_type_code_c LIKE 'ASSOC%' )
 	                                    AND person.p_partner_key_n = staff.p_partner_key_n
 	                                    AND (staff.pm_end_of_commitment_d >= '"
-                        + AParameters["param_today"].ToDate().ToString(
+                        +
+                        AParameters["param_today"].ToDate().ToString(
                             "yyyy-MM-dd") +
                         @"'
 		                                    OR staff.pm_end_of_commitment_d IS NULL)
