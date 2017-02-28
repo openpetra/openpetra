@@ -67,12 +67,12 @@ namespace Ict.Petra.Server.MPartner.Common
 
             if (AParameters["param_postcode_from"].ToString() != String.Empty)
             {
-                returnstring += " AND PostalCode >= " + AParameters["param_postcode_from"].ToString();
+                returnstring += " AND PostalCode >= '" + AParameters["param_postcode_from"].ToString() + "'";
             }
 
             if (AParameters["param_postcode_to"].ToString() != String.Empty)
             {
-                returnstring += " AND PostalCode <= " + AParameters["param_postcode_to"].ToString();
+                returnstring += " AND PostalCode <= '" + AParameters["param_postcode_to"].ToString() + "'";
             }
 
             /*
