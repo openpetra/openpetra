@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                             continue;
                         }
 
-                        for (int i = 0; i < LocationCountry.Rows.Count; i++)
+                        for (int i = 0; i < LocationCountry.Rows.Count && ReturnTable.Rows.Count < 500; i++)
                         {
                             string AAddress = null;
                             string[] AAddressArray = null;
@@ -235,6 +235,15 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                                 OutputMessage,
                                 PercentageCompleted);
                         }
+                    }
+
+                    if (ReturnTable.Rows.Count >= 500)
+                    {
+                        System.Windows.Forms.MessageBox.Show(
+                            Catalog.GetString(
+                                "Too many duplicates found (maximum 500). Please deal with these first, then re-run the report for more."),
+                            Catalog.GetString("Duplicate Address Check"),
+                            System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
                     }
                 });
 
