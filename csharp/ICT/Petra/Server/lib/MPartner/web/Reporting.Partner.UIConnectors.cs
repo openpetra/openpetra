@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 using Ict.Petra.Server.MPartner.Common;
+using System.Linq;
 
 namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 {
@@ -793,6 +794,74 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             ResultSet.Merge(relationship);
             ResultSet.Merge(church);
             return ResultSet;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataTable PartnerBySpecialType(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable ReturnTable = new DataTable();
+            TDBTransaction Transaction = null;
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        @"SELECT DISTINCT
+                                        p_partner.p_partner_key_n,
+	                                    p_partner.p_partner_short_name_c,
+	                                    p_partner.p_partner_class_c
+                                        FROM   p_partner, p_partner_location, p_location, p_partner_type as ptype
+                                    WHERE
+                                        ptype.p_partner_key_n = p_partner.p_partner_key_n
+                                        AND NOT p_partner.p_partner_key_n = 0
+                                        AND p_partner_location.p_partner_key_n = p_partner.p_partner_key_n
+                                        AND p_partner_location.p_location_key_i = p_location.p_location_key_i"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ;
+
+                    Query += " AND ptype.p_type_code_c IN(" + AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0,
+                        "'").Insert(AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0, "'").Length, "'") + ") ";
+
+
+                    TPartnerReportTools.UCExtractChkFilterSQLConditions(Query, AParameters);
+
+                    ReturnTable = DbAdapter.RunQuery(Query, "PartnerBySpecialType", Transaction);
+
+                    //Add Contact Information, Address, Field
+                    TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0);
+                    ReturnTable = TAddressTools.GetBestAddressForPartnersAsJoinedTable(ReturnTable, 0, Transaction, false);
+                    TPartnerReportTools.AddFieldNameToTable(ReturnTable, 0, AParameters["param_address_date_valid_on"].ToDate(), DbAdapter);
+
+                    //Make the Column Names great again.
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(ReturnTable);
+
+                    //Sort and filter
+                    ReturnTable.CaseSensitive = false;
+                    DataView dv = ReturnTable.DefaultView;
+                    dv.RowFilter = TPartnerReportTools.UCAddressFilterDataViewRowFilter(AParameters);
+
+                    Dictionary <string, string>Mapping = new Dictionary <string, string>();
+                    Mapping.Add("PartnerName", "PartnerShortName");
+                    Mapping.Add("AddressType", "LocationType");
+                    Mapping.Add("Addressvalidfrom", "DateEffective");
+                    Mapping.Add("Addressvalidto", "DateGoodUntil");
+                    Mapping.Add("Fax", "PrimaryFax");
+                    Mapping.Add("FirstAddressLine", "Locality");
+                    Mapping.Add("PostCode", "PostalCode");
+                    Mapping.Add("ThirdAddressLine", "Address3");
+                    Mapping.Add("Country", "CountryCode");
+                    dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), ReturnTable.Columns, Mapping);
+                    ReturnTable = dv.ToTable();
+                });
+
+            return ReturnTable;
         }
     }
 }

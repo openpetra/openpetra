@@ -107,6 +107,11 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ATransaction,
             Boolean APartnerDetails = false)
         {
+            if (Partners == null)
+            {
+                return null;
+            }
+
             List <String>PartnerList = new List <string>();
 
             foreach (DataRow Partner in Partners.Rows)
@@ -160,6 +165,21 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ATransaction,
             Boolean APartnerDetails = false)
         {
+            if (Partners == null)
+            {
+                return null;
+            }
+
+            bool deleteFirstRows = false;
+
+            if (Partners.Rows.Count == 0)
+            {
+                object[] newRow = new object[Partners.Columns.Count];
+                newRow[PartnerKeyColumn] = -1;
+                Partners.Rows.Add(newRow);
+                deleteFirstRows = true;
+            }
+
             DataTable Addresses = GetBestAddressForPartners(Partners, PartnerKeyColumn, ATransaction, APartnerDetails);
 
             foreach (DataColumn dc in Addresses.Columns)
@@ -171,7 +191,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             foreach (DataRow dr in Addresses.Rows)
             {
-                dv.RowFilter = "partnerkey = " + dr[0].ToString();
+                dv.RowFilter = Partners.Columns[PartnerKeyColumn].ColumnName + " = " + dr[0].ToString();
 
                 for (int i = 0; i < Addresses.Columns.Count; i++)
                 {
@@ -181,7 +201,14 @@ namespace Ict.Petra.Server.MPartner.Common
 
             dv.RowFilter = String.Empty;
 
-            return dv.ToTable();
+            DataTable newDataTable = dv.ToTable();
+
+            if (deleteFirstRows)
+            {
+                newDataTable.Rows.RemoveAt(0);
+            }
+
+            return newDataTable;
         }
 
         /// <summary>

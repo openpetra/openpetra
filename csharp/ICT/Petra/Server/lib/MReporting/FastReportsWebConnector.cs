@@ -100,6 +100,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             switch (AReportType)
             {
                 /* Partner Reports*/
+                case "PartnerBySpecialType":
+                    ResultTbl = TPartnerReportingWebConnector.PartnerBySpecialType(AParameters, FDbAdapter);
+                    break;
 
                 /* Personnel Reports*/
                 case "PreviousExperience":
