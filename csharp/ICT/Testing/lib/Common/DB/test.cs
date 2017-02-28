@@ -22,6 +22,8 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.Collections.Generic;
+using System.Data.Common;
 using Ict.Common.DB.Exceptions;
 using NUnit.Framework;
 using System.Threading;
@@ -49,6 +51,8 @@ namespace Ict.Common.DB.Testing
     {
         private const string DefaultDBConnName = "Default NUnit TTestCommonDB DB Connection";
         private TDBType FDBType;
+        Int32 FProgressUpdateCounter;
+        Int32 FProgressUpdateNumber;
 
         private void EstablishDBConnection(string AConnectionName = null)
         {
@@ -170,6 +174,8 @@ namespace Ict.Common.DB.Testing
             FRollbackDBTransactionSignal2 = null;
             FDBTransactionRolledbackSignal1 = null;
             FDBTransactionRolledbackSignal2 = null;
+            FProgressUpdateCounter = 0;
+            FProgressUpdateNumber = 0;
         }
 
         /// tear down
@@ -700,6 +706,100 @@ namespace Ict.Common.DB.Testing
                     sql = "DELETE FROM p_type" +
                           " WHERE p_type_code_c = 'TEST_EXECUTENONQUERY' AND p_type_description_c = 'Test should be fine'";
                     DBAccess.GDBAccessObj.ExecuteNonQuery(sql, t);
+                });
+        }
+
+        /// <summary>
+        /// Tests the SelectUsingDataAdapterMulti Method, passing a single SQL Query Parameter for each of two Partners.
+        /// Also, the AMultipleParamQueryProgressUpdateCallback Delegate is hooked up and the correct calling of this gets
+        /// asserted, too.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SelectUsingDataAdapterMulti1()
+        {
+            TDBTransaction ReadTransaction = null;
+            const string TestReadQuery1 = "SELECT * from p_partner where p_partner_key_n = :APartnerKey;";
+            DataTable TmpDT = new DataTable();
+            TDataAdapterCanceller TmpDac;
+
+            OdbcParameter[] ParametersArray = new OdbcParameter[1];
+            List <object[]>ParameterValuesList = new List <object[]>();
+
+            ParametersArray[0] = new OdbcParameter("APartnerKey", OdbcType.BigInt);
+            ParameterValuesList.Add(new object[] { 43005001 });
+            ParameterValuesList.Add(new object[] { 43005002 });
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    // Act AND Asserts # 1 - Prepared Parametrised Query
+
+                    Assert.AreEqual(2, DBAccess.GDBAccessObj.SelectUsingDataAdapterMulti(TestReadQuery1, ReadTransaction, ref TmpDT, out TmpDac,
+                            AParameterDefinitions : ParametersArray, AParameterValues : ParameterValuesList,
+                            APrepareSelectCommand : true,
+                            AProgressUpdateEveryNRecs : 1, AMultipleParamQueryProgressUpdateCallback : delegate(int AProgressUpdateCounter)
+                            {
+                                FProgressUpdateCounter++;
+                                FProgressUpdateNumber = AProgressUpdateCounter;
+                            }),
+                        "SelectUsingDataAdapterMulti using a Prepared Command did not yield 2 records, but ought to.");
+
+                    Assert.AreEqual(2, FProgressUpdateCounter,
+                        "SelectUsingDataAdapterMulti using a Prepared Command did not yield 2 progress updates, but ought to.");
+
+
+                    // Act AND Asserts # 2 - Non-Prepared Parametrised Query
+                    FProgressUpdateCounter = 0;
+
+                    Assert.AreEqual(2, DBAccess.GDBAccessObj.SelectUsingDataAdapterMulti(TestReadQuery1, ReadTransaction, ref TmpDT, out TmpDac,
+                            AParameterDefinitions : ParametersArray, AParameterValues : ParameterValuesList,
+                            AProgressUpdateEveryNRecs : 2, AMultipleParamQueryProgressUpdateCallback : delegate(int AProgressUpdateCounter)
+                            {
+                                FProgressUpdateCounter++;
+                                FProgressUpdateNumber = AProgressUpdateCounter;
+                            }),
+                        "SelectUsingDataAdapterMulti using NO Prepared Command did not yield 2 records, but ought to.");
+
+                    Assert.AreEqual(1, FProgressUpdateCounter,
+                        "SelectUsingDataAdapterMulti using NO Prepared Command did not yield 1 progress update, but ought to.");
+                });
+        }
+
+        /// <summary>
+        /// Tests the SelectUsingDataAdapterMulti Method, passing two SQL Query Parameters for each of two Partners.
+        /// </summary>
+        [Test]
+        public void TestDBAccess_SelectUsingDataAdapterMulti2()
+        {
+            TDBTransaction ReadTransaction = null;
+            const string TestReadQuery1 =
+                "SELECT * from p_partner where p_partner_key_n = :APartnerKey and p_partner_short_name_c LIKE :APartnerShortName;";
+            DataTable TmpDT = new DataTable();
+            TDataAdapterCanceller TmpDac;
+
+            OdbcParameter[] ParametersArray;
+            List <object[]>ParameterValuesList = new List <object[]>();
+
+            ParametersArray = new OdbcParameter[2];
+            ParametersArray[0] = new OdbcParameter("APartnerKey", OdbcType.BigInt);
+            ParametersArray[1] = new OdbcParameter("APartnerShortName", OdbcType.Text);
+
+            ParameterValuesList.Add(new object[] { 43005001, "z%" });
+            ParameterValuesList.Add(new object[] { 43005002, "T%" });
+
+            DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref ReadTransaction,
+                delegate
+                {
+                    // Act AND Assert #1 - Prepared Parametrised Query
+
+                    Assert.AreEqual(1, DBAccess.GDBAccessObj.SelectUsingDataAdapterMulti(TestReadQuery1, ReadTransaction, ref TmpDT, out TmpDac,
+AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList, APrepareSelectCommand : true),
+                        "SelectUsingDataAdapterMulti using a Prepared Command did not yield 1 records, but ought to.");
+
+                    // Act AND Assert #2 - Non-Prepared Parametrised Query
+                    Assert.AreEqual(1, DBAccess.GDBAccessObj.SelectUsingDataAdapterMulti(TestReadQuery1, ReadTransaction, ref TmpDT, out TmpDac,
+AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
+                        "SelectUsingDataAdapterMulti using NO Prepared Command did not yield 1 records, but ought to.");
                 });
         }
     }
