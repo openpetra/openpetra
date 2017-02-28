@@ -824,7 +824,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                         ptype.p_partner_key_n = p_partner.p_partner_key_n
                                         AND NOT p_partner.p_partner_key_n = 0
                                         AND p_partner_location.p_partner_key_n = p_partner.p_partner_key_n
-                                        AND p_partner_location.p_location_key_i = p_location.p_location_key_i"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ;
+                                        AND p_partner_location.p_location_key_i = p_location.p_location_key_i"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ;
 
                     Query += " AND ptype.p_type_code_c IN(" + AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0,
                         "'").Insert(AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0, "'").Length, "'") + ") ";
@@ -835,7 +835,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     ReturnTable = DbAdapter.RunQuery(Query, "PartnerBySpecialType", Transaction);
 
                     //Add Contact Information, Address, Field
-                    TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0);
+                    //TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0);
+                    TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0, DbAdapter);
                     ReturnTable = TAddressTools.GetBestAddressForPartnersAsJoinedTable(ReturnTable, 0, Transaction, false);
                     TPartnerReportTools.AddFieldNameToTable(ReturnTable, 0, AParameters["param_address_date_valid_on"].ToDate(), DbAdapter);
 

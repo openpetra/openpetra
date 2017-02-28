@@ -113,7 +113,7 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// Adds the primary Phone Email and Fax to a DataTable
+        /// OBSOLETE!!! Adds the primary Phone Email and Fax to a DataTable
         /// </summary>
         /// <param name="ADataTable"></param>
         /// <param name="APartnerKeyColumnNumber"></param>
@@ -140,6 +140,93 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             dv.RowFilter = "";
+
+            ADataTable = dv.ToTable();
+        }
+
+        /// <summary>
+        /// Adds the primary Phone Email and Fax to a DataTable
+        /// </summary>
+        /// <param name="ADataTable"></param>
+        /// <param name="APartnerKeyColumn"></param>
+        /// <param name="ADbAdapter"></param>
+        public static void AddPrimaryPhoneEmailFaxToTable(DataTable ADataTable, int APartnerKeyColumn, TReportingDbAdapter ADbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            List <string>partnerlist = new List <string>();
+
+            foreach (DataRow dr in ADataTable.Rows)
+            {
+                partnerlist.Add(dr[APartnerKeyColumn].ToString());
+            }
+
+            if (partnerlist.Count == 0)
+            {
+                partnerlist.Add("-1");
+            }
+
+            DataTable PhoneFaxMailDT = new DataTable();
+            string Query =
+                @"SELECT
+                                p_partner_key_n AS partner_key,
+	                            (
+                                    SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
+
+                                    FROM p_partner_attribute AS pattribute
+
+                                    JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
+
+                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c != 'Fax'
+	                            ) AS primary_phone,
+
+                                (
+                                    SELECT p_value_c
+
+                                    FROM p_partner_attribute AS pattribute
+
+                                    JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
+
+                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_primary_l AND p_category_code_c = 'E-Mail'
+	                            ) AS primary_email,
+
+                                (
+                                    SELECT '+' || (SELECT p_internat_telephone_code_i FROM p_country WHERE p_country_code_c = pattribute.p_value_country_c)|| ' ' || p_value_c
+
+                                    FROM p_partner_attribute AS pattribute
+
+                                    JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
+
+                                    WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Fax' LIMIT 1
+	                            ) AS primary_fax
+                            FROM p_partner AS partner
+                            WHERE p_partner_key_n IN("
+                + String.Join(",", partnerlist) + ")";
+
+            ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    PhoneFaxMailDT = ADbAdapter.RunQuery(Query, "PhoneFaxMail", Transaction);
+                });
+
+            ADataTable.Columns.Add("primary_phone");
+            ADataTable.Columns.Add("primary_email");
+            ADataTable.Columns.Add("primary_fax");
+
+            DataView dv = ADataTable.DefaultView;
+
+            foreach (DataRow dr in PhoneFaxMailDT.Rows)
+            {
+                dv.RowFilter = ADataTable.Columns[APartnerKeyColumn].ColumnName + " = " + dr[0].ToString();
+                dv[0]["primary_phone"] = dr[1];
+                dv[0]["primary_email"] = dr[2];
+                dv[0]["primary_fax"] = dr[3];
+            }
+
+            dv.RowFilter = String.Empty;
 
             ADataTable = dv.ToTable();
         }
@@ -172,9 +259,9 @@ namespace Ict.Petra.Server.MPartner.Common
                 }
 
                 string NewColumnName = String.Empty;
-                int lastchar = parts.Length > 1 ? 1 : 0;
+                int removeLastChar = parts.Length > 1 && parts[parts.Length - 1].Length <= 1 ? 1 : 0;
 
-                for (int z = 0; z < parts.Length - lastchar; z++)
+                for (int z = 0; z < parts.Length - removeLastChar; z++)
                 {
                     if (parts[z] != String.Empty)
                     {
@@ -252,7 +339,8 @@ namespace Ict.Petra.Server.MPartner.Common
 
                                             WHERE p_partner_key_n = partner.p_partner_key_n
                                             AND p_date_effective_d <= '"
-                           + ACurrentDate.ToString("yyyy-MM-dd") + "' AND (p_date_expires_d >= '" + ACurrentDate.ToString("yyyy-MM-dd") +
+                           +
+                           ACurrentDate.ToString("yyyy-MM-dd") + "' AND (p_date_expires_d >= '" + ACurrentDate.ToString("yyyy-MM-dd") +
                            @"
                                                 ' OR p_date_expires_d = NULL))
 
