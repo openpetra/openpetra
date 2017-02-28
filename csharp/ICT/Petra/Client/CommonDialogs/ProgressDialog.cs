@@ -46,6 +46,8 @@ namespace Ict.Petra.Client.CommonDialogs
         private int FTotal, FCurrentProgress = 0;
         private bool FFinished = false;
         private bool FQueryServerForProgress = true;
+        private Thread FWorkerThread = null;
+        private bool FWaitForThreadComplete = false;
 
         /// <summary>
         /// Constructor
@@ -59,7 +61,12 @@ namespace Ict.Petra.Client.CommonDialogs
         /// well not be what the user wants!!! So, in general this Argument should be set to true only for
         /// Threads that are running a substantial amount of time. (Default=false).</param>
         /// <param name="AQueryServerForProgress">does this track a process on the server</param>
-        public TProgressDialog(Thread AWorkerThread, bool AShowCancellationConfirmationQuestion = false, bool AQueryServerForProgress = true) : base()
+        /// <param name="AWaitForThreadComplete">Keep dialog box open until the worker thread is complete, even if server-side processing is finished.
+        /// This was added because there is a delay (10-15 seconds in my testing) between this dialog closing and the FastReports progress window appears.</param>
+        public TProgressDialog(Thread AWorkerThread,
+            bool AShowCancellationConfirmationQuestion = false,
+            bool AQueryServerForProgress = true,
+            bool AWaitForThreadComplete = false) : base()
         {
             //
             // Required for Windows Form Designer support
@@ -75,8 +82,9 @@ namespace Ict.Petra.Client.CommonDialogs
             FShowCancellationConfirmationQuestion = AShowCancellationConfirmationQuestion;
 
             TRemote.MCommon.WebConnectors.Reset();
+            AWorkerThread.Start();
             FWorkerThread = AWorkerThread;
-            FWorkerThread.Start();
+            FWaitForThreadComplete = AWaitForThreadComplete;
 
             FQueryServerForProgress = AQueryServerForProgress;
 
@@ -211,11 +219,15 @@ namespace Ict.Petra.Client.CommonDialogs
 
                         if (finished)
                         {
-                            // wait till the thread finishes
-                            FWorkerThread.Join();
-                            this.DialogResult = FCancelled ? DialogResult.Cancel : DialogResult.OK;
-                            FConfirmedClosing = true;
-                            Close();
+                            // don't close the dialog yet if FWaitForThreadComplete=true and FWorkerThread.IsAlive=true
+                            if (!FWaitForThreadComplete || !FWorkerThread.IsAlive)
+                            {
+                                // wait till the thread finishes
+                                FWorkerThread.Join();
+                                this.DialogResult = FCancelled ? DialogResult.Cancel : DialogResult.OK;
+                                FConfirmedClosing = true;
+                                Close();
+                            }
                         }
                     }
                 }

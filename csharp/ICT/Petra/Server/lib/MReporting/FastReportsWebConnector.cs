@@ -36,6 +36,8 @@ using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
 using Ict.Petra.Server.MPartner.Reporting.WebConnectors;
+using Ict.Petra.Server.App.Core;
+using System.Diagnostics;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -508,6 +510,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             String donorSelect = AParameters["param_donor"].ToString();
             String donorKeyList = "";
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Donor Gift Statement"));
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Gathering information from the database..."), 0);
+
             if (donorSelect == "One Donor")
             {
                 donorKeyList = AParameters["param_donorkey"].ToString();
@@ -543,8 +549,50 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 DistinctDonors = View.ToTable(true, "DonorKey");
             }
 
+            decimal RowCount = DistinctDonors.Rows.Count;
+            decimal RowsProcessed = 1; // starting at 0 causes divide by zero error at the TimeLeft calculation
+            decimal PercentageCompleted = 0, TimeLeft = 0;
+            int MinutesLeft = 0, SecondsLeft = 0;
+            Stopwatch time = Stopwatch.StartNew();
+            string OutputMessage = "";
+
             foreach (DataRow Row in DistinctDonors.Rows)
             {
+                if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                {
+                    break;
+                }
+
+                // estimate the remaining time
+                PercentageCompleted = decimal.Divide(RowsProcessed * 100, RowCount);
+                TimeLeft = (Int64)(time.ElapsedMilliseconds * ((100 / PercentageCompleted) - 1));
+                MinutesLeft = (int)TimeLeft / 60000;
+
+                OutputMessage = string.Format(Catalog.GetString("Data collection: {0}%"), Math.Round(PercentageCompleted, 1));
+
+                // only show estimated time left if at least 0.1% complete
+                if (PercentageCompleted >= (decimal)0.1)
+                {
+                    // only show seconds if less than 10 minutes remaining
+                    if (MinutesLeft < 10)
+                    {
+                        SecondsLeft = (int)(TimeLeft % 60000) / 1000;
+
+                        OutputMessage += string.Format(Catalog.GetPluralString(" (approx. {0} minute and {1} seconds remaining)",
+                                " (approx. {0} minutes and {1} seconds remaining)", MinutesLeft, true),
+                            MinutesLeft, SecondsLeft);
+                    }
+                    else
+                    {
+                        OutputMessage += string.Format(Catalog.GetString(" (approx. {0} minutes remaining)"),
+                            MinutesLeft);
+                    }
+                }
+
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    OutputMessage,
+                    PercentageCompleted);
+
                 Int64 DonorKey = (Int64)Row["DonorKey"];
 
                 // get historical totals for donor
@@ -584,6 +632,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 {
                     return null;
                 }
+
+                RowsProcessed++;
             } // foreach
 
             if (Recipients.Columns.Count == 0)
@@ -625,6 +675,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 {
                     DonorAddresses = TAddressTools.GetBestAddressForPartners(DistinctDonors, 0, Transaction);
                 });
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             if (ADbAdapter.IsCancelled)
             {

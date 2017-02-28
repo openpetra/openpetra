@@ -35,6 +35,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using Ict.Petra.Client.App.Core;
+using System.Threading;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -253,6 +255,33 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
         }
 
+        // This function is necessary because there seemed to be no way to get the DataSet back from GetReportDataSet().
+        // I tested the obvious (explicit refs didn't work either):
+        // DataSet ReportDataSet = null;
+        // Thread t = new Thread(() => { ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", paramsDictionary); });
+        // but ReportDataSet was null afterwards, even if I did a Thread.Join or while (!ThreadFinished){Thread.Sleep(50);}
+        private void GetDGSDataSet(ref DataSet Results, Dictionary <String, TVariant>AParameters, ref Boolean ThreadFinished, TRptCalculator ACalc)
+        {
+            Results = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", AParameters);
+
+            if ((Results.Tables["Donors"] != null) && (Results.Tables["Donors"].Rows.Count != 0))
+            {
+                // Moved this lot in here from LoadReportData() and added AWaitForThreadComplete so that we can keep the progress bar open during this step, which in
+                // testing on a large report (~2000 pages) was rather substantial (10-15 seconds) which might lead the user to think it had hung.
+                Boolean useGovId = TSystemDefaults.GetBooleanDefault("GovIdEnabled", false);
+                ACalc.AddParameter("param_use_gov_id", useGovId);
+
+                // Register datatables with the report
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["Donors"], "Donors");
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["PartnersAddresses"], "DonorAddresses");
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["Recipients"], "Recipients");
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["Totals"], "Totals");
+                FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["TaxRef"], "TaxRef");
+            }
+
+            ThreadFinished = true;
+        }
+
         private Boolean LoadReportData(TRptCalculator ACalc)
         {
             //
@@ -276,7 +305,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             }
 
             // get data for this report
-            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", paramsDictionary);
+            // Previous code:
+            // DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", paramsDictionary);
+            DataSet ReportDataSet = null;
+            Boolean ThreadFinished = false;
+            Thread t = new Thread(() => GetDGSDataSet(ref ReportDataSet, paramsDictionary, ref ThreadFinished, ACalc));
+            using (TProgressDialog dialog = new TProgressDialog(t, AWaitForThreadComplete : true))
+            {
+                dialog.ShowDialog();
+            }
+
+            while (!ThreadFinished)
+            {
+                Thread.Sleep(50);
+            }
 
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
             {
@@ -290,15 +332,16 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 return false;
             }
 
-            Boolean useGovId = TSystemDefaults.GetBooleanDefault("GovIdEnabled", false);
-            ACalc.AddParameter("param_use_gov_id", useGovId);
+            // Next few lines were moved from here into GetDGSDataSet()
+            //Boolean useGovId = TSystemDefaults.GetBooleanDefault("GovIdEnabled", false);
+            //ACalc.AddParameter("param_use_gov_id", useGovId);
 
-            // Register datatables with the report
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["PartnersAddresses"], "DonorAddresses");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Totals"], "Totals");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["TaxRef"], "TaxRef");
+            //// Register datatables with the report
+            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
+            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["PartnersAddresses"], "DonorAddresses");
+            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
+            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Totals"], "Totals");
+            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["TaxRef"], "TaxRef");
             return true;
         }
     }

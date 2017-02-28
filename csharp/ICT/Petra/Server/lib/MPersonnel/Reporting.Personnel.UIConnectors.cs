@@ -644,7 +644,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 
                                         AND pm_staff_data.p_partner_key_n = p_partner.p_partner_key_n
                                         AND (pm_end_of_commitment_d >= '"
-                        + DateTime.Today.ToString(
+                        +
+                        DateTime.Today.ToString(
                             "yyyy-MM-dd") +
                         @"' OR NULL)
 
@@ -663,7 +664,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                                 AND p_country.p_country_code_c = '99'))
 
                                         AND p_partner.p_partner_key_n IN("
-                        + GetPartnerKeysAsString(AParameters,
+                        +
+                        GetPartnerKeysAsString(AParameters,
                             DbAdapter) + ") ORDER BY " + AParameters["param_sortby_readable"].ToString().Replace(" ", "");;
 
                     PassportExpiryReport = DbAdapter.RunQuery(Query, "PassportExpiryReport", Transaction);
@@ -707,7 +709,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 	                                    AND person.p_partner_key_n = evaluation.p_partner_key_n
 	                                    AND partner.p_status_code_c = 'ACTIVE' AND person.p_partner_key_n
                                     IN("
-                        + GetPartnerKeysAsString(AParameters,
+                        +
+                        GetPartnerKeysAsString(AParameters,
                             DbAdapter) + ") ORDER BY " + AParameters["param_sortby_readable"].ToString().Replace(" ", "");;
 
                     ProgressReport = DbAdapter.RunQuery(Query, "ProgressReport", Transaction);
@@ -758,7 +761,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 	                                    AND (staff.pm_end_of_commitment_d >= '2016-12-15'
 		                                    OR staff.pm_end_of_commitment_d IS NULL)
 		                                AND person.p_partner_key_n IN("
-                        + GetPartnerKeysAsString(AParameters,
+                        +
+                        GetPartnerKeysAsString(AParameters,
                             DbAdapter) +
                         @")
                                     GROUP BY person.p_partner_key_n,
@@ -768,7 +772,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                             partner.p_partner_short_name_c,
                                             unit.p_unit_name_c
                                     ORDER BY "
-                        + AParameters["param_sortby_readable"].ToString().Replace(" ", "");
+                        +
+                        AParameters["param_sortby_readable"].ToString().Replace(" ", "");
 
 
                     EndofCommitment = DbAdapter.RunQuery(Query, "EndofCommitment", Transaction);
@@ -820,7 +825,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                     {
                         Query =
                             "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
-                            + AParameters["param_extract"] + "')";
+                            +
+                            AParameters["param_extract"] + "')";
                     }
                     else if (AParameters["param_selection"].ToString() == "all current staff")
                     {
