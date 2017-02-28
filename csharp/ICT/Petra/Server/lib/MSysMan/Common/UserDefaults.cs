@@ -27,6 +27,7 @@ using System.Data.Odbc;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.Data.Exceptions;
+using Ict.Common.Session;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
 using Ict.Common.Verification;
@@ -46,22 +47,79 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
     /// </summary>
     public class TUserDefaults
     {
+        /*------------------------------------------------------------------------------
+         *  Finance User Default Constants
+         * -------------------------------------------------------------------------------*/
+
+        /// <summary>todoComment</summary>
+        public const String FINANCE_DEFAULT_LEDGERNUMBER = "a_default_ledger_number_i";
+
         private const String USERDEFAULTSDT_NAME = "UserDefaultsCacheDT";
 
         /// <summary>internal cache DataSet of the UserDefaults  for current user only</summary>
-        private static DataSet UUserDefaultsDS;
+        private static DataSet UUserDefaultsDS
+        {
+            set
+            {
+                TSession.SetVariable("UUserDefaultsDS", value);
+            }
+            get
+            {
+                return (DataSet)TSession.GetVariable("UUserDefaultsDS");
+            }
+        }
 
         /// <summary>internal cache DataTable of the UserDefaults  for current user only</summary>
-        private static SUserDefaultsTable UUserDefaultsDT;
+        private static SUserDefaultsTable UUserDefaultsDT
+        {
+            set
+            {
+                TSession.SetVariable("UUserDefaultsDT", value);
+            }
+            get
+            {
+                return (SUserDefaultsTable)TSession.GetVariable("UUserDefaultsDT");
+            }
+        }
 
         /// <summary>DataView on the internal cache DataTable</summary>
-        private static DataView UUserDefaultsDV;
+        private static DataView UUserDefaultsDV
+        {
+            set
+            {
+                TSession.SetVariable("UUserDefaultsDV", value);
+            }
+            get
+            {
+                return (DataView)TSession.GetVariable("UUserDefaultsDV");
+            }
+        }
 
         /// <summary>used to control read and write access to the cache</summary>
-        private static System.Threading.ReaderWriterLock UReadWriteLock;
+        private static System.Threading.ReaderWriterLock UReadWriteLock
+        {
+            set
+            {
+                TSession.SetVariable("UReadWriteLock", value);
+            }
+            get
+            {
+                return (System.Threading.ReaderWriterLock)TSession.GetVariable("UReadWriteLock");
+            }
+        }
 
         /// <summary>tells whether the cache is containing data, or not</summary>
-        private static Boolean UTableCached;
+        private static Boolean UTableCached
+        {
+            set
+            {
+                TSession.SetVariable("UTableCached", value);
+            }
+            get
+            {
+                return (Boolean)TSession.GetVariable("UTableCached");
+            }
+        }
 
         /// <summary>
         /// initialize some static variables
@@ -808,7 +866,9 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 
             try
             {
-                if (UUserDefaultsDT.Rows.Count > 0)
+                SUserDefaultsTable DefaultsDT = UUserDefaultsDT;
+
+                if (DefaultsDT.Rows.Count > 0)
                 {
                     // Start a DB Transaction on a TDataBase instance that has currently not got a DB Transaction
                     // running and hence can be used to start a DB Transaction.
@@ -820,13 +880,14 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                         delegate
                         {
                             SubmissionOK = TUserDefaults.SaveUserDefaultsTable(UserInfo.GUserInfo.UserID,
-                                ref UUserDefaultsDT,
+                                ref DefaultsDT,
                                 SubmitChangesTransaction,
                                 ASendUpdateInfoToClient);
                         });
 
                     // we don't have any unsaved changes anymore in the cache table.
-                    UUserDefaultsDT.AcceptChanges();
+                   DefaultsDT.AcceptChanges();
+                   UUserDefaultsDT = DefaultsDT;
                 }
                 else
                 {
@@ -898,15 +959,18 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All", 1);
+                    DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(
+                        SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH, "All",
+                        null, null, null, null, 1);
                 }
                 else
                 {
                     // Queue a ClientTask to any but the current User's PetraClient
-                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                    TClientManager.QueueClientTask(AUserName,
                         SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                         "All",
-                        1);
+                        null, null, null, null,
+                        1, DomainManager.GClientID);
                 }
             }
             else
@@ -923,25 +987,29 @@ namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
                 if (AUserName == UserInfo.GUserInfo.UserID)
                 {
                     // Queue a ClientTask to the current User's PetraClient
-                    Ict.Petra.Server.App.Core.DomainManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
-                        SingleOrMultipleIndicator,
-                        AChangedUserDefaultCode,
-                        AChangedUserDefaultValue,
-                        AChangedUserDefaultModId,
-                        null,
-                        1);
+                    if (DomainManager.CurrentClient != null)
+                    {
+                        DomainManager.CurrentClient.FTasksManager.ClientTaskAdd(SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
+                            SingleOrMultipleIndicator,
+                            AChangedUserDefaultCode,
+                            AChangedUserDefaultValue,
+                            AChangedUserDefaultModId,
+                            UserInfo.GUserInfo.ProcessID,
+                            1);
+                    }
                 }
 
                 // Send the same ClientTask to all other running PetraClient instances where
                 // the same user is logged in!
-                Ict.Petra.Server.App.Core.DomainManager.ClientTaskAddToOtherClient(AUserName,
+                TClientManager.QueueClientTask(AUserName,
                     SharedConstants.CLIENTTASKGROUP_USERDEFAULTSREFRESH,
                     SingleOrMultipleIndicator,
                     AChangedUserDefaultCode,
                     AChangedUserDefaultValue,
                     AChangedUserDefaultModId,
-                    UserInfo.GUserInfo.ProcessID,
-                    1);
+                    null,
+                    1,
+                    DomainManager.GClientID);
             }
         }
 

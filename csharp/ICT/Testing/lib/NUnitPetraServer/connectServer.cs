@@ -37,7 +37,7 @@ using Ict.Petra.Shared;
 using Ict.Petra.Shared.Security;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Delegates;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Testing.NUnitTools;
 
 namespace Ict.Testing.NUnitPetraServer

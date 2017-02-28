@@ -323,6 +323,28 @@ namespace Ict.Petra.Server.App.Core.ServerAdmin.WebConnectors
             return TServerManagerBase.TheServerManager.AddUser(AUserID, APassword);
         }
 
+        /// <summary>
+        /// Lists the GPG keys for the Intranet server that are available to the Petra Server.
+        /// </summary>
+        /// <param name="List">Returns the output of the external gpg command.</param>
+        /// <returns>Return code of gpg command.</returns>
+        [RequireModulePermission("SYSMAN")]
+        public static int ListGpgKeys(out string List)
+        {
+            return TServerManagerBase.TheServerManager.ListGpgKeys(out List);
+        }
+
+        /// <summary>
+        /// Imports the GPG encryption keys for the Intranet server.
+        /// </summary>
+        /// <param name="List">Return the output of the gpg command.</param>
+        /// <returns>Return code of external gpg command.</returns>
+        [RequireModulePermission("SYSMAN")]
+        public static int ImportGpgKeys(out string List)
+        {
+            return TServerManagerBase.TheServerManager.ImportGpgKeys(out List);
+        }
+
         /// Allows the admin console to run a timed job now
         [RequireModulePermission("SYSMAN")]
         public static void PerformTimedProcessingNow(string AProcessName)

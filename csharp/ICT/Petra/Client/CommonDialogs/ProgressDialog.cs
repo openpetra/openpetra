@@ -38,7 +38,6 @@ namespace Ict.Petra.Client.CommonDialogs
     /// </summary>
     public partial class TProgressDialog : System.Windows.Forms.Form
     {
-        private Thread FWorkerThread = null;
         private bool FConfirmedClosing = false;
         private bool FShowCancellationConfirmationQuestion = false;
         private bool FCancelled = false;

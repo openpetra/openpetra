@@ -320,12 +320,12 @@ namespace PetraServerAdminConsole
             TRemote.AddUser(AUserId);
         }
 
-        private static int ListGpgKeys(IServerAdminInterface TRemote, out string List)
+        private static int ListGpgKeys(out string List)
         {
             return TRemote.ListGpgKeys(out List);
         }
 
-        private static int ImportGpgKeys(IServerAdminInterface TRemote, out string List)
+        private static int ImportGpgKeys(out string List)
         {
             return TRemote.ImportGpgKeys(out List);
         }
@@ -704,13 +704,13 @@ namespace PetraServerAdminConsole
                             break;
 
                         case 'k':
-                            ListGpgKeys(TRemote, out GpgList);
+                            ListGpgKeys(out GpgList);
                             Console.WriteLine(GpgList);
                             Console.Write(ServerAdminPrompt);
                             break;
 
                         case 'K':
-                            ImportGpgKeys(TRemote, out GpgList);
+                            ImportGpgKeys(out GpgList);
                             Console.WriteLine(GpgList);
                             Console.Write(ServerAdminPrompt);
                             break;
