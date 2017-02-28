@@ -247,7 +247,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                                    SUM(detail."
                         +
                         Currency +
-                        @") AS TotalGiven
+                        @") AS TotalGiven,
+	                                    COUNT(detail.a_gift_amount_n) AS NumberOfGifts
                                     FROM
 
                                         a_gift as gift
@@ -256,7 +257,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                         JOIN a_gift_detail AS detail ON(gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
 
-                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
+                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
 
                     if (Extract)
                     {
