@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -388,6 +388,7 @@ namespace Ict.Common.DB.Testing
             Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc AND 'def' LIKE 'xyz'"), "abc AND 'def' ILIKE 'xyz'", "Like between two sets of quotes");
             Assert.AreEqual(psql.FormatQueryRDBMSSpecific("'abc' LIKE 'xyz'"), "'abc' ILIKE 'xyz'", "Quote at start and end");
             Assert.AreEqual(psql.FormatQueryRDBMSSpecific("LIKE 'xyz'"), "ILIKE 'xyz'", "Like at start");
+            Assert.AreEqual(psql.FormatQueryRDBMSSpecific("abc ILIKE 'xyz'"), "abc ILIKE 'xyz'", "there is already an ILIKE");
         }
 
         #region GNoETransaction_throws_proper_Exception

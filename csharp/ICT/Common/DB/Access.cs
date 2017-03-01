@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2361,9 +2361,10 @@ namespace Ict.Common.DB
             bool ExecuteProgressUpdateCallback = (AMultipleParamQueryProgressUpdateCallback != null)
                                                  && (AProgressUpdateEveryNRecs != 0);
 
-
             AFillDataTable = AFillDataTable ?? new DataTable("SelectUsingDataAdapter_DataTable");
             ADataAdapterCanceller = null;
+
+            ASqlStatement = FDataBaseRDBMS.FormatQueryRDBMSSpecific(ASqlStatement);
 
             WaitForCoordinatedDBAccess();
 
@@ -2411,13 +2412,16 @@ namespace Ict.Common.DB
 
                 if (AParameterValues != null)
                 {
+                    string CommandText = ASqlStatement;
+                    DbParameter[] ConvertedParameters = FDataBaseRDBMS.ConvertOdbcParameters(QueryParameters, ref CommandText);
+
                     if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
                     {
-                        LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", ASqlStatement, QueryParameters);
+                        LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", CommandText, QueryParameters);
                     }
 
-                    SelectDataAdapter = (DbDataAdapter)SelectDA(ASqlStatement, AReadTransaction,
-                        false, QueryParameters);
+                    SelectDataAdapter = (DbDataAdapter)SelectDA(CommandText, AReadTransaction,
+                        false, ConvertedParameters);
                 }
                 else
                 {
@@ -2461,6 +2465,15 @@ namespace Ict.Common.DB
                         {
                             for (int InnerCounter = 0; InnerCounter < AParameterValues[OuterCounter].Length && !userCancel; InnerCounter++)
                             {
+                                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
+                                {
+                                    TLogging.Log("Adding parameter " + InnerCounter.ToString() + ": " +
+                                        SelectDataAdapter.SelectCommand.Parameters[InnerCounter].ParameterName +
+                                        " (" + SelectDataAdapter.SelectCommand.Parameters[InnerCounter].DbType.ToString() + ") value: " +
+                                        AParameterValues[OuterCounter][InnerCounter].ToString() +
+                                        " (" + AParameterValues[OuterCounter][InnerCounter].GetType().ToString() + ")");
+                                }
+
                                 SelectDataAdapter.SelectCommand.Parameters[InnerCounter].Value = AParameterValues[OuterCounter][InnerCounter];
                             }
 
@@ -4580,7 +4593,7 @@ namespace Ict.Common.DB
 
             if (AParametersArray != null)
             {
-                foreach (OdbcParameter param in AParametersArray)
+                foreach (DbParameter param in AParametersArray)
                 {
                     if (param.Value is TDbListParameterValue)
                     {
@@ -4901,6 +4914,13 @@ namespace Ict.Common.DB
                             "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
                             Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType));
                     }
+                    else if (Parameter.Value == null)
+                    {
+                        TLogging.Log(
+                            "Parameter: " + Counter.ToString() + " " + Parameter.ParameterName + " (no value specified) " +
+                            ' ' +
+                            Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString());
+                    }
                     else
                     {
                         TLogging.Log(
@@ -5011,7 +5031,7 @@ namespace Ict.Common.DB
                 FormattedSqlStatement = "The SQL Statement was: " + Environment.NewLine +
                                         ASqlStatement + Environment.NewLine;
 
-                if (AParametersArray != null)
+                if (AParametersArray != null && AParametersArray.Length > 0 && AParametersArray[0] is OdbcParameter)
                 {
                     Int32 Counter = 1;
 
@@ -5023,6 +5043,13 @@ namespace Ict.Common.DB
                                 "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
                                 Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) +
                                 Environment.NewLine;
+                        }
+                        else if (Parameter.Value == null)
+                        {
+                            TLogging.Log(
+                                "Parameter: " + Counter.ToString() + " " + Parameter.ParameterName + " (no value specified) " +
+                                ' ' +
+                                Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString());
                         }
                         else
                         {

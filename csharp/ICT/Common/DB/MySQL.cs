@@ -199,6 +199,15 @@ namespace Ict.Common.DB
             {
                 AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
 
+                bool changeParamNames = true;
+
+                if (AParameterArray.Length >= 1
+                    && (ASqlStatement.Contains(":" + AParameterArrayOdbc[0].ParameterName)
+                       || ASqlStatement.Contains("@" + AParameterArrayOdbc[0].ParameterName)))
+                {
+                    changeParamNames = false;
+                }
+
                 // Parameter Type change and Parameter Name assignment
                 for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
                 {
@@ -209,7 +218,12 @@ namespace Ict.Common.DB
                         ParamName = "param";
                     }
 
-                    ParamName += Counter.ToString();
+                    if (changeParamNames)
+                    {
+                        ParamName += Counter.ToString();
+                    }
+
+                    ASqlStatement = ASqlStatement.Replace(":" + ParamName, "@" + ParamName);
 
                     switch (AParameterArrayOdbc[Counter].OdbcType)
                     {
@@ -221,6 +235,7 @@ namespace Ict.Common.DB
 
                             break;
 
+                        case OdbcType.Text:
                         case OdbcType.VarChar:
                             ReturnValue[Counter] = new MySqlParameter(
                             ParamName,
@@ -349,7 +364,7 @@ namespace Ict.Common.DB
 
                     SQLSelectStatementRepl = SQLSelectStatementRepl +
                                              SQLSelectBeforeQMark +
-                                             "?" + ReturnValue[ParamCounter].ParameterName +
+                                             "@" + ReturnValue[ParamCounter].ParameterName +
                                              SQLSelectAfterQMark;
 
                     LastQMarkPos = QMarkPos;
