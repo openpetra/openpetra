@@ -237,6 +237,14 @@
          <property name="DemoData.Dir" value="${OpenPetraRoot.dir}/db/${SelectedDemo}"/>
          <property name="PublicInstallerDemoData.Dir" value="${OpenPetraRoot.dir}/db/${PublicInstallerDemo}"/>
 
+         <!-- delete all local files. to avoid issues when running resetDatabase first for Mysql, and then for sqlite -->
+         <delete>
+           <fileset>
+             <include name="${DemoData.Dir}/*.local" />
+             <include name="${BaseData.Dir}/*.local" />
+           </fileset>
+         </delete>
+
          <copy file="${DemoData.Dir}/a_accounting_period.csv"
             tofile="${DemoData.Dir}/a_accounting_period.csv.local" overwrite="true" outputencoding="latin1">
             <filterchain>

@@ -124,7 +124,7 @@ namespace Ict.Tools.GenerateSQL
                     "        GenerateSQL -do:sql -dbms:postgresql -petraxml:u:/sql/datadefinition/petra.xml -outputFile:U:/setup/petra0300/petra.sql");
                 System.Console.WriteLine("Available database managment systems and their code:");
                 System.Console.WriteLine("  postgresql (Recommended)");
-                System.Console.WriteLine("  mysql (experimental)");
+                System.Console.WriteLine("  mysql (supported)");
                 System.Console.WriteLine("  sqlite (for the light version)");
                 System.Environment.Exit(-1);
             }

@@ -254,7 +254,7 @@ namespace Ict.Common.DB
 
                 for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
                 {
-                    ReturnValue[Counter] = new SqliteParameter();
+                    ReturnValue[Counter] = new SqliteParameter(AParameterArrayOdbc[Counter].ParameterName);
                     ReturnValue[Counter].Value = AParameterArrayOdbc[Counter].Value;
                 }
             }
