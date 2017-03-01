@@ -312,7 +312,13 @@ namespace Ict.Common.DB
                     {
                         // there is an issue with locked database file. therefore trying to avoid multiple database connections
                         // see https://github.com/openpetra/openpetra/issues/182
-                        throw new Exception("should not get here, sqlite locks the database, use GetNewOrExistingTransaction instead");
+                        bool NewTransaction;
+                        ANewDBConnectionEstablished = false;
+                        ADBAccessObj = DBAccess.GDBAccessObj;
+                        TDBTransaction Transaction = ADBAccessObj.GetNewOrExistingTransaction(AIsolationLevel,
+                            TEnforceIsolationLevel.eilMinimum,
+                            out NewTransaction);
+                        return Transaction;
                     }
 
                     // There is a DB Transaction running on the DBAccess.GDBAccessObj instance = we need to create a separate
