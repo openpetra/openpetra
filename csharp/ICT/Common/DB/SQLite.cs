@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -269,7 +269,7 @@ namespace Ict.Common.DB
                         ParamName = "param";
                     }
 
-                    if (changeParamNames)
+                    if (changeParamNames && ParamName != Counter.ToString())
                     {
                         ParamName += Counter.ToString();
                     }

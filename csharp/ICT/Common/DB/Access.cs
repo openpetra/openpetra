@@ -5046,21 +5046,21 @@ namespace Ict.Common.DB
                         if (Parameter.Value == System.DBNull.Value)
                         {
                             FormattedSqlStatement +=
-                                "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.ParameterName + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
                                 Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) +
                                 Environment.NewLine;
                         }
                         else if (Parameter.Value == null)
                         {
                             TLogging.Log(
-                                "Parameter: " + Counter.ToString() + " " + Parameter.ParameterName + " (no value specified) " +
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.ParameterName + " (no value specified) " +
                                 ' ' +
                                 Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString());
                         }
                         else
                         {
                             FormattedSqlStatement +=
-                                "Parameter: " + Counter.ToString() + ' ' + Parameter.Value.ToString() + ' ' +
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.ParameterName + ' ' + Parameter.Value.ToString() + ' ' +
                                 Parameter.Value.GetType().ToString() +
                                 ' ' +
                                 Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString() +
