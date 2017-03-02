@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -252,9 +252,29 @@ namespace Ict.Common.DB
             {
                 AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
 
+                bool changeParamNames = true;
+
+                if (AParameterArray.Length >= 1
+                    && ASqlStatement.Contains(":" + AParameterArrayOdbc[0].ParameterName))
+                {
+                    changeParamNames = false;
+                }
+
                 for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
                 {
-                    ReturnValue[Counter] = new SqliteParameter();
+                    string ParamName = AParameterArrayOdbc[Counter].ParameterName;
+
+                    if (ParamName == "")
+                    {
+                        ParamName = "param";
+                    }
+
+                    if (changeParamNames && ParamName != Counter.ToString())
+                    {
+                        ParamName += Counter.ToString();
+                    }
+
+                    ReturnValue[Counter] = new SqliteParameter(ParamName);
                     ReturnValue[Counter].Value = AParameterArrayOdbc[Counter].Value;
                 }
             }
@@ -291,10 +311,7 @@ namespace Ict.Common.DB
             if ((AParametersArray != null)
                 && (AParametersArray.Length > 0))
             {
-                if (AParametersArray != null)
-                {
-                    SQLiteParametersArray = (SqliteParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
-                }
+                SQLiteParametersArray = (SqliteParameter[])ConvertOdbcParameters(AParametersArray, ref ACommandText);
             }
 
             ObjReturn = ((SqliteConnection)AConnection).CreateCommand();

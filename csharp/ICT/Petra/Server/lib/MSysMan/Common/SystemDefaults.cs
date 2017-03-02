@@ -6,7 +6,7 @@
 //       Tim Ingham
 //       timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -30,7 +30,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors
+namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 {
     /// <summary>
     /// Reads and updates/adds System Defaults. This Class exists solely for Client calls; for any server-side calls

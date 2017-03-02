@@ -32,10 +32,14 @@ using Ict.Petra.Server.MFinance.Reporting.WebConnectors;
 using Ict.Petra.Shared.MFinance.GL.Data;
 using Ict.Common.DB;
 using Ict.Petra.Shared;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPersonnel.Reporting.WebConnectors;
 using Ict.Petra.Server.MPartner.Reporting.WebConnectors;
+using Ict.Petra.Server.App.Core;
+using System.Diagnostics;
+using System.Data.Common;
+using System.Data.Odbc;
 
 namespace Ict.Petra.Server.MReporting.WebConnectors
 {
@@ -97,6 +101,28 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             switch (AReportType)
             {
+                /* Partner Reports*/
+                case "PartnerBySpecialType":
+                    ResultTbl = TPartnerReportingWebConnector.PartnerBySpecialType(AParameters, FDbAdapter);
+                    break;
+
+                /* Personnel Reports*/
+                case "PreviousExperience":
+                    ResultTbl = TPersonnelReportingWebConnector.PreviousExperience(AParameters, FDbAdapter);
+                    break;
+
+                case "PassportExpiryReport":
+                    ResultTbl = TPersonnelReportingWebConnector.PassportExpiryReport(AParameters, FDbAdapter);
+                    break;
+
+                case "ProgressReport":
+                    ResultTbl = TPersonnelReportingWebConnector.ProgressReport(AParameters, FDbAdapter);
+                    break;
+
+                case "EndOfCommitmentReport":
+                    ResultTbl = TPersonnelReportingWebConnector.EndOfCommitmentReport(AParameters, FDbAdapter);
+                    break;
+
                 /* GL Reports */
 
                 case "BalanceSheet":
@@ -195,6 +221,11 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TFinanceReportingWebConnector.TotalForRecipients(AParameters, FDbAdapter);
                     break;
 
+                /* Accounts Payable*/
+                case "APCurrentPayable":
+                    ResultTbl = TFinanceReportingWebConnector.APCurrentPayable(AParameters, FDbAdapter);
+                    break;
+
                 /* Financial Development */
 
                 case "SYBUNT":
@@ -233,6 +264,14 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 /* Partner Reports */
 
+                case "BriefAddressReport":
+                    ResultSet = TPartnerReportingWebConnector.BriefAddressReport(AParameters, FDbAdapter);
+                    break;
+
+                case "Relationship":
+                    ResultSet = TPartnerReportingWebConnector.PartnerByRelationship(AParameters, FDbAdapter);
+                    break;
+
                 case "PrintPartner":
                     ResultSet = TPartnerReportingWebConnector.PrintPartner(AParameters, FDbAdapter);
                     break;
@@ -250,6 +289,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 case "DonorGiftStatement":
                     ResultSet = GetDonorGiftStatementDataSet(AParameters, FDbAdapter);
+                    break;
+
+                /* AP Reports */
+                case "APAgedSupplierList":
+                    ResultSet = TFinanceReportingWebConnector.APAgedSupplierList(AParameters, FDbAdapter);
+                    break;
+
+                case "APPaymentReport":
+                    ResultSet = TFinanceReportingWebConnector.APPaymentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "APAccountDetail":
+                    ResultSet = TFinanceReportingWebConnector.APAccountDetail(AParameters, FDbAdapter);
                     break;
 
                 /* Financial Development */
@@ -292,6 +344,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             return ResultSet;
         }
 
+        // Leaving this in here in case it's needed again.  The performance is not optimised but this shouldn't matter
+        // for a few donors(APartnerKey).  The Donor Gift Statement now calls GetAllDonorsHistoricTotals().
         private static void GetDonorHistoricTotals(Dictionary <String, TVariant>AParameters,
             TReportingDbAdapter ADbAdapter,
             Int64 APartnerKey,
@@ -420,6 +474,140 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 }); // Get NewOrExisting AutoRead Transaction
         }
 
+        // Code refactored to call SelectUsingDataAdapterMulti().  Since the Prepare must be called before the outer loop starts,
+        // we could not just replace GetDonorHistoricTotals().
+        private static void GetAllDonorsHistoricTotals(Dictionary <String, TVariant>AParameters,
+            TReportingDbAdapter ADbAdapter,
+            DataTable DistinctDonors,
+            DataTable Totals)
+        {
+            DataTable ResultsDT = new DataTable();
+
+            // ResultsDT.RemotingFormat defaults to SerializationFormat.XML. Using SerializationFormat.Binary also provided a significant
+            // performance boost on the original code; also about a minute improvement on a long report run of about 4min30.
+            ResultsDT.RemotingFormat = SerializationFormat.Binary;
+            TDataAdapterCanceller DataAdapterCanceller;
+            TDBTransaction ReadTransaction = null;
+            Dictionary <int, object[]>ParameterValues = new Dictionary <int, object[]>();
+            List <object[]>ParameterValuesList = new List <object[]>();
+            int ledgerNumber = AParameters["param_ledger_number_i"].ToInt32();
+            int currentYear = DateTime.Now.Year;
+            int NumRows = 0;
+            bool userCancel = false;
+
+            string amountField = AParameters["param_currency"].ToString().ToUpper() == "BASE" ? "a_gift_amount_n" : "a_gift_amount_intl_n";
+
+            // NB: String compare of YYYY-MM proved faster in performance testing than >= "1st this month" AND < "1st next month"
+            // Performance improvement was about one minute on a total run of about 4min30
+            string innerQueryYYYYMM = "SELECT :APartnerKey AS DonorKey, :month AS Month, " +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM THEN GiftDetail." + amountField +
+                                      " ELSE 0 END) AS Year0Total," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM THEN 1 ELSE 0 END) AS Year0Count," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM1 THEN GiftDetail." + amountField +
+                                      " ELSE 0 END) AS Year1Total," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM1 THEN 1 ELSE 0 END) AS Year1Count," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM2 THEN GiftDetail." + amountField +
+                                      " ELSE 0 END) AS Year2Total," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM2 THEN 1 ELSE 0 END) AS Year2Count," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM3 THEN GiftDetail." + amountField +
+                                      " ELSE 0 END) AS Year3Total," +
+                                      " SUM (CASE WHEN to_char(Gift.a_date_entered_d,'YYYY-MM') = :YYYYMM3 THEN 1 ELSE 0 END) AS Year3Count" +
+                                      " FROM PUB_a_gift AS Gift, PUB_a_gift_detail AS GiftDetail, PUB_a_gift_batch AS GiftBatch WHERE GiftDetail.a_ledger_number_i = "
+                                      +
+                                      ledgerNumber +
+                                      " AND Gift.p_donor_key_n = :APartnerKey AND Gift.a_ledger_number_i = " + ledgerNumber +
+                                      " AND Gift.a_batch_number_i = GiftDetail.a_batch_number_i " +
+                                      " AND Gift.a_gift_transaction_number_i = GiftDetail.a_gift_transaction_number_i" +
+                                      " AND Gift.a_date_entered_d >= '" + (currentYear - 3) + "-01-01'" +
+                                      " AND GiftBatch.a_ledger_number_i = " + ledgerNumber +
+                                      " AND GiftBatch.a_batch_number_i = Gift.a_batch_number_i" +
+                                      " AND GiftBatch.a_batch_status_c = 'Posted'";
+
+            OdbcParameter[] ParametersArray = new OdbcParameter[6];
+            ParametersArray[0] = new OdbcParameter("APartnerKey", OdbcType.BigInt);
+            ParametersArray[1] = new OdbcParameter("month", OdbcType.SmallInt);
+            ParametersArray[2] = new OdbcParameter("YYYYMM", OdbcType.Text);
+            ParametersArray[3] = new OdbcParameter("YYYYMM1", OdbcType.Text);
+            ParametersArray[4] = new OdbcParameter("YYYYMM2", OdbcType.Text);
+            ParametersArray[5] = new OdbcParameter("YYYYMM3", OdbcType.Text);
+
+            decimal DonorRowCount = DistinctDonors.Rows.Count;
+
+            foreach (DataRow Row in DistinctDonors.Rows)
+            {
+                for (Int16 month = 1; month <= 12; month++)
+                {
+                    Int64 APartnerKey = (Int64)Row["DonorKey"];
+                    ParameterValuesList.Add(new object[] { APartnerKey, month,
+                                                           string.Format("{0}-{1:D2}", currentYear, month),
+                                                           string.Format("{0}-{1:D2}", currentYear - 1, month),
+                                                           string.Format("{0}-{1:D2}", currentYear - 2, month),
+                                                           string.Format("{0}-{1:D2}", currentYear - 3, month) });
+                    NumRows++;
+                }
+            }
+
+            Stopwatch time = Stopwatch.StartNew();
+
+            if (!userCancel)
+            {
+                ADbAdapter.FPrivateDatabaseObj.SelectUsingDataAdapterMulti(innerQueryYYYYMM, ReadTransaction, ref ResultsDT, out DataAdapterCanceller,
+                    AParameterDefinitions : ParametersArray, AParameterValues : ParameterValuesList,
+                    APrepareSelectCommand : true, AProgressUpdateEveryNRecs : NumRows / 100,
+                    AMultipleParamQueryProgressUpdateCallback : delegate(int counter)
+                    {
+                        if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                        {
+                            userCancel = true;
+                        }
+
+                        // estimate the remaining time
+                        decimal PercentageCompleted = decimal.Divide(counter * 100, NumRows);
+
+                        if (PercentageCompleted == 0)
+                        {
+                            PercentageCompleted = 1;     // avoid div by zero, and for our purposes zero is approximately equal to 1.
+                        }
+
+                        decimal TimeLeft = (Int64)(time.ElapsedMilliseconds * ((100 / PercentageCompleted) - 1));
+                        int MinutesLeft = (int)TimeLeft / 60000;
+
+                        string OutputMessage = string.Format(Catalog.GetString("Data collection: {0}%"), Math.Round(PercentageCompleted, 1));
+
+                        // only show estimated time left if at least 0.1% complete
+                        if (PercentageCompleted >= (decimal)0.1)
+                        {
+                            // only show seconds if less than 10 minutes remaining
+                            if (MinutesLeft < 10)
+                            {
+                                int SecondsLeft = (int)(TimeLeft % 60000) / 1000;
+
+                                OutputMessage += string.Format(Catalog.GetPluralString(" (approx. {0} minute and {1} seconds remaining)",
+                                        " (approx. {0} minutes and {1} seconds remaining)", MinutesLeft, true),
+                                    MinutesLeft, SecondsLeft);
+                            }
+                            else
+                            {
+                                OutputMessage += string.Format(Catalog.GetString(" (approx. {0} minutes remaining)"),
+                                    MinutesLeft);
+                            }
+                        }
+
+                        TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                            OutputMessage,
+                            PercentageCompleted);
+
+                        return userCancel;
+                    });
+            }
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Transferring data to report generator"),
+                100);
+            Totals.Merge(ResultsDT);
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+        }
+
         [NoRemoting]
         private static String GetDonorListFromExtract(Dictionary <String, TVariant>AParameters, TReportingDbAdapter ADbAdapter)
         {
@@ -473,6 +661,10 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             String donorSelect = AParameters["param_donor"].ToString();
             String donorKeyList = "";
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Donor Gift Statement"));
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                Catalog.GetString("Gathering information from the database"), 0);
+
             if (donorSelect == "One Donor")
             {
                 donorKeyList = AParameters["param_donorkey"].ToString();
@@ -489,8 +681,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             // get donors
             DataTable Donors = TFinanceReportingWebConnector.GiftStatementDonorTable(AParameters, ADbAdapter, donorKeyList, -1, "DONOR");
 
-            if (ADbAdapter.IsCancelled || (Donors == null))
+            if (ADbAdapter.IsCancelled || (Donors == null) || (Donors.Rows.Count == 0))
             {
+                TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
                 return null;
             }
 
@@ -508,17 +701,59 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 DistinctDonors = View.ToTable(true, "DonorKey");
             }
 
-            foreach (DataRow Row in DistinctDonors.Rows)
-            {
-                Int64 DonorKey = (Int64)Row["DonorKey"];
+            decimal RowCount = DistinctDonors.Rows.Count;
+            decimal RowsProcessed = 1; // starting at 0 causes divide by zero error at the TimeLeft calculation
+            decimal PercentageCompleted = 0, TimeLeft = 0;
+            int MinutesLeft = 0, SecondsLeft = 0;
+            Stopwatch time = Stopwatch.StartNew();
+            string OutputMessage = "";
 
-                // get historical totals for donor
-                if (reportType == "Totals")
+            // Due to use of SelectUsingDataAdapterMulti() function, must now do this slightly differently
+            if (reportType == "Totals")
+            {
+                GetAllDonorsHistoricTotals(AParameters, ADbAdapter, DistinctDonors, Totals);
+            }
+            else
+            {
+                foreach (DataRow Row in DistinctDonors.Rows)
                 {
-                    GetDonorHistoricTotals(AParameters, ADbAdapter, DonorKey, Totals);
-                }
-                else
-                {
+                    if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+                    {
+                        break;
+                    }
+
+                    // estimate the remaining time
+                    PercentageCompleted = decimal.Divide(RowsProcessed * 100, RowCount);
+                    TimeLeft = (Int64)(time.ElapsedMilliseconds * ((100 / PercentageCompleted) - 1));
+                    MinutesLeft = (int)TimeLeft / 60000;
+
+                    OutputMessage = string.Format(Catalog.GetString("Data collection: {0}%"), Math.Round(PercentageCompleted, 1));
+
+                    // only show estimated time left if at least 0.1% complete
+                    if (PercentageCompleted >= (decimal)0.1)
+                    {
+                        // only show seconds if less than 10 minutes remaining
+                        if (MinutesLeft < 10)
+                        {
+                            SecondsLeft = (int)(TimeLeft % 60000) / 1000;
+
+                            OutputMessage += string.Format(Catalog.GetPluralString(" (approx. {0} minute and {1} seconds remaining)",
+                                    " (approx. {0} minutes and {1} seconds remaining)", MinutesLeft, true),
+                                MinutesLeft, SecondsLeft);
+                        }
+                        else
+                        {
+                            OutputMessage += string.Format(Catalog.GetString(" (approx. {0} minutes remaining)"),
+                                MinutesLeft);
+                        }
+                    }
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        OutputMessage,
+                        PercentageCompleted);
+
+                    Int64 DonorKey = (Int64)Row["DonorKey"];
+
                     Decimal thisYearTotal = 0;
                     Decimal previousYearTotal = 0;
                     TFinanceReportingWebConnector.GetGiftStatementTotals(AParameters,
@@ -543,13 +778,17 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     {
                         Recipients.Merge(tempTable);
                     }
-                }
 
-                if (ADbAdapter.IsCancelled)
-                {
-                    return null;
-                }
-            } // foreach
+                    if (ADbAdapter.IsCancelled)
+                    {
+                        TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+                        return null;
+                    }
+
+                    RowsProcessed++;
+                } // foreach
+
+            } // if (reportType == "Totals") else
 
             if (Recipients.Columns.Count == 0)
             {
@@ -590,6 +829,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 {
                     DonorAddresses = TAddressTools.GetBestAddressForPartners(DistinctDonors, 0, Transaction);
                 });
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             if (ADbAdapter.IsCancelled)
             {

@@ -74,7 +74,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
         // read user default filter from SUserDefaults (if it exists) and apply it to form
         private void SetupFilter()
         {
-            FUserDefaultFilter = TUserDefaults.GetStringDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS);
+            FUserDefaultFilter = TUserDefaults.GetStringDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS_LONG_TERM);
             string[] FilterArray = FUserDefaultFilter.Split(',');
 
             // No filter
@@ -191,7 +191,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui
                 DefaultFilter = FDetailedStatuses;
             }
 
-            TUserDefaults.SetDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS, DefaultFilter);
+            TUserDefaults.SetDefault(TUserDefaults.PERSONNEL_APPLICATION_STATUS_LONG_TERM, DefaultFilter);
         }
 
         private void Search_Click(System.Object sender, EventArgs e)

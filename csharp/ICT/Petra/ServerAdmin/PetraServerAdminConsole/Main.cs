@@ -320,6 +320,16 @@ namespace PetraServerAdminConsole
             TRemote.AddUser(AUserId);
         }
 
+        private static int ListGpgKeys(out string List)
+        {
+            return TRemote.ListGpgKeys(out List);
+        }
+
+        private static int ImportGpgKeys(out string List)
+        {
+            return TRemote.ImportGpgKeys(out List);
+        }
+
         /// <summary>
         /// shows the menu and processes the selections of the administrator
         /// </summary>
@@ -335,6 +345,8 @@ namespace PetraServerAdminConsole
 
             System.Int16 ClientID = 0;                                      // assignment only to make code compile; has no functional implication
             System.Int16 ClientTaskPriority = 1;                    // assignment only to make code compile; has no functional implication
+
+            String GpgList;
 
             // label
             // ReadClientID,               used only for repeating invalid command line input
@@ -392,6 +404,7 @@ namespace PetraServerAdminConsole
 #if DEBUG
                             Console.WriteLine("     v: Clear all RDBMS Connection Pools");
 #endif
+                            Console.WriteLine("     k: List Intranet GPG encryption keys / K: Import keys");
                             Console.WriteLine("     x: exit PETRAServerADMIN");
                             Console.Write(ServerAdminPrompt);
                             break;
@@ -688,6 +701,18 @@ namespace PetraServerAdminConsole
                         case 'u':
                         case 'U':
                             ReadLineLoopEnd = ShutDown(true);
+                            break;
+
+                        case 'k':
+                            ListGpgKeys(out GpgList);
+                            Console.WriteLine(GpgList);
+                            Console.Write(ServerAdminPrompt);
+                            break;
+
+                        case 'K':
+                            ImportGpgKeys(out GpgList);
+                            Console.WriteLine(GpgList);
+                            Console.Write(ServerAdminPrompt);
                             break;
 
                         case 'x':

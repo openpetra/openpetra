@@ -23,32 +23,16 @@
 //
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Data;
-using System.Data.Odbc;
-
-using GNU.Gettext;
-
-using Ict.Common;
-using Ict.Common.Data;
 using Ict.Common.DB;
-using Ict.Common.Remoting.Server;
-using Ict.Common.Verification;
-
-using Ict.Petra.Shared;
-using Ict.Petra.Shared.MCommon.Data;
-using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Shared.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
-using Ict.Petra.Shared.MSysMan.Data;
-
 using Ict.Petra.Server.App.Core;
+using Ict.Petra.Shared.MCommon.Data;
+using Ict.Petra.Shared.MPartner;
 using Ict.Petra.Server.MCommon.Data.Access;
-using Ict.Petra.Server.MFinance.Account.Data.Access;
-using Ict.Petra.Server.MFinance.Common;
-using Ict.Petra.Server.MPartner.Mailroom.Data.Access;
+using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Data.Access;
+using Ict.Petra.Server.MFinance.Common;
+using Ict.Common.Remoting.Server;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -81,8 +65,8 @@ namespace Ict.Petra.Server.MPartner.Common
             // find all locations of the partner, put it into a dataset
             PPartnerLocationAccess.LoadViaPPartner(PartnerLocationsDS, APartnerKey, ATransaction);
 
-            Ict.Petra.Shared.MPartner.Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
-            Ict.Petra.Shared.MPartner.Calculations.DetermineBestAddress(PartnerLocationsDS);
+            Calculations.DeterminePartnerLocationsDateStatus(PartnerLocationsDS);
+            Calculations.DetermineBestAddress(PartnerLocationsDS);
 
             foreach (PPartnerLocationRow row in PartnerLocationTable.Rows)
             {
@@ -123,6 +107,11 @@ namespace Ict.Petra.Server.MPartner.Common
             TDBTransaction ATransaction,
             Boolean APartnerDetails = false)
         {
+            if (Partners == null)
+            {
+                return null;
+            }
+
             List <String>PartnerList = new List <string>();
 
             foreach (DataRow Partner in Partners.Rows)
@@ -139,8 +128,10 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="DonorList">Comma-separated list of partner keys, or SQL query returning partner keys only</param>
         /// <param name="ATransaction">The current database transaction</param>
         /// <param name="APartnerDetails">if true: Adds partner short name and partner class columns</param>
+        /// <param name="ASanitizeFieldNames">If true, fieldnames are tweaked for reporting</param>
         /// <returns></returns>
-        public static DataTable GetBestAddressForPartners(String DonorList, TDBTransaction ATransaction, Boolean APartnerDetails = false)
+        public static DataTable GetBestAddressForPartners(String DonorList, TDBTransaction ATransaction,
+            Boolean APartnerDetails = false, Boolean ASanitizeFieldNames = false)
         {
             DataTable ResultTable = new DataTable();
 
@@ -149,18 +140,89 @@ namespace Ict.Petra.Server.MPartner.Common
                 return ResultTable;
             }
 
-            string Query = TDataBase.ReadSqlFile("Partner.CommonAddressTools.GetBestAddress.sql");
+            string Query = TDataBase.ReadSqlFile(
+                ASanitizeFieldNames ?
+                "Partner.CommonAddressTools.GetBestAddressSanitized.sql"
+                :
+                "Partner.CommonAddressTools.GetBestAddress.sql"
+                );
 
             Query = Query.Replace("{DonorList}", DonorList);
 
             if (APartnerDetails)
             {
                 Query = "WITH AddressTable AS (" + Query +
-                        ") SELECT DISTINCT AddressTable.*, p_partner.p_partner_short_name_c, p_partner.p_partner_class_c FROM AddressTable JOIN p_partner ON p_partner.p_partner_key_n=AddressTable.p_partner_key_n";
+                        ") SELECT DISTINCT AddressTable.*, " +
+                        (ASanitizeFieldNames ?
+                         " p_partner.p_partner_short_name_c AS ShortName, p_partner.p_partner_class_c AS PartnerClass"
+                         :
+                         " p_partner.p_partner_short_name_c, p_partner.p_partner_class_c "
+                        ) +
+                        " FROM" +
+                        " AddressTable JOIN p_partner ON p_partner.p_partner_key_n=AddressTable.p_partner_key_n";
             }
 
             ResultTable = DBAccess.GetDBAccessObj(ATransaction).SelectDT(Query, "PartnersAddresses", ATransaction);
             return ResultTable;
+        }
+
+        /// <summary>
+        /// Returns the Table handed in with the best addresses
+        /// </summary>
+        /// <param name="Partners"></param>
+        /// <param name="PartnerKeyColumn"></param>
+        /// <param name="ATransaction"></param>
+        /// <param name="APartnerDetails"></param>
+        /// <returns></returns>
+        public static DataTable GetBestAddressForPartnersAsJoinedTable(DataTable Partners,
+            int PartnerKeyColumn,
+            TDBTransaction ATransaction,
+            Boolean APartnerDetails = false)
+        {
+            if (Partners == null)
+            {
+                return null;
+            }
+
+            bool deleteFirstRows = false;
+
+            if (Partners.Rows.Count == 0)
+            {
+                object[] newRow = new object[Partners.Columns.Count];
+                newRow[PartnerKeyColumn] = -1;
+                Partners.Rows.Add(newRow);
+                deleteFirstRows = true;
+            }
+
+            DataTable Addresses = GetBestAddressForPartners(Partners, PartnerKeyColumn, ATransaction, APartnerDetails);
+
+            foreach (DataColumn dc in Addresses.Columns)
+            {
+                Partners.Columns.Add("addr_" + dc.ColumnName, dc.DataType);
+            }
+
+            DataView dv = Partners.DefaultView;
+
+            foreach (DataRow dr in Addresses.Rows)
+            {
+                dv.RowFilter = Partners.Columns[PartnerKeyColumn].ColumnName + " = " + dr[0].ToString();
+
+                for (int i = 0; i < Addresses.Columns.Count; i++)
+                {
+                    dv[0]["addr_" + Addresses.Columns[i].ColumnName] = dr[i];
+                }
+            }
+
+            dv.RowFilter = String.Empty;
+
+            DataTable newDataTable = dv.ToTable();
+
+            if (deleteFirstRows)
+            {
+                newDataTable.Rows.RemoveAt(0);
+            }
+
+            return newDataTable;
         }
 
         /// <summary>

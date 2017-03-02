@@ -426,6 +426,9 @@ namespace Ict.Petra.Client.MPartner.Gui
             this.cmbAcquisitionCode.Filter = PAcquisitionTable.GetValidAcquisitionDBName() + " <> 0";
 
             // Setup Data
+            // As part of bug 5556 testing, checked if this returned a DataTable with any rows with RowState Modified.
+            // The test didn't return much so this isn't conclusive, but it doesn't point to an error:
+            // DataTable summary: 1 rows; 0 Added, 0 deleted, 0 detached, ***0 modified***, 1 unchanged.  Table name InstalledSitesList
             FInstalledSitesDT = TDataCache.TMPartner.GetCacheablePartnerTable(TCacheablePartnerTablesEnum.InstalledSitesList);
 
             if (FInstalledSitesDT.Rows.Count != 0)

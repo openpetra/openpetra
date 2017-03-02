@@ -38,7 +38,7 @@ using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Server.MReporting;
 using Ict.Petra.Server.MReporting.Calculator;
 using Ict.Petra.Server.MReporting.MFinance;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.DB;

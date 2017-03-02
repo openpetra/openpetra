@@ -124,6 +124,15 @@ namespace Ict.Petra.Client.MPartner.Gui
 
             UpdateRecordNumberDisplay();
 
+            if (FDuplicateLocations.Rows.Count >= 500)
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    Catalog.GetString(
+                        "Too many duplicates found (maximum 500). Please deal with these first, then re-run the report for more."),
+                    Catalog.GetString("Duplicate Address Check"),
+                    System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Information);
+            }
+
             if (FDuplicateLocations.Rows.Count > 0)
             {
                 btnMergeAddresses.Enabled = true;

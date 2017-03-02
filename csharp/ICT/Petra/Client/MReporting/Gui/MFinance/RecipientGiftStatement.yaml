@@ -21,7 +21,7 @@
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [grpReportType, grpDateSelection, rgrRecipientSelection, grpCurrencySelection]
+            Controls: [grpReportType, grpDateSelection, rgrRecipientSelection, grpCurrencySelection, chkNewPage]
             
         tpgReportSorting:
             Label: Sorting
@@ -93,71 +93,6 @@
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [=Base, International]
-        
-    ReportParameters:{ColumnFunction=TPartnerColumnFunction}
-        Para0:
-            Name: Donor Name
-            Parameter: 3.5
-        Para1:
-            Name: Donor Key
-            Parameter: 2.0
-        Para2:
-            Name: Donor Class
-            Parameter: 2.0
-        Para3:
-            Name: Recipient Name
-            Parameter: 3.5
-        Para4:
-            Name: Recipient Key
-            Parameter: 2.0
-        Para5:
-            Name: Recipient Class
-            Parameter: 2.0
-        Para6:
-            Name: Gift Date
-            Parameter: 2.0
-        Para7:
-            Name: Gift Amount
-            Parameter: 2.0
-        Para8:
-            Name: Motivation Code
-            Parameter: 2.0
-        Para9:
-            Name: Address line 1
-            Parameter: 2.5
-        Para10:
-            Name: Street
-            Parameter: 3.0
-        Para11:
-            Name: Address line 3
-            Parameter: 2.5
-        Para12:
-            Name:Post Code
-            Parameter: 2.0
-        Para13:
-            Name: City
-            Parameter: 3.0
-        Para14:
-            Name: County
-            Parameter: 2.0
-        Para15:
-            Name: Country
-            Parameter: 1.5
-        Para16:
-            Name: Primary Phone
-            Parameter: 3.0
-        Para18:
-            Name: Alternate Phone
-            Parameter: 3.0
-        Para19:
-            Name: Fax Number
-            Parameter: 3.0
-        Para21:
-            Name: Mobile Number
-            Parameter: 3.0
-        Para22:
-            Name: Primary E-Mail
-            Parameter: 3.0
-        Para23:
-            Name: Receipt
-            Parameter: 2.0
+        chkNewPage:
+            Label: Paginate
+            CheckBoxAttachedLabel: right

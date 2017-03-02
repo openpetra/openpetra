@@ -17,7 +17,7 @@ RootNode:
             Controls: [pnlButtons, grdDetails]
             Dock: Fill
         pnlButtons:
-            Controls: [btnPrint, btnRemove]
+            Controls: [btnTagSelected, btnPrint, btnRemove]
             Dock: Bottom
             ControlsOrientation: horizontal
         pnlBtns:
@@ -27,20 +27,30 @@ RootNode:
  
         grdDetails:
             Dock: Fill
+            AutoFindColumn: 3
 
         txtLedger: {Label=Ledger, ReadOnly=true, Width=150}
 
         btnPrint:
             Label: Print Tagged
             ActionClick:OnBtnPrint
+            Tooltip: Print receipts for all the tagged items
+        btnTagSelected:
+            Label: Tag/Untag Selected Files
+            ActionClick: BtnToggleTagSelectedFiles_Click
+            Width: 180
+            Tooltip: Toggle between selected items tagged and selected items un-tagged
         btnRemove:
             Label: Remove Tagged
             ActionClick:OnBtnRemove
+            Tooltip: Mark the receipts for the tagged rows as already printed
         btnRcptNumber:
             ActionClick:OnBtnRcptNumber
             Align: right
             Label: Receipt Number
+            Tooltip: Show/Set the receipt number for the next gift receipt
         btnCloseForm:
             ActionClick:OnBtnClose
             Label:Close
+            Tooltip: Click the Close button to close this window
             Align: right

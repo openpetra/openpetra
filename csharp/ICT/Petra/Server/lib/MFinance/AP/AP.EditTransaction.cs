@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1058,12 +1058,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                                 ALedgerNumber,
                                 GLDataset.ABatch[0].BatchNumber,
                                 out MoreResults);
+                            ResultsCollection.AddCollection(MoreResults);
                         }
                         catch (Exception)
                         {
                         }
 
-                        ResultsCollection.AddCollection(MoreResults);
 
                         return;
                     }
@@ -1608,8 +1608,6 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
             AglBatchNumber = -1;
 
-            AVerificationResult = VerificationResult;
-
             if ((MainDS.AApPayment.Rows.Count < 1) || (MainDS.AApDocumentPayment.Rows.Count < 1))
             {
                 AVerificationResult = new TVerificationResultCollection();
@@ -1717,12 +1715,19 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     if (!PostingWorkedOk)
                     {
                         TVerificationResultCollection MoreResults;
-
-                        TGLPosting.DeleteGLBatch(
-                            MainDS.AApPayment[0].LedgerNumber,
-                            batch.BatchNumber,
-                            out MoreResults);
-                        VerificationResult.AddCollection(MoreResults);
+                        //
+                        // If it didn't work, there's a good chance the batch can't be deleted.
+                        try
+                        {
+                            TGLPosting.DeleteGLBatch(
+                                MainDS.AApPayment[0].LedgerNumber,
+                                batch.BatchNumber,
+                                out MoreResults);
+                            VerificationResult.AddCollection(MoreResults);
+                        }
+                        catch (Exception)
+                        {
+                        }
 
                         return; // return from delegate
                     }
@@ -1742,6 +1747,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                 AglBatchNumber = batch.BatchNumber;
             }
 
+            AVerificationResult = VerificationResult;
             return SubmissionOK;
         } // Post AP Payments
 

@@ -35,7 +35,7 @@ using Ict.Common.IO;
 using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MFinance.Account.Data;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 
 namespace Ict.Petra.Server.app.JSClient

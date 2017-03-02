@@ -104,6 +104,12 @@ namespace Ict.Common
         /// </summary>
         public static int DebugLevel = 0;
 
+        /// <summary>
+        /// No logging of messages to Console.Error? Set this to true if the PetraServer runs as a Windows Service
+        /// to prevent Bug #5846!
+        /// </summary>
+        private static bool FNoLoggingToConsoleError = false;
+
         /// <summary>DL is a abbreviated synonym for DebugLevel (more convenient)</summary>
         public static int DL
         {
@@ -113,6 +119,22 @@ namespace Ict.Common
             }
         }
 
+        /// <summary>
+        /// No logging of messages to Console.Error? Set this to true if the PetraServer runs as a Windows Service
+        /// to prevent Bug #5846!
+        /// </summary>
+        public static bool NoLoggingToConsoleError
+        {
+            get
+            {
+                return FNoLoggingToConsoleError;
+            }
+
+            set
+            {
+                FNoLoggingToConsoleError = value;
+            }
+        }
 
         /// <summary>
         /// this is the default prefix for the username
@@ -364,15 +386,18 @@ namespace Ict.Common
                     UNewMessageCallback();
                 }
             }
-            else if (((ALoggingType & TLoggingType.ToConsole) != 0)
+            else if (!FNoLoggingToConsoleError)
+            {
+                if (((ALoggingType & TLoggingType.ToConsole) != 0)
                      // only in Debugmode write the messages for the statusbar also on the console (e.g. reporting progress)
                      || (((ALoggingType & TLoggingType.ToStatusBar) != 0) && (TLogging.DebugLevel != 0)))
-            {
-                Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
-
-                if (!string.IsNullOrEmpty(TLogging.Context))
                 {
-                    Console.Error.WriteLine("  Context: " + TLogging.Context);
+                    Console.Error.WriteLine(Utilities.CurrentTime() + "  " + Text);
+
+                    if (!string.IsNullOrEmpty(TLogging.Context))
+                    {
+                        Console.Error.WriteLine("  Context: " + TLogging.Context);
+                    }
                 }
             }
 

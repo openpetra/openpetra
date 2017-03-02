@@ -89,6 +89,18 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
 
             // enable autofind in list for first character (so the user can press character to find list entry)
             // from Sep 2015 this is handled automatically by the code generator
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("PartnerBySpecialType",
+                false,
+                new string[] { "PartnerBySpecialType" },
+                ACalc,
+                this,
+                true,
+                false);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

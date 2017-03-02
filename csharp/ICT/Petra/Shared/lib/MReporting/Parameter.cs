@@ -32,6 +32,8 @@ using System.Collections;
 using System.Globalization;
 using Ict.Petra.Shared.MReporting;
 using System.Xml;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ict.Petra.Shared.MReporting
 {
@@ -1183,6 +1185,279 @@ namespace Ict.Petra.Shared.MReporting
         public TParameterList ConvertToFormattedStrings()
         {
             return ConvertToFormattedStrings("Localized");
+        }
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    public class TColumnSettingCollection
+    {
+        private Dictionary <string, TColumnSetting>FColumns = new Dictionary <string, TColumnSetting>();
+
+        /// <summary>
+        /// Returns the number of TColumnsSettings
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return FColumns.Count;
+            }
+        }
+
+        /// <summary>
+        /// Resizes all Column Widths
+        /// </summary>
+        /// <param name="AFactor"></param>
+        public void ResizeAllColumns(float AFactor)
+        {
+            foreach (KeyValuePair <string, TColumnSetting>KVPair in FColumns)
+            {
+                KVPair.Value.Width = KVPair.Value.Width * AFactor;
+            }
+        }
+
+        /// <summary>
+        /// Gets the FastReport "Left" for a Position
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public float GetLeftValueForPositionIndex(int pos)
+        {
+            float returnValue = 0;
+
+            foreach (KeyValuePair <string, TColumnSetting>KVPair in FColumns)
+            {
+                if (KVPair.Value.Position < pos)
+                {
+                    returnValue += KVPair.Value.Width;
+                }
+            }
+
+            return returnValue;
+        }
+
+        /// <summary>
+        /// Sets the Column Settings for an existing or a new Column Name
+        /// </summary>
+        /// <param name="AColumnName"></param>
+        /// <param name="AColumnSetting"></param>
+        public void SetSettingForColumn(String AColumnName, TColumnSetting AColumnSetting)
+        {
+            if (FColumns.ContainsKey(AColumnName))
+            {
+                FColumns[AColumnName] = AColumnSetting;
+            }
+            else
+            {
+                FColumns.Add(AColumnName, AColumnSetting);
+            }
+        }
+
+        /// <summary>
+        /// Sets the Column Settings for an existing or a new Column Name stored inside the AColumnSetting object.
+        /// </summary>
+        /// <param name="AColumnSetting"></param>
+        public void SetSettingForColumn(TColumnSetting AColumnSetting)
+        {
+            if (FColumns.ContainsKey(AColumnSetting.ColumnName))
+            {
+                FColumns[AColumnSetting.FColumnName] = AColumnSetting;
+            }
+            else
+            {
+                if (AColumnSetting.FColumnName != String.Empty)
+                {
+                    FColumns.Add(AColumnSetting.FColumnName, AColumnSetting);
+                }
+                else
+                {
+                    throw new Exception(Catalog.GetString("TColumnSetting does not contain a name."));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if TColumnSetting exists for Column Name
+        /// </summary>
+        /// <param name="AColumnName"></param>
+        /// <returns></returns>
+        public Boolean HasSettingForColumn(String AColumnName)
+        {
+            if (FColumns.ContainsKey(AColumnName))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Returns the TColumnSetting by Column Name
+        /// </summary>
+        /// <param name="AColumnName"></param>
+        /// <returns></returns>
+        public TColumnSetting GetSettingForColumn(String AColumnName)
+        {
+            if (FColumns.ContainsKey(AColumnName))
+            {
+                return FColumns[AColumnName];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Returns the TColumnSetting by Column Index
+        /// </summary>
+        /// <param name="AColumnIndex"></param>
+        /// <returns></returns>
+        public TColumnSetting GetSettingForColumn(int AColumnIndex)
+        {
+            if (FColumns.ContainsKey(FColumns.Keys.ElementAt(AColumnIndex)))
+            {
+                return FColumns[FColumns.Keys.ElementAt(AColumnIndex)];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Serialises the Collection
+        /// </summary>
+        /// <returns></returns>
+        public string SerialiseCollection()
+        {
+            List <string>collection = new List <string>();
+
+            foreach (KeyValuePair <string, TColumnSetting>KVPair in FColumns)
+            {
+                if (KVPair.Value.FColumnName == String.Empty)
+                {
+                    KVPair.Value.FColumnName = KVPair.Key;
+                }
+
+                collection.Add(KVPair.Value.Serialise());
+            }
+
+            return String.Join("&&", collection);
+        }
+
+        /// <summary>
+        /// Deserialises the Collection
+        /// </summary>
+        /// <param name="ASerialisedCollection"></param>
+        public void DeserialiseCollection(string ASerialisedCollection)
+        {
+            string[] ColumnSettingArray = ASerialisedCollection.Split(new string[] { "&&" }, StringSplitOptions.None);
+
+            foreach (string ColumnSetting in ColumnSettingArray)
+            {
+                TColumnSetting tcs = new TColumnSetting(ColumnSetting);
+                SetSettingForColumn(tcs);
+            }
+        }
+    }
+    /// <summary>
+    ///
+    /// </summary>
+    public class TColumnSetting
+    {
+        /// <summary>
+        /// Column Name
+        /// </summary>
+        public String FColumnName;
+        /// <summary>
+        /// Gets or Sets the Column Name. It is not allowed to be empty.
+        /// </summary>
+        public string ColumnName
+        {
+            get
+            {
+                return FColumnName;
+            }
+
+            set
+            {
+                if (value != String.Empty)
+                {
+                    FColumnName = value;
+                }
+                else
+                {
+                    throw new Exception(Catalog.GetString("Input string for FColumnName is empty."));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Wdith of the Column
+        /// </summary>
+        public float Width {
+            get; set;
+        }
+
+        /// <summary>
+        /// Position of the Column
+        /// </summary>
+        public int Position {
+            get; set;
+        }
+
+
+        /// <summary>
+        /// Default Contructor.
+        /// </summary>
+        /// <param name="AColumnName">The Name of the Column</param>
+        /// <param name="AWidth">The Width of the Column</param>
+        /// <param name="APosition">The Position of the Column</param>
+        public TColumnSetting(string AColumnName, float AWidth, int APosition)
+        {
+            ColumnName = AColumnName;
+            Width = AWidth;
+            Position = APosition;
+        }
+
+        /// <summary>
+        /// Constructor that takes a Serialised String
+        /// </summary>
+        /// <param name="ASerialisedString"></param>
+        public TColumnSetting(string ASerialisedString)
+        {
+            Deserialise(ASerialisedString);
+        }
+
+        /// <summary>
+        /// Serialises All Members to String
+        /// </summary>
+        /// <returns></returns>
+        public string Serialise()
+        {
+            List <string>AllMembersAsString = new List <string>();
+            AllMembersAsString.Add(ColumnName);
+            AllMembersAsString.Add(Width.ToString());
+            AllMembersAsString.Add(Position.ToString());
+            return String.Join("#$#", AllMembersAsString);
+        }
+
+        /// <summary>
+        /// Deserialises String to Object
+        /// </summary>
+        /// <param name="FAllMembersAsSerialisedString"></param>
+        public void Deserialise(string FAllMembersAsSerialisedString)
+        {
+            string[] VariablesArray = FAllMembersAsSerialisedString.Split(new string[] { "#$#" }, StringSplitOptions.None);
+
+            ColumnName = VariablesArray[0];
+            Width = float.Parse(VariablesArray[1]);
+            Position = int.Parse(VariablesArray[2]);
         }
     }
 }

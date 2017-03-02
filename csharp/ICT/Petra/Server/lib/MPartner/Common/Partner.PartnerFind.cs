@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -40,10 +40,8 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Extracts;
 using Ict.Petra.Server.MPartner.DataAggregates;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Server;
-using Ict.Petra.Shared.Interfaces.MPartner;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Ict.Petra.Server.MPartner.Common;
 
 namespace Ict.Petra.Server.MPartner.PartnerFind
 {
@@ -1414,7 +1412,7 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
         }
 
         /// <summary>
-        /// modify search result: filter each result partner for best address only
+        /// Modify search result: filter each result partner for best address only
         /// </summary>
         /// <returns>DataTable with filtered result</returns>
         public DataTable FilterResultByBestAddress()
@@ -1457,7 +1455,8 @@ namespace Ict.Petra.Server.MPartner.PartnerFind
                 }
 
                 // Is this row the same as the Best Address? If so its the one we import and we no longer need a fallback
-                if ((bestLocationPK.LocationKey == Convert.ToInt32(row[locationKeyDBName]))
+                if ((bestLocationPK != null)
+                    && (bestLocationPK.LocationKey == Convert.ToInt32(row[locationKeyDBName]))
                     && (bestLocationPK.SiteKey == Convert.ToInt64(row[siteKeyDBname])))
                 {
                     FilteredResultDT.ImportRow(row);

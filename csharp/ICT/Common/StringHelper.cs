@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.IO;
 
 using System.Threading;
@@ -2494,25 +2495,24 @@ namespace Ict.Common
         /// </summary>
         public static CultureInfo GetCultureInfoForDateFormat(string ADateFormat)
         {
-            CultureInfo ci = null;
+            CultureInfo ciCurrent = Thread.CurrentThread.CurrentCulture;
+            CultureInfo returnValue;
 
-            if (ADateFormat.StartsWith("M"))
+            if (ciCurrent.TwoLetterISOLanguageName == "en")
             {
-                // The format is M/d/y
-                // It is best to use the en-US culture for month-first formats because it includes a number of useful formats
+                // If the format is M/d/ it is best to use the en-US culture for month-first formats because it includes a number of useful formats
                 // over and above the one supplied as a parameter.
-                ci = new CultureInfo("en-US");
-                ci.DateTimeFormat.ShortDatePattern = "MM-dd-yy";
+                // Otherwise it is best to use a day-first culture as the basis because this includes a number of other useful formats
+                returnValue = new CultureInfo(ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "en-US" : "en-GB");
             }
             else
             {
-                // The format is d/M/y or y/M/d
-                // It is best to use a day-first culture as the basis because this includes a number of other useful formats
-                ci = new CultureInfo("en-GB");
-                ci.DateTimeFormat.ShortDatePattern = "dd-MM-yy";
+                // Use the current culture and set the short date pattern below
+                returnValue = new CultureInfo(ciCurrent.LCID);
             }
 
-            return ci;
+            returnValue.DateTimeFormat.ShortDatePattern = ADateFormat.StartsWith("M", StringComparison.OrdinalIgnoreCase) ? "MM-dd-yy" : "dd-MM-yy";
+            return returnValue;
         }
 
         /// <summary>

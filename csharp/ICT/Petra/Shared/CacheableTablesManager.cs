@@ -940,6 +940,7 @@ namespace Ict.Petra.Shared
                 }
 
                 // add the passed in DataTable to the Cache DataSet
+                ACacheableTable.AcceptChanges(); // bug 5556; in case ACacheableTable contains wrong RowStates, reset them to Unchanged
                 UDataCacheDataSet.Tables.Add(ACacheableTable);
 
                 UDataCacheDataSet.Tables[ACacheableTable.TableName].TableName = ACacheableTableName;
@@ -1522,6 +1523,7 @@ namespace Ict.Petra.Shared
                 // So we convert it to a table and then usually change it to a typed table.
                 //   NOTE: Prior to Sep 2015 we returned the whole table (unfiltered) direct from FCacheableTablesManager!!
                 ReturnValue = ACacheableTableDV.ToTable();
+                ReturnValue.AcceptChanges(); // bug 5556; ToTable() changes all the RowStates to Added, which is not what we want.
 
                 if (AType.IsSubclassOf(typeof(TTypedDataTable)))
                 {

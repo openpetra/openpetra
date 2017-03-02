@@ -3,7 +3,7 @@
 // @Authors:
 //     Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -320,15 +320,13 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             MainDS.ACostCentre.DefaultView.RowFilter = "";
 
-            trvCostCentres.EndUpdate();
-
             this.trvCostCentres.BeforeSelect += TreeViewBeforeSelect;
             this.trvCostCentres.AfterSelect += TreeViewAfterSelect;
             trvCostCentres.EndUpdate();
 
             FDuringInitialisation = false;
 
-            if (trvCostCentres.Nodes.Count > 0)
+            if ((FParentForm.FIAmUpdating == 0) && (trvCostCentres.Nodes.Count > 0))
             {
                 SelectNodeByName(trvCostCentres.Nodes[0].Name); // Select the first item
             }
@@ -463,24 +461,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         }
 
         /// <summary>
-        /// Remove node from tree. The actual CostCentreNodeDetails object is being deleted by the parent form.
-        /// </summary>
-        public void DeleteSelectedCostCentre()
-        {
-            // select parent node first
-            TreeNode NodeToBeDeleted = FSelectedCostCentre.linkedTreeNode;
-
-            FParentForm.SetSelectedCostCentre((CostCentreNodeDetails)NodeToBeDeleted.Parent.Tag); // This will change the current FSelectedCostCentre.
-
-            trvCostCentres.BeginUpdate();
-            NodeToBeDeleted.Remove();
-            trvCostCentres.EndUpdate();
-        }
-
-        /// <summary>
-        /// The SelectedNode has had its name changed, and all its children need
-        /// to be informed of the new name.
-        /// (This can only happen when both the parent and its children are new this session; there's nothing in the Database yet.)
+        /// The SelectedNode has had its name changed,
+        /// and all its children need to be informed of the new name.
+        /// (This can only happen when both the parent and its children are new this session;
+        /// there's nothing in the Database yet.)
         /// </summary>
         public void FixupChildrenAfterCostCentreNameChange()
         {

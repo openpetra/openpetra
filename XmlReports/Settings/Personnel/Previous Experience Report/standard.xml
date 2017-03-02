@@ -28,4 +28,5 @@
   <Parameter id="ColumnWidth" column="6" value="eInteger:5" />
   <Parameter id="param_calculation" column="7" value="eString:Role" />
   <Parameter id="ColumnWidth" column="7" value="eInteger:3" />
+  <Parameter id="param_StretchColumns" value="eBoolean:true" />
 </Parameters>

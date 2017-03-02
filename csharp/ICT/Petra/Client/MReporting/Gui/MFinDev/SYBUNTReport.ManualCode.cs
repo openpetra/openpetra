@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       berndr, peters
+//       berndr, peters, Jacob Englert
 //
-// Copyright 2004-2010 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,11 +27,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 
-using GNU.Gettext;
 using Ict.Common;
 using Ict.Common.Verification;
-using Ict.Petra.Client.MReporting.Gui.MFinance;
-using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
@@ -188,16 +185,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             if (!string.IsNullOrEmpty(GiftsInRange))
             {
                 string[] GiftsInRangeArray = GiftsInRange.Split(',');
-
-                DataRow NewInRow = ucoGiftsInRange.RangeTable.NewRow();
+                ucoGiftsInRange.RangeTable.DefaultView.Sort = "From, To";
 
                 foreach (string Range in GiftsInRangeArray)
                 {
-                    if (Range.Length == 23) // range must be in this format: yyyy-mm-dd - yyyy-mm-dd
+                    if (Range.Length == 23) // Range must be in this format: yyyy-mm-dd - yyyy-mm-dd
                     {
-                        NewInRow["From"] = Range.Substring(0, 10);
-                        NewInRow["To"] = Range.Substring(13, 10);
-                        ucoGiftsInRange.RangeTable.Rows.Add(NewInRow);
+                        String fromThis = Range.Substring(0, 10);
+                        String toThat = Range.Substring(13, 10);
+
+                        if (ucoGiftsInRange.RangeTable.DefaultView.Find(new String[] { fromThis, toThat }) < 0)
+                        {
+                            DataRow NewInRow = ucoGiftsInRange.RangeTable.NewRow();
+                            NewInRow["From"] = fromThis;
+                            NewInRow["To"] = toThat;
+                            ucoGiftsInRange.RangeTable.Rows.Add(NewInRow);
+                        }
                     }
                 }
             }
@@ -205,16 +208,22 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             if (!string.IsNullOrEmpty(NoGiftsInRange))
             {
                 string[] NoGiftsInRangeArray = NoGiftsInRange.Split(',');
-
-                DataRow NewInRow = ucoNoGiftsInRange.RangeTable.NewRow();
+                ucoNoGiftsInRange.RangeTable.DefaultView.Sort = "From, To";
 
                 foreach (string Range in NoGiftsInRangeArray)
                 {
                     if (Range.Length == 23) // range must be in this format: yyyy-mm-dd - yyyy-mm-dd
                     {
-                        NewInRow["From"] = Range.Substring(0, 10);
-                        NewInRow["To"] = Range.Substring(13, 10);
-                        ucoNoGiftsInRange.RangeTable.Rows.Add(NewInRow);
+                        String fromThis = Range.Substring(0, 10);
+                        String toThat = Range.Substring(13, 10);
+
+                        if (ucoNoGiftsInRange.RangeTable.DefaultView.Find(new String[] { fromThis, toThat }) < 0)
+                        {
+                            DataRow NewInRow = ucoNoGiftsInRange.RangeTable.NewRow();
+                            NewInRow["From"] = fromThis;
+                            NewInRow["To"] = toThat;
+                            ucoNoGiftsInRange.RangeTable.Rows.Add(NewInRow);
+                        }
                     }
                 }
             }
@@ -255,8 +264,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             ReportTable = Dv.ToTable();
 
             FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "SYBUNT");
-            //
-            // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
             DataView LedgerView = new DataView(LedgerNameTable);
             LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;

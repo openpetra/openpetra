@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -22,24 +22,14 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
-using System.Collections;
 using System.Data;
-using System.Data.Odbc;
-using System.Threading;
 using Ict.Common;
-using Ict.Common.Data;
-using Ict.Common.DB;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
 using Ict.Petra.Server.App.Core;
-using Ict.Petra.Shared;
 using Ict.Petra.Shared.Interfaces.MPartner;
-using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.PartnerFind;
-using Ict.Petra.Server.MPartner.Extracts;
-using Ict.Petra.Server.MPartner.DataAggregates;
-using Ict.Petra.Server.MCommon;
 using Ict.Petra.Shared.MCommon;
 
 namespace Ict.Petra.Server.MPartner.Partner.UIConnectors

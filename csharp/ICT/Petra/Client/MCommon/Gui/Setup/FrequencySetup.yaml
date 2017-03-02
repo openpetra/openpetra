@@ -36,29 +36,12 @@ RootNode:
             Width: 80
         grdDetails:
             Dock: Fill
-            Columns: [DetailFrequencyCode, DetailFrequencyDescription, DetailNumberOfYears, DetailNumberOfMonths, DetailNumberOfDays, DetailNumberOfHours, DetailNumberOfMinutes]
-            CustomColumns:
-                DetailNumberOfYears: {Label=Years, Type=String}
-                DetailNumberOfMonths: {Label=Months, Type=String}
-                DetailNumberOfDays: {Label=Days, Type=String}
-                DetailNumberOfHours: {Label=Hours, Type=String}
-                DetailNumberOfMinutes: {Label=Minutes, Type=String}
+            Columns: [DetailFrequencyCode, DetailFrequencyDescription]
             SortOrder: DetailFrequencyCode ASC
             ActionFocusRow: FocusedRowChanged
         pnlDetails:
             Dock: Bottom
             Controls:
                 Row0: [txtDetailFrequencyCode, txtDetailFrequencyDescription]
-                Row1: [pnlValues]
-        pnlValues:            
-            Controls:
-                Row0: [txtDetailNumberOfYears, txtDetailNumberOfMonths, Empty]
-                Row1: [txtDetailNumberOfDays, txtDetailNumberOfHours, txtDetailNumberOfMinutes] 
-            ColSpan: 2
         txtDetailFrequencyCode: {Width=100}
         txtDetailFrequencyDescription: {Width=260}
-        txtDetailNumberOfYears: {Format=Integer, Width=30, Validation=true}
-        txtDetailNumberOfMonths: {Format=Integer, Width=30, Validation=true}
-        txtDetailNumberOfDays: {Format=Integer, Width=30, Validation=true}
-        txtDetailNumberOfHours: {Format=Integer, Width=30, Validation=true}
-        txtDetailNumberOfMinutes: {Format=Integer, Width=30, Validation=true}

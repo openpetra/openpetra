@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -240,7 +240,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         }
 
         /// <summary>
-        /// save the changes on the screen
+        /// Save the changes on the screen
         /// </summary>
         /// <returns></returns>
         public bool SaveChanges()
@@ -397,10 +397,13 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                             FMainDS.AcceptChanges();
 
                             // Merge back with data from the Server (eg. for getting Sequence values)
-                            FMainDS.Merge(SubmitDS, false);
+                            if (SubmitDS != null)
+                            {
+                                FMainDS.Merge(SubmitDS, false);
 
-                            // need to accept the new modification ID
-                            FMainDS.AcceptChanges();
+                                // need to accept the new modification ID
+                                FMainDS.AcceptChanges();
+                            }
 
                             // Update UI
                             FPetraUtilsObject.WriteToStatusBar(MCommonResourcestrings.StrSavingDataSuccessful);
@@ -408,6 +411,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                             // We don't have unsaved changes anymore
                             FPetraUtilsObject.DisableSaveButton();
+                            TFormsMessage broadcastMessage = new TFormsMessage(TFormsMessageClassEnum.mcAPSupplierChanged);
+                            TFormsList.GFormsList.BroadcastFormMessage(broadcastMessage);
 
                             ReturnValue = true;
                             FPetraUtilsObject.OnDataSaved(this, new TDataSavedEventArgs(ReturnValue));

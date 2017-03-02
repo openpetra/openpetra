@@ -39,7 +39,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Petra.Server.MPersonnel.Personnel.Data.Access;
 using Ict.Petra.Server.MCommon;
-using Ict.Petra.Server.MPartner;
+//using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 
 namespace Ict.Petra.Server.MPartner.Common

@@ -662,7 +662,7 @@ namespace Ict.Petra.Client.MCommon.Gui
             else if (ADataLabelRow.DataType == MCommonConstants.OFFICESPECIFIC_DATATYPE_BOOLEAN)
             {
                 CheckBoxEditor = new System.Windows.Forms.CheckBox();
-                CheckBoxEditor.ThreeState = true;
+                //CheckBoxEditor.ThreeState = true;
                 cellControl = CheckBoxEditor;
 
                 if (DataLabelValuePartnerRow != null)
@@ -676,7 +676,8 @@ namespace Ict.Petra.Client.MCommon.Gui
                 else
                 {
                     // Default value if no Label data exists for the Partner
-                    CheckBoxEditor.CheckState = CheckState.Indeterminate;
+                    CheckBoxEditor.Checked = false;
+                    //CheckBoxEditor.CheckState = CheckState.Indeterminate;
                 }
 
                 // enable save button in editor when cell contents have changed

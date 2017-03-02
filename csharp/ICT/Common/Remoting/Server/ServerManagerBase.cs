@@ -509,7 +509,8 @@ CheckAllClientsDisconnected:
         /// </returns>
         public bool DisconnectClient(System.Int16 AClientID, out String ACantDisconnectReason)
         {
-            return TClientManager.ServerDisconnectClient(AClientID, out ACantDisconnectReason);
+            return TClientManager.ServerDisconnectClient(AClientID,
+                "Client disconnection requested by Adminstrator!", out ACantDisconnectReason);
         }
 
         /// <summary>
@@ -622,6 +623,30 @@ CheckAllClientsDisconnected:
         {
             // implemented in derived class
             return false;
+        }
+
+        /// <summary>
+        /// Lists the GPG keys for the Intranet server that are available to the Petra Server.
+        /// </summary>
+        /// <param name="List">Returns the output of the external gpg command.</param>
+        /// <returns>Return code of gpg command.</returns>
+        public virtual int ListGpgKeys(out string List)
+        {
+            List = "";
+            // implemented in derived class
+            return -1;
+        }
+
+        /// <summary>
+        /// Imports the GPG encryption keys for the Intranet server.
+        /// </summary>
+        /// <param name="List">Return the output of the gpg command.</param>
+        /// <returns>Return code of external gpg command.</returns>
+        public virtual int ImportGpgKeys(out string List)
+        {
+            List = "";
+            // implemented in derived class
+            return -1;
         }
 
         /// <summary>

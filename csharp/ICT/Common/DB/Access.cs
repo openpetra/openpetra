@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -312,7 +312,13 @@ namespace Ict.Common.DB
                     {
                         // there is an issue with locked database file. therefore trying to avoid multiple database connections
                         // see https://github.com/openpetra/openpetra/issues/182
-                        throw new Exception("should not get here, sqlite locks the database, use GetNewOrExistingTransaction instead");
+                        bool NewTransaction;
+                        ANewDBConnectionEstablished = false;
+                        ADBAccessObj = DBAccess.GDBAccessObj;
+                        TDBTransaction Transaction = ADBAccessObj.GetNewOrExistingTransaction(AIsolationLevel,
+                            TEnforceIsolationLevel.eilMinimum,
+                            out NewTransaction);
+                        return Transaction;
                     }
 
                     // There is a DB Transaction running on the DBAccess.GDBAccessObj instance = we need to create a separate
@@ -849,8 +855,6 @@ namespace Ict.Common.DB
                                                            "The attempt to begin a DB Transaction NOW occured on Thread {5} in AppDomain '{6}.'   " +
                                                            "The StackTrace of the *previously* started DB Transaction is as follows:\r\n  PREVIOUS Stracktrace: {7}\r\n  CURRENT Stracktrace: {8}";
 
-        private const string StrThreadAndAppDomainCallInfo = "(Call performed in Thread {0} in AppDomain '{1}')";
-
         /// <summary>An identifier ('Globally Unique Identifier (GUID)') that uniquely identifies a DB Connection once it
         /// gets created. It is used for internal 'sanity checks'. It also gets logged and hence can aid debugging (also useful for
         /// Unit Testing).</summary>
@@ -926,6 +930,14 @@ namespace Ict.Common.DB
         private string FUserID = string.Empty;
 
         private static bool FCheckedDatabaseVersion = false;
+
+        /// <summary>
+        /// Delegate that can optionally be passed to Method <see cref="SelectUsingDataAdapterMulti"/>. It will get called
+        /// every 'n' records (where n is specified with the "AProgressUpdateEveryNRecs" Argument of that Method) while multiple
+        /// Parameterised Query executions take place.
+        /// </summary>
+        /// <param name="ANumberOfProcessedParameterVariations"></param>
+        public delegate bool MultipleParamQueryProgressUpdateDelegate(Int32 ANumberOfProcessedParameterVariations);
 
         #region Constructors
 
@@ -1620,8 +1632,7 @@ namespace Ict.Common.DB
         {
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_DETAILED_CONN_INFO)
             {
-                return String.Format(StrThreadAndAppDomainCallInfo, ThreadingHelper.GetCurrentThreadIdentifier(),
-                    AppDomain.CurrentDomain.FriendlyName);
+                return Utilities.GetThreadAndAppDomainCallInfo();
             }
 
             return String.Empty;
@@ -2238,14 +2249,15 @@ namespace Ict.Common.DB
         public delegate string TOptionalColumnMappingDelegate(ref IDictionaryEnumerator AColumNameMappingEnumerator);
 
         /// <summary>
-        /// Executes a SQL Select Statement using a <see cref="DbDataAdapter"/>.
+        /// Executes a SQL Select Statement (once) using a <see cref="DbDataAdapter"/>.
         /// <para><em>Speciality:</em> The execution of the query can be cancelled at any time using the
         /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method of the
         /// <see cref="TDataAdapterCanceller"/> instance that gets returned in Argument
         /// <paramref name="ADataAdapterCanceller"/>!
         /// </para>
         /// </summary>
-        /// <param name="ASqlStatement">SQL statement.</param>
+        /// <param name="ASqlStatement">SQL statement. Must contain SQL Parameters if
+        /// <paramref name="AParametersArray" /> is specified!</param>
         /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
         /// <see cref="IsolationLevel"/>.</param>
         /// <param name="AFillDataTable">Instance of a DataTable. Can be null; in that case a DataTable by the name of
@@ -2255,33 +2267,146 @@ namespace Ict.Common.DB
         /// <param name="AOptionalColumnNameMapping">Supply a Delegate to create a mapping between the names of the fields
         /// in the DB and how they should be named in the resulting DataTable. (Optional - pass null for this Argument to not
         /// do that).</param>
-        /// <param name="APrepareSelectCommand">Set to true to 'Prepare' the Select Command in the RDBMS (if it supports
-        /// that) (Optional, Default=false.).</param>
         /// <param name="ASelectCommandTimeout">Set a timeout (in seconds) for the Select Command that is different
         /// from the default timeout for a Command (eg. 20s for a NpgsqlCommand). (Optional.)</param>
         /// <param name="AParametersArray">An array holding 1..n instantiated DbParameters (eg. OdbcParameters)
-        /// (including parameter Value) (Optional.)</param>
+        /// (including parameter Value) for a Parameterised Query (Optional.)</param>
         /// <returns>The number of Rows successfully added or refreshed in the DataTable passed in using
         /// <paramref name="AFillDataTable"/> (=return value of calling DbDataAdapter.Fill) - or -1 in case
         /// the creation of the internally used DataAdapter failed (should not happen).</returns>
         public int SelectUsingDataAdapter(String ASqlStatement, TDBTransaction AReadTransaction,
             ref DataTable AFillDataTable, out TDataAdapterCanceller ADataAdapterCanceller,
             TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
-            bool APrepareSelectCommand = false, int ASelectCommandTimeout = -1, DbParameter[] AParametersArray = null)
+            int ASelectCommandTimeout = -1, DbParameter[] AParametersArray = null)
         {
-            int ReturnValue;
+            List <object[]>ParameterValues = null;
+            List <object>ObjectValues = null;
+
+            if (AParametersArray != null)
+            {
+                ParameterValues = new List <object[]>(1);
+                ObjectValues = new List <object>();
+
+                for (int Counter = 0; Counter < AParametersArray.Length; Counter++)
+                {
+                    ObjectValues.Add(AParametersArray[Counter].Value);
+                }
+
+                ParameterValues.Add(ObjectValues.ToArray());
+            }
+
+            return SelectUsingDataAdapterMulti(ASqlStatement,
+                AReadTransaction,
+                ref AFillDataTable,
+                out ADataAdapterCanceller,
+                AOptionalColumnNameMapping,
+                ASelectCommandTimeout,
+                AParametersArray,
+                ParameterValues,
+                false);
+        }
+
+        /// <summary>
+        /// Executes a SQL Select Statement (1..n times if a Paramterised Query is used) using a <see cref="DbDataAdapter"/>.
+        /// <para><em>Speciality:</em> The execution of the query can be cancelled at any time using the
+        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method of the
+        /// <see cref="TDataAdapterCanceller"/> instance that gets returned in Argument
+        /// <paramref name="ADataAdapterCanceller"/>!
+        /// </para>
+        /// <para>
+        /// In case <paramref name="AParameterValues"/> holds more than one entry then the same parameterised query will be
+        /// executed as many times as there are entries. The resulting data of all query executions gets appended to
+        /// <paramref name="AFillDataTable"/>!
+        /// </para>
+        /// </summary>
+        /// <param name="ASqlStatement">SQL statement. Must contain SQL Parameters if
+        /// <paramref name="AParameterDefinitions"/> is specified!</param>
+        /// <param name="AReadTransaction">Instantiated <see cref="TDBTransaction" /> with the desired
+        /// <see cref="IsolationLevel"/>.</param>
+        /// <param name="AFillDataTable">Instance of a DataTable. Can be null; in that case a DataTable by the name of
+        /// "SelectUsingDataAdapter_DataTable" is created on-the-fly.</param>
+        /// <param name="ADataAdapterCanceller">An instance of the <see cref="TDataAdapterCanceller"/> Class. Call the
+        /// <see cref="TDataAdapterCanceller.CancelFillOperation"/> Method to cancel the execution of the query.</param>
+        /// <param name="AOptionalColumnNameMapping">Supply a Delegate to create a mapping between the names of the fields
+        /// in the DB and how they should be named in the resulting DataTable. (Optional - pass null for this Argument to not
+        /// do that).</param>
+        /// <param name="ASelectCommandTimeout">Set a timeout (in seconds) for the Select Command that is different
+        /// from the default timeout for a Command (eg. 20s for a NpgsqlCommand). (Optional.)</param>
+        /// <param name="AParameterDefinitions">Instantiated DbParameters (eg. OdbcParameters) for a Parameterised Query.
+        /// Only the the Types of the Parameters are relevant, the Values will be <em>ignored</em> (these will need to be passed
+        /// in via the <paramref name="AParameterValues"/> Argument!!! (Optional.)</param>
+        /// <param name="AParameterValues">A List of Type object[] that contains 1..n Parameter Values in each array for
+        /// 1..n executions (=number of List entries) of the <em>same</em> Parameterised Query using the internal DataAdapter.</param>
+        /// <param name="APrepareSelectCommand">Set to true to 'Prepare' the Select Command in the RDBMS (if the RDBMS supports
+        /// that). Because this only makes sense if <paramref name="AParameterValues"/> holds more than one entry it will be
+        /// ignored if <paramref name="AParameterValues"/> is null or holds only one entry! (Optional, Default=false.).</param>
+        /// <param name="AProgressUpdateEveryNRecs">Specifies the interval in which
+        /// the Delegate passed in in Argument <paramref name="AMultipleParamQueryProgressUpdateCallback"/> will get called
+        /// (Optional if that Delegate isn't passed in./)</param>
+        /// <param name="AMultipleParamQueryProgressUpdateCallback">The Delegate that should be called every
+        /// '<paramref name="AProgressUpdateEveryNRecs"/>' records while multiple Parameterised Query executions take place.
+        /// This makes sense only when <paramref name="AParameterValues"/> holds more than one Item. (Optional.)</param>
+        /// <returns>The number of Rows successfully added or refreshed in the DataTable passed in using
+        /// <paramref name="AFillDataTable"/> (=return value of calling DbDataAdapter.Fill) - or -1 in case
+        /// the creation of the internally used DataAdapter failed (should not happen). In case a Parameterised Query got
+        /// executed several times (with multiple Parameter Values) then the return value is the added-up number of the calls
+        /// to DbDataAdapter.Fill!</returns>
+        public int SelectUsingDataAdapterMulti(String ASqlStatement, TDBTransaction AReadTransaction, ref DataTable AFillDataTable,
+            out TDataAdapterCanceller ADataAdapterCanceller, TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
+            int ASelectCommandTimeout = -1, DbParameter[] AParameterDefinitions = null, List <object[]>AParameterValues = null,
+            bool APrepareSelectCommand = false,
+            int AProgressUpdateEveryNRecs = 0, MultipleParamQueryProgressUpdateDelegate AMultipleParamQueryProgressUpdateCallback = null)
+        {
+            int ReturnValue = 0;
+            bool userCancel = false;
             DbDataAdapter SelectDataAdapter;
             IDictionaryEnumerator ColumNameMappingEnumerator = null;
             string MappingsString;
 
+            OdbcParameter[] QueryParameters = null;
+            bool ExecuteProgressUpdateCallback = (AMultipleParamQueryProgressUpdateCallback != null)
+                                                 && (AProgressUpdateEveryNRecs != 0);
+
             AFillDataTable = AFillDataTable ?? new DataTable("SelectUsingDataAdapter_DataTable");
             ADataAdapterCanceller = null;
+
+            ASqlStatement = FDataBaseRDBMS.FormatQueryRDBMSSpecific(ASqlStatement);
 
             WaitForCoordinatedDBAccess();
 
             try
             {
-                if (APrepareSelectCommand)
+                if (AParameterDefinitions != null)
+                {
+                    #region Validate Arguments
+
+                    if (AParameterValues == null)
+                    {
+                        throw new ArgumentNullException("AParameterValues", "AParameterValues must not be null if " +
+                            "AParameterDefinitions is specified");
+                    }
+
+                    if (AParameterDefinitions.Length != AParameterValues[0].Length)
+                    {
+                        throw new ArgumentException(String.Format(
+                                "ValidateSeparateOdbcQueryParametersAndValues - Item count mismatch: AParameterDefinitions holds {0} " +
+                                "items but AParameterValues holds {1}; in order for this Method to work they must hold the same number of items",
+                                AParameterDefinitions.Length, AParameterValues[0].Length));
+                    }
+
+                    #endregion
+
+                    QueryParameters = new OdbcParameter[AParameterDefinitions.Length];
+
+                    for (int Counter = 0; Counter < AParameterDefinitions.Length; Counter++)
+                    {
+                        QueryParameters[Counter] = (OdbcParameter)AParameterDefinitions[Counter];
+                    }
+                }
+
+                if (APrepareSelectCommand
+                    && (AParameterValues != null)
+                    && (AParameterValues.Count > 1))
                 {
                     PrepareNextCommand();
                 }
@@ -2291,13 +2416,29 @@ namespace Ict.Common.DB
                     SetTimeoutForNextCommand(ASelectCommandTimeout);
                 }
 
-                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                if (AParameterValues != null)
                 {
-                    LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", ASqlStatement, AParametersArray);
-                }
+                    string CommandText = ASqlStatement;
+                    DbParameter[] ConvertedParameters = FDataBaseRDBMS.ConvertOdbcParameters(QueryParameters, ref CommandText);
 
-                SelectDataAdapter = (DbDataAdapter)SelectDA(ASqlStatement, AReadTransaction,
-                    false, AParametersArray);
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", CommandText, QueryParameters);
+                    }
+
+                    SelectDataAdapter = (DbDataAdapter)SelectDA(CommandText, AReadTransaction,
+                        false, ConvertedParameters);
+                }
+                else
+                {
+                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_QUERY)
+                    {
+                        LogSqlStatement(this.GetType().FullName + ".SelectUsingDataAdapter()", ASqlStatement, null);
+                    }
+
+                    SelectDataAdapter = (DbDataAdapter)SelectDA(ASqlStatement, AReadTransaction,
+                        false);
+                }
 
                 if (SelectDataAdapter != null)
                 {
@@ -2320,12 +2461,53 @@ namespace Ict.Common.DB
 
                     ADataAdapterCanceller = new TDataAdapterCanceller(SelectDataAdapter);
 
-                    ReturnValue = SelectDataAdapter.Fill(AFillDataTable);
-
-                    if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                    if (AParameterValues != null)
                     {
-                        TLogging.Log(((this.GetType().FullName + ".SelectUsingDataAdapter: finished filling DbDataAdapter(DataTable " +
-                                       AFillDataTable.TableName) + "). DT Row Count: " + AFillDataTable.Rows.Count.ToString()));
+                        // AParameterValues can hold parameters for 1..n executions of the same query with differing Parameter Values.
+                        // Iterate over the AParameterValues entries and assign the individual Parameter Values of a given entry to
+                        // the SelectDataAdapter.SelectCommand.Parameters' Values, then execute SelectDataAdapter.Fill.
+                        // Thus the resulting DataRows of all the iterations will all be appended to AFillDataTable.
+                        for (int OuterCounter = 0; OuterCounter < AParameterValues.Count && !userCancel; OuterCounter++)
+                        {
+                            for (int InnerCounter = 0; InnerCounter < AParameterValues[OuterCounter].Length && !userCancel; InnerCounter++)
+                            {
+                                if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_RESULT)
+                                {
+                                    TLogging.Log("Adding parameter " + InnerCounter.ToString() + ": " +
+                                        SelectDataAdapter.SelectCommand.Parameters[InnerCounter].ParameterName +
+                                        " (" + SelectDataAdapter.SelectCommand.Parameters[InnerCounter].DbType.ToString() + ") value: " +
+                                        AParameterValues[OuterCounter][InnerCounter].ToString() +
+                                        " (" + AParameterValues[OuterCounter][InnerCounter].GetType().ToString() + ")");
+                                }
+
+                                SelectDataAdapter.SelectCommand.Parameters[InnerCounter].Value = AParameterValues[OuterCounter][InnerCounter];
+                            }
+
+                            ReturnValue += SelectDataAdapter.Fill(AFillDataTable);
+
+                            if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                            {
+                                TLogging.Log(((this.GetType().FullName + ".SelectUsingDataAdapter: finished filling DbDataAdapter(DataTable " +
+                                               AFillDataTable.TableName) + "). DT Row Count: " + AFillDataTable.Rows.Count.ToString() +
+                                              "; Parameter iteration count: " + OuterCounter.ToString()));
+                            }
+
+                            if (ExecuteProgressUpdateCallback
+                                && ((OuterCounter + 1) % AProgressUpdateEveryNRecs == 0))
+                            {
+                                userCancel = AMultipleParamQueryProgressUpdateCallback(OuterCounter + 1);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        ReturnValue = SelectDataAdapter.Fill(AFillDataTable);
+
+                        if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_TRACE)
+                        {
+                            TLogging.Log(((this.GetType().FullName + ".SelectUsingDataAdapter: finished filling DbDataAdapter(DataTable " +
+                                           AFillDataTable.TableName) + "). DT Row Count: " + AFillDataTable.Rows.Count.ToString()));
+                        }
                     }
                 }
                 else
@@ -4417,7 +4599,7 @@ namespace Ict.Common.DB
 
             if (AParametersArray != null)
             {
-                foreach (OdbcParameter param in AParametersArray)
+                foreach (DbParameter param in AParametersArray)
                 {
                     if (param.Value is TDbListParameterValue)
                     {
@@ -4738,6 +4920,13 @@ namespace Ict.Common.DB
                             "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
                             Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType));
                     }
+                    else if (Parameter.Value == null)
+                    {
+                        TLogging.Log(
+                            "Parameter: " + Counter.ToString() + " " + Parameter.ParameterName + " (no value specified) " +
+                            ' ' +
+                            Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString());
+                    }
                     else
                     {
                         TLogging.Log(
@@ -4848,7 +5037,7 @@ namespace Ict.Common.DB
                 FormattedSqlStatement = "The SQL Statement was: " + Environment.NewLine +
                                         ASqlStatement + Environment.NewLine;
 
-                if (AParametersArray != null)
+                if (AParametersArray != null && AParametersArray.Length > 0 && AParametersArray[0] is OdbcParameter)
                 {
                     Int32 Counter = 1;
 
@@ -4857,14 +5046,21 @@ namespace Ict.Common.DB
                         if (Parameter.Value == System.DBNull.Value)
                         {
                             FormattedSqlStatement +=
-                                "Parameter: " + Counter.ToString() + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.ParameterName + " DBNull" + ' ' + Parameter.Value.GetType().ToString() + ' ' +
                                 Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) +
                                 Environment.NewLine;
+                        }
+                        else if (Parameter.Value == null)
+                        {
+                            TLogging.Log(
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.ParameterName + " (no value specified) " +
+                                ' ' +
+                                Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString());
                         }
                         else
                         {
                             FormattedSqlStatement +=
-                                "Parameter: " + Counter.ToString() + ' ' + Parameter.Value.ToString() + ' ' +
+                                "Parameter: " + Counter.ToString() + ' ' + Parameter.ParameterName + ' ' + Parameter.Value.ToString() + ' ' +
                                 Parameter.Value.GetType().ToString() +
                                 ' ' +
                                 Enum.GetName(typeof(System.Data.Odbc.OdbcType), Parameter.OdbcType) + ' ' + Parameter.Size.ToString() +
@@ -4905,8 +5101,9 @@ namespace Ict.Common.DB
         internal void WaitForCoordinatedDBAccess()
         {
             const string StrWaitingMessage =
-                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... " + StrThreadAndAppDomainCallInfo;
-            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " + StrThreadAndAppDomainCallInfo;
+                "Waiting to obtain Thread-safe access to the Database Abstraction Layer... " + Utilities.StrThreadAndAppDomainCallInfo;
+            const string StrWaitingSuccessful = "Obtained Thread-safe access to the Database Abstraction Layer... " +
+                                                Utilities.StrThreadAndAppDomainCallInfo;
 
             if (TLogging.DL >= DBAccess.DB_DEBUGLEVEL_COORDINATED_DBACCESS_STACKTRACES)
             {
@@ -4945,7 +5142,7 @@ namespace Ict.Common.DB
         internal void ReleaseCoordinatedDBAccess()
         {
             const string StrReleasedCoordinatedDBAccess =
-                "Released Thread-safe access to the Database Abstraction Layer. " + StrThreadAndAppDomainCallInfo + "...";
+                "Released Thread-safe access to the Database Abstraction Layer. " + Utilities.StrThreadAndAppDomainCallInfo + "...";
 
             FCoordinatedDBAccess.Release();
 

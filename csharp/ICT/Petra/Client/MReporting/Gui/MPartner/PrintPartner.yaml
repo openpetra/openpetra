@@ -36,8 +36,8 @@ RootNode:
                 Row0: [chkPartnerClassData, chkFinanceDetails]
                 Row1: [chkSubscriptions, chkInterests]
                 Row2: [chkRelationships, chkContacts]
-                Row3: [chkLocations, chkContactDetails]
-                Row4: [chkReminders, chkSpecialTypes]
+                Row3: [chkLocations, chkReminders]
+                Row4: [chkContactDetails, chkSpecialTypes]
                 Row5: [btnSelectAll, btnDeselectAll]
                 Row6: [chkHideEmpty, chkPaginate]
             
@@ -68,13 +68,8 @@ RootNode:
         chkReminders:
             Label: Reminders
             CheckBoxAttachedLabel: right
-        chkHideEmpty:
-            Label: Show Hint if Section is Empty
-            CheckBoxAttachedLabel: right
         chkSpecialTypes:
             Label: Special Types
-            CheckBoxAttachedLabel: right
-        chkPaginate:
             CheckBoxAttachedLabel: right
 
         btnSelectAll:
@@ -82,3 +77,9 @@ RootNode:
         btnDeselectAll:
             Action: actDeselectAll
             Padding: -75,0,0,0
+
+        chkHideEmpty:
+            Label: Show Hint if Section is Empty
+            CheckBoxAttachedLabel: right
+        chkPaginate:
+            CheckBoxAttachedLabel: right

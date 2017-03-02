@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2014
+// Copyright 2004-2016
 // This file is part of OpenPetra.org.
 //
 // OpenPetra.org is free software: you can redistribute it and/or modify
@@ -605,6 +605,19 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             //FSelectedDocumentRow.Amount = Decimal.Parse(txtAmountToPay.Text);
             FSelectedDocumentRow.Amount = txtAmountToPay.NumberValueDecimal.Value;
             FSelectedPaymentRow.BankAccount = cmbBankAccount.GetSelectedString();
+
+            //
+            // I can't go ahead if the bank account isn't set.
+            //
+            if (FSelectedPaymentRow.BankAccount == "")
+            {
+                System.Windows.Forms.MessageBox.Show(
+                    Catalog.GetString("Error: no Bank account was specified."),
+                    Catalog.GetString("AP Payment"));
+                cmbBankAccount.Focus();
+                return;
+            }
+
             AccountsPayableTDSAApPaymentTable AApPayment = FMainDS.AApPayment;
 
             //
@@ -629,7 +642,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                                 StringHelper.FormatUsingCurrencyCode(DocPaymentRow.Amount, PaymentRow.CurrencyCode),
                                 PaymentRow.CurrencyCode, PaymentRow.SupplierName);
 
-                        System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("OverPayment"));
+                        System.Windows.Forms.MessageBox.Show(strMessage, Catalog.GetString("AP Payment"));
                         return;
                     }
                 }

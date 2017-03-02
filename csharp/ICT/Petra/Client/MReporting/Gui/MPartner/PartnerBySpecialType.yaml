@@ -53,8 +53,10 @@ RootNode:
             Width: 230
             Height: 170
         txtDateSet:
-            Label: Date Set
+            #Label: Date Set
+            NoLabel:true
             ParameterName: param_date_set
+            Visible: false
         ucoReportSorting:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_Sorting
             Dock: Fill
@@ -62,9 +64,6 @@ RootNode:
         Para1:
             Name: Address Type
             Parameter: 2.5
-        Para2:
-            Name: Alternate Telephone
-            Parameter: 3.3
         Para3:
             Name: Address valid from
             Parameter: 1.8
@@ -81,7 +80,7 @@ RootNode:
             Name: County
             Parameter: 2.0
         Para8:
-            Name: Primary E-Mail
+            Name: Primary EMail
             Parameter: 4.0
         Para9:
             Name: Fax
@@ -95,9 +94,9 @@ RootNode:
         Para12:
             Name: Location Key
             Parameter: 2.0
-        Para13:
-            Name: Mobile
-            Parameter: 3.0
+        #Para13:
+        #    Name: Mobile
+        #    Parameter: 3.0
         Para14:
             Name: Partner Class
             Parameter: 1.0
@@ -127,8 +126,5 @@ RootNode:
             Parameter: 3.3
         Para22:
             Name: Third Address Line
-            Parameter: 3.0
-        Para23:
-            Name: URL
             Parameter: 3.0
             

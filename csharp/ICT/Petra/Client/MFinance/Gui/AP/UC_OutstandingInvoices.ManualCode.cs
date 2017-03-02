@@ -106,6 +106,14 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         /// </summary>
         public void SelectRowInGrid(int ARowNumber)
         {
+            SelectAndFocus(ARowNumber);
+        }
+
+        /// <summary>Use this to avoid the form pulling forward when the data is loaded.</summary>
+        /// <param name="ARowNumber"></param>
+        /// <param name="AndFocus"></param>
+        public void SelectAndFocus(int ARowNumber, Boolean AndFocus = true)
+        {
             if (ARowNumber >= grdInvoices.Rows.Count)
             {
                 ARowNumber = grdInvoices.Rows.Count - 1;
@@ -117,7 +125,15 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // Note:  We need to be sure to focus column 1 in this case because sometimes column 0 is not visible!!
-            grdInvoices.Selection.SelectCell(new SourceGrid.Position(ARowNumber, 1), true);
+            if (AndFocus)
+            {
+                grdInvoices.Selection.SelectCell(new SourceGrid.Position(ARowNumber, 1), true);
+            }
+            else
+            {
+                grdInvoices.SelectRowWithoutFocus(ARowNumber);
+            }
+
             FPrevRowChangedRow = ARowNumber;
         }
 

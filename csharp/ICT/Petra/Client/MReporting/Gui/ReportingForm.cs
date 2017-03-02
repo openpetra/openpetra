@@ -36,6 +36,10 @@ using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Common.Controls;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using System.Collections.Generic;
+using System.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {

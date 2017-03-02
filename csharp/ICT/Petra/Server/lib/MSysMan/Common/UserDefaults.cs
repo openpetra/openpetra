@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -27,9 +27,9 @@ using System.Data.Odbc;
 using System.Threading;
 using Ict.Common;
 using Ict.Common.Data.Exceptions;
+using Ict.Common.Session;
 using Ict.Common.DB;
 using Ict.Common.Exceptions;
-using Ict.Common.Session;
 using Ict.Common.Verification;
 using Ict.Common.Remoting.Shared;
 using Ict.Common.Remoting.Server;
@@ -39,7 +39,7 @@ using Ict.Common.Data;
 using Ict.Petra.Shared;
 using Ict.Petra.Server.App.Core.Security;
 
-namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
+namespace Ict.Petra.Server.MSysMan.Common.WebConnectors
 {
     /// <summary>
     /// Reads and saves a DataTable for the User Defaults.
@@ -886,8 +886,8 @@ namespace Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors
                         });
 
                     // we don't have any unsaved changes anymore in the cache table.
-                    DefaultsDT.AcceptChanges();
-                    UUserDefaultsDT = DefaultsDT;
+                   DefaultsDT.AcceptChanges();
+                   UUserDefaultsDT = DefaultsDT;
                 }
                 else
                 {

@@ -51,7 +51,7 @@ using Ict.Petra.Server.MFinance.GL.WebConnectors;
 using Ict.Petra.Server.MFinance.Setup.WebConnectors;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 
 using Ict.Petra.Shared;
 using Ict.Petra.Shared.MCommon.Data;
@@ -4286,22 +4286,24 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
             DBAccess.GDBAccessObj.SelectDT(tmpFeesReceivable, Query, ATransaction);
             AMainDS.AFeesReceivable.Merge(tmpFeesReceivable);
 
-            #region Validate Data
-
-            if ((AMainDS.AMotivationDetailFee != null) && (AMainDS.AMotivationDetailFee.Count > 0)
-                && ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Rows.Count == 0))
-                && ((AMainDS.AFeesReceivable == null) || (AMainDS.AFeesReceivable.Rows.Count == 0)))
-            {
-                throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                            "Function:{0} - Admin fee data for Gift Detail {1}, from Gift {2} in Batch {3} and Ledger {4} does not exist or could not be accessed!"),
-                        Utilities.GetMethodSignature(),
-                        AGiftDetail.DetailNumber,
-                        AGiftDetail.GiftTransactionNumber,
-                        AGiftDetail.BatchNumber,
-                        AGiftDetail.LedgerNumber));
-            }
-
-            #endregion Validate Data
+            /*
+             * So, previously it was !!a fatal exception!! if there were no applicaple fees returned!
+             *
+             * Modified Jan 2017 Tim Ingham
+             *
+             *         if ((AMainDS.AMotivationDetailFee != null) && (AMainDS.AMotivationDetailFee.Count > 0)
+             *             && ((AMainDS.AFeesPayable == null) || (AMainDS.AFeesPayable.Rows.Count == 0))
+             *             && ((AMainDS.AFeesReceivable == null) || (AMainDS.AFeesReceivable.Rows.Count == 0)))
+             *         {
+             *             throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+             *                         "Function:{0} - Admin fee data for Gift Detail {1}, from Gift {2} in Batch {3} and Ledger {4} does not exist or could not be accessed!"),
+             *                     Utilities.GetMethodSignature(),
+             *                     AGiftDetail.DetailNumber,
+             *                     AGiftDetail.GiftTransactionNumber,
+             *                     AGiftDetail.BatchNumber,
+             *                     AGiftDetail.LedgerNumber));
+             *         }
+             */
         }
 
         /// <summary>

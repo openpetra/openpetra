@@ -29,6 +29,11 @@ using Ict.Petra.Client.MFinance.Logic;
 using Ict.Petra.Client.MReporting.Logic;
 using Ict.Petra.Client.App.Core.RemoteObjects;
 using Ict.Petra.Shared.MReporting;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
 
 namespace Ict.Petra.Client.MReporting.Gui.MFinance
 {
@@ -53,6 +58,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 TFinanceControls.InitialiseAccountList(ref cmbAccountTo, FLedgerNumber, true, false, false, false);
                 cmbAccountTo.SetSelectedString(FToAccountCode, -1);
             }
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+            tabReportSettings.Controls.Remove(tpgAdditionalSettings);
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("APAccountDetail",
+                true,
+                new string[] { "Accounts", "Details" },
+                ACalc,
+                this,
+                true,
+                true,
+                FLedgerNumber);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

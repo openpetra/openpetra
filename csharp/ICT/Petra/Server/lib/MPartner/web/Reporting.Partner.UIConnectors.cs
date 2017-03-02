@@ -4,7 +4,7 @@
 // @Authors:
 //       Jakob Englert
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -29,7 +29,10 @@ using Ict.Petra.Shared;
 using System;
 using System.Collections.Generic;
 using System.Data;
-//using Ict.Petra.Server.MPartner.Common;
+using System.Text;
+using Ict.Petra.Server.MPartner.Common;
+using Ict.Petra.Server.MPartner.DataAggregates;
+using System.Linq;
 
 namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 {
@@ -38,6 +41,114 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
     ///</summary>
     public partial class TPartnerReportingWebConnector
     {
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataSet BriefAddressReport(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataSet ReturnDataSet = new DataSet();
+
+            TDBTransaction Transaction = null;
+            DataTable Partners = new DataTable("Partners");
+            DataTable Locations = new DataTable("Locations");
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    String PartnerSelection = GetPartnerKeysAsString(AParameters,
+                        DbAdapter);
+
+                    String PartnersQuery =
+                        @"SELECT
+	                                            p_partner_key_n AS PartnerKey,
+	                                            p_partner_class_c AS PartnerClass,
+	                                            p_partner_short_name_c AS PartnerShortName,
+	                                            p_status_code_c AS StatusCode
+
+                                            FROM p_partner
+                                            WHERE p_partner_key_n IN ("
+                        +
+                        PartnerSelection + ")";
+
+                    Partners = DbAdapter.RunQuery(PartnersQuery,
+                        "Partners",
+                        Transaction);
+
+                    if ((AParameters["param_addressdetail"]).ToString() == "GetBestAddressForPartner")
+                    {
+                        // Get best Addresses for every partner
+                        Locations = TAddressTools.GetBestAddressForPartners(Partners,
+                            0,
+                            Transaction);
+                    }
+                    else
+                    {
+                        // in this case we want to get all addresses (including expired ones)
+                        String LocationsQuery =
+                            @"SELECT
+                                               p_partner_location.*,
+                                               p_location.*,
+                                               p_country.p_address_order_i
+                                           FROM
+                                               p_partner_location, p_location, p_country
+                                           WHERE
+                                               p_partner_location.p_partner_key_n IN("
+                            +
+
+                            PartnerSelection +
+                            @")
+
+                                               AND p_location.p_location_key_i = p_partner_location.p_location_key_i
+
+                                               AND p_country.p_country_code_c = p_location.p_country_code_c"                                                                                                                                                           ;
+
+                        Locations = DbAdapter.RunQuery(LocationsQuery,
+                            "Locations",
+                            Transaction);
+                    }
+
+                    Locations.TableName = "Locations";
+
+                    //Add fields and retrieve data for contact details
+                    TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(Partners, 0, DbAdapter, true, true, true);
+
+                    //Retrieve "field" information
+                    TPartnerReportTools.AddFieldNameToTable(Partners, 0, AParameters, "param_currentstaffdate", DbAdapter);
+
+                    //Make the Column Names great again.
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(Partners);
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(Locations);
+
+                    //Sort and filter
+                    Locations.CaseSensitive = false;
+                    DataView dv = Locations.DefaultView;
+
+                    Dictionary <string, string>Mapping = new Dictionary <string, string>();
+                    Mapping.Add("PartnerName", "PartnerShortName");
+                    Mapping.Add("AddressType", "LocationType");
+                    Mapping.Add("Addressvalidfrom", "DateEffective");
+                    Mapping.Add("Addressvalidto", "DateGoodUntil");
+                    Mapping.Add("FirstAddressLine", "Locality");
+                    Mapping.Add("PostCode", "PostalCode");
+                    Mapping.Add("ThirdAddressLine", "Address3");
+                    Mapping.Add("Country", "CountryCode");
+                    dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), Locations.Columns, Mapping);
+                    Locations = dv.ToTable();
+                });
+
+            ReturnDataSet.Tables.Add(Partners);
+            ReturnDataSet.Tables.Add(Locations);
+
+            return ReturnDataSet;
+        }
+
         /// <summary>
         ///
         /// </summary>
@@ -187,10 +298,16 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                 INNER JOIN p_family ON p_family.p_partner_key_n = p_partner.p_partner_key_n
                                                 LEFT JOIN p_partner_gift_destination
                                                                 ON(p_family.p_partner_key_n = p_partner_gift_destination.p_partner_key_n
-                                                                AND(p_partner_gift_destination.p_date_effective_d <= '2015-11-25'
-                                                                AND p_partner_gift_destination.p_date_expires_d IS NULL
-                                                                OR p_partner_gift_destination.p_date_expires_d >= '2015-11-25'
-                                                                AND p_partner_gift_destination.p_date_effective_d != p_partner_gift_destination.p_date_expires_d))
+                                                                AND(p_partner_gift_destination.p_date_effective_d <= '"
+                        +
+                        DateTime.Today.ToString(
+                            "yyyy-MM-dd") +
+                        @"' AND p_partner_gift_destination.p_date_expires_d IS NULL
+                                                                OR p_partner_gift_destination.p_date_expires_d >= '"
+                        +
+                        DateTime.Today.ToString(
+                            "yyyy-MM-dd") +
+                        @"' AND p_partner_gift_destination.p_date_effective_d != p_partner_gift_destination.p_date_expires_d))
                                                 WHERE p_family.p_partner_key_n IN("
                         +
                         PartnerSelection + ")";
@@ -661,6 +778,277 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             ReturnDataSet.Tables.Add(Reminders);
             ReturnDataSet.Tables.Add(SpecialTypes);
             return ReturnDataSet;
+        }
+
+        /// <summary>
+        /// Returns a DataTable to the client for use in client-side reporting
+        /// </summary>
+        [NoRemoting]
+        public static DataSet PartnerByRelationship(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataSet ResultSet = new DataSet();
+
+            DataTable relationship = new DataTable();
+            DataTable church = new DataTable();
+            DataTable address = new DataTable();
+            DataTable organisation = new DataTable();
+            TDBTransaction Transaction = null;
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    Boolean useRecipropcal = AParameters["param_use_reciprocal_relationship"].ToBool();
+                    String byPartnerField = (useRecipropcal) ?
+                                            "PUB_p_partner_relationship.p_relation_key_n"
+                                            :
+                                            "PUB_p_partner_relationship.p_partner_key_n";
+                    String DescrField = (useRecipropcal) ?
+                                        "PUB_p_relation.p_reciprocal_description_c"
+                                        :
+                                        "PUB_p_relation.p_relation_description_c";
+                    String paramPartnerSelection = AParameters["param_selection"].ToString();
+                    String extraTables = "";
+                    String partnerSelection = "";
+
+                    switch (paramPartnerSelection)
+                    {
+                        case "one partner":
+                            String paramPartnerKey = AParameters["param_partnerkey"].ToString();
+                            partnerSelection = " AND " + byPartnerField + " = " + paramPartnerKey;
+                            break;
+
+                        case "an extract":
+                            extraTables = ", PUB_m_extract, PUB_m_extract_master";
+                            String paramExtractName = AParameters["param_extract"].ToString();
+                            partnerSelection =
+                                " AND PUB_m_extract.p_partner_key_n = " + byPartnerField +
+                                " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
+                                " AND PUB_m_extract_master.m_extract_name_c = '" + paramExtractName + "' ";
+                            break;
+
+                        case "all current staff": // There's currently no UI for this option, so it can't get called!
+                            extraTables = ", PUB_pm_staff_data";
+                            String paramCurrentStaffDate = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+                            partnerSelection =
+                                " AND PUB_pm_staff_data.p_partner_key_n = " + byPartnerField +
+                                " AND PUB_pm_staff_data.pm_start_of_commitment_d <= '" + paramCurrentStaffDate + "'" +
+                                " AND(PUB_pm_staff_data.pm_end_of_commitment_d >= '" + paramCurrentStaffDate + "'" +
+                                " OR PUB.pm_staff_data.pm_end_of_commitment_d IS NULL )";
+                            break;
+                    }
+
+                    String paramRelationshipTypes = AParameters["param_relationship_types"].ToString();
+                    String relationshipSelection = " AND PUB_p_partner_relationship.p_relation_name_c IN ('" +
+                                                   paramRelationshipTypes.Replace(",", "','") + "')";
+
+                    Boolean paramActive = AParameters["param_active"].ToBool();
+                    String excludeNotActive = paramActive ? " AND Rel1.p_status_code_c = 'ACTIVE'" : "";
+
+                    Boolean paramExcludeNoSolicitations = AParameters["param_exclude_no_solicitations"].ToBool();
+                    String excludeNoSolicitations = paramExcludeNoSolicitations ? " AND Rel1.p_no_solicitations_l = 0" : "";
+
+                    String orderBy = " ORDER BY " + byPartnerField;
+                    String Query =
+                        @"SELECT DISTINCT
+                        PUB_p_partner_relationship.p_relation_name_c AS Relationship, "                                            +
+                        DescrField +
+                        @" AS RelationshipDescr,
+                        PUB_p_partner_relationship.p_partner_key_n AS Rel1PartnerKey,
+                        PUB_p_partner_relationship.p_relation_key_n AS Rel2PartnerKey,
+                        Rel1.p_partner_short_name_c AS Rel1PartnerName,
+                        Rel2.p_partner_short_name_c AS Rel2PartnerName,
+                        Rel1.p_partner_class_c AS Rel1PartnerClass,
+                        Rel2.p_partner_class_c AS Rel2PartnerClass
+                        FROM
+                        PUB_p_partner_relationship,
+                        PUB_p_relation,
+                        PUB_p_partner AS Rel1,
+                        PUB_p_partner AS Rel2
+                        "
+                        +
+                        extraTables +
+                        " WHERE" +
+                        " PUB_p_partner_relationship.p_relation_name_c = PUB_p_relation.p_relation_name_c" +
+                        " AND Rel1.p_partner_key_n = PUB_p_partner_relationship.p_partner_key_n" +
+                        " AND Rel2.p_partner_key_n = PUB_p_partner_relationship.p_relation_key_n" +
+                        partnerSelection +
+                        relationshipSelection +
+                        excludeNotActive +
+                        excludeNoSolicitations +
+                        orderBy;
+                    relationship = DbAdapter.RunQuery(Query, "Relationship", Transaction);
+
+                    if (relationship.Rows.Count == 0)
+                    {
+                        return; // Returns out of the delegate, to the enclosing method.
+                    }
+
+                    //
+                    // Get supporting tables, that the client can link via relations.
+
+                    StringBuilder partnerKeysBuilder = new StringBuilder();
+
+                    foreach (DataRow row in relationship.Rows)
+                    {
+                        partnerKeysBuilder.Append(row["Rel1PartnerKey"].ToString() + "," + row["Rel2PartnerKey"].ToString() + ",");
+                    }
+
+                    String partnerKeys = partnerKeysBuilder.ToString().TrimEnd(new char[] { ',' });
+                    Query = "SELECT p_church.p_partner_key_n AS PartnerKey, " +
+                            " p_church.p_church_name_c AS ChurchName, " +
+                            " p_partner.p_partner_short_name_c AS ChurchContactPersonName, " +
+                            " p_church.p_contact_partner_key_n AS ChurchContactPersonKey" +
+                            " FROM p_church, p_partner" +
+                            " WHERE p_church.p_partner_key_n in (" + partnerKeys + ")" +
+                            " AND p_partner.p_partner_key_n = p_church.p_contact_partner_key_n";
+                    church = DbAdapter.RunQuery(Query, "Church", Transaction);
+
+                    address = TAddressTools.GetBestAddressForPartners(partnerKeys, Transaction, false, true);
+
+                    Query = "SELECT p_organisation.p_partner_key_n AS PartnerKey, " +
+                            " p_organisation.p_organisation_name_c AS OrganisationName, " +
+                            " p_partner.p_partner_short_name_c AS OrganisationContactPersonName, " +
+                            " p_organisation.p_contact_partner_key_n AS OrganisationContactPersonKey" +
+                            " FROM p_organisation, p_partner" +
+                            " WHERE p_organisation.p_partner_key_n in (" + partnerKeys + ")" +
+                            " AND p_partner.p_partner_key_n = p_organisation.p_contact_partner_key_n";
+                    organisation = DbAdapter.RunQuery(Query, "Organisation", Transaction);
+                });
+
+            if (relationship.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            ResultSet.Merge(relationship);
+            ResultSet.Merge(church);
+            ResultSet.Merge(address);
+            ResultSet.Merge(organisation);
+            return ResultSet;
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        [NoRemoting]
+        public static DataTable PartnerBySpecialType(Dictionary <string, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            DataTable ReturnTable = new DataTable();
+            TDBTransaction Transaction = null;
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query =
+                        @"SELECT DISTINCT
+                                        p_partner.p_partner_key_n,
+	                                    p_partner.p_partner_short_name_c,
+	                                    p_partner.p_partner_class_c
+                                        FROM   p_partner, p_partner_location, p_location, p_partner_type as ptype
+                                    WHERE
+                                        ptype.p_partner_key_n = p_partner.p_partner_key_n
+                                        AND NOT p_partner.p_partner_key_n = 0
+                                        AND p_partner_location.p_partner_key_n = p_partner.p_partner_key_n
+                                        AND p_partner_location.p_location_key_i = p_location.p_location_key_i"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ;
+
+                    Query += " AND ptype.p_type_code_c IN(" + AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0,
+                        "'").Insert(AParameters["param_explicit_specialtypes"].ToString().Replace(",", "','").Insert(0, "'").Length, "'") + ") ";
+
+
+                    Query += TPartnerReportTools.UCExtractChkFilterSQLConditions(AParameters);
+
+                    ReturnTable = DbAdapter.RunQuery(Query, "PartnerBySpecialType", Transaction);
+
+                    //Add Contact Information, Address, Field
+                    TPartnerReportTools.AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0, DbAdapter);
+                    ReturnTable = TAddressTools.GetBestAddressForPartnersAsJoinedTable(ReturnTable, 0, Transaction, false);
+                    TPartnerReportTools.AddFieldNameToTable(ReturnTable, 0, AParameters, "param_address_date_valid_on", DbAdapter);
+
+                    //Make the Column Names great again.
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(ReturnTable);
+
+                    //Sort and filter
+                    ReturnTable.CaseSensitive = false;
+                    DataView dv = ReturnTable.DefaultView;
+                    dv.RowFilter = TPartnerReportTools.UCAddressFilterDataViewRowFilter(AParameters);
+
+                    Dictionary <string, string>Mapping = new Dictionary <string, string>();
+                    Mapping.Add("PartnerName", "PartnerShortName");
+                    Mapping.Add("AddressType", "LocationType");
+                    Mapping.Add("Addressvalidfrom", "DateEffective");
+                    Mapping.Add("Addressvalidto", "DateGoodUntil");
+                    Mapping.Add("FirstAddressLine", "Locality");
+                    Mapping.Add("PostCode", "PostalCode");
+                    Mapping.Add("ThirdAddressLine", "Address3");
+                    Mapping.Add("Country", "CountryCode");
+                    dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), ReturnTable.Columns, Mapping);
+                    ReturnTable = dv.ToTable();
+                });
+
+            return ReturnTable;
+        }
+
+        private static String GetPartnerKeysAsString(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            if (AParameters["param_selection"].ToString() == "one partner")
+            {
+                return AParameters["param_partnerkey"].ToString();
+            }
+
+            List <string>PartnerKeys = new List <string>();
+
+            DataTable Partners = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "";
+
+                    if (AParameters["param_selection"].ToString() == "an extract")
+                    {
+                        Query =
+                            "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
+                            +
+                            AParameters["param_extract"] + "')";
+                    }
+                    else if (AParameters["param_selection"].ToString() == "all current staff")
+                    {
+                        string date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+                        Query = "SELECT p_partner_key_n FROM pm_staff_data WHERE pm_start_of_commitment_d <= '" + date +
+                                "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
+                    }
+
+                    if (Query != "")
+                    {
+                        Partners = DbAdapter.RunQuery(Query, "Partners", Transaction);
+                    }
+                    else
+                    {
+                        Partners.Columns.Add("partnerkey");
+                        Partners.Rows.Add(new object[] { 0 });
+                    }
+                });
+
+            foreach (DataRow dr in Partners.Rows)
+            {
+                PartnerKeys.Add(dr[0].ToString());
+            }
+
+            return String.Join(",", PartnerKeys);
         }
     }
 }

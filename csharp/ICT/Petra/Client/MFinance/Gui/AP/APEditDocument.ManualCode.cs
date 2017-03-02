@@ -430,7 +430,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             txtDetailAmount.CurrencyCode = DocumentRow.CurrencyCode;
             dtpDateDue.Date = DocumentRow.DateIssued.AddDays(Convert.ToDouble(nudCreditTerms.Value));
 
-            this.Text += " - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
+            this.Text = "AP Document Edit - " + TFinanceControls.GetLedgerNumberAndName(FDocumentLedgerNumber);
 
             FLedgerRow =
                 ((ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails, FDocumentLedgerNumber))[0];

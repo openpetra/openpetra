@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank
 //
-// Copyright 2004-2011 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -33,11 +33,10 @@ using Ict.Petra.Shared.MSysMan;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Common.Verification;
-using Ict.Petra.Server.MSysMan.Maintenance.UserDefaults.WebConnectors;
-using Npgsql;
-using System.Data.Odbc;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
+using Npgsql; // Visual Studio says this isn't needed, but it really is!
 
-namespace Ict.Petra.Server.MPartner.Partner
+namespace Ict.Petra.Server.MPartner.Processing
 {
     /**
      * Enumeration: return values for functions in TPartnerFamilyIDHandling.

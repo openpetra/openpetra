@@ -876,20 +876,17 @@ namespace Ict.Petra.Client.CommonForms
         #region Helper Functions
 
         /**
-         * This function can be used to write to the StatusBar.
+         * This delegate can be used to write to the StatusBar.
          *
-         * TLogging can use it as a callback procedure, so it does not need to know
-         * about the StatusBar itself
-         *
-         * @param s the text to be displayed in the StatusBar
-         *
+         * TLogging uses this through a callback procedure,
+         * so it does not need to know about the StatusBar itself.
          */
         delegate void WriteCallback (String s);
 
         /// <summary>
-        /// (Thread safe)
+        /// Write to the StatusBar (Thread safe)
         /// </summary>
-        /// <param name="s"></param>
+        /// <param name="s">the text to be displayed in the StatusBar</param>
         public void WriteToStatusBar(String s)
         {
             if ((FStatusBar == null) || (FStatusBar.IsDisposed) || (!FStatusBar.IsHandleCreated))
@@ -897,7 +894,10 @@ namespace Ict.Petra.Client.CommonForms
                 return;
             }
 
-            try // despite the efforts above, it's still possible that the FStatusBar object will be invalid by the time it's actually used.
+            try //
+                // Despite the efforts above,
+                // it's still possible that the FStatusBar object
+                // will be invalid by the time it's actually used.
             {   // so if it gives any problem, I'm just ignoring it.
                 if (FStatusBar.InvokeRequired)
                 {

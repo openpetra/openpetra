@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1914,8 +1914,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         {
             FPetraUtilsObject.VerificationResultCollection.Clear();
 
-            if (FPreviouslySelectedDetailRow == null)
+            if ((FPreviouslySelectedDetailRow == null)
+                || (FPreviouslySelectedDetailRow.RowState == DataRowState.Deleted)
+                || (FPreviouslySelectedDetailRow.RowState == DataRowState.Detached))
             {
+                FPreviouslySelectedDetailRow = null;
                 return;
             }
 
@@ -2472,6 +2475,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
         private void RunOnceOnParentActivationManual()
         {
             grdDetails.DataSource.ListChanged += new System.ComponentModel.ListChangedEventHandler(DataSource_ListChanged);
+
+            if (TSystemDefaults.GetBooleanDefault(SharedConstants.SYSDEFAULT_GLREFMANDATORY, true) == false)
+            {
+                lblDetailReference.Text = lblDetailReference.Text.Replace("*", ":");
+            }
         }
 
         private void DataSource_ListChanged(object sender, System.ComponentModel.ListChangedEventArgs e)

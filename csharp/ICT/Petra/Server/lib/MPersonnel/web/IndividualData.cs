@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2012 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -23,23 +23,12 @@
 //
 using System;
 using System.Collections.Specialized;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Odbc;
-using System.Runtime.Remoting;
-using System.Xml;
-using System.IO;
-using GNU.Gettext;
 
 using Ict.Common;
-using Ict.Common.IO;
-using Ict.Common.Data;
 using Ict.Common.DB;
-using Ict.Common.Remoting.Shared;
-using Ict.Common.Remoting.Server;
 using Ict.Common.Verification;
 using Ict.Petra.Shared;
-using Ict.Petra.Shared.Interfaces.MPartner;
 using Ict.Petra.Shared.MCommon;
 using Ict.Petra.Shared.MCommon.Data;
 using Ict.Petra.Shared.MPartner;
@@ -51,13 +40,14 @@ using Ict.Petra.Server.MPersonnel.Units.Data.Access;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon.Cacheable;
 using Ict.Petra.Server.MCommon.UIConnectors;
-using Ict.Petra.Server.MCommon.WebConnectors;
-using Ict.Petra.Server.MPartner;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.Partner.Cacheable;
 using Ict.Petra.Server.App.Core.Security;
+using Ict.Petra.Server.MPartner.Common;
 
+using Ict.Petra.Shared.Interfaces.MCommon;
+using Ict.Common.Remoting.Shared;
 
 namespace Ict.Petra.Server.MPersonnel.Person.DataElements.WebConnectors
 {

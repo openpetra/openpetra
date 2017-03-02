@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2012 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -57,7 +57,7 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
         public DataTable GetCacheableTable(TCacheablePartnerTablesEnum ACacheableTable)
         {
             System.Type TmpType;
-            return GetCacheableTable(ACacheableTable, "", false, out TmpType, DBAccess.GDBAccessObj);
+            return GetCacheableTable(ACacheableTable, "", false, out TmpType);
         }
 
         /// <summary>
@@ -136,6 +136,8 @@ namespace Ict.Petra.Server.MPartner.Partner.Cacheable
                 }
             }
 
+            // As part of bug 5556 testing, checked if this DataTable contained any Added rows.  It didn't, so there isn't an issue here.
+            // Findings: DataTable summary: 1 rows; 0 Added, 0 deleted, 0 detached, 1 modified, 0 unchanged.  Table name PPartnerLedger
             return TmpInstalledSitesDT;
         }
 

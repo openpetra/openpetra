@@ -704,11 +704,8 @@ namespace Ict.Common.IO
 
                 grdPreview.ResumeLayout();
 
-                if (FIsActivatedOnce)
-                {
-                    NumberFormatChanged();
-                    DateFormatChanged();
-                }
+                NumberFormatChanged();
+                DateFormatChanged();
             }
         }
 

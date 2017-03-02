@@ -41,6 +41,7 @@ using Ict.Petra.Server.MPartner.Partner.Data.Access;
 using Ict.Petra.Server.MPartner.ImportExport;
 using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MPartner.ImportExport.WebConnectors;
+using Ict.Petra.Shared.MPersonnel.Personnel.Data;
 using Ict.Testing.NUnitTools;
 
 namespace Tests.MPartner.Server.PartnerExports
@@ -77,7 +78,7 @@ namespace Tests.MPartner.Server.PartnerExports
             XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport.csv", ";");
             TVerificationResultCollection VerificationResult = null;
 
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), out VerificationResult);
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "DMY", out VerificationResult);
 
             if (VerificationResult != null)
             {
@@ -86,6 +87,90 @@ namespace Tests.MPartner.Server.PartnerExports
 
             // there should be 2 partners imported
             Assert.AreEqual(2, MainDS.PPartner.Rows.Count);
+        }
+
+        /// <summary>
+        /// Test importing a CSV file with partners using dates with dmy format
+        /// </summary>
+        [Test]
+        public void TestImportCSV_Dates_DMY()
+        {
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport_dates_dmy.csv", ";");
+            TVerificationResultCollection VerificationResult = null;
+
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "dmy", out VerificationResult);
+
+            if (VerificationResult != null)
+            {
+                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
+            }
+
+            // there should be 4 partners imported (2 x family + 2 x person)
+            Assert.AreEqual(4, MainDS.PPartner.Rows.Count, "Wrong number of partners");
+            Assert.AreEqual(2, MainDS.PmPassportDetails.Rows.Count, "Wrong number of persons");
+
+            Assert.AreEqual(((PmPassportDetailsRow)MainDS.PmPassportDetails.Rows[0]).DateOfIssue, new DateTime(2016,
+                    4,
+                    22), "passport date of issue is wrong!");
+
+            // Now try with the wrong date format
+            VerificationResult = null;
+            MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "mdy", out VerificationResult);
+
+            Assert.IsNotNull(VerificationResult, "Expected to get errors");
+            int numErrors = 0;
+
+            for (int i = 0; i < VerificationResult.Count; i++)
+            {
+                if (VerificationResult[i].ResultSeverity != TResultSeverity.Resv_Status)
+                {
+                    numErrors++;
+                }
+            }
+
+            Assert.AreEqual(5, numErrors, "Wrong number of errors");
+        }
+
+        /// <summary>
+        /// Test importing a CSV file with partners using dates with mdy format
+        /// </summary>
+        [Test]
+        public void TestImportCSV_Dates_MDY()
+        {
+            XmlDocument doc = TCsv2Xml.ParseCSVFile2Xml("../../demodata/partners/samplePartnerImport_dates_mdy.csv", ";");
+            TVerificationResultCollection VerificationResult = null;
+
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "mdy", out VerificationResult);
+
+            if (VerificationResult != null)
+            {
+                Assert.IsFalse(VerificationResult.HasCriticalErrors, "there was an error importing the csv file");
+            }
+
+            // there should be 4 partners imported (2 x family + 2 x person)
+            Assert.AreEqual(4, MainDS.PPartner.Rows.Count);
+            Assert.AreEqual(2, MainDS.PmPassportDetails.Rows.Count);
+
+            Assert.AreEqual(((PmPassportDetailsRow)MainDS.PmPassportDetails.Rows[0]).DateOfIssue, new DateTime(2016,
+                    5,
+                    22), "passport date of issue is wrong!");
+
+            // Now try with the wrong date format
+            VerificationResult = null;
+            MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "dmy", out VerificationResult);
+
+            Assert.IsNotNull(VerificationResult, "Expected to get errors");
+            int numErrors = 0;
+
+            for (int i = 0; i < VerificationResult.Count; i++)
+            {
+                if (VerificationResult[i].ResultSeverity != TResultSeverity.Resv_Status)
+                {
+                    numErrors++;
+                }
+            }
+
+            Assert.AreEqual(5, numErrors, "Wrong number of errors");
         }
 
         /// <summary>
@@ -99,7 +184,7 @@ namespace Tests.MPartner.Server.PartnerExports
             TVerificationResultCollection VerificationResult = null;
 
             Console.WriteLine(TXMLParser.XmlToString(doc));
-            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), out VerificationResult);
+            PartnerImportExportTDS MainDS = TImportExportWebConnector.ImportFromCSVFile(TXMLParser.XmlToString(doc), "dMy", out VerificationResult);
 
             if (VerificationResult != null)
             {

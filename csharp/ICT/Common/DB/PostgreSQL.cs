@@ -214,6 +214,11 @@ namespace Ict.Common.DB
                 {
                     break;
                 }
+                else if ((posLike > 0) && ReturnValue[posLike - 1] == 'I')
+                {
+                    // nothing to do, it has already been replaced
+                    pos = posLike + 4;
+                }
                 else if ((posLike >= 0) && ((posStartQuote > posLike) || (posStartQuote == -1)) && !inQuotes)
                 {
                     // found a LIKE that needs changing
@@ -267,6 +272,14 @@ namespace Ict.Common.DB
             {
                 AParameterArrayOdbc = (OdbcParameter[])AParameterArray;
 
+                bool changeParamNames = true;
+
+                if (AParameterArray.Length >= 1
+                    && ASqlStatement.Contains(":" + AParameterArrayOdbc[0].ParameterName))
+                {
+                    changeParamNames = false;
+                }
+
                 // Parameter Type change and Parameter Name assignment
                 for (int Counter = 0; Counter < AParameterArray.Length; Counter++)
                 {
@@ -277,7 +290,10 @@ namespace Ict.Common.DB
                         ParamName = "param";
                     }
 
-                    ParamName += Counter.ToString();
+                    if (changeParamNames)
+                    {
+                        ParamName += Counter.ToString();
+                    }
 
                     switch (AParameterArrayOdbc[Counter].OdbcType)
                     {

@@ -309,7 +309,10 @@ namespace Ict.Petra.Client.App.Core
         public const String PARTNER_EXTRAC_LAST_EXTRACT_NAME = "Extract";
 
         /// <summary>todoComment</summary>
-        public const String PERSONNEL_APPLICATION_STATUS = "ApplicationStatus";
+        public const String PERSONNEL_APPLICATION_STATUS_SHORT_TERM = "ApplicationStatusShortTerm";
+
+        /// <summary>todoComment</summary>
+        public const String PERSONNEL_APPLICATION_STATUS_LONG_TERM = "ApplicationStatusLongTerm";
 
         /// <summary>
         /// ------------------------------------------------------------------------------
@@ -385,7 +388,7 @@ namespace Ict.Petra.Client.App.Core
         /// </summary>
         public static void InitUserDefaults()
         {
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+            TRemote.MSysMan.Common.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                 out UUserDefaultsDataTable);
             UUserDefaults = new DataView(UUserDefaultsDataTable);
             UUserDefaults.Sort = SUserDefaultsTable.GetDefaultCodeDBName();
@@ -444,7 +447,7 @@ namespace Ict.Petra.Client.App.Core
                     }
 
                     // MessageBox.Show('Saving single User Default ''' + DesiredUserDefaultsDataTable.Rows[0].Item['s_default_code_c'].ToString + '''');
-                    TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                    TRemote.MSysMan.Common.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                         ref DesiredUserDefaultsDataTable);
 
                     // Copy over ModificationId that was changed on the Server side!
@@ -476,7 +479,7 @@ namespace Ict.Petra.Client.App.Core
             if (UserDefaultsDataTableChanges != null)
             {
                 // MessageBox.Show('Changed/added User Defaults: ' + UserDefaultsDataTableChanges.Rows.Count.ToString);
-                TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+                TRemote.MSysMan.Common.WebConnectors.SaveUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                     ref UserDefaultsDataTableChanges);
 
                 // We need to take over the changed modification ID's, otherwise this method will only succeed with ONE change and then fail
@@ -585,7 +588,7 @@ namespace Ict.Petra.Client.App.Core
 
             // TODO 1 : ReaderWriterLock
             // reload user defaults from server
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
+            TRemote.MSysMan.Common.WebConnectors.GetUserDefaults(Ict.Petra.Shared.UserInfo.GUserInfo.UserID,
                 out TempUserDefaultsDataTable);
 
             // merge the current table with the one requested from the server so that client changes are not lost
@@ -608,7 +611,7 @@ namespace Ict.Petra.Client.App.Core
         {
 //            TLogging.Log("ReloadCachedUserDefaultsOnServerAndClient got called");
             // First update the server-side-held UserDefaults for this session of the same user...
-            TRemote.MSysMan.Maintenance.UserDefaults.WebConnectors.ReloadUserDefaults(UserInfo.GUserInfo.UserID,
+            TRemote.MSysMan.Common.WebConnectors.ReloadUserDefaults(UserInfo.GUserInfo.UserID,
                 out UUserDefaultsDataTable);
 
             // ...then the client-side-held UserDefaults, too!

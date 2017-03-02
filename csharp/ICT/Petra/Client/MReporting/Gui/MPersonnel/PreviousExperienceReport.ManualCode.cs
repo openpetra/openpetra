@@ -23,6 +23,14 @@
 //
 using System;
 using Ict.Common;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using Ict.Petra.Client.MReporting.Logic;
+using Ict.Petra.Client.App.Core;
+using Ict.Petra.Shared;
+using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
 {
@@ -34,6 +42,20 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
         private void InitializeManualCode()
         {
             ucoPartnerSelection.SetRestrictedPartnerClasses("PERSON");
+        }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        //
+        // This will be called if the Fast Reports Wrapper loaded OK.
+        // Returns True if the data apparently loaded OK and the report should be printed.
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData(
+                "PreviousExperience", false, new string[] { "PreviousExperience" }, ACalc, this, true);
         }
     }
 }

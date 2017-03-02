@@ -23,6 +23,7 @@
 //
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
 using System.Data.Common;
@@ -492,7 +493,7 @@ namespace Ict.Petra.Server.MCommon
                         {
                             return String.Empty;
                         }
-                    }, true, 60, FFindParameters.FParametersArray);
+                    }, 60, FFindParameters.FParametersArray);
             }
             catch (NpgsqlException Exp)
             {
@@ -1184,7 +1185,47 @@ namespace Ict.Petra.Server.MCommon
         /// The query can be cancelled WHILE IT IS RUNNING. In this case the returned table may be partially filled.
         /// </summary>
         /// <returns>DataTable. May be empty (even with no fields defined!) if cancellation happens or has happened.</returns>
-        public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans)
+        public DataTable RunQuery(String Query, String TableName, TDBTransaction Trans,
+            TDataBase.TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
+            int ASelectCommandTimeout = -1, DbParameter[] AParametersArray = null)
+        {
+            List <object[]>ParameterValues = null;
+            List <object>ObjectValues = null;
+
+            if (AParametersArray != null)
+            {
+                ParameterValues = new List <object[]>(1);
+                ObjectValues = new List <object>();
+
+                for (int Counter = 0; Counter < AParametersArray.Length; Counter++)
+                {
+                    ObjectValues.Add(AParametersArray[Counter].Value);
+                }
+
+                ParameterValues.Add(ObjectValues.ToArray());
+            }
+
+            return RunQueryMultiParams(Query, TableName, Trans, AOptionalColumnNameMapping,
+                ASelectCommandTimeout, AParametersArray, ParameterValues, false);
+        }
+
+        /// <summary>
+        /// Run this Database query.
+        /// If FReportingQueryCancelFlag is set, this returns immediately with an empty table.
+        /// The query can be cancelled WHILE IT IS RUNNING. In this case the returned table may be partially filled.
+        /// </summary>
+        /// <remarks>For details on the Arguments that can be passed with <paramref name="AOptionalColumnNameMapping"/>,
+        /// <paramref name="ASelectCommandTimeout"/>, <paramref name="AParameterDefinitions"/>,
+        /// <paramref name="AParameterValues"/>, <paramref name="APrepareSelectCommand"/>,
+        /// <paramref name="AProgressUpdateEveryNRecs"/> and
+        /// <paramref name="AMultipleParamQueryProgressUpdateCallback"/> please see their respective XML Comments on
+        /// Method <see cref="TDataBase.SelectUsingDataAdapterMulti"/>!/</remarks>
+        /// <returns>DataTable. May be empty (even with no fields defined!) if cancellation happens or has happened.</returns>
+        public DataTable RunQueryMultiParams(String Query, String TableName, TDBTransaction Trans,
+            TDataBase.TOptionalColumnMappingDelegate AOptionalColumnNameMapping = null,
+            int ASelectCommandTimeout = -1, DbParameter[] AParameterDefinitions = null, List <object[]>AParameterValues = null,
+            bool APrepareSelectCommand = false, Int16 AProgressUpdateEveryNRecs = 0,
+            TDataBase.MultipleParamQueryProgressUpdateDelegate AMultipleParamQueryProgressUpdateCallback = null)
         {
             var ResultDT = new DataTable(TableName);
 
@@ -1193,8 +1234,9 @@ namespace Ict.Petra.Server.MCommon
                 try
                 {
                     FRunningQuery = true;
-                    FPrivateDatabaseObj.SelectUsingDataAdapter(Query, Trans,
-                        ref ResultDT, out FDataAdapterCanceller);
+                    FPrivateDatabaseObj.SelectUsingDataAdapterMulti(Query, Trans, ref ResultDT, out FDataAdapterCanceller,
+                        AOptionalColumnNameMapping, ASelectCommandTimeout, AParameterDefinitions, AParameterValues,
+                        APrepareSelectCommand, AProgressUpdateEveryNRecs, AMultipleParamQueryProgressUpdateCallback);
                 }
                 catch (NpgsqlException Exp)
                 {

@@ -108,6 +108,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         TImportFileFormat FFileFormat = TImportFileFormat.unknown;
         string FFileName = string.Empty;
         string FFileContent = string.Empty;
+        string FDateFormat = "DMY";
         string FImportIDHeaderText = string.Empty;
 
         private void AddStatus(String ANewStuff)
@@ -322,6 +323,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                             {
                                 SaveUserDefaults(dlgSeparator);
                                 FSelectedSeparator = dlgSeparator.SelectedSeparator;
+                                FDateFormat = dlgSeparator.DateFormat;
                                 XmlDocument doc = TCsv2Xml.ParseCSVContent2Xml(dlgSeparator.FileContent, FSelectedSeparator);
                                 FFileContent = TXMLParser.XmlToString(doc);
                                 GetImportIDHeaderText(doc);
@@ -422,15 +424,30 @@ namespace Ict.Petra.Client.MPartner.Gui
                     if (!TVerificationHelper.IsNullOrOnlyNonCritical(VerificationResult))
                     {
                         string ErrorMessages = String.Empty;
+                        int count = 0;
 
                         foreach (TVerificationResult verif in VerificationResult)
                         {
-                            ErrorMessages += "[" + verif.ResultContext + "] " +
-                                             verif.ResultTextCaption + ": " +
-                                             verif.ResultText + Environment.NewLine;
+                            if (verif.ResultSeverity == TResultSeverity.Resv_Critical)
+                            {
+                                count++;
+
+                                if (count < 5)
+                                {
+                                    ErrorMessages += "[" + verif.ResultContext + "] " +
+                                                     verif.ResultTextCaption + ": " +
+                                                     verif.ResultText + Environment.NewLine;
+                                }
+                            }
                         }
 
-                        MessageBox.Show(ErrorMessages, Catalog.GetString("Import of partners failed!"));
+                        if (count >= 5)
+                        {
+                            ErrorMessages += string.Format("There were {0} errors in total.  Did you specify the wrong date format?", count);
+                        }
+
+                        MessageBox.Show(ErrorMessages, Catalog.GetString(
+                                "Import of partners failed!"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 
                         FMainDS = null;
 
@@ -488,7 +505,7 @@ namespace Ict.Petra.Client.MPartner.Gui
                     FFileContent = FFileContent.Replace(AOldPartnerKey.ToString(), ANewPartnerKey.ToString());
                 }
 
-                FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(FFileContent, out AVerificationResult);
+                FMainDS = TRemote.MPartner.ImportExport.WebConnectors.ImportFromCSVFile(FFileContent, FDateFormat, out AVerificationResult);
             }
             else if (FFileFormat == TImportFileFormat.ext)
             {

@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -170,7 +170,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 ucoCostCentreTree.PopulateTreeView(FMainDS);
 
                 ucoCostCentreList.RunOnceOnActivationManual(this);
-                ucoCostCentreList.PopulateListView(FMainDS, FLedgerNumber);
+                ucoCostCentreList.PopulateListView(FMainDS);
 
                 FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
 
@@ -950,18 +950,33 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 }
             }
 
+            CostCentreNodeDetails Parent = (CostCentreNodeDetails)FCurrentCostCentre.linkedTreeNode.Parent.Tag;
             ACostCentreRow SelectedRow = FCurrentCostCentre.CostCentreRow;
-            TreeNode DeletedNode = FCurrentCostCentre.linkedTreeNode;
-            TreeNode ParentNode = DeletedNode.Parent;
+//          FMainDS.ACostCentre.Rows.Remove(SelectedRow);
             SelectedRow.Delete();
-            ucoCostCentreTree.DeleteSelectedCostCentre();
+            FIAmUpdating++;
+            ucoCostCentreTree.SelectedCostCentre = null;
+            ucoCostCentreList.SelectedCostCentre = null;
+            ucoCostCentreTree.PopulateTreeView(FMainDS);
+            ucoCostCentreList.PopulateListView(FMainDS);
+
+            FCurrentCostCentre = Parent;
+            ucoCostCentreTree.SelectedCostCentre = FCurrentCostCentre;
+            ucoCostCentreList.SelectedCostCentre = FCurrentCostCentre;
 
             // FCurrentCostCentre is now the parent of the CostCentre that was just deleted.
-            // If just I added a sub-tree and I decide I don't want it, I might be about to remove the parent too.
             if (FCurrentCostCentre != null)
             {
                 FCurrentCostCentre.GetAttrributes();
+                ShowDetails(FCurrentCostCentre.CostCentreRow);
+                FRecentlyUpdatedDetailCostCentreCode = txtDetailCostCentreCode.Text;
             }
+            else
+            {
+                ShowDetails(null);
+            }
+
+            FIAmUpdating--;
 
             FPetraUtilsObject.SetChangedFlag();
         }
@@ -1086,7 +1101,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                                 FPetraUtilsObject.SuppressChangeDetection = false;
                                 FCurrentCostCentre = null;
                                 ucoCostCentreTree.PopulateTreeView(FMainDS);
-                                ucoCostCentreList.PopulateListView(FMainDS, FLedgerNumber);
+                                ucoCostCentreList.PopulateListView(FMainDS);
                                 FIAmUpdating--;
                                 ucoCostCentreTree.SelectNodeByName(FRecentlyUpdatedDetailCostCentreCode);
                                 ClearStatus();

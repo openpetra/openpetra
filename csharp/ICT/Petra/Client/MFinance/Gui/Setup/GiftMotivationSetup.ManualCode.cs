@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2016 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -68,8 +68,10 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup.Gift
 
                 TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false);
 
-                // Do not include summary cost centres: we want to use one cost centre for each Motivation Details
-                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, true);
+                // Do not include summary cost centres: we want to use one cost centre for each Motivation Detail
+                TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false,
+                    false // Foreign Cost Centres are now allowed.
+                    );
 
                 TFinanceControls.InitialiseFeesReceivableList(ref clbDetailFeesReceivable, FLedgerNumber);
                 TFinanceControls.InitialiseFeesPayableList(ref clbDetailFeesPayable, FLedgerNumber);

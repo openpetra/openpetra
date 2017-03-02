@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MPartner.Mailroom.WebConnectors
                             continue;
                         }
 
-                        for (int i = 0; i < LocationCountry.Rows.Count; i++)
+                        for (int i = 0; i < LocationCountry.Rows.Count && ReturnTable.Rows.Count < 500; i++)
                         {
                             string AAddress = null;
                             string[] AAddressArray = null;

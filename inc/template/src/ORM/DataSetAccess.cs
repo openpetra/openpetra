@@ -12,6 +12,7 @@ using Ict.Petra.Shared;
 using System;
 using System.Data;
 using System.Data.Odbc;
+using System.Diagnostics;
 using System.Collections.Generic;
 {#USINGNAMESPACES}
 
@@ -40,6 +41,7 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
 
     bool NewTransaction;
     TDBTransaction SubmitChangesTransaction = DBAccess.GetDBAccessObj(ADataBase).GetNewOrExistingTransaction(IsolationLevel.Serializable, out NewTransaction);
+    string SavingOperation = "No action taken yet!";
 
     try
     {
@@ -59,8 +61,14 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
     }
     catch (Exception e)
     {
-        TLogging.Log("exception during saving dataset {#DATASETNAME}:" + e.Message);
-
+        TLogging.Log(
+            String.Format("An Exception occurred during the saving of Typed DataSet '{#DATASETNAME}' in {0} DB Transaction!  " +
+            Utilities.GetThreadAndAppDomainCallInfo() + Environment.NewLine +
+            "The last action that was taken and which has caused the Exception is this: '{1}'." + Environment.NewLine + 
+            "Exception Details: {2}" + Environment.NewLine + "StackTrace: {3}",
+            (NewTransaction ? "a separately established" : "an already running"),
+            SavingOperation, e.ToString(), new StackTrace().ToString()));
+            
         if (NewTransaction)
         {
             DBAccess.GetDBAccessObj(ADataBase).RollbackTransaction();
@@ -72,9 +80,14 @@ static public void SubmitChanges({#DATASETNAME} AInspectDS, TDataBase ADataBase 
 
 {##SUBMITCHANGES}
 {#IFNDEF UPDATESEQUENCEINOTHERTABLES}
-TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
-    TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-    UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+if (AInspectDS.{#TABLEVARIABLENAME} != null)
+{
+    SavingOperation = "Table: " + AInspectDS.{#TABLEVARIABLENAME}.TableName + "; Action: TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION}";
+    
+    TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
+        TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
+        UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+}
 {#ENDIFN UPDATESEQUENCEINOTHERTABLES}
 {#IFDEF UPDATESEQUENCEINOTHERTABLES}
 if (AInspectDS.{#TABLEVARIABLENAME} != null)
@@ -92,9 +105,14 @@ if (AInspectDS.{#TABLEVARIABLENAME} != null)
         rowIndex++;
     }
 
-    TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
-        TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
-        UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+    if (AInspectDS.{#TABLEVARIABLENAME} != null)
+    {
+        SavingOperation = "Table: " + AInspectDS.{#TABLEVARIABLENAME}.TableName + "; Action: TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION}";
+        
+        TTypedDataAccess.SubmitChanges(AInspectDS.{#TABLEVARIABLENAME}, SubmitChangesTransaction,
+            TTypedDataAccess.eSubmitChangesOperations.{#SQLOPERATION},
+            UserInfo.GUserInfo.UserID{#SEQUENCENAMEANDFIELD});
+    }
     {#UPDATESEQUENCEINOTHERTABLES}
 }
 {#ENDIF UPDATESEQUENCEINOTHERTABLES}

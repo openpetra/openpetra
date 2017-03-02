@@ -34,7 +34,7 @@ using Ict.Petra.Shared.MPartner.Partner.Data;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.Partner.Data.Access;
-using Ict.Petra.Server.MSysMan.Maintenance.SystemDefaults.WebConnectors;
+using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.App.Core.Security;
 using System.Linq;
@@ -121,11 +121,11 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         foreach (string Range in GiftsInRangeArray)
                         {
                             Query += " AND (gift.a_date_entered_d BETWEEN '" + Range.Substring(0, 10) + "' AND '" + Range.Substring(13,
-                                10) + "') AND";
+                                10) + "')";
                         }
                     }
 
-                    Query += " gift.a_ledger_number_i = " + LedgerNumber +
+                    Query += " AND gift.a_ledger_number_i = " + LedgerNumber +
                              " AND PUB_p_partner.p_partner_key_n = gift.p_donor_key_n" +
                              " AND PUB_a_gift_batch.a_batch_status_c = 'Posted'" +
                              " AND PUB_a_gift_batch.a_batch_number_i = gift.a_batch_number_i" +
@@ -247,7 +247,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                                    SUM(detail."
                         +
                         Currency +
-                        @") AS TotalGiven
+                        @") AS TotalGiven,
+	                                    COUNT(detail.a_gift_amount_n) AS NumberOfGifts
                                     FROM
 
                                         a_gift as gift
@@ -256,7 +257,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                         JOIN a_gift_detail AS detail ON(gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
 
-                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
+                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
 
                     if (Extract)
                     {
