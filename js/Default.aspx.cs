@@ -48,7 +48,7 @@ namespace Ict.Petra.WebServer
             string filename = String.Empty;
             foreach (string f in files)
             {
-                filename=System.IO.Path.GetFileName(filename);
+                filename=System.IO.Path.GetFileName(f);
             }
 
             return filename;
