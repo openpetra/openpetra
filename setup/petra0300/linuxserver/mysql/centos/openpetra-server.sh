@@ -159,7 +159,7 @@ init() {
        > /home/$userName/etc/PetraServerConsole.config
     cat $OpenPetraPath/etc30/PetraServerAdminConsole.config \
        | sed -e "s/USERNAME/$userName/" \
-       | sed -e "s/openpetra_OPENPETRA_PORT/$userName/" \
+       | sed -e "s/openpetraOPENPETRA_PORT/$userName/" \
        > /home/$userName/etc/PetraServerAdminConsole.config
 
     chown -R $userName:$userName /home/$userName
