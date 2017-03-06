@@ -78,7 +78,7 @@
           <div class="bs-callout bs-callout-warning"><h4>Download</h4>
             <p>Install the Windows client and connect to your OpenPetra server:</p>
                <button id="btnDownload" class="btn btn-lg btn-primary btn-block"
-                  onclick="location.href = '/client/<% Response.Write(Filename); %>'">
+                  onclick="location.href = '?download=<% Response.Write(Filename); %>'">
                     Get the Windows Client!
                </button>
           </div>
