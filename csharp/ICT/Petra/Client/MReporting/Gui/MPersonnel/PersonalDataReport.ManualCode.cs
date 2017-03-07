@@ -56,5 +56,27 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
             ACalc.SetMaxDisplayColumns(1);
             ACalc.AddColumnCalculation(0, "Personal Data");
         }
+
+        private void RunOnceOnActivationManual()
+        {
+            FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
+        }
+
+        private bool LoadReportData(TRptCalculator ACalc)
+        {
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("PersonalDataReport",
+                true,
+                new string[]
+                {
+                    "Person", "LocalPartnerData", "LocalPersonnelData",
+                    "JobAssignments", "Commitments", "Passports",
+                    "PersonalDocuments", "SpecialNeeds", "PersonalBudget",
+                    "Skills", "Languages", "PreviousExperience"
+                },
+                ACalc,
+                this,
+                true,
+                false);
+        }
     }
 }

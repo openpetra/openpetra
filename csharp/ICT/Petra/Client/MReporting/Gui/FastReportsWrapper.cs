@@ -375,21 +375,23 @@ namespace Ict.Petra.Client.MReporting.Gui
             bool AAddLedger = false,
             Int32 ALedgerNumber = -1)
         {
-            Dictionary <String, TVariant>paramsDictionary = ParamsToDictionary(ACalc);
-
             if (AUseColumnTab)
             {
                 TColumnSettingCollection tcsc = new TColumnSettingCollection();
 
                 for (int counter = 0; counter <= ACalc.GetParameters().Get("MaxDisplayColumns").ToInt() - 1; counter += 1)
                 {
-                    TColumnSetting tcs = new TColumnSetting(ACalc.GetParameters().Get("param_calculation", counter).ToString().Replace(" ", ""),
+                    TColumnSetting tcs = new TColumnSetting(ACalc.GetParameters().Get("param_calculation", counter).ToString().Replace(" ",
+                            "").Replace("/", ""),
                         float.Parse(ACalc.GetParameters().Get("ColumnWidth", counter).ToString()), counter + 1);
                     tcsc.SetSettingForColumn(tcs);
                 }
 
                 ACalc.AddParameter("param_columns", tcsc.SerialiseCollection());
             }
+
+            //paramsDictionary also contains the selected columns as serialised string
+            Dictionary <String, TVariant>paramsDictionary = ParamsToDictionary(ACalc);
 
             DataTable ReportTable = null;
             DataSet ReportSet = null;

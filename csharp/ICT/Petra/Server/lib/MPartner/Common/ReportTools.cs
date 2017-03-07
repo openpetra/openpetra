@@ -37,6 +37,7 @@ using Ict.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.MCommon;
 using System.Linq;
+using Ict.Petra.Shared.MReporting;
 
 namespace Ict.Petra.Server.MPartner.Common
 {
@@ -160,7 +161,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Mobile Phone' LIMIT 1
-                                   ) AS Mobile"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ;
+                                   ) AS Mobile"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
             }
 
             if (AIncludeAlternateTelephone)
@@ -174,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND NOT p_primary_l AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Phone' LIMIT 1
-                                    ) AS AlternateTelephone"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
+                                    ) AS AlternateTelephone"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ;
             }
 
             if (AIncludeURL)
@@ -188,7 +189,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_category_code_c = 'Digital Media' AND pattribute.p_attribute_type_c = 'Web Site' LIMIT 1
-                                    ) AS URL"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
+                                    ) AS URL"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
             }
 
             DataTable PhoneFaxMailDT = new DataTable();
@@ -301,7 +302,7 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
-        /// Converts the field names from the database to a readable name
+        /// Converts the field names from the database to a readable name (DataTable)
         /// </summary>
         /// <param name="ADataTable"></param>
         public static void ConvertDbFieldNamesToReadable(DataTable ADataTable)
@@ -346,6 +347,18 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
+        /// Converts the field names from the database to a readable name (DataSet)
+        /// </summary>
+        /// <param name="ADataSet"></param>
+        public static void ConvertDbFieldNamesToReadable(DataSet ADataSet)
+        {
+            foreach (DataTable Table in ADataSet.Tables)
+            {
+                ConvertDbFieldNamesToReadable(Table);
+            }
+        }
+
+        /// <summary>
         ///
         /// </summary>
         /// <param name="ADataTable"></param>
@@ -382,7 +395,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             DataTable PartnerAndField = new DataTable();
             string Query = @"
-                            WITH partnertable AS (VALUES "                                +
+                            WITH partnertable AS (VALUES "                               +
                            String.Join(",",
                 partnerlist) +
                            @"),
@@ -403,7 +416,7 @@ namespace Ict.Petra.Server.MPartner.Common
                            +
                            CurrentDate.ToString("yyyy-MM-dd") + @"'
 
-                                    AND(pm_end_of_commitment_d >= '"                                                                        +
+                                    AND(pm_end_of_commitment_d >= '"                                                                      +
                            CurrentDate.ToString(
                 "yyyy-MM-dd") +
                            @"' OR pm_end_of_commitment_d IS NULL)
@@ -446,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Common
                             RIGHT JOIN p_partner AS partner ON persontable.Partner_Key = partner.p_partner_key_n
                             WHERE partner.p_partner_key_n IN((SELECT * FROM partnertable))
 
-                            GROUP BY partner.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
+                            GROUP BY partner.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
 
             ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
@@ -542,6 +555,102 @@ namespace Ict.Petra.Server.MPartner.Common
             }
 
             return String.Join(",", list);
+        }
+
+        /// <summary>
+        /// Replaces the field name with NULL if it is not needed in order to improve the performance of certain reports.
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="AColumnDBNamesAndAliases">Dictionary of the column names. Key: full DB Name, Value: Alias.</param>
+        /// <returns></returns>
+        public static string ReplaceColumnWithNullWhenUnused(Dictionary <String, TVariant>AParameters,
+            Dictionary <String, String>AColumnDBNamesAndAliases)
+        {
+            List <string>Columns = new List <string>();
+
+            TColumnSettingCollection tcsc = new TColumnSettingCollection();
+            tcsc.DeserialiseCollection(AParameters["param_columns"].ToString());
+
+            foreach (KeyValuePair <string, string>entry in AColumnDBNamesAndAliases)
+            {
+                if (tcsc.HasSettingForColumn(entry.Value))
+                {
+                    Columns.Add(entry.Key + " AS " + entry.Value);
+                }
+                else
+                {
+                    Columns.Add("NULL AS " + entry.Value);
+                }
+            }
+
+            return String.Join(",", Columns);
+        }
+
+        /// <summary>
+        /// Returns the Partner Keys for UCPartnerSelection as a comma seperated list.
+        /// </summary>
+        /// <param name="AParameters"></param>
+        /// <param name="DbAdapter"></param>
+        /// <returns></returns>
+        public static String GetPartnerKeysAsString(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
+        {
+            TDBTransaction Transaction = null;
+
+            if (AParameters["param_selection"].ToString() == "one partner")
+            {
+                return AParameters["param_partnerkey"].ToString();
+            }
+
+            List <string>PartnerKeys = new List <string>();
+
+            DataTable Partners = new DataTable();
+
+            DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
+                IsolationLevel.ReadCommitted,
+                TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    string Query = "";
+
+                    if (AParameters["param_selection"].ToString() == "an extract")
+                    {
+                        Query =
+                            "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
+                            +
+                            AParameters["param_extract"] + "')";
+                    }
+                    else if (AParameters["param_selection"].ToString() == "all current staff")
+                    {
+                        string date = AParameters["param_currentstaffdate"].ToDate().ToString("yyyy-MM-dd");
+                        Query = "SELECT p_partner_key_n FROM pm_staff_data WHERE pm_start_of_commitment_d <= '" + date +
+                                "' AND (pm_end_of_commitment_d >= '" + date + "' OR pm_end_of_commitment_d IS NULL)";
+                    }
+
+                    if (Query != "")
+                    {
+                        Partners = DbAdapter.RunQuery(Query, "Partners", Transaction);
+                    }
+                    else
+                    {
+                        Partners.Columns.Add("partnerkey");
+                        Partners.Rows.Add(new object[] { 0 });
+                    }
+                });
+
+            if (Partners.Rows.Count == 0)
+            {
+                return "-1";
+            }
+            else
+            {
+                foreach (DataRow dr in Partners.Rows)
+                {
+                    PartnerKeys.Add(dr[0].ToString());
+                }
+
+                return String.Join(",", PartnerKeys);
+            }
         }
     }
 }

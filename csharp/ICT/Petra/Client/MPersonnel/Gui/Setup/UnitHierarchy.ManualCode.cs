@@ -30,6 +30,7 @@ using Ict.Common;
 using Ict.Common.IO;
 using Ict.Petra.Client.App.Core;
 using Ict.Petra.Client.App.Core.RemoteObjects;
+using Ict.Petra.Client.CommonControls.Logic;
 using Ict.Petra.Client.CommonForms;
 using Ict.Petra.Shared.MPersonnel;
 using Ict.Petra.Shared.MPersonnel.Personnel.Data;
@@ -419,6 +420,17 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             ShowThisUnit(MySiteKey);
 
             FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
+
+            //Active the print menu item
+            mniFilePrint.Enabled = true;
+            mniFilePrint.Click += new EventHandler(print);
+        }
+
+        private void print(object sender, EventArgs ea)
+        {
+            Form MainWindow = FPetraUtilsObject.GetCallerForm();
+
+            TCommonScreensForwarding.OpenPrintUnitHierarchy.Invoke(TRemote.MPartner.Partner.WebConnectors.GetUnitHierarchyRootUnitKey(), MainWindow);
         }
 
         private void GetAllChildren(TreeNode Parent, ref ArrayList UnitNodes)

@@ -77,7 +77,7 @@ RootNode:
             Name: Address Country
             Parameter: 3.0
         Para16:
-            Name: Primary E-Mail
+            Name: Primary Email
             Parameter: 3.0
         Para17:
             Name: Primary Phone

@@ -1,28 +1,29 @@
 <?xml version="1.0"?>
 <Parameters>
-  <Parameter id="systemsettings" value="eBoolean:true" />
-  <Parameter id="xmlfiles" value="eString:Personnel\\personaldatareport.xml,Personnel\\commonpersonnel.xml" />
+  <Parameter id="xmlfiles" value="eString:Personnel\\\\personaldatareport.xml,Personnel\\\\commonpersonnel.xml" />
   <Parameter id="currentReport" value="eString:Personal Data Report" />
   <Parameter id="MaxDisplayColumns" value="eInteger:1" />
   <Parameter id="param_selection" value="eString:one partner" />
   <Parameter id="param_extract" value="eString:" />
   <Parameter id="param_partnerkey" value="eInteger:0" />
-  <Parameter id="param_chkPersonalInfo" value="eString:true" />
-  <Parameter id="param_chkLocalPartnerData" value="eString:true" />
-  <Parameter id="param_chkLocalPersonnelData" value="eString:true" />
-  <Parameter id="param_chkJobAssignments" value="eString:true" />
-  <Parameter id="param_chkCommitments" value="eString:true" />
-  <Parameter id="param_chkPassport" value="eString:true" />
-  <Parameter id="param_chkPersonalDocuments" value="eString:true" />
-  <Parameter id="param_chkSpecialNeeds" value="eString:true" />
-  <Parameter id="param_chkPersonalBudget" value="eString:true" />
-  <Parameter id="param_chkVisions" value="eString:true" />
-  <Parameter id="param_chkSkills" value="eString:true" />
-  <Parameter id="param_chkLanguages" value="eString:true" />
-  <Parameter id="param_chkPreviousExperiences" value="eString:true" />
-  <Parameter id="param_chkValuableItems" value="eString:true" />
-  <Parameter id="ColumnPosition" column="0" value="eInteger:0" />
-  <Parameter id="ColumnPositionIndented" column="0" value="eInteger:0" />
-  <Parameter id="ColumnWidth" column="0" value="eInteger:19" />
+  <Parameter id="param_chkNewPage" value="eBoolean:true" />
+  <Parameter id="param_chkLocalPartnerData" value="eBoolean:true" />
+  <Parameter id="param_chkLocalPersonnelData" value="eBoolean:true" />
+  <Parameter id="param_chkJobAssignments" value="eBoolean:true" />
+  <Parameter id="param_chkCommitments" value="eBoolean:true" />
+  <Parameter id="param_chkPassport" value="eBoolean:true" />
+  <Parameter id="param_chkPersonalDocuments" value="eBoolean:true" />
+  <Parameter id="param_chkSpecialNeeds" value="eBoolean:true" />
+  <Parameter id="param_chkPersonalBudget" value="eBoolean:true" />
+  <Parameter id="param_chkSkills" value="eBoolean:true" />
+  <Parameter id="param_chkLanguages" value="eBoolean:true" />
+  <Parameter id="param_chkPreviousExperiences" value="eBoolean:true" />
+  <Parameter id="ColumnPosition" column="0" value="eDecimal:0" />
+  <Parameter id="ColumnPositionIndented" column="0" value="eDecimal:0" />
+  <Parameter id="ColumnWidth" column="0" value="eDecimal:4626041242239631360" />
   <Parameter id="param_calculation" column="0" value="eString:Personal Data" />
+  <Parameter id="param_SelectedTemplate" value="eInteger:49" />
+  <Parameter id="param_chkPersonalInfo" value="eString:true" />
+  <Parameter id="param_chkVisions" value="eString:true" />
+  <Parameter id="param_chkValuableItems" value="eString:true" />
 </Parameters>

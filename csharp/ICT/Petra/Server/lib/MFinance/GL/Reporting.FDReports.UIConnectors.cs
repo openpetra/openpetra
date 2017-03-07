@@ -257,7 +257,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                                         JOIN a_gift_detail AS detail ON(gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
 
-                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
+                                        JOIN p_partner AS partner ON gift.p_donor_key_n = partner.p_partner_key_n "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ;
 
                     if (Extract)
                     {
@@ -286,7 +286,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         @"
                                     GROUP BY gift.p_donor_key_n,p_partner_short_name_c, p_partner_class_c
 
-                                    ORDER BY p_partner_short_name_c"                                                                                                                                         ;
+                                    ORDER BY p_partner_short_name_c"                                                                                                                                      ;
 
                     Results = DbAdapter.RunQuery(Query, "DonorReportShort", Transaction);
 
@@ -298,6 +298,16 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     DonorAddresses = TAddressTools.GetBestAddressForPartners(Results, 0, Transaction);
                     DonorAddresses.TableName = "DonorAddresses";
+
+                    //Adding the Columns in case no data has been returned
+                    if (DonorAddresses.Rows.Count == 0)
+                    {
+                        DonorAddresses.Columns.Add("p_locality_c");
+                        DonorAddresses.Columns.Add("p_street_name_c");
+                        DonorAddresses.Columns.Add("p_postal_code_c");
+                        DonorAddresses.Columns.Add("p_city_c");
+                        DonorAddresses.Columns.Add("p_country_code_c");
+                    }
                 });
 
             ReturnSet.Tables.Add(Results);
@@ -364,7 +374,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                                                 AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
 	                        JOIN a_gift_batch AS batch ON (batch.a_ledger_number_i = gift.a_ledger_number_i AND batch.a_batch_number_i = gift.a_batch_number_i)
 	                        JOIN p_partner AS partner ON p_recipient_key_n = p_partner_key_n
-                            JOIN a_motivation_detail AS mot ON (detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ;
+                            JOIN a_motivation_detail AS mot ON (detail.a_ledger_number_i = mot.a_ledger_number_i AND detail.a_motivation_group_code_c = mot.a_motivation_group_code_c AND detail.a_motivation_detail_code_c = mot.a_motivation_detail_code_c)"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ;
 
                     //Add extract parameter
                     if (AParameters["param_extract"].ToBool())
@@ -832,7 +842,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         @" ELSE 0 END) AS totalamount
 
 
-                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner"                                                           ;
+                        FROM a_gift AS gift, a_gift_batch, a_gift_detail AS detail, p_partner"                                                        ;
 
                     //Add extract parameter
                     if (AParameters["param_extract"].ToBool())
@@ -882,7 +892,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                        FROM GiftTotals WHERE totalamount >= 0
                         )
                 SELECT *
-                FROM CumulativeTotals WHERE PercentCumulative"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ;
+                FROM CumulativeTotals WHERE PercentCumulative"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
 
                     switch (AParameters["param_donor_type"].ToString())
                     {
@@ -1043,7 +1053,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 	                                            JOIN a_gift_detail AS detail ON (gift.a_ledger_number_i = detail.a_ledger_number_i AND gift.a_batch_number_i = detail.a_batch_number_i AND gift.a_gift_transaction_number_i = detail.a_gift_transaction_number_i)
 	                                            JOIN a_gift_batch AS batch ON (batch.a_ledger_number_i = gift.a_ledger_number_i AND batch.a_batch_number_i = gift.a_batch_number_i)
 	                                            JOIN p_partner AS partner ON p_recipient_key_n = p_partner_key_n
-	                                            JOIN a_motivation_detail AS motivationdetail ON (motivationdetail.a_ledger_number_i = detail.a_ledger_number_i AND motivationdetail.a_motivation_group_code_c=detail.a_motivation_group_code_c AND motivationdetail.a_motivation_detail_code_c=detail.a_motivation_detail_code_c) "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ;
+	                                            JOIN a_motivation_detail AS motivationdetail ON (motivationdetail.a_ledger_number_i = detail.a_ledger_number_i AND motivationdetail.a_motivation_group_code_c=detail.a_motivation_group_code_c AND motivationdetail.a_motivation_detail_code_c=detail.a_motivation_detail_code_c) "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
 
                     //Add extract parameter
                     if (AParameters["param_extract"].ToBool())

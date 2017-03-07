@@ -116,4 +116,8 @@ namespace Ict.Petra.Client.CommonControls.Logic
         DateTime AValidFrom,
         bool ANoLabel,
         Form AParentForm);
+
+    /// <summary>Delegate for a call to open a Modal Print Unit Hierarchy report screen</summary>
+    public delegate bool TDelegateOpenPrintUnitHierarchy(long AUnitKey,
+        Form AParentForm);
 }

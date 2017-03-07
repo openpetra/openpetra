@@ -61,6 +61,7 @@ using Ict.Petra.Client.MPartner.Gui.Setup;
 using Ict.Petra.Client.MPersonnel.Gui;
 using Ict.Petra.Client.MReporting.Gui;
 using Ict.Petra.Client.MReporting.Gui.MPartner;
+using Ict.Petra.Client.MReporting.Gui.MPersonnel;
 using Ict.Petra.Client.MSysMan.Gui;
 using SplashScreen;
 using PetraClientShutdown;
@@ -654,6 +655,7 @@ namespace Ict.Petra.Client.App.PetraClient
             TCommonScreensForwarding.OpenGetMergeDataDialog = @TGetMergeDataManager.OpenModalForm;
             TCommonScreensForwarding.OpenPrintPartnerDialog = @TPrintPartnerModal.OpenModalForm;
             TCommonScreensForwarding.TaxDeductiblePctAdjust = @TFrmGiftTaxDeductiblePctAdjustment.TaxDeductiblePctAdjustment;
+            TCommonScreensForwarding.OpenPrintUnitHierarchy = @TPrintUnitHierarchy.OpenModalForm;
 
             // Set up Delegate for the opening of Forms from the Main Menu
             Ict.Common.Controls.TLstTasks.OpenNewOrExistingForm = @Ict.Petra.Client.CommonForms.TFormsList.OpenNewOrExistingForm;

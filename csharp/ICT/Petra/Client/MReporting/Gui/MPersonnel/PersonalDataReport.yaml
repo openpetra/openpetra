@@ -21,20 +21,17 @@ RootNode:
     Controls:
         tpgGeneralSettings:
             Label: General Settings
-            Controls: [ucoPartnerSelection]
-            Order: AlwaysFirst
+            Controls: [ucoPartnerSelection, chkNewPage]
+            Dock: Fill
         tpgReportDetails:
             Lable: Report Details
             Controls: [grpReportDetails]
         ucoPartnerSelection:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
-            Dock: Fill
+            Height: 150
         grpReportDetails:
-            Controls: [chkPersonalInfo, chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkPersonalBudget, chkVisions, chkSkills, chkLanguages, chkPreviousExperiences, chkValuableItems]
+            Controls: [chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkSkills, chkLanguages, chkPreviousExperiences]
             
-        chkPersonalInfo:
-            Label: Show Personal Info
-            CheckBoxAttachedLabel: right
         chkLocalPartnerData:
             Label: Show Local Partner Data
             CheckBoxAttachedLabel: right
@@ -56,12 +53,6 @@ RootNode:
         chkSpecialNeeds:
             Label: Show Special Needs
             CheckBoxAttachedLabel: right
-        chkPersonalBudget:
-            Label: Show Personal Budget
-            CheckBoxAttachedLabel: right
-        chkVisions:
-            Label: Show Visions
-            CheckBoxAttachedLabel: right
         chkSkills:
             Label: Show Skills
             CheckBoxAttachedLabel: right
@@ -71,6 +62,6 @@ RootNode:
         chkPreviousExperiences:
             Label: Show Previous Experiences
             CheckBoxAttachedLabel: right
-        chkValuableItems:
-            Label: Show Valuable Items
+        chkNewPage:
+            Label: Paginate
             CheckBoxAttachedLabel: right

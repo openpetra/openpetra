@@ -123,6 +123,18 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     ResultTbl = TPersonnelReportingWebConnector.EndOfCommitmentReport(AParameters, FDbAdapter);
                     break;
 
+                case "JobAssignmentReport":
+                    ResultTbl = TPersonnelReportingWebConnector.JobAssignmentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "StartOfCommitmentReport":
+                    ResultTbl = TPersonnelReportingWebConnector.StartOfCommitmentReport(AParameters, FDbAdapter);
+                    break;
+
+                case "UnitHierarchyReport":
+                    ResultTbl = TPersonnelReportingWebConnector.UnitHierarchyReport(AParameters, FDbAdapter);
+                    break;
+
                 /* GL Reports */
 
                 case "BalanceSheet":
@@ -280,6 +292,14 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
                 case "EmergencyDataReport":
                     ResultSet = TPersonnelReportingWebConnector.EmergencyDataReport(AParameters, FDbAdapter);
+                    break;
+
+                case "PersonalDataReport":
+                    ResultSet = TPersonnelReportingWebConnector.PersonalDataReport(AParameters, FDbAdapter);
+                    break;
+
+                case "EmergencyContactReport":
+                    ResultSet = TPersonnelReportingWebConnector.EmergencyContactReport(AParameters, FDbAdapter);
                     break;
 
                 /* Finance */
