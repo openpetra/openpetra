@@ -4,7 +4,7 @@
 // @Authors:
 //       timop, christiank
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -466,9 +466,12 @@ namespace Ict.Petra.Server.MSysMan.ImportExport.WebConnectors
 
                 if (count != 1)
                 {
-                    if ((CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.SQLite) || ((count % 500) == 0))
+                    if ((CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.SQLite)
+                       || (CommonTypes.ParseDBType(AReadWriteTransaction.DataBaseObj.DBType) == TDBType.MySQL)
+                       || ((count % 500) == 0))
                     {
                         // SQLite does not support INSERT of several rows at the same time
+                        // MySQL is very slow with INSERT of several rows at the same time
                         try
                         {
                             AReadWriteTransaction.DataBaseObj.ExecuteNonQuery(InsertStatement.ToString(), AReadWriteTransaction, Parameters.ToArray());
