@@ -90,6 +90,7 @@
 
 Section "Main Section" SecInstallFiles
   Call CheckDotNETVersion
+  Call CheckVisualStudioRedist2015
 
   CreateDirectory "$INSTDIR\tmp30"
   CreateDirectory "$INSTDIR\log30"
