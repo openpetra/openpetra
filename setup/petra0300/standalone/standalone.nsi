@@ -229,10 +229,10 @@ FunctionEnd
 Function CheckVisualStudioRedist2015
     ReadRegDword $R1 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86" "Installed"
   ${If} $R1 != "1"
-    DetailPrint "We are missing the 'Microsoft Visual C++ Redistributable' version 2015 - 32 bit"
-    DetailPrint "Please first install this from https://www.microsoft.com/en-us/download/details.aspx?id=48145!"
+    DetailPrint "We are missing the 'Microsoft Visual C++ Redistributable' version 2015 - 32 bit (x86)"
+    DetailPrint "Please first install this from https://www.microsoft.com/en-us/download/details.aspx?id=48145"
     MessageBox MB_OK|MB_ICONSTOP \
-    "'Microsoft Visual C++ Redistributable' version 2015 - 32 bit not installed.$\nPlease first install this from https://www.microsoft.com/en-us/download/details.aspx?id=48145!"
+    "'Microsoft Visual C++ Redistributable' version 2015 - 32 bit (x86) not installed.$\nPlease first install this from https://www.microsoft.com/en-us/download/details.aspx?id=48145"
     Abort
   ${EndIf}
 FunctionEnd
