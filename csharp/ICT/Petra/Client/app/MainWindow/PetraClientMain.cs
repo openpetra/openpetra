@@ -452,7 +452,7 @@ namespace Ict.Petra.Client.App.PetraClient
                 // we need this for libsodium.dll
                 const string keyName = @"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86";
                 RegistryKey rk = Registry.LocalMachine.OpenSubKey(keyName);
-                object value = rk.GetValue("Installed");
+                object value = (rk == null?null:rk.GetValue("Installed"));
 
                 if (value == null || (Convert.ToUInt32(value) != 1))
                 {
