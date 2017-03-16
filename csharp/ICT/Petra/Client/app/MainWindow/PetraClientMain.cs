@@ -2,9 +2,9 @@
 // DO NOT REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
 //
 // @Authors:
-//       christiank
+//       christiank, timop
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -31,6 +31,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Windows.Forms;
 using System.Globalization;
+using Microsoft.Win32;
 
 using GNU.Gettext;
 using Ict.Common;
@@ -446,6 +447,19 @@ namespace Ict.Petra.Client.App.PetraClient
             if (TClientSettings.RunAsStandalone == true)
             {
                 FSplashScreen.ProgressText = "Starting OpenPetra Server Environment...";
+
+                // check if 'Microsoft Visual C++ Redistributable' version 2015 - 32 bit is installed
+                // we need this for libsodium.dll
+                const string keyName = @"SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86";
+                RegistryKey rk = Registry.LocalMachine.OpenSubKey(keyName);
+                object value = (rk == null?null:rk.GetValue("Installed"));
+
+                if (value == null || (Convert.ToUInt32(value) != 1))
+                {
+                    MessageBox.Show(String.Format(Catalog.GetString("Please install the {0}"), "'Microsoft Visual C++ Redistributable' version 2015 32-bit (x86)"),
+                                    Catalog.GetString("Error"));
+                    Environment.Exit(0);
+                }
 
                 if (!StartServer())
                 {

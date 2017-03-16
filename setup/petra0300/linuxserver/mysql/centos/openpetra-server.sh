@@ -96,7 +96,7 @@ restore() {
     echo `date` "Start restoring from " $backupfile
     echo "creating database..."
 
-    echo "DROP DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp30/createtables-MySQL.sql
+    echo "DROP DATABASE IF EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp30/createtables-MySQL.sql
     echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
     echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createtables-MySQL.sql
     cat $OpenPetraPath/db30/createtables-MySQL.sql >> $OpenPetraPath/tmp30/createtables-MySQL.sql
@@ -219,7 +219,7 @@ initdb() {
       echo "initialise database"
       systemctl start mariadb
       systemctl enable mariadb
-      echo "DROP DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
+      echo "DROP DATABASE IF EXISTS \`$OPENPETRA_DBNAME\`;" > $OpenPetraPath/tmp30/createdb-MySQL.sql
       echo "CREATE DATABASE IF NOT EXISTS \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
       echo "USE \`$OPENPETRA_DBNAME\`;" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
       echo "GRANT ALL ON \`$OPENPETRA_DBNAME\`.* TO \`$OPENPETRA_DBUSER\`@localhost IDENTIFIED BY '$OPENPETRA_DBPWD'" >> $OpenPetraPath/tmp30/createdb-MySQL.sql
