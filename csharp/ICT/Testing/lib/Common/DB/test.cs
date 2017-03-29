@@ -917,6 +917,12 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_CantJoinExistingTransaction()
         {
+            if (FDBType == TDBType.SQLite)
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
             TDBTransaction FirstTransaction = DBAccess.GDBAccessObj.BeginTransaction(ATransactionName : "FirstTransaction");
             TDBTransaction ReadTransaction = null;
             int Result = 0;
