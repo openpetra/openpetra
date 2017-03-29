@@ -475,7 +475,22 @@ namespace Ict.Common.DB
             Int32 AMaxRecords,
             string ADataTableName)
         {
-            ((MySqlDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+            if ((AStartRecord > 0) && (AMaxRecords > 0))
+            {
+                ((MySqlDataAdapter)TheAdapter).Fill(AFillDataSet, AStartRecord, AMaxRecords, ADataTableName);
+            }
+            else
+            {
+                if (ADataTableName == String.Empty)
+                {
+                    ((MySqlDataAdapter)TheAdapter).Fill(AFillDataSet);
+                }
+                else
+                {
+                    ((MySqlDataAdapter)TheAdapter).Fill(AFillDataSet, ADataTableName);
+                }
+            }
+
         }
 
         /// <summary>
@@ -491,7 +506,15 @@ namespace Ict.Common.DB
             Int32 AStartRecord,
             Int32 AMaxRecords)
         {
-            ((MySqlDataAdapter)TheAdapter).Fill(AStartRecord, AMaxRecords, AFillDataTable);
+            if ((AStartRecord > 0) && (AMaxRecords > 0))
+            {
+                ((MySqlDataAdapter)TheAdapter).Fill(AStartRecord, AMaxRecords, AFillDataTable);
+            }
+            else
+            {
+                ((MySqlDataAdapter)TheAdapter).Fill(AFillDataTable);
+            }
+
         }
 
         /// <summary>

@@ -90,6 +90,7 @@
 
 Section "Main Section" SecInstallFiles
   Call CheckDotNETVersion
+  Call CheckVisualStudioRedist2015
 
   CreateDirectory "$INSTDIR\tmp30"
   CreateDirectory "$INSTDIR\log30"
@@ -220,6 +221,18 @@ Function CheckDotNETVersion
     DetailPrint "Please first install this .NET Framework version from www.microsoft.com!"
     MessageBox MB_OK|MB_ICONSTOP \
     ".NET Framework v4.0 not installed.$\nPlease first install this .NET Framework version from www.microsoft.com!"
+    Abort
+  ${EndIf}
+FunctionEnd
+
+; we need this for libsodium.dll
+Function CheckVisualStudioRedist2015
+    ReadRegDword $R1 HKLM "SOFTWARE\Wow6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x86" "Installed"
+  ${If} $R1 != "1"
+    DetailPrint "We are missing the 'Microsoft Visual C++ Redistributable' version 2015 - 32 bit (x86)"
+    DetailPrint "Please first install this from https://www.microsoft.com/en-us/download/details.aspx?id=48145"
+    MessageBox MB_OK|MB_ICONSTOP \
+    "'Microsoft Visual C++ Redistributable' version 2015 - 32 bit (x86) not installed.$\nPlease first install this from https://www.microsoft.com/en-us/download/details.aspx?id=48145"
     Abort
   ${EndIf}
 FunctionEnd
