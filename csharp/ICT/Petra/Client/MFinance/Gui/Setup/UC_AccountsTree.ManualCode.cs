@@ -411,7 +411,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             AccountNodeDetails NodeTag = AccountNodeDetails.AddNewAccount(Child, AccountRow, ADetailRow);
 
-            NodeTag.IsNew = false;
+            NodeTag.IsNew = (ADetailRow.RowState == DataRowState.Added);
 
             SetNodeLabel(AccountRow, Child);
 

@@ -911,8 +911,8 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
             bool TransactionDataChanged = false;
             bool JournalDataChanged = false;
 
-            int CurrentTransBatchNumber = 0;
-            int CurrentTransJournalNumber = 0;
+            int CurrentTransBatchNumber = FBatchNumber;
+            int CurrentTransJournalNumber = FJournalNumber;
             int CurrentTransNumber = 0;
 
             int CurrentJournalNumber = 0;
@@ -1700,6 +1700,11 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     UpdateTransactionTotals();
                     FMyForm.SaveChanges();
                 }
+
+                FPreviouslySelectedDetailRow = null;
+                //Always update LastTransactionNumber first before updating totals
+                GLRoutines.UpdateJournalLastTransaction(FMainDS, FJournalRow);
+                UpdateTransactionTotals();
             }
             catch (Exception ex)
             {
@@ -1764,7 +1769,7 @@ namespace Ict.Petra.Client.MFinance.Gui.GL
                     }
 
                     //Always update LastTransactionNumber first before updating totals
-                    GLRoutines.UpdateJournalLastTransaction(ref FMainDS, ref FJournalRow);
+                    GLRoutines.UpdateJournalLastTransaction(FMainDS, FJournalRow);
                     UpdateTransactionTotals();
 
                     if (!FMyForm.SaveChangesManual(FMyForm.FCurrentGLBatchAction))

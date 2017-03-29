@@ -1073,6 +1073,7 @@ namespace Ict.Petra.Server.MFinance.GL
                         String Query =
                             "SELECT PUB_a_journal.* FROM PUB_a_batch, PUB_a_journal WHERE " +
                             " PUB_a_journal.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
+                            " AND PUB_a_batch.a_ledger_number_i=" + FLedgerInfo.LedgerNumber +
                             " AND PUB_a_batch.a_batch_number_i= PUB_a_journal.a_batch_number_i" +
                             " AND PUB_a_batch.a_batch_year_i=" + FOldYearNum +
                             " AND a_journal_period_i>" + FLedgerInfo.NumberOfAccountingPeriods;

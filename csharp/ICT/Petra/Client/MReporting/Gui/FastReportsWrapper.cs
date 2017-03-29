@@ -1009,6 +1009,7 @@ namespace Ict.Petra.Client.MReporting.Gui
         } // AutoEmailReports
 
         /// <summary>Helper for the report printing ClientTask</summary>
+        /// <remarks>This way of printing reports shows some reliability concerns so it is not currently used.</remarks>
         /// <param name="ReportName"></param>
         /// <param name="paramStr"></param>
         public static void PrintReportNoUi(String ReportName, String paramStr)
@@ -1080,22 +1081,8 @@ namespace Ict.Petra.Client.MReporting.Gui
                 }
             } // foreach param
 
-            //
-            // Get Data for report:
-            switch (ReportName)
-            {
-                case "Gift Batch Detail":
-                {
-                    DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("GiftBatchDetail", paramsDictionary);
-                    ReportingEngine.RegisterData(ReportTable, "GiftBatchDetail");
-                    break;
-                }
-            } // switch
-
             // I'm not in the User Interface thread, so I can use an invoke here:
-
             TFormsList.GFormsList.MainMenuForm.Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
-            //Application.OpenForms[0].Invoke((ThreadStart) delegate { ReportingEngine.GenerateReport(Calc); });
         } // PrintReportNoUi
     }
 }

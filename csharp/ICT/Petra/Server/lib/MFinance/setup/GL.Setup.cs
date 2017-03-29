@@ -5119,7 +5119,7 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
         ///          AND it has no children.
         ///          But I can't delete System Cost Centres.
         /// </summary>
-        /// <returns>true if the attributes were found. (If not found, that's a serious fault!)</returns>
+        /// <returns>true if the attributes were found.</returns>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean GetCostCentreAttributes(Int32 ALedgerNumber,
             String ACostCentreCode,
@@ -5161,10 +5161,11 @@ namespace Ict.Petra.Server.MFinance.Setup.WebConnectors
 
                         if ((tempTbl == null) || (tempTbl.Count == 0))
                         {
-                            throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
-                                        "Function:{0} - Cost Centre data for Cost Centre Code {1} does not exist or could not be accessed!"),
-                                    Utilities.GetMethodName(true),
-                                    ACostCentreCode));
+                            DBSuccess = false;
+                            CanBeParent = false;
+                            CanDelete = false;
+                            Msg = String.Format(Catalog.GetString("Cost Centre Code {0} is not in the database."), ACostCentreCode);
+                            return;
                         }
 
                         #endregion Validate Data

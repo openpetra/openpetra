@@ -106,13 +106,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             ACalc.AddStringParameter("param_linked_partner_cc", ""); // I may want to use this for auto_email, but usually it's unused.
 
-            if (ACalc.GetParameters().Exists("param_currency")
-                && (ACalc.GetParameters().Get("param_currency").ToString() == Catalog.GetString("Transaction")))
-            {
-                ACalc.RemoveParameter("param_currency_name");
-                ACalc.AddParameter("param_currency_name",
-                    TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber, true));
-            }
+            ACalc.AddParameter("param_currency_name",
+                TRemote.MFinance.Reporting.WebConnectors.GetTransactionCurrency(FLedgerNumber, FBatchNumber, true));
 
             ACalc.AddParameter("param_ledger_number_i", FLedgerNumber);
             ACalc.AddParameter("param_batch_number_i", FBatchNumber);

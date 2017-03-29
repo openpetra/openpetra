@@ -285,8 +285,11 @@ namespace Ict.Petra.Client.MFinance.Gui.Budget
 
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, FLedgerNumber, true, false, false, false, true);
 
-            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details. Local and Foreign included
-            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber, true, false, false, false, true);
+            // Do not include summary cost centres: we want to use one cost centre for each Motivation Details. Local Cost Centres only.
+            TFinanceControls.InitialiseCostCentreList(ref cmbDetailCostCentreCode, FLedgerNumber,
+                true, false,  // Posting only
+                false, true,  // inactive allowed, local only
+                true);        // inactive should be indicated.
 
             bool IfMoreThan12Periods = (FNumberOfPeriods > 12);
             bool IfMoreThan13Periods = (FNumberOfPeriods > 13);

@@ -27,8 +27,9 @@
                 Row2: [grpDateSelection]
                 Row3: [rgrDonorSelection]
                 Row4: [ucoMotivationCriteria]
+                Row5: [chkNewPage]
             Stretch: horizontally
-            
+
         tpgReportSorting:
             Label: Sorting
             Controls: [rgrSorting]
@@ -130,7 +131,7 @@
         cmbCurrency:
             ParameterName: param_currency
             OptionalValues: [Base, International]
-        
+
         tpgAdditionalSettings:
             Label: Additional Settings
             Controls: [rgrFormatCurrency]
@@ -147,3 +148,6 @@
         rbtCurrencyThousands:
             Label: Only Thousands
             ParameterValue: CurrencyThousands
+        chkNewPage:
+            Label: Paginate
+            CheckBoxAttachedLabel: right

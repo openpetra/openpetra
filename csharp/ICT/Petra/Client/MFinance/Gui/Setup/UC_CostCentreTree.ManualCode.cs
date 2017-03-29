@@ -338,7 +338,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             CostCentreNodeDetails NewNodeDetails = CostCentreNodeDetails.AddNewCostCentre(newNode, ADetailRow);
 
-            NewNodeDetails.IsNew = false;
+            NewNodeDetails.IsNew = (ADetailRow.RowState == DataRowState.Added);
 
             SetNodeLabel(ADetailRow, newNode);
 

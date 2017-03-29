@@ -314,6 +314,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
                 // search child below root organisation node
                 FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey, false);
+
                 if (FChildNodeReference == null)
                 {
                     // if not found yet then search below "Unassigned" node
@@ -322,6 +323,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
 
                 // search parent as or below root organisation node
                 FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey, true);
+
                 if (FParentNodeReference == null)
                 {
                     // if not found yet then search below "Unassigned" node

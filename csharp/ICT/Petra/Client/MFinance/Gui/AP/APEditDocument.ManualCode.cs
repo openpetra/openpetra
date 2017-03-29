@@ -154,6 +154,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 focusCorrectionTimer.Tick += new EventHandler(TimerDrivenFocusCorrection);
                 focusCorrectionTimer.Start();
             }
+
+            nudCreditTerms.Minimum = 0;
+            nudCreditTerms.Maximum = 4000;
         }
 
         private void TimerDrivenFocusCorrection(Object Sender, EventArgs e)

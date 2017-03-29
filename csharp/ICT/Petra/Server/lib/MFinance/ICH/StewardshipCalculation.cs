@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, christophert, timop
 //
-// Copyright 2004-2014 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -1218,6 +1218,66 @@ namespace Ict.Petra.Server.MFinance.ICH.WebConnectors
                 TLogging.LogException(ex, Utilities.GetMethodSignature());
                 throw;
             }
+        }
+
+        /// <summary>
+        /// If there are any foreign transactions in the selected period, for which ICH has not been run,
+        /// return true so the client can show a warning to the user, before allowing any Stewardship Reports.
+        /// </summary>
+        /// <param name="ALedgerNumber"></param>
+        /// <param name="ASelectedPeriod"></param>
+        /// <param name="ASelectedYear"></param>
+        /// <returns>true if the user should probably run Stewardship Calculation.</returns>
+        [RequireModulePermission("FINANCE-2")]
+        public static Boolean SelectedPeriodRequiresStewardshipRun(Int32 ALedgerNumber, Int32 ASelectedPeriod, Int32 ASelectedYear)
+        {
+            Boolean Ret = false;
+            TDBTransaction DBTransaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.Serializable,
+                ref DBTransaction,
+                delegate
+                {
+                    DateTime periodStart;
+                    DateTime periodEnd;
+
+                    if (!TFinancialYear.GetStartAndEndDateOfPeriod(
+                            ALedgerNumber,
+                            ASelectedYear,
+                            ASelectedPeriod,
+                            out periodStart,
+                            out periodEnd,
+                            DBTransaction))
+                    {
+                        return; // If an unexpected fault occurs, this only returns from the delegate, so will end up returning false.
+                    }
+
+                    //
+                    // Now I can get that list of transactions...
+                    String Query = "SELECT DISTINCT" +
+                                   " a_batch.a_batch_number_i, a_batch.a_date_effective_d, a_transaction.a_transaction_number_i, a_cost_centre_name_c"
+                                   +
+                                   " FROM" +
+                                   " a_transaction, a_batch, a_cost_centre" +
+                                   " WHERE" +
+                                   " a_transaction.a_ledger_number_i = " + ALedgerNumber +
+                                   " AND a_batch.a_ledger_number_i = " + ALedgerNumber +
+                                   " AND a_transaction.a_batch_number_i = a_batch.a_batch_number_i" +
+                                   " AND a_batch.a_date_effective_d >= '" + periodStart.ToString("yyyy-MM-dd") + "'" +
+                                   " AND a_batch.a_date_effective_d < '" + periodEnd.ToString("yyyy-MM-dd") + "'" +
+                                   " AND a_transaction.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c" +
+                                   " AND a_transaction.a_cost_centre_code_c = a_cost_centre.a_cost_centre_code_c" +
+                                   " AND a_cost_centre.a_cost_centre_type_c = 'Foreign'" +
+                                   " AND a_transaction.a_ich_number_i = 0";
+                    DataTable ForeignTransactions =
+                        DBAccess.GDBAccessObj.SelectDT(Query, "ForeignTransactions", DBTransaction);
+
+                    if ((ForeignTransactions != null) && (ForeignTransactions.Rows.Count > 0))
+                    {
+                        Ret = true;
+                    }
+                });
+            return Ret;
         }
     }
 }

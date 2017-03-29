@@ -719,6 +719,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     GenAppRow.GenAppDate = DateTime.Now;
                 }
+
                 ShortTermRow.StAppDate = GenAppRow.GenAppDate;
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE))
