@@ -316,7 +316,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                     break;
 
                 case "DonorGiftStatement":
-                    ResultSet = GetDonorGiftStatementDataSet(AParameters, FDbAdapter);
+                    ResultSet = GetDonorGiftStatementDataSet(AParameters, ref FDbAdapter);
                     break;
 
                 /* AP Reports */
@@ -689,7 +689,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
         /// Returns a DataSet to the client for use in client-side reporting
         /// </summary>
         [NoRemoting]
-        private static DataSet GetDonorGiftStatementDataSet(Dictionary <String, TVariant>AParameters, TReportingDbAdapter ADbAdapter)
+        private static DataSet GetDonorGiftStatementDataSet(Dictionary <String, TVariant>AParameters, ref TReportingDbAdapter ADbAdapter)
         {
             String reportType = AParameters["param_report_type"].ToString();
             String donorSelect = AParameters["param_donor"].ToString();
@@ -730,6 +730,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             // 5883 contd: Unfortunately the above can timeout, which it does silently (if it does timeout),
             // so if this happens we revert to the previous code.
+            // This recreates the ADbAdapter, which was created by the caller, so that is why it needs passing in with "ref".
+            // Another solution could be to update ADbAdapter so that FCancelFlag can be set back to false; that would also
+            // remove the need to create a new connection.
             DataTable tempTable;
             bool retrieveRecipientsIndividually = false;
 

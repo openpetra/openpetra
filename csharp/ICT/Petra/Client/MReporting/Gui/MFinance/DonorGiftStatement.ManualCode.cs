@@ -283,6 +283,10 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["Totals"], "Totals");
                 FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["TaxRef"], "TaxRef");
             }
+            else
+            {
+                MessageBox.Show("Report generation failed, most likely due to query timeout");
+            }
 
             ThreadFinished = true;
         }

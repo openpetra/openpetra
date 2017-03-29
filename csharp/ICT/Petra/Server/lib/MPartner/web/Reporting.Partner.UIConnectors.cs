@@ -469,7 +469,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 	                        p_partner_relationship, p_relation, p_partner
                         WHERE
 	                        p_partner_relationship.p_relation_key_n IN("
-                        + PartnerSelection +
+                        +
+                        PartnerSelection +
                         @")
 	                        AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
 	                        AND p_partner.p_partner_key_n = p_partner_relationship.p_partner_key_n"                                                                                                                            ;
