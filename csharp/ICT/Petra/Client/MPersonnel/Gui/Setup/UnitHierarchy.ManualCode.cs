@@ -95,8 +95,16 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
         }
 
-        private TreeNode FindChild(TreeNode AParentNode, Int64 AUnitKey)
+        private TreeNode FindChild(TreeNode AParentNode, Int64 AUnitKey, Boolean AIncludeParentNodeInSearch = false)
         {
+            if (AIncludeParentNodeInSearch)
+            {
+                if (((UnitHierarchyNode)AParentNode.Tag).MyUnitKey == AUnitKey)
+                {
+                    return AParentNode;
+                }
+            }
+
             foreach (TreeNode Node in AParentNode.Nodes)
             {
                 if (((UnitHierarchyNode)Node.Tag).MyUnitKey == AUnitKey)
@@ -104,7 +112,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                     return Node;
                 }
 
-                TreeNode ChildResult = FindChild(Node, AUnitKey);
+                TreeNode ChildResult = FindChild(Node, AUnitKey, false);
 
                 if (ChildResult != null)
                 {
@@ -198,6 +206,7 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
                 txtChild.Text = ((UnitHierarchyNode)ASelThis.Tag).MyUnitKey.ToString("D10");
                 txtParent.Text = ((UnitHierarchyNode)ASelThis.Tag).ParentUnitKey.ToString("D10");
                 btnMove.Enabled = false;
+                EvaluateParentChange(null, null);
             }
         }
 
@@ -302,12 +311,12 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 ChildKey = Convert.ToInt64(txtChild.Text);
                 ParentKey = Convert.ToInt64(txtParent.Text);
-                FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey);
-                FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey);
+                FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey, false);
+                FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey, true);
 
                 if ((FChildNodeReference != null) && (FParentNodeReference != null))
                 {
-                    if (!IsDescendantOf(FParentNodeReference, FChildNodeReference))
+                    if (FChildNodeReference.Parent != FParentNodeReference)
                     {
                         ICanReassign = true;
                     }
@@ -452,6 +461,66 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 GetAllChildren(Node, ref UnitNodes);
             }
+        }
+
+        /// Our main keyboard handler
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            switch (keyData)
+            {
+                case Keys.Home | Keys.Control:
+                case Keys.Home:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.FirstNode);
+                    }
+                    else
+                    {
+                        SelectNode(trvUnits.GetNodeAt(1, 1));
+                    }
+
+                    break;
+
+                case Keys.Up | Keys.Control:
+                case Keys.Up:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.PrevVisibleNode);
+                    }
+
+                    break;
+
+                case Keys.Down | Keys.Control:
+                case Keys.Down:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.NextVisibleNode);
+                    }
+
+                    break;
+
+                case Keys.End | Keys.Control:
+                case Keys.End:
+
+                    if (trvUnits.SelectedNode != null)
+                    {
+                        SelectNode(trvUnits.SelectedNode.LastNode);
+                    }
+                    else
+                    {
+                        SelectNode(trvUnits.GetNodeAt(1, trvUnits.Bottom - 2));
+                    }
+
+                    break;
+
+                default:
+                    break;
+            }
+
+            return base.ProcessCmdKey(ref msg, keyData);
         }
 
         /// <summary>
