@@ -63,7 +63,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("TotalGiftsThroughField",
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData(true, "TotalGiftsThroughField",
                 false,
                 new string[] { "MonthlyGifts" },
                 ACalc,

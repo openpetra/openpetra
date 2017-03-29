@@ -449,12 +449,28 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                                                 FROM
 	                                                p_partner_relationship, p_relation, p_partner
                                                 WHERE
-	                                                p_partner_relationship.p_partner_key_n IN("
+	                                                (p_partner_relationship.p_partner_key_n IN(
+"
                         +
                         PartnerSelection +
-                        @")
+                        @") OR p_partner_relationship.p_relation_key_n IN( "
+                        +
+                        PartnerSelection +
+                        @"))
 	                                                AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
-	                                                AND p_partner.p_partner_key_n = p_partner_relationship.p_relation_key_n"                                                                                                                                                    ;
+	                                                AND p_partner.p_partner_key_n = p_partner_relationship.p_relation_key_n
+                        UNION ALL 
+                        SELECT
+	                        p_partner_relationship.p_relation_key_n,
+	                        p_partner_relationship.p_partner_key_n,
+	                        p_relation.p_reciprocal_description_c,
+	                        p_partner.p_partner_short_name_c
+                        FROM
+	                        p_partner_relationship, p_relation, p_partner
+                        WHERE
+	                        p_partner_relationship.p_relation_key_n IN(" + PartnerSelection + @")
+	                        AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
+	                        AND p_partner.p_partner_key_n = p_partner_relationship.p_partner_key_n";
 
                     if (!AParameters["param_chkRelationships"].ToBool())
                     {
