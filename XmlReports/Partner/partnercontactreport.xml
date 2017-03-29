@@ -3,47 +3,47 @@
 <reports>
 
   <report id="Partner Contact">
-	<description>
-		Report for the contacts of Partners
-	</description>
-	<reportparameters>
-		<reportparameter name="param_selection">
-			<option name="one partner"></option>
-			<option name="an extract"></option>
-			<option name="all current staff"></option>
-		</reportparameter>
-		<reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
-		<reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
-		<reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
-		<reportparameter name="param_dtpDateTo"></reportparameter>
-		<reportparameter name="param_dtpDateFrom"></reportparameter>
-	</reportparameters>
+    <description>
+        Report for the contacts of Partners
+    </description>
+    <reportparameters>
+        <reportparameter name="param_selection">
+            <option name="one partner"></option>
+            <option name="an extract"></option>
+            <option name="all current staff"></option>
+        </reportparameter>
+        <reportparameter condition="param_selection=an extract" name="param_extract"></reportparameter>
+        <reportparameter condition="param_selection=one partner" name="param_partnerkey"></reportparameter>
+        <reportparameter condition="param_selection=all current staff" name="param_currentstaffdate"></reportparameter>
+        <reportparameter name="param_dtpDateTo"></reportparameter>
+        <reportparameter name="param_dtpDateFrom"></reportparameter>
+    </reportparameters>
 
     <reportheader></reportheader>
     <pageheader>
       <field whichfield="title1"><value text="Partner Contact Report"></value></field>
       <field whichfield="title2"><value function="getSiteName()"></value></field>
       <field whichfield="descr1">
-	  <fielddetail>
-		  <switch>
-			<case condition="eq({param_order_by_name}, PartnerName)">
-				<value text="Sorted by: Partner Name"></value>
-			</case>
-			<case condition="eq({param_order_by_name}, PartnerKey)">
-				<value text="Sorted by: Partner Key"></value>
-			</case>
-		  </switch>
-	  </fielddetail>
-	</field>	
+      <fielddetail>
+          <switch>
+            <case condition="eq({param_order_by_name}, PartnerName)">
+                <value text="Sorted by: Partner Name"></value>
+            </case>
+            <case condition="eq({param_order_by_name}, PartnerKey)">
+                <value text="Sorted by: Partner Key"></value>
+            </case>
+          </switch>
+      </fielddetail>
+    </field>    
       <field whichfield="period1">
         <fielddetail>
-          <switch><case condition="not(eq(length({param_dtpDateFrom}), 1))">
+          <switch><case condition="not(eq(length({param_dtpDateFrom}), 0))">
               <value text="From "></value>
               <value variable="param_dtpDateFrom" format="formatteddate"></value>
           </case></switch>
         </fielddetail>
         <fielddetail>
-          <switch><case condition="not(eq(length({param_dtpDateTo}), 1))">
+          <switch><case condition="not(eq(length({param_dtpDateTo}), 0))">
               <value text=" To "></value>
               <value variable="param_dtpDateTo" format="formatteddate"></value>
           </case></switch>
@@ -66,592 +66,592 @@
     </pageheader>
 
     <calculations>
-	
-	<calculation id="Select Partners" returns="PartnerKey, ShortName" returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-					PUB_p_partner_contact.p_partner_key_n AS PartnerKey,
-					PUB_p_partner.p_partner_short_name_c AS ShortName
-				</value>
-			</queryDetail>
-			
-			<queryDetail condition="not (eq(length({param_contact_attributes}), 1))">
-				<value>
-						FROM PUB_p_partner_contact_attribute, 
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq(length({param_contact_attributes}), 1)">
-				<value>
-						FROM 
-				</value>
-			</queryDetail>
-			
-			<queryDetail condition="eq({param_selection},one partner)">
-				<value>
-					   PUB_p_partner, PUB_p_partner_contact, PUB_p_contact_log
-					WHERE  PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},an extract)">
-				<value>
-					 PUB_p_partner, PUB_m_extract, PUB_m_extract_master, PUB_p_partner_contact, PUB_p_contact_log
-					WHERE PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
-					AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
-					AND PUB_m_extract_master.m_extract_name_c = {param_extract}
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_selection},all current staff)">
-				<value>
-					 PUB_p_partner, PUB_pm_staff_data, PUB_p_partner_contact, PUB_p_contact_log
-					WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
-					AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
-					AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
-					OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
-				</value>
-			</queryDetail>
-			<queryDetail>
-				<value>
-					AND PUB_p_partner.p_partner_key_n = PUB_p_partner_contact.p_partner_key_n
+    
+    <calculation id="Select Partners" returns="PartnerKey, ShortName" returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT
+                    PUB_p_partner_contact.p_partner_key_n AS PartnerKey,
+                    PUB_p_partner.p_partner_short_name_c AS ShortName
+                </value>
+            </queryDetail>
+            
+            <queryDetail condition="not (eq(length({param_contact_attributes}), 1))">
+                <value>
+                        FROM PUB_p_partner_contact_attribute, 
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq(length({param_contact_attributes}), 1)">
+                <value>
+                        FROM 
+                </value>
+            </queryDetail>
+            
+            <queryDetail condition="eq({param_selection},one partner)">
+                <value>
+                       PUB_p_partner, PUB_p_partner_contact, PUB_p_contact_log
+                    WHERE  PUB_p_partner.p_partner_key_n = {{param_partnerkey}}
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},an extract)">
+                <value>
+                     PUB_p_partner, PUB_m_extract, PUB_m_extract_master, PUB_p_partner_contact, PUB_p_contact_log
+                    WHERE PUB_p_partner.p_partner_key_n = PUB_m_extract.p_partner_key_n
+                    AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i
+                    AND PUB_m_extract_master.m_extract_name_c = {param_extract}
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_selection},all current staff)">
+                <value>
+                     PUB_p_partner, PUB_pm_staff_data, PUB_p_partner_contact, PUB_p_contact_log
+                    WHERE PUB_p_partner.p_partner_key_n = PUB_pm_staff_data.p_partner_key_n
+                    AND PUB_pm_staff_data.pm_start_of_commitment_d &lt;= {#param_currentstaffdate#}
+                    AND (PUB_pm_staff_data.pm_end_of_commitment_d &gt;= {#param_currentstaffdate#}
+                    OR PUB_pm_staff_data.pm_end_of_commitment_d IS NULL) 
+                </value>
+            </queryDetail>
+            <queryDetail>
+                <value>
+                    AND PUB_p_partner.p_partner_key_n = PUB_p_partner_contact.p_partner_key_n
                     AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq({param_cmbContact}, *))">
-				<value>
-					AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq(length({param_dtpDateTo}), 1))">
-				<value>
-					AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not(eq(length({param_dtpDateFrom}), 1))">
-				<value>
-					AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq({param_cmbContactor},*))">
-				<value>
-					AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
-				</value>
-			</queryDetail>
-			
-			<queryDetail condition="not (eq(length({param_contact_attributes}), 1))">
-				<value>
-					AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_contact_log.p_contact_log_id_i
-					{{param_contact_attributes}}
-					
-				</value>
-			</queryDetail>
-			
-			<queryDetail condition="eq({param_order_by_name}, PartnerName)">
-				<value>
-					ORDER BY PUB_p_partner.p_partner_short_name_c
-				</value>
-			</queryDetail>
-			<queryDetail condition="eq({param_order_by_name}, PartnerKey)">
-				<value>
-					ORDER BY PUB_p_partner_contact.p_partner_key_n
-				</value>
-			</queryDetail>
-			
-		</query>
-	</calculation><!-- Select Partners -->
-	  
-	<calculation  id="Get All Contacts of partner" returns="Contactor, Method, ContactId, ContactDate,
-					Mailing, Notes, ContactAttribute, ContactDetail, ContactDetailDescription"	returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-						PUB_p_contact_log.p_contactor_c AS Contactor,
-						PUB_p_contact_log.p_contact_code_c AS Method,
-						PUB_p_contact_log.s_contact_date_d AS ContactDate,
-						PUB_p_contact_log.p_mailing_code_c AS Mailing,
-						PUB_p_contact_log.p_contact_comment_c AS Notes,
-						PUB_p_partner_contact_attribute.p_contact_id_i AS ContactId,
-						PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
-						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail,
-						PUB_p_contact_attribute_detail.p_contact_attr_detail_descr_c AS ContactDetailDescription
-					FROM
-						PUB_p_partner_contact, PUB_p_contact_log, PUB_p_partner_contact_attribute
-					LEFT JOIN
-						PUB_p_contact_attribute_detail
-					ON
-						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c 
-						AND
-						PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
-					WHERE
-						PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
-						AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq({param_cmbContact}, *))">
-				<value>
-					AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq(length({param_dtpDateTo}), 1))">
-				<value>
-					AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq(length({param_dtpDateFrom}), 1))">
-				<value>
-					AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq({param_cmbContactor},*))">
-				<value>
-					AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
-				</value>
-			</queryDetail>
-			<queryDetail>
-				<value>
-					AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_log_id_i
-					{{param_contact_attributes}}
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation  id="Get All Contacts of partner NO ATTRIBUTE" returns="Contactor, Method, ContactId, ContactDate,
-					Mailing, Notes, ContactAttribute, ContactDetail"	returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-						PUB_p_contact_log.p_contactor_c AS Contactor,
-						PUB_p_contact_log.p_contact_code_c AS Method,
-						PUB_p_contact_log.s_contact_date_d AS ContactDate,
-						PUB_p_contact_log.p_mailing_code_c AS Mailing,
-						PUB_p_contact_log.p_contact_comment_c AS Notes,
-						PUB_p_contact_log.p_contact_log_id_i AS ContactId,
-						PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
-						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail
-					FROM
-						PUB_p_contact_log, PUB_p_partner_contact
-					LEFT JOIN
-						PUB_p_partner_contact_attribute
-					ON 	
-						PUB_p_partner_contact.p_contact_log_id_i = PUB_p_partner_contact_attribute.p_contact_id_i
-					WHERE
-						PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq({param_cmbContact}, *))">
+                <value>
+                    AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq(length({param_dtpDateTo}), 0))">
+                <value>
+                    AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not(eq(length({param_dtpDateFrom}), 0))">
+                <value>
+                    AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq({param_cmbContactor},*))">
+                <value>
+                    AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
+                </value>
+            </queryDetail>
+            
+            <queryDetail condition="not (eq(length({param_contact_attributes}), 1))">
+                <value>
+                    AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_contact_log.p_contact_log_id_i
+                    {{param_contact_attributes}}
+                    
+                </value>
+            </queryDetail>
+            
+            <queryDetail condition="eq({param_order_by_name}, PartnerName)">
+                <value>
+                    ORDER BY PUB_p_partner.p_partner_short_name_c
+                </value>
+            </queryDetail>
+            <queryDetail condition="eq({param_order_by_name}, PartnerKey)">
+                <value>
+                    ORDER BY PUB_p_partner_contact.p_partner_key_n
+                </value>
+            </queryDetail>
+            
+        </query>
+    </calculation><!-- Select Partners -->
+      
+    <calculation  id="Get All Contacts of partner" returns="Contactor, Method, ContactId, ContactDate,
+                    Mailing, Notes, ContactAttribute, ContactDetail, ContactDetailDescription"  returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT
+                        PUB_p_contact_log.p_contactor_c AS Contactor,
+                        PUB_p_contact_log.p_contact_code_c AS Method,
+                        PUB_p_contact_log.s_contact_date_d AS ContactDate,
+                        PUB_p_contact_log.p_mailing_code_c AS Mailing,
+                        PUB_p_contact_log.p_contact_comment_c AS Notes,
+                        PUB_p_partner_contact_attribute.p_contact_id_i AS ContactId,
+                        PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
+                        PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail,
+                        PUB_p_contact_attribute_detail.p_contact_attr_detail_descr_c AS ContactDetailDescription
+                    FROM
+                        PUB_p_partner_contact, PUB_p_contact_log, PUB_p_partner_contact_attribute
+                    LEFT JOIN
+                        PUB_p_contact_attribute_detail
+                    ON
+                        PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c 
+                        AND
+                        PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
+                    WHERE
+                        PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
+                        AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq({param_cmbContact}, *))">
+                <value>
+                    AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq(length({param_dtpDateTo}), 0))">
+                <value>
+                    AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq(length({param_dtpDateFrom}), 0))">
+                <value>
+                    AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq({param_cmbContactor},*))">
+                <value>
+                    AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
+                </value>
+            </queryDetail>
+            <queryDetail>
+                <value>
+                    AND PUB_p_partner_contact_attribute.p_contact_id_i = PUB_p_partner_contact.p_contact_log_id_i
+                    {{param_contact_attributes}}
+                </value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation  id="Get All Contacts of partner NO ATTRIBUTE" returns="Contactor, Method, ContactId, ContactDate,
+                    Mailing, Notes, ContactAttribute, ContactDetail"    returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT
+                        PUB_p_contact_log.p_contactor_c AS Contactor,
+                        PUB_p_contact_log.p_contact_code_c AS Method,
+                        PUB_p_contact_log.s_contact_date_d AS ContactDate,
+                        PUB_p_contact_log.p_mailing_code_c AS Mailing,
+                        PUB_p_contact_log.p_contact_comment_c AS Notes,
+                        PUB_p_contact_log.p_contact_log_id_i AS ContactId,
+                        PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
+                        PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail
+                    FROM
+                        PUB_p_contact_log, PUB_p_partner_contact
+                    LEFT JOIN
+                        PUB_p_partner_contact_attribute
+                    ON  
+                        PUB_p_partner_contact.p_contact_log_id_i = PUB_p_partner_contact_attribute.p_contact_id_i
+                    WHERE
+                        PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
                         AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i                        
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq({param_cmbContact}, *))">
-				<value>
-					AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq(length({param_dtpDateTo}), 1))">
-				<value>
-					AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq(length({param_dtpDateFrom}), 1))">
-				<value>
-					AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
-				</value>
-			</queryDetail>
-			<queryDetail condition="not (eq({param_cmbContactor},*))">
-				<value>
-					AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation  id="Get All Details of Contact Attribute" returns="ContactAttribute, ContactDetail, ContactDetailDescription"	returnsFormat="row">
-		<query>
-			<queryDetail>
-				<value>
-					SELECT DISTINCT
-						PUB_p_contact_log.p_contactor_c AS Contactor,
-						PUB_p_contact_log.p_contact_code_c AS Method,
-						PUB_p_contact_log.s_contact_date_d AS ContactDate,
-						PUB_p_contact_log.p_mailing_code_c AS Mailing,
-						PUB_p_contact_log.p_contact_comment_c AS Notes,
-						PUB_p_contact_log.p_contact_log_id_i AS ContactId,
-						PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
-						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail,
-						PUB_p_contact_attribute_detail.p_contact_attr_detail_descr_c AS ContactDetailDescription
-					FROM
-						PUB_p_partner_contact, PUB_p_contact_log, PUB_p_partner_contact_attribute
-					LEFT JOIN
-						PUB_p_contact_attribute_detail
-					ON
-						PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c 
-						AND
-						PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
-					WHERE
-							 PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
-						AND PUB_p_partner_contact.p_contact_log_id_i = {{ContactId}}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq({param_cmbContact}, *))">
+                <value>
+                    AND PUB_p_contact_log.p_contact_code_c = {param_cmbContact}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq(length({param_dtpDateTo}), 0))">
+                <value>
+                    AND PUB_p_contact_log.s_contact_date_d &lt;= {#param_dtpDateTo#}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq(length({param_dtpDateFrom}), 0))">
+                <value>
+                    AND PUB_p_contact_log.s_contact_date_d &gt;= {#param_dtpDateFrom#}
+                </value>
+            </queryDetail>
+            <queryDetail condition="not (eq({param_cmbContactor},*))">
+                <value>
+                    AND PUB_p_contact_log.p_contactor_c = {param_cmbContactor}
+                </value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation  id="Get All Details of Contact Attribute" returns="ContactAttribute, ContactDetail, ContactDetailDescription" returnsFormat="row">
+        <query>
+            <queryDetail>
+                <value>
+                    SELECT DISTINCT
+                        PUB_p_contact_log.p_contactor_c AS Contactor,
+                        PUB_p_contact_log.p_contact_code_c AS Method,
+                        PUB_p_contact_log.s_contact_date_d AS ContactDate,
+                        PUB_p_contact_log.p_mailing_code_c AS Mailing,
+                        PUB_p_contact_log.p_contact_comment_c AS Notes,
+                        PUB_p_contact_log.p_contact_log_id_i AS ContactId,
+                        PUB_p_partner_contact_attribute.p_contact_attribute_code_c AS ContactAttribute,
+                        PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c AS ContactDetail,
+                        PUB_p_contact_attribute_detail.p_contact_attr_detail_descr_c AS ContactDetailDescription
+                    FROM
+                        PUB_p_partner_contact, PUB_p_contact_log, PUB_p_partner_contact_attribute
+                    LEFT JOIN
+                        PUB_p_contact_attribute_detail
+                    ON
+                        PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = PUB_p_contact_attribute_detail.p_contact_attr_detail_code_c 
+                        AND
+                        PUB_p_partner_contact_attribute.p_contact_attribute_code_c = PUB_p_contact_attribute_detail.p_contact_attribute_code_c
+                    WHERE
+                             PUB_p_partner_contact.p_partner_key_n = {{PartnerKey}}
+                        AND PUB_p_partner_contact.p_contact_log_id_i = {{ContactId}}
                         AND PUB_p_contact_log.p_contact_log_id_i = PUB_p_partner_contact.p_contact_log_id_i                        
-						AND PUB_p_partner_contact_attribute.p_contact_id_i = {{ContactId}}
-						AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = {ContactAttribute}
-						AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = {ContactDetail}
-				</value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="Make Contact Time" returns="PartnerNameAndKey" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(ContactTime, ConvertIntToTime({s_contact_time_i}, 2)"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="AddAddressCount" returns="PartnerNameAndKey" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(NumberOfAddresses, add({NumberOfAddresses}, 1))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation id="MakeAddress" returns="PartnerAddress" returnsFormat="text">
-		<query>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="GetPartnerBestAddress({PartnerKey})"/>
-				<value function="assign(PartnerNameAndKey, {PartnerKey})"/>
-				<value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{ShortName}, 2))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerAddress, )"/>
-			</queryDetail>
-			<queryDetail condition="eq({SendMail}, false)">
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerAddress, #)"/>
-			</queryDetail>
-			<queryDetail condition="eq({Icon}, 2)">
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, ^, 2))"/>
-			</queryDetail>
-			<queryDetail condition="eq({Icon}, 3)">
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, *, 2))"/>
-			</queryDetail>
-			<queryDetail>
-				<value text="NO-SQL"/>
-				<value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
-				<value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contactor" returns="text" returnsFormat="text">
-		<caption><value text="Contactor"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Contactor"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Method" returns="text" returnsFormat="text">
-		<caption><value text="Method"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Method"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contact ID" returns="text" returnsFormat="text">
-		<caption><value text="Contact ID"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ContactId"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contact Date" returns="text" returnsFormat="formatteddate">
-		<caption><value text="Date"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ContactDate"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contact Time" returns="text" returnsFormat="text">
-		<caption><value text="Time"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ContactTime"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Mailing" returns="text" returnsFormat="text">
-		<caption><value text="Mailing"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Mailing"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Notes" returns="text" returnsFormat="text">
-		<caption><value text="Notes"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Notes"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PartnerNameAndKey" returns="text" returnsFormat="text">
-		<caption><value text=""></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerNameAndKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PartnerAddress" returns="text" returnsFormat="text">
-		<caption><value text="Partner Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
-		<caption><value text="Partner Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ShortName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
+                        AND PUB_p_partner_contact_attribute.p_contact_id_i = {{ContactId}}
+                        AND PUB_p_partner_contact_attribute.p_contact_attribute_code_c = {ContactAttribute}
+                        AND PUB_p_partner_contact_attribute.p_contact_attr_detail_code_c = {ContactDetail}
+                </value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="Make Contact Time" returns="PartnerNameAndKey" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(ContactTime, ConvertIntToTime({s_contact_time_i}, 2)"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="AddAddressCount" returns="PartnerNameAndKey" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(NumberOfAddresses, add({NumberOfAddresses}, 1))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation id="MakeAddress" returns="PartnerAddress" returnsFormat="text">
+        <query>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="GetPartnerBestAddress({PartnerKey})"/>
+                <value function="assign(PartnerNameAndKey, {PartnerKey})"/>
+                <value function="assign(PartnerNameAndKey, concatenateww({PartnerNameAndKey},{ShortName}, 2))"/>
+            </queryDetail>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerAddress, )"/>
+            </queryDetail>
+            <queryDetail condition="eq({SendMail}, false)">
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerAddress, #)"/>
+            </queryDetail>
+            <queryDetail condition="eq({Icon}, 2)">
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, ^, 2))"/>
+            </queryDetail>
+            <queryDetail condition="eq({Icon}, 3)">
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, *, 2))"/>
+            </queryDetail>
+            <queryDetail>
+                <value text="NO-SQL"/>
+                <value function="assign(PartnerAddress, concatenateww({PartnerAddress}, {Locality}, 2))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{StreetName}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{Address3}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{PostalCode}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{City}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{County}))"/>
+                <value function="assign(PartnerAddress, concatenatewithcomma({PartnerAddress},{CountryCode}))"/>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contactor" returns="text" returnsFormat="text">
+        <caption><value text="Contactor"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Contactor"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Method" returns="text" returnsFormat="text">
+        <caption><value text="Method"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Method"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contact ID" returns="text" returnsFormat="text">
+        <caption><value text="Contact ID"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ContactId"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contact Date" returns="text" returnsFormat="formatteddate">
+        <caption><value text="Date"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ContactDate"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contact Time" returns="text" returnsFormat="text">
+        <caption><value text="Time"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ContactTime"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Mailing" returns="text" returnsFormat="text">
+        <caption><value text="Mailing"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Mailing"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Notes" returns="text" returnsFormat="text">
+        <caption><value text="Notes"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Notes"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PartnerNameAndKey" returns="text" returnsFormat="text">
+        <caption><value text=""></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerNameAndKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PartnerAddress" returns="text" returnsFormat="text">
+        <caption><value text="Partner Address"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Partner Name" returns="text" returnsFormat="text">
+        <caption><value text="Partner Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ShortName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
 
-	<calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
-		<caption><value text="Partner Key"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PartnerKey"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	  
-	<calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
-		<caption><value text="E-Mail Address"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="EMailAddress"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Street Name" returns="text" returnsFormat="text">
-		<caption><value text="Street Name"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="StreetName"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
-		<caption><value text="First Address Line"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Locality"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
-		<caption><value text="Third Address Line"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="Address3"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Country" returns="text" returnsFormat="text">
-		<caption><value text="Country"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="CountryCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="County" returns="text" returnsFormat="text">
-		<caption><value text="County"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="County"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="City" returns="text" returnsFormat="text">
-		<caption><value text="City"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="City"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="PostCode" returns="text" returnsFormat="text">
-		<caption><value text="PostCode"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="PostalCode"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="SendMail" returns="text" returnsFormat="text">
-		<caption><value text="Send Mail"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="SendMail"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contact Attribute" returns="text" returnsFormat="text">
-		<caption><value text="Contact Attribute"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ContactAttribute"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contact Detail" returns="text" returnsFormat="text">
-		<caption><value text="Contact Detail"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ContactDetail"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="Contact Detail Description" returns="text" returnsFormat="text">
-		<caption><value text="Contact Detail Description"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="ContactDetailDescription"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
-	<calculation align="left" id="NumberOfAddresses" returns="text" returnsFormat="text">
-		<caption><value text="Number of Addresses"></value></caption>
-		<query>
-			<queryDetail>
-				<value variable="NumberOfAddresses"></value>
-			</queryDetail>
-		</query>
-	</calculation>
-	
+    <calculation align="left" id="Partner Key" returns="text" returnsFormat="partnerkey">
+        <caption><value text="Partner Key"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PartnerKey"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+      
+    <calculation align="left" id="E-Mail Address" returns="text" returnsFormat="text">
+        <caption><value text="E-Mail Address"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="EMailAddress"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Street Name" returns="text" returnsFormat="text">
+        <caption><value text="Street Name"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="StreetName"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="First Address Line" returns="text" returnsFormat="text">
+        <caption><value text="First Address Line"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Locality"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Third Address Line" returns="text" returnsFormat="text">
+        <caption><value text="Third Address Line"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="Address3"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Country" returns="text" returnsFormat="text">
+        <caption><value text="Country"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="CountryCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="County" returns="text" returnsFormat="text">
+        <caption><value text="County"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="County"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="City" returns="text" returnsFormat="text">
+        <caption><value text="City"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="City"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="PostCode" returns="text" returnsFormat="text">
+        <caption><value text="PostCode"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="PostalCode"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="SendMail" returns="text" returnsFormat="text">
+        <caption><value text="Send Mail"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="SendMail"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contact Attribute" returns="text" returnsFormat="text">
+        <caption><value text="Contact Attribute"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ContactAttribute"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contact Detail" returns="text" returnsFormat="text">
+        <caption><value text="Contact Detail"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ContactDetail"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="Contact Detail Description" returns="text" returnsFormat="text">
+        <caption><value text="Contact Detail Description"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="ContactDetailDescription"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
+    <calculation align="left" id="NumberOfAddresses" returns="text" returnsFormat="text">
+        <caption><value text="Number of Addresses"></value></caption>
+        <query>
+            <queryDetail>
+                <value variable="NumberOfAddresses"></value>
+            </queryDetail>
+        </query>
+    </calculation>
+    
     </calculations>
     
     <levels>    
-	<level name="main">
-		<detail>
-			<lowerLevelReport level="intermediatelevel"></lowerLevelReport>
-		</detail>
-	</level> <!-- main -->
+    <level name="main">
+        <detail>
+            <lowerLevelReport level="intermediatelevel"></lowerLevelReport>
+        </detail>
+    </level> <!-- main -->
 
-	<level name="intermediatelevel">
-		<detail>
-			<lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
-		</detail>
-		<footer space="above" >
-			<field whichfield="left 0" pos="0.3cm" width="18cm">
-				<value text="Number of Addresses: "/>
-				<value variable="NumberOfAddresses"/>
-				<value text="         Address Flags:  * expired,   ^ not yet current,  # no post to this address"/>
-			</field>
-		</footer>
-	</level>
-	
+    <level name="intermediatelevel">
+        <detail>
+            <lowerLevelReport calculation="Select Partners" level="Partner Level"></lowerLevelReport>
+        </detail>
+        <footer space="above" >
+            <field whichfield="left 0" pos="0.3cm" width="18cm">
+                <value text="Number of Addresses: "/>
+                <value variable="NumberOfAddresses"/>
+                <value text="         Address Flags:  * expired,   ^ not yet current,  # no post to this address"/>
+            </field>
+        </footer>
+    </level>
+    
       <level name="Partner Level" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="0cm" width="7cm" calculation="AddAddressCount">
-				<value text=""/>
-				<value variable="PartnerNameAndKey"/>
-			</field>
-			<field whichfield="header 1" pos="8.0cm" width="15cm">
-				<value text=""/>
-				<value variable="PartnerAddress"/>
-			</field>
-		</header>
-		<detail>
-			<switch>
-				<case condition="not (eq(length({param_contact_attributes}), 1))">
-					<lowerLevelReport calculation="Get All Contacts of partner" level="Partner Contact"></lowerLevelReport>
-				</case>
-				<default>
-					<lowerLevelReport calculation="Get All Contacts of partner NO ATTRIBUTE" level="Partner Contact2"></lowerLevelReport>
-				</default>
-			</switch>
-		</detail>
-		<footer>
-			<field whichfield="columns">
-				<value text=" "/>
-			</field>
-		</footer>
+        <header>
+            <field whichfield="header 0" pos="0cm" width="7cm" calculation="AddAddressCount">
+                <value text=""/>
+                <value variable="PartnerNameAndKey"/>
+            </field>
+            <field whichfield="header 1" pos="8.0cm" width="15cm">
+                <value text=""/>
+                <value variable="PartnerAddress"/>
+            </field>
+        </header>
+        <detail>
+            <switch>
+                <case condition="not (eq(length({param_contact_attributes}), 1))">
+                    <lowerLevelReport calculation="Get All Contacts of partner" level="Partner Contact"></lowerLevelReport>
+                </case>
+                <default>
+                    <lowerLevelReport calculation="Get All Contacts of partner NO ATTRIBUTE" level="Partner Contact2"></lowerLevelReport>
+                </default>
+            </switch>
+        </detail>
+        <footer>
+            <field whichfield="columns">
+                <value text=" "/>
+            </field>
+        </footer>
        </level><!-- Partner Level -->
-	   
-	<level name="Partner Contact" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="1.0cm" width="15cm" calculation="MakeAddress">
-				<value variable="PartnerNameAndKey"/>
-				<value text="   "/>
-				<value variable="PartnerAddress"/>
-			</field>
-		</header>
-		<detail>
-			<field whichfield="left 0" pos="0cm" width="0.3cm">
-				<value text=" "/>
-			</field>
-			<field whichfield="columns"></field>
-		</detail>
+       
+    <level name="Partner Contact" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="1.0cm" width="15cm" calculation="MakeAddress">
+                <value variable="PartnerNameAndKey"/>
+                <value text="   "/>
+                <value variable="PartnerAddress"/>
+            </field>
+        </header>
+        <detail>
+            <field whichfield="left 0" pos="0cm" width="0.3cm">
+                <value text=" "/>
+            </field>
+            <field whichfield="columns"></field>
+        </detail>
        </level><!-- Partner Contact -->
-	   
-	<level name="Partner Contact2" identification="PartnerKey">
-		<header>
-			<field whichfield="header 0" pos="1.0cm" width="15cm" calculation="MakeAddress">
-				<value variable="PartnerNameAndKey"/>
-				<value text="   "/>
-				<value variable="PartnerAddress"/>
-			</field>
-		</header>
-		<detail>
-			<field whichfield="left 0" pos="0cm" width="0.3 cm" calculation="Make Contact Time">
-				<value text=" "/>
-			</field>
-			<field whichfield="columns" calculation="Get All Details of Contact Attribute"></field>
-		</detail>
+       
+    <level name="Partner Contact2" identification="PartnerKey">
+        <header>
+            <field whichfield="header 0" pos="1.0cm" width="15cm" calculation="MakeAddress">
+                <value variable="PartnerNameAndKey"/>
+                <value text="   "/>
+                <value variable="PartnerAddress"/>
+            </field>
+        </header>
+        <detail>
+            <field whichfield="left 0" pos="0cm" width="0.3 cm" calculation="Make Contact Time">
+                <value text=" "/>
+            </field>
+            <field whichfield="columns" calculation="Get All Details of Contact Attribute"></field>
+        </detail>
        </level>
-	   
+       
     </levels>
 
   </report>
