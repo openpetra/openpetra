@@ -47,6 +47,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 //using Ict.Petra.Client.MFastReport.Gui;
 using Ict.Petra.Shared.MReporting;
 using Ict.Petra.Client.CommonDialogs;
+using Ict.Common.Exceptions;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -563,7 +564,18 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private DataSet GetReportDataSet(string AReportName, Dictionary <String, TVariant>AParamsDictionary, ref bool AThreadFinished)
         {
-            DataSet ReturnSet = TRemote.MReporting.WebConnectors.GetReportDataSet(AReportName, AParamsDictionary);
+            DataSet ReturnSet = null;
+
+            try
+            {
+                ReturnSet = TRemote.MReporting.WebConnectors.GetReportDataSet(AReportName, AParamsDictionary);
+            }
+            catch (System.OutOfMemoryException Exc)
+            {
+                TExceptionHelper.ShowExceptionCausedByOutOfMemoryMessage(true);
+
+                TLogging.Log(Exc.ToString());
+            }
 
             AThreadFinished = true;
             return ReturnSet;
@@ -571,7 +583,18 @@ namespace Ict.Petra.Client.MReporting.Gui
 
         private DataTable GetReportDataTable(string AReportName, Dictionary <String, TVariant>AParamsDictionary, ref bool AThreadFinished)
         {
-            DataTable ReturnTable = TRemote.MReporting.WebConnectors.GetReportDataTable(AReportName, AParamsDictionary);
+            DataTable ReturnTable = null;
+
+            try
+            {
+                ReturnTable = TRemote.MReporting.WebConnectors.GetReportDataTable(AReportName, AParamsDictionary);
+            }
+            catch (System.OutOfMemoryException Exc)
+            {
+                TExceptionHelper.ShowExceptionCausedByOutOfMemoryMessage(true);
+
+                TLogging.Log(Exc.ToString());
+            }
 
             AThreadFinished = true;
             return ReturnTable;

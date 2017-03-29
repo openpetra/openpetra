@@ -1035,5 +1035,29 @@ namespace Ict.Common.Exceptions
                         TExceptionHelper.StrDBConnectionIssueDateTimeFooter, DateTime.Now)),
                 StrDBConnectionBrokenTitle, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+        /// <summary>
+        /// Shows a MessageBox to the user that explains to the user that OpenPetra can't process that much data.
+        /// The same message gets logged, too.
+        /// </summary>
+        /// <param name="AReportWasBeingGenerated">Set this to true if the Exception was encountered while a Report was generated
+        /// otherwise to false.</param>
+        public static void ShowExceptionCausedByOutOfMemoryMessage(bool AReportWasBeingGenerated)
+        {
+            string Message = AReportWasBeingGenerated ?
+                             Catalog.GetString("Your request cannot be handled by OpenPetra because the Report Criteria that you have " +
+                "specified causes too much data to be processed, and OpenPetra cannot handle this (yet).") :
+                             Catalog.GetString("Your request cannot be handled by OpenPetra because too much data would need to be " +
+                "processed in order to handle it.");
+
+            Message += Environment.NewLine + Environment.NewLine + Catalog.GetString(
+                "If you believe this is a genuine error or if you can't do your work by requesting less data to be processed " +
+                "then please contact OpenPetra Support.");
+
+            TLogging.Log(Message.ToString(), TLoggingType.ToLogfile);
+
+            MessageBox.Show(Message, Catalog.GetString("Request Cannot be Handled"),
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
     }
 }

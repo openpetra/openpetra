@@ -558,8 +558,10 @@ namespace Ict.Petra.Client.MReporting.Gui
                 // Filter out messages most likely to alarm or confuse users
                 if ((ProgressInformation != OldLoggingText)
                     && !(ProgressInformation.StartsWith("    Connecting to database")
-                         || ProgressInformation.StartsWith("    Database connection closed.")))
+                         || ProgressInformation.StartsWith("    Database connection closed."))
+                    && !(ProgressInformation.StartsWith("FirstChanceException event raised because of an *out of memory condition*")))
                 {
+                    // ^^^ That particular 'FirstChanceException' gets handled in Methods 'GetReportDataSet' and 'GetReportDataTable' of the FastReportsWrapper Class!
                     TLogging.Log(ProgressInformation, TLoggingType.ToStatusBar);
                     OldLoggingText = ProgressInformation;
                 }
