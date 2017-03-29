@@ -366,6 +366,7 @@ namespace Ict.Common.Controls
         /// the Client runs as part of Unit Tests! (If this would also be done in a regularly running
         /// Client then this would cause a 'memory leak' because we would hold a reference to any last-opened
         /// screen until the next one is opened!)
+        /// </summary>
         static public Form LastOpenedScreen
         {
             get
