@@ -116,7 +116,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         }
 
         // Sets the key for a new row
-        private void NewRowManual(ref PmPastExperienceRow ARow)
+        private void NewRowManual(ref IndividualDataTDSPmPastExperienceRow ARow)
         {
             ARow.PartnerKey = FMainDS.PPerson[0].PartnerKey;
             ARow.Key = Convert.ToInt32(TRemote.MCommon.WebConnectors.GetNextSequence(TSequenceNames.seq_past_experience));
@@ -129,7 +129,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="ARowToDelete">the currently selected row to be deleted</param>
         /// <param name="ADeletionQuestion">can be changed to a context-sensitive deletion confirmation question</param>
         /// <returns>true if user is permitted and able to delete the current row</returns>
-        private bool PreDeleteManual(PmPastExperienceRow ARowToDelete, ref string ADeletionQuestion)
+        private bool PreDeleteManual(IndividualDataTDSPmPastExperienceRow ARowToDelete, ref string ADeletionQuestion)
         {
             /*Code to execute before the delete can take place*/
             ADeletionQuestion = Catalog.GetString("Are you sure you want to delete the current row?");
@@ -149,7 +149,7 @@ namespace Ict.Petra.Client.MPartner.Gui
         /// <param name="AAllowDeletion">whether or not the user was permitted to delete</param>
         /// <param name="ADeletionPerformed">whether or not the deletion was performed successfully</param>
         /// <param name="ACompletionMessage">if specified, is the deletion completion message</param>
-        private void PostDeleteManual(PmPastExperienceRow ARowToDelete,
+        private void PostDeleteManual(IndividualDataTDSPmPastExperienceRow ARowToDelete,
             bool AAllowDeletion,
             bool ADeletionPerformed,
             string ACompletionMessage)
@@ -167,8 +167,15 @@ namespace Ict.Petra.Client.MPartner.Gui
                 });
         }
 
-        private void ShowDetailsManual(PmPastExperienceRow ARow)
+        private void ShowDetailsManual(IndividualDataTDSPmPastExperienceRow ARow)
         {
+            txtEventName.Text = ARow.EventName;
+
+            if (ARow.EventName != "")
+            {
+                txtEventName.Text = "(" + ARow.EventName + ")";
+            }
+
             // In theory, the next Method call could be done in Methods NewRowManual; however, NewRowManual runs before
             // the Row is actually added and this would result in the Count to be one too less, so we do the Method call here, short
             // of a non-existing 'AfterNewRowManual' Method....
@@ -279,7 +286,7 @@ namespace Ict.Petra.Client.MPartner.Gui
             }
         }
 
-        private void ValidateDataDetailsManual(PmPastExperienceRow ARow)
+        private void ValidateDataDetailsManual(IndividualDataTDSPmPastExperienceRow ARow)
         {
             TVerificationResultCollection VerificationResultCollection = FPetraUtilsObject.VerificationResultCollection;
 
