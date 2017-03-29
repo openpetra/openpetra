@@ -381,6 +381,133 @@ namespace Ict.Common.DB
             }
         }
 
+        /// <summary>
+        /// Gets a transaction. If the requested connection (default global connection) has no transaction, it
+        /// creates one. If a transaction already exists, it attempts to re-use it. If the requested connection
+        /// is not available or is running an incompatible transaction, it creates a new connection and
+        /// transaction.
+        /// </summary>
+        /// <param name="AName">The name of the new transaction, and of any new database connection required for it.</param>
+        /// <param name="ANewConnectionEstablished">Outputs true if a new database connection was created; false if an existing
+        /// one was re-used.</param>
+        /// <param name="ANewDatabaseObj">If <paramref name="ANewConnectionEstablished"/> is true and a new database connection
+        /// was created, this returns the new database object. The caller must ensure it is closed after use.</param>
+        /// <param name="ANewTransaction">Outputs true if a new transaction was created; false if an existing one was re-used.
+        /// The caller must ensure that a new transaction is closed appropriately.</param>
+        /// <param name="ADatabase">The database connection the transaction is requested for (defaults to the global connection).
+        /// Note: if a transaction cannot be established on this connection, a new connection will be created and returned
+        /// in <paramref name="ANewDatabaseObj"/>.</param>
+        /// <param name="AIsolationLevel">The minimum requested isolation level of the transaction. If an existing transaction has the
+        /// same isolation level or higher, it can be re-used.</param>
+        /// <returns>A new <see cref="TDBTransaction"/>.</returns>
+        public static TDBTransaction SimpleGetTransaction(string AName,
+            out bool ANewConnectionEstablished,
+            out TDataBase ANewDatabaseObj,
+            out bool ANewTransaction,
+            TDataBase ADatabase = null,
+            IsolationLevel AIsolationLevel = IsolationLevel.ReadCommitted)
+        {
+            TDBTransaction TheTransaction = null;
+            TDataBase TheDatabase = ADatabase ?? GDBAccessObj;
+            var Reason = "";
+
+            ANewConnectionEstablished = false;
+            ANewDatabaseObj = null;
+            ANewTransaction = false;
+
+            try
+            {
+                TheDatabase.WaitForCoordinatedDBAccess();
+            }
+            catch (EDBCoordinatedDBAccessWaitingTimeExceededException)
+            {
+                // Requested Database connection is not available: make a new one.
+                TLogging.LogAtLevel(7,
+                    String.Format("SimpleGetTransaction: connection '{0}' could not be locked: creating transaction '{1}' on new connection.",
+                        TheDatabase.ConnectionName, AName));
+
+                ANewConnectionEstablished = true;
+                ANewTransaction = true;
+                return SimpleGetNewConnectionAndTransactionInternal(AName, false, out ANewDatabaseObj, AIsolationLevel);
+            }
+
+            try
+            {
+                if (TheDatabase.TransactionNonThreadSafe == null)
+                {
+                    // Requested Database does not have a transaction: begin one.
+                    TLogging.LogAtLevel(7,
+                        String.Format("SimpleGetTransaction: connection '{0}' has no current transaction: creating '{1}'.",
+                            TheDatabase.ConnectionName,
+                            AName));
+
+                    ANewTransaction = true;
+                    TheTransaction = TheDatabase.BeginTransaction(AIsolationLevel, false, ATransactionName : AName);
+                }
+                else if (TheDatabase.CheckRunningDBTransactionIsValidInternal(AIsolationLevel, TEnforceIsolationLevel.eilMinimum, false, out Reason))
+                {
+                    // There is a transaction - and we can use it.
+                    TLogging.LogAtLevel(7, String.Format("SimpleGetTransaction: connection '{0}' transaction '{1}' {2}: reusing it for '{3}' {4}.",
+                            TheDatabase.ConnectionName, TheDatabase.TransactionNonThreadSafe.TransactionName,
+                            TheDatabase.TransactionNonThreadSafe.IsolationLevel,
+                            AName, AIsolationLevel));
+
+                    TheTransaction = TheDatabase.TransactionNonThreadSafe;
+                    TheTransaction.SetTransactionToReused();
+                }
+                else
+                {
+                    // There was a transaction - but we could not use it.
+                    TLogging.LogAtLevel(7,
+                        String.Format("SimpleGetTransaction: creating transaction {0} on new DB connection. Reason: {1}", AName, Reason));
+
+                    ANewTransaction = true;
+                    ANewConnectionEstablished = true;
+                    TheTransaction = SimpleGetNewConnectionAndTransactionInternal(AName, false, out ANewDatabaseObj, AIsolationLevel);
+                }
+            }
+            finally
+            {
+                TheDatabase.ReleaseCoordinatedDBAccess();
+            }
+
+            return TheTransaction;
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="TDataBase"/> instance, opens a DB Connection on it, and starts a transaction on it.
+        /// </summary>
+        /// <param name="AName">The name of the new connection and transaction.</param>
+        /// <param name="ADBConnectionObj">The new connection that has been created. The caller must ensure it is closed after use.</param>
+        /// <param name="AIsolationLevel">The transaction isolation level.</param>
+        /// <returns>A new <see cref="TDBTransaction"/>.</returns>
+        public static TDBTransaction SimpleGetNewConnectionAndTransaction(string AName,
+            out TDataBase ADBConnectionObj,
+            IsolationLevel AIsolationLevel = IsolationLevel.ReadCommitted)
+        {
+            return SimpleGetNewConnectionAndTransactionInternal(AName, true, out ADBConnectionObj, AIsolationLevel);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="TDataBase"/> instance, opens a DB Connection on it, and starts a transaction on it.
+        /// </summary>
+        /// <param name="AName">The name of the new connection and transaction.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this. Important: 'false' must only be passed if the
+        /// caller has already obtained Coordinated DB Access as otherwise the behaviour of this Method will be unreliable!</param>
+        /// <param name="ADBConnectionObj">The new connection that has been created. The caller must ensure it is closed after use.</param>
+        /// <param name="AIsolationLevel">The transaction isolation level.</param>
+        /// <returns>A new <see cref="TDBTransaction"/>.</returns>
+        private static TDBTransaction SimpleGetNewConnectionAndTransactionInternal(string AName,
+            bool AMustCoordinateDBAccess,
+            out TDataBase ADBConnectionObj,
+            IsolationLevel AIsolationLevel = IsolationLevel.ReadCommitted)
+        {
+            ADBConnectionObj = SimpleEstablishDBConnection(AName);
+
+            return ADBConnectionObj.BeginTransaction(AIsolationLevel, AMustCoordinateDBAccess, ATransactionName : AName);
+        }
+
         #region AutoTransactions
 
         /// <summary>
@@ -479,6 +606,76 @@ namespace Ict.Common.DB
             // established in the call above!
             DBAccess.AutoTransaction(ref ATransaction, SeparateDBConnectionEstablished, ref ASubmissionOK,
                 AEncapsulatedDBAccessCode);
+        }
+
+        /// <summary>
+        /// Runs a delegate within a database transaction. Without further parameters, it will attempt to use a new ReadCommitted transaction in the global database object.
+        /// Optionally, give it an existing <see cref="TDataBase"/> connection object or tell it to create a new one; and/or specify the transaction isolation.
+        /// WARNING: If a new transaction is created it will be rolled back.
+        /// </summary>
+        /// <param name="AEncapsulatedDBAccessCode">Delegate containing the code to run inside the transaction.</param>
+        /// <param name="ATransaction">Reference for the <see cref="TDBTransaction"/> object used in the delegate. Not for use outside the delegate.</param>
+        /// <param name="AName">A name for any new connection or transaction.</param>
+        /// <param name="ADatabase">If set, specifies an existing database connection to try. If unset, uses the global connection.
+        /// Incompatible with <paramref name="ASeparateDBConnection"/> = true.</param>
+        /// <param name="ASeparateDBConnection">If true, start a new database connection.
+        /// If false, use the connection given by <paramref name="ADatabase"/>, or the global connection.</param>
+        /// <param name="AIsolationLevel">The <see cref="IsolationLevel"/> for any new transaction, or the minimum isolation for an existing transaction.</param>
+        public static void SimpleAutoDBConnAndReadTransactionSelector(Action AEncapsulatedDBAccessCode,
+            out TDBTransaction ATransaction,
+            string AName,
+            TDataBase ADatabase = null,
+            bool ASeparateDBConnection = false,
+            IsolationLevel AIsolationLevel = IsolationLevel.ReadCommitted)
+        {
+            ATransaction = null;
+            TDataBase TheDatabase = ADatabase ?? GDBAccessObj;
+            TDataBase NewDatabaseObj = null;
+            bool IsNewDatabaseConnection = false;
+            bool IsNewTransaction = false;
+
+            if ((ASeparateDBConnection) && (ADatabase != null))
+            {
+                throw new ArgumentException("SimpleAutoDBConnAndReadTransactionSelector: ADataBase must be null when ASeparateDBConnection is true.");
+            }
+
+            if (TLogging.DL >= 6)
+            {
+                TLogging.Log(String.Format("SimpleAutoDBConnAndReadTransactionSelector: name '{0}' called in {1}", AName, Thread.CurrentThread.Name));
+            }
+
+            try
+            {
+                if (ASeparateDBConnection)
+                {
+                    ATransaction = SimpleGetNewConnectionAndTransactionInternal(AName, false, out NewDatabaseObj, AIsolationLevel);
+                    IsNewDatabaseConnection = true;
+                }
+                else
+                {
+                    ATransaction = SimpleGetTransaction(AName,
+                        out IsNewDatabaseConnection,
+                        out NewDatabaseObj,
+                        out IsNewTransaction,
+                        TheDatabase,
+                        AIsolationLevel);
+                }
+
+                AEncapsulatedDBAccessCode();
+            }
+            finally
+            {
+                if (IsNewTransaction)
+                {
+                    GetDBAccessObj(ATransaction).RollbackTransaction();
+                }
+
+                // Close separate DB Connection if we opened one earlier
+                if (IsNewDatabaseConnection)
+                {
+                    NewDatabaseObj.CloseDBConnection();
+                }
+            }
         }
 
         /// <summary>
@@ -2941,8 +3138,9 @@ namespace Ict.Common.DB
         /// <summary>
         /// Checks if the current Thread is the same Thread that the currently running DB Transaction was started on.
         /// </summary>
-        /// <returns>True if there isn't a currently running DB Transaction or if the current Thread is the same Thread
-        /// that the currently running DB Transaction was started on; if this isn't the case false is returned.</returns>
+        /// <returns>True if the current Thread is the same Thread that the currently running DB Transaction was started
+        /// on; if this isn't the case false is returned.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
         public bool CheckRunningDBTransactionThreadIsCompatible()
         {
             return CheckRunningDBTransactionThreadIsCompatible(true);
@@ -2953,8 +3151,9 @@ namespace Ict.Common.DB
         /// </summary>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
-        /// <returns>True if there isn't a currently running DB Transaction or if the current Thread is the same Thread
-        /// that the currently running DB Transaction was started on; if this isn't the case false is returned.</returns>
+        /// <returns>True if the current Thread is the same Thread that the currently running DB Transaction was started
+        /// on; if this isn't the case false is returned.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
         private bool CheckRunningDBTransactionThreadIsCompatible(bool AMustCoordinateDBAccess)
         {
             if (AMustCoordinateDBAccess)
@@ -2966,7 +3165,7 @@ namespace Ict.Common.DB
             {
                 if (FTransaction == null)
                 {
-                    return true;
+                    throw new EDBNullTransactionException();
                 }
 
                 // Multi-threading 'Sanity Check':
@@ -3002,9 +3201,9 @@ namespace Ict.Common.DB
         /// if the minimum <see cref="IsolationLevel"/> specified with <paramref name="ADesiredIsolationLevel"/> is
         /// acceptable.
         /// </param>
-        /// <returns>True if there isn't a currently running DB Transaction or if the <see cref="IsolationLevel"/> of the
-        /// currently running DB Transaction is acceptable for what is asked for with the two Arguments; if this isn't the case
-        /// false is returned.</returns>
+        /// <returns>True if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for
+        /// what is asked for with the two Arguments; if this isn't the case false is returned.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
         public bool CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel AEnforceIsolationLevel)
         {
@@ -3025,9 +3224,9 @@ namespace Ict.Common.DB
         /// </param>
         /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
         /// set to false if the calling Method already takes care of this.</param>
-        /// <returns>True if there isn't a currently running DB Transaction or if the <see cref="IsolationLevel"/> of the
-        /// currently running DB Transaction is acceptable for what is asked for with the two Arguments; if this isn't the case
-        /// false is returned.</returns>
+        /// <returns>True if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for
+        /// what is asked for with the two Arguments; if this isn't the case false is returned.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
         private bool CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel AEnforceIsolationLevel, bool AMustCoordinateDBAccess)
         {
@@ -3040,7 +3239,7 @@ namespace Ict.Common.DB
             {
                 if (FTransaction == null)
                 {
-                    return true;
+                    throw new EDBNullTransactionException();
                 }
 
                 // Check if the IsolationLevel of the currently running Transaction is acceptable for what is requested with
@@ -3067,7 +3266,8 @@ namespace Ict.Common.DB
         /// <summary>
         /// Checks if the current Thread is the same Thread that the currently running DB Transaction was started on AND
         /// if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for what is
-        /// asked for with the two Arguments.
+        /// asked for with the two Arguments. Use <see cref="CheckRunningDBTransactionIsValid"/> instead to check that
+        /// the transaction is still valid (i.e. has not been committed or rolled back).
         /// </summary>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel"/> that is desired.</param>
         /// <param name="AEnforceIsolationLevel">Pass <see cref="TEnforceIsolationLevel.eilExact"/> if an
@@ -3079,10 +3279,10 @@ namespace Ict.Common.DB
         /// <remarks>Combines calls to the Methods <see cref="CheckRunningDBTransactionThreadIsCompatible()"/> and
         /// <see cref="CheckRunningDBTransactionIsolationLevelIsCompatible(IsolationLevel, TEnforceIsolationLevel)"/>
         /// for convenience!</remarks>
-        /// <returns>True if there isn't a currently running DB Transaction. Also returns true if the current Thread is the
-        /// same Thread that the currently running DB Transaction was started on AND if the <see cref="IsolationLevel"/>
-        /// of the currently running DB Transaction is acceptable for what is asked for with the two Arguments; if this isn't the
-        /// case false is returned.</returns>
+        /// <returns>True if the current Thread is the same Thread that the currently running DB Transaction was started
+        /// on AND if the <see cref="IsolationLevel"/> of the currently running DB Transaction is acceptable for what is
+        /// asked for with the two Arguments; if this isn't the case false is returned.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
         public bool CheckRunningDBTransactionIsCompatible(IsolationLevel ADesiredIsolationLevel,
             TEnforceIsolationLevel AEnforceIsolationLevel)
         {
@@ -3094,6 +3294,104 @@ namespace Ict.Common.DB
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks that transaction currently running on this connection is compatible with a requested one. It must be:
+        /// <list type="number">
+        /// <item><description>Requested from the same thread;</description></item>
+        /// <item><description>have a compatible isolation level;</description></item>
+        /// <item><description>the current transaction must not be committed or rolled back.</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel"/> that is desired.</param>
+        /// <param name="AEnforceIsolationLevel">Pass <see cref="TEnforceIsolationLevel.eilExact"/> if an
+        /// exact match of the <see cref="IsolationLevel"/> of the currently running DB Transaction with
+        /// <paramref name="ADesiredIsolationLevel"/> is required. Pass <see cref="TEnforceIsolationLevel.eilMinimum"/>
+        /// if the minimum <see cref="IsolationLevel"/> specified with <paramref name="ADesiredIsolationLevel"/> is
+        /// acceptable.</param>
+        /// <param name="AReason">The reason that the current transaction is not valid for the requested isolation level.</param>
+        /// <returns>True if the current transaction is compatible and valid.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
+        public bool CheckRunningDBTransactionIsValid(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel AEnforceIsolationLevel, out string AReason)
+        {
+            return CheckRunningDBTransactionIsValidInternal(ADesiredIsolationLevel, AEnforceIsolationLevel, true, out AReason);
+        }
+
+        /// <summary>
+        /// Checks that transaction currently running on this connection is compatible with a requested one. It must be:
+        /// <list type="number">
+        /// <item><description>Requested from the same thread;</description></item>
+        /// <item><description>have a compatible isolation level;</description></item>
+        /// <item><description>the current transaction must not be committed or rolled back.</description></item>
+        /// </list>
+        /// </summary>
+        /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel"/> that is desired.</param>
+        /// <param name="AEnforceIsolationLevel">Pass <see cref="TEnforceIsolationLevel.eilExact"/> if an
+        /// exact match of the <see cref="IsolationLevel"/> of the currently running DB Transaction with
+        /// <paramref name="ADesiredIsolationLevel"/> is required. Pass <see cref="TEnforceIsolationLevel.eilMinimum"/>
+        /// if the minimum <see cref="IsolationLevel"/> specified with <paramref name="ADesiredIsolationLevel"/> is
+        /// acceptable.</param>
+        /// <param name="AMustCoordinateDBAccess">Set to true if the Method needs to co-ordinate DB Access on its own,
+        /// set to false if the calling Method already takes care of this. Important: 'false' must only be passed if the
+        /// caller has already obtained Coordinated DB Access as otherwise the behaviour of this Method will be unreliable!</param>
+        /// <param name="AReason">The reason that the current transaction is not valid for the requested isolation level. (Only
+        /// populated when this Method returns false.)"</param>
+        /// <returns>True if the current transaction is compatible and valid.</returns>
+        /// <exception cref="EDBNullTransactionException"> is thrown if there is no Running DB Transaction to check against.</exception>
+        internal bool CheckRunningDBTransactionIsValidInternal(IsolationLevel ADesiredIsolationLevel,
+            TEnforceIsolationLevel AEnforceIsolationLevel, bool AMustCoordinateDBAccess, out string AReason)
+        {
+            AReason = "";
+            var ReturnValue = true;
+
+            if (AMustCoordinateDBAccess)
+            {
+                WaitForCoordinatedDBAccess();
+            }
+
+            try
+            {
+                if (!CheckRunningDBTransactionThreadIsCompatible(false))
+                {
+                    ReturnValue = false;
+                    AReason = String.Format("Transaction started on thread {0} cannot be modified from thread {1} {2}.",
+                        ThreadingHelper.GetThreadIdentifier(TransactionNonThreadSafe.ThreadThatTransactionWasStartedOn),
+                        ThreadingHelper.GetCurrentThreadIdentifier(), TransactionNonThreadSafe.GetDBTransactionIdentifier());
+                }
+                else if (!CheckRunningDBTransactionIsolationLevelIsCompatible(ADesiredIsolationLevel, AEnforceIsolationLevel, false))
+                {
+                    ReturnValue = false;
+                    AReason = String.Format("Requested IsolationLevel {0} {1} cannot be used with IsolationLevel {2} {3}.",
+                        AEnforceIsolationLevel,
+                        ADesiredIsolationLevel,
+                        TransactionNonThreadSafe.IsolationLevel,
+                        TransactionNonThreadSafe.GetDBTransactionIdentifier());
+                }
+                else
+                {
+                    if (TransactionNonThreadSafe == null)
+                    {
+                        throw new EDBNullTransactionException();
+                    }
+                    else if (!TransactionNonThreadSafe.Valid)
+                    {
+                        ReturnValue = false;
+                        AReason = String.Format("Transaction is committed, rolled back or otherwise invalid {0}.",
+                            TransactionNonThreadSafe.GetDBTransactionIdentifier());
+                    }
+                }
+            }
+            finally
+            {
+                if (AMustCoordinateDBAccess)
+                {
+                    ReleaseCoordinatedDBAccess();
+                }
+            }
+
+            return ReturnValue;
         }
 
         #endregion
@@ -7046,7 +7344,7 @@ namespace Ict.Common.DB
         }
 
         /// <summary>
-        /// This Method must only get called from one of the 'TDataBase.GetNewOrExistingTransaction' Methods!
+        /// This Method must only get called from one of the 'TDataBase.GetNewOrExistingTransaction' Methods, or their extension DBAccess.SimpleGetTransaction!
         /// </summary>
         internal void SetTransactionToReused()
         {

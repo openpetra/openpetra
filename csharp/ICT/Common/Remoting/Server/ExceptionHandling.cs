@@ -108,6 +108,7 @@ namespace Ict.Common.Remoting.Server
 
                     Environment.Exit(1);
                 });
+            HelperThread.Name = "Asynchronous_Server_Shutdown_Thread";
 
             HelperThread.Start();
             HelperThread.Join(); // wait until we have exited

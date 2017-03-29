@@ -70,6 +70,8 @@ namespace Ict.Common.Remoting.Client
             // Start PollClientTasksThread
             TheThread = new Thread(new ThreadStart(PollClientTasksThread));
             TheThread.Name = "PollClientTasksThread" + Guid.NewGuid().ToString();
+            // TheThread.Name = string.Format("ClientID_{0}__PollClientTasksThread", FClientID);
+            TLogging.LogAtLevel(7, TheThread.Name + " starting.");
             TheThread.Start();
         }
 
@@ -131,7 +133,7 @@ namespace Ict.Common.Remoting.Client
                 try
                 {
                     // Make PollClientTasks call to Server to keep the Client's remoted objects
-                    // and it's AppDomain alive.
+                    // and its AppDomain alive.
                     // The value of the AClientTasksDataTable parameter is always null, except when
                     // the Server has a queued ClientTask that the Client needs to read.
                     ClientTasksDataTable = RemotePollClientTasks();
@@ -146,6 +148,8 @@ namespace Ict.Common.Remoting.Client
                         // This is done in a separate Thread to make sure the PollClientTasks thread can continue to run
                         // without the risk of being interrupted in case the execution of (a) ClientTask(s) takes some time!
                         Thread ClientTaskQueueThread = new Thread(new ThreadStart(ClientTasksQueueInstance.QueueClientTasks));
+                        ClientTaskQueueThread.Name = String.Format("ClientID_{0}__ClientTasksQueueThread", FClientID);
+                        TLogging.LogAtLevel(7, ClientTaskQueueThread.Name + "starting.");
                         ClientTaskQueueThread.SetApartmentState(ApartmentState.STA);
                         ClientTaskQueueThread.Start();
                     }

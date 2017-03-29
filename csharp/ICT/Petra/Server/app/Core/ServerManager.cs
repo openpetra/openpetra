@@ -312,6 +312,8 @@ namespace Ict.Petra.Server.App.Core
                         new TDBReconnectionThreadCallback(DBReconnectionCallback));
                     PerformDBReconnectionThread = new Thread(
                         new ThreadStart(ParameterisedThreadWithCallback.PerformDBReconnection));
+                    PerformDBReconnectionThread.Name = UserInfo.GUserInfo.UserID + "__DBReconnectionThread";
+                    TLogging.LogAtLevel(7, PerformDBReconnectionThread.Name + " starting.");
 
                     PerformDBReconnectionThread.Start();
                 }
@@ -709,6 +711,9 @@ namespace Ict.Petra.Server.App.Core
         {
             Thread StartProcessingThread = new Thread(TTimedProcessing.StartProcessing);
 
+            StartProcessingThread.Name = UserInfo.GUserInfo.UserID + "__TTimedProcessing.StartProcessing_Thread";
+            TLogging.LogAtLevel(7, StartProcessingThread.Name + " starting.");
+
             StartProcessingThread.Start();
 
             FServerTimedProcessingSetup = true;
@@ -721,6 +726,9 @@ namespace Ict.Petra.Server.App.Core
         public override void PerformTimedProcessingNow(string AProcessName)
         {
             Thread StartProcessingThread = new Thread(TTimedProcessing.RunJobManually);
+
+            StartProcessingThread.Name = UserInfo.GUserInfo.UserID + "__TTimedProcessing.RunJobManually_Thread";
+            TLogging.LogAtLevel(7, StartProcessingThread.Name + " starting.");
 
             StartProcessingThread.Start(AProcessName);
         }

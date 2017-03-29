@@ -82,12 +82,40 @@ namespace Ict.Common.Remoting.Client
                 if (ClientTaskInstance.LaunchOnItsOwnThread())
                 {
                     ClientTaskThread = new Thread(new ThreadStart(ClientTaskInstance.Execute));
+                    ClientTaskThread.Name = String.Format("{0}_{1}__QueueClientTasks_Thread",
+                        ClientTaskInstance.ClientTask["TaskGroup"],
+                        ClientTaskInstance.ClientTask["TaskCode"]);
+
+                    // Temporarily decrease log level for Cache Refresh request threads for Swiss connection spike debugging.
+                    // Also below in "else" clause.
+                    if (ClientTaskInstance.ClientTask["TaskGroup"].ToString() == "CACHEREFRESH")
+                    {
+                        TLogging.LogAtLevel(2, ClientTaskThread.Name + " starting.");
+                    }
+                    else
+                    {
+                        TLogging.LogAtLevel(7, ClientTaskThread.Name + " starting.");
+                    }
+
                     ClientTaskThread.SetApartmentState(ApartmentState.STA);
 
                     ClientTaskThread.Start();
                 }
                 else
                 {
+                    if (ClientTaskInstance.ClientTask["TaskGroup"].ToString() == "CACHEREFRESH")    // See above (actually, this case shouldn't happen: see TClientTaskInstance.LaunchInItsOwnThread())
+                    {
+                        TLogging.LogAtLevel(2,
+                            String.Format("TClientTasksQueue.QueueClientTasks: executing CACHEREFRESH_{0} in thread '{1}'.",
+                                ClientTaskInstance.ClientTask["TaskCode"], Thread.CurrentThread.Name));
+                    }
+                    else
+                    {
+                        TLogging.LogAtLevel(7,
+                            String.Format("TClientTasksQueue.QueueClientTasks: executing {0}_{1} in thread '{2}'.",
+                                ClientTaskInstance.ClientTask["TaskGroup"], ClientTaskInstance.ClientTask["TaskCode"], Thread.CurrentThread.Name));
+                    }
+
                     ClientTaskInstance.Execute();
                 }
             }

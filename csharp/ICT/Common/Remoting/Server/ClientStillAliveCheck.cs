@@ -94,13 +94,15 @@ namespace Ict.Common.Remoting.Server
             /// </summary>
             public TClientStillAliveCheck(TConnectedClient AConnectedClient,
                 TClientServerConnectionType AClientServerConnectionType,
-                TDelegateTearDownAppDomain ATearDownAppDomain)
+                TDelegateTearDownAppDomain ATearDownAppDomain,
+                string AUser="")
             {
                 FClientObject = AConnectedClient;
                 ClientName = FClientObject.ClientName;
                 Int32 ClientStillAliveTimeout;
 
-                TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'') created");
+                // Note: calls to TLogging here only go to the console. The log file doesn't get initialised in TLogging until TClientDomainManager.EstablishDBConnection()
+                TLogging.LogAtLevel(10, "TClientStillAliveCheck (for ClientName '" + ClientName + "'') created");
 
                 // Determine timeout limit (different for Clients connected via LAN or Remote)
                 if (AClientServerConnectionType == TClientServerConnectionType.csctRemote)
@@ -132,7 +134,7 @@ namespace Ict.Common.Remoting.Server
                 UClientStillAliveCheckThread.IsBackground = true;
                 UClientStillAliveCheckThread.Start();
 
-                TLogging.LogAtLevel(2, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): started ClientStillAliveCheckThread.");
+                TLogging.LogAtLevel(10, "TClientStillAliveCheck (for ClientName '" + ClientName + "'): started " + UClientStillAliveCheckThread.Name);
             }
 
             /**

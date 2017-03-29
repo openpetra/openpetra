@@ -83,9 +83,9 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted,
-                "TPartnerServerLookups.GetPartnerShortName", out ReadTransaction,
-                delegate
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction,
+                AName : "TPartnerServerLookups.GetPartnerShortName",
+                AEncapsulatedDBAccessCode : delegate
                 {
                     ReturnValue = MCommonMain.RetrievePartnerShortName(APartnerKey, out PartnerShortName,
                         out PartnerClass, out PartnerStatus, ReadTransaction.DataBaseObj);
@@ -201,11 +201,11 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             // Connection where a DB Transaction can be exectued (only if that should be needed).
             TDBTransaction ReadTransaction = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TPartnerServerLookups.VerifyPartner", out ReadTransaction,
-                delegate
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out ReadTransaction, AName : "TPartnerServerLookups.VerifyPartner",
+                AEncapsulatedDBAccessCode : delegate
                 {
                     ReturnValue = PartnerExists = MCommonMain.RetrievePartnerShortName(APartnerKey,
-                        out PartnerShortName, out PartnerClass, out PartnerStatus, ReadTransaction.DataBaseObj);
+                        out PartnerShortName, out PartnerClass, out PartnerStatus, ReadTransaction);
                 });
 
             APartnerShortName = PartnerShortName;
@@ -236,18 +236,20 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
             return ReturnValue;
         }
 
-        /// <summary></summary>
+        /// <summary>Test whether a Partner is Active.</summary>
         /// <returns>True if this Status is listed as being active</returns>
         [RequireModulePermission("PTNRUSER")]
         public static Boolean PartnerHasActiveStatus(Int64 APartnerKey)
         {
             Boolean IsActive = false;
+
             // Automatic handling of a Read-only DB Transaction - and also the automatic establishment and closing of a DB
             // Connection where a DB Transaction can be exectued (only if that should be needed).
             TDBTransaction readTransaction = null;
 
-            DBAccess.SimpleAutoReadTransactionWrapper(IsolationLevel.ReadCommitted, "TPartnerServerLookups.PartnerHasActiveStatus", out readTransaction,
-                delegate
+            DBAccess.SimpleAutoDBConnAndReadTransactionSelector(ATransaction : out readTransaction,
+                AName : "TPartnerServerLookups.PartnerHasActiveStatus",
+                AEncapsulatedDBAccessCode : delegate
                 {
                     PPartnerTable partnerTbl = PPartnerAccess.LoadByPrimaryKey(APartnerKey, readTransaction);
 
@@ -799,7 +801,7 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
                         throw new NotImplementedException();
 
-                    case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly :
+                    case TPartnerInfoScopeEnum.pisPartnerLocationAndRestOnly:
 
                         ReturnValue = TServerLookups_PartnerInfo.PartnerLocationAndRestOnly(APartnerKey,
                         ALocationKey, ref APartnerInfoDS, ReadTransaction);
