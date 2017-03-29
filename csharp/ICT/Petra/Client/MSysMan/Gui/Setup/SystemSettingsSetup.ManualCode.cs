@@ -252,7 +252,7 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
             TVerificationResultCollection verificationResults = FPetraUtilsObject.VerificationResultCollection;
             DataColumn validationColumn = ARow.Table.Columns[SSystemDefaultsTable.ColumnDefaultValueId];
-            TVerificationResult verificationResult = null;
+            //TVerificationResult verificationResult = null;
 
             // First we need to validate that there were no errors setting up the controls for this row
             if (!FControlsDataTable.Validate(ARow.DefaultValue, validationColumn, this, verificationResults))

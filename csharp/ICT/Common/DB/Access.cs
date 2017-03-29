@@ -5197,6 +5197,10 @@ namespace Ict.Common.DB
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
@@ -5224,6 +5228,8 @@ namespace Ict.Common.DB
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
@@ -5253,6 +5259,8 @@ namespace Ict.Common.DB
         /// Handles the Committing / Rolling Back of the DB Transaction automatically, depending whether an
         /// Exception occured (Rollback always issued!) and on the value of <paramref name="ASubmissionOK"/>.
         /// </summary>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
@@ -5312,6 +5320,8 @@ namespace Ict.Common.DB
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
         /// and <paramref name="ACommitTransaction"/>.
         /// </summary>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATransaction">The DB Transaction that the Method
         /// <see cref="GetNewOrExistingTransaction(IsolationLevel, out bool, string)"/> either
@@ -5343,6 +5353,8 @@ namespace Ict.Common.DB
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
         /// and <paramref name="ACommitTransaction"/>.
         /// </summary>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
@@ -5376,6 +5388,8 @@ namespace Ict.Common.DB
         /// Exception occured (Rollback always issued!) and on the values of <paramref name="ASubmissionOK"/>
         /// and <paramref name="ACommitTransaction"/>.
         /// </summary>
+        /// <remarks>If <paramref name="ASubmissionOK"/>is set, the transaction will be committed, but not if it's nested.
+        /// If <paramref name="ASubmissionOK"/>is not set, the transaction will be rolled back, but not if it's nested.</remarks>
         /// <param name="ADesiredIsolationLevel"><see cref="IsolationLevel" /> that is desired.</param>
         /// <param name="ATryToEnforceIsolationLevel">Only has an effect if there is an already
         /// existing Transaction. See the 'Exceptions' section for possible Exceptions that may be thrown.
@@ -5420,7 +5434,14 @@ namespace Ict.Common.DB
 
                 // The next Method that gets called will know whether an unhandled Exception has be thrown (or not) by inspecting the
                 // 'ExceptionThrown' Variable and will act accordingly!
-                AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK, NewTransaction && ACommitTransaction);
+                if (NewTransaction || ExceptionThrown)
+                {
+                    AutoTransCommitOrRollback(ExceptionThrown, ASubmissionOK, ACommitTransaction);
+                }
+                else
+                {
+                    TLogging.LogAtLevel(DBAccess.DB_DEBUGLEVEL_TRACE, "AutoTransCommitOrRollback not called in reused transaction.");
+                }
             }
         }
 

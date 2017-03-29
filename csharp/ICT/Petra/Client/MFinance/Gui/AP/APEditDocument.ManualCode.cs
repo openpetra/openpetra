@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -589,7 +589,17 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         dtpDateDue.Date = dtpDateIssued.Date.Value;
                     }
 
-                    nudCreditTerms.Value = diffDays;
+                    if (diffDays > 720)
+                    {
+                        MessageBox.Show(
+                            Catalog.GetString("Date Due cannot be set so far in the future!"),
+                            Catalog.GetString("Edit Document"),
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        diffDays = 28;
+                        dtpDateDue.Date = dtpDateIssued.Date.Value.AddDays(diffDays);
+                    }
+
+                    nudCreditTerms.Value = Math.Min(diffDays, 3999);
                 }
             }
             else if ((sender == dtpDateIssued) || (sender == nudCreditTerms))

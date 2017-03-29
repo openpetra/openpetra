@@ -5,7 +5,7 @@
 //       timop
 //       Tim Ingham
 //
-// Copyright 2004-2015 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -2235,7 +2235,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         if (IchNumber == 0)
                         {
-                            StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " + period;
+                            StewardshipFilter += " AND a_ich_stewardship.a_period_number_i = " +
+                                                 period +
+                                                 " AND a_ich_stewardship.a_year_i = " +
+                                                 Year;
                         }
                         else
                         {
@@ -2272,7 +2275,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         string Actual = "GLMP1." + ActualCurrency;
 
-                        // if period is not 1 then we need to subract the actual for the previous period from the actual for the current period
+                        //
+                        // if period is not 1 then we need to subract the actual for the previous period
+                        // from the actual for the current period
+
                         if (period > 1)
                         {
                             Actual = "(" + Actual + " - GLMP2." + ActualCurrency + ")";
@@ -2394,6 +2400,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " AND GiftBatch2.a_ledger_number_i = GiftDetail2.a_ledger_number_i" +
                                  " AND GiftBatch2.a_batch_number_i = GiftDetail2.a_batch_number_i" +
                                  " AND GiftBatch2.a_batch_year_i = " + YearNumber + " AND GiftBatch2.a_batch_period_i = " + period +
+                                 " AND GiftBatch2.a_batch_status_c = 'Posted'" +
                                  ") AS GiftAmount";
                     }
                     else
@@ -2440,6 +2447,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     Query += "WHERE " +
                              "a_gift_batch.a_ledger_number_i = " + LedgerNumber +
                              " AND a_gift_batch.a_batch_year_i = " + YearNumber + " AND a_gift_batch.a_batch_period_i = " + period +
+                             " AND a_gift_batch.a_batch_status_c = 'Posted'" +
                              " AND a_gift_detail.a_ledger_number_i = " + LedgerNumber +
                              " AND a_gift_batch.a_batch_number_i = a_gift_detail.a_batch_number_i ";
 

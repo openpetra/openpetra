@@ -29,6 +29,7 @@ using Ict.Testing.NUnitPetraServer;
 using Ict.Common.Verification;
 using Ict.Petra.Server.MFinance.Common;
 using Ict.Petra.Server.MFinance.GL;
+using Ict.Common.DB;
 
 namespace Ict.Testing.Petra.Server.MFinance.GL
 {
@@ -98,7 +99,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
         }
 
         /// <summary></summary>
-        public override void SetNextPeriod()
+        public override void SetNextPeriod(TDBTransaction ATransaction)
         {
         }
     }

@@ -238,8 +238,8 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             // Add all the fees from the "Don't Print" box, up to the maximum number allowed.
             if (FeeStr == "")
             {
-                Array.Resize(ref FSelectedFees, lstDontPrint.Items.Count);
-                lstDontPrint.Items.CopyTo(FSelectedFees, 0);
+                Array.Resize(ref FSelectedFees, FUnselectedFees.Length);
+                FUnselectedFees.CopyTo(FSelectedFees, 0);
 
                 if (lstDontPrint.Items.Count > MAX_FEE_COUNT)
                 {

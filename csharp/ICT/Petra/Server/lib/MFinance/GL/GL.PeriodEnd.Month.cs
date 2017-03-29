@@ -171,7 +171,7 @@ namespace Ict.Petra.Server.MFinance.GL
         /// <summary>
         /// Go to next month - unless you're already at the last month!
         /// </summary>
-        public override void SetNextPeriod()
+        public override void SetNextPeriod(TDBTransaction ATransaction)
         {
             if (FledgerInfo.CurrentPeriod == FledgerInfo.NumberOfAccountingPeriods)
             {
@@ -335,7 +335,7 @@ namespace Ict.Petra.Server.MFinance.GL
             {
                 if (!FHasCriticalErrors)
                 {
-                    SetNextPeriod();
+                    SetNextPeriod(null);
                     NoteForexRevalRequired(FledgerInfo.LedgerNumber, FledgerInfo.CurrentFinancialYear, FledgerInfo.CurrentPeriod);
                     // refresh cached ledger table, so that the client will know the current period
                     TCacheableTablesManager.GCacheableTablesManager.MarkCachedTableNeedsRefreshing(
