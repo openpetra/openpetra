@@ -51,6 +51,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             set
             {
                 FLedgerNumber = value;
+                lblLedger.Text = Catalog.GetString("Ledger: ") + FLedgerNumber.ToString();
             }
         }
 

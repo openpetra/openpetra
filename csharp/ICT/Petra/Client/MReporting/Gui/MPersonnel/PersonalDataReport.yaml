@@ -18,6 +18,9 @@ RootNode:
         REPORTSETTINGSDIRECTORY: Personnel
     Security:
         ModulePermissionRequired: [PERSONNEL]
+    Actions:
+        actSelectAll: {ActionClick=SelectAll}
+        actDeselectAll: {ActionClick=DeselectAll}
     Controls:
         tpgGeneralSettings:
             Label: General Settings
@@ -30,7 +33,7 @@ RootNode:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerSelection
             Height: 150
         grpReportDetails:
-            Controls: [chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkSkills, chkLanguages, chkPreviousExperiences]
+            Controls: [chkLocalPartnerData, chkLocalPersonnelData, chkJobAssignments, chkCommitments, chkPassport, chkPersonalDocuments, chkSpecialNeeds, chkSkills, chkLanguages, chkPreviousExperiences, pnlSelect]
             
         chkLocalPartnerData:
             Label: Show Local Partner Data
@@ -65,3 +68,11 @@ RootNode:
         chkNewPage:
             Label: Paginate
             CheckBoxAttachedLabel: right
+        pnlSelect:
+            Controls: [btnSelectAll, btnDeselectAll]
+            ControlsOrientation: horizontal
+        btnSelectAll:
+            Action: actSelectAll
+        btnDeselectAll:
+            Action: actDeselectAll
+            #Padding: -75,0,0,0

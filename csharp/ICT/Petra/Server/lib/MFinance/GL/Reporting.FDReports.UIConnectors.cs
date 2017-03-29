@@ -38,7 +38,7 @@ using Ict.Petra.Server.MSysMan.Common.WebConnectors;
 using Ict.Petra.Server.MPartner.DataAggregates;
 using Ict.Petra.Server.App.Core.Security;
 using System.Linq;
-
+// generateNamespaceMap-Link-Extra-DLL System.Data.DataSetExtensions;
 namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 {
     ///<summary>
@@ -1105,6 +1105,76 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     DonorAddresses = TAddressTools.GetBestAddressForPartners(dtDonations, 0, Transaction, true);
                 });
+
+            dtDonations.Columns.Add("RecipientKeyCollection");
+
+            if (AParameters["param_chkGroupDonors"].ToBool())
+            {
+                var duplicates = dtDonations.AsEnumerable().GroupBy(r => r[0]).Where(gr => gr.Count() > 1);
+
+                DataView dv = dtDonations.DefaultView;
+
+                List <DataRow>NewDataRows = new List <DataRow>();
+                List <long>DeleteDonorRows = new List <long>();
+
+                //Generate the new row
+                foreach (var partnerkey in duplicates)
+                {
+                    if (!DeleteDonorRows.Contains((long)partnerkey.Key))
+                    {
+                        DeleteDonorRows.Add((long)partnerkey.Key);
+                    }
+
+                    dv.RowFilter = "donorpartnerkey = " + partnerkey.Key;
+                    DataRow NewDataRow = dtDonations.NewRow();
+                    NewDataRow[0] = (long)partnerkey.Key;
+                    NewDataRow[1] = dv[0][1].ToString();
+
+                    List <String>RecipientKeys = new List <String>();
+                    List <String>RecipientShortNames = new List <String>();
+                    List <String>MotivationDetails = new List <String>();
+                    List <String>MotivationDetailDescriptions = new List <String>();
+                    List <String>MotivationGroups = new List <String>();
+                    List <String>MotivationGroupDescriptions = new List <String>();
+                    Decimal TotalAmount = 0;
+
+                    foreach (DataRow dr in dv.ToTable().Rows)
+                    {
+                        RecipientKeys.Add(((Int64)dr[2]).ToString("0000000000"));
+                        RecipientShortNames.Add(dr[3].ToString());
+                        MotivationDetails.Add(dr[4].ToString());
+                        MotivationDetailDescriptions.Add(dr[5].ToString());
+                        MotivationGroups.Add(dr[6].ToString());
+                        MotivationGroupDescriptions.Add(dr[7].ToString());
+                        TotalAmount += (decimal)dr[8];
+                    }
+
+                    NewDataRow[3] = String.Join(" | ", RecipientShortNames);
+                    NewDataRow[4] = String.Join(" | ", MotivationDetails);
+                    NewDataRow[5] = String.Join(" | ", MotivationDetailDescriptions);
+                    NewDataRow[6] = String.Join(" | ", MotivationGroups);
+                    NewDataRow[7] = String.Join(" | ", MotivationGroupDescriptions);
+                    NewDataRow[8] = TotalAmount;
+                    NewDataRow[9] = String.Join(" | ", RecipientKeys);
+
+                    NewDataRows.Add(NewDataRow);
+                }
+
+                //Delete the old rows
+                for (int i = dtDonations.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (DeleteDonorRows.Contains((long)dtDonations.Rows[i][0]))
+                    {
+                        dtDonations.Rows.Remove(dtDonations.Rows[i]);
+                    }
+                }
+
+                //Add the new grouped rows
+                foreach (DataRow dr in NewDataRows)
+                {
+                    dtDonations.Rows.Add(dr);
+                }
+            }
 
             DonorAddresses.TableName = "DonorAddresses";
 

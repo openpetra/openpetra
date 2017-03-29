@@ -3,7 +3,7 @@
     FormType: report
     FormTitle: New Donor Report
     WindowWidth: 700
-    WindowHeight: 660
+    WindowHeight: 680
     Namespace: Ict.Petra.Client.MReporting.Gui.MFinDev
     TemplateParameters:
         XMLFILES: [FinancialDevelopment\\\\newdonorreport.xml, common.xml]
@@ -43,8 +43,9 @@
             Controls: 
                 Row0: [dtpStartDate, dtpEndDate]
                 Row1: [txtMinimumAmount, cmbCurrency]
-                Row2: [rgrRecipientSelection]
-                Row3: [rgrDonorSelection]
+                Row2: [chkGroupDonors]
+                Row3: [rgrRecipientSelection]
+                Row4: [rgrDonorSelection]
         rgrSorting:
             Label: Sort by
             Controls: [rbtPartnerName, rbtPartnerKey, rbtAmount]
@@ -103,6 +104,10 @@
         txtExtract:
             NoLabel: true
             Type: Extract
+        chkGroupDonors:
+            Label: Group Split Gifts
+            CheckBoxAttachedLabel: right
+            ColSpan: 2
         
     ReportParameters:{ColumnFunction=TPartnerColumnFunction}
         Para1:

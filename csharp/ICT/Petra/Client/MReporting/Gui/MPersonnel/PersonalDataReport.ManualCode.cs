@@ -78,5 +78,35 @@ namespace Ict.Petra.Client.MReporting.Gui.MPersonnel
                 true,
                 false);
         }
+
+        private void DeselectAll(Object sender, EventArgs e)
+        {
+            chkCommitments.Checked = false;
+            chkJobAssignments.Checked = false;
+            chkLanguages.Checked = false;
+            chkLocalPartnerData.Checked = false;
+            chkLocalPersonnelData.Checked = false;
+            chkNewPage.Checked = false;
+            chkPassport.Checked = false;
+            chkPersonalDocuments.Checked = false;
+            chkPreviousExperiences.Checked = false;
+            chkSkills.Checked = false;
+            chkSpecialNeeds.Checked = false;
+        }
+
+        private void SelectAll(Object sender, EventArgs e)
+        {
+            chkCommitments.Checked = true;
+            chkJobAssignments.Checked = true;
+            chkLanguages.Checked = true;
+            chkLocalPartnerData.Checked = true;
+            chkLocalPersonnelData.Checked = true;
+            chkNewPage.Checked = true;
+            chkPassport.Checked = true;
+            chkPersonalDocuments.Checked = true;
+            chkPreviousExperiences.Checked = true;
+            chkSkills.Checked = true;
+            chkSpecialNeeds.Checked = true;
+        }
     }
 }

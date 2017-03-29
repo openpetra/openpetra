@@ -22,7 +22,7 @@
         tpgReportSpecific:
             Controls: [pnlRow1,pnlRow2]
         pnlRow1:
-            Controls: [dtpPaymentDateFrom, dtpPaymentDateTo]
+            Controls: [lblLedger, dtpPaymentDateFrom, dtpPaymentDateTo]
         pnlRow2:
             Controls: [txtPaymentNumFrom, txtPaymentNumTo]
         dtpPaymentDateFrom:
@@ -37,4 +37,6 @@
         txtPaymentNumTo:
             Label: To Payment Num
             ParameterName: param_payment_num_to_i
+        lblLedger:
+            Label: Ledger
             

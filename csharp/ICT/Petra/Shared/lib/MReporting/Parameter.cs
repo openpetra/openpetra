@@ -1239,6 +1239,40 @@ namespace Ict.Petra.Shared.MReporting
         }
 
         /// <summary>
+        /// Gets the FastReport "Width" for a Position. Returns 0 if index not found.
+        /// </summary>
+        /// <param name="pos"></param>
+        /// <returns></returns>
+        public float GetWidthValueForPositionIndex(int pos)
+        {
+            foreach (KeyValuePair <string, TColumnSetting>KVPair in FColumns)
+            {
+                if (KVPair.Value.Position == pos)
+                {
+                    return KVPair.Value.Width;
+                }
+            }
+
+            return 0;
+        }
+
+        /// <summary>
+        /// Gets the total width of all columns.
+        /// </summary>
+        /// <returns></returns>
+        public float GetTotalWidth()
+        {
+            float ReturnValue = 0;
+
+            foreach (KeyValuePair <string, TColumnSetting>KVPair in FColumns)
+            {
+                ReturnValue += KVPair.Value.Width;
+            }
+
+            return ReturnValue;
+        }
+
+        /// <summary>
         /// Sets the Column Settings for an existing or a new Column Name
         /// </summary>
         /// <param name="AColumnName"></param>
