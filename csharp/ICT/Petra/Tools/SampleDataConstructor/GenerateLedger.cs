@@ -231,7 +231,7 @@ namespace Ict.Petra.Tools.SampleDataConstructor
                                 glmNewYearInit.VerificationResultCollection = verificationResult;
                                 glmNewYearInit.IsInInfoMode = false;
                                 glmNewYearInit.RunOperation();
-                                YearEndOperator.SetNextPeriod();
+                                YearEndOperator.SetNextPeriod(transaction);
 
                                 SampleDataLedger.InitExchangeRate();
 
