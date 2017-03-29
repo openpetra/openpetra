@@ -128,7 +128,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
         public static DataTable GiftStatementRecipientTable(
             Dictionary <String, TVariant>AParameters,
             TReportingDbAdapter DbAdapter,
-            Int64 ADonorKey = -1)
+            string DonorKeyList = "")
         {
             TDBTransaction Transaction = null;
 
@@ -158,10 +158,10 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                     String paramToDate = "'" + AParameters["param_to_date"].ToDate().ToString(
                         "yyyy-MM-dd") + "'";
                     String donorKeyFilter =
-                        (ADonorKey == -1) ?
+                        (DonorKeyList == "") ?
                         ""
                         :
-                        " AND gift.p_donor_key_n =" + ADonorKey;
+                        " AND gift.p_donor_key_n IN (" + DonorKeyList + ")";
 
                     string Query = "SELECT" +
                                    " Recipient.p_partner_key_n AS RecipientKey," +

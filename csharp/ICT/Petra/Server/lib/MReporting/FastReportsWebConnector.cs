@@ -637,21 +637,25 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             TDBTransaction Transaction = null;
             DataTable tbl = null;
 
+            OdbcParameter[] parameters = new OdbcParameter[1];
+            parameters[0] = new OdbcParameter("ExtractName", OdbcType.VarChar);
+            parameters[0].Value = AParameters["param_extract_name"].ToString();
+
             ADbAdapter.FPrivateDatabaseObj.BeginAutoReadTransaction(
                 ref Transaction,
                 delegate
                 {
                     String Query =
-                        " (SELECT DISTINCT gift.p_donor_key_n FROM a_gift AS gift" +
+                        " SELECT DISTINCT gift.p_donor_key_n FROM a_gift AS gift" +
                         " LEFT JOIN m_extract AS extract ON gift.p_donor_key_n = extract.p_partner_key_n" +
                         " LEFT JOIN m_extract_master AS master ON extract.m_extract_id_i = master.m_extract_id_i" +
                         " LEFT JOIN a_gift_batch batch ON batch.a_batch_number_i = gift.a_batch_number_i" +
                         " AND batch.a_ledger_number_i = gift.a_ledger_number_i" +
-                        " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                        " WHERE master.m_extract_name_c = :ExtractName" +
                         " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
                         " AND batch.a_batch_status_c = 'Posted'" +
-                        " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
-                    tbl = ADbAdapter.RunQuery(Query, "Recipients", Transaction);
+                        " AND batch.a_ledger_number_i = " + LedgerNumber;
+                    tbl = ADbAdapter.RunQuery(Query, "Recipients", Transaction, AParametersArray : parameters);
                 });
             String Results = "";
 
@@ -707,14 +711,20 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 return null;
             }
 
+            // DWS bug 5883: doing this once for all donors (933ms in testing) turned out to be substantially quicker
+            // than calling it for each donor (533ms each).  Total runtime of this
+            // part of the report reduced from 31 minutes to 13 seconds (3500 donors).
+            // The behaviour should not be changed for other callers of GiftStatementRecipientTable(),
+            // because an empty DonorKeyList still results in donorKeyFilter="".
             DataTable Recipients = new DataTable("Recipients");
+            Recipients = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, donorKeyList);
+
             DataTable Totals = new DataTable("Totals");
 
             DataView View = new DataView(Donors);
             View.Sort = "DonorKey";
 
             DataTable DistinctDonors = new DataTable();
-            DataTable tempTable;
 
             if (View.Count > 0)
             {
@@ -789,14 +799,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         DataRow DonorsRow = rv.Row;
                         DonorsRow["thisYearTotal"] = thisYearTotal;
                         DonorsRow["previousYearTotal"] = previousYearTotal;
-                    }
-
-                    // Get recipient information for each donor
-                    tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey);
-
-                    if (tempTable != null)
-                    {
-                        Recipients.Merge(tempTable);
                     }
 
                     if (ADbAdapter.IsCancelled)
