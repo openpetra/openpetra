@@ -920,7 +920,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
                     Query =
                         "SELECT p_partner_key_n, p_title_c, p_first_name_c, p_prefered_name_c, p_family_name_c, p_date_of_birth_d FROM p_person WHERE p_partner_key_n IN ("
-                        + partnerKeys + ")";
+                        +
+                        partnerKeys + ")";
                     PersonInformation = DbAdapter.RunQuery(Query, "PersonInformation", Transaction);
                     TPartnerReportTools.ConvertDbFieldNamesToReadable(PersonInformation);
 

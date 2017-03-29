@@ -726,8 +726,24 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             // part of the report reduced from 31 minutes to 13 seconds (3500 donors).
             // The behaviour should not be changed for other callers of GiftStatementRecipientTable(),
             // because an empty DonorKeyList still results in donorKeyFilter="".
-            DataTable Recipients = new DataTable("Recipients");
-            Recipients = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, donorKeyList);
+            DataTable Recipients = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, donorKeyList);
+
+            // 5883 contd: Unfortunately the above can timeout, which it does silently (if it does timeout),
+            // so if this happens we revert to the previous code.
+            DataTable tempTable;
+            bool UseOldMethod = false;
+
+            if (Recipients == null)
+            {
+                Recipients = new DataTable("Recipients");
+                UseOldMethod = true;
+
+                // If the query timed out then we can no longer use the current ADbAdapter since there is no way to
+                // set FCancelFlag back to false, so we close its connection and create a new adapter.  The time
+                // this will take is negligible compared to the time it will take to return all the data.
+                ADbAdapter.CloseConnection();
+                ADbAdapter = new TReportingDbAdapter(true);
+            }
 
             DataTable Totals = new DataTable("Totals");
 
@@ -809,6 +825,17 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         DataRow DonorsRow = rv.Row;
                         DonorsRow["thisYearTotal"] = thisYearTotal;
                         DonorsRow["previousYearTotal"] = previousYearTotal;
+                    }
+
+                    if (UseOldMethod)
+                    {
+                        // Get recipient information for each donor
+                        tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey.ToString());
+
+                        if (tempTable != null)
+                        {
+                            Recipients.Merge(tempTable);
+                        }
                     }
 
                     if (ADbAdapter.IsCancelled)
