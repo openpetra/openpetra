@@ -4,7 +4,7 @@
 // @Authors:
 //       timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -213,6 +213,18 @@ namespace GenerateSQL
 
             while ((line = reader.ReadLine()) != null)
             {
+                while (!line.Trim().StartsWith("--") && !line.Trim().EndsWith(";") && !reader.EndOfStream)
+                {
+                    string templine = reader.ReadLine();
+
+                    if (!templine.StartsWith("--"))
+                    {
+                        line += " " + templine;
+                    }
+                }
+
+                line = line.Trim();
+
                 Console.WriteLine(line);
 
                 if (line.ToUpper().StartsWith("DELETE FROM "))
