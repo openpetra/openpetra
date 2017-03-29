@@ -410,6 +410,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             //  * The root node appears first,
             //  * a parent appears before its child.
             UnitHierarchyNode RootData = (UnitHierarchyNode)UnitNodes[0];
+            UnitHierarchyNode UnassignedData = (UnitHierarchyNode)UnitNodes[1];
+
+            // build up actual root node
             TreeNode RootNode = new TreeNode(RootData.Description);
             RootNode.Tag = RootData;
             RootNode.ToolTipText = RootData.TypeCode;
@@ -418,6 +421,14 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             AddChildren(RootNode, UnitNodes);
             Int64 MySiteKey = TSystemDefaults.GetSiteKeyDefault();
             ShowThisUnit(MySiteKey);
+
+            // build up node for unassigned units
+            TreeNode UnassignedNode = new TreeNode(UnassignedData.Description);
+            UnassignedNode.Tag = UnassignedData;
+            UnassignedNode.ToolTipText = UnassignedData.TypeCode;
+            UnitNodes.RemoveAt(0);
+            trvUnits.Nodes.Add(UnassignedNode);
+            AddChildren(UnassignedNode, UnitNodes);
 
             FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
 

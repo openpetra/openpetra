@@ -161,7 +161,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Mobile Phone' LIMIT 1
-                                   ) AS Mobile"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ;
+                                   ) AS Mobile"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ;
             }
 
             if (AIncludeAlternateTelephone)
@@ -175,7 +175,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND NOT p_primary_l AND p_current_l AND p_category_code_c = 'Phone' AND pattribute.p_attribute_type_c = 'Phone' LIMIT 1
-                                    ) AS AlternateTelephone"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       ;
+                                    ) AS AlternateTelephone"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               ;
             }
 
             if (AIncludeURL)
@@ -189,7 +189,7 @@ namespace Ict.Petra.Server.MPartner.Common
                                       JOIN p_partner_attribute_type ON p_partner_attribute_type.p_attribute_type_c = pattribute.p_attribute_type_c
 
                                       WHERE pattribute.p_partner_key_n = partner.p_partner_key_n AND p_category_code_c = 'Digital Media' AND pattribute.p_attribute_type_c = 'Web Site' LIMIT 1
-                                    ) AS URL"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ;
+                                    ) AS URL"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ;
             }
 
             DataTable PhoneFaxMailDT = new DataTable();
@@ -395,7 +395,7 @@ namespace Ict.Petra.Server.MPartner.Common
 
             DataTable PartnerAndField = new DataTable();
             string Query = @"
-                            WITH partnertable AS (VALUES "                               +
+                            WITH partnertable AS (VALUES "                                +
                            String.Join(",",
                 partnerlist) +
                            @"),
@@ -416,7 +416,7 @@ namespace Ict.Petra.Server.MPartner.Common
                            +
                            CurrentDate.ToString("yyyy-MM-dd") + @"'
 
-                                    AND(pm_end_of_commitment_d >= '"                                                                      +
+                                    AND(pm_end_of_commitment_d >= '"                                                                        +
                            CurrentDate.ToString(
                 "yyyy-MM-dd") +
                            @"' OR pm_end_of_commitment_d IS NULL)
@@ -459,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Common
                             RIGHT JOIN p_partner AS partner ON persontable.Partner_Key = partner.p_partner_key_n
                             WHERE partner.p_partner_key_n IN((SELECT * FROM partnertable))
 
-                            GROUP BY partner.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ;
+                            GROUP BY partner.p_partner_key_n"                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   ;
 
             ADbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,

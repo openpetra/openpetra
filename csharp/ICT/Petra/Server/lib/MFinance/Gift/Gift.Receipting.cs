@@ -639,6 +639,12 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                                           "FROM PUB_a_gift LEFT JOIN PUB_p_partner on PUB_a_gift.p_donor_key_n = PUB_p_partner.p_partner_key_n " +
                                           "WHERE PUB_a_gift.a_ledger_number_i=" + ALedgerNumber.ToString() +
                                           " AND a_receipt_printed_l=FALSE AND p_receipt_each_gift_l=TRUE " +
+                                          " AND (EXISTS (SELECT 1 FROM PUB_a_gift_detail d LEFT JOIN a_motivation_detail m ON m.a_ledger_number_i = d.a_ledger_number_i AND m.a_motivation_group_code_c = d.a_motivation_group_code_c AND m.a_motivation_detail_code_c = d.a_motivation_detail_code_c "
+                                          +
+                                          "WHERE d.a_ledger_number_i = PUB_a_gift.a_ledger_number_i " +
+                                          "AND d.a_batch_number_i = PUB_a_gift.a_batch_number_i " +
+                                          "AND d.a_gift_transaction_number_i = PUB_a_gift.a_gift_transaction_number_i " +
+                                          "AND m.a_receipt_l=TRUE)) " +
                                           "ORDER BY BatchNumber";
 
                         GiftsTbl = DBAccess.GDBAccessObj.SelectDT(SqlQuery, "UnreceiptedGiftsTbl", Transaction);

@@ -351,7 +351,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                     Query =
                         @"SELECT p_person.*, p_partner.p_partner_short_name_c FROM p_person JOIN p_partner ON p_partner.p_partner_key_n = p_person.p_partner_key_n
                               WHERE p_person.p_partner_key_n IN ("
-                        + Selection + ")";
+                        +
+                        Selection + ")";
 
                     Person = DbAdapter.RunQuery(Query,
                         "Person",
@@ -375,7 +376,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                 p_data_label_use, p_data_label, p_data_label_value_partner
                               WHERE
                                   p_data_label_value_partner.p_partner_key_n IN ( "
-                        + Selection +
+                        +
+                        Selection +
                         @")
                                 AND p_data_label_value_partner.p_data_label_key_i = p_data_label.p_key_i
                                 AND p_data_label_use.p_use_c <> 'Personnel'
@@ -404,7 +406,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                 p_data_label_use, p_data_label, p_data_label_value_partner
                               WHERE
                                   p_data_label_value_partner.p_partner_key_n IN("
-                        + Selection +
+                        +
+                        Selection +
                         @")
                                 AND p_data_label_value_partner.p_data_label_key_i = p_data_label.p_key_i
                                 AND p_data_label_use.p_use_c = 'Personnel'
@@ -435,7 +438,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
 					            LEFT JOIN p_partner AS sending ON pm_staff_data.pm_office_recruited_by_n = sending.p_partner_key_n
 				             WHERE
 					            pm_staff_data.p_partner_key_n IN("
-                        + Selection + ")";
+                        +
+                        Selection + ")";
 
                     Commitments = DbAdapter.RunQuery(Query, "Commitments", Transaction);
 
@@ -525,7 +529,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                             ON p_partner.p_partner_key_n = type.p_partner_key_n
                                         WHERE
                                             p_partner.p_partner_key_n IN("
-                        + ASelection + ") ";
+                        +
+                        ASelection + ") ";
 
                     if (AUseOrderBy)
                     {
@@ -848,7 +853,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                         AND staff.pm_receiving_field_n = unit.p_partner_key_n
 	                                    AND partner.p_status_code_c = 'ACTIVE'
 	                                    AND staff.pm_start_of_commitment_d >= '"
-                        + AParameters["param_dtpStartDate"].ToDate().ToString(
+                        +
+                        AParameters["param_dtpStartDate"].ToDate().ToString(
                             "yyyy-MM-dd") + @"'
 	                                    AND staff.pm_start_of_commitment_d <= '"                                           +
                         AParameters["param_dtpEndDate"].ToDate().ToString(
@@ -938,7 +944,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                            FROM um_unit_structure
                                           WHERE
                                           um_unit_structure.um_child_unit_key_n = "
-                        + AParameters["param_txtUnitCode"].ToInt32() +
+                        +
+                        AParameters["param_txtUnitCode"].ToInt32() +
                         @"
                                        UNION ALL
                                          SELECT
@@ -955,7 +962,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                         u_unit_type_name_c
                                       FROM breadth_first_traversal
                                            JOIN p_unit ON p_partner_key_n = um_child_unit_key_n
-                                           LEFT JOIN u_unit_type ON p_unit.u_unit_type_code_c = u_unit_type.u_unit_type_code_c "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ;
+                                           LEFT JOIN u_unit_type ON p_unit.u_unit_type_code_c = u_unit_type.u_unit_type_code_c "                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ;
 
                     if (!AParameters["param_chkInclude"].ToBool())
                     {
@@ -963,7 +970,7 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                             @" WHERE p_unit.u_unit_type_code_c NOT LIKE 'GA%'
                                     AND p_unit.u_unit_type_code_c NOT LIKE 'GC%'
                                     AND p_unit.u_unit_type_code_c NOT LIKE 'TN%'
-                                    AND p_unit.u_unit_type_code_c NOT LIKE 'TS%'"                                                                                                                                                                                                                                                    ;
+                                    AND p_unit.u_unit_type_code_c NOT LIKE 'TS%'"                                                                                                                                                                                                                                                   ;
                     }
 
                     UnitHierarchy = DbAdapter.RunQuery(Query, "UnitHierarchy", Transaction);
@@ -1191,7 +1198,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                                 LEFT JOIN p_partner AS partner ON pm_job_assignment.p_partner_key_n = partner.p_partner_key_n
                               WHERE
                                 pm_job_assignment.p_partner_key_n IN("
-                + ASelection + @")";
+                +
+                ASelection + @")";
 
             return ADbAdapter.RunQuery(Query, "JobAssignments", ATransaction);
         }

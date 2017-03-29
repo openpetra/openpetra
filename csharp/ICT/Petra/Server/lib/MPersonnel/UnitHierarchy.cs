@@ -62,6 +62,10 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
             DBAccess.GDBAccessObj.BeginAutoReadTransaction(IsolationLevel.ReadCommitted, ref Transaction,
                 delegate
                 {
+                    PPartnerTable PartnerTbl = PPartnerAccess.LoadViaPPartnerClasses("UNIT", Transaction);
+                    PartnerTbl.DefaultView.RowFilter = "p_status_code_c <> 'MERGED'";
+                    PartnerTbl.DefaultView.Sort = PPartnerTable.GetPartnerKeyDBName();
+
                     PUnitTable UnitTbl = PUnitAccess.LoadAll(Transaction);
                     UUnitTypeTable UnitTypeTbl = UUnitTypeAccess.LoadAll(Transaction);
                     UnitTypeTbl.DefaultView.Sort = UUnitTypeTable.GetUnitTypeCodeDBName();
@@ -71,6 +75,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
                     UnitTbl.DefaultView.Sort = PUnitTable.GetPartnerKeyDBName();
                     UnitHierarchyNode RootNode = new UnitHierarchyNode();
+                    UnitHierarchyNode UnassignedNode = new UnitHierarchyNode();
 
                     RootNode.MyUnitKey = THE_ORGANISATION;
                     RootNode.ParentUnitKey = THE_ORGANISATION;
@@ -87,9 +92,21 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
 
                     Ret.Add(RootNode);
 
+                    UnassignedNode.MyUnitKey = 0;
+                    UnassignedNode.ParentUnitKey = 0;
+                    UnassignedNode.Description = Catalog.GetString("Unassigned Units");
+                    Ret.Add(UnassignedNode);
+
                     foreach (DataRowView rv in UnitTbl.DefaultView)
                     {
                         PUnitRow UnitRow = (PUnitRow)rv.Row;
+
+                        if (PartnerTbl.DefaultView.Find(UnitRow.PartnerKey) < 0)
+                        {
+                            // skip all merged units
+                            continue;
+                        }
+
                         UnitHierarchyNode Node = new UnitHierarchyNode();
                         Node.Description = UnitRow.UnitName + " " + UnitRow.Description;
 
@@ -110,7 +127,7 @@ namespace Ict.Petra.Server.MPersonnel.WebConnectors
                         }
                         else
                         {
-                            Node.ParentUnitKey = THE_ORGANISATION;
+                            Node.ParentUnitKey = UnassignedNode.MyUnitKey;
                         }
 
                         //
