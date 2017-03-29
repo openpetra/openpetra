@@ -311,8 +311,22 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             {
                 ChildKey = Convert.ToInt64(txtChild.Text);
                 ParentKey = Convert.ToInt64(txtParent.Text);
+
+                // search child below root organisation node
                 FChildNodeReference = FindChild(trvUnits.Nodes[0], ChildKey, false);
+                if (FChildNodeReference == null)
+                {
+                    // if not found yet then search below "Unassigned" node
+                    FChildNodeReference = FindChild(trvUnits.Nodes[1], ChildKey, false);
+                }
+
+                // search parent as or below root organisation node
                 FParentNodeReference = FindChild(trvUnits.Nodes[0], ParentKey, true);
+                if (FParentNodeReference == null)
+                {
+                    // if not found yet then search below "Unassigned" node
+                    FParentNodeReference = FindChild(trvUnits.Nodes[1], ParentKey, true);
+                }
 
                 if ((FChildNodeReference != null) && (FParentNodeReference != null))
                 {
@@ -377,9 +391,10 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             if (SelectedNode != null)
             {
                 trvUnits.CollapseAll();
+                SelectNode(SelectedNode);
+                trvUnits.SelectedNode = SelectedNode;
                 SelectedNode.Expand();
                 SelectedNode.EnsureVisible();
-                SelectNode(SelectedNode);
             }
 
             return SelectedNode != null;
@@ -428,8 +443,6 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             UnitNodes.RemoveAt(0);
             trvUnits.Nodes.Add(RootNode);
             AddChildren(RootNode, UnitNodes);
-            Int64 MySiteKey = TSystemDefaults.GetSiteKeyDefault();
-            ShowThisUnit(MySiteKey);
 
             // build up node for unassigned units
             TreeNode UnassignedNode = new TreeNode(UnassignedData.Description);
@@ -438,6 +451,9 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             UnitNodes.RemoveAt(0);
             trvUnits.Nodes.Add(UnassignedNode);
             AddChildren(UnassignedNode, UnitNodes);
+
+            Int64 MySiteKey = TSystemDefaults.GetSiteKeyDefault();
+            ShowThisUnit(MySiteKey);
 
             FPetraUtilsObject.ApplySecurity(TSecurityChecks.SecurityPermissionsSetupScreensEditingAndSaving);
 
@@ -548,7 +564,18 @@ namespace Ict.Petra.Client.MPersonnel.Gui.Setup
             }
 
             ArrayList UnitNodes = new ArrayList();
+            // collect all children under root organisational node
             GetAllChildren(trvUnits.Nodes[0], ref UnitNodes);
+
+            // Collect all children under 'Unassigned' so that substructures are preserved (but not the ones directly under 'Unassigned' since that is not actually a Unit).
+            // We need to go 2 levels deep as on the server each node is stored alongside it's parent unit key
+            foreach (TreeNode Node in trvUnits.Nodes[1].Nodes)
+            {
+                foreach (TreeNode SubNode in Node.Nodes)
+                {
+                    GetAllChildren(SubNode, ref UnitNodes);
+                }
+            }
 
             TRemote.MPersonnel.WebConnectors.SaveUnitHierarchy(UnitNodes);
 

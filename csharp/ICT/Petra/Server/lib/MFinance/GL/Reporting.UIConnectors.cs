@@ -3413,7 +3413,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                         " WHERE" +
                         " gift.p_donor_key_n =  PUB_m_extract.p_partner_key_n" +
                         " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                        " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                        " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" +
                         " AND";
                     break;
 
@@ -3590,7 +3590,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             if (fromExtract)
             {
-                String extractName = AParameters["param_extract_name"].ToString();
+                String extractName = AParameters["param_extract_name"].ToString().Replace("'", "''");
                 SqlQuery += (", PUB_m_extract AS Extract, PUB_m_extract_master AS ExtractMaster " +
                              "WHERE " +
                              "recipient.p_partner_key_n = Extract.p_partner_key_n " +

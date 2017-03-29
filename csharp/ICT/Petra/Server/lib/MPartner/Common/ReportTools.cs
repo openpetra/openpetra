@@ -656,7 +656,7 @@ namespace Ict.Petra.Server.MPartner.Common
                         Query =
                             "SELECT p_partner_key_n FROM m_extract  WHERE m_extract_id_i = (SELECT m_extract_id_i FROM m_extract_master WHERE m_extract_name_c = '"
                             +
-                            AParameters["param_extract"] + "')";
+                            AParameters["param_extract"].ToString().Replace("'", "''") + "')";
                     }
                     else if (AParameters["param_selection"].ToString() == "all current staff")
                     {

@@ -183,6 +183,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
             DataTable PartnerSelectionTable = new DataTable("DataSelection");
 
+            String PartnerSelection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
 
             DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
                 IsolationLevel.ReadCommitted,
@@ -190,34 +191,6 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    #region Get Partner Selection
-                    String PartnerSelection = "";
-
-                    if (AParameters["param_selection"].ToString() == "one partner")
-                    {
-                        PartnerSelection = AParameters["param_partnerkey"].ToInt32().ToString();
-                    }
-                    else
-                    {
-                        String SelectionQuery =
-                            "SELECT p_partner_key_n FROM m_extract JOIN m_extract_master ON m_extract.m_extract_id_i = m_extract_master.m_extract_id_i WHERE m_extract_name_c = '"
-                            +
-                            AParameters["param_extract"] + "'";
-
-                        PartnerSelectionTable = DbAdapter.RunQuery(SelectionQuery, "PartnerSelection", Transaction);
-                        List <String>PartnerList = new List <string>();
-
-                        foreach (DataRow row in PartnerSelectionTable.Rows)
-                        {
-                            PartnerList.Add(row[0].ToString());
-                        }
-
-                        PartnerSelection = String.Join(",",
-                            PartnerList);
-                    }
-
-                    #endregion
-
                     #region Partners
                     String PartnersQuery =
                         @"SELECT
@@ -826,7 +799,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
 
                         case "an extract":
                             extraTables = ", PUB_m_extract, PUB_m_extract_master";
-                            String paramExtractName = AParameters["param_extract"].ToString();
+                            String paramExtractName = AParameters["param_extract"].ToString().Replace("'", "''");
                             partnerSelection =
                                 " AND PUB_m_extract.p_partner_key_n = " + byPartnerField +
                                 " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +

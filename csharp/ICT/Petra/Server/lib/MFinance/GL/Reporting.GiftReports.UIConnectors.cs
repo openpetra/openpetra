@@ -238,7 +238,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  +
                                  " LEFT JOIN PUB_a_gift_batch batch ON batch.a_batch_number_i = detail.a_batch_number_i AND batch.a_ledger_number_i = detail.a_ledger_number_i"
                                  +
-                                 " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                                 " WHERE master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" +
                                  " AND gift.a_date_entered_d BETWEEN " + paramFromDate + " AND " + paramToDate +
                                  " AND batch.a_batch_status_c = 'Posted'" +
                                  " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
@@ -725,7 +725,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                         Query += " WHERE p_partner_tax_deductible_pct.p_partner_key_n = m_extract.p_partner_key_n " +
                                  "AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i " +
-                                 "AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"] + "'";
+                                 "AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'";
 
                         if (!AParameters["param_chkPrintAllExtract"].ToBool())
                         {

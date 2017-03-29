@@ -677,7 +677,7 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                     ShortTermRow.PartnerKey = APartnerKey;
                     ShortTermRow.ApplicationKey = GenAppRow.ApplicationKey;
                     ShortTermRow.RegistrationOffice = GenAppRow.RegistrationOffice; // When this is imported, RegistrationOffice can't be null.
-                    ShortTermRow.StBasicOutreachId = "Unused field"; // This field is scheduled for deletion, but NOT NULL now.
+                    ShortTermRow.StBasicOutreachId = GenAppRow.OldLink; //"Unused field"; // This field is scheduled for deletion, but NOT NULL now.
                     ShortTermRow.StAppDate = GenAppRow.GenAppDate;
                     ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
                     ShortTermRow.StConfirmedOption = EventKey;
@@ -719,16 +719,19 @@ namespace Ict.Petra.Server.MPartner.ImportExport
                 {
                     GenAppRow.GenAppDate = DateTime.Now;
                 }
+                ShortTermRow.StAppDate = GenAppRow.GenAppDate;
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE))
                 {
                     GenAppRow.AppTypeName = TXMLParser.GetAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPTYPE);
+                    ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
                 }
 
                 if (GenAppRow.AppTypeName == "")
                 {
                     // if column value is missing then preset this with TEENSTREET
                     GenAppRow.AppTypeName = "TEENSTREET";
+                    ShortTermRow.StApplicationType = GenAppRow.AppTypeName;
                 }
 
                 if (TXMLParser.HasAttribute(ANode, MPartnerConstants.PARTNERIMPORT_APPSTATUS))

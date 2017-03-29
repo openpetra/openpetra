@@ -97,7 +97,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             " WHERE" +
                             " gift.p_donor_key_n = PUB_m_extract.p_partner_key_n" +
                             " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                            " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" + // {param_extract_name}" +
+                            " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" + // {param_extract_name}" +
                             " AND";
                     }
                     else
@@ -267,7 +267,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             " WHERE" +
                             " gift.p_donor_key_n = PUB_m_extract.p_partner_key_n" +
                             " AND PUB_m_extract.m_extract_id_i = PUB_m_extract_master.m_extract_id_i" +
-                            " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" + // {param_extract_name}" +
+                            " AND PUB_m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" + // {param_extract_name}" +
                             " AND ";
                     }
                     else
@@ -385,7 +385,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             " WHERE" +
                             " p_donor_key_n = m_extract.p_partner_key_n" +
                             " AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i" +
-                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" +
                             " AND";
                     }
                     else
@@ -853,7 +853,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             " WHERE" +
                             " p_donor_key_n = m_extract.p_partner_key_n" +
                             " AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i" +
-                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" +
                             " AND";
                     }
                     else
@@ -1064,7 +1064,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                             " WHERE" +
                             " p_donor_key_n = m_extract.p_partner_key_n" +
                             " AND m_extract.m_extract_id_i = m_extract_master.m_extract_id_i" +
-                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString() + "'" +
+                            " AND m_extract_master.m_extract_name_c = '" + AParameters["param_extract_name"].ToString().Replace("'", "''") + "'" +
                             " AND";
                     }
                     else
