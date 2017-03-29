@@ -127,9 +127,8 @@ namespace Ict.Petra.Server.MReporting.UIConnectors
                 Run(session);
             };
             Thread TheThread = new Thread(myThreadStart);
-            TheThread.Name = FProgressID;
             TheThread.CurrentCulture = Thread.CurrentThread.CurrentCulture;
-            TheThread.Name = UserInfo.GUserInfo.UserID + "__TReportGeneratorUIConnector.Start_Thread";
+            TheThread.Name = FProgressID + "_" + UserInfo.GUserInfo.UserID + "__TReportGeneratorUIConnector.Start_Thread";
             TLogging.LogAtLevel(7, TheThread.Name + " starting.");
             TheThread.Start();
         }
