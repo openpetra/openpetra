@@ -4,7 +4,7 @@
 // @Authors:
 //       christiank, timop
 //
-// Copyright 2004-2013 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -76,6 +76,8 @@ namespace Ict.Common.Remoting.Server
          */
         public DataTable PollClientTasks()
         {
+            int UnusualNumberOfEntries = Convert.ToInt16(TAppSettingsManager.GetValue(
+                    "Server.DEBUG.ClientTasks_UnusualNumberOfEntries", "5", false));
             DataTable ReturnValue = null;
 
 //            if (TLogging.DL >= 10)
@@ -101,6 +103,28 @@ namespace Ict.Common.Remoting.Server
             {
                 // Retrieve new ClientTasks DataTable and pass it on the the Client
                 ReturnValue = FClientTasksManager.ClientTasksNewDataTable;
+
+                //
+                // Debugging
+                //
+                if (TLogging.DL >= 2)
+                {
+                    if (ReturnValue.Rows.Count >= UnusualNumberOfEntries)
+                    {
+                        TLogging.Log(String.Format(
+                                "TPollClientTasks: Client Tasks Table has got a rather unusal number of entries (more than {0}): it holds {1} entries!!!   AppDomain: '{2}'",
+                                UnusualNumberOfEntries, ReturnValue.Rows.Count, AppDomain.CurrentDomain.FriendlyName));
+
+                        for (int Counter = 0; Counter < ReturnValue.Rows.Count; Counter++)
+                        {
+                            TLogging.Log(String.Format(
+                                    "TPollClientTasks: Data of Entry #{0} for AppDomain '{1}': TaskGroup: '{2}'; TaskCode: '{3}'; TaskParameter1: '{4}', ; TaskParameter2: '{5}'",
+                                    Counter, AppDomain.CurrentDomain.FriendlyName,
+                                    ReturnValue.Rows[Counter]["TaskGroup"], ReturnValue.Rows[Counter]["TaskCode"],
+                                    ReturnValue.Rows[Counter]["TaskParameter1"], ReturnValue.Rows[Counter]["TaskParameter2"]));
+                        }
+                    }
+                }
 
 //                if (TLogging.DL >= 9)
 //                {
