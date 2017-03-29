@@ -46,6 +46,7 @@ using Ict.Petra.Shared.MSysMan.Data;
 //using Ict.Petra.Client.MFastReport;
 //using Ict.Petra.Client.MFastReport.Gui;
 using Ict.Petra.Shared.MReporting;
+using Ict.Petra.Client.CommonDialogs;
 
 namespace Ict.Petra.Client.MReporting.Gui
 {
@@ -364,7 +365,9 @@ namespace Ict.Petra.Client.MReporting.Gui
         /// <param name="AWindow">"Parent" Window</param>
         /// <param name="AUseColumnTab">"Parent" Window</param>
         /// <param name="AAddLedger">"Adds the Ledger Name to the Parameters"</param>
-        /// /// <param name="ALedgerNumber">"The Ledger Number if used"</param>
+        /// <param name="ALedgerNumber">"The Ledger Number if used"</param>
+        /// <param name="AMainTableName">Indicating Table (name) whether a report would be blank. Only if DataSet is used and Main Table isn't the first in the DataSet. </param>
+        /// <param name="ASortBy">"Sort By..."</param>
         /// <returns></returns>
         public bool LoadReportData(string AReportName,
             bool AUseDataSet,
@@ -373,7 +376,52 @@ namespace Ict.Petra.Client.MReporting.Gui
             Form AWindow,
             bool AUseColumnTab,
             bool AAddLedger = false,
-            Int32 ALedgerNumber = -1)
+            Int32 ALedgerNumber = -1,
+            string AMainTableName = "",
+            string ASortBy = ""
+            )
+        {
+            return LoadReportData(false,
+                AReportName,
+                AUseDataSet,
+                ATableNames,
+                ACalc,
+                AWindow,
+                AUseColumnTab,
+                AAddLedger,
+                ALedgerNumber,
+                AMainTableName,
+                ASortBy);
+        }
+
+        /// <summary>
+        /// Helper function to load the Report Data in the standard case where no client-side processing is required.
+        /// </summary>
+        /// <param name="AUseProgressBar">Use a ProgressBar?</param>
+        /// <param name="AReportName">The Name of the Report</param>
+        /// <param name="AUseDataSet">True, if a ReportSet is used</param>
+        /// <param name="ATableNames">The Names of the Tables</param>
+        /// <param name="ACalc">ACalc object</param>
+        /// <param name="AWindow">"Parent" Window</param>
+        /// <param name="AUseColumnTab">"Parent" Window</param>
+        /// <param name="AAddLedger">"Adds the Ledger Name to the Parameters"</param>
+        /// <param name="ALedgerNumber">"The Ledger Number if used"</param>
+        /// <param name="AMainTableName">Indicating Table (name) whether a report would be blank. Only if DataSet is used and Main Table isn't the first in the DataSet. </param>
+        /// <param name="ASortBy">"Sort By..."</param>
+        /// <returns></returns>
+        public bool LoadReportData(
+            bool AUseProgressBar,
+            string AReportName,
+            bool AUseDataSet,
+            string[] ATableNames,
+            TRptCalculator ACalc,
+            Form AWindow,
+            bool AUseColumnTab,
+            bool AAddLedger = false,
+            Int32 ALedgerNumber = -1,
+            string AMainTableName = "",
+            string ASortBy = ""
+            )
         {
             if (AUseColumnTab)
             {
@@ -396,13 +444,37 @@ namespace Ict.Petra.Client.MReporting.Gui
             DataTable ReportTable = null;
             DataSet ReportSet = null;
 
+
+            Thread t;
+            bool ThreadFinished = false;
+
             if (AUseDataSet)
             {
-                ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet(AReportName, paramsDictionary);
+                t = new Thread(() => ReportSet = GetReportDataSet(AReportName, paramsDictionary, ref ThreadFinished));
             }
             else
             {
-                ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable(AReportName, paramsDictionary);
+                t = new Thread(() => ReportTable = GetReportDataTable(AReportName, paramsDictionary, ref ThreadFinished));
+            }
+
+            if (AUseProgressBar)
+            {
+                using (TProgressDialog dialog = new TProgressDialog(t))
+                {
+                    dialog.SetRefreshInterval(200);
+                    dialog.ShowDialog();
+                }
+
+                // wait here until Thread is really finished
+                while (!ThreadFinished)
+                {
+                    Thread.Sleep(50);
+                }
+            }
+            else
+            {
+                t.Start();
+                t.Join();
             }
 
             if ((AWindow == null) || AWindow.IsDisposed)
@@ -413,6 +485,42 @@ namespace Ict.Petra.Client.MReporting.Gui
             if ((ReportTable == null) && (ReportSet == null))
             {
                 FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
+                return false;
+            }
+
+            //Message if Report would be blank
+            string Message = Catalog.GetString("No data has been found for the current selection.");
+
+            if (AUseDataSet)
+            {
+                bool error = false;
+
+                if (AMainTableName == String.Empty)
+                {
+                    if (ReportSet.Tables[0].Rows.Count == 0)
+                    {
+                        error = true;
+                    }
+                }
+                else
+                {
+                    if (ReportSet.Tables[AMainTableName].Rows.Count == 0)
+                    {
+                        error = true;
+                    }
+                }
+
+                if (error)
+                {
+                    MessageBox.Show(Message, "Error");
+                    FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("No data found for current selection."));
+                    return false;
+                }
+            }
+            else if (ReportTable.Rows.Count == 0)
+            {
+                MessageBox.Show(Message, "Error");
+                FPetraUtilsObject.WriteToStatusBar(Catalog.GetString("No data found for current selection."));
                 return false;
             }
 
@@ -431,6 +539,13 @@ namespace Ict.Petra.Client.MReporting.Gui
                 ACalc.AddStringParameter("param_ledger_name", LedgerName);
             }
 
+            if (!AUseDataSet && (ASortBy != ""))
+            {
+                DataView dv = ReportTable.DefaultView;
+                dv.Sort = ASortBy;
+                ReportTable = dv.ToTable();
+            }
+
             if (AUseDataSet)
             {
                 foreach (string TableName in ATableNames)
@@ -444,6 +559,22 @@ namespace Ict.Petra.Client.MReporting.Gui
             }
 
             return true;
+        }
+
+        private DataSet GetReportDataSet(string AReportName, Dictionary <String, TVariant>AParamsDictionary, ref bool AThreadFinished)
+        {
+            DataSet ReturnSet = TRemote.MReporting.WebConnectors.GetReportDataSet(AReportName, AParamsDictionary);
+
+            AThreadFinished = true;
+            return ReturnSet;
+        }
+
+        private DataTable GetReportDataTable(string AReportName, Dictionary <String, TVariant>AParamsDictionary, ref bool AThreadFinished)
+        {
+            DataTable ReturnTable = TRemote.MReporting.WebConnectors.GetReportDataTable(AReportName, AParamsDictionary);
+
+            AThreadFinished = true;
+            return ReturnTable;
         }
 
         private void LoadReportParams(TRptCalculator ACalc)

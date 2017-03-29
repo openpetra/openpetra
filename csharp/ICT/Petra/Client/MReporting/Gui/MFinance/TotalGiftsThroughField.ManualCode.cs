@@ -63,21 +63,12 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("TotalGiftsThroughField", paramsDictionary);
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "MonthlyGifts");
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("TotalGiftsThroughField",
+                false,
+                new string[] { "MonthlyGifts" },
+                ACalc,
+                this,
+                false);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

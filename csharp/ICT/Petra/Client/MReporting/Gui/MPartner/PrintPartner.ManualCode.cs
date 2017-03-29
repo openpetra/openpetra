@@ -95,50 +95,15 @@ namespace Ict.Petra.Client.MReporting.Gui.MPartner
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataSet ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet("PrintPartner", paramsDictionary);
-
-            if (this.IsDisposed)
-            {
-                return false;
-            }
-
-            if (ReportSet == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Partners"], "Partners");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassPerson"], "ClassPerson");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassFamily"], "ClassFamily");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassOrganisation"], "ClassOrganisation");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassBank"], "ClassBank");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassChurch"], "ClassChurch");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassUnit"], "ClassUnit");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ClassVenue"], "ClassVenue");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Subscriptions"], "Subscriptions");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Relationships"], "Relationships");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Locations"], "Locations");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["ContactDetails"], "ContactDetails");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["FinanceDetails"], "FinanceDetails");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PartnerInterests"], "PartnerInterests");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["PartnerContacts"], "PartnerContacts");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Reminders"], "Reminders");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["SpecialTypes"], "SpecialTypes");
-
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("PrintPartner",
+                true,
+                new string[] { "Partners", "ClassPerson", "ClassFamily", "ClassOrganisation", "ClassBank", "ClassChurch", "ClassUnit", "ClassVenue",
+                               "Subscriptions",
+                               "Relationships", "Locations",
+                               "ContactDetails", "FinanceDetails", "PartnerInterests", "PartnerContacts", "Reminders", "SpecialTypes" },
+                ACalc,
+                this,
+                false);
         }
 
         private void DeselectAll(Object sender, EventArgs e)

@@ -23,6 +23,7 @@
 //
 using Ict.Common;
 using Ict.Common.DB;
+using Ict.Petra.Server.App.Core;
 using Ict.Petra.Server.MCommon;
 using Ict.Petra.Server.MPartner.Common;
 using Ict.Petra.Server.MPartner.DataAggregates;
@@ -44,6 +45,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
         [NoRemoting]
         public static DataSet EmergencyDataReport(Dictionary <String, TVariant>AParameters, TReportingDbAdapter DbAdapter)
         {
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Generating DataTables"), 1);
+
             TDBTransaction Transaction = null;
 
             String Selection = TPartnerReportTools.GetPartnerKeysAsString(AParameters, DbAdapter);
@@ -73,6 +76,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                 ref Transaction,
                 delegate
                 {
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString(
+                            "Get Personnel Data"), 7);
                     //Get Personnel Data
                     string Query =
                         @"SELECT
@@ -109,6 +114,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         "PersonnelData",
                         Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString(
+                            "Get Family Table"), 14);
                     //Get Family Table
                     Query =
                         "SELECT p_person.*, p_partner.* FROM p_person JOIN p_partner ON p_person.p_partner_key_n = p_partner.p_partner_key_n WHERE p_family_key_n IN "
@@ -124,12 +131,15 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         "Family",
                         Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Passport"), 21);
                     //Get Passport
                     Passports = GetPassportTable(Selection,
                         AParameters,
                         DbAdapter,
                         Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString(
+                            "Get Other Emergency Data"), 28);
                     //Get Other Emergency Data
                     Query =
                         @"SELECT
@@ -168,7 +178,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         "OtherEmergData",
                         Transaction);
 
-
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString(
+                            "Get Proof of Life Questions"), 35);
                     //Get Proof of Life Questions
                     Query =
                         @"SELECT
@@ -207,20 +218,27 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         "ProofOfLife",
                         Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Special Needs"), 42);
                     //Get Special Needs
                     SpecialNeeds = GetSpecialNeedsTable(Selection, AParameters, DbAdapter, Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Skills"), 49);
                     //Get Skills
                     Skills = GetSkillsTable(Selection, AParameters, DbAdapter, Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Language"), 56);
                     //Get language
                     Languages = GetLanguagesTable(Selection, AParameters, DbAdapter, Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Personal Documents"), 63);
                     //Get Personal Documents
                     PersonalDocuments = GetPersonalDocumentsTable(Selection, AParameters, DbAdapter, Transaction);
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Emergengcy Contacts"), 70);
                     //Get Emergengcy Contacts
                     EmergencyContacts = GetEmergencyContactsTable(Selection, AParameters, DbAdapter, Transaction);
+
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Addresses for Partner"), 77);
 
                     //Get Addresses for Partner
                     if (AParameters["param_chkAddress"].ToBool())
@@ -228,10 +246,13 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         PartnerAddress = TAddressTools.GetBestAddressForPartners(PersonnelData, 0, Transaction);
                     }
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Get Addresses for Emergency Contact"), 84);
                     //Get Addresses for Emergency Contact
                     ECAddresses = TAddressTools.GetBestAddressForPartners(EmergencyContacts, 1, Transaction);
                     ECAddresses.TableName = "ECAddresses";
 
+                    TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                        Catalog.GetString("Get Contact Details for Emergency Contact"), 91);
                     //Get Contact Details for Emergency Contact
                     ECContactDetails.TableName = "ECContactDetails";
                     ECContactDetails.Columns.Add("ECPartnerKey", typeof(long));
@@ -251,6 +272,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
                         ECContactDetails.Rows.Add(newContactDetails);
                     }
                 });
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Finalise..."), 91);
 
             //PartnerAddresses should not be empty or OP will crash
             if (PartnerAddress.Columns.Count == 0)
@@ -314,6 +337,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             ReturnSet.Tables.Add(OtherEmergData);
             ReturnSet.Tables.Add(ProofOfLife);
             ReturnSet.Tables.Add(SpecialNeeds);
+
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Done"), 100);
 
             return ReturnSet;
         }
@@ -810,7 +835,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             Mapping.Add("AddressCity", "City");
             Mapping.Add("Address State/County/Province", "County");
             Mapping.Add("AddressCountry", "Country");
-            dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), JobAssignments.Columns, Mapping);
+            dv.Sort = TPartnerReportTools.ColumnMapping(
+                AParameters["param_sortby_readable"].ToString(), JobAssignments.Columns, Mapping, "Job Assignment Report");
             JobAssignments = dv.ToTable();
 
             return JobAssignments;
@@ -909,7 +935,8 @@ namespace Ict.Petra.Server.MPersonnel.Reporting.WebConnectors
             Mapping.Add("PartnerAddress", "FullAddress");
             Mapping.Add("StartDate", "StartOfCommitment");
             Mapping.Add("EndDate", "EndOfCommitment");
-            dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), StartOfCommitment.Columns, Mapping);
+            dv.Sort = TPartnerReportTools.ColumnMapping(
+                AParameters["param_sortby_readable"].ToString(), StartOfCommitment.Columns, Mapping, "Start Of Commitment Report");
             StartOfCommitment = dv.ToTable();
 
 

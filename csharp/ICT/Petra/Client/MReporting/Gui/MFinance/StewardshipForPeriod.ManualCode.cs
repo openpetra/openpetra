@@ -66,48 +66,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("StewardshipForPeriod", paramsDictionary);
-
-            if (this.IsDisposed)
-            {
-                return false;
-            }
-
-            if (ReportTable == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "StewardshipForPeriod");
-
-            //
-            // I need to get the name of the current ledger..
-
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
-
-            if (LedgerView.Count > 0)
-            {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
-            }
-
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("StewardshipForPeriod",
+                false,
+                new string[] { "StewardshipForPeriod" },
+                ACalc,
+                this,
+                false,
+                true,
+                FLedgerNumber);
         }
 
         private void ReadControlsManual(TRptCalculator ACalc, TReportActionEnum AReportAction)

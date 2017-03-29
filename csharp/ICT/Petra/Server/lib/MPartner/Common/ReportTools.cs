@@ -118,6 +118,34 @@ namespace Ict.Petra.Server.MPartner.Common
         }
 
         /// <summary>
+        /// Reuturns a DataTable called ContactInformation
+        /// </summary>
+        /// <param name="APartnerKeys"></param>
+        /// <param name="ADbAdapter"></param>
+        /// <param name="AIncludeMobile"></param>
+        /// <param name="AIncludeAlternateTelephone"></param>
+        /// <param name="AIncludeURL"></param>
+        /// <returns></returns>
+        public static DataTable GetPrimaryPhoneFax(List <string>APartnerKeys, TReportingDbAdapter ADbAdapter,
+            Boolean AIncludeMobile = false, Boolean AIncludeAlternateTelephone = false, Boolean AIncludeURL = false)
+        {
+            DataTable ReturnTable = new DataTable("ContactInformation");
+
+            ReturnTable.Columns.Add("PartnerKey");
+
+            foreach (string PartnerKey in APartnerKeys)
+            {
+                DataRow dr = ReturnTable.NewRow();
+                dr[0] = PartnerKey;
+                ReturnTable.Rows.Add(dr);
+            }
+
+            AddPrimaryPhoneEmailFaxToTable(ReturnTable, 0, ADbAdapter, AIncludeMobile, AIncludeAlternateTelephone, AIncludeURL);
+
+            return ReturnTable;
+        }
+
+        /// <summary>
         /// Adds the primary Phone Email and Fax to a DataTable
         /// </summary>
         /// <param name="ADataTable"></param>
@@ -491,13 +519,14 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ASortingColumnsAsText">Comma seperated list of Column Names.</param>
         /// <param name="AColumns">Column Collection of the DataTable to check if the given names are valid.</param>
         /// <param name="AMappingDictionaryWithoutBlanks">The Dictionary to use for the translation. Key is the old name, values is the new name. </param>
+        /// <param name="AReportName">Used for the Log.</param>
         /// <returns></returns>
         public static string ColumnMapping(string ASortingColumnsAsText,
             DataColumnCollection AColumns,
-            Dictionary <string, string>AMappingDictionaryWithoutBlanks)
+            Dictionary <string, string>AMappingDictionaryWithoutBlanks, string AReportName)
         {
             return ColumnNameMapping(ASortingColumnsAsText, AColumns.Cast <DataColumn>().Select(
-                    x => x.ColumnName).ToArray(), AMappingDictionaryWithoutBlanks);
+                    x => x.ColumnName).ToArray(), AMappingDictionaryWithoutBlanks, AReportName);
         }
 
         /// <summary>
@@ -506,10 +535,11 @@ namespace Ict.Petra.Server.MPartner.Common
         /// <param name="ASortingColumnsAsText">Comma seperated list of Column Names.</param>
         /// <param name="ADataTableColumns">Column Names of the DataTable as a string[] to check if the given names are valid.</param>
         /// <param name="AMappingDictionaryWithoutBlanks">The Dictionary to use for the translation. Key is the old name, values is the new name. </param>
+        /// <param name="AReportName">Used for the Log.</param>
         /// <returns></returns>
         public static string ColumnNameMapping(string ASortingColumnsAsText,
             string[] ADataTableColumns,
-            Dictionary <string, string>AMappingDictionaryWithoutBlanks)
+            Dictionary <string, string>AMappingDictionaryWithoutBlanks, string AReportName)
         {
             List <string>list = new List <string>();
 
@@ -521,13 +551,20 @@ namespace Ict.Petra.Server.MPartner.Common
                 {
                     if (part.Replace(" ", "") == entry.Key)
                     {
-                        list.Add(entry.Value);
+                        if (!list.Contains(entry.Key))
+                        {
+                            list.Add(entry.Value);
+                        }
+
                         AMappingDictionaryWithoutBlanks.Remove(entry.Key);
                         break;
                     }
                     else
                     {
-                        list.Add(part.Replace(" ", ""));
+                        if (!list.Contains(part.Replace(" ", "")))
+                        {
+                            list.Add(part.Replace(" ", ""));
+                        }
                     }
                 }
             }
@@ -547,7 +584,8 @@ namespace Ict.Petra.Server.MPartner.Common
                 if (delete)
                 {
                     TLogging.Log(String.Format(Catalog.GetString(
-                                "FastReport Sorting Error: The column name '{0}' couldn't be found in the DataTable. Therefore it has been ignored."),
+                                "{0} Sorting Error: The column name '{1}' couldn't be found in the DataTable. Therefore it has been ignored."),
+                            AReportName,
                             list[i]));
                     list.Remove(list[i]);
                     i--;

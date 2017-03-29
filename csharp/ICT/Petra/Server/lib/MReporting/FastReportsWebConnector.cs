@@ -99,6 +99,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
 
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Load Report Data"));
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Initialise..."), 0);
+
             switch (AReportType)
             {
                 /* Partner Reports*/
@@ -257,6 +260,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 ResultTbl = null;
             }
 
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
+
             return ResultTbl;
         }
 
@@ -271,6 +276,9 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             DataSet ResultSet = null;
 
             FDbAdapter = new TReportingDbAdapter(true);   // Uses a separate DB Connection.
+
+            TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Load Report Data"));
+            TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Initialise..."), 0);
 
             switch (AReportType)
             {
@@ -360,6 +368,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             {
                 ResultSet = null;
             }
+
+            TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
             return ResultSet;
         }

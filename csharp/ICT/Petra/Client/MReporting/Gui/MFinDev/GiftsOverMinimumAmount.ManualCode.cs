@@ -155,32 +155,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
         private bool LoadReportData(TRptCalculator ACalc)
         {
             ACurrencyRow CurrencyRow;
-            ArrayList reportParam = ACalc.GetParameters().Elems;
 
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataSet ReportSet = TRemote.MReporting.WebConnectors.GetReportDataSet("GiftsOverMinimum", paramsDictionary);
-
-            if (this.IsDisposed)
-            {
-                return false;
-            }
-
-            if (ReportSet == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            //
             // I need to get the name of the current ledger..
             ALedgerRow LedgerDetailsRow = (ALedgerRow)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
                 FLedgerNumber).Rows[0];
@@ -230,11 +205,13 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
             //{
             //    TLogWriter.Log(p.name.ToString() + " => " + p.value.ToString());
             //}
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Donors"], "Donors");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["Contacts"], "Contacts");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportSet.Tables["GiftsOverMinimum"], "GiftsOverMinimum");
 
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("GiftsOverMinimum",
+                true,
+                new string[] { "Donors", "Contacts", "GiftsOverMinimum" },
+                ACalc,
+                this,
+                false);
         }
     }
 }

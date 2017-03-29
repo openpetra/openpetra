@@ -3330,6 +3330,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             } // For Year
 
+            resultTable.TableName = "MonthlyGifts";
             return resultTable;
         } // Total Gifts Through Field
 

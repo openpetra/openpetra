@@ -78,48 +78,14 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinDev
 
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param") && (p.name != "param_calculation") && (!paramsDictionary.ContainsKey(p.name)))
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("NewDonorReport", paramsDictionary);
-
-            if (this.IsDisposed)
-            {
-                return false;
-            }
-
-            if (ReportDataSet == null)
-            {
-                FPetraUtilsObject.WriteToStatusBar("Report Cancelled.");
-                return false;
-            }
-
-            //
-            // I need to get the name of the current ledger..
-            DataTable LedgerNameTable = TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerNameList);
-            DataView LedgerView = new DataView(LedgerNameTable);
-            LedgerView.RowFilter = "LedgerNumber=" + FLedgerNumber;
-            String LedgerName = "";
-
-            if (LedgerView.Count > 0)
-            {
-                LedgerName = LedgerView[0].Row["LedgerName"].ToString();
-            }
-
-            ACalc.AddStringParameter("param_ledger_name", LedgerName);
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["NewDonorReportDonations"], "NewDonorReportDonations");
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["DonorAddresses"], "DonorAddresses");
-
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("NewDonorReport",
+                true,
+                new string[] { "NewDonorReportDonations", "DonorAddresses" },
+                ACalc,
+                this,
+                false,
+                true,
+                FLedgerNumber);
         }
 
         private void ReadControlsVerify(TRptCalculator ACalc, TReportActionEnum AReportAction)

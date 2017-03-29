@@ -152,42 +152,23 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
         // Returns True if the data apparently loaded OK and the report should be printed.
         private bool LoadReportData(TRptCalculator ACalc)
         {
-            Shared.MReporting.TParameterList pm = ACalc.GetParameters();
-
-            ArrayList reportParam = ACalc.GetParameters().Elems;
-            Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
-
-            foreach (Shared.MReporting.TParameter p in reportParam)
-            {
-                if (p.name.StartsWith("param")
-                    && (p.name != "param_calculation")
-                    && !paramsDictionary.ContainsKey(p.name)
-                    )
-                {
-                    paramsDictionary.Add(p.name, p.value);
-                }
-            }
-
-            DataTable ReportTable = TRemote.MReporting.WebConnectors.GetReportDataTable("DonorGiftsToField", paramsDictionary);
-
-            if (ReportTable == null)
-            {
-                return false;
-            }
-
-            FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportTable, "DonorGiftsToField");
-            //
             // My report doesn't need a ledger row - only the name of the ledger. And I need the currency formatter..
             String LedgerName = TRemote.MFinance.Reporting.WebConnectors.GetLedgerName(FLedgerNumber);
             ALedgerTable LedgerDetailsTable = (ALedgerTable)TDataCache.TMFinance.GetCacheableFinanceTable(TCacheableFinanceTablesEnum.LedgerDetails,
                 FLedgerNumber);
             ALedgerRow Row = LedgerDetailsTable[0];
+
             ACalc.AddStringParameter("param_ledger_name", LedgerName);
             String CurrencyName = (cmbCurrency.SelectedItem.ToString() == "Base") ? Row.BaseCurrency : Row.IntlCurrency;
             ACalc.AddStringParameter("param_currency_name", CurrencyName);
 
             ACalc.AddStringParameter("param_currency_formatter", "0,0.000");
-            return true;
+            return FPetraUtilsObject.FFastReportsPlugin.LoadReportData("DonorGiftsToField",
+                false,
+                new string[] { "DonorGiftsToField" },
+                ACalc,
+                this,
+                false);
         }
     }
 }

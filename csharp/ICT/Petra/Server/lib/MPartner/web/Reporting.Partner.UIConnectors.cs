@@ -139,7 +139,9 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     Mapping.Add("PostCode", "PostalCode");
                     Mapping.Add("ThirdAddressLine", "Address3");
                     Mapping.Add("Country", "CountryCode");
-                    dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), Locations.Columns, Mapping);
+                    dv.Sort =
+                        TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), Locations.Columns, Mapping,
+                            "Brief Address Report");
                     Locations = dv.ToTable();
                 });
 
@@ -792,6 +794,8 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
             DataTable church = new DataTable();
             DataTable address = new DataTable();
             DataTable organisation = new DataTable();
+            DataTable ContactInformation = new DataTable();
+            DataTable PersonInformation = new DataTable();
             TDBTransaction Transaction = null;
 
             DbAdapter.FPrivateDatabaseObj.GetNewOrExistingAutoReadTransaction(
@@ -897,6 +901,12 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     }
 
                     String partnerKeys = partnerKeysBuilder.ToString().TrimEnd(new char[] { ',' });
+
+                    if (partnerKeys == String.Empty)
+                    {
+                        partnerKeys = "-1";
+                    }
+
                     Query = "SELECT p_church.p_partner_key_n AS PartnerKey, " +
                             " p_church.p_church_name_c AS ChurchName, " +
                             " p_partner.p_partner_short_name_c AS ChurchContactPersonName, " +
@@ -904,7 +914,17 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                             " FROM p_church, p_partner" +
                             " WHERE p_church.p_partner_key_n in (" + partnerKeys + ")" +
                             " AND p_partner.p_partner_key_n = p_church.p_contact_partner_key_n";
-                    church = DbAdapter.RunQuery(Query, "Church", Transaction);
+                    church = DbAdapter.RunQuery(Query,
+                        "Church",
+                        Transaction);
+
+                    Query =
+                        "SELECT p_partner_key_n, p_title_c, p_first_name_c, p_prefered_name_c, p_family_name_c, p_date_of_birth_d FROM p_person WHERE p_partner_key_n IN ("
+                        + partnerKeys + ")";
+                    PersonInformation = DbAdapter.RunQuery(Query, "PersonInformation", Transaction);
+                    TPartnerReportTools.ConvertDbFieldNamesToReadable(PersonInformation);
+
+                    ContactInformation = TPartnerReportTools.GetPrimaryPhoneFax(partnerKeys.Split(',').ToList <string>(), DbAdapter, true, true);
 
                     address = TAddressTools.GetBestAddressForPartners(partnerKeys, Transaction, false, true);
 
@@ -918,15 +938,19 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     organisation = DbAdapter.RunQuery(Query, "Organisation", Transaction);
                 });
 
-            if (relationship.Rows.Count == 0)
-            {
-                return null;
-            }
+            /*
+             * if (relationship.Rows.Count == 0)
+             * {
+             *  return null;
+             * }
+             */
 
+            ResultSet.Merge(ContactInformation);
             ResultSet.Merge(relationship);
             ResultSet.Merge(church);
             ResultSet.Merge(address);
             ResultSet.Merge(organisation);
+            ResultSet.Merge(PersonInformation);
             return ResultSet;
         }
 
@@ -990,7 +1014,9 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                     Mapping.Add("PostCode", "PostalCode");
                     Mapping.Add("ThirdAddressLine", "Address3");
                     Mapping.Add("Country", "CountryCode");
-                    dv.Sort = TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), ReturnTable.Columns, Mapping);
+                    dv.Sort =
+                        TPartnerReportTools.ColumnMapping(AParameters["param_sortby_readable"].ToString(), ReturnTable.Columns, Mapping,
+                            "Partner By Special Type Report");
                     ReturnTable = dv.ToTable();
                 });
 

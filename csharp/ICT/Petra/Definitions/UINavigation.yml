@@ -75,19 +75,19 @@ OpenPetra:
                     PartnerReports:
                         PrintPartner: {Description=Create Report of specific Partner Information for selected Partners, ActionOpenScreen=TFrmPrintPartner}
                         PartnerByCity: {Description=Create Report of Partners in a selected City, ActionOpenScreen=TFrmPartnerByCity}
-                        RelationshipReport: {Description=Create Report of Partners with selected Relationships, ActionOpenScreen=TFrmPartnerByRelationship}
                         PartnerBySpecialType: {Description=Create Report of Partners with selected Special Types, ActionOpenScreen=TFrmPartnerBySpecialType}
                         PartnerBySubscription: {Description=Create Report of Partners with selected Subscriptions, ActionOpenScreen=TFrmPartnerBySubscription}
+                        LocalPartnerDataReport: {Label=Local Partner Data, Description=Create Report of Local Partner Data for selected Partners, ActionOpenScreen=TFrmLocalPartnerDataReport}
+                        RelationshipReport: {Description=Create Report of Partners with selected Relationships, ActionOpenScreen=TFrmPartnerByRelationship}
+                        SubscriptionReport: {Label=Subscription Report, Description=Create Report of selected Partners and their Subscriptions, ActionOpenScreen=TFrmSubscriptionReport}
                         PartnerAddress: {Label=Brief Address Report, Description=Create Report of selected Partners and their addresses, ActionOpenScreen=TFrmBriefAddressReport}
-                        BriefFoundation: {Label=Brief Foundation Report, Description=Create Report of Contact Info for selected Foundations, ActionOpenScreen=TFrmBriefFoundationReport}
+                        BulkAddressReport: {Label=Bulk Address Report, Description=Create Report of selected Partners who have Bulk Subscriptions, ActionOpenScreen=TFrmBulkAddressReport}
                         SupportingChurches: {Label=Supporting Churches Report, Description=Create Report of selected Partners and their Supporting Churches, ActionOpenScreen=TFrmSupportingChurchesReport}
                         ValidBankAccount: {Label=Valid Bank Account Report, Description=Create Report of selected Partners and their Bank Account details, ActionOpenScreen=TFrmValidBankAccountReport}
-                        PublicationStatisticalReport: {Label=Publication Statistical Report, Description=Create Report of Statistical Data for selected Publications, ActionOpenScreen=TFrmPublicationStatisticalReport}
-                        BulkAddressReport: {Label=Bulk Address Report, Description=Create Report of selected Partners who have Bulk Subscriptions, ActionOpenScreen=TFrmBulkAddressReport}
                         ContactLogsReport: {Label=Contact Logs Report, Description=Create Report of Contact Logs for selected Partners, ActionOpenScreen=TFrmPartnerContactReport}
-                        SubscriptionReport: {Label=Subscription Report, Description=Create Report of selected Partners and their Subscriptions, ActionOpenScreen=TFrmSubscriptionReport}
-                        LocalPartnerDataReport: {Label=Local Partner Data, Description=Create Report of Local Partner Data for selected Partners, ActionOpenScreen=TFrmLocalPartnerDataReport}
-           
+                        PublicationStatisticalReport: {Label=Publication Statistical Report, Description=Create Report of Statistical Data for selected Publications, ActionOpenScreen=TFrmPublicationStatisticalReport}
+                        BriefFoundation: {Label=Brief Foundation Report, Description=Create Report of Contact Info for selected Foundations, ActionOpenScreen=TFrmBriefFoundationReport}  
+                        UnitHierarchyReport: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel, Description=View Hierarchy for selected Units, ActionOpenScreen=TFrmUnitHierarchy}
                 PartnerImportExport: {Label=Import/Export, DontShowNestedTasksAsLinks=true}
                     PartnerImport: {Label=Import}
                         ImportPartners: {Label=Import Partners, Description=Import Partners from a file, Namespace=Ict.Petra.Client.MPartner.Gui, ActionOpenScreen=TFrmPartnerImport}  
@@ -138,7 +138,8 @@ OpenPetra:
                         Relationship:  {Label=Relationships, Description=Maintain Relationships, ActionOpenScreen=TFrmRelationshipSetup} 
                         PartnerContactCategoriesAndTypes: {Label=Partner Contact Categories and Types, Description=Maintain Partner Contact Categories and Types, ActionOpenScreen=TFrmContactCategoriesAndTypesSetup}   
                         InterestCategory: {Label=Interest Categories, Description=Maintain Interest Categories, ActionOpenScreen=TFrmInterestCategorySetup}   
-                        Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup} 
+                        Interest: {Label=Partner Interests, Description=Maintain Partner Interests, ActionOpenScreen=TFrmInterestSetup}
+                        UnitHierarchy: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, Label=Unit Hierarchy, Description=Maintain Unit Hierarchy, ActionOpenScreen=TFrmUnitHierarchy} 
                     PartnerLocalData: {Label=Local Data}
                         LocalDataOptionListNames: {Label=Local Data Option List Names, Description=Maintain Local Data Option List names, ActionOpenScreen=TFrmLocalDataOptionListNameSetup, Context=Partner}
                         LocalDataOptions: {Label=Local Data Options, Description=Maintain Local Data Options, ActionOpenScreen=TFrmLocalDataOptionsSetup, Context=Partner}
@@ -297,6 +298,9 @@ OpenPetra:
                         AddressLayoutCodes: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layout Codes, Description=Maintain Address Layout Codes, ActionOpenScreen=TFrmAddressLayoutCodeSetup, Context=Finance}
                         AddressLayouts: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Address Layouts, Description=Maintain Address Layouts, ActionOpenScreen=TFrmAddressLayoutSetup, Context=Finance}
                         LetterFormalities: {Namespace=Ict.Petra.Client.MPartner.Gui.Setup, Label=Letter Formalities, Description=Maintain Letter Formalities, ActionOpenScreen=TFrmFormalitySetup, Context=Finance}
+                    UnitStructure:
+                        UnitHierarchy: {Namespace=Ict.Petra.Client.MPersonnel.Gui.Setup, Label=Unit Hierarchy, Description=Maintain Unit Hierarchy, ActionOpenScreen=TFrmUnitHierarchy}
+                        UnitHierarchyReport: {Namespace=Ict.Petra.Client.MReporting.Gui.MPersonnel, Description=View Hierarchy for selected Units, ActionOpenScreen=TFrmUnitHierarchy}
                     Other:
                         MethodsOfGiving: {Description=Maintain Methods of Giving,ActionOpenScreen=TFrmSetupMethodOfGiving}
                         MethodsOfPayment: {Description=Maintain Methods of Payment, ActionOpenScreen=TFrmSetupMethodOfPayment}
@@ -335,9 +339,9 @@ OpenPetra:
                         ProgressReport: {Description=Create a Progress Report for selected Personnel, ActionOpenScreen=TFrmProgressReport}
                         PreviousExperienceReport: {Description=Create Report of Previous Experience for selected Personnel, ActionOpenScreen=TFrmPreviousExperienceReport}
                         StartOfCommitmentReport: {Label=Start of Commitment Report, Description=Create Report with Start of Commitment dates for selected Personnel, ActionOpenScreen=TFrmStartOfCommitmentReport}
+                        LengthOfCommitmentReport: {Label=Length of Commitment Report, Description=Create Report of Staff Service Anniversaries, ActionOpenScreen=TFrmLengthOfCommitmentReport}
                         EndOfCommitmentReport: {Label=End of Commitment Report, Description=Create Report with End of Commitment dates for selected Personnel, ActionOpenScreen=TFrmEndOfCommitmentReport}
                         JobAssignmentReport: {Description=Create Report of Job Assignments for selected Personnel, ActionOpenScreen=TFrmJobAssignmentReport}
-                        LengthOfCommitmentReport: {Label=Length of Commitment Report, Description=Create Report of Staff Service Anniversaries, ActionOpenScreen=TFrmLengthOfCommitmentReport}
                         BirthdayList: {Description=Create Report of Birthdays for selected Personnel, ActionOpenScreen=TFrmBirthdayListReport}
                         EmergencyContactReport: {Description=Create Report with Emergency Contact Details for selected Personnel, ActionOpenScreen=TFrmEmergencyContactReportStaff}
                         PassportExpiryReport: {Description=Create Report with Passport Expiry Dates for selected Personnel, ActionOpenScreen=TFrmPassportExpiryReport}
