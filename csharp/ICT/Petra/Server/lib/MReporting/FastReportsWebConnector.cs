@@ -731,12 +731,12 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             // 5883 contd: Unfortunately the above can timeout, which it does silently (if it does timeout),
             // so if this happens we revert to the previous code.
             DataTable tempTable;
-            bool UseOldMethod = false;
+            bool retrieveRecipientsIndividually = false;
 
             if (Recipients == null)
             {
                 Recipients = new DataTable("Recipients");
-                UseOldMethod = true;
+                retrieveRecipientsIndividually = true;
 
                 // If the query timed out then we can no longer use the current ADbAdapter since there is no way to
                 // set FCancelFlag back to false, so we close its connection and create a new adapter.  The time
@@ -827,7 +827,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                         DonorsRow["previousYearTotal"] = previousYearTotal;
                     }
 
-                    if (UseOldMethod)
+                    if (retrieveRecipientsIndividually)
                     {
                         // Get recipient information for each donor
                         tempTable = TFinanceReportingWebConnector.GiftStatementRecipientTable(AParameters, ADbAdapter, DonorKey.ToString());
@@ -848,6 +848,29 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 } // foreach
 
             } // if (reportType == "Totals") else
+
+            //
+            // If I previously failed to receive all the recipients in one query,
+            // I now need to sort them according to user's request:
+            if (retrieveRecipientsIndividually)
+            {
+                string recipientOrder = AParameters["param_order_recipient"].ToString();
+
+                if (recipientOrder == "RecipientField")
+                {
+                    Recipients.DefaultView.Sort = "FieldName, RecipientKey";
+                }
+                else if (recipientOrder == "RecipientKey")
+                {
+                    Recipients.DefaultView.Sort = "RecipientKey";
+                }
+                else if (recipientOrder == "RecipientName")
+                {
+                    Recipients.DefaultView.Sort = "RecipientName";
+                }
+
+                Recipients = Recipients.DefaultView.ToTable("Recipients");
+            }
 
             if (Recipients.Columns.Count == 0)
             {

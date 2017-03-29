@@ -134,7 +134,6 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
             int LedgerNumber = AParameters["param_ledger_number_i"].ToInt32();
             string RecipientSelection = AParameters["param_recipient"].ToString();
-            string OrderBy = AParameters["param_order_by_name"].ToString();
 
             DateTime CurrentDate = DateTime.Today;
 
@@ -243,6 +242,8 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                  " AND batch.a_batch_status_c = 'Posted'" +
                                  " AND batch.a_ledger_number_i = " + LedgerNumber + ")";
                     }
+
+                    string OrderBy = AParameters["param_order_recipient"].ToString();
 
                     if (OrderBy == "RecipientField")
                     {
@@ -561,40 +562,29 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
                                    " AND PUB_a_motivation_detail.a_motivation_detail_code_c = detail.a_motivation_detail_code_c" +
                                    pTaxFieldFilterAsRequired;
 
-                    String requestedSort = "";
+                    String donorSort = "GiftDate";
 
-                    if (AParameters.ContainsKey("param_order_by_name"))
+                    if (AParameters.ContainsKey("param_order_donor"))
                     {
-                        requestedSort = AParameters["param_order_by_name"].ToString();
-                    }
+                        String request = AParameters["param_order_donor"].ToString();
 
-                    if ((ReportType == "Complete") || (ReportType == "Gifts Only"))
-                    {
-                        Query += " ORDER BY ";
+                        switch (request)
+                        {
+                            case "PartnerKey":
+                                donorSort = "DonorKey";
+                                break;
 
-                        if (requestedSort == "PartnerKey")
-                        {
-                            Query += "DonorPartner.p_partner_key_n";
-                        }
-                        else
-                        {
-                            Query += "DonorPartner.p_partner_short_name_c";
-                        }
+                            case "DonorName":
+                                donorSort = "DonorName";
+                                break;
 
-                        Query += ", gift.a_date_entered_d";
-                    }
-                    else if (ReportType == "Donors Only")
-                    {
-                        if (requestedSort == "PartnerKey")
-                        {
-                            Query += " ORDER BY DonorPartner.p_partner_key_n";
-                        }
-                        else
-                        {
-                            Query += " ORDER BY DonorPartner.p_partner_short_name_c";
+                            case "Amount":
+                                donorSort = "GiftAmount DESC";
+                                break;
                         }
                     }
 
+                    Query += " ORDER BY " + donorSort;
                     Results = DbAdapter.RunQuery(Query, "Donors", Transaction);
                 });
 

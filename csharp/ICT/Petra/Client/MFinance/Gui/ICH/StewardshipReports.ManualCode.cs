@@ -106,6 +106,13 @@ namespace Ict.Petra.Client.MFinance.Gui.ICH
             }
         }
 
+        private void RunOnceOnActivationManual()
+        {
+            //
+            // I don't want to see the "Select template" option on this form.
+            FPetraUtilsObject.EnableDisableFastReports(false);
+        }
+
         //
         // called on Year change.
         private void RefreshReportPeriodList(object sender, EventArgs e)

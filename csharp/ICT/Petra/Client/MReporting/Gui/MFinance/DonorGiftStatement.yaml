@@ -32,19 +32,29 @@
 
         tpgReportSorting:
             Label: Sorting
-            Controls: [rgrSorting]
+            Controls: [rgrDonorSort, rgrRecipientSort]
         tpgColumnSettings:
             Label: Column Settings
             Controls: [uco_Columns]
 
-        rgrSorting: {ParameterName=param_order_by_name}
-            Label: Sorting
+        rgrDonorSort:
+            ParameterName:param_order_donor
+            Label: Donor Sort
             Controls: [rbtPartnerKey, rbtPartnerName]
         rbtPartnerKey: 
             Label: Partner Key
             Checked: true
         rbtPartnerName:
             Label: Partner Name
+
+        rgrRecipientSort:
+            ParameterName:param_order_recipient
+            Label: Recipient Sort
+            Controls: [rbtRecipientName, rbtRecipientKey, rbtDate, rbtAmount]
+        rbtRecipientKey:
+        rbtRecipientName:
+        rbtDate:
+        rbtAmount:
 
         uco_Columns:
             Type: Ict.Petra.Client.MReporting.Gui.TFrmUC_PartnerColumns

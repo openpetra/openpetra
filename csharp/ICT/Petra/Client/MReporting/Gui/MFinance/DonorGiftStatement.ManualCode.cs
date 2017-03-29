@@ -5,7 +5,7 @@
 //       berndr
 //       Tim Ingham
 //
-// Copyright 2004-2016 by OM International
+// Copyright 2004-2017 by OM International
 //
 // This file is part of OpenPetra.org.
 //
@@ -243,16 +243,21 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
 
         private void DonorSelectionChanged(object sender, EventArgs e)
         {
-            if (tpgReportSorting.Enabled && rbtPartner.Checked)
-            {
-                tpgReportSorting.Enabled = false;
-                this.Refresh();
-            }
-            else if (!tpgReportSorting.Enabled && (rbtAllDonors.Checked || rbtExtract.Checked))
-            {
-                tpgReportSorting.Enabled = true;
-                this.Refresh();
-            }
+            /*
+             * It's OK to show the sorting options -
+             * especially now that we're offering to sort both the donors and recipients.
+             *
+             * if (tpgReportSorting.Enabled && rbtPartner.Checked)
+             * {
+             *  tpgReportSorting.Enabled = false;
+             *  this.Refresh();
+             * }
+             * else if (!tpgReportSorting.Enabled && (rbtAllDonors.Checked || rbtExtract.Checked))
+             * {
+             *  tpgReportSorting.Enabled = true;
+             *  this.Refresh();
+             * }
+             */
         }
 
         // This function is necessary because there seemed to be no way to get the DataSet back from GetReportDataSet().
