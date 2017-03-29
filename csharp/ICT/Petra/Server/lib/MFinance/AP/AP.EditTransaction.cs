@@ -1488,6 +1488,10 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         [RequireModulePermission("FINANCE-1")]
         public static bool CreatePaymentTableEntries(ref AccountsPayableTDS ADataset, Int32 ALedgerNumber, List <Int32>ADocumentsToPay)
         {
+            // Create a dictionary to keep our running total for each supplier
+            Dictionary <long, decimal>workingSupplierTotals = new Dictionary <long, decimal>();
+
+            // Now go through our list of documents to pay
             ADataset.AApDocument.DefaultView.Sort = AApDocumentTable.GetApDocumentIdDBName();
 
             foreach (Int32 ApDocId in ADocumentsToPay)
@@ -1507,17 +1511,23 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     AccountsPayableTDSAApDocumentRow apDocumentRow =
                         (AccountsPayableTDSAApDocumentRow)ADataset.AApDocument.DefaultView[indexDocument].Row;
 
-                    AApSupplierRow supplierRow = GetSupplier(ADataset.AApSupplier, apDocumentRow.PartnerKey);
+                    long supplierPartnerKey = apDocumentRow.PartnerKey;
+                    AApSupplierRow supplierRow = GetSupplier(ADataset.AApSupplier, supplierPartnerKey);
 
                     if (supplierRow == null)
                     {
                         // I need to load the supplier record into the TDS...
-                        ADataset.Merge(LoadAApSupplier(apDocumentRow.LedgerNumber, apDocumentRow.PartnerKey));
-                        supplierRow = GetSupplier(ADataset.AApSupplier, apDocumentRow.PartnerKey);
+                        ADataset.Merge(LoadAApSupplier(apDocumentRow.LedgerNumber, supplierPartnerKey));
+                        supplierRow = GetSupplier(ADataset.AApSupplier, supplierPartnerKey);
                     }
 
                     if (supplierRow != null)
                     {
+                        if (workingSupplierTotals.ContainsKey(supplierPartnerKey) == false)
+                        {
+                            workingSupplierTotals.Add(supplierPartnerKey, 0.0m);
+                        }
+
                         AccountsPayableTDSAApPaymentRow supplierPaymentsRow = null;
 
                         // My TDS may already have a AApPayment row for this supplier.
@@ -1530,14 +1540,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                             if (apDocumentRow.CreditNoteFlag)
                             {
-                                supplierPaymentsRow.TotalAmountToPay -= apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] -= apDocumentRow.OutstandingAmount;
                             }
                             else
                             {
-                                supplierPaymentsRow.TotalAmountToPay += apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] += apDocumentRow.OutstandingAmount;
                             }
 
-                            supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
+                            supplierPaymentsRow.Amount = workingSupplierTotals[supplierPartnerKey]; // The user may choose to change the amount paid.
                         }
                         else
                         {
@@ -1564,14 +1574,14 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                             if (apDocumentRow.CreditNoteFlag)
                             {
-                                supplierPaymentsRow.TotalAmountToPay = 0 - apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] = 0 - apDocumentRow.OutstandingAmount;
                             }
                             else
                             {
-                                supplierPaymentsRow.TotalAmountToPay = apDocumentRow.OutstandingAmount;
+                                workingSupplierTotals[supplierPartnerKey] = apDocumentRow.OutstandingAmount;
                             }
 
-                            supplierPaymentsRow.Amount = supplierPaymentsRow.TotalAmountToPay; // The user may choose to change the amount paid.
+                            supplierPaymentsRow.Amount = workingSupplierTotals[supplierPartnerKey]; // The user may choose to change the amount paid.
                             supplierPaymentsRow.PrintRemittanceAdvice = true;
                             supplierPaymentsRow.PrintCheque = string.Compare(supplierRow.PaymentType,
                                 "CHEQUE",
@@ -1717,6 +1727,7 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
 
                         paymentRow.PaymentNumber = NewPaymentNumber;
 
+                        // Now that we have the new payment number we create a new row in our newPayments table
                         AccountsPayableTDSAApPaymentRow paymentRowCopy = newPayments.NewRowTyped();
                         DataUtilities.CopyAllColumnValues(paymentRow, paymentRowCopy);
                         newPayments.Rows.Add(paymentRowCopy);

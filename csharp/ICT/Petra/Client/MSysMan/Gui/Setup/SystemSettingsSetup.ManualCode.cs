@@ -252,7 +252,6 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
 
             TVerificationResultCollection verificationResults = FPetraUtilsObject.VerificationResultCollection;
             DataColumn validationColumn = ARow.Table.Columns[SSystemDefaultsTable.ColumnDefaultValueId];
-            //TVerificationResult verificationResult = null;
 
             // First we need to validate that there were no errors setting up the controls for this row
             if (!FControlsDataTable.Validate(ARow.DefaultValue, validationColumn, this, verificationResults))
@@ -266,6 +265,7 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             // This shows how to check SYSDEFAULT_LOCALISEDCOUNTYLABEL is not an empty string
             // We no longer check for this because Petra databases have empty string here and our main OP code takes care of empty string
             //  by substituting our default County/State
+            //TVerificationResult verificationResult = null;
 
             //if (string.Compare(ARow.DefaultCode, SharedConstants.SYSDEFAULT_LOCALISEDCOUNTYLABEL, true) == 0)
             //{

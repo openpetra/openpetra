@@ -245,5 +245,20 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
 
             return true;
         }
+
+        private void ShowDetailsManual(AFeesPayableRow ARow)
+        {
+            if (ARow == null)
+            {
+                return;
+            }
+
+            bool isNotIctOrGif = (ARow.FeeCode != "GIF" && ARow.FeeCode != "ICT");
+
+            txtDetailFeeDescription.Enabled = isNotIctOrGif;
+            cmbDetailChargeOption.Enabled = isNotIctOrGif;
+            txtDetailChargePercentage.ReadOnly = !isNotIctOrGif;
+            cmbDetailCostCentreCode.Enabled = isNotIctOrGif;
+        }
     }
 }

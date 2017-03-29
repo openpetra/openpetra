@@ -552,6 +552,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 if ((Row["Type"].ToString() == "Invoice") && (Row["CreditNote"].Equals(true)))
                 {
                     Row["Type"] = "Credit Note";
+                    Row["Amount"] = -Convert.ToDecimal(Row["Amount"]);
+                    Row["OutstandingAmount"] = -Convert.ToDecimal(Row["OutstandingAmount"]);
                 }
 
 /*
@@ -616,14 +618,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                         && (Row["OutstandingAmount"].GetType() == typeof(Decimal))
                         && (Row["Status"].ToString() != MFinanceConstants.AP_DOCUMENT_CANCELLED))
                     {
-                        if (Row["CreditNote"].Equals(true))  // Payments also carry this "Credit note" label
-                        {
-                            balance -= (Decimal)Row["OutstandingAmount"];
-                        }
-                        else
-                        {
-                            balance += (Decimal)Row["OutstandingAmount"];
-                        }
+                        balance += (Decimal)Row["OutstandingAmount"];
                     }
                 }
             }
@@ -708,17 +703,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
                     if (Row["Type"].ToString() != "Payment")
                     {
-                        // If it's a credit note, I'll subract it
-                        // If it's an invoice, I'll add it!
-                        //
-                        if (Row["CreditNote"].Equals(true))
-                        {
-                            TotalSelected -= (Decimal)(Row["OutstandingAmount"]);
-                        }
-                        else
-                        {
-                            TotalSelected += (Decimal)(Row["OutstandingAmount"]);
-                        }
+                        TotalSelected += (Decimal)(Row["OutstandingAmount"]);
                     }
                 }
             }

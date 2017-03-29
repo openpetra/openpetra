@@ -130,6 +130,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
 
             btnHint.Height = txtDocumentStatus.Height;
+
+            nudCreditTerms.Minimum = 0;
+            nudCreditTerms.Maximum = 4000;
         }
 
         // When the user enters a total amount for the invoice,
@@ -176,9 +179,6 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 focusCorrectionTimer.Tick += new EventHandler(TimerDrivenFocusCorrection);
                 focusCorrectionTimer.Start();
             }
-
-            nudCreditTerms.Minimum = 0;
-            nudCreditTerms.Maximum = 4000;
         }
 
         private void TimerDrivenFocusCorrection(Object Sender, EventArgs e)
@@ -305,6 +305,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 cmbDocumentType.Enabled = false;
                 txtReference.Enabled = false;
                 dtpDateIssued.Enabled = false;
+                dtpDateDue.Enabled = false;
+                nudCreditTerms.Enabled = false;
                 nudDiscountDays.Enabled = false;
                 txtDiscountPercentage.Enabled = false;
                 txtTotalAmount.Enabled = false;

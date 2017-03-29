@@ -26,7 +26,6 @@
           <CustomField name="SupplierKey" type="Int64"/>
           <CustomField name="SupplierName" type="string"/>
           <CustomField name="ListLabel" type="string"/>
-          <CustomField name="TotalAmountToPay" type="Decimal"/>
           <CustomField name="PrintRemittanceAdvice" type="bool" initial="true"/>
           <CustomField name="PrintCheque" type="bool" initial="false"/>
           <CustomField name="ChequeNumber" type="Int32" initial="0"/>

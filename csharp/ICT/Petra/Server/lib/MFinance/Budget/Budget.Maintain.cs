@@ -117,7 +117,7 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                         TemplateRow.LedgerNumber = ALedgerNumber;
                         TemplateRow.Year = CurrentFinancialYear;
 
-                        StringCollection Operators = StringHelper.InitStrArr(new string[] { "=", "<=" });
+                        StringCollection Operators = StringHelper.InitStrArr(new string[] { "=", ">=" });
                         StringCollection OrderList = new StringCollection();
 
                         OrderList.Add("ORDER BY");

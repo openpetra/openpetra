@@ -1038,6 +1038,7 @@ namespace Ict.Common.Controls
 
             if (AEditor != null)
             {
+                AEditor.UseCellViewProperties = false;
                 ADataCell.Editor = AEditor;
             }
 
@@ -1097,6 +1098,7 @@ namespace Ict.Common.Controls
 
             if (AEditor != null)
             {
+                AEditor.UseCellViewProperties = false;
                 ADataCell.Editor = AEditor;
             }
 

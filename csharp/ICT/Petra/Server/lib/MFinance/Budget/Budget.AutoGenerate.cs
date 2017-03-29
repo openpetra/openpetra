@@ -30,6 +30,7 @@ using System.Xml;
 using System.IO;
 using GNU.Gettext;
 using Ict.Common;
+using Ict.Common.Exceptions;
 using Ict.Common.IO;
 using Ict.Common.DB;
 using Ict.Common.Verification;
@@ -73,12 +74,41 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
                 ref Transaction,
                 delegate
                 {
-                    //TODO: need to filter on Year
-                    ABudgetAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
-                    ABudgetRevisionAccess.LoadViaALedger(FMainDS, ALedgerNumber, Transaction);
-                    //TODO: need to filter on ABudgetPeriod using LoadViaBudget or LoadViaUniqueKey
-                    ABudgetPeriodAccess.LoadAll(FMainDS, Transaction);
                     ALedgerAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, Transaction);
+
+                    #region Validate Data
+
+                    if ((FMainDS.ALedger == null) || (FMainDS.ALedger.Count == 0))
+                    {
+                        throw new EFinanceSystemDataTableReturnedNoDataException(String.Format(Catalog.GetString(
+                                    "Function:{0} - Ledger data for Ledger number {1} does not exist or could not be accessed!"),
+                                Utilities.GetMethodName(true),
+                                ALedgerNumber));
+                    }
+
+                    #endregion Validate Data
+
+                    int CurrentFinancialYear = FMainDS.ALedger[0].CurrentFinancialYear;
+
+                    //Load all by Ledger/Year but none may exist
+                    ABudgetTable BudgetTable = new ABudgetTable();
+                    ABudgetRow TemplateRow = (ABudgetRow)BudgetTable.NewRow();
+
+                    TemplateRow.LedgerNumber = ALedgerNumber;
+                    TemplateRow.Year = CurrentFinancialYear;
+
+                    StringCollection Operators = StringHelper.InitStrArr(new string[] { "=", "=" });
+                    StringCollection OrderList = new StringCollection();
+
+                    OrderList.Add("ORDER BY");
+                    OrderList.Add(ABudgetTable.GetCostCentreCodeDBName() + " ASC");
+                    OrderList.Add(ABudgetTable.GetAccountCodeDBName() + " ASC");
+
+                    ABudgetAccess.LoadUsingTemplate(FMainDS, TemplateRow, Operators, null, Transaction, OrderList, 0, 0);
+                    ABudgetPeriodAccess.LoadViaABudgetTemplate(FMainDS, TemplateRow, Operators, null, Transaction, OrderList, 0, 0);
+
+                    ABudgetRevisionAccess.LoadByPrimaryKey(FMainDS, ALedgerNumber, CurrentFinancialYear, 0, Transaction);
+
                     ABudgetTypeAccess.LoadAll(FMainDS, Transaction);
                 });
 
@@ -109,17 +139,35 @@ namespace Ict.Petra.Server.MFinance.Budget.WebConnectors
             int gLMSequenceThisYear = 0;
             int gLMSequenceLastYear = 0;
 
-            ABudgetTable budgetTable = FMainDS.ABudget;
-            ABudgetRow budgetRow = (ABudgetRow)budgetTable.Rows.Find(new object[] { ABudgetSeq });
-
             ALedgerTable ledgerTable = FMainDS.ALedger;
             ALedgerRow ledgerRow = (ALedgerRow)ledgerTable.Rows[0];
-
-            string accountCode = budgetRow.AccountCode;
-            string costCentreCode = budgetRow.CostCentreCode;
             int currentFinancialYear = ledgerRow.CurrentFinancialYear;
             int currentPeriod = ledgerRow.CurrentPeriod;
             int numAccPeriods = ledgerRow.NumberOfAccountingPeriods;
+
+            ABudgetTable budgetTable = FMainDS.ABudget;
+            ABudgetRow budgetRow = (ABudgetRow)budgetTable.Rows.Find(new object[] { ABudgetSeq });
+
+            #region  Validate Method Parameters
+
+            if ((budgetRow == null) || (budgetRow.LedgerNumber != ledgerRow.LedgerNumber) || (budgetRow.Year != currentFinancialYear))
+            {
+                TLogging.Log("GenBudgetForNextYear: either could not find budget sequence " + ABudgetSeq.ToString() +
+                    "or the sequence does not apply to ledger " + ledgerRow.LedgerNumber.ToString() +
+                    "or to ledger current year " + currentFinancialYear.ToString());
+                return retVal;
+            }
+
+            if (ALedgerNumber != ledgerRow.LedgerNumber)
+            {
+                TLogging.Log("GenBudgetForNextYear: method parameter ALedgerNumber is " + ALedgerNumber.ToString() +
+                    " but the data set expected the ledger to be " + ledgerRow.LedgerNumber.ToString());
+            }
+
+            #endregion
+
+            string accountCode = budgetRow.AccountCode;
+            string costCentreCode = budgetRow.CostCentreCode;
 
             gLMSequenceThisYear = TCommonBudgetMaintain.GetGLMSequenceForBudget(ALedgerNumber,
                 accountCode,

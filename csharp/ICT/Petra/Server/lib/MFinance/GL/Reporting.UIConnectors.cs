@@ -3274,6 +3274,7 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Processing Data"), 40);
             int steps = (int)60 / (endDate.Year - startDate.Year);
             int CurrentState = 0;
+
             for (Int32 Year = endDate.Year; Year >= startDate.Year; Year--)
             {
                 Int32 MaxMonth = (Year == endDate.Year) ? MostRecentCompletedMonth : LedgerAccountingPeriods;
@@ -3341,9 +3342,12 @@ namespace Ict.Petra.Server.MFinance.Reporting.WebConnectors
 
                     resultTable.Rows.Add(resultRow);
                 } // For Month
+
                 CurrentState++;
-                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Processing Data " + CurrentState + "/" + (int)(endDate.Year - startDate.Year)), 40 + CurrentState * steps);
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Processing Data " + CurrentState + "/" + (int)(endDate.Year - startDate.Year)), 40 + CurrentState * steps);
             } // For Year
+
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Done"), 100);
 
             resultTable.TableName = "MonthlyGifts";

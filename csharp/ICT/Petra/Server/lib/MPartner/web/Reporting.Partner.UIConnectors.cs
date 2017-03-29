@@ -459,7 +459,7 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                         @"))
 	                                                AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
 	                                                AND p_partner.p_partner_key_n = p_partner_relationship.p_relation_key_n
-                        UNION ALL 
+                        UNION ALL
                         SELECT
 	                        p_partner_relationship.p_relation_key_n,
 	                        p_partner_relationship.p_partner_key_n,
@@ -468,9 +468,11 @@ namespace Ict.Petra.Server.MPartner.Reporting.WebConnectors
                         FROM
 	                        p_partner_relationship, p_relation, p_partner
                         WHERE
-	                        p_partner_relationship.p_relation_key_n IN(" + PartnerSelection + @")
+	                        p_partner_relationship.p_relation_key_n IN("
+                        + PartnerSelection +
+                        @")
 	                        AND p_relation.p_relation_name_c = p_partner_relationship.p_relation_name_c
-	                        AND p_partner.p_partner_key_n = p_partner_relationship.p_partner_key_n";
+	                        AND p_partner.p_partner_key_n = p_partner_relationship.p_partner_key_n"                                                                                                                            ;
 
                     if (!AParameters["param_chkRelationships"].ToBool())
                     {
