@@ -1001,6 +1001,12 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnectionJoin()
         {
+            if (FDBType == TDBType.SQLite)
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
             TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
             TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(ATransactionName : "FirstTransaction");
             TDBTransaction ReadTransaction = null;
@@ -1038,6 +1044,12 @@ AParameterDefinitions: ParametersArray, AParameterValues : ParameterValuesList),
         [Test]
         public void TestDBAccess_SimpleAutoDBConnAndReadTransactionSelector_RequestedConnectionCantJoin()
         {
+            if (FDBType == TDBType.SQLite)
+            {
+                // do not run this test with SQLite
+                return;
+            }
+
             TDataBase RequestedConnection = EstablishDBConnectionAndReturnIt("New DB Connection");
             TDBTransaction FirstTransaction = RequestedConnection.BeginTransaction(ATransactionName : "FirstTransaction");
             TDBTransaction ReadTransaction = null;
