@@ -56,13 +56,20 @@ namespace Ict.Tools.CodeGeneration.DataStore
             tables = TTableSort.TopologicalSort(AStore, tables);
 
             string namesCodelet = string.Empty;
+            string namesCodeletCustomReport = string.Empty;
 
             foreach (TTable t in tables)
             {
                 namesCodelet += "list.Add(\"" + t.strName + "\");" + Environment.NewLine;
+
+                if (t.AvailableForCustomReport)
+                {
+                    namesCodeletCustomReport += "list.Add(\"" + t.strName + "\");" + Environment.NewLine;
+                }
             }
 
             Template.AddToCodelet("DBTableNames", namesCodelet);
+            Template.AddToCodelet("DBTableNamesAvailableForCustomReport", namesCodeletCustomReport);
 
             List <TSequence>Sequences = AStore.GetSequences();
 

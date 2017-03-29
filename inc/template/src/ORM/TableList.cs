@@ -37,5 +37,16 @@ namespace Ict.Petra.Shared
             {#DBSequenceNames}
             return list;
         }
+        
+        /// <summary>
+        /// get the names of the tables that are available for use in custom report
+        /// </summary>
+        /// <returns></returns>
+        public static List<string> GetDBNamesAvailableForCustomReport()
+        {
+            List<string> list = new List<string>();
+            {#DBTableNamesAvailableForCustomReport}
+            return list;
+        }
     }
 }

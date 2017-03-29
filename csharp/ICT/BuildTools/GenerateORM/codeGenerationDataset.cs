@@ -305,7 +305,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
                                 table.iOrder = DataSetTableIdCounter++;
 
                                 // TODO: can we derive from the base table, and just overload a few functions?
-                                CodeGenerationTable.InsertTableDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
+                                CodeGenerationTable.InsertTableDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP", true);
                                 CodeGenerationTable.InsertRowDefinition(snippetDataset, table, store.GetTable(table.tableorig), "TABLELOOP");
                             }
 
@@ -420,7 +420,7 @@ namespace Ict.Tools.CodeGeneration.DataStore
 
                             AddTableToDataset(tabletype, variablename, snippetDataset);
 
-                            CodeGenerationTable.InsertTableDefinition(snippetDataset, customTable, null, "TABLELOOP");
+                            CodeGenerationTable.InsertTableDefinition(snippetDataset, customTable, null, "TABLELOOP", true);
                             CodeGenerationTable.InsertRowDefinition(snippetDataset, customTable, null, "TABLELOOP");
                         }
 

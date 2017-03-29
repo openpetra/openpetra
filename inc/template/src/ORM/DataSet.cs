@@ -6,6 +6,7 @@
 using Ict.Common;
 using Ict.Common.Data;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Odbc;
 {#USINGNAMESPACES}

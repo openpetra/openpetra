@@ -124,6 +124,35 @@ namespace Ict.Common.Data
         public bool DontThrowAwayAfterSubmitChanges = false;
 
         /// <summary>
+        /// string to indicate which permissions a user needs to access table for custom reports
+        /// (e.g. "PTNRUSER", "OR(FINANCE-1,DEVUSER)", "AND(PTNRUSER,FINANCE-1)"
+        /// This should be returned by method in derived class
+        /// </summary>
+        public virtual string GetCustomReportPermission()
+        {
+            // this will be implemented by subclasses
+            return "";
+        }
+
+        /// <summary>
+        /// Is this table generally available in custom reports?
+        /// </summary>
+        public virtual bool IsAvailableForCustomReport()
+        {
+            // this will be implemented by subclasses
+            return false;
+        }
+
+        /// <summary>
+        /// Return a list of fields that are available for custom reports
+        /// </summary>
+        public virtual List <String>GetCustomReportFieldList()
+        {
+            // this will be implemented by subclasses
+            return new List <String>();
+        }
+
+        /// <summary>
         /// our own version of GetChanges
         /// </summary>
         /// <returns>returns a typed table with the changes</returns>

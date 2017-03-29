@@ -208,6 +208,7 @@ namespace Ict.Tools.DBXML
             TIndex myIndex;
             TTable table;
             int groupId;
+            String AvailableForCustomReport = "";
 
             cur = cur2;
             table = new TTable();
@@ -218,6 +219,20 @@ namespace Ict.Tools.DBXML
             table.strArea = GetAttribute(cur, "area");
             table.ExistsStrLabel = HasAttribute(cur, "label");
             table.strLabel = GetAttribute(cur, "label");
+
+            AvailableForCustomReport = GetAttribute(cur, "availableforcustomreport");
+
+            if ((AvailableForCustomReport.ToUpper() == "YES")
+                || (AvailableForCustomReport.ToUpper() == "TRUE"))
+            {
+                table.AvailableForCustomReport = true;
+                table.CustomReportPermission = GetAttribute(cur, "customreportpermission");
+            }
+            else
+            {
+                table.AvailableForCustomReport = false;
+                table.CustomReportPermission = "";
+            }
 
             if (!table.ExistsStrLabel)
             {
@@ -252,6 +267,16 @@ namespace Ict.Tools.DBXML
                     tableField.strTableName = table.strName;
                     tableField.iOrder = table.grpTableField.Count;
                     table.grpTableField.Add(tableField);
+
+                    if (table.AvailableForCustomReport)
+                    {
+                        // include any field that is not explicitely excluded
+                        if (!((GetAttribute(cur, "excludefromcustomreport").ToUpper() == ("YES"))
+                              || (GetAttribute(cur, "excludefromcustomreport").ToUpper() == ("TRUE"))))
+                        {
+                            tableField.bAvailableForCustomReport = true;
+                        }
+                    }
                 }
 
                 myConstraint = (TConstraint)Parse(cur, ref groupId, "foreignkey");

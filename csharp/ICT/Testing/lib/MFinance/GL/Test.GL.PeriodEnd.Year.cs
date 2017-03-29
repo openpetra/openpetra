@@ -172,7 +172,6 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                 ref SubmissionOK,
                 delegate
                 {
-
                     //
                     // Reallocation is never called explicitly like this - it's not really appropriate
                     // because I'm about to call it again as part of YearEnd, below.
@@ -282,7 +281,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     }
                     else
                     {
-                        List<Int32> glBatchNumbers;
+                        List <Int32>glBatchNumbers;
                         Boolean stewardshipBatch;
                         TVerificationResultCollection VerificationResult;
 
@@ -308,7 +307,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                     delegate
                     {
                         TLogging.Log("Closing year number " + countYear.ToString());
-                        List<Int32> glBatches = new List<int>();
+                        List <Int32>glBatches = new List <int>();
                         TReallocation reallocation = new TReallocation(LedgerInfo, glBatches, transaction);
                         TVerificationResultCollection verificationResult = new TVerificationResultCollection();
                         reallocation.VerificationResultCollection = verificationResult;
@@ -326,6 +325,7 @@ namespace Ict.Testing.Petra.Server.MFinance.GL
                         SubmissionOK = true;
                     });
             }
+
             Assert.AreEqual(2, LedgerInfo.CurrentFinancialYear, "After YearEnd, Ledger is in year 2");
 
             TAccountPeriodInfo periodInfo = new TAccountPeriodInfo(intLedgerNumber, 1);

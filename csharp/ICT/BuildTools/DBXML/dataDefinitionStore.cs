@@ -113,6 +113,16 @@ namespace Ict.Tools.DBXML
         public static Boolean GEnabledLoggingMissingFields = true;
 
         /// <summary>
+        /// which permission is needed to access this table with a custom report
+        /// </summary>
+        public String CustomReportPermission;
+
+        /// <summary>
+        /// is this table available for custom reports
+        /// </summary>
+        public Boolean AvailableForCustomReport;
+
+        /// <summary>
         /// constructor
         /// </summary>
         public TTable()
@@ -155,6 +165,8 @@ namespace Ict.Tools.DBXML
             this.strLabel = AOtherTable.strLabel;
             this.ExistsStrLabel = AOtherTable.ExistsStrLabel;
             this.strGroup = AOtherTable.strGroup;
+            this.CustomReportPermission = AOtherTable.CustomReportPermission;
+            this.AvailableForCustomReport = AOtherTable.AvailableForCustomReport;
             this.bWithoutCRMDFields = AOtherTable.bWithoutCRMDFields;
             this.bCatchUpdateException = AOtherTable.bCatchUpdateException;
         }
@@ -1066,6 +1078,11 @@ namespace Ict.Tools.DBXML
         /// can be used to define input validation, and show an error message (not used at the moment)
         /// </summary>
         public string strValMsg;
+
+        /// <summary>
+        /// is this field available for use in custom report
+        /// </summary>
+        public Boolean bAvailableForCustomReport;
 
         /// <summary>
         /// constructor

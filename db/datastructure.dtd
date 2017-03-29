@@ -11,6 +11,8 @@
    label      CDATA  #IMPLIED
    dumpname     ID  #REQUIRED
    group      CDATA  #IMPLIED
+   availableforcustomreport CDATA  #IMPLIED
+   customreportpermission CDATA  #IMPLIED
    nopgsync      CDATA  #IMPLIED
    withoutcrmd CDATA #IMPLIED
    catchupdateexception CDATA #IMPLIED
@@ -47,6 +49,7 @@
    autoincrement (no|yes)  #IMPLIED
    check              CDATA  #IMPLIED
    initial   CDATA  #IMPLIED
+   excludefromcustomreport CDATA  #IMPLIED
 >
 
 <!ELEMENT primarykey EMPTY >
