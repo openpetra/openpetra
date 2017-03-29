@@ -5436,6 +5436,7 @@ namespace Ict.Petra.Server.MFinance.Gift.WebConnectors
                         break;
 
                     case MPartnerConstants.UNIT_TYPE_FIELD:
+                    case MPartnerConstants.UNIT_TYPE_AREA:
                         UnitTable = LoadKeyMinistriesOfField(ARecipientPartnerKey, ATransaction, AActiveOnly);
                         break;
                 }
