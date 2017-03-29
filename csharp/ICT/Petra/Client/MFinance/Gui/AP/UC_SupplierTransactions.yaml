@@ -11,7 +11,7 @@ RootNode:
         actOpenSelected: {Label=&Open Selected, ShortCut=Ctrl+O, ActionClick=OpenSelectedTransaction, Image=Edit_Record.ico, Tooltip=View details of the selected transaction}
         actOpenTagged: {Label=Open Ta&gged, ShortCut=Ctrl+O, ActionClick=OpenTaggedDocuments, Tooltip=View details of all the tagged transactions}
         #actApproveTagged: {Label=&Approve Tagged, ShortCut=F6, ActionClick=ApproveTaggedDocuments, Tooltip=Approve all the tagged invoices}
-        actDeleteSelected: {Label=De&lete Selected, ShortCut=F5, ActionClick=DeleteSelected, Image=Delete_Record.ico, Tooltip=Delete the selected invoice/payment}
+        actCancelSelected: {Label=Cance&l Selected, ShortCut=F5, ActionClick=CancelSelected, Image=Delete_Record.ico, Tooltip=Cancel the selected invoice/payment}
         actReverseSelected: {Label=Re&verse Selected, ShortCut=F5, ActionClick=ReverseSelected, Tooltip=Reverse the selected invoice/payment}
         #actPostTagged: {Label=&Post Tagged, ShortCut=F7, ActionClick=PostTaggedDocuments, Tooltip=Post all the tagged invoices}
         #actAddTaggedToPayment: {Label=Pa&y Tagged, ShortCut=F8, ActionClick=AddTaggedToPayment, Tooltip=Pay or part-pay all the tagged invoices}
@@ -43,11 +43,11 @@ RootNode:
             Controls: [btnReloadList]
             Width:120
             Dock:Right
-        txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey}
+        txtSupplierName: {Label=Supplier, ReadOnly=true, PartnerShortNameLookup=AApSupplier.PartnerKey, Width=280}
         #txtSupplierCurrency: {Label=Currency, ReadOnly=true, DataField=AApSupplier.CurrencyCode}
         txtSupplierCurrency: {Label=Currency, ReadOnly=true}
         pnlButtons:
-            Controls: [btnNewInvoice, btnNewCreditNote, btnTagAll, btnUntagAll, btnRunTagAction, btnReverseSelected, btnDeleteSelected]
+            Controls: [btnNewInvoice, btnNewCreditNote, btnTagAll, btnUntagAll, btnRunTagAction, btnReverseSelected, btnCancelSelected]
             ControlsOrientation: horizontal
             Dock:Bottom
         pnlOutstandingTotals:
@@ -68,7 +68,7 @@ RootNode:
         btnUntagAll:
         btnRunTagAction: {Width=120}
         btnReverseSelected: {StartNewButtonGroup=true}
-        btnDeleteSelected: {Width=120}
+        btnCancelSelected: {Width=120}
         txtSupplierBalance: {Label=All outstanding transactions, ReadOnly=true, Format=Currency}
         txtFilteredBalance: {Label=Displayed transactions, ReadOnly=true, Format=Currency}
         txtTaggedBalance: {Label=Tagged transactions, ReadOnly=true, Format=Currency}

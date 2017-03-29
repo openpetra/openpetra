@@ -4813,7 +4813,7 @@ namespace Tests.MPartner.Server.PartnerMerge
             // Cleanup: Delete test records
             List <int>DocumentID = new List <int>();
             DocumentID.Add(APDocumentID);
-            TAPTransactionWebConnector.DeleteAPDocuments(LedgerNumber, DocumentID);
+            TAPTransactionWebConnector.CancelAPDocuments(LedgerNumber, DocumentID, true);
             AccountsPayableTDS APDS = TAPTransactionWebConnector.LoadAApSupplier(LedgerNumber, ToPartnerKey);
             APDS.AApSupplier.Rows[0].Delete();
             AApSupplierAccess.SubmitChanges(APDS.AApSupplier, DBAccess.GDBAccessObj.Transaction);

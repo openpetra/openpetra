@@ -723,7 +723,7 @@ namespace Ict.Common.Controls
                     InternalContentHoverFontColour = Color.FromArgb(32, 101, 215);
                     InternalContentActivatedFontColour = InternalContentHoverFontColour;
                     InternalContentActivationEventFontColour = Color.FromArgb(255, 0, 0);
-                    InternalContentDisabledFontColour = Color.FromArgb(44, 58, 56);
+                    InternalContentDisabledFontColour = Color.FromArgb(144, 158, 156);
 
                     //CollapsedInfoTextFont Variables
                     InternalCollapsedInfoTextFont = InternalTitleFont;

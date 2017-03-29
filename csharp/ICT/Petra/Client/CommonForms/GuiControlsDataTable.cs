@@ -161,6 +161,7 @@ namespace Ict.Petra.Client.CommonForms
                 string stretchAttribute = string.Empty;
                 int widthAttribute = -1;
                 int labelWidthAttribute = -1;
+                int comboBoxWidthAttribute = -1;
 
                 if (attributes.ContainsKey("Format"))
                 {
@@ -171,6 +172,11 @@ namespace Ict.Petra.Client.CommonForms
                 if (attributes.ContainsKey("Width"))
                 {
                     widthAttribute = Convert.ToInt32(attributes["Width"]);
+                }
+
+                if (attributes.ContainsKey("ComboBoxWidth"))
+                {
+                    comboBoxWidthAttribute = Convert.ToInt32(attributes["ComboBoxWidth"]);
                 }
 
                 if (attributes.ContainsKey("LabelWidth"))
@@ -267,6 +273,13 @@ namespace Ict.Petra.Client.CommonForms
                             cmb.ListTable = (TCmbAutoPopulated.TListTableEnum)Enum.Parse(typeof(TCmbAutoPopulated.TListTableEnum),
                                 attributes["List"].ToString(),
                                 true);
+                            cmb.cmbCombobox.AllowBlankValue = (allowBlankAttribute == "true");
+
+                            if (comboBoxWidthAttribute > 0)
+                            {
+                                cmb.ComboBoxWidth = comboBoxWidthAttribute;
+                            }
+
                             cmb.InitialiseUserControl();
                             cmb.SetSelectedString(values[id], -1);
 

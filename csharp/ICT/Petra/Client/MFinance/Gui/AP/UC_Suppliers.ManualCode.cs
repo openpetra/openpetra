@@ -319,7 +319,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 }
 
                 // Highlight first Row
-                SelectAndFocus(1, false);
+                SelectRowInGrid(1);
             }
 
             // Size it

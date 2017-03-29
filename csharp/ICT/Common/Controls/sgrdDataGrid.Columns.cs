@@ -34,6 +34,7 @@ using SourceGrid.Cells;
 using SourceGrid.Cells.Controllers;
 using SourceGrid.Cells.Models;
 using SourceGrid.Cells.Views;
+using SourceGrid.Selection;
 
 namespace Ict.Common.Controls
 {
@@ -157,22 +158,52 @@ namespace Ict.Common.Controls
             SourceGrid.Cells.ICellVirtual BoldBorderDataCellSelected;
             TSgrdDataGrid GridWrapper = (TSgrdDataGrid)FGrid;
 
-            int Reminder;
+            // Standard border
+            RectangleBorder border = new DevAge.Drawing.RectangleBorder(new BorderLine(GridWrapper.GridLinesColour, 0.5f));
+
+            // Test to see if the cell is part of a highlighted row
+            bool rowIsHighlighted = false;
+
+            foreach (SourceGrid.Decorators.DecoratorBase dec in FGrid.Decorators)
+            {
+                if ((dec is SourceGrid.Decorators.DecoratorSelection) && dec.IntersectWith(new Range(AGridRow, 1, AGridRow, 1)))
+                {
+                    rowIsHighlighted = true;
+                }
+            }
+
+            int Remainder;
 
             HeaderCell.View = ((TSgrdDataGrid)FGrid).ColumnHeaderView;
             FDataCellSelected = BaseDataCell.Copy();
+            FDataCellSelected.View.ForeColor = Color.Black;
+            // Info: if you want to play with a bold font, re-enable the following line and the one about 15 lines down
+            //FDataCellSelected.View.Font = new Font(GridWrapper.Font, FontStyle.Regular);
 
             // Create a ToolTip
             FDataCellSelected.AddController(SourceGrid.Cells.Controllers.ToolTipText.Default);
             FDataCellSelected.Model.AddModel(TToolTipModel.myDefault);
 
             // Alternating BackColor (banding effect)
-            Math.DivRem(AGridRow, 2, out Reminder);
+            Math.DivRem(AGridRow, 2, out Remainder);
 
-            if (Reminder == 0)
+            if (rowIsHighlighted)
+            {
+                // Highlighted rows have a solid background of the selection backcolor
+                // Then when the highlight decoration is applied it will be a fully transparent version of this overlaid on top
+                // Highlighted rows use a bold font and text colour that is a contrast with the background
+                Color selectionColour = ((SelectionBase)GridWrapper.Selection).BackColor;
+                FDataCellSelected.View.BackColor = Color.FromArgb(255, selectionColour.R, selectionColour.G, selectionColour.B);    // Fully solid
+                FDataCellSelected.View.ForeColor = GetBestContrastColor(FDataCellSelected.View.BackColor);
+                // Info: if you want to play with a bold font, re-enable the following line and the one about 15 lines above
+                //FDataCellSelected.View.Font = new Font(GridWrapper.Font, FontStyle.Bold);
+                FDataCellSelected.View.Border = border;
+                ReturnValue = FDataCellSelected;
+            }
+            else if (Remainder == 0)
             {
                 FDataCellSelected.View.BackColor = ((TSgrdDataGrid)FGrid).CellBackgroundColour;
-                FDataCellSelected.View.Border = new DevAge.Drawing.RectangleBorder(new BorderLine(GridWrapper.GridLinesColour, 0.5f));
+                FDataCellSelected.View.Border = border;
                 ReturnValue = FDataCellSelected;
             }
             else
@@ -182,7 +213,7 @@ namespace Ict.Common.Controls
                     AlternatingDataCellSelected = FDataCellSelected.Copy();
                     AlternatingDataCellSelected.View = (SourceGrid.Cells.Views.IView)FDataCellSelected.View.Clone();
                     AlternatingDataCellSelected.View.BackColor = ((TSgrdDataGrid)FGrid).AlternatingBackgroundColour;
-                    AlternatingDataCellSelected.View.Border = new DevAge.Drawing.RectangleBorder(new BorderLine(GridWrapper.GridLinesColour, 0.5f));
+                    AlternatingDataCellSelected.View.Border = border;
                     ReturnValue = AlternatingDataCellSelected;
                 }
                 else
@@ -204,6 +235,22 @@ namespace Ict.Common.Controls
             }
 
             return ReturnValue;
+        }
+
+        private Color GetBestContrastColor(Color AColor)
+        {
+            // Get the colours on a scale of 0 to 1.0
+            float red = AColor.R / 255f;
+            float green = AColor.G / 255f;
+            float blue = AColor.B / 255f;
+
+            // Calculate the Luma using the 'industry-standard' formula
+            float L = (0.2126f * red * red) + (0.7152f * green * green) + (0.0722f * blue * blue);
+
+            // The 'correct' test value is 0.25 but strangely our default highlight colour (blue) comes out at 0.33
+            // and I think white is best for that since it works better with a screen not at a 90 degree angle.
+            // So I am setting to 0.34
+            return (L > 0.34) ? Color.Black : Color.White;
         }
     }
     #endregion

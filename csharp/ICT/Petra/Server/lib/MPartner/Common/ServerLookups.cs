@@ -1203,5 +1203,48 @@ namespace Ict.Petra.Server.MPartner.Partner.ServerLookups.WebConnectors
 
             return CountryCode;
         }
+
+        /// <summary>
+        /// Can be used to recover basic p_unit information
+        /// </summary>
+        /// <param name="APartnerKey">The Partner Key of the UNIT</param>
+        /// <param name="AUnitName">Returns the Unit short name</param>
+        /// <param name="ACountryCode">Returns the country code stored for this unit.  It may be 99.</param>
+        /// <returns></returns>
+        [RequireModulePermission("PTNRUSER")]
+        public static bool GetUnitNameAndCountryCodeFromPartnerKey(Int64 APartnerKey, out string AUnitName, out string ACountryCode)
+        {
+            string PartnerShortName = null;
+            string CountryCode = null;
+            TDBTransaction Transaction = null;
+
+            DBAccess.GDBAccessObj.GetNewOrExistingAutoReadTransaction(IsolationLevel.ReadCommitted, TEnforceIsolationLevel.eilMinimum,
+                ref Transaction,
+                delegate
+                {
+                    // SELECT p.p_partner_short_name_c, u.p_country_c FROM p_partner p JOIN p_unit u ON p.p_partner_key_n=u.p_partner_key_n
+                    // WHERE p_partner_key_n=?
+                    string sql = String.Format("SELECT p.{0}, u.{1} FROM {2} p JOIN {3} u ON p.{4}=u.{5} WHERE p.{4}={6}",
+                        PPartnerTable.GetPartnerShortNameDBName(),
+                        PUnitTable.GetCountryCodeDBName(),
+                        PPartnerTable.GetTableDBName(),
+                        PUnitTable.GetTableDBName(),
+                        PPartnerTable.GetPartnerKeyDBName(),
+                        PUnitTable.GetPartnerKeyDBName(),
+                        APartnerKey);
+                    DataTable t = DBAccess.GDBAccessObj.SelectDT(sql, "UnitInfo", Transaction);
+
+                    if (t.Rows.Count > 0)
+                    {
+                        PartnerShortName = Convert.ToString(t.Rows[0][0]);
+                        CountryCode = Convert.ToString(t.Rows[0][1]);
+                    }
+                });
+
+            AUnitName = PartnerShortName;
+            ACountryCode = CountryCode;
+
+            return AUnitName != null && ACountryCode != null;
+        }
     }
 }

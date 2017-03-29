@@ -6,7 +6,7 @@ RootNode:
     FormType: dialog
     Template: window
     WindowWidth: 600
-    WindowHeight: 500
+    WindowHeight: 520
     Controls:
         pnlDialogContent:
             Controls: [grpGeneral, grpCurrencies, grpAccountingPeriods, rgrIch, grpSubsystems]
@@ -18,7 +18,6 @@ RootNode:
             ControlsOrientation:horizontal
         grpCurrencies: {Label=Currencies, Stretch=horizontally}
             Controls: [cmbBaseCurrency, cmbIntlCurrency]
-            ControlsOrientation:horizontal
         grpAccountingPeriods: {Label=Accounting Periods, Stretch=horizontally}
             Controls: [dtpCalendarStartDate, pnlPeriodsRow, nudNumberOfFwdPostingPeriods]
         pnlPeriodsRow:
@@ -38,20 +37,20 @@ RootNode:
             Controls: [chkActivateGiftProcessing, txtStartingReceiptNumber]
             ControlsOrientation:horizontal
         nudLedgerNumber: {OnChange=LedgerNumberChanged}
-            Width:100
-            LabelWidth:195
+            Width:50
+            LabelWidth:145
         txtLedgerName: {Width=310}
-            LabelWidth:200
+            LabelWidth:150
         cmbCountryCode: {List=CountryList}
             LabelWidth:100
-            Width:150
+            Width:220
         cmbBaseCurrency: {List=CurrencyCodeList}
-            Width:100
+            Width:220
             LabelWidth:200
 
         cmbIntlCurrency: {List=CurrencyCodeList}
-            LabelWidth:100
-            Width:150
+            LabelWidth:200
+            Width:220
         dtpCalendarStartDate: {Label=First Day of the Financial Year}
             Width:100
             LabelWidth:200

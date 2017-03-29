@@ -757,19 +757,20 @@ namespace Ict.Petra.Client.App.PetraClient
             // The UserDefault for the Selection colour stores a decimal Alpha value appended to the HTML representation of the colour
             // because the Selection needs to be transparent to a certain degree in order to let the data of a selected Grid Row shine through!
             // Example: "#00FFAA;50": A=140 (decimal 140), R=15 (hex 0F), G=255 (hex FF), B=170 (hex AA)
+            // Note 17/02/2017: We are trying an alternative way of drawing the highlight, which means that we no longer need the 'A' value.
+            // Now we always use a value of 0 but the setting is still retained in the user defaults table in case we need it again.
             SelectionColourUserDefault = TUserDefaults.GetStringDefault(TUserDefaults.NamedDefaults.COLOUR_GRID_SELECTION, String.Empty);
 
             if (SelectionColourUserDefault.Length > 0)
             {
                 ReturnValue.SelectionColour = System.Drawing.ColorTranslator.FromHtml(SelectionColourUserDefault.Split(';')[0]);
-                ReturnValue.SelectionColour = System.Drawing.Color.FromArgb(Convert.ToInt32(SelectionColourUserDefault.Split(
-                            ';')[1]), ReturnValue.SelectionColour);
+                ReturnValue.SelectionColour = System.Drawing.Color.FromArgb(0, ReturnValue.SelectionColour);    // Fully transparent
             }
             else
             {
                 // No UserDefault for the Selection in the DB; use a hard-coded default
                 ReturnValue.SelectionColour =
-                    System.Drawing.Color.FromArgb(120, System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight));
+                    System.Drawing.Color.FromArgb(0, System.Drawing.Color.FromKnownColor(System.Drawing.KnownColor.Highlight));    // Fully transparent
             }
 
             return ReturnValue;

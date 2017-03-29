@@ -63,6 +63,9 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
             cmbIntlCurrency.SetSelectedString("USD");
             cmbCountryCode.SetSelectedString("DE");
 
+            // In OM we always use USD as Intl currency
+            cmbIntlCurrency.Enabled = false;
+
             ActivateGiftProcessing_Changed(null, null);
 
             nudLedgerNumber.KeyDown += numericUpDown_KeyDown;
@@ -303,7 +306,7 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
         void LedgerNumberChanged(Object sender, EventArgs e)
         {
             String UnitName;
-            TPartnerClass PartnerClass;
+            String CountryCode;
             Int64 PartnerKey = Convert.ToInt64(nudLedgerNumber.Value) * 1000000L;
 
             // make sure text is reset if it field is disabled (i.e. text was earlier initialized from database)
@@ -312,15 +315,26 @@ namespace Ict.Petra.Client.MFinance.Gui.Setup
                 txtLedgerName.Text = "";
             }
 
-            if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetPartnerShortName(PartnerKey,
-                    out UnitName, out PartnerClass, true))
+            try
             {
-                txtLedgerName.Text = UnitName;
-                txtLedgerName.Enabled = false;
+                this.Cursor = Cursors.WaitCursor;
+
+                if (TRemote.MPartner.Partner.ServerLookups.WebConnectors.GetUnitNameAndCountryCodeFromPartnerKey(PartnerKey,
+                        out UnitName, out CountryCode))
+                {
+                    txtLedgerName.Text = UnitName;
+                    txtLedgerName.Enabled = false;
+
+                    cmbCountryCode.SetSelectedString(CountryCode);
+                }
+                else
+                {
+                    txtLedgerName.Enabled = true;
+                }
             }
-            else
+            finally
             {
-                txtLedgerName.Enabled = true;
+                this.Cursor = Cursors.Default;
             }
         }
     }

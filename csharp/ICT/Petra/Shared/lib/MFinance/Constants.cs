@@ -154,6 +154,9 @@ namespace Ict.Petra.Shared.MFinance
         public const String AP_DOCUMENT_APPROVED = "APPROVED";
 
         /// <summary>Accounts Payable</summary>
+        public const String AP_DOCUMENT_CANCELLED = "CANCELLED";
+
+        /// <summary>Accounts Payable</summary>
         public const String AP_DOCUMENT_POSTED = "POSTED";
 
         /// <summary>Accounts Payable</summary>

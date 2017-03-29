@@ -96,8 +96,9 @@ namespace Ict.Petra.Server.MFinance.Gift
 
                 if (TSystemDefaultsCache.GSystemDefaultsCache.GetStringDefault(SharedConstants.SYSDEFAULT_DISPLAYGIFTAMOUNT).ToLower() == "true")
                 {
-                    // Check OpenPetra Module access to FINANCE-1
-                    if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+                    // Check OpenPetra Module access to FINANCE-1 or Financial Development
+                    if (UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
+                        || UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER))
                     {
                         if (LastGiftCurrencyCode != "")
                         {
@@ -219,9 +220,10 @@ namespace Ict.Petra.Server.MFinance.Gift
             String tmpLastGiftRecipientLedgerShortName = ALastGiftRecipientLedgerShortName;
             Boolean tmpRestrictedOrConfidentialGiftAccessDenied = ARestrictedOrConfidentialGiftAccessDenied;
 
-            if (!UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1))
+            if ((UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_FINANCE1)
+                 || UserInfo.GUserInfo.IsInModule(SharedConstants.PETRAMODULE_DEVUSER)) == false)
             {
-                // User hasn't got access to FINANCE-1 module
+                // User hasn't got access to FINANCE-1 module or Financial Development module
                 return false;
             }
 

@@ -1,3 +1,3 @@
 ﻿RootNodeInternal:
-#    ICT:{feespayable=yes, chargeoption=Percentage, percentage=1, costcentrecode=1000, accountcode=3400, description=1% ICT, draccountcode=4900}
-#    GIF:{feespayable=yes, chargeoption=Percentage, percentage=2, costcentrecode=9500, accountcode=3400, description=2% Global Impact Fund, draccountcode=4900}
+    ICT:{feespayable=yes, chargeoption=Percentage, percentage=1, costcentrecode=1000, accountcode=3400, description=1% ICT, draccountcode=4900}
+    GIF:{feespayable=yes, chargeoption=Percentage, percentage=2, costcentrecode=9500, accountcode=3400, description=2% Global Impact Fund, draccountcode=4900}

@@ -122,7 +122,7 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             return true;
         }
 
-        /// <summary>Automatically print this Posting Register with displaying the UI</summary>
+        /// <summary>Automatically print this Posting Register without displaying the UI</summary>
         /// <param name="AledgerNumber"></param>
         /// <param name="AbatchNumber"></param>
         public void PrintReportNoUi(Int32 AledgerNumber, Int32 AbatchNumber)
@@ -133,6 +133,8 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             FPetraUtilsObject.FFastReportsPlugin.SetDataGetter(LoadReportData);
             Dictionary <String, TVariant>paramsDictionary = new Dictionary <string, TVariant>();
             TRptCalculator Calc = new TRptCalculator();
+            Calc.AddStringParameter("param_sortby", "Transaction");     // always by transaction number with no UI
+
             FPetraUtilsObject.FFastReportsPlugin.GenerateReport(Calc);
         }
 

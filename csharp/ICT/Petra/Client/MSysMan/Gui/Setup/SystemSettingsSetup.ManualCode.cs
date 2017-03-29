@@ -262,23 +262,28 @@ namespace Ict.Petra.Client.MSysMan.Gui.Setup
             }
 
             // Individual rows can be validated to check that settings code values are ok.
-            if (string.Compare(ARow.DefaultCode, SharedConstants.SYSDEFAULT_LOCALISEDCOUNTYLABEL, true) == 0)
-            {
-                Control[] validationControl = pnlValues.Controls.Find("cValue_0", true);
 
-                if (validationControl.Length > 0)
-                {
-                    verificationResult = TStringChecks.StringMustNotBeEmpty(ARow.DefaultValue, "",
-                        this, validationColumn, validationControl[0]);
+            // This shows how to check SYSDEFAULT_LOCALISEDCOUNTYLABEL is not an empty string
+            // We no longer check for this because Petra databases have empty string here and our main OP code takes care of empty string
+            //  by substituting our default County/State
 
-                    if (verificationResult != null)
-                    {
-                        verificationResult.OverrideResultText(CommonResourcestrings.StrSettingCannotBeEmpty);
-                    }
-                }
+            //if (string.Compare(ARow.DefaultCode, SharedConstants.SYSDEFAULT_LOCALISEDCOUNTYLABEL, true) == 0)
+            //{
+            //    Control[] validationControl = pnlValues.Controls.Find("cValue_0", true);
 
-                verificationResults.Auto_Add_Or_AddOrRemove(this, verificationResult, validationColumn);
-            }
+            //    if (validationControl.Length > 0)
+            //    {
+            //        verificationResult = TStringChecks.StringMustNotBeEmpty(ARow.DefaultValue, "",
+            //            this, validationColumn, validationControl[0]);
+
+            //        if (verificationResult != null)
+            //        {
+            //            verificationResult.OverrideResultText(CommonResourcestrings.StrSettingCannotBeEmpty);
+            //        }
+            //    }
+
+            //    verificationResults.Auto_Add_Or_AddOrRemove(this, verificationResult, validationColumn);
+            //}
         }
 
         #endregion

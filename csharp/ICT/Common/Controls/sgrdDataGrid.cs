@@ -942,7 +942,7 @@ namespace Ict.Common.Controls
                 FColourInfo.BackColour = System.Drawing.Color.White;
                 FColourInfo.CellBackgroundColour = System.Drawing.Color.White;
                 FColourInfo.AlternatingBackgroundColour = System.Drawing.Color.FromArgb(230, 230, 230);
-                FColourInfo.SelectionColour = Color.FromArgb(150, Color.FromKnownColor(KnownColor.Highlight));
+                FColourInfo.SelectionColour = Color.FromArgb(0, Color.FromKnownColor(KnownColor.Highlight));
                 FColourInfo.GridLinesColour = System.Drawing.SystemColors.ControlDark;
             }
 

@@ -62,7 +62,8 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         /// </summary>
         /// <param name="ALedgerNum">Number of the Ledger to be revaluated</param>
         /// <param name="AForeignAccount">Account Codes (Array) of the selected foreign currency accounts</param>
-        /// <param name="ANewExchangeRate">Array of the exchange rates</param>
+        /// <param name="AForeignCurrency">Array of the 'foreign' currencies</param>
+        /// <param name="ANewExchangeRate">Matching array of the exchange rates</param>
         /// <param name="ACostCentre">Which Cost Centre should win / lose money in this process</param>
         /// <param name="glBatchNumber">If a batch was generated, the caller should print it.</param>
         /// <param name="AVerificationResult">A TVerificationResultCollection for possible error messages</param>
@@ -71,13 +72,14 @@ namespace Ict.Petra.Server.MFinance.GL.WebConnectors
         public static bool Revaluate(
             int ALedgerNum,
             string[] AForeignAccount,
+            string[] AForeignCurrency,
             decimal[] ANewExchangeRate,
             String ACostCentre,
             out Int32 glBatchNumber,
             out TVerificationResultCollection AVerificationResult)
         {
             CLSRevaluation revaluation = new CLSRevaluation(ALedgerNum,
-                AForeignAccount, ANewExchangeRate, ACostCentre);
+                AForeignAccount, AForeignCurrency, ANewExchangeRate, ACostCentre);
 
             bool blnReturn = revaluation.RunRevaluation(out glBatchNumber);
 
@@ -97,6 +99,7 @@ namespace Ict.Petra.Server.MFinance.GL
         private int F_LedgerNum;
         private int F_AccountingPeriod;
         private string[] F_ForeignAccount;
+        private string[] F_ForeignCurrency;
         private decimal[] F_ExchangeRate;
         String F_CostCentre;
 
@@ -118,11 +121,13 @@ namespace Ict.Petra.Server.MFinance.GL
         /// </summary>
         public CLSRevaluation(int ALedgerNum,
             string[] AForeignAccount,
+            string[] AForeignCurrency,
             decimal[] ANewExchangeRate,
             String ACostCentre)
         {
             F_LedgerNum = ALedgerNum;
             F_ForeignAccount = AForeignAccount;
+            F_ForeignCurrency = AForeignCurrency;
             F_ExchangeRate = ANewExchangeRate;
             F_CostCentre = ACostCentre;
             FVerificationCollection = new TVerificationResultCollection();
@@ -176,7 +181,7 @@ namespace Ict.Petra.Server.MFinance.GL
 
                     if (GlmTable.Rows.Count > 0)
                     {
-                        transactionsWereCreated |= RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignAccount[i]);
+                        transactionsWereCreated |= RevaluateAccount(GlmTable, F_ExchangeRate[i], F_ForeignCurrency[i]);
                     }
                 }
 

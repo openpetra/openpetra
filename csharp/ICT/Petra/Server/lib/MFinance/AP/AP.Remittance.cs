@@ -147,22 +147,20 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
         /// </summary>
         [RequireModulePermission("FINANCE-1")]
         public static Boolean CreateChequeFormData(TFormLetterFinanceInfo AFormLetterFinanceInfo,
-            Int32 AFirstPaymentNumber,
-            Int32 ALastPaymentNumber,
+            List <int>APaymentNumberList,
             Int32 ALedgerNumber,
-            Int32 AChequeNumber,
-            string AChequeAmountInWords,
-            decimal AChequeAmountToPay,
             out List <TFormData>AFormDataList)
         {
             AFormDataList = new List <TFormData>();
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Creating Cheque"));
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(), Catalog.GetString("Starting ..."), 10.0m);
 
-            int totalPayments = ALastPaymentNumber - AFirstPaymentNumber + 1;
+            int counter = 0;
 
-            for (Int32 paymentNumber = AFirstPaymentNumber; paymentNumber <= ALastPaymentNumber; paymentNumber++)
+            foreach (int paymentNumber in APaymentNumberList)
             {
+                counter++;
+
                 AccountsPayableTDS paymentDetails = TAPTransactionWebConnector.LoadAPPayment(ALedgerNumber, paymentNumber);
 
                 if (paymentDetails.PPartner.Rows.Count == 0) // unable to load this partner..
@@ -170,7 +168,12 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                     continue;
                 }
 
-                decimal progress = (paymentNumber - AFirstPaymentNumber + 1) / totalPayments * 100.0m;
+                if (paymentDetails.AApPayment.Rows.Count == 0) // unable to load this payment..
+                {
+                    continue;
+                }
+
+                decimal progress = counter / APaymentNumberList.Count * 100.0m;
                 TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
                     Catalog.GetString(string.Format("Printing cheque for payment number {0} ...", paymentNumber)),
                     progress);
@@ -186,9 +189,9 @@ namespace Ict.Petra.Server.MFinance.AP.WebConnectors
                         TFormLettersWebConnector.FillFormDataFromPartner(supplierKey, formData, AFormLetterFinanceInfo);
 
                         formData.ChequeDate = DateTime.Today.ToString("dd MMM yyyy");
-                        formData.ChequeAmountInWords = AChequeAmountInWords;
-                        formData.ChequeAmountToPay = AChequeAmountToPay.ToString("n2");
-                        formData.ChequeNumber = AChequeNumber.ToString("D6");
+                        formData.ChequeAmountInWords = paymentDetails.AApPayment[0].ChequeAmountInWords;
+                        formData.ChequeAmountToPay = paymentDetails.AApPayment[0].Amount.ToString("n2");
+                        formData.ChequeNumber = paymentDetails.AApPayment[0].ChequeNumber.ToString("D6");
                     });
 
                 AFormDataList.Add(formData);

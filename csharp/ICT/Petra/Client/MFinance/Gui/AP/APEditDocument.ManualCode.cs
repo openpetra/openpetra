@@ -23,6 +23,7 @@
 // along with OpenPetra.org.  If not, see <http://www.gnu.org/licenses/>.
 //
 using System;
+using System.ComponentModel;
 using System.Data;
 using System.IO;
 using System.Threading;
@@ -85,6 +86,26 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             ApDocumentCanPost(FMainDS, FMainDS.AApDocument[0], true); // Various warnings may be generated, but the save still goes ahead.
         }
 
+        private void DataSavingValidated(object sender, CancelEventArgs e)
+        {
+            if (FMainDS.AApDocument[0].DocumentStatus == MFinanceConstants.AP_DOCUMENT_APPROVED)
+            {
+                string msg = Catalog.GetString(
+                    "You are about to save changes to an 'Approved' document.  When the document has been saved the status will revert to 'Open' and the document will need to be approved again.");
+                msg += Environment.NewLine + Environment.NewLine;
+                msg += Catalog.GetString("Proceed to save the changes?");
+
+                if (MessageBox.Show(msg, Catalog.GetString("Save Changes"), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                {
+                    e.Cancel = true;
+                }
+                else
+                {
+                    FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
+                }
+            }
+        }
+
         /// <summary>
         /// When this document is saved in the database, I can check whether
         /// my calling form should be updated.
@@ -104,8 +125,9 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         private void InitializeManualCode()
         {
             // When a doument is saved, I'll see about updating my caller.
-            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
             FPetraUtilsObject.DataSavingStarted += new TDataSavingStartHandler(BeforeDataSave);
+            FPetraUtilsObject.DataSavingValidated += new TDataSavingValidatedHandler(DataSavingValidated);
+            FPetraUtilsObject.DataSaved += new TDataSavedHandler(OnDataSaved);
 
             btnHint.Height = txtDocumentStatus.Height;
         }
@@ -216,7 +238,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
 
         void AnalysisAttributeValueChanged(object sender, EventArgs e)
         {
-            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
+            if ("|CANCELLED|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
             {
                 return;
             }
@@ -271,8 +293,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
         {
             btnDelete.Enabled = (GetSelectedDetailRow() != null);
 
-            // I need to make everything read-only if this document was already posted.
-            if ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
+            // I need to make everything read-only if this document was already posted or cancelled.
+            if ("|CANCELLED|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0)
             {
                 tbbApproveDocument.Enabled = false;
                 tbbPostDocument.Enabled = false;
@@ -301,7 +323,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 pnlDetails.Enabled = false;
             }
 
-            tbbPostDocument.Enabled = ("|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
+            tbbPostDocument.Enabled = ("|CANCELLED|POSTED|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
             tbbPayDocument.Enabled = ("|POSTED|PARTPAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
             tbbReprintRemittanceAdvice.Enabled = ("|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
             btnHint.Enabled = ("|PARTPAID|PAID".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) >= 0);
@@ -310,7 +332,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             {
                 tbbApproveDocument.Visible = true;
 
-                if (FMainDS.AApDocument[0].DocumentStatus == "OPEN")
+                if (FMainDS.AApDocument[0].DocumentStatus == MFinanceConstants.AP_DOCUMENT_OPEN)
                 {
                     tbbPostDocument.Enabled = false;
                     tbbPayDocument.Enabled = false;
@@ -508,9 +530,8 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                 {
                     FMainDS.AApDocument[0].LastDetailNumber++;
 
-                    // set the document status to open or approved depending on the user preference for the ledger
-                    FMainDS.AApDocument[0].DocumentStatus =
-                        (FRequireApprovalBeforePosting) ? MFinanceConstants.AP_DOCUMENT_OPEN : MFinanceConstants.AP_DOCUMENT_APPROVED;
+                    // set the document status to open
+                    FMainDS.AApDocument[0].DocumentStatus = MFinanceConstants.AP_DOCUMENT_OPEN;
                     EnableControls();
                     txtDetailNarrative.Focus();
                 }
@@ -614,7 +635,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
             }
 
             // if this document was already posted, then we need all account and cost centre codes, because old codes might have been used
-            bool ActiveOnly = ("|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
+            bool ActiveOnly = ("|CANCELLED|POSTED|PARTPAID|PAID|".IndexOf("|" + FMainDS.AApDocument[0].DocumentStatus) < 0);
 
             FPetraUtilsObject.SuppressChangeDetection = true;
             TFinanceControls.InitialiseAccountList(ref cmbDetailAccountCode, ARow.LedgerNumber, true, false, ActiveOnly, false);
@@ -1215,6 +1236,7 @@ namespace Ict.Petra.Client.MFinance.Gui.AP
                     return;
                 }
 
+                paymentNumberList.Sort();
                 PrintRemittanceAdviceTemplater(paymentNumberList, FDocumentLedgerNumber, FormLetterFinanceInfo);
             }
             else
