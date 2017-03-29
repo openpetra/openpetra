@@ -67,9 +67,14 @@ namespace GenerateSQL
                     {
                         string line = sr.ReadLine();
 
-                        while (!line.Trim().EndsWith(";") && !sr.EndOfStream)
+                        while (!line.Trim().StartsWith("--") && !line.Trim().EndsWith(";") && !sr.EndOfStream)
                         {
-                            line += " " + sr.ReadLine();
+                            string templine = sr.ReadLine();
+
+                            if (!templine.StartsWith("--"))
+                            {
+                                line += " " + templine;
+                            }
                         }
 
                         if (line.Trim().ToUpper().StartsWith("INSERT"))
