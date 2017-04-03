@@ -697,7 +697,7 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             TProgressTracker.InitProgressTracker(DomainManager.GClientID.ToString(), Catalog.GetString("Donor Gift Statement"));
             TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
-                Catalog.GetString("Gathering information from the database"), 0);
+                Catalog.GetString("Gathering information from the database (Cancel button may seem unresponsive initially)"), 0);
 
             if (donorSelect == "One Donor")
             {
@@ -735,6 +735,19 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
             // remove the need to create a new connection.
             DataTable tempTable;
             bool retrieveRecipientsIndividually = false;
+
+            if (TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+            {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Cancelling report generation"), 0);
+                return null;
+            }
+            else
+            {
+                TProgressTracker.SetCurrentState(DomainManager.GClientID.ToString(),
+                    Catalog.GetString("Gathering information from the database"), 0);
+            }
+                
 
             if (Recipients == null)
             {
@@ -852,10 +865,30 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             } // if (reportType == "Totals") else
 
+            // This check should be done immediately after the "if (reportType == "Totals") else" block because ALL 
+            // further processing is irrelevant if the user cancelled.
+            if (ADbAdapter.IsCancelled || TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
+            {
+                return null;
+            }
+
+            // bug 5985: this needs to be before the next block so that the relevant DefaultView.Sort fields are present
+            // Adding "else" because if there are no columns then there can't be any rows, so sorting is a no-op
+            if (Recipients.Columns.Count == 0)
+            {
+                Recipients.Columns.Add("RecipientKey", typeof(Int32));
+                Recipients.Columns.Add("RecipientName", typeof(Int32));
+                Recipients.Columns.Add("RecipientClass", typeof(Int32));
+                Recipients.Columns.Add("FieldName", typeof(Int32));
+                Recipients.Columns.Add("FieldKey", typeof(Int32));
+                Recipients.Columns.Add("thisYearTotal", typeof(Int32));
+                Recipients.Columns.Add("previousYearTotal", typeof(Int32));
+            }
+
             //
             // If I previously failed to receive all the recipients in one query,
             // I now need to sort them according to user's request:
-            if (retrieveRecipientsIndividually)
+            else if (retrieveRecipientsIndividually)
             {
                 string recipientOrder = AParameters["param_order_recipient"].ToString();
 
@@ -875,16 +908,6 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
                 Recipients = Recipients.DefaultView.ToTable("Recipients");
             }
 
-            if (Recipients.Columns.Count == 0)
-            {
-                Recipients.Columns.Add("RecipientKey", typeof(Int32));
-                Recipients.Columns.Add("RecipientName", typeof(Int32));
-                Recipients.Columns.Add("RecipientClass", typeof(Int32));
-                Recipients.Columns.Add("FieldName", typeof(Int32));
-                Recipients.Columns.Add("FieldKey", typeof(Int32));
-                Recipients.Columns.Add("thisYearTotal", typeof(Int32));
-                Recipients.Columns.Add("previousYearTotal", typeof(Int32));
-            }
 
             if (Totals.Columns.Count == 0)
             {
@@ -917,7 +940,8 @@ namespace Ict.Petra.Server.MReporting.WebConnectors
 
             TProgressTracker.FinishJob(DomainManager.GClientID.ToString());
 
-            if (ADbAdapter.IsCancelled)
+            // Since the progress bar is still up it's still possible the user might have clicked Cancel since the last check
+            if (ADbAdapter.IsCancelled || TProgressTracker.GetCurrentState(DomainManager.GClientID.ToString()).CancelJob)
             {
                 return null;
             }

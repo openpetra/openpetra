@@ -283,10 +283,6 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["Totals"], "Totals");
                 FPetraUtilsObject.FFastReportsPlugin.RegisterData(Results.Tables["TaxRef"], "TaxRef");
             }
-            else
-            {
-                MessageBox.Show("Report generation failed, most likely due to query timeout");
-            }
 
             ThreadFinished = true;
         }
@@ -318,10 +314,17 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
             // DataSet ReportDataSet = TRemote.MReporting.WebConnectors.GetReportDataSet("DonorGiftStatement", paramsDictionary);
             DataSet ReportDataSet = null;
             Boolean ThreadFinished = false;
+            Boolean ThreadOK = true;
+            string ThreadFailMsg = "GetDGSDataSet completed successfully"; // This message should not be displayed!  Hence it is not translated.
             Thread t = new Thread(() => GetDGSDataSet(ref ReportDataSet, paramsDictionary, ref ThreadFinished, ACalc));
             using (TProgressDialog dialog = new TProgressDialog(t, AWaitForThreadComplete : true))
             {
                 dialog.ShowDialog();
+                if (dialog.Cancelled)
+                {
+                    ThreadOK = false;
+                    ThreadFailMsg = Catalog.GetString("Query generation cancelled");
+                }
             }
 
             while (!ThreadFinished)
@@ -329,29 +332,26 @@ namespace Ict.Petra.Client.MReporting.Gui.MFinance
                 Thread.Sleep(50);
             }
 
+            // if no Donors
+            if (ThreadOK && ((ReportDataSet == null) || (ReportDataSet.Tables["Donors"] == null) || (ReportDataSet.Tables["Donors"].Rows.Count == 0)))
+            {
+                ThreadOK = false;
+                ThreadFailMsg = Catalog.GetString("No Donors found.");
+            }
+
+            // so if ThreadOK was set false, show the user why.
+            if (!ThreadOK)
+            {
+                MessageBox.Show(ThreadFailMsg, "Donor Gift Statement");
+                return false;
+            }
+
             if (TRemote.MReporting.WebConnectors.DataTableGenerationWasCancelled() || this.IsDisposed)
             {
                 return false;
             }
 
-            // if no Donors
-            if ((ReportDataSet == null) || (ReportDataSet.Tables["Donors"] == null) || (ReportDataSet.Tables["Donors"].Rows.Count == 0))
-            {
-                MessageBox.Show(Catalog.GetString("No Donors found."), "Donor Gift Statement");
-                return false;
-            }
-
-            // Next few lines were moved from here into GetDGSDataSet()
-            //Boolean useGovId = TSystemDefaults.GetBooleanDefault("GovIdEnabled", false);
-            //ACalc.AddParameter("param_use_gov_id", useGovId);
-
-            //// Register datatables with the report
-            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Donors"], "Donors");
-            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["PartnersAddresses"], "DonorAddresses");
-            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Recipients"], "Recipients");
-            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["Totals"], "Totals");
-            //FPetraUtilsObject.FFastReportsPlugin.RegisterData(ReportDataSet.Tables["TaxRef"], "TaxRef");
-            return true;
+            return ThreadOK;
         }
     }
 }
